@@ -1,6 +1,13 @@
 <?php
 
-require_once 'include/template.php';
+/* $Id$ */
+
+/* vim: set tabstop=4 shiftwidth=4 expandtab: */
+
+// Written by James Flemer
+// For eGrad2000.com
+// <jflemer@alum.rpi.edu>
+
 if (!defined('ESP_BASE'))
 define('ESP_BASE', dirname(dirname(__FILE__)) .'/');
 
@@ -8,7 +15,7 @@ $base  = $GLOBALS['ESPCONFIG']['base_url'];
 $public = $base . '/public';
 $admin = $base . '/admin';
 
-$CONFIG = 'config/phpESP.ini.php';
+$CONFIG = ESP_BASE . 'admin/phpESP.ini.php';
 $DEFAULT_CONFIG = $CONFIG.'.default';
 $FIXED_CONFIG = $CONFIG.'.fixed';
 if(!file_exists($DEFAULT_CONFIG)) {
@@ -37,7 +44,7 @@ if (isset($ESPCONFIG['question_table'] )) {
 require_once($FIXED_CONFIG);
 
 /* check if the basic config files haven't changed */
-//check_checksum($DEFAULT_CONFIG);
+check_checksum($DEFAULT_CONFIG);
 #check_checksum($FIXED_CONFIG);
 
 /* check for an unsupported web server configuration */
@@ -121,16 +128,44 @@ if ($where == 'download') {
     exit;
 }
 
-$title = 'Main Page';
-displayHeader($title);
-displayNav();
-displayPageHeader($title);
-//if ($where == "new") { displayTabNav(); }
-//if (!empty($_POST['tab'])) { displayTabNav(); }
-//displayTabNav();
-include(esp_where($where));
-displayPageFooter();
-displayFooter();
-
 ?>
 
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="css/bootstrap-theme.css" rel="stylesheet" type="text/css" />
+    <link href="css/admin.css" rel="stylesheet" type="text/css" />
+    <title>Client Section: <?php echo($ESPCONFIG['title']); ?></title>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/admin.js"></script>
+    <script type="text/javascript">
+      var activateConfirmMsg="<?php echo(_('Warning! Once activated, this survey can no longer be edited.  Any further changes must be done on a copy.')); ?>";
+      var cancelConfirmMsg="<?php echo(_('Warning! This survey has not been saved.  Canceling now will remove any changes.')); ?>";
+      var mergeMsg="<h2><?php echo(_('You must select at least two surveys before you can merge')); ?></h2>";
+    </script>
+</head>
+<body>
+
+<?php
+
+global $ESPCONFIG;
+
+if($ESPCONFIG['DEBUG']) {
+	include($ESPCONFIG['include_path']."/debug".$ESPCONFIG['extension']);
+}
+
+if(file_exists($ESPCONFIG['include_path']."/head".$ESPCONFIG['extension']))
+	include($ESPCONFIG['include_path']."/head".$ESPCONFIG['extension']);
+	
+include("include/nav.php");
+include(esp_where($where));
+
+if(file_exists($ESPCONFIG['include_path']."/foot".$ESPCONFIG['extension']))
+	include($ESPCONFIG['include_path']."/foot".$ESPCONFIG['extension']);
+
+?>
+</body>
+</html>
