@@ -7,9 +7,13 @@ function displayHeader($title) {
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Client Section: '.$title.'</title>
-	<link href="css/bootstrap.css" rel="stylesheet" type="text/css" />
-	<link href="css/pe.css" rel="stylesheet" type="text/css" />';
+	<title>Client Section: '.$title.'</title>';
+	echo "\n";
+	$cssfiles = array("css/bootstrap.css", "css/bootstrap-theme.css", "css/pe.css");
+	foreach ($cssfiles as $filename) {
+		echo '	<link href="' . $filename . '" rel="stylesheet" type="text/css" />';
+		echo "\n";
+ 	}
 	//if(!empty($ESPCONFIG['favicon'])) {
 	//echo '	<link rel="cshortcut icon" href=".$ESPCONFIG['favicon']."';
 	//}
@@ -97,10 +101,12 @@ function displayPageFooter() {
 }
 
 function displayFooter() {
+	$jsfiles = array("js/jquery-2.2.1.js", "js/bootstrap.js", "js/admin.js");
+	foreach ($jsfiles as $filename) {
+		//$path = dirname(dirname(__FILE__)).'/js/'.$filename;
+		echo '<script type="text/javascript" src="' . $filename . '"></script>'."\n";
+ 	}
 	echo '
-<script type="text/javascript" src="js/jquery-2.2.1.js"></script>
-<script type="text/javascript" src="js/bootstrap.js"></script>
-<script type="text/javascript" src="js/admin.js"></script>
 <script type="text/javascript">
 	var activateConfirmMsg="Warning! Once activated, this survey can no longer be edited. Any further changes must be done on a copy.";
 	var cancelConfirmMsg="Warning! This survey has not been saved. Canceling now will remove any changes.";
@@ -110,5 +116,6 @@ function displayFooter() {
 </body>
 </html>';
 }
+
 
 ?>
