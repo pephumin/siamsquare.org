@@ -18,9 +18,6 @@ function displayHeader($title) {
 <body>';
 }
 
-function displayNavTest() {
-}
-
 function displayNav() {
 	echo "\n\n";
 echo <<< ENDHTML
@@ -51,6 +48,17 @@ echo <<< ENDHTML
 ENDHTML;
 }
 
+function displayTabNav() {
+	echo '
+<input type="hidden" name="where" value="tab" />
+<input type="submit" name="tab_general" value="General" />
+<input type="submit" name="tab_questions" value="Questions" />
+<input type="submit" name="tab_order" value="Order" />
+<input type="submit" name="tab_conditions" value="Conditions" />
+<input type="submit" name="tab_preview" value="Preview" />
+<input type="submit" name="tab_finish" value="Finish" />';
+}
+
 function displayPageHeader() {
 	echo "\n";
 	$self = $_SERVER['PHP_SELF'];
@@ -79,10 +87,10 @@ function displayPageFooter() {
 	echo '
 </div> <!-- /container -->
 </form>
-
+<br /><br />
 <footer class="footer">
   <div class="container">
-    <p>Powered by SiamSquare</p>
+    <p class="text-muted">Powered by SiamSquare</p>
   </div>
 </footer>';
 	echo "\n";

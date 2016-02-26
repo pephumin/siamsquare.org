@@ -1,3 +1,9 @@
 body {
   padding-top: 70px;
 }
+
+footer {
+	text-align: center;
+	background: #252C34;
+	padding: 15px 0;
+}
