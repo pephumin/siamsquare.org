@@ -1,0 +1,108 @@
+<?php
+
+define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/ssq');
+define('BASEURL', "http://" . $_SERVER['SERVER_NAME']);
+
+$SSQ['include_url'] = BASEURL . '/include/';
+$SSQ['image_url'] = BASEURL . '/images/';
+$SSQ['css_url'] = BASEURL . '/css/';
+$SSQ['font_url'] = BASEURL . '/fonts/';
+$SSQ['js_url'] = BASEURL . '/js/';
+$SSQ['favicon'] = BASEURL . '/images/favicon.ico';
+
+$SSQ['include_path'] = BASEPATH . '/include';
+$SSQ['autopub_url'] = BASEURL . '/public/survey.php';
+$SSQ['handler'] = BASEURL . '/public/handler.php';
+$SSQ['handler_prefix'] = BASEURL . '/public/handler-prefix.php';
+
+$SSQ['ME'] = $_SERVER['PHP_SELF'];
+$SSQ['FULL_NAME'] = 'SiamSquare';
+$SSQ['SHORT_NAME'] = 'SSQ';
+
+$SSQ['db_host'] = 'magenta.thaiweb.net';
+$SSQ['db_user'] = 'sinbad';
+$SSQ['db_pass'] = '2bbadd';
+$SSQ['db_name'] = 'ssq';
+$SSQ['db_prefix'] = "p_";
+$SSQ['limit_double_postings'] = 3;  // number of days, set to 0 to disable
+$SSQ['use_captcha'] = 0;
+$SSQ['date_format'] = "%d/%m/%Y";
+$SSQ['adodb_database_type'] = 'mysql';
+$SSQ['adodb_persist'] = 'true';
+$SSQ['allow_email'] = true;
+$SSQ['human_email'] = true;
+$SSQ['email_from_name'] = $SSQ['SHORT_NAME'];
+$SSQ['email_from_address'] = "siamsquare@" . $_SERVER['SERVER_NAME'];
+$SSQ['email_return_path'] = "admin@" . $_SERVER['SERVER_NAME'];
+$SSQ['auth_mode'] = 'form'; // basic or form
+$SSQ['auth_design'] = true;
+$SSQ['auth_response'] = true;
+$SSQ['auth_type'] = 'default';
+$SSQ['signup_realm'] = 'auto';
+$SSQ['dashboard_enable'] = false;
+$SSQ['dashboard_show_public_surveys'] = false;
+$SSQ['dashboard_allow_change_profile'] = true;
+$SSQ['dashboard_allow_change_password'] = true;
+$SSQ['support_email_address'] = null;
+$SSQ['default_lang'] = 'en_US';
+$SSQ['extension'] = '.inc';
+$SSQ['charset'] = 'UTF-8';
+$SSQ['default_num_choices'] = 10;
+$SSQ['main_bgcolor']      = '#FFFFFF';
+$SSQ['link_color']        = '#0000CC';
+$SSQ['vlink_color']       = '#0000CC';
+$SSQ['alink_color']       = '#0000CC';
+$SSQ['dim_bgcolor']       = '#3399CC';
+$SSQ['error_color']       = '#FF0000';
+$SSQ['warn_color']        = '#FF0000';
+$SSQ['reqd_color']        = '#FF0000';
+$SSQ['bgalt_color1']      = '#FFFFFF';
+$SSQ['bgalt_color2']      = '#EEEEEE';
+
+$SSQ['gettext'] = extension_loaded('gettext');
+$SSQ['unsupported'] = array('cgi', 'sapi');
+//$SSQ['access_table']              = $SSQ['db_prefix']."access";
+//$SSQ['designer_table']            = $SSQ['db_prefix']."designer";
+//$SSQ['question_table']            = $SSQ['db_prefix']."question";
+//$SSQ['question_choice_table']     = $SSQ['db_prefix']."question_choice";
+//$SSQ['question_type_table']       = $SSQ['db_prefix']."question_type";
+//$SSQ['realm_table']               = $SSQ['db_prefix']."realm";
+//$SSQ['respondent_table']          = $SSQ['db_prefix']."respondent";
+//$SSQ['response_table']            = $SSQ['db_prefix']."response";
+//$SSQ['response_bool_table']       = $SSQ['db_prefix']."response_bool";
+//$SSQ['response_date_table']       = $SSQ['db_prefix']."response_date";
+//$SSQ['response_multiple_table']   = $SSQ['db_prefix']."response_multiple";
+//$SSQ['response_other_table']      = $SSQ['db_prefix']."response_other";
+//$SSQ['response_rank_table']       = $SSQ['db_prefix']."response_rank";
+//$SSQ['response_single_table']     = $SSQ['db_prefix']."response_single";
+//$SSQ['response_text_table']       = $SSQ['db_prefix']."response_text";
+//$SSQ['survey_table']              = $SSQ['db_prefix']."survey";
+//$SSQ['condition_table']           = $SSQ['db_prefix']."conditions";
+//$SSQ['survey_statistics_table']   = $SSQ['db_prefix']."survey_statistics";
+//$SSQ['version_table']             = $SSQ['db_prefix']."version";
+
+$SSQ['thank_head'] = _('Thank You For Completing This Survey.');
+$SSQ['thank_body'] = _('Please do not use the back button on your browser to go back.');
+
+$SSQ['tabs'] = array('general', 'questions', 'order', 'conditions', 'preview', 'finish');
+
+
+if (!isset($_SESSION)) session_start();
+// if the session fails to start
+if (!isset($_SESSION)) {
+   echo "This script can't work without setting the php session variable first!!!";
+   exit ;
+}
+
+if (isset($GLOBALS)) {
+    $GLOBALS['SSQ'] = $SSQ;
+} else {
+    global $SSQ;
+}
+
+require_once('include/funcs.inc.php');
+//require_once('funcs.inc.php');
+
+?>
+
+
