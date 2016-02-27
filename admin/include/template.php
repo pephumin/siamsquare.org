@@ -9,7 +9,7 @@ function displayHeader($title) {
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Client Section: '.$title.'</title>';
 	echo "\n";
-	$cssfiles = array("css/bootstrap.css", "css/bootstrap-theme.css", "css/pe.css");
+	$cssfiles = array("css/bootstrap.css", "css/bootstrap-theme.css", "css/pe.css", "css/font-awesome.css");
 	foreach ($cssfiles as $filename) {
 		echo '	<link href="' . $filename . '" rel="stylesheet" type="text/css" />';
 		echo "\n";
@@ -23,6 +23,12 @@ function displayHeader($title) {
 }
 
 function displayNav() {
+	$id = "";
+	if($_SESSION['acl']['superuser'] == 'Y') { $id .= 'Superuser: <tt>'. $_SESSION['acl']['username'] .'</tt>'; }
+	else { $id .= 'Login: <tt>'. $_SESSION['acl']['username'] .'</tt>'; }
+	//$id .= " (";
+	//$id .= $_SESSION['acl']['pdesign'];
+	//$id .= ")";
 	echo "\n\n";
 echo <<< ENDHTML
 <!-- Fixed navbar -->
@@ -35,16 +41,16 @@ echo <<< ENDHTML
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" href="/admin">Client Login</a>
+    <a class="navbar-brand" href="/admin">SiamSquare: Client Zone</a>
   </div> <!--/navbar-header -->
   <div id="navbar" class="navbar-collapse collapse">
     <ul class="nav navbar-nav">
       <li class="active"><a href="/admin">Home</a></li>
-      <li><a href="/admin">About</a></li>
-      <li><a href="/admin">Contact</a></li>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/admin/index.php?where=help">Help</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
-      <li><a href="../navbar/">Default</a></li>
+      <li><a href="/admin/index.php?where=passwd">$id</a></li>
     </ul>
   </div> <!--/navbar-collapse -->
 </div>
@@ -55,12 +61,12 @@ ENDHTML;
 function displayTabNav() {
 	echo '
 <input type="hidden" name="where" value="tab" />
-<input type="submit" name="tab_general" value="General" />
-<input type="submit" name="tab_questions" value="Questions" />
-<input type="submit" name="tab_order" value="Order" />
-<input type="submit" name="tab_conditions" value="Conditions" />
-<input type="submit" name="tab_preview" value="Preview" />
-<input type="submit" name="tab_finish" value="Finish" />';
+<input class="btn btn-default" type="button" name="tab_general" value="General" />
+<input class="btn btn-default" type="button" name="tab_questions" value="Questions" />
+<input class="btn btn-default" type="button" name="tab_order" value="Order" />
+<input class="btn btn-default" type="button" name="tab_conditions" value="Conditions" />
+<input class="btn btn-default" type="button" name="tab_preview" value="Preview" />
+<input class="btn btn-default" type="button" name="tab_finish" value="Finish" />';
 }
 
 function displayAdminBack() {

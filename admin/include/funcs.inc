@@ -39,7 +39,7 @@ function esp_where($where = null)
 function esp_init_adodb() {
     $cfg =& $GLOBALS['ESPCONFIG'];
     if(!file_exists($cfg['adodb_path'].'adodb.inc.php')) {
-        echo('<b>'. _('Unable to open ADODB include file. Check INI settings. Aborting.'). '</b>');
+        echo('<b>Unable to open ADODB include file. Check INI settings. Aborting.</b>');
         exit;
     }
     else {
@@ -69,7 +69,7 @@ function esp_init_adodb() {
         header('HTTP/1.0 503 '. _('Service Unavailable'));
         echo('<html><head><title>HTTP 503 '. _('Service Unavailable') .'</title></head>');
         echo('<body><h1>HTTP 503 '. _('Service Unavailable') .'</h1>');
-        echo(mkerror(_('Connection to database failed. Please check configuration.')));
+        echo(mkerror(_('<div class="alert alert-danger" role="alert"><p>Connection to database failed. Please check configuration.</p></div>')));
         if ($cfg['DEBUG']) {
             echo("<br>\n". mkerror(ErrorNo().": ".ErrorMsg()));
         }
@@ -222,7 +222,7 @@ and password to complete the survey.') ?></blockquote>
 }
 
 // {{{ esp_require_once()          
-// Wrap include file loading, so that paths are resolved centrally
+// xWrap include file loading, so that paths are resolved centrally
 
 function esp_require_once($path) {
     // expose the global 'ESPCONFIG' as if it were local

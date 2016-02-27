@@ -1,12 +1,5 @@
 <?php
 
-/* $Id$ */
-
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-// Written by James Flemer
-// <jflemer@alum.rpi.edu>
-
 if(!empty($_POST['sid']))
 	$sid = intval($_POST['sid']);
 elseif(!empty($_GET['sid']))
@@ -16,12 +9,14 @@ else
 $bg = '';
 
 ?>
-</div>
 </form>
-<div class="contents">
-<h2><?php echo(_('Export Data')); ?></h2>
-<?php echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n"); ?>
-<table cellspacing="0" cellpadding="4">
+
+<h2>Export Data</h2>
+
+<br />
+
+<table class="table table-hover">
+
 <?php
 
 /* If the Survey ID is not given, then build
@@ -29,14 +24,14 @@ $bg = '';
  */
 if(!$sid) {
 ?>
-	<tr class="header">
-		<th><?php echo(_('ID')); ?></th>
-		<th><?php echo(_('Name')); ?></th>
-		<th><?php echo(_('Title')); ?></th>
-		<th><?php echo(_('Owner')); ?></th>
-		<th><?php echo(_('Group')); ?></th>
-		<th><?php echo(_('Status')); ?></th>
-		<th colspan="2"><?php echo(_('Format')); ?></th>
+	<tr>
+		<th>ID</th>
+		<th>Name</th>
+		<th>Title</th>
+		<th>Owner</th>
+		<th>Group</th>
+		<th>Status</th>
+		<th colspan="2">Format</th>
 	</tr>
 <?php
 	/* load names and titles of all surveys available to
@@ -70,12 +65,12 @@ if(!$sid) {
 			$stat = _('Testing');
 		}
 
-		if($bg != $ESPCONFIG['bgalt_color1'])
-			$bg = $ESPCONFIG['bgalt_color1'];
-		else
-			$bg = $ESPCONFIG['bgalt_color2'];
+		//if($bg != $ESPCONFIG['bgalt_color1'])
+		//	$bg = $ESPCONFIG['bgalt_color1'];
+		//else
+		//	$bg = $ESPCONFIG['bgalt_color2'];
 ?>
-	<tr style="background-color: <?php echo($bg); ?>;">
+	<tr>
 		<td><?php echo($sid); ?></td>
 		<td><?php echo($name); ?></td>
 		<td><?php echo($title); ?></td>
@@ -106,10 +101,9 @@ if(!$sid) {
 	}
 ?>
 </table>
-</div>
+<br />
 <form method="post" id="null" action="">
-<div class="contents">
-<?php echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n"); ?>
+<?php displayAdminBack(); ?>
 <?php
 	return;
 	}
@@ -186,6 +180,7 @@ if(!$sid) {
 		echo(mkwarn(_('Error exporting survey as:') . " <tt>$file</tt>"));
 	}
 	echo("</td></tr></table>\n");
-	echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n");
+	echo("<br />\n");
+	displayAdminBack();
 
 ?>

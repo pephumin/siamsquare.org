@@ -279,9 +279,9 @@ if(!empty($u) && !empty($r)) {
 ?>
 	</tr>
 </table>
-<input class="btn btn-default" type="button" name="submit" value="Update">
-<input class="btn btn-default" type="button" name="cancel" value="Cancel">
-<input class="btn btn-danger" type="button" name="delete" value="Delete">
+<input class="btn btn-default" type="button" name="submit" value="Update" />
+<input class="btn btn-default" type="button" name="cancel" value="Cancel" />
+<input class="btn btn-danger" type="button" name="delete" value="Delete" />
 <br /><br />
 <?php displayAdminBack(); ?>
 

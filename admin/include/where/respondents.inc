@@ -94,10 +94,10 @@ $result = execute_sql($sql);
 
 <table class="table table-hover">
 	<tr>
-		<th><a href="<?php echo(htmlentities($base . $u)); ?>"><?php echo(_('Username')); ?></a></th>
-		<th><a href="<?php echo(htmlentities($base . $f)); ?>"><?php echo(_('First Name')); ?></a></th>
-		<th><a href="<?php echo(htmlentities($base . $l)); ?>"><?php echo(_('Last Name')); ?></a></th>
-		<th><a href="<?php echo(htmlentities($base . $g)); ?>"><?php echo(_('Group')); ?></a></th>
+		<th><a href="<?php echo(htmlentities($base . $u)); ?>">Username</a></th>
+		<th><a href="<?php echo(htmlentities($base . $f)); ?>">First Name</a></th>
+		<th><a href="<?php echo(htmlentities($base . $l)); ?>">Last Name</a></th>
+		<th><a href="<?php echo(htmlentities($base . $g)); ?>">Company</a></th>
 		<th>&nbsp;</th>
 	</tr>
 <?php
@@ -111,10 +111,10 @@ $result = execute_sql($sql);
 		if (empty($fname)) $fname = '&nbsp;';
 		if (empty($lname)) $lname = '&nbsp;';
 
-		if ($bg == $ESPCONFIG['bgalt_color1'])
-			$bg =& $ESPCONFIG['bgalt_color2'];
-		else
-			$bg =& $ESPCONFIG['bgalt_color1'];
+		//if ($bg == $ESPCONFIG['bgalt_color1'])
+		//	$bg =& $ESPCONFIG['bgalt_color2'];
+		//else
+		//	$bg =& $ESPCONFIG['bgalt_color1'];
 ?>
 	<tr style="background-color: <?php echo($bg); ?>">
 		<td class="left">

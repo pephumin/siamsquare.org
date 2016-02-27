@@ -41,12 +41,13 @@ esp_require_once('/lib/espsurveystat');
 $stats = stat_fetch_with_summary();
 
 // show them
-echo '<h2>' . _('View Survey Statistics') . '</h2>';
-echo "<a href='{$GLOBALS['ESPCONFIG']['ME']}?where=help#stats' target='_blank'>"._('Help')."</a>";
+echo '<h2>View Survey Statistics</h2>';
+//echo "<a href='{$GLOBALS['ESPCONFIG']['ME']}?where=help#stats' target='_blank'>"._('Help')."</a>";
 echo '<input type="hidden" name="where" value="statistics" />';
-echo '<div id="view_survey_statistics">';
+//echo '<div id="view_survey_statistics">';
 if (0 < count($stats)) {
-    echo '<table><caption>' . _('Various access statistics for your active and done surveys.') . '</caption>';
+    echo '<table class="table table-hover">';
+    echo '<caption>' . _('Various access statistics for your active and done surveys.') . '</caption>';
     echo '<thead><tr><th>' .
          _('Survey') .
          '</th><th>' .
@@ -90,6 +91,7 @@ if (0 < count($stats)) {
 } else {
     echo _('You have no active or done surveys. Check back later.');
 }
-echo '</div>';
-echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n");
+//echo '</div>';
+echo '<br /><br />';
+displayAdminBack(); 
 ?>

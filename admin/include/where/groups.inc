@@ -44,10 +44,10 @@ $i = 0;
 <br />
 <table class="table table-hover">
 	<tr>
-		<th>Company</th>
-		<th>Description</th>
-		<th>Members</th>
-		<td>&nbsp;</td>
+		<th class="left">Company</th>
+		<th class="left">Description</th>
+		<th class="text-center">Members</th>
+		<td class="text-center">&nbsp;</td>
 	</tr>
 <?php
 	while(list($realm, $title, $count) = fetch_row($result)) {
@@ -61,13 +61,11 @@ $i = 0;
 		//	$bg =& $ESPCONFIG['bgalt_color1'];
 ?>
 	<tr>
-		<td class="left"><?php echo($realm);  ?></td>
-		<td class="left"><?php echo($title);  ?></td>
-		<td class="left"><?php echo($count);  ?></td>
-                <td class="left"><?php echo ($count ?
-                        "&nbsp;" :
-                        "<a href=\"". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=groups&del=$realm")."\">".
-_('Delete') ."</a>"); ?></td>
+		<td class="left"><?php echo ($realm); ?></td>
+		<td class="left"><?php echo ($title); ?></td>
+		<td class="text-center"><?php echo ($count); ?></td>
+		<td class="text-center"><?php echo ($count ? "&nbsp;" :
+			"<a class=\"btn btn-danger btn-xs\" role=\"button\" href=\"". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=groups&del=$realm")."\">Delete</a>"); ?></td>
 	</tr>
 <?php
 	}
@@ -80,10 +78,10 @@ _('Delete') ."</a>"); ?></td>
 	//	$bg =& $ESPCONFIG['bgalt_color1'];
 ?>
 	<tr>
-		<td class="left"><input type="text" size="16" maxlength="16" name="r" /></td>
-		<td class="left"><input type="text" size="32" maxlength="64" name="t" /></td>
+		<td class="left"><input type="text" class="form-control" id="r" placeholder="Company Name" /></td>
+		<td class="left"><input type="text" class="form-control" id="t" placeholder="Description" /></td>
 		<td>&nbsp;</td>
-		<td class="left"><input type="submit" name="add" value="Add"/></td>
+		<td class="text-center"><input class="btn btn-success btn-sm" type="button" name="add" value="Add"/></td>
 	</tr>
 </table>
 <br />

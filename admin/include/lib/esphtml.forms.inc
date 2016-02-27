@@ -29,7 +29,7 @@ function mkwarn ($msg) {
 /* {{{ proto string mkerror(string message)
    Returns HTML format for an error message. */
 function mkerror ($msg) {
-	return("<span class=\"error\">[ ${msg} ]</span>\n");
+	return("<div class=\"alert alert-danger\" role=\"alert\"><p>${msg}</p></div>\n");
 }
 /* }}} */
 
@@ -97,7 +97,7 @@ function mkhidden ($_name, $varr = null) {
 function mktextarea ($_name, $rows, $cols, $wrap, $varr = null) {
     	if ($varr == null)
         	$varr =& $_POST;
-	$str = '<textarea name="' . htmlspecialchars($_name) .'"';
+	$str = '<textarea class="form-control" name="' . htmlspecialchars($_name) .'"';
 	if($rows > 0)
 		$str .= ' rows="' . $rows . '"';
 	if($cols > 0)
@@ -117,7 +117,7 @@ function mktextarea ($_name, $rows, $cols, $wrap, $varr = null) {
 function mkselect ($_name, $options, $varr = null) {
     	if ($varr == null)
         	$varr =& $_POST;
-	$str  = "<select name=\"${_name}\">\n";
+	$str  = "<select class=\"form-control\" name=\"${_name}\">\n";
 	$str .= "<option></option>\n";
 	while(list($cid, $content) = each($options)) {
 		$checked = '';
@@ -146,7 +146,7 @@ function mksubmit($_name, $_value = null, $_attrs = array ()) {
         $_value = ' value="'.htmlspecialchars($_value).'"';
     $_extra = make_element_attrs_from_array($_attrs);
 
-    return sprintf('<input type="submit" name="%s" %s %s />', htmlspecialchars($_name), $_value, $_extra);
+    return sprintf('<input class="btn btn-default" type="submit" name="%s" %s %s />', htmlspecialchars($_name), $_value, $_extra);
 }
 /* }}} */
 
@@ -253,50 +253,26 @@ function show_login_original($_surveyname = null, $_message = null, $_css = null
     $str .= "<html>\n";
     $str .= "<head>\n";
     $str .= "<meta charset=\"utf-8\">\n";
-    //if(!empty($GLOBALS['ESPCONFIG']['charset'])) {
-        //$str .= '<meta http-equiv="Content-Type" content="text/html; charset='. $GLOBALS['ESPCONFIG']['charset'] .'" />';
-        // $str .= "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n";
-    //}
     $str .= "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
     $str .= "<title>$_title</title>\n";
-    //if (empty($_css)) {
-    //    $_css = "default.css";
-    //}
-    //$str .= '<link rel="stylesheet" href="'. $GLOBALS['ESPCONFIG']['css_url'].'/'.$_css .'" type="text/css">';
     $str .= '<link href="css/bootstrap.css" rel="stylesheet" type="text/css">';
     $str .= '<link href="css/admin.css" rel="stylesheet" type="text/css">';
-
-    //if(!empty($GLOBALS['ESPCONFIG']['favicon'])) {
-    //    $str .= "<link rel=\"shortcut icon\" href=\"" . $GLOBALS['ESPCONFIG']['favicon'] . "\" />\n";
-    //}
-    //$str .=  "\n</head>\n<body id=\"auth\">\n";
     $str .=  "\n</head>\n<body>\n";
-    
-    //$str .= '<div class="headerGraphic"></div>';
-    //$str .= '<div class="login">';
-    //if ($_title) {
-    //    $str .= "<h1>$_title</h1>\n";
-    //}
     if ($_message) {
         $str .= mkerror($_message);
     }
-
     $str .= '<div class="container">';
     $str .= '<div class="dashboardPanel" id="my_login">';
-    //$str .= '  <div id="dashboard"><div class="dashboardPanel" id="my_login">';
     $str .= '  <form name="loginform" id="loginform" method="post" class="form-horizontal">';
     $str .= '    <h2 class="form-signin-heading">Client Login</h2><br>';
-    //$str .= '    <fieldset">';
     $str .= '    <div class="form-group">';
     $str .= '    <label for="username" class="col-sm-3 control-label">Username:</label>';
     $str .= '    <div class="col-sm-9">';
-    //$str .= mktext("username");
     $str .= '    <input type="text" name="username" class="form-control" placeholder="Username">';
     $str .= '    </div></div>';
     $str .= '    <div class="form-group">';
     $str .= '    <label for="password" class="col-sm-3 control-label">Password:</label>';
     $str .= '    <div class="col-sm-9">';
-    //$str .= mkpass("password");
     $str .= '    <input type="password" name="password" class="form-control" placeholder="Password">';
     $str .= '    </div></div>';
     $str .= '    <div class="form-group">';
@@ -310,41 +286,12 @@ function show_login_original($_surveyname = null, $_message = null, $_css = null
     $str .= '    <div class="col-sm-offset-3 col-sm-9">';
     $str .= '    <button class="btn btn-lg btn-primary btn-block" name="Login" type="submit">Sign in</button>';
     $str .= '    </div></div></div>';
-    //$str .= '    </fieldset">';
     $str .= '  </form> <!-- /container -->';
 
-    //$str .= '<form name="loginform" id="loginform"  method="post">';
-    //$str .= "\n<fieldset>\n";
-    //$str .= '<div class="row">';
-    //$str .= '<label for="username">';
-    //$str .= _('Username:');
-    //$str .= '</label>';
-    //$str .= mktext("username");
-    //$str .= "\n".'</div><div class="row">'."\n";
-    //$str .= '<label for="password">';
-    //$str .= _('Password:');
-    //$str .= '</label>';
-    //$str .= mkpass("password");
-    //$str .= "\n".'</div><div class="row">'."\n";
-    //$str .= '<br />';
-
-    //# if the variable $lang is set, we assume we don't need to ask for the language
-    //if ((!isset($_REQUEST['lang']) && !isset($_SESSION['language'])) || empty($_SESSION['language'])) {
-    //   $str .= _('Language:');
-    //   $_languages=array();
-    //   foreach (esp_getlocales() as $_lang) {
-    //     $_languages[$_lang]=$_lang;
-    //   }
-    //   $str .= mkselect("lang",$_languages);
-    //   $str .= "\n".'</div><div class="row">'."\n";
-    //}
-
-    //$str .= mksubmit("Login");
     if ($_surveyname != "") {
         $str .= '<input type="hidden" name="'."$_surveyname".'"';
     }
-    //$str .= "\n</div></fieldset>\n</form>\n";
-    //$str .= "</div>";
+
     $str .= "<br />";
     $str .= mkalert();
     $str .= "</div>";

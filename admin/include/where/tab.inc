@@ -149,11 +149,11 @@ if($tab=='finish') {
 if($_SESSION['new_survey']) {
     echo "</p>";
     echo "Click cancel to cancel this survey, or click continue to proceed to the next tab.<br />";
-    echo "<input type=\"submit\" name=\"where\" value=\"Cancel\" onclick='return cancelConfirm()' />";
+    echo "<input class=\"btn btn-default\" type=\"button\" name=\"where\" value=\"Cancel\" onclick='return cancelConfirm()' />";
     if($tab=='preview') {
-	    echo "<input type=\"submit\" name=\"tab_finish\" value=\"Finish\" />";
+	    echo "<input class=\"btn btn-success\" type=\"button\" name=\"tab_finish\" value=\"Finish\" />";
     } else { 
-        echo "<input type=\"submit\" name=\"tab_continue\" value=\"Continue &gt;&gt;\" />";
+        echo "<input class=\"btn btn-success\" type=\"button\" name=\"tab_continue\" value=\"Continue &gt;&gt;\" />";
     }
     echo "</p>";
     return; 

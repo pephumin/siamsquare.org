@@ -372,10 +372,10 @@ if(!empty($u) && !empty($r)) {
 	</tr>
 </table>
 
-<input class="btn btn-default" type="button" name="submit" value="Update">
-<input class="btn btn-default" type="button" name="cancel" value="Cancel">
+<input class="btn btn-success" type="button" name="submit" value="Update" />
+<input class="btn btn-default" type="button" name="cancel" value="Cancel" />
 <?php if (!(isset($_SESSION['username']) && $_SESSION['username']===$u)) { ?>
-<input class="btn btn-danger" type="button" name="delete" value="Delete">
+<input class="btn btn-danger" type="button" name="delete" value="Delete" />
 <?php } ?>
 <br /><br />
 <?php displayAdminBack(); ?>

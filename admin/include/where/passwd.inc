@@ -44,7 +44,7 @@
 	<?php echo(mkpass('newpass2')); ?></td>
 </tr><tr>
 	<th colspan="2" class="center">
-	<input type="submit" value="Change Password" />
+	<input class="btn btn-default" type="button" name="submit" value="Change Password" />
 	</th>
 </tr>
 </table>
