@@ -25,35 +25,61 @@ function displayHeader($title) {
 
 function displayNav() {
 	$base =& $GLOBALS['ESPCONFIG']['ME'];
-	$id = "";
-	if($_SESSION['acl']['superuser'] == 'Y') { $id .= 'Superuser: <tt>'. $_SESSION['acl']['username'] .'</tt>'; }
-	else { $id .= 'Login: <tt>'. $_SESSION['acl']['username'] .'</tt>'; }
-	//$id .= " (";
-	//$id .= $_SESSION['acl']['pdesign'];
-	//$id .= ")";
-	echo "\n\n";
-	//echo "<!-- Fixed navbar -->\n";
-	echo "<nav class=\"navbar navbar-default navbar-fixed-top\">\n";
-	echo "<div class=\"container\">\n";
-	echo "  <div class=\"navbar-header\">\n";
-	echo "    <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\" aria-expanded=\"false\" aria-controls=\"navbar\">\n";
-	echo "      <span class=\"sr-only\">Toggle navigation</span>\n";
-	echo "      <span class=\"icon-bar\"></span>\n";
-	echo "      <span class=\"icon-bar\"></span>\n";
-	echo "      <span class=\"icon-bar\"></span>\n";
-	echo "    </button>\n";
-	echo "    <a class=\"navbar-brand\" href=\"'.${base}.'\">SiamSquare: Client Zone</a>\n";
-	echo "  </div> <!--/navbar-header -->\n";
-	echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
-	echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
-	echo "      <li><a href=\"$base\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
-	echo "      <li><a href=\"$base?where=contact\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
-	echo "      <li><a href=\"$base?where=help\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
-	echo "      <li><a href=\"$base?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log Out</a></li>\n";
-	echo "    </ul>\n";
-	echo "  </div> <!--/navbar-collapse -->\n";
-	echo "</div>\n";
-	echo "</nav>\n";
+	if(!empty($_SESSION['acl']['username'])) {
+		$id = "";
+		if($_SESSION['acl']['superuser'] == 'Y') { $id .= 'Superuser: <tt>'. $_SESSION['acl']['username'] .'</tt>'; }
+		else { $id .= 'Login: <tt>'. $_SESSION['acl']['username'] .'</tt>'; }
+		if ($_SERVER['REQUEST_URI'] == "$base") { $a = '<li class="active">'; } else { $a = '<li>'; }
+		if ($_SERVER['REQUEST_URI'] == "$base?where=contact") { $b = '<li class="active">'; } else { $b = '<li>'; }
+		if ($_SERVER['REQUEST_URI'] == "$base?where=help") { $c = '<li class="active">'; } else { $c = '<li>'; }
+		echo "\n\n";
+		//echo "<!-- Fixed navbar -->\n";
+		echo "<nav class=\"navbar navbar-default navbar-fixed-top\">\n";
+		echo "<div class=\"container\">\n";
+		echo "  <div class=\"navbar-header\">\n";
+		echo "    <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\" aria-expanded=\"false\" aria-controls=\"navbar\">\n";
+		echo "      <span class=\"sr-only\">Toggle navigation</span>\n";
+		echo "      <span class=\"icon-bar\"></span>\n";
+		echo "      <span class=\"icon-bar\"></span>\n";
+		echo "      <span class=\"icon-bar\"></span>\n";
+		echo "    </button>\n";
+		echo "    <a class=\"navbar-brand\" href=\"$base\">SiamSquare: Client Zone</a>\n";
+		echo "  </div> <!--/navbar-header -->\n";
+		echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
+		echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
+		echo "      $a<a href=\"$base\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
+		echo "      $b<a href=\"$base?where=contact\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
+		echo "      $c<a href=\"$base?where=help\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
+		echo "      <li><a href=\"$base?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log Out</a></li>\n";
+		echo "    </ul>\n";
+		echo "  </div> <!--/navbar-collapse -->\n";
+		echo "</div>\n";
+		echo "</nav>\n";
+	} else {
+		echo "\n\n";
+		//echo "<!-- Fixed navbar -->\n";
+		echo "<nav class=\"navbar navbar-default navbar-fixed-top\">\n";
+		echo "<div class=\"container\">\n";
+		echo "  <div class=\"navbar-header\">\n";
+		echo "    <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\" aria-expanded=\"false\" aria-controls=\"navbar\">\n";
+		echo "      <span class=\"sr-only\">Toggle navigation</span>\n";
+		echo "      <span class=\"icon-bar\"></span>\n";
+		echo "      <span class=\"icon-bar\"></span>\n";
+		echo "      <span class=\"icon-bar\"></span>\n";
+		echo "    </button>\n";
+		echo "    <a class=\"navbar-brand\" href=\"$base\">SiamSquare: Client Zone</a>\n";
+		echo "  </div> <!--/navbar-header -->\n";
+		echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
+		echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
+		echo "      <li><a href=\"$base\"><i class=\"fa fa-power-off fa-lg\"></i>&nbsp; Log-in</a></li>\n";
+		//echo "      <li><a href=\"$base?where=contact\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
+		//echo "      <li><a href=\"$base?where=help\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
+		//echo "      <li><a href=\"$base?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log Out</a></li>\n";
+		echo "    </ul>\n";
+		echo "  </div> <!--/navbar-collapse -->\n";
+		echo "</div>\n";
+		echo "</nav>\n";		
+	}
 }
 
 function displayTabNav() {
@@ -100,6 +126,7 @@ function displayPageFooter() {
 </div> <!-- /container -->
 </form>
 <br /><br />
+
 <footer class="footer">
   <div class="container">
     <p class="text-muted">Powered by SiamSquare</p>

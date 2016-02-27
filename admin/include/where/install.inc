@@ -58,7 +58,7 @@ if (version_compare($db_version,$new_version,"eq")) {
 <?php
    }
 
-   echo mkwarn("<br /><br />If you see this screen and you have phpesp already installed using the current db config, it might be because the default table prefix setting has changed. Use <a href=update_prefix.php>this link</a> to update non-prefixed tables to the correct prefix, or change the variable \$DB_PREFIX in the config file.<br /><br />");
+   echo mkwarn("<br /><br />If you see this screen and you have phpesp already installed using the current db config, it might be because the default table prefix setting has changed. Use this link to update non-prefixed tables to the correct prefix, or change the variable \$DB_PREFIX in the config file.<br /><br />");
 }
 
 echo "<br /><br />";

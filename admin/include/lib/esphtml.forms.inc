@@ -22,7 +22,7 @@
 /* {{{ proto string mkwarn(string message)
    Returns HTML format for an warning message. */
 function mkwarn ($msg) {
-	return("<span class=\"warn\">${msg}</span>\n");
+	return("<div class=\"alert alert-warning\" role=\"alert\"><p>${msg}</p></div>\n");
 }
 /* }}} */
 
@@ -69,15 +69,15 @@ function mktext ($_name, $size = 20, $max = 0, $varr = null) {
 	$str = "size=\"$size\"";
 	if ($max)	$str .= " maxlength=\"$max\"";
 	if (isset($varr[$_name]))
-		return('<input type="text" '. $str .' name="'. htmlspecialchars($_name) .'" value="'. _stripslashes(htmlspecialchars($varr[$_name])) .'" />');
-	return('<input type="text" '. $str .' name="'. htmlspecialchars($_name) .'" />');
+		return('<input class="form-control" type="text" '. $str .' name="'. htmlspecialchars($_name) .'" value="'. _stripslashes(htmlspecialchars($varr[$_name])) .'" />');
+	return('<input class="form-control" type="text" '. $str .' name="'. htmlspecialchars($_name) .'" />');
 }
 /* }}} */
 
 /* {{{ proto string mkpass(string name)
    Returns HTML format for a password entry line. */
 function mkpass ($_name) {
-	return('<input type="password" name="'. htmlspecialchars($_name) .'" />');
+	return('<input type="password" class="form-control" placeholder="Password" name="'. htmlspecialchars($_name) .'" />');
 }
 /* }}} */
 
@@ -159,16 +159,15 @@ function show_login($_surveyname = null, $_message = null, $_css = null, $_title
         $str .= mkerror($_message);
     }
     //$str .= "<div class=\"container\">\n";
+    $str .= "</form>\n";
     $str .= mkloginbox();
 
     if ($_surveyname != "") {
         $str .= '<input type="hidden" name="'."$_surveyname".'"';
     }
 
-    //$str .= "<br />\n\n";
-    //$str .= mkalert();
-    //$str .= "</div> <!-- /container -->";
-    $str .= "\n";
+    $str .= "<br />\n";
+    $str .= mkalert();
     return $str;
 }
 
@@ -187,23 +186,23 @@ function make_element_attrs_from_array($attrs) {
 
 function mkalert() {
     $extra = "";
-    //$extra .= "<div class=\"alert alert-danger\" role=\"alert\">\n";
+    $extra .= "<div class=\"alert alert-danger\" role=\"alert\">\n";
     $text = <<< END
-    <p class="bg-danger"><strong>UNAUTHORIZED ACCESS TO THIS COMPUTER SYSTEM IS PROHIBITED BY LAW</strong></p>
+    <p><strong>UNAUTHORIZED ACCESS TO THIS COMPUTER SYSTEM IS PROHIBITED BY LAW</strong></p>
 
-    <p class="bg-danger">You are accessing a private computer network which includes: (1) this computer, (2) this computer network, (3) all computers connected to this network, and (4) all devices and storage media attached to this network or to a computer on this network. This information system is provided for registered clients authorized use only. Unauthorized or improper use of this system may result in disciplinary action, as well as civil and criminal penalties.</p>
+    <p>You are accessing a private computer network which includes: (1) this computer, (2) this computer network, (3) all computers connected to this network, and (4) all devices and storage media attached to this network or to a computer on this network. This information system is provided for registered clients authorized use only. Unauthorized or improper use of this system may result in disciplinary action, as well as civil and criminal penalties.</p>
 
-    <p class="bg-danger">If you do not have an access, please contact sales for setting up a master login/password for your company.</p>
+    <p>If you do not have an access, please contact sales for setting up a master login/password for your company.</p>
 
-    <p class="bg-danger">By using this information system, you understand and consent to the following:</p>
+    <p>By using this information system, you understand and consent to the following:</p>
 
-    <p class="bg-danger">* You have no reasonable expectation of privacy regarding any communication or data transiting or stored on this information system. At any time, and for any lawful purpose, we may monitor, intercept, and search and seize any communication or data transiting or stored on this information system.</p>
+    <p>* You have no reasonable expectation of privacy regarding any communication or data transiting or stored on this information system. At any time, and for any lawful purpose, we may monitor, intercept, and search and seize any communication or data transiting or stored on this information system.</p>
 
-    <p class="bg-danger">* Any communication or data transiting or stored on this information system may be disclosed or used for any lawful purpose.</p>
+    <p>* Any communication or data transiting or stored on this information system may be disclosed or used for any lawful purpose.</p>
 END;
     //$extra .= nl2br($text);
     $extra .= $text;
-    $extra .= "\n\n";
+    $extra .= "</div>\n\n";
     return $extra;
 }
 
@@ -239,8 +238,8 @@ function mkloginbox() {
                 <button class="btn btn-lg btn-primary btn-block" name="Login" type="submit">Sign in</button>
             </div>
         </div>
-    </form>
     </div> 
+    </form>
 END;
     $extra .= $text;
     return $extra;    
