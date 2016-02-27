@@ -63,6 +63,10 @@ function displayTabNav() {
 <input type="submit" name="tab_finish" value="Finish" />';
 }
 
+function displayAdminBack() {
+	echo '<a class="btn btn-default pull-right" role="button" href="/admin/index.php?where=manage">Go back to Management Interface</a>';
+}
+
 function displayPageHeader() {
 	echo "\n";
 	$self = $_SERVER['PHP_SELF'];

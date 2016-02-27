@@ -1,22 +1,18 @@
 <?php
 
-/* $Id$ */
+echo "<h2>README</h2>";
 
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
+if (file_exists(dirname(__FILE__) . '/../text/readme.txt')) {
+	echo "<pre>";
+	include(dirname(__FILE__) . '/../text/readme.txt');
+	//return $text;
+	echo "</pre>\n";
+} else {
+		echo('<p>' . mkwarn(_("README is not found.")) . "</p>\n");
+		//var_dump(dirname(__FILE__));
+}
 
-// Written by James Flemer
-// For eGrad2000.com
-// <jflemer@alum.rpi.edu>
+echo "<br />\n";
+displayAdminBack(); 
 
 ?>
-<?php echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n"); ?>
-<?php if (file_exists(ESP_BASE . '/README.md')) { ?>
-<table border="0"><tr><td><pre>
-<?php include(ESP_BASE . '/README.md'); ?>
-</pre></td></tr></table>
-<?php
-	} else {
-		echo('<p>' . mkwarn(_('README not found.')) . "</p>\n");
-	}
-?>
-<?php echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n"); ?>

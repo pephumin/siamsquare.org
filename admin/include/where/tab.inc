@@ -124,9 +124,9 @@ $updated = survey_update($_SESSION['survey_id'],$tab,$_SESSION['last_tab']);
 <h2>Designing a questionnaire</h2>
 
 <?php if (!empty($errstr)) {
-	echo "<div class=\"alert alert-danger\" role=\"alert\">\n";
+	//echo "<div class=\"alert alert-danger\" role=\"alert\">\n";
 	echo(mkerror($errstr));
-	echo "</div>\n";
+	//echo "</div>\n";
 
 }
 ?>
