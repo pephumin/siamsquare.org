@@ -1,5 +1,6 @@
 <?php
 
+
 function displayHeader($title) {
 	echo '
 <!DOCTYPE html>
@@ -23,6 +24,7 @@ function displayHeader($title) {
 }
 
 function displayNav() {
+	$base =& $GLOBALS['ESPCONFIG']['ME'];
 	$id = "";
 	if($_SESSION['acl']['superuser'] == 'Y') { $id .= 'Superuser: <tt>'. $_SESSION['acl']['username'] .'</tt>'; }
 	else { $id .= 'Login: <tt>'. $_SESSION['acl']['username'] .'</tt>'; }
@@ -30,32 +32,28 @@ function displayNav() {
 	//$id .= $_SESSION['acl']['pdesign'];
 	//$id .= ")";
 	echo "\n\n";
-echo <<< ENDHTML
-<!-- Fixed navbar -->
-<nav class="navbar navbar-default navbar-fixed-top">
-<div class="container">
-  <div class="navbar-header">
-    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-      <span class="sr-only">Toggle navigation</span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
-    <a class="navbar-brand" href="/admin">SiamSquare: Client Zone</a>
-  </div> <!--/navbar-header -->
-  <div id="navbar" class="navbar-collapse collapse">
-    <ul class="nav navbar-nav">
-      <li class="active"><a href="/admin">Home</a></li>
-      <li><a href="/contact">Contact</a></li>
-      <li><a href="/admin/index.php?where=help">Help</a></li>
-    </ul>
-    <ul class="nav navbar-nav navbar-right">
-      <li><a href="/admin/index.php?where=passwd">$id</a></li>
-    </ul>
-  </div> <!--/navbar-collapse -->
-</div>
-</nav>
-ENDHTML;
+	//echo "<!-- Fixed navbar -->\n";
+	echo "<nav class=\"navbar navbar-default navbar-fixed-top\">\n";
+	echo "<div class=\"container\">\n";
+	echo "  <div class=\"navbar-header\">\n";
+	echo "    <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\" aria-expanded=\"false\" aria-controls=\"navbar\">\n";
+	echo "      <span class=\"sr-only\">Toggle navigation</span>\n";
+	echo "      <span class=\"icon-bar\"></span>\n";
+	echo "      <span class=\"icon-bar\"></span>\n";
+	echo "      <span class=\"icon-bar\"></span>\n";
+	echo "    </button>\n";
+	echo "    <a class=\"navbar-brand\" href=\"'.${base}.'\">SiamSquare: Client Zone</a>\n";
+	echo "  </div> <!--/navbar-header -->\n";
+	echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
+	echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
+	echo "      <li><a href=\"$base\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
+	echo "      <li><a href=\"$base?where=contact\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
+	echo "      <li><a href=\"$base?where=help\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
+	echo "      <li><a href=\"$base?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log Out</a></li>\n";
+	echo "    </ul>\n";
+	echo "  </div> <!--/navbar-collapse -->\n";
+	echo "</div>\n";
+	echo "</nav>\n";
 }
 
 function displayTabNav() {
