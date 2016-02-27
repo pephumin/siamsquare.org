@@ -1,50 +1,46 @@
 <?php
 
-/* $Id$ */
+if(!isset($_GET['precision'])) {
+    $_GET['precision'] = "";
+}
+if(!isset($_GET['totals'])) {
+    $_GET['totals'] = "";
+}
+if(!isset($_GET['test'])) {
+    $_GET['test'] = "";
+}
 
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
+$_GET['precision'] = intval($_GET['precision']);
+$_GET['totals'] = intval($_GET['totals']);
+$_GET['test'] = intval($_GET['test']);
 
-// Written by Romans Jasins
-// <roma@latnet.lv>
+// see if surveys have been selected
+if(!empty($_REQUEST['sids'])) {
+	$sid = intval($_REQUEST['sids']);
+    $_REQUEST['sids'] = htmlspecialchars($_REQUEST['sids']);
+	if($_GET['test']) {
+		echo("<p><b>". _('Testing Survey...') .'</b> ('. _('SIDS') ." = ". $sid .")</p>\n");
+	}
 
-    if(!isset($_GET['precision'])) {
-        $_GET['precision'] = "";
-    }
-    if(!isset($_GET['totals'])) {
-        $_GET['totals'] = "";
-    }
-    if(!isset($_GET['test'])) {
-        $_GET['test'] = "";
-    }
-
-    $_GET['precision'] = intval($_GET['precision']);
-    $_GET['totals'] = intval($_GET['totals']);
-    $_GET['test'] = intval($_GET['test']);
-
-	// see if surveys have been selected
-	if(!empty($_REQUEST['sids'])) {
-		$sid = intval($_REQUEST['sids']);
-        $_REQUEST['sids'] = htmlspecialchars($_REQUEST['sids']);
-		if($_GET['test']) {
-			echo("<p><b>". _('Testing Survey...') .'</b> ('. _('SIDS') ." = ". $sid .")</p>\n");
-		}
-
-		/* check ACLs for permissions ...
-		 * XXX only check the first of the SIDS for ownership */
-		if($_SESSION['acl']['superuser'] == 'Y' ||
-				auth_is_owner($sid, $_SESSION['acl']['username']) ||
-				($_GET['test'] &&
-					$_SESSION['acl']['seeall'] == 'Y') ||
-				auth_no_access('to access this survey')) {
+	/* check ACLs for permissions ...
+	 * XXX only check the first of the SIDS for ownership */
+	if($_SESSION['acl']['superuser'] == 'Y' ||
+			auth_is_owner($sid, $_SESSION['acl']['username']) ||
+			($_GET['test'] &&
+				$_SESSION['acl']['seeall'] == 'Y') ||
+			auth_no_access('to access this survey')) {
 ?>
-<table><tr><td>
+
+<table class="table table-hover">
+<tr><td>
 <?php
 			$ret = survey_merge(preg_split("/\+/",$_REQUEST['sids']),$_GET['precision'],$_GET['totals']);
 			if(!empty($ret))
 				echo("<span class=\"error\">$ret</span>\n");
 ?>
 </td></tr></table>
-<?php echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n"); ?>
+<br /><br />
+<?php displayAdminBack(); ?>
 <?php
 		}
 		return;
@@ -67,16 +63,20 @@
 	$result = execute_sql($sql);
 
 ?>
-<h2><?php echo(_('Merge Survey Results')); ?></h2>
-<?php echo(_('Pick Surveys to Merge')); ?>
+
 </form>
-    <div id="error"></div>
+
+<h2>Merge Survey Results</h2>
+
+<p>Pick Surveys to Merge</p>
+<br />
 <form id="merge" action="<?php echo($GLOBALS['ESPCONFIG']['ME']) ?>?where=merge" method="post">
-<table cellspacing="0" cellpadding="4">
+
+<table class="table table-hover">
 	<tr>
-		<th><?php echo(_('List of Surveys')); ?></th>
+		<th>List of Surveys</th>
 		<th>&nbsp;</th>
-		<th><?php echo(_('Surveys to Merge')); ?></th>
+		<th>Surveys to Merge</th>
 	</tr>
 	<tr>
 		<td class="center">
@@ -88,11 +88,11 @@
 			<?php } db_close($result); ?>
 		</select>
 		</td>
-		<td class="center">
-<input type="button" value="   &gt;&gt;   " onclick="move(this.form.list1,this.form.list2)" name="B1" /><br />
-<input type="button" value="   &lt;&lt;   " onclick="move(this.form.list2,this.form.list1)" name="B2" /><br />
-<input type="button" value="<?php echo(_('Merge')); ?>" onclick="merge(this.form.list2)" name="B3" />
-    <input type="hidden" id="sids" name="sids" value="">
+		<td>
+			<input class="btn btn-default" type="button" value="   &gt;&gt;   " onclick="move(this.form.list1,this.form.list2)" name="B1" /><br />
+			<input class="btn btn-default" type="button" value="   &lt;&lt;   " onclick="move(this.form.list2,this.form.list1)" name="B2" /><br />
+			<input class="btn btn-default" type="button" value="Merge" onclick="merge(this.form.list2)" name="B3" />
+	    	<input type="hidden" id="sids" name="sids" value="">
 		</td>
 		<td class="center">
 		<select multiple="multiple" size="10" name="list2">
@@ -100,4 +100,5 @@
 		</td>
 	</tr>
 </table>
-<?php echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n"); ?>
+<br /><br />
+<?php displayAdminBack(); ?>

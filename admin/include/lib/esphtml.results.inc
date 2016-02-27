@@ -19,19 +19,19 @@ function mkrespercent($counts,$total,$precision,$showTotals) {
 	$i=0;
 	$bg='';
 ?>
-<table width="90%" border="0">
+<table class="table table-hover">
 <?php
 	while(list($content,$num) = each($counts)) {
 		if($num>0) { $percent = $num/$total*100.0; }
 		else { $percent = 0; }
 		if($percent > 100) { $percent = 100; }
 
-		if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
-			$bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
-		else
-			$bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
+		//if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
+		//	$bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
+		//else
+		//	$bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
 ?>
-	<tr bgcolor="<?php echo($bg); ?>">
+	<tr>
 		<td><?php echo($content); ?></td>
 		<td align="left">
 <?php
@@ -52,12 +52,12 @@ function mkrespercent($counts,$total,$precision,$showTotals) {
 		else { $percent = 0; }
 		if($percent > 100) { $percent = 100; }
 
-		if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
-			$bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
-		else
-			$bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
+		//if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
+		//	$bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
+		//else
+		//	$bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
 ?>
-	<tr bgcolor="<?php echo($bg); ?>">
+	<tr>
 		<td><b><?php echo(_('TOTAL')); ?></b></td>
 		<td width="40%"><b>&nbsp;<?php
 			echo("<img src=\"" .$GLOBALS['ESPCONFIG']['image_url'] ."hbar_l.gif\" height=9 width=4>");
@@ -80,7 +80,7 @@ function mkresrank($counts,$total,$precision,$showTotals) {
 ?>
 <table border="0">
 	<tr>
-		<td align="right"><b><?php echo(_('Rank')); ?></b></td>
+		<td align="right"><b>Rank</b></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
@@ -95,12 +95,12 @@ function mkresrank($counts,$total,$precision,$showTotals) {
 			$p = 0;
 		$pt += $p;
 
-		if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
-			$bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
-		else
-			$bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
+		//if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
+		//	$bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
+		//else
+		//	$bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
 ?>
-	<tr bgcolor="<?php echo($bg); ?>">
+	<tr>
 		<td align="right"><b><?php echo(++$i); ?></b></td>
 		<td><?php echo($content); ?></td>
 		<td align="right" width="60"><?php if($p) printf("%.${precision}f%%",$p); ?></td>
@@ -109,12 +109,12 @@ function mkresrank($counts,$total,$precision,$showTotals) {
 <?php
 	} // end while
 	if($showTotals) {
-		if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
-			$bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
-		else
-			$bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
+		//if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
+		//	$bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
+		//else
+		//	$bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
 ?>
-	<tr bgcolor="<?php echo($bg); ?>">
+	<tr>
 		<td colspan=2 align="left"><b><?php echo(_('TOTAL')); ?></b></td>
 		<td align="right"><b><?php printf("%.${precision}f%%",$pt); ?></b></td>
 		<td align="right"><b><?php print "$i ($total)"; ?></b></td>
@@ -130,16 +130,16 @@ function mkresrank($counts,$total,$precision,$showTotals) {
 function mkrescount($counts,$total,$precision,$showTotals) {
 	$i=0;
 ?>
-<table width="90%" border="0">
+<table class="table table-hover">
 <?php
     $bg = '';
 	while(list($content,$num) = each($counts)) {
-		if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
-			$bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
-		else
-			$bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
+		//if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
+		//	$bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
+		//else
+		//	$bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
 ?>
-	<tr bgcolor="<?php echo($bg); ?>">
+	<tr>
 		<td><?php echo($content); ?></td>
 		<td align="right" width="60"><?php echo($num); ?></td>
 		<td align="right" width="60">(<?php if($num) printf("%.${precision}f",$num/$total*100.0); ?>%)</td>
@@ -148,12 +148,12 @@ function mkrescount($counts,$total,$precision,$showTotals) {
 		$i += $num;
 	} // end while
 	if($showTotals) {
-		if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
-			$bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
-		else
-			$bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
+		//if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
+		//	$bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
+		//else
+		//	$bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
 ?>
-	<tr bgcolor="<?php echo($bg); ?>">
+	<tr>
 		<td><b><?php echo(_('TOTAL')); ?></b></td>
 		<td align="right"><b><?php print "$i ($total)"; ?></b></td>
 		<td align="right"><b>(<?php if($i) printf("%.${precision}f",$i/$total*100.0); ?>%)</b></td>
@@ -170,15 +170,15 @@ function mkreslist($counts,$total,$precision,$showTotals) {
 	if($total==0)	return;
 	$bg='';
 ?>
-<table width="90%" border="0" cellpadding="1">
-	<tr><th align="left"><?php echo(_('#')); ?></th><th><?php echo(_('Response')); ?></th></tr>
+<table class="table table-hover">
+	<tr><th align="left"><?php echo(_('#')); ?></th><th>Response</th></tr>
 <?php
 	while(list($text,$num) = each($counts)) {
-		if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
-			$bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
-		else
-			$bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
-		echo("<tr bgcolor=\"$bg\"><th align=\"left\" valign=\"top\">$num</th><td>$text</td></tr>\n");
+		//if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
+		//	$bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
+		//else
+		//	$bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
+		echo("<tr><th align=\"left\" valign=\"top\">$num</th><td>$text</td></tr>\n");
 	}
 ?>
 </table>
@@ -196,7 +196,7 @@ function mkresavg($counts,$total,$precision,$showTotals,$length) {
 <table cellspacing="0" cellpadding="0">
 	<tr>
 		<td></td>
-		<td colspan="<?php echo($length+2); ?>"><?php echo(_('Average rank')); ?></td>
+		<td colspan="<?php echo($length+2); ?>">Average Rank</td>
 	</tr>
 	<tr>
 		<td></td>
@@ -210,12 +210,12 @@ function mkresavg($counts,$total,$precision,$showTotals,$length) {
 <?php
     $bg = '';
 	while(list($content,$avg) = each($counts)) {
-		if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
-			$bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
-		else
-			$bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
+		//if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
+		//	$bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
+		//else
+		//	$bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
 ?>
-	<tr bgcolor="<?php echo($bg); ?>">
+	<tr>
 		<td><?php echo($content); ?>&nbsp;</td>
 		<td colspan="<?php echo($length+1); ?>">
 <?php

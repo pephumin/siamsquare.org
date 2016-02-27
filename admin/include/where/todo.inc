@@ -1,18 +1,21 @@
 <?php
 
-/* $Id$ */
+echo "<h2>To-do List</h2>";
 
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
+if (file_exists(dirname(__FILE__) . '/../text/todo.txt')) {
+	echo "<pre>";
+	include(dirname(__FILE__) . '/../text/todo.txt');
+	//readfile(dirname(__FILE__) . '/../todo.txt');
+	//return $text;
+	echo "</pre>\n";
+	//displayAdminBack(); 
+} else {
+		echo('<p>' . mkwarn(_("Todo list not found.")) . "</p>\n");
+		//var_dump(dirname(__FILE__));
+}
+
+echo "<br />\n";
+displayAdminBack(); 
 
 ?>
-<?php echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n"); ?>
-<?php if (file_exists($ESPCONFIG['include_path']."/../../TODO")) { ?>
-<table><tr><td><pre>
-<?php include($ESPCONFIG['include_path']."/../../TODO"); ?>
-</pre></td></tr></table>
-<?php
-	} else {
-		echo('<p>' . mkwarn(_('Todo list not found.')) . "</p>\n");
-	}
-?>
-<?php echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n"); ?>
+

@@ -3,29 +3,8 @@
 $base =& $GLOBALS['ESPCONFIG']['ME'];
 
 ?>
-<h2><?php echo(_('Management Interface')); ?></h2>
-<p><?php
-    if($GLOBALS['ESPCONFIG']['auth_design']) {
-        if($_SESSION['acl']['superuser'] == 'Y')
-        echo(mkwarn(_('Superuser')));
-        else {
-            echo(_('Username'));
-        }
-        echo(': <tt>'. $_SESSION['acl']['username'] .'</tt>');
-    }
-    $db_version = get_dbversion();
-    $new_version = $ESPCONFIG['version'];
-    if (version_compare($db_version,$new_version,"!=")) {
-?></p>
-			<div id="surveyAdmin">
-                        <ul>
-                            <li><a href="<?php echo("${base}?where=update");     ?>"><?php echo(_('Update the database')); ?></a></li>
-                        </ul>
-			</div>
-<?php
-    } else {
-?></p>
-			
+<h2>Management Interface</h2>
+<br />      
     <div class="container">
     <div class="row">
       <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4"> <!-- Survey Administration -->
@@ -88,10 +67,10 @@ $base =& $GLOBALS['ESPCONFIG']['ME'];
           if($GLOBALS['ESPCONFIG']['auth_type'] != 'ldap_both' && $GLOBALS['ESPCONFIG']['auth_type'] != 'ldap_des' && ($_SESSION['acl']['superuser'] == 'Y' || count($_SESSION['acl']['pgroup']) > 0)) { ?>
           <a class="list-group-item" href="<?php echo("${base}?where=designers");   ?>">Manage Designer Accounts</a>
           <?php if($_SESSION['acl']['superuser'] == 'Y') { ?>
-          <a class="list-group-item" href="<?php echo("${base}?where=groups"); ?>">Manage Groups</a>
+          <a class="list-group-item" href="<?php echo("${base}?where=groups"); ?>">Manage Companies</a>
           <?php }
           } ?>
-          <a class="list-group-item" href="<?php echo("${base}?where=TODO"); ?>">View TO DO list</a>
+          <a class="list-group-item" href="<?php echo("${base}?where=todo"); ?>">View TO DO list</a>
           <a class="list-group-item" href="<?php echo("${base}?where=guide"); ?>">View the User &amp; Administrator Guide</a>
           <a class="list-group-item" href="<?php echo("${base}?where=help"); ?>">Help Documents</a>
           <a class="list-group-item" href="<?php echo("${base}?where=logout"); ?>">Log Out</a>
@@ -100,8 +79,3 @@ $base =& $GLOBALS['ESPCONFIG']['ME'];
       </div> <!-- /User Administration -->
       </div>
     </div>
-<?php
-}
-?>
-&nbsp;
-
