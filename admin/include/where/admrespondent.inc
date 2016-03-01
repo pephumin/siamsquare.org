@@ -20,6 +20,7 @@ $arr = array();
 if(isset($_POST['cancel'])) {
 	unset($_POST['submit']);
 	unset($_POST['delete']);
+	echo mkwarn(_('The process has been cancelled by you.'));
 	include(esp_where('respondents'));
 	return;
 }
@@ -37,11 +38,14 @@ if(isset($_POST['delete'])) {
 		$sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['respondent_table']." WHERE username=$u AND realm=$r";
 		if(!execute_sql($sql) || affected_rows() < 1) {
 			/* unsucessfull -- abort */
-			$errstr .= mkerror(_('Cannot delete account.') .' ('.
-				ErrorMsg() .')');
+			//$errstr .= mkerror(_('Cannot delete account.') .' ('. ErrorMsg() .')');
+			$errstr .= _('Cannot delete account.') .' ('. ErrorMsg() .')';
+		} else {
+			$success .= _('Account has been deleted successfully.');
 		}
 	}
 	if(empty($errstr)) {
+		echo mksuccess(_('Account has been deleted successfully.'));
 		include(esp_where('respondents'));
 		return;
 	}
@@ -119,7 +123,7 @@ if(isset($_POST['submit'])) {
         $result = execute_sql($sql);
         if(record_count($result) < 1) {
         	if(empty($u) || empty($r) || empty($u_password)) {
-        		$errstr .= mkerror(_('Username, Password, and Group are required.'));
+        		$errstr .= _('Username, Password, and Group are required.');
         	} else {
         		$sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['respondent_table']."
         			(username,realm,password,changed)
@@ -127,12 +131,14 @@ if(isset($_POST['submit'])) {
         		if(!execute_sql($sql)) {
         			$u = '';
         			$r = '';
-        			$errstr .= mkerror(_('Error adding account.') .' ('.
-        				ErrorMsg() .')');
+        			$errstr .= _('Error adding account.') .' ('. ErrorMsg() .')';
+        		} else {
+        			$success .= _('New account has been added successfully.');
         		}
         	}
         }
         db_close($result);
+
         /* change user data */
         if(!empty($u) && !empty($r)) {
         	if (!empty($u_password))
@@ -147,12 +153,14 @@ if(isset($_POST['submit'])) {
         		expiration=$u_expiration WHERE username=$u AND realm=$r";
         	if(!execute_sql($sql)) {
         		/* unsucessfull -- abort */
-        		$errstr .= mkerror(_('Cannot change account data.') .' ('.
-        			ErrorMsg() .')');
+        		$errstr .= _('Cannot change account data.') .' ('. ErrorMsg() .')';
+        	} else {
+        		$success .= _('Account has been updated successfully.');
         	}
         }
     }
     if(empty($errstr)) {
+        echo mksuccess(_('Account has been added/updated successfully.'));
         include(esp_where('respondents'));
         return;
     }
@@ -190,15 +198,14 @@ if(!empty($u) && !empty($r)) {
 			$arr['ex_day']   = '';
 		}
 	} else {
-		$errstr .= mkerror(_('Account not found.') .' ('.
-			ErrorMsg() .')');
+		$errstr .= _('Account not found.') .' ('. ErrorMsg() .')';
 	}
     db_close($result);
 }
 
 ?>
 
-<h2>Managing a Respondent</h2>
+<h2>Managing respondent accounts</h2>
 
 <?php if(!empty($errstr)) echo(mkerror($errstr)); ?>
 
@@ -279,9 +286,9 @@ if(!empty($u) && !empty($r)) {
 ?>
 	</tr>
 </table>
-<input class="btn btn-default" type="button" name="submit" value="Update" />
-<input class="btn btn-default" type="button" name="cancel" value="Cancel" />
-<input class="btn btn-danger" type="button" name="delete" value="Delete" />
+<input class="btn btn-success" type="submit" name="submit" value="Update" />
+<input class="btn btn-default" type="submit" name="cancel" value="Cancel" />
+<input class="btn btn-danger" type="submit" name="delete" value="Delete" />
 <br /><br />
 <?php displayAdminBack(); ?>
 

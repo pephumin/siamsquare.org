@@ -1,16 +1,8 @@
 <?php
 
-/* $Id$ */
+/* proto bool survey_auth(int survey_id, string username, string password)
+   Returns true if the supplied username/password is allowed access to the survey. */
 
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-//  phpESP Default Authentication Library
-//  By: Romans Jasins <roma@latnet.lv>
-//      James Flemer <jflemer@alum.rpi.edu>
-
-/* {{{ proto bool survey_auth(int survey_id, string username, string password)
-   Returns true if the supplied username/password is allowed
-   access to the survey. */
 function survey_auth($sid, $username, $password, $raw_password, $css, $title) {
 	// Default to _unauthorized_
 	$auth = false;
@@ -161,12 +153,11 @@ function survey_auth($sid, $username, $password, $raw_password, $css, $title) {
     }
     return(true);
 }
-/* }}} */
 
-/* {{{ proto bool manage_auth(string username, string password)
-   Returns true if the supplied username/password is allowed
-   access to the management interface. This sets/clears
-   access control related session variables. */
+/* proto bool manage_auth(string username, string password)
+   Returns true if the supplied username/password is allowed access to the management interface. 
+   This sets/clears access control related session variables. */
+
 function manage_auth($username, $password, $raw_password="") {
 	// see if session is expired, or has been logged out
 	if(isset($_SESSION['acl']) &&
@@ -282,15 +273,12 @@ function manage_auth($username, $password, $raw_password="") {
 
 	return(true);
 }
-/* }}} */
 
-/* {{{ proto void manage_logout()
-   Clears the current ACL, and will cause HTTP-Auth
-   to be redisplayed. This is not fool proof; common browsers
-   will continue to retry cached username & password for
-   HTTP-Auth. So if the browser is not closed after logout,
-   it still may be possible to get back in w/o knowing a
-   valid username & password. */
+/* proto void manage_logout()
+   Clears the current ACL, and will cause HTTP-Auth to be redisplayed. 
+   This is not fool proof; common browsers will continue to retry cached username & password for HTTP-Auth. 
+   So if the browser is not closed after logout, it still may be possible to get back in w/o knowing a valid username & password. */
+
 function manage_logout() {
 	// clear existing ACL, and set the expired flag
     $_SESSION['acl'];
@@ -301,10 +289,10 @@ function manage_logout() {
 	////angek: $GLOBALS['HTTP_SESSION_VARS']['acl'] = array('expired' => 2);
 	$_SESSION['acl'] = array('expired' => 2);
 }
-/* }}} */
 
 /* {{{ proto boolean auth_is_owner(int surveyId, string user)
    Returns true if user owns the survey. */
+
 function auth_is_owner($sid, $user) {
 	$val = false;
 	$sql = "SELECT s.owner = "._addslashes($user)."FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s WHERE s.id=$sid";
@@ -314,10 +302,10 @@ function auth_is_owner($sid, $user) {
     db_close($result);
 	return $val;
 }
-/* }}} */
 
-/* {{{ proto string auth_get_survey_realm(int surveyId)
+/* proto string auth_get_survey_realm(int surveyId)
    Returns the realm of the survey. */
+
 function auth_get_survey_realm($sid) {
 	$val = '';
 	$sql = "SELECT s.realm FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s WHERE s.id=$sid";
@@ -326,41 +314,37 @@ function auth_get_survey_realm($sid) {
     db_close($result);
 	return $val;
 }
-/* }}} */
 
-/* {{{ proto boolean auth_no_access(string description)
-   Handle a user trying to access an unauthorised area.
-   Returns true if user should be allowed to continue.
+/* proto boolean auth_no_access(string description)
+   Handle a user trying to access an unauthorised area. Returns true if user should be allowed to continue.
    Returns false (or exits) if access should be denied. */
+
 function auth_no_access($description) {
 	echo(mkerror(_('This account does not have permission') .' '. $description .'.'));
 	echo("\n<br>\n");
 	echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n");
 	return false;
 }
-/* }}} */
 
-/* {{{ proto boolean auth_change_manager_passwd(string user, string old, string new)
-   Change a managers password. If old password does not match
-   or if there is an error, return false. Return true if
-   password changed. */
+/* proto boolean auth_change_manager_passwd(string user, string old, string new)
+   Change a managers password. If old password does not match or if there is an error, return false. Return true if password changed. */
+
 function auth_change_manager_passwd($user,$old,$new) {
 	$sql = "UPDATE ".$GLOBALS['ESPCONFIG']['designer_table']." SET password=".db_crypt($new) ."
 		WHERE username="._addslashes($user)." AND password=".db_crypt($old);
 	return(execute_sql($sql) && affected_rows() > 0);
 }
-/* }}} */
 
-/* {{{ proto boolean auth_get_option(string option)
-   Returns the value of the given option. Valid options include:
-   { resume, navigate } */
+/* proto boolean auth_get_option(string option)
+   Returns the value of the given option. Valid options include: { resume, navigate } */
+
 function auth_get_option($opt) {
 	return (isset($GLOBALS['auth_options'][$opt]) && $GLOBALS['auth_options'][$opt] == 'Y');
 }
-/* }}} */
 
-/* {{{ proto int auth_get_rid (int survey_id, string username, int response_id)
+/* proto int auth_get_rid (int survey_id, string username, int response_id)
    Returns the RID to use for this user. */
+
 function auth_get_rid($sid, $username, $rid = 0) {
 	$rid = intval($rid);
 	if (isset($rid) && $rid != 0) {
@@ -393,13 +377,12 @@ function auth_get_rid($sid, $username, $rid = 0) {
 		return '';
 	}
 }
-/* }}} */
 
-/* respondent authentication methods */
-// {{{ authenticate()                  See if a <username,password> credential is valid, and identify to which realms that applies
-// NOTE1: returns true iff authenticated, false otherwise
-// NOTE2: $realms will always be an array with at least one element.  If 2 or more, you must have an external
-// NOTE2: means to disambiguate to which realms the username/password pair applies
+/* respondent authentication methods authenticate()                  
+   See if a <username,password> credential is valid, and identify to which realms that applies
+   NOTE1: returns true if authenticated, false otherwise
+   NOTE2: $realms will always be an array with at least one element.
+   If 2 or more, you must have an externalmeans to disambiguate to which realms the username/password pair applies */
 
 function authenticate($username, $password, &$realms) {
     $cfg =& $GLOBALS['ESPCONFIG'];
@@ -411,12 +394,14 @@ function authenticate($username, $password, &$realms) {
     $user = _addslashes($username);
     $pass = db_crypt(_addslashes($password));
     $now  = sys_time_stamp();
-    $sql =<<<EOSQL
-SELECT realm
-  FROM {$cfg['respondent_table']}
- WHERE username={$user} AND password={$pass} AND
-       disabled='N' AND (expiration='0000-00-00 00:00:00' OR {$now} < expiration)
-EOSQL;
+    $sql = "SELECT realm FROM ".$GLOBALS['ESPCONFIG']['response_table']." 
+            WHERE username = $user AND password = $pass AND disabled = 'N' 
+            AND (expiration='0000-00-00 00:00:00' OR $now < expiration)";
+//    $sql = <<< EOSQL
+//    SELECT realm FROM {$cfg['respondent_table']}
+//        WHERE username={$user} AND password={$pass} AND
+//        disabled='N' AND (expiration='0000-00-00 00:00:00' OR {$now} < expiration)
+//EOSQL;
     $res = execute_sql($sql);
     if ($res) {
         // was there a single match?
@@ -440,7 +425,5 @@ EOSQL;
 
     assert('false; // NOTREACHED');
 }
-
-// }}}
 
 ?>

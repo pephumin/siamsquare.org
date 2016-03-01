@@ -25,7 +25,7 @@ GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm
 ORDER BY s.id DESC";
 	$result = execute_sql($sql);
 
-	$bg = $ESPCONFIG['bgalt_color2'];
+	//$bg = $ESPCONFIG['bgalt_color2'];
 ?>
 
 <h2>Purge Surveys</h2>
@@ -91,7 +91,7 @@ ORDER BY s.id DESC";
 $confirmText = _('You are about to PERMANENTLY and IRREVOCABLY remove ALL information about the selected surveys. Click Ok if you are absolutely sure this is what you want to do.');
 ?>
 
-<input class="btn btn-default" type="submit" name="submit" onclick='return confirm("<?php echo $confirmText; ?>")' onkeypress='return confirm ("<?php echo $confirmText; ?>");' value="Purge Surveys" />
+<input class="btn btn-danger" type="submit" name="submit" onclick='return confirm("<?php echo $confirmText; ?>")' onkeypress='return confirm ("<?php echo $confirmText; ?>");' value="Delete data" />
 
 <br /><br />
 <?php displayAdminBack(); ?>

@@ -1,11 +1,8 @@
-<?php
 
-?>
 <h2>Changing your password</h2>
 
-<?php if(!empty($errstr)) echo(mkerror($errstr)); ?>
-
 <?php
+$base =& $GLOBALS['ESPCONFIG']['ME'];
 if(isset($_POST['newpass1']) &&
 	$_POST['newpass1'] == $_POST['newpass2'] &&
 	!empty($_POST['newpass1'])) {
@@ -13,23 +10,27 @@ if(isset($_POST['newpass1']) &&
 			$_SESSION['acl']['username'],
 			_addslashes($_POST['oldpass']),
 			_addslashes($_POST['newpass1']))) {
-		echo(mkerror('Your password has been successfully changed.'));
+		//echo(_('Your password has been successfully changed.') ."<br>\n");
+		echo(mksuccess(_('Your password has been successfully changed.')));
 		displayAdminBack();
+		header("Refresh: 10; URL=$base");
 		return;
 	} else {
-		echo(mkerror('Password not set, check your old password.'));
+		echo(mkerror(_('Password not set, check your old password.')));
 	}
 } else if(isset($_POST['newpass1'])) {
-	echo(mkerror('Your new passwords do not match or are blank.'));
+	echo(mkerror(_('New passwords do not match or are blank.')));
 }
 ?>
 <input type="hidden" name="where" value="passwd" />
 <br />
+
+<div class="table-responsive">
 <table class="table table-hover">
 <tr>
 	<th class="right">Username</th>
 	<td class="left">
-	<?php echo('<tt>'. $_SESSION['acl']['username'] .'</tt>'); ?></td>
+	<?php echo('<tt class="form-control-static">'. $_SESSION['acl']['username'] .'</tt>'); ?></td>
 </tr><tr>
 	<th class="right">Old Password</th>
 	<td class="left">
@@ -43,10 +44,11 @@ if(isset($_POST['newpass1']) &&
 	<td class="left">
 	<?php echo(mkpass('newpass2')); ?></td>
 </tr><tr>
-	<th colspan="2" class="right">
-	<input class="btn btn-success" type="button" name="submit" value="Change Password" />
+	<th colspan="2" class="center">
+	<input class="btn btn-success" type="submit" name="submit" value="Change Password" />
 	</th>
 </tr>
 </table>
+</div>
 <br /><br />
 <?php displayAdminBack(); ?>

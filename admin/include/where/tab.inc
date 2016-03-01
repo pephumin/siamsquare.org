@@ -129,45 +129,40 @@ $updated = survey_update($_SESSION['survey_id'],$tab,$_SESSION['last_tab']);
 	//echo "</div>\n";
 
 }
-?>
 
-<?php displayTabNav(); ?>
+displayTabNav();
 
-<table>
-  <tr>
-    <td>
-<?php include($ESPCONFIG['include_path'].'/tab/'.$tab.$ESPCONFIG['extension']); $_SESSION['last_tab'] = $tab; ?>
-    </td>
-  </tr>
-</table>
+include($ESPCONFIG['include_path'].'/tab/'.$tab.$ESPCONFIG['extension']); 
+$_SESSION['last_tab'] = $tab;
 
-<?php 
 if($tab=='finish') {
     echo('&nbsp;');
     return;
 }
+
 if($_SESSION['new_survey']) {
     echo "</p>";
     echo "Click cancel to cancel this survey, or click continue to proceed to the next tab.<br />";
-    echo "<input class=\"btn btn-default\" type=\"button\" name=\"where\" value=\"Cancel\" onclick='return cancelConfirm()' />";
+    echo "<input class=\"btn btn-default\" type=\"submit\" name=\"where\" value=\"Cancel\" onclick='return cancelConfirm()' />";
     if($tab=='preview') {
-	    echo "<input class=\"btn btn-success\" type=\"button\" name=\"tab_finish\" value=\"Finish\" />";
+	    echo "<input class=\"btn btn-success\" type=\"submit\" name=\"tab_finish\" value=\"Finish\" />";
     } else { 
-        echo "<input class=\"btn btn-success\" type=\"button\" name=\"tab_continue\" value=\"Continue &gt;&gt;\" />";
+        echo "<input class=\"btn btn-success\" type=\"submit\" name=\"tab_continue\" value=\"Continue &gt;&gt;\" />";
     }
     echo "</p>";
     return; 
 }
+
+echo "<p>The survey title and other general fields are on the <strong>General</strong> tab.";
+echo "Individual survey questions are added and modified on the <strong>Questions</strong> tab.";
+echo "Questions may be re-ordered or deleted from the <strong>Order</strong> tab.";
+echo "You may see a preview of your survey at any time, by going to the <strong>Preview</strong>";
+echo "tab. If you have no further changes click <strong>Finish</strong> to go back to the";
+echo "Management Interface.</p>";
+
+displayTabNav();
+
 ?>
-<p>The survey title and other general fields are on the <strong>General</strong> tab.
-Individual survey questions are added and modified on the <strong>Questions</strong> tab.
-Questions may be re-ordered or deleted from the <strong>Order</strong> tab.
-You may see a preview of your survey at any time, by going to the <strong>Preview</strong>
-tab. If you have no further changes click <strong>Finish</strong> to go back to the
-Management Interface.<br />
-
-
-<?php displayTabNav(); ?>
 
 </form>
 <form method="post" action="" id="null">

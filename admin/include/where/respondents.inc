@@ -87,9 +87,11 @@ $result = execute_sql($sql);
 
 <p><Click on a username to edit, or click on add new user below.</p>
 
-<p><a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=admrespondent")); ?>">Add a new Respodent</a> / 
-<a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=upload&account_type=respondents")); ?>">Bulk Upload Respondents</a>
+<p>
+	<a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=admrespondent")); ?>">Add a new respodent</a> / 
+	<a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=upload&account_type=respondents")); ?>">Bulk upload respondents</a>
 </p>
+
 <br />
 
 <table class="table table-hover">
@@ -126,12 +128,9 @@ $result = execute_sql($sql);
 		<td class="left"><?php echo($d); ?></td>
 	</tr>
 <?php
-	}
-	//if ($bg == $ESPCONFIG['bgalt_color1'])
-	//	$bg =& $ESPCONFIG['bgalt_color2'];
-	//else
-	//	$bg =& $ESPCONFIG['bgalt_color1'];
+}
 ?>
+
 </table>
 <br /><br />
 <?php displayAdminBack(); ?>

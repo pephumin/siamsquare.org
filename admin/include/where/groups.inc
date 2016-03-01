@@ -7,12 +7,18 @@ if($_SESSION['acl']['superuser'] != 'Y' &&
 }
 
 $errstr = '';
+$success = '';
+
 if(!empty($_POST['r']) && !empty($_POST['t'])) {
     $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['realm_table']." (name, title, changed)
     VALUES (". _addslashes($_POST['r']) .", ".
     _addslashes($_POST['t']).", ". sys_time_stamp().")";
-	if(!execute_sql($sql))
-		$errstr = _('Error adding group.') . ' (' . ErrorMsg() .')';
+	if(!execute_sql($sql)) {
+		$errstr = _('Error adding a new company.') . ' (' . ErrorMsg() .')';
+	} else {
+		$success = _('A new company has been added successfully.');
+	}
+		
 }
 if(!empty($_GET['del'])) {
 	if($_GET['del'] == 'superuser') {
@@ -24,8 +30,11 @@ if(!empty($_GET['del'])) {
 			$errstr = _('Group is not empty.');
 		} else {
 			$sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['realm_table']." WHERE name=". _addslashes($_GET['del']);
-			if(!execute_sql($sql))
-				$errstr = _('Error deleting group.');
+			if(!execute_sql($sql)) {
+				$errstr = _('Error deleting a company.');
+			} else {
+				$success = _('A company has been deleted successfully.');
+			}
 		}
 	}
 }
@@ -36,16 +45,17 @@ $result2 = execute_sql($sql2);
 
 $i = 0;
 ?>
-<h2>Managing Companies</h2>
+<h2>Managing companies</h2>
 
 <?php if(!empty($errstr)) echo(mkerror($errstr)); ?>
+<?php if(!empty($success)) echo(mksuccess($success)); ?>
 
 <input type="hidden" name="where" value="groups" />
 <br />
 <table class="table table-hover">
 	<tr>
-		<th class="left">Company</th>
-		<th class="left">Description</th>
+		<th>Company</th>
+		<th>Description</th>
 		<th class="text-center">Members</th>
 		<td class="text-center">&nbsp;</td>
 	</tr>
@@ -61,8 +71,8 @@ $i = 0;
 		//	$bg =& $ESPCONFIG['bgalt_color1'];
 ?>
 	<tr>
-		<td class="left"><?php echo ($realm); ?></td>
-		<td class="left"><?php echo ($title); ?></td>
+		<td><?php echo ($realm); ?></td>
+		<td><?php echo ($title); ?></td>
 		<td class="text-center"><?php echo ($count); ?></td>
 		<td class="text-center"><?php echo ($count ? "&nbsp;" :
 			"<a class=\"btn btn-danger btn-xs\" role=\"button\" href=\"". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=groups&del=$realm")."\">Delete</a>"); ?></td>
@@ -78,10 +88,10 @@ $i = 0;
 	//	$bg =& $ESPCONFIG['bgalt_color1'];
 ?>
 	<tr>
-		<td class="left"><input type="text" class="form-control" id="r" placeholder="Company Name" /></td>
-		<td class="left"><input type="text" class="form-control" id="t" placeholder="Description" /></td>
+		<td><input type="text" class="form-control" name="r" placeholder="Company Name" /></td>
+		<td><input type="text" class="form-control" name="t" placeholder="Description" /></td>
 		<td>&nbsp;</td>
-		<td class="text-center"><input class="btn btn-success btn-sm" type="button" name="add" value="Add"/></td>
+		<td class="text-center"><input class="btn btn-success btn-sm" type="submit" name="add" value="Add"/></td>
 	</tr>
 </table>
 <br />

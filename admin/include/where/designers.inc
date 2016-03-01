@@ -84,9 +84,11 @@ $result = execute_sql($sql);
 
 <p><Click on a username to edit, or click on add new user below.</p>
 
-<p><a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=admdesigner")); ?>">Add a new Designer</a> / 
-<a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=upload&account_type=designers")); ?>">Bulk Upload Designers</a>
+<p>
+	<a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=admdesigner")); ?>">Add a new designer</a> / 
+	<a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=upload&account_type=designers")); ?>">Bulk upload designers</a>
 </p>
+
 <br />
 
 <table class="table table-hover">
@@ -125,7 +127,7 @@ $result = execute_sql($sql);
 </table>
 
 <?php
-	}
+}
 ?>
 
 <br />

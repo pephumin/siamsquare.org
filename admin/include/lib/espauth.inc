@@ -1,16 +1,16 @@
 <?php
 
 $auth_type = $GLOBALS['ESPCONFIG']['auth_type'];
+
 if (empty($auth_type))
-	$auth_type = 'default';
-if (preg_match("/manage.php/",$ESPCONFIG['ME']) &&
-    ($auth_type == 'ldap_both' || $auth_type == 'ldap_des')) {
-	$auth_type = 'ldap';
-} else if (!preg_match("/manage.php/",$ESPCONFIG['ME']) &&
-	($auth_type == 'ldap_both' || $auth_type == 'ldap_resp')) {
-	$auth_type = 'ldap';
+    $auth_type = 'default';
+
+if (preg_match("/manage.php/",$ESPCONFIG['ME']) && ($auth_type == 'ldap_both' || $auth_type == 'ldap_des')) {
+    $auth_type = 'ldap';
+} else if (!preg_match("/manage.php/",$ESPCONFIG['ME']) && ($auth_type == 'ldap_both' || $auth_type == 'ldap_resp')) {
+    $auth_type = 'ldap';
 } else {
-	$auth_type = 'default';
+    $auth_type = 'default';
 }
 
 if (!file_exists($GLOBALS['ESPCONFIG']['include_path']."/lib/espauth-$auth_type".$ESPCONFIG['extension'])) {
@@ -21,8 +21,8 @@ if (!file_exists($GLOBALS['ESPCONFIG']['include_path']."/lib/espauth-$auth_type"
 require($ESPCONFIG['include_path']."/lib/espauth-$auth_type".$ESPCONFIG['extension']);
 
 
-/* respondent authentication methods */
-// {{{ authenticate_in_realm()         Determine if a <username,password> credential is valid for a given realm
+/* respondent authentication methods authenticate_in_realm()
+   Determine if a <username,password> credential is valid for a given realm */
 
 function authenticate_in_realm($username, $password, $realm) {
     assert('is_callable("authenticate"); // expecting an authenticate function to be defined');
@@ -30,8 +30,8 @@ function authenticate_in_realm($username, $password, $realm) {
     return ($isAuthenticated && in_array($realm, $realms) ? true : false);
 }
 
-// }}}
-// {{{ set_session_authentication()    Set session authentication bit
+/* set_session_authentication()
+   Set session authentication bit */
 
 function set_session_authentication($isAuthenticated) {
     // IE6 has a serious problem with cookies in multi-home framed sites. Force it to shut up.
@@ -59,15 +59,15 @@ function set_session_authentication($isAuthenticated) {
     }
 }
 
-// }}}
-// {{{ is_session_authenticated()      Determine if this session has been authenticated
+/* is_session_authenticated()
+   Determine if this session has been authenticated */
 
 function is_session_authenticated() {
     return (array_key_exists('authenticated', $_SESSION) ? $_SESSION['authenticated'] : false);
 }
 
-// }}}
-// {{{ set_current_respondent()        Set the current respondent
+/* set_current_respondent()
+   Set the current respondent */
 
 function set_current_respondent($username, $realm, $password = null) {
     $cfg =& $GLOBALS['ESPCONFIG'];
@@ -103,8 +103,8 @@ function set_current_respondent($username, $realm, $password = null) {
     return true;
 }
 
-// }}}
-// {{{ get_current_respondent()        Get the respondent currently logged in
+/* get_current_respondent()  
+   Get the respondent currently logged in */
 
 function get_current_respondent(&$respondent) {
     if (isset($_SESSION['respondent'])) {
@@ -116,8 +116,8 @@ function get_current_respondent(&$respondent) {
     }
 }
 
-// }}}
-// {{{ change_profile()                cHANGE THe profile for a user (in a given realm)
+/* change_profile()
+   Change the profile for a user (in a given realm) */
 
 function change_profile($username, $realm, $firstName, $lastName, $emailAddress) {
     // build the change SQL
@@ -127,11 +127,14 @@ function change_profile($username, $realm, $firstName, $lastName, $emailAddress)
     $_lastName     = _addslashes($lastName);
     $_emailAddress = _addslashes($emailAddress);
     $changed  = sys_time_stamp();
-	$sql =<<<EOSQL
-UPDATE {$GLOBALS['ESPCONFIG']['respondent_table']}
-   SET fname={$_firstName}, lname={$_lastName}, email={$_emailAddress}, changed={$changed}
- WHERE username={$_username} AND realm={$_realm}
-EOSQL;
+    $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['response_table']." 
+            SET fname = $_firstName, lname = $_lastName, email = $_emailAddress, changed = $changed
+            WHERE username = $_username AND realm = $_realm";
+//	$sql =<<<EOSQL
+//UPDATE {$GLOBALS['ESPCONFIG']['respondent_table']}
+//   SET fname={$_firstName}, lname={$_lastName}, email={$_emailAddress}, changed={$changed}
+// WHERE username={$_username} AND realm={$_realm}
+//EOSQL;
 
     // throw it at the DB
     // NOTE: There is a small race condition here on some databases: see the note in change_password()
@@ -145,8 +148,8 @@ EOSQL;
     }
 }
 
-// }}}
-// {{{ change_password()               Change a password for a user (in a given realm)
+/* change_password()
+   Change a password for a user (in a given realm) */
 
 function change_password($username, $realm, $password) {
     // build the change SQL
@@ -154,12 +157,14 @@ function change_password($username, $realm, $password) {
     $_realm    = _addslashes($realm);
     $_password = db_crypt(_addslashes($password));
     $changed  = sys_time_stamp();
-	$sql =<<<EOSQL
-UPDATE {$GLOBALS['ESPCONFIG']['respondent_table']}
-   SET password={$_password}, changed={$changed}
- WHERE username={$_username} AND realm={$_realm}
-EOSQL;
-
+    $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['response_table']." 
+            SET password = $_password, changed =$changed
+            WHERE username = $_username AND realm = $_realm";
+//	$sql =<<<EOSQL
+//UPDATE {$GLOBALS['ESPCONFIG']['respondent_table']}
+//   SET password={$_password}, changed={$changed}
+// WHERE username={$_username} AND realm={$_realm}
+//EOSQL;
     // throw it at the DB
     // NOTE: There is a small race condition here on some databases: this will fail if the password is changed to the same password
     // NOTE: as originally within 1 second of the last change.  In other words, if you changed your password to "bob" 500ms ago,

@@ -1,6 +1,7 @@
 <?php
 
 /* SuperUser or Designers with "Administer Designers(pgroup)" permissions only*/
+
 if($GLOBALS['ESPCONFIG']['auth_type'] != 'ldap_both' &&
 $GLOBALS['ESPCONFIG']['auth_type'] != 'ldap_resp' &&
 $GLOBALS['ESPCONFIG']['auth_type'] != 'ldap_des' &&
@@ -14,6 +15,7 @@ $_SESSION['acl']['superuser'] != 'Y' &&
 //$bg2 =& $ESPCONFIG['bgalt_color2'];
 
 $errstr = '';
+//$success = '';
 $u = '';
 $r = '';
 $arr = array();
@@ -22,6 +24,7 @@ $arr = array();
 if(isset($_POST['cancel'])) {
 	unset($_POST['submit']);
 	unset($_POST['delete']);
+	echo mkwarn(_('The process has been cancelled by you.'));
 	include(esp_where('designers'));
 	return;
 }
@@ -34,6 +37,7 @@ if(isset($_POST['delete'])) {
 	$r2 = _stripslashes($_POST['r']);
 	/* user can't delete himself */
 	if (isset($_SESSION['username']) && $_SESSION['username']===$u) {
+		echo mkwarn(_('You cannot delete yourself.'));
 		include(esp_where('designers'));
 		return;
 	}
@@ -44,11 +48,14 @@ if(isset($_POST['delete'])) {
 		$sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['designer_table']." WHERE username=$u AND realm=$r";
 		if(!execute_sql($sql) || affected_rows() < 1) {
 			/* unsucessfull -- abort */
-			$errstr .= mkerror(_('Cannot delete account.') .' ('.
-				ErrorMsg() .')');
+			//$errstr .= mkerror(_('Cannot delete account.') .' ('. ErrorMsg() .')');
+			$errstr .= _('Cannot delete account.') .' ('. ErrorMsg() .')';
+		} else {
+			$success .= _('Account has been deleted successfully.');
 		}
 	}
 	if(empty($errstr)) {
+		echo mksuccess(_('Account has been deleted successfully.'));
 		include(esp_where('designers'));
 		return;
 	}
@@ -74,9 +81,9 @@ if(isset($_POST['submit'])) {
 		$u_password = '';
 	}
 	
-	$u_fname     = _addslashes($_POST['fname']);
-	$u_lname     = _addslashes($_POST['lname']);
-	$u_email     = _addslashes($_POST['email']);
+	$u_fname = _addslashes($_POST['fname']);
+	$u_lname = _addslashes($_POST['lname']);
+	$u_email = _addslashes($_POST['email']);
 
 	if (!empty($_POST['pdesign'])) {
 		$u_pdesign = _addslashes($_POST['pdesign']);
@@ -155,7 +162,7 @@ if(isset($_POST['submit'])) {
         if(!$result || record_count($result) < 1) {
 	/* new user */
         	if(empty($u) || empty($r) || empty($u_password)) {
-        		$errstr .= mkerror(_('Username, Password, and Group are required.'));
+        		$errstr .= _('Username, Password, and Group are required.');
         	} else {
         		$sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['designer_table']."
         			(username,realm,password,changed)
@@ -163,8 +170,9 @@ if(isset($_POST['submit'])) {
         		if(!execute_sql($sql)) {
         			$u = '';
         			$r = '';
-        			$errstr .= mkerror(_('Error adding account.') .' ('.
-        				ErrorMsg() .')');
+        			$errstr .= _('Error adding account.') .' ('. ErrorMsg() .')';
+        		} else {
+        			$success .= _('New account has been added successfully.');
         		}
         	}
         }
@@ -192,13 +200,14 @@ if(isset($_POST['submit'])) {
         	#WHERE username=$u AND realm=$r;
         	if(!execute_sql($sql)) {
         		/* unsucessfull -- abort */
-        		$errstr .= mkerror(_('Cannot change account data.') .' ('.
-        			ErrorMsg() .')');
+        		$errstr .= _('Cannot change account data.') .' ('. ErrorMsg() .')';
+        	} else {
+        		$success .= _('Account has been updated successfully.');
         	}
         }
     }
-
     if(empty($errstr)) {
+    	echo mksuccess(_('Account has been added/updated successfully.'));
     	include(esp_where('designers'));
     	return;
     }
@@ -244,14 +253,13 @@ if(!empty($u) && !empty($r)) {
 			$arr['ex_day']   = '';
 		}
 	} else {
-		$errstr .= mkerror(_('Account not found.') .' ('.
-			ErrorMsg() .')');
+		$errstr .= _('Account not found.') .' ('. ErrorMsg() .')';
 	}
 }
 
 ?>
 
-<h2>Managing a Designer</h2>
+<h2>Managing designer accounts</h2>
 
 <?php if(!empty($errstr)) echo(mkerror($errstr)); ?>
 
@@ -372,10 +380,10 @@ if(!empty($u) && !empty($r)) {
 	</tr>
 </table>
 
-<input class="btn btn-success" type="button" name="submit" value="Update" />
-<input class="btn btn-default" type="button" name="cancel" value="Cancel" />
+<input class="btn btn-success" type="submit" name="submit" value="Update" />
+<input class="btn btn-default" type="submit" name="cancel" value="Cancel" />
 <?php if (!(isset($_SESSION['username']) && $_SESSION['username']===$u)) { ?>
-<input class="btn btn-danger" type="button" name="delete" value="Delete" />
+<input class="btn btn-danger" type="submit" name="delete" value="Delete" />
 <?php } ?>
 <br /><br />
 <?php displayAdminBack(); ?>

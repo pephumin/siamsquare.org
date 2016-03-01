@@ -1,7 +1,8 @@
 <?php
 
-
 function displayHeader($title) {
+	header("Content-language: en");
+	header("Content-type: text/html; charset=utf-8");
 	echo '
 <!DOCTYPE html>
 <html>
@@ -10,7 +11,7 @@ function displayHeader($title) {
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Client Section: '.$title.'</title>';
 	echo "\n";
-	$cssfiles = array("css/bootstrap.css", "css/bootstrap-theme.css", "css/pe.css", "css/font-awesome.css");
+	$cssfiles = array("css/bootstrap.css", "css/font-awesome.css", "css/pe.css");
 	foreach ($cssfiles as $filename) {
 		echo '	<link href="' . $filename . '" rel="stylesheet" type="text/css" />';
 		echo "\n";
@@ -24,32 +25,37 @@ function displayHeader($title) {
 }
 
 function displayNav() {
-	$base =& $GLOBALS['ESPCONFIG']['ME'];
+	$base = "/";
+	$home = "/admin/index.php";
+	//$base =& $GLOBALS['ESPCONFIG']['ME'];
+	//if ($_SERVER['REQUEST_URI'] == "$base") { $a = '<li class="active">'; } else { $a = '<li>'; }
+	//if ($_SERVER['REQUEST_URI'] == "/contact.php") { $b = '<li class="active">'; } else { $b = '<li>'; }
+	//if ($_SERVER['REQUEST_URI'] == "$base?where=help") { $c = '<li class="active">'; } else { $c = '<li>'; }
+	if ($_SERVER['REQUEST_URI'] == "$base") { $a = '<li class="active">'; } else { $a = '<li>'; }
+	if ($_SERVER['REQUEST_URI'] == "/admin/contact.php") { $b = '<li class="active">'; } else { $b = '<li>'; }
+	if ($_SERVER['REQUEST_URI'] == "/admin/help.php") { $c = '<li class="active">'; } else { $c = '<li>'; }
 	if(!empty($_SESSION['acl']['username'])) {
 		$id = "";
 		if($_SESSION['acl']['superuser'] == 'Y') { $id .= 'Superuser: <tt>'. $_SESSION['acl']['username'] .'</tt>'; }
 		else { $id .= 'Login: <tt>'. $_SESSION['acl']['username'] .'</tt>'; }
-		if ($_SERVER['REQUEST_URI'] == "$base") { $a = '<li class="active">'; } else { $a = '<li>'; }
-		if ($_SERVER['REQUEST_URI'] == "$base?where=contact") { $b = '<li class="active">'; } else { $b = '<li>'; }
-		if ($_SERVER['REQUEST_URI'] == "$base?where=help") { $c = '<li class="active">'; } else { $c = '<li>'; }
 		echo "\n\n";
 		//echo "<!-- Fixed navbar -->\n";
 		echo "<nav class=\"navbar navbar-default navbar-fixed-top\">\n";
 		echo "<div class=\"container\">\n";
 		echo "  <div class=\"navbar-header\">\n";
-		echo "    <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\" aria-expanded=\"false\" aria-controls=\"navbar\">\n";
+		echo "    <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\">\n";
 		echo "      <span class=\"sr-only\">Toggle navigation</span>\n";
 		echo "      <span class=\"icon-bar\"></span>\n";
 		echo "      <span class=\"icon-bar\"></span>\n";
 		echo "      <span class=\"icon-bar\"></span>\n";
 		echo "    </button>\n";
-		echo "    <a class=\"navbar-brand\" href=\"$base\">SiamSquare: Client Zone</a>\n";
+		echo "    <a class=\"navbar-brand\" href=\"$base\">SiamSquare</a>\n";
 		echo "  </div> <!--/navbar-header -->\n";
 		echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
 		echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
-		echo "      $a<a href=\"$base\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
-		echo "      $b<a href=\"$base?where=contact\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
-		echo "      $c<a href=\"$base?where=help\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
+		echo "      $a<a href=\"$home\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
+		echo "      $b<a href=\"/admin/contact.php\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
+		echo "      $c<a href=\"/admin/help.php\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
 		echo "      <li><a href=\"$base?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log Out</a></li>\n";
 		echo "    </ul>\n";
 		echo "  </div> <!--/navbar-collapse -->\n";
@@ -61,19 +67,20 @@ function displayNav() {
 		echo "<nav class=\"navbar navbar-default navbar-fixed-top\">\n";
 		echo "<div class=\"container\">\n";
 		echo "  <div class=\"navbar-header\">\n";
-		echo "    <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\" aria-expanded=\"false\" aria-controls=\"navbar\">\n";
+		echo "    <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\">\n";
 		echo "      <span class=\"sr-only\">Toggle navigation</span>\n";
 		echo "      <span class=\"icon-bar\"></span>\n";
 		echo "      <span class=\"icon-bar\"></span>\n";
 		echo "      <span class=\"icon-bar\"></span>\n";
 		echo "    </button>\n";
-		echo "    <a class=\"navbar-brand\" href=\"$base\">SiamSquare: Client Zone</a>\n";
+		echo "    <a class=\"navbar-brand\" href=\"$base\">SiamSquare</a>\n";
 		echo "  </div> <!--/navbar-header -->\n";
 		echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
 		echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
-		echo "      <li><a href=\"$base\"><i class=\"fa fa-power-off fa-lg\"></i>&nbsp; Log-in</a></li>\n";
-		//echo "      <li><a href=\"$base?where=contact\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
-		//echo "      <li><a href=\"$base?where=help\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
+		//echo "      $a<a href=\"$base\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
+		echo "      $a<a href=\"$home\"><i class=\"fa fa-power-off fa-lg\"></i>&nbsp; Log-in</a></li>\n";
+		echo "      $b<a href=\"/admin/contact.php\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
+		echo "      $c<a href=\"/admin/help.php\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
 		//echo "      <li><a href=\"$base?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log Out</a></li>\n";
 		echo "    </ul>\n";
 		echo "  </div> <!--/navbar-collapse -->\n";
@@ -85,12 +92,12 @@ function displayNav() {
 function displayTabNav() {
 	echo '
 <input type="hidden" name="where" value="tab" />
-<input class="btn btn-default" type="button" name="tab_general" value="General" />
-<input class="btn btn-default" type="button" name="tab_questions" value="Questions" />
-<input class="btn btn-default" type="button" name="tab_order" value="Order" />
-<input class="btn btn-default" type="button" name="tab_conditions" value="Conditions" />
-<input class="btn btn-default" type="button" name="tab_preview" value="Preview" />
-<input class="btn btn-default" type="button" name="tab_finish" value="Finish" />';
+<input class="btn btn-default" type="submit" name="tab_general" value="General" />
+<input class="btn btn-default" type="submit" name="tab_questions" value="Questions" />
+<input class="btn btn-default" type="submit" name="tab_order" value="Order" />
+<input class="btn btn-default" type="submit" name="tab_conditions" value="Conditions" />
+<input class="btn btn-default" type="submit" name="tab_preview" value="Preview" />
+<input class="btn btn-default" type="submit" name="tab_finish" value="Finish" />';
 }
 
 function displayAdminBack() {
@@ -100,9 +107,7 @@ function displayAdminBack() {
 function displayPageHeader() {
 	echo "\n";
 	$self = $_SERVER['PHP_SELF'];
-	//if($ESPCONFIG['DEBUG']) {
-	//include 'include/debug.inc';
-	//}
+	//if($ESPCONFIG['DEBUG']) { include 'include/debug.inc'; }
 	echo '
 <form method="post" id="phpesp" action="'.$self.'">
 <div class="container">';
@@ -136,7 +141,7 @@ function displayPageFooter() {
 }
 
 function displayFooter() {
-	$jsfiles = array("js/jquery-2.2.1.js", "js/bootstrap.js", "js/admin.js");
+	$jsfiles = array("js/jquery-2.2.1.js", "js/bootstrap.min.js", "js/admin.js");
 	foreach ($jsfiles as $filename) {
 		//$path = dirname(dirname(__FILE__)).'/js/'.$filename;
 		echo '<script type="text/javascript" src="' . $filename . '"></script>'."\n";
