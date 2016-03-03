@@ -245,6 +245,9 @@ if(!empty($u) && !empty($r)) {
 		#if(intval($expiration) > 0) {
 		$u =$arr['username'];
 		$r =$arr['realm'];
+		$fname = $arr['fname'];
+		$lname = $arr['lname'];
+		$email = $arr['email'];
 		if(intval($arr['expiration']) > 0) {
 			$arr['ex_year']  = substr($arr['expiration'],0,4);
 			$arr['ex_month'] = substr($arr['expiration'],5,2);
@@ -260,6 +263,7 @@ if(!empty($u) && !empty($r)) {
 }
 
 ?>
+</div>
 </form>
 
 <h2>Managing designer accounts</h2>
@@ -275,9 +279,10 @@ if(!empty($u) && !empty($r)) {
     <div class="col-sm-9">
 		<?php
 		if(empty($u)) { echo '<input class="form-control" type="text" name="u" placeholder="Username" />'; }
-		else { echo '<input class="form-control" type="hidden" name="u" placeholder="'.$u.'" />'; }
+		else { echo '<input class="form-control" type="text" name="u" placeholder='.$u.' disabled/>'; }
 		?>
 		<p class="text-muted">Assign an user name which will be used as a login.</p>
+		<input type="hidden" name="u" value="<?php echo $u; ?>" />
     </div>
   </div>
   <div class="form-group">
@@ -285,6 +290,7 @@ if(!empty($u) && !empty($r)) {
     <div class="col-sm-9">
     	<input type="password" class="form-control" name="password" placeholder="Password">
     	<p class="text-muted">Password must be more than 8 charters with a combination of letters and numbers.</p>
+    	<input type="hidden" name="password" value="<?php echo $u_password; ?>" />
     </div>
   </div>
   <div class="form-group">
@@ -317,25 +323,46 @@ if(!empty($u) && !empty($r)) {
     </div>
   </div>
   <div class="form-group form-inline">
-    <label class="col-sm-3 control-label" for="fname">Name <span class="label label-danger">required</span></label>
+    <label class="col-sm-3 control-label" for="name">Name <span class="label label-danger">required</span></label>
     <div class="col-sm-9">
-    	First name: <input class="form-control" type="text" name="fname" placeholder="Jane" />
-    	Last name: <input class="form-control" type="text" name="lname" placeholder="Doe" />
+		<?php if(empty($u)) { ?>
+    		First name: <input class="form-control" type="text" name="fname" placeholder="Jane" />
+    		Last name: <input class="form-control" type="text" name="lname" placeholder="Doe" />
+    	<?php } else { ?>
+    		First name: <input class="form-control" type="text" name="fname" placeholder="<?php echo $fname; ?>" />
+    		Last name: <input class="form-control" type="text" name="lname" placeholder="<?php echo $lname; ?>" />
+    	<?php } ?>
+    	<p class="text-muted">Enter the full name of this user including first and last name.</p>
+    	<input type="hidden" name="fname" value="<?php echo $fname; ?>" />
+    	<input type="hidden" name="lname" value="<?php echo $lname; ?>" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="lname">Last name <span class="label label-danger">required</span></label>
+    <div class="col-sm-9">
+		<?php if(empty($u)) { ?>
+
+    	<?php } else { ?>
+
+    	<?php } ?>
     	<p class="text-muted">Enter the full name of this user including first and last name.</p>
     </div>
   </div>
-
   <div class="form-group">
     <label class="col-sm-3 control-label" for="email">Email <span class="label label-danger">required</span></label>
-    <div class="col-sm-9">
-    	<input class="form-control" type="text" name="email" placeholder="email@compnay.com" />
+    <div class="col-sm-9">    	
+    	<?php if(empty($u)) { ?>
+    		<input class="form-control" type="text" name="email" placeholder="email@compnay.com" />
+    	<?php } else { ?>
+    		<input class="form-control" type="text" name="email" placeholder="<?php echo $email; ?>" />
+    	<?php } ?>
     	<p class="text-muted">Enter correct email.</p>
     </div>
   </div>
   <div class="form-group form-inline">
     <label class="col-sm-3 control-label" for="expiration">Expiration</label>
     <div class="col-sm-9">
-		Year: <input class="form-control" type="text" size="4" name="ex_year" placeholder="2016" />&nbsp;
+		Year: <input class="form-control" type="text" size="4" name="ex_year" placeholder="2017" />&nbsp;
 		Month: <input class="form-control" type="text" size="2" name="ex_month" placeholder="01" />&nbsp;
 		Day: <input class="form-control" type="text" size="2" name="ex_day" placeholder="01" />
 		<p class="text-muted">Assign expiration date (if any).</p>
@@ -426,7 +453,7 @@ if(!empty($u) && !empty($r)) {
   </div>
   <div class="col-sm-offset-3 col-sm-9">
   	<input type="hidden" name="where" value="admdesigner" />
-  	<input class="btn btn-success" type="submit" name="submit" value="Update" />&nbsp;
+  	<input class="btn btn-success" type="submit" name="submit" value="Create / Update" />&nbsp;
   	<input class="btn btn-default" type="submit" name="cancel" value="Cancel" />&nbsp;
   	<?php if (!(isset($_SESSION['username']) && $_SESSION['username']===$u)) { ?>
   	<input class="btn btn-danger" type="submit" name="delete" value="Delete" />&nbsp;

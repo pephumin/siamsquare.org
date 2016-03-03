@@ -220,7 +220,7 @@ if(!empty($u) && !empty($r)) {
     <div class="col-sm-9">
 		<?php
 		if(empty($u)) { echo '<input class="form-control" type="text" name="u" placeholder="Username" />'; }
-		else { echo '<input class="form-control" type="hidden" name="u" placeholder="'.$u.'" />'; }
+		else { echo '<input class="form-control" type="text" name="u" placeholder='.$u.' disabled/>'; }
 		?>
 		<p class="text-muted">Assign an user name which will be used as a login.</p>
     </div>
@@ -301,7 +301,7 @@ if(!empty($u) && !empty($r)) {
   </div>
   <div class="col-sm-offset-3 col-sm-9">
   	<input type="hidden" name="where" value="admrespondent" />
-  	<input class="btn btn-success" type="submit" name="submit" value="Update" />&nbsp;
+  	<input class="btn btn-success" type="submit" name="submit" value="Create / Update" />&nbsp;
   	<input class="btn btn-default" type="submit" name="cancel" value="Cancel" />&nbsp;
   	<input class="btn btn-danger" type="submit" name="delete" value="Delete" />&nbsp;
   </div>

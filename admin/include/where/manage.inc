@@ -67,7 +67,7 @@ $base =& $GLOBALS['ESPCONFIG']['ME'];
         <?php if ($GLOBALS['ESPCONFIG']['auth_type'] != 'ldap_both' && $GLOBALS['ESPCONFIG']['auth_type'] != 'ldap_des' && ($_SESSION['acl']['superuser'] == 'Y' || count($_SESSION['acl']['pgroup']) > 0)): ?>
         <a class="list-group-item list-group-item-warning" href="<?php echo("${base}?where=designers"); ?>"><i class="fa fa-cogs fa-fw"></i>&nbsp; Manage designer accounts</a>
           <?php if ($_SESSION['acl']['superuser'] == 'Y'): ?>
-          <a class="list-group-item list-group-item-danger" href="<?php echo("${base}?where=groups"); ?>"><i class="fa fa-database fa-fw"></i>&nbsp; Manage companies</a>
+          <a class="list-group-item list-group-item-danger" href="<?php echo("${base}?where=groups"); ?>"><i class="fa fa-database fa-fw"></i>&nbsp; Manage groups</a>
           <a class="list-group-item list-group-item-danger" href="<?php echo("${base}?where=guide"); ?>"><i class="fa fa-list-alt fa-fw"></i>&nbsp; Administrator guide</a>
           <?php endif; ?>
         <?php endif; ?>
