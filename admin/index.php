@@ -78,7 +78,12 @@ if ($where == 'download') {
     exit;
 }
 
-$title = 'Management interface';
+global $title;
+
+if (empty($title)) {
+    $title = 'Management interface';
+}
+
 displayHeader($title);
 displayNav();
 displayPageHeader($title);

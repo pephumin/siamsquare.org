@@ -56,7 +56,7 @@ function displayNav() {
 		echo "      $a<a href=\"$home\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
 		echo "      $b<a href=\"/admin/contact.php\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
 		echo "      $c<a href=\"/admin/help.php\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
-		echo "      <li><a href=\"$base?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log Out</a></li>\n";
+		echo "      <li><a href=\"$home?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log Out</a></li>\n";
 		echo "    </ul>\n";
 		echo "  </div> <!--/navbar-collapse -->\n";
 		echo "</div>\n";
@@ -81,7 +81,7 @@ function displayNav() {
 		echo "      $a<a href=\"$home\"><i class=\"fa fa-power-off fa-lg\"></i>&nbsp; Log-in</a></li>\n";
 		echo "      $b<a href=\"/admin/contact.php\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
 		echo "      $c<a href=\"/admin/help.php\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
-		//echo "      <li><a href=\"$base?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log Out</a></li>\n";
+		//echo "      <li><a href=\"$home?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log Out</a></li>\n";
 		echo "    </ul>\n";
 		echo "  </div> <!--/navbar-collapse -->\n";
 		echo "</div>\n";
@@ -90,14 +90,27 @@ function displayNav() {
 }
 
 function displayTabNav() {
-	echo '
-<input type="hidden" name="where" value="tab" />
-<input class="btn btn-default" type="submit" name="tab_general" value="General" />
-<input class="btn btn-default" type="submit" name="tab_questions" value="Questions" />
-<input class="btn btn-default" type="submit" name="tab_order" value="Order" />
-<input class="btn btn-default" type="submit" name="tab_conditions" value="Conditions" />
-<input class="btn btn-default" type="submit" name="tab_preview" value="Preview" />
-<input class="btn btn-default" type="submit" name="tab_finish" value="Finish" />';
+	global $tab;
+	echo '<input type="hidden" name="where" value="tab" />';
+	echo "&nbsp;\n";
+	if ($tab == 'general') { echo '<input type="submit" name="tab_general" value="General" class="btn btn-warning active" />'; }
+	else { echo '<input type="submit" name="tab_general" value="General" class="btn btn-warning" />'; }
+	echo "&nbsp;\n";
+	if ($tab == 'questions') { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-warning active" />'; }
+	else { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-warning" />'; }
+	echo "&nbsp;\n";
+	if ($tab == 'order') { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-warning active" />'; }
+	else { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-warning" />'; }
+	echo "&nbsp;\n";
+	if ($tab == 'conditions') { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-warning active" />'; }
+	else { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-warning" />'; }
+	echo "&nbsp;\n";
+	if ($tab == 'preview') { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-warning active" />'; }
+	else { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-warning" />'; }
+	echo "&nbsp;\n";
+	if ($tab == 'finish') { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-warning active" />'; }
+	else { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-warning" />'; }
+	echo "&nbsp;\n";
 }
 
 function displayAdminBack() {

@@ -1,6 +1,5 @@
 <?php
 
-$base =& $GLOBALS['ESPCONFIG']['ME'];
 
 /* SuperUser or Designers with "Administer Respondents(puser)" permissions only*/
 if($_SESSION['acl']['superuser'] != 'Y' &&
@@ -205,109 +204,91 @@ if(!empty($u) && !empty($r)) {
 }
 
 ?>
-</form>
 
 <h2>Managing respondent accounts</h2>
 
 <?php if(!empty($errstr)) echo(mkerror($errstr)); ?>
 
+<input type="hidden" name="where" value="admrespondent" />
 <br />
+<table class="table table-hover">
+	<tr>
 
-<div class="container">
-<form class="form-horizontal" method="post" id="phpesp" action="<?php echo($base); ?>">
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="user">Username <span class="label label-danger">required</span></label>
-    <div class="col-sm-9">
-		<?php
-		if(empty($u)) { echo '<input class="form-control" type="text" name="u" placeholder="Username" />'; }
-		else { echo '<input class="form-control" type="hidden" name="u" placeholder="'.$u.'" />'; }
-		?>
-		<p class="text-muted">Assign an user name which will be used as a login.</p>
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="password">Password <span class="label label-danger">required</span></label>
-    <div class="col-sm-9">
-    	<input type="password" class="form-control" name="password" placeholder="Password">
-    	<p class="text-muted">Password must be more than 8 charters with a combination of letters and numbers.</p>
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="group">Group</label>
-    <div class="col-sm-9">
-		<?php
-		if(empty($r)) {
-			$u_r = '<select name="r" class="form-control"><option></option>';
-			$groups = array();
-			if($_SESSION['acl']['superuser'] == 'Y') {
-				$sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['realm_table'];
-				$result = execute_sql($sql);
-				while( list($g) = fetch_row($result) ) {
-					array_push($groups, $g);
-					$result->MoveNext();
-				}
-				db_close($result);
-			} else {
-				$groups =& $_SESSION['acl']['pgroup'];
+<?php
+	echo("<th class=\"right\">Username</th>\n");
+	if(empty($u))
+		$u_u = mktext('u', 16, 16, $arr);
+	else
+		$u_u = mkhidden('u', $arr) . "<tt>$u</tt>";
+	echo("<td class=\"left\">$u_u</td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">Password</th>\n");
+	echo("<td class=\"left\">". mkpass('password') ."</td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">Company</th>\n");
+	if(empty($r)) {
+		$u_r = '<select name="r"><option></option>';
+		$groups = array();
+		if($_SESSION['acl']['superuser'] == 'Y') {
+			$sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['realm_table'];
+			$result = execute_sql($sql);
+			while( list($g) = fetch_row($result)) {
+				array_push($groups, $g);
+                $result->MoveNext();
 			}
-			foreach($groups as $g) {
-				if (!empty($r) && $g===$r)
-				   $u_r .= "<option value=\"$g\" selected>$g</option>";
-				else
-				   $u_r .= "<option value=\"$g\">$g</option>";
-			}
-			$u_r .= "</select>\n";
+			db_close($result);
 		} else {
-		$u_r = "<input class=\"form-control\" type=\"hidden\" name=\"r\" />'.$r.'";
+			$groups =& $_SESSION['acl']['puser'];
 		}
-		echo $u_r;
-		?>
-		<p class="text-muted">Select appropriate group for this user.</p>
-    </div>
-  </div>
-  <div class="form-group form-inline">
-    <label class="col-sm-3 control-label" for="fname">Name <span class="label label-danger">required</span></label>
-    <div class="col-sm-9">
-    	First name: <input class="form-control" type="text" name="fname" placeholder="Jane" />
-    	Last name: <input class="form-control" type="text" name="lname" placeholder="Doe" />
-    	<p class="text-muted">Enter the full name of this user including first and last name.</p>
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="email">Email <span class="label label-danger">required</span></label>
-    <div class="col-sm-9">
-    	<input class="form-control" type="text" name="email" placeholder="email@compnay.com" />
-    	<p class="text-muted">Enter correct email.</p>
-    </div>
-  </div>
-  <div class="form-group form-inline">
-    <label class="col-sm-3 control-label" for="expiration">Expiration</label>
-    <div class="col-sm-9">
-		Year: <input class="form-control" type="text" size="4" name="ex_year" placeholder="2016" />&nbsp;
-		Month: <input class="form-control" type="text" size="2" name="ex_month" placeholder="01" />&nbsp;
-		Day: <input class="form-control" type="text" size="2" name="ex_day" placeholder="01" />
-		<p class="text-muted">Assign expiration date (if any).</p>
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="disable">Disable</label>
-    <div class="col-sm-9">
-    	<select class="form-control" name="disabled">
-    		<option value="Y">Yes</option>
-    		<option value="N" selected>No</option>
-    	</select>
-    	<p class="text-muted">Disable this user from using the system.</p>
-    </div>
-  </div>
-  <div class="col-sm-offset-3 col-sm-9">
-  	<input type="hidden" name="where" value="admrespondent" />
-  	<input class="btn btn-success" type="submit" name="submit" value="Update" />&nbsp;
-  	<input class="btn btn-default" type="submit" name="cancel" value="Cancel" />&nbsp;
-  	<input class="btn btn-danger" type="submit" name="delete" value="Delete" />&nbsp;
-  </div>
-</form>
-</div>
-
+		foreach($groups as $g) {
+			$u_r .= "<option value=\"$g\">$g</option>";
+		}
+		$u_r .= '</select>';
+	} else {
+		$u_r = mkhidden('r', $arr) . "<tt>$r</tt>";
+	}
+	echo("<td class=\"left\">$u_r</td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">First Name</th>\n");
+	echo("<td class=\"left\">". mktext('fname', 16, 16, $arr) ."</td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">Last Name</th>\n");
+	echo("<td class=\"left\">". mktext('lname', 24, 24, $arr) ."</td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">Email</th>\n");
+	echo("<td class=\"left\">". mktext('email', 24, 64, $arr) ."</td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">Expiration</th>\n");
+	echo("<td class=\"left\">".
+		mktext('ex_year', 4, 0, $arr) .' '.
+		mktext('ex_month', 2, 0, $arr) .' '.
+		mktext('ex_day', 2, 0, $arr) .' ('.
+			_('year') .' '.
+			_('month') .' '.
+			_('day'). ")</td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">Disabled</th>\n");
+	echo("<td class=\"left\">". mkselect('disabled',array('Y' => _('Yes'), 'N' => _('No')), $arr) ."</td>\n");
+?>
+	</tr>
+</table>
+<input class="btn btn-success" type="submit" name="submit" value="Update" />
+<input class="btn btn-default" type="submit" name="cancel" value="Cancel" />
+<input class="btn btn-danger" type="submit" name="delete" value="Delete" />
 <br /><br />
 <?php displayAdminBack(); ?>
 
