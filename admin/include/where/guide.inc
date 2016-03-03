@@ -1,14 +1,14 @@
 <?php
 
-echo "<h2>Admin Guide</h2>";
+echo "<h2>Administrator guide</h2>";
 
-if (file_exists(dirname(__FILE__) . '/../text/adminguide.txt')) {
-	echo "<pre>";
-	include(dirname(__FILE__) . '/../text/adminguide.txt');
+if (file_exists(dirname(__FILE__) . '/../text/guide.txt')) {
+	//echo "<pre>";
+	include(dirname(__FILE__) . '/../text/guide.txt');
 	//return $text;
-	echo "</pre>\n";
+	//echo "</pre>\n";
 } else {
-		echo('<p>' . mkwarn(_("User's guide not found.")) . "</p>\n");
+		echo('<p>' . mkwarn(_("Admin guide not found.")) . "</p>\n");
 		//var_dump(dirname(__FILE__));
 }
 

@@ -1,40 +1,36 @@
 <?php
 
-/* $Id$ */
+/* proto string mksuccess(string message)
+   Returns HTML format for an success message. */
 
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
+function mksuccess ($msg) {
+    return("<div class=\"alert alert-success\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-check-square-o\"></i>&nbsp; ${msg}</div>\n");
+}
 
-// Written by James Flemer
-// For eGrad2000.com
-// <jflemer@alum.rpi.edu>
+/* proto string mkinfo(string message)
+   Returns HTML format for an info message. */
 
-// string	mkwarn(char *warning);
-// string	mkerror(char *error);
+function mkinfo ($msg) {
+    return("<div class=\"alert alert-info\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-info-circle\"></i>&nbsp; ${msg}</div>\n");
+}
 
-// string	mkradio(char *name, char *value);
-// string	mkcheckbox(char *name, char *value);
-// string	mktext(char *name);
-// string   mkhidden(char *name, char *$value)
-// string	mktextarea(char *name, int rows, int cols, char *wordwrap);
-// string	mkselect(char *name, char *options[]);
-// string	mkfile(char *name);
-
-/* {{{ proto string mkwarn(string message)
+/* proto string mkwarn(string message)
    Returns HTML format for an warning message. */
+
 function mkwarn ($msg) {
-	return("<div class=\"alert alert-warning\" role=\"alert\"><p>${msg}</p></div>\n");
+	return("<div class=\"alert alert-warning\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-bullhorn\"></i>&nbsp; ${msg}</div>\n");
 }
-/* }}} */
 
-/* {{{ proto string mkerror(string message)
+/* proto string mkerror(string message)
    Returns HTML format for an error message. */
-function mkerror ($msg) {
-	return("<div class=\"alert alert-danger\" role=\"alert\"><p>${msg}</p></div>\n");
-}
-/* }}} */
 
-/* {{{ proto string mkradio(string name, string value)
+function mkerror ($msg) {
+	return("<div class=\"alert alert-danger\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-exclamation-circle\"></i>&nbsp; ${msg}</div>\n");
+}
+
+/* proto string mkradio(string name, string value)
    Returns HTML format for a radio button. */
+
 function mkradio ($_name, $value, $varr = null) {
     	if ($varr == null)
         	$varr =& $_POST;
@@ -44,10 +40,10 @@ function mkradio ($_name, $value, $varr = null) {
 	$str .= ' />';
 	return($str);
 }
-/* }}} */
 	
-/* {{{ proto string mkcheckbox(string name, string value)
+/* proto string mkcheckbox(string name, string value)
    Returns HTML format for a check box. */
+
 function mkcheckbox ($_name, $value, $varr = null) {
     	if ($varr == null)
         	$varr =& $_POST;
@@ -57,10 +53,10 @@ function mkcheckbox ($_name, $value, $varr = null) {
 	$str .= ' />';
 	return($str);
 }
-/* }}} */
 
-/* {{{ proto string mktext(string name, int size)
+/* proto string mktext(string name, int size)
    Returns HTML format for a text entry line. */
+
 function mktext ($_name, $size = 20, $max = 0, $varr = null) {
         if ($varr == null)
             $varr =& $_POST;
@@ -72,17 +68,17 @@ function mktext ($_name, $size = 20, $max = 0, $varr = null) {
 		return('<input class="form-control" type="text" '. $str .' name="'. htmlspecialchars($_name) .'" value="'. _stripslashes(htmlspecialchars($varr[$_name])) .'" />');
 	return('<input class="form-control" type="text" '. $str .' name="'. htmlspecialchars($_name) .'" />');
 }
-/* }}} */
 
-/* {{{ proto string mkpass(string name)
+/* proto string mkpass(string name)
    Returns HTML format for a password entry line. */
+
 function mkpass ($_name) {
 	return('<input type="password" class="form-control" placeholder="Password" name="'. htmlspecialchars($_name) .'" />');
 }
-/* }}} */
 
-/* {{{ proto string mkhidden(string name)
+/* proto string mkhidden(string name)
    Returns HTML format for a hidden form field. */
+
 function mkhidden ($_name, $varr = null) {
     	if ($varr == null)
         	$varr =& $_POST;
@@ -90,10 +86,10 @@ function mkhidden ($_name, $varr = null) {
 		return('<input type="hidden" name="'. htmlspecialchars($_name) .'" value="'. _stripslashes(htmlspecialchars($varr[$_name])) .'" />');
 	return('<input type="hidden" name="'. htmlspecialchars($_name) .'" />');
 }
-/* }}} */
 
-/* {{{ proto string mktextarea(string name, int rows, int cols, string wrap_type)
+/* proto string mktextarea(string name, int rows, int cols, string wrap_type)
    Returns HTML format for a text entry box. */
+
 function mktextarea ($_name, $rows, $cols, $wrap, $varr = null) {
     	if ($varr == null)
         	$varr =& $_POST;
@@ -148,10 +144,9 @@ function mksubmit($_name, $_value = null, $_attrs = array ()) {
 
     return sprintf('<input class="btn btn-default" type="submit" name="%s" %s %s />', htmlspecialchars($_name), $_value, $_extra);
 }
-/* }}} */
 
-/* {{{ proto string show_login(string surveyname, string message, string css, string title)
-    Returns HTML login form */
+/* proto string show_login(string surveyname, string message, string css, string title)
+   Returns HTML login form */
 
 function show_login($_surveyname = null, $_message = null, $_css = null, $_title = "Client Login") {
     $str = "";
@@ -167,13 +162,12 @@ function show_login($_surveyname = null, $_message = null, $_css = null, $_title
     }
 
     $str .= "<br />\n";
-    $str .= mkalert();
+    $str .= login_warning();
     return $str;
 }
 
-/* {{{ proto string make_element_attrs_from_array(array attributes)
-   Convert an array of key => value pairs into an HTML attributes specification key="value"
-*/
+/* proto string make_element_attrs_from_array(array attributes)
+   Convert an array of key => value pairs into an HTML attributes specification key="value" */
 
 function make_element_attrs_from_array($attrs) {
     $extra = '';
@@ -184,9 +178,9 @@ function make_element_attrs_from_array($attrs) {
     return trim($extra);
 }
 
-function mkalert() {
-    $extra = "";
-    $extra .= "<div class=\"alert alert-danger\" role=\"alert\">\n";
+function login_warning() {
+    //$extra = "";
+    //$extra .= "<div class=\"alert alert-warning\" role=\"alert\">\n";
     $text = <<< END
     <p><strong>UNAUTHORIZED ACCESS TO THIS COMPUTER SYSTEM IS PROHIBITED BY LAW</strong></p>
 
@@ -201,8 +195,10 @@ function mkalert() {
     <p>* Any communication or data transiting or stored on this information system may be disclosed or used for any lawful purpose.</p>
 END;
     //$extra .= nl2br($text);
-    $extra .= $text;
-    $extra .= "</div>\n\n";
+    //$extra .= $text;
+    //$extra .= "</div>\n\n";
+    $extra = mkwarn ($text);
+    $extra .= "\n\n";
     return $extra;
 }
 
@@ -210,7 +206,6 @@ function mkloginbox() {
 
     $extra = "";
     $text = <<< END
-
     <form name="loginform" id="loginform" method="post" class="form-horizontal">
     <div class="dashboardPanel" id="my_login">
     <h2 class="form-signin-heading">Client Login</h2>
@@ -242,11 +237,11 @@ function mkloginbox() {
     </form>
 END;
     $extra .= $text;
-    return $extra;    
+    $extra .= "\n\n";
+    return $extra;
 }
-// }}}
 
-function show_login_original($_surveyname = null, $_message = null, $_css = null, $_title = "Client Login") {
+function show_login_old($_surveyname = null, $_message = null, $_css = null, $_title = "Client Login") {
     //$str = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n";
     $str = "<!DOCTYPE html>\n";
     $str .= "<html>\n";
@@ -299,6 +294,5 @@ function show_login_original($_surveyname = null, $_message = null, $_css = null
 
     return $str;
 }
-/* }}} */
 
 ?>

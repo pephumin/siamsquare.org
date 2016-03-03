@@ -1,11 +1,11 @@
 <?php
 
- /* SuperUser or Designers with "Administer Designers(pgroup)" permissions only*/
- if(($_SESSION['acl']['superuser'] != 'Y') &&
-     count($_SESSION['acl']['pgroup']) == 0 &&
-     !auth_no_access(_('to access this form'))) {
-     return;
- }
+$base =& $GLOBALS['ESPCONFIG']['ME'];
+
+/* SuperUser or Designers with "Administer Designers(pgroup)" permissions only*/
+if(($_SESSION['acl']['superuser'] != 'Y') && count($_SESSION['acl']['pgroup']) == 0 && !auth_no_access(_('to access this form'))) {
+	return;
+}
  
 $sql = 'SELECT username, fname, lname, realm, disabled, expiration FROM '.$GLOBALS['ESPCONFIG']['designer_table'];
 
@@ -19,7 +19,7 @@ if($_SESSION['acl']['superuser'] != 'Y') {
 }
 
 $sql .= ' ORDER BY ';
-$base = $GLOBALS['ESPCONFIG']['ME'] .'?where=designers';
+//$base = $GLOBALS['ESPCONFIG']['ME'] .'?where=designers';
 if(!isset($_GET['u'])) $_GET['u'] = '';
 if(!isset($_GET['g'])) $_GET['g'] = '';
 if(!isset($_GET['f'])) $_GET['f'] = '';
@@ -84,9 +84,11 @@ $result = execute_sql($sql);
 
 <p><Click on a username to edit, or click on add new user below.</p>
 
-<p><a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=admdesigner")); ?>">Add a new Designer</a> / 
-<a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=upload&account_type=designers")); ?>">Bulk Upload Designers</a>
+<p>
+	<a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=admdesigner")); ?>">Add a new designer</a> / 
+	<a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=upload&account_type=designers")); ?>">Bulk upload designers</a>
 </p>
+
 <br />
 
 <table class="table table-hover">
@@ -114,19 +116,20 @@ $result = execute_sql($sql);
 		//	$bg =& $ESPCONFIG['bgalt_color1'];
 ?>
 	<tr>
-		<td class="left">
+		<td>
 			<a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=admdesigner&u=$u&r=$r")); ?>"><?php echo($u); ?></a>
 		</td>
-		<td class="left"><?php echo($fname); ?></td>
-		<td class="left"><?php echo($lname); ?></td>
-		<td class="left"><?php echo($r); ?></td>
-		<td class="left"><?php echo($d); ?></td>
+		<td><?php echo($fname); ?></td>
+		<td><?php echo($lname); ?></td>
+		<td><?php echo($r); ?></td>
+		<td><?php echo($d); ?></td>
 	</tr>
-</table>
+
 
 <?php
-	}
+}
 ?>
 
+</table>
 <br />
 <?php displayAdminBack(); ?>

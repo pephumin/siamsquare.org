@@ -1,7 +1,5 @@
 <?php
 
-$base =& $GLOBALS['ESPCONFIG']['ME'];
-
 /* SuperUser or Designers with "Administer Designers(pgroup)" permissions only*/
 
 if($GLOBALS['ESPCONFIG']['auth_type'] != 'ldap_both' &&
@@ -245,9 +243,6 @@ if(!empty($u) && !empty($r)) {
 		#if(intval($expiration) > 0) {
 		$u =$arr['username'];
 		$r =$arr['realm'];
-		$fname = $arr['fname'];
-		$lname = $arr['lname'];
-		$email = $arr['email'];
 		if(intval($arr['expiration']) > 0) {
 			$arr['ex_year']  = substr($arr['expiration'],0,4);
 			$arr['ex_month'] = substr($arr['expiration'],5,2);
@@ -263,48 +258,40 @@ if(!empty($u) && !empty($r)) {
 }
 
 ?>
-</div>
-</form>
 
 <h2>Managing designer accounts</h2>
 
 <?php if(!empty($errstr)) echo(mkerror($errstr)); ?>
 
+<input type="hidden" name="where" value="admdesigner" />
 <br />
-
-<div class="container">
-<form class="form-horizontal" method="post" id="phpesp" action="<?php echo($base); ?>">
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="user">Username <span class="label label-danger">required</span></label>
-    <div class="col-sm-9">
-		<?php
-		if(empty($u)) { echo '<input class="form-control" type="text" name="u" placeholder="Username" />'; }
-		else { echo '<input class="form-control" type="text" name="u" placeholder='.$u.' disabled/>'; }
-		?>
-		<p class="text-muted">Assign an user name which will be used as a login.</p>
-		<input type="hidden" name="u" value="<?php echo $u; ?>" />
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="password">Password <span class="label label-danger">required</span></label>
-    <div class="col-sm-9">
-    	<input type="password" class="form-control" name="password" placeholder="Password">
-    	<p class="text-muted">Password must be more than 8 charters with a combination of letters and numbers.</p>
-    	<input type="hidden" name="password" value="<?php echo $u_password; ?>" />
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="group">Group</label>
-    <div class="col-sm-9">
-		<?php
-		$u_r = '<select name="r" class="form-control"><option></option>';
+<table class="table table-hover">
+	<tr>
+<?php
+	echo("<th class=\"right\">Username</th>\n");
+	if(empty($u))
+		$u_u = mktext('u', 16, 16, $GLOBALS);
+	else
+		$u_u = mkhidden('u', $GLOBALS) . "<tt>$u</tt>";
+	echo("<td class=\"left\">$u_u</td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">". _('Password') ."</th>\n");
+	echo("<td class=\"left\">". mkpass('password') ."</td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">". _('Group') ."</th>\n");
+	#if(empty($r)) {
+		$u_r = '<select name="r"><option></option>';
 		$groups = array();
 		if($_SESSION['acl']['superuser'] == 'Y') {
 			$sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['realm_table'];
 			$result = execute_sql($sql);
 			while( list($g) = fetch_row($result) ) {
 				array_push($groups, $g);
-				$result->MoveNext();
+                $result->MoveNext();
 			}
 			db_close($result);
 		} else {
@@ -316,154 +303,87 @@ if(!empty($u) && !empty($r)) {
 			else
 			   $u_r .= "<option value=\"$g\">$g</option>";
 		}
-		$u_r .= "</select>\n";
-		echo $u_r;
-		?>
-		<p class="text-muted">Select appropriate group for this user.</p>
-    </div>
-  </div>
-  <div class="form-group form-inline">
-    <label class="col-sm-3 control-label" for="name">Name <span class="label label-danger">required</span></label>
-    <div class="col-sm-9">
-		<?php if(empty($u)) { ?>
-    		First name: <input class="form-control" type="text" name="fname" placeholder="Jane" />
-    		Last name: <input class="form-control" type="text" name="lname" placeholder="Doe" />
-    	<?php } else { ?>
-    		First name: <input class="form-control" type="text" name="fname" placeholder="<?php echo $fname; ?>" />
-    		Last name: <input class="form-control" type="text" name="lname" placeholder="<?php echo $lname; ?>" />
-    	<?php } ?>
-    	<p class="text-muted">Enter the full name of this user including first and last name.</p>
-    	<input type="hidden" name="fname" value="<?php echo $fname; ?>" />
-    	<input type="hidden" name="lname" value="<?php echo $lname; ?>" />
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="lname">Last name <span class="label label-danger">required</span></label>
-    <div class="col-sm-9">
-		<?php if(empty($u)) { ?>
-
-    	<?php } else { ?>
-
-    	<?php } ?>
-    	<p class="text-muted">Enter the full name of this user including first and last name.</p>
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="email">Email <span class="label label-danger">required</span></label>
-    <div class="col-sm-9">    	
-    	<?php if(empty($u)) { ?>
-    		<input class="form-control" type="text" name="email" placeholder="email@compnay.com" />
-    	<?php } else { ?>
-    		<input class="form-control" type="text" name="email" placeholder="<?php echo $email; ?>" />
-    	<?php } ?>
-    	<p class="text-muted">Enter correct email.</p>
-    </div>
-  </div>
-  <div class="form-group form-inline">
-    <label class="col-sm-3 control-label" for="expiration">Expiration</label>
-    <div class="col-sm-9">
-		Year: <input class="form-control" type="text" size="4" name="ex_year" placeholder="2017" />&nbsp;
-		Month: <input class="form-control" type="text" size="2" name="ex_month" placeholder="01" />&nbsp;
-		Day: <input class="form-control" type="text" size="2" name="ex_day" placeholder="01" />
-		<p class="text-muted">Assign expiration date (if any).</p>
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="disable">Disable</label>
-    <div class="col-sm-9">
-    	<select class="form-control" name="disabled">
-    		<option value="Y">Yes</option>
-    		<option value="N" selected>No</option>
-    	</select>
-    	<p class="text-muted">Disable this user from using the system.</p>
-
-    </div>
-  </div>
-
-  <!-- 
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="Username">NOT USE</label>
-    <div class="col-sm-9">NOT USE
+		$u_r .= '</select>';
+	#} else {
+	#	$u_r = mkhidden('r', $GLOBALS) . "<tt>$r</tt>";
+	#}
+	echo("<td class=\"left\"><tt>$u_r</tt></td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">". _('First Name') ."</th>\n");
+	echo("<td class=\"left\">". mktext('fname', 16, 16, $arr) ."</td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">". _('Last Name') ."</th>\n");
+	echo("<td class=\"left\">". mktext('lname', 24, 24, $arr) ."</td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">". _('Email') ."</th>\n");
+	echo("<td class=\"left\">". mktext('email', 24, 64, $arr) ."</td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">". _('Expiration') ."</th>\n");
+	echo("<td class=\"left\">".
+		mktext('ex_year',4,4, $arr) .' '.
+		mktext('ex_month',2,2, $arr) .' '.
+		mktext('ex_day',2,2, $arr) .' ('.
+			_('year') .' '.
+			_('month') .' '.
+			_('day'). ")</td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">". _('Disabled') ."</th>\n");
+	echo("<td class=\"left\">". mkselect('disabled',array('Y' => _('Yes'), 'N' => _('No')), $arr) ."</td>\n");
+?>
+	</tr><!-- <tr>
+		<th colspan="2" bgcolor="<?php echo($bg2); ?>">
 			<input type="submit" name="submit" value="<?php echo(_('Update')); ?>">&nbsp;
 			<input type="submit" name="cancel" value="<?php echo(_('Cancel')); ?>">&nbsp;
-			<input type="submit" name="delete" value="<?php echo(_('Delete')); ?>">
-    </div>
-  </div>
--->
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="pdesign">Design Surveys</label>
-    <div class="col-sm-9">
-    	<select class="form-control" name="pdesign">
-    		<option value="Y" selected>Yes</option>
-    		<option value="N">No</option>
-    	</select>
-    	<p class="text-muted">Allow the user to create, edit and test surveys. This option is on by default, and is probably desired for most situations.</p>
-    </div>
-  </div>
+			<input type="submit" name="delete" value="<?php echo(_('Delete')); ?>"></th>
+	</tr>--><tr>
+<?php
+	echo("<th class=\"right\">". _('Design Surveys') ."</th>\n");
+	echo("<td class=\"left\">". mkselect('pdesign',array('Y' => _('Yes'), 'N' => _('No')), $arr) ."</td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">". _('Change Survey Status') ."</th>\n");
+	echo("<td class=\"left\">". mkselect('pstatus',array('Y' => _('Yes'), 'N' => _('No')), $arr) .
+		'<!-- ('. _('Activate/End') .") --></td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">". _('Export Survey Data') ."</th>\n");
+	echo("<td class=\"left\">". mkselect('pdata',array('Y' => _('Yes'), 'N' => _('No')), $arr) ."</td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">". _('Group Editor') ."</th>\n");
+	echo("<td class=\"left\">". mkselect('pall',array('Y' => _('Yes'), 'N' => _('No')), $arr) .
+		'<!-- ('. _('may edit <b>all</b> forms owned by this group') .") --></td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">". _('Administer Designers') ."</th>\n");
+	echo("<td class=\"left\">". mkselect('pgroup',array('Y' => _('Yes'), 'N' => _('No')), $arr) ."</td>\n");
+?>
+	</tr><tr>
+<?php
+	echo("<th class=\"right\">". _('Administer Respondents') ."</th>\n");
+	echo("<td class=\"left\">". mkselect('puser',array('Y' => _('Yes'), 'N' => _('No')), $arr) ."</td>\n");
+?>
+	</tr>
+</table>
 
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="pstatus">Change Survey Status</label>
-    <div class="col-sm-9">
-     	<select class="form-control" name="pstatus">
-    		<option value="Y" selected>Yes</option>
-    		<option value="N">No</option>
-    	</select>
-    	<p class="text-muted">This lets a user change the status of a survey. Essentially this gives them the ability to release, end, and archive surveys.</p>
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="pdata">Export Survey Data</label>
-    <div class="col-sm-9">
-     	<select class="form-control" name="pdata">
-    		<option value="Y" selected>Yes</option>
-    		<option value="N">No</option>
-    	</select>
-    	<p class="text-muted">Users with this flag, have the option to download the data collected from a survey.</p>
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="pall">Group Editor</label>
-    <div class="col-sm-9">
-     	<select class="form-control" name="pall">
-    		<option value="Y">Yes</option>
-    		<option value="N" selected>No</option>
-    	</select>
-    	<p class="text-muted">By default, users can only perform any of the three actions above on their own surveys. If the Group Editor flag is on, the above permissions are widened to include all surveys created by members of the group.</p>
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="pgroup">Administer Designers</label>
-    <div class="col-sm-9">
-     	<select class="form-control" name="pgroup">
-    		<option value="Y">Yes</option>
-    		<option value="N" selected>No</option>
-    	</select>
-    	<p class="text-muted">This grants the user permission to change flags on users in their group, and to add new users to the group.</p>
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="puser">Administer Respondents</label>
-    <div class="col-sm-9">
-     	<select class="form-control" name="puser">
-    		<option value="Y">Yes</option>
-    		<option value="N" selected>No</option>
-    	</select>
-    	<p class="text-muted">Allows a user to add users to the list of allowed respondents, within their group.</p>
-    </div>
-  </div>
-  <div class="col-sm-offset-3 col-sm-9">
-  	<input type="hidden" name="where" value="admdesigner" />
-  	<input class="btn btn-success" type="submit" name="submit" value="Create / Update" />&nbsp;
-  	<input class="btn btn-default" type="submit" name="cancel" value="Cancel" />&nbsp;
-  	<?php if (!(isset($_SESSION['username']) && $_SESSION['username']===$u)) { ?>
-  	<input class="btn btn-danger" type="submit" name="delete" value="Delete" />&nbsp;
-  	<?php } ?>
-  </div>
-</form>
-</div>
-
-
-<br />
-
+<input class="btn btn-success" type="submit" name="submit" value="Update" />
+<input class="btn btn-default" type="submit" name="cancel" value="Cancel" />
+<?php if (!(isset($_SESSION['username']) && $_SESSION['username']===$u)) { ?>
+<input class="btn btn-danger" type="submit" name="delete" value="Delete" />
+<?php } ?>
 <br /><br />
 <?php displayAdminBack(); ?>

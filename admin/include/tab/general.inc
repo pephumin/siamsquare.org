@@ -1,5 +1,8 @@
 <?php
 
+$title = "Create a new survey";
+$base =& $GLOBALS['ESPCONFIG']['ME'];
+
 unset($sid);
 $sid = $_SESSION['survey_id'];
 
@@ -29,7 +32,7 @@ if ('0000-00-00 00:00:00' == $survey['close_date']) {
 }
 ?>
 
-<p>The information on this tab applies to the whole survey. Fill out this page then go to the <strong>Fields</strong> tab to edit individual fields.</p>
+</form>
 
 <script type="text/javascript">
 <!--
@@ -38,19 +41,23 @@ function validate() {
 }
 -->
 </script>
-<hr />
-<table class="table table-hover">
-	<tr style="vertical-align: top">
-		<td class="right"><strong>Name</strong></td>
-		<td class="left">
-			<?php echo mktext('name', 20, 64, $survey); ?>
-			<span class="red"><em><?php echo _('Required'); ?></em></span><br />
-			<p>Survey filename. This is used for all further access to this survey. (no spaces, alpha-numeric only)</p>
-		</td>
-	</tr>
-	<tr style="vertical-align: top">
-		<td class="right"><strong>Owner</strong></td>
-		<td class="left"><?php
+
+<br /><br />
+
+<div class="container">
+<form class="form-horizontal" method="post" id="phpesp" action="<?php echo($base); ?>">
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="Name"><strong>Name</strong> <span class="label label-danger">required</span></label>
+    <div class="col-sm-9">
+    	<?php echo mktext('name', 20, 64, $survey); // need <input class="form-control"> ?>
+    	<p class="text-muted">Survey filename. This is used for all further access to this survey. (no spaces, alpha-numeric only)</p>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="realm"><strong>Owner</strong> <span class="label label-danger">required</span></label>
+    <div class="col-sm-9">
+    	<div class="form-inline">
+    	<?php
 			$realms = array();
 			if(isset($_SESSION['acl']['superuser']) && $_SESSION['acl']['superuser'] == 'Y') {
 				$sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['realm_table'];
@@ -64,113 +71,110 @@ function validate() {
 				foreach($_SESSION['acl']['pdesign'] as $r)
 					$realms[$r] = $r;
 			}
-
 			echo(htmlspecialchars($_SESSION['acl']['username']) . "&nbsp;/&nbsp;");
-			echo(mkselect('realm',$realms, $survey) . "  <span class=\"red\"><em>". _('Required') ."</em></span><br />\n");
+			echo(mkselect('realm',$realms, $survey) . "\n");
+			// need <select class="form-control" name="realm">
 			?>
-			<p>User and Group that owns this survey.</p></td>
-	</tr>
-	<tr style="vertical-align: top">
-		<td class="right"><strong>Title</strong></td>
-		<td class="left">
-			<?php echo mktext('title', 60, 60, $survey); ?>
-			<span class="red"><em><?php echo _('Required'); ?></em></span><br />
-			<p>Title of this survey. This appears at the top of every page of this survey. (free-form, including spaces)</p>
-		</td>
-	</tr>
-	<tr style="vertical-align: top">
-		<td class="right"><strong>Subtitle</strong></td>
-		<td class="left">
-			<?php echo mktext('subtitle', 60, 128, $survey); ?><br />
-			<p>Subtitle of this survey. Appears below the title. (free-form, including spaces)</p>
-		</td>
-	</tr>
-	<tr style="vertical-align: top">
-		<td class="right"><strong>Additional Info</strong></td>
-		<td class="left">
-			<?php echo mktextarea('info', 5, 60, 'virtual', $survey); ?><br />
-			<p>Text to be displayed on this survey before any fields. (i.e. instructions, background info, etc.)</p>
-		</td>
-	</tr>
-	<tr style="vertical-align: top">
-		<td class="right"><strong>Confirmation Page</strong></td>
-		<td class="left">
-			<?php echo mktext('thanks_page', 60, 255, $survey) .'&nbsp;'.
-                    _('(URL)'); ?><br />
-			<?php echo(_('The URL to which a user is redirected after completing this survey.')); ?>
-			<br /><strong><?php echo(_('OR')); ?></strong><br />
-			<?php echo mktext('thank_head', 30, 0, $survey) .'&nbsp;'.
-                    _('(heading text)'); ?><br />
-			<?php echo mktextarea('thank_body', 5, 60, 'virtual', $survey) .
-                    '&nbsp;' . _('(body text)'); ?><br />
- 			<?php echo(_('Heading (in bold) and body text for the &quot;Confirmation&quot; page
-displayed after a user completes this survey.')); ?>
-			<?php echo(_('(URL, if present, takes precedent over confirmation text.)')); ?>
-			</td>
-	</tr>
-	<tr style="vertical-align: top">
-		<td class="right"><strong>Email</strong></td>
-		<td class="left">
-            <?php echo mktext('email', 30, 0, $survey); ?><br />
-            <p>Sends a copy of each submission to address (or leave blank for no email backup).</p>
-			</td>
-	</tr>
-    <tr style="vertical-align: top">
-		<td class="right"><strong>Theme</strong></td>
-                <td class="left"><?php
-			$themes_array = array();
-			$dir = dir($ESPCONFIG['css_path']);
-				$dir->rewind();
-				while ($file=$dir->read()) {
-					if (stristr($file,".css")) {
-						$pos = strrpos($file, ".");
-						$name = substr($file, 0,$pos);
-						$themes_array[$file] = $name;
-					}
+			<p class="text-muted">User and Group that owns this survey.</p>
+		</div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="title"><strong>Title</strong> <span class="label label-danger">required</span></label>
+    <div class="col-sm-9">
+    	<?php echo mktext('title', 60, 60, $survey); ?>
+    	<p class="text-muted">Title of this survey. This appears at the top of every page of this survey. (free-form, including spaces)</p>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="subtitle"><strong>Subtitle</strong></label>
+    <div class="col-sm-9">
+    	<?php echo mktext('subtitle', 60, 128, $survey); ?>
+    	<p class="text-muted">Subtitle of this survey. Appears below the title. (free-form, including spaces)</p>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="info"><strong>Additional Info</strong></label>
+    <div class="col-sm-9">
+    	<?php echo mktextarea('info', 5, 60, 'virtual', $survey); ?>
+    	<p class="text-muted">Text to be displayed on this survey before any fields. (i.e. instructions, background info, etc.)</p>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="thanks"><strong>Confirmation Page</strong></label>
+    <div class="col-sm-9">
+		<?php echo mktext('thanks_page', 60, 255, $survey) .'&nbsp;'. _('(URL)'); ?>
+		<p class="text-muted">The URL to which a user is redirected after completing this survey.<br /><strong>OR</strong></p>
+		<?php echo mktext('thank_head', 30, 0, $survey) .'&nbsp;'. _('(heading text)'); ?>
+		<?php echo mktextarea('thank_body', 5, 60, 'virtual', $survey) .'&nbsp;' . _('(body text)'); ?>
+ 		<p class="text-muted">Heading (in bold) and body text for the &quot;Confirmation&quot; page displayed after a user completes this survey. URL, if present, takes precedent over confirmation text.</p>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="email"><strong>Email</strong></label>
+    <div class="col-sm-9">
+    	<?php echo mktext('email', 30, 0, $survey); ?>
+    	<p class="text-muted">Sends a copy of each submission to address (or leave blank for no email backup).</p>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="theme"><strong>Theme</strong></label>
+    <div class="col-sm-9">
+         <?php
+		$themes_array = array();
+		$dir = dir($ESPCONFIG['css_path']);
+			$dir->rewind();
+			while ($file=$dir->read()) {
+				if (stristr($file,".css")) {
+					$pos = strrpos($file, ".");
+					$name = substr($file, 0,$pos);
+					$themes_array[$file] = $name;
 				}
-				$dir->close();
-
-			echo(mkselect('theme',$themes_array, $survey) . '<br />' .
-            		_('Select a theme (css) to use with this survey.')); ?></td>
-        </tr>
-	<tr style="vertical-align: top">
-		<td class="right"><strong>Automatic numbering</strong></td>
-                <td class="left"><?php
-			if (empty($survey["auto_num"])) {
-				$survey["auto_num"]='Y';
 			}
-			echo(mkselect('auto_num',array('Y'=>_('Yes'),'N'=>_('No')), $survey) . '<span class="red"><em>'. _('Required') .'</em></span><br />' .
-            		_('Select if questions are to be numbered automatically when showing the survey.')); ?>
-		</td>
-    </tr>
-	<tr style="vertical-align: top">
-		<td class="right"><strong>Survey opening date</strong></td>
-        <td class="left"><?php echo mktext('open_date', 16, null, $survey) ?>
-        	<br />
-        	<p>The earliest date and time respondents may respond to survey.<br />
-        		If date given without a time, midnight on the given date is assumed.<br />
-        		If not supplied, respondents may respond immediately once survey activated.</p>
-		</td>
-        </tr>
-	<tr style="vertical-align: top">
-		<td class="right"><strong>Survey closing date</strong></td>
-        <td class="left"><?php echo mktext('close_date', 16, null, $survey) ?>
-        	<br />
-        	<p>When provided, the latest date and time respondents may respond to survey.<br />
-        		If date given without a time, midnight on the given date is assumed.<br />
-        		If not supplied, respondents may respond indefinitely until survey marked as done.</p>
-        </td>
-        </tr>
-<!--
-	<tr><td colspan="2"><hr class="line1" /></td></tr>
-	<tr style="vertical-align: top">
-        <td><strong><?php echo(_('Options')); ?></strong></td>
-		<td><?php echo(mkcheckbox('options','resume') . '&nbsp;' .
-				_('Allow survey respondents to save/resume. (Survey login required.)')); ?></td>
-	</tr>
-	<tr style="vertical-align: top">
-		<td>&nbsp;</td>
-		<td><?php echo(mkcheckbox('options','navigate') . '&nbsp;' .
-				_('Allow survey respondents to go forward and back between survey sections.')); ?></td>
--->                
-</table>
+		$dir->close();
+		echo(mkselect('theme',$themes_array, $survey) . '<p class="text-muted">Select a theme (css) to use with this survey.</p>'); ?>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="auto_num"><strong>Automatic numbering</strong> <span class="label label-danger">required</span></label>
+    <div class="col-sm-9">
+        <?php
+		if (empty($survey["auto_num"])) { $survey["auto_num"]='Y'; }
+		echo(mkselect('auto_num',array('Y'=>_('Yes'),'N'=>_('No')), $survey) . '<p class="text-muted">Select if questions are to be numbered automatically when showing the survey.</p>'); ?>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="open_date"><strong>Survey starting date</strong></label>
+    <div class="col-sm-9">
+    	<?php echo mktext('open_date', 16, null, $survey) ?>
+    	<p class="text-muted">The earliest date and time respondents may respond to survey.<br />
+    		If date given without a time, midnight on the given date is assumed.<br />
+    		If not supplied, respondents may respond immediately once survey activated.</p>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="close_date"><strong>Survey closing date</strong></label>
+    <div class="col-sm-9">
+    	<?php echo mktext('close_date', 16, null, $survey) ?>
+    	<p class="text-muted">When provided, the latest date and time respondents may respond to survey.<br />
+    		If date given without a time, midnight on the given date is assumed.<br />
+    		If not supplied, respondents may respond indefinitely until survey marked as done.</p>
+    </div>
+  </div>
+  <!--
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="close_date">Options</label>
+    <div class="col-sm-9">
+    	<?php echo(mkcheckbox('options','resume') . '&nbsp;' . _('Allow survey respondents to save/resume. (Survey login required.)')); ?>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="close_date">Navigate</label>
+    <div class="col-sm-9">
+    	<?php echo(mkcheckbox('options','navigate') . '&nbsp;' . _('Allow survey respondents to go forward and back between survey sections.')); ?>
+    </div>
+  </div>
+  -->
+</form>
+</div>
+
