@@ -1,7 +1,7 @@
 <?php
 
-$bg = '';
-require ($ESPCONFIG['include_path']."where/crosstab.inc");
+//require ($ESPCONFIG['include_path']."where/crosstab.inc");
+require $_SERVER['DOCUMENT_ROOT'] . '/admin/include/where/crosstab.inc';
 
 // see if a survey has been selected
 $sid = '';
@@ -49,6 +49,7 @@ if (!empty($sid)) {
 
 
 <br /><br />
+
 <table class="table table-hover">
     <tr><td>
 <?php
@@ -141,8 +142,9 @@ $result = execute_sql($sql);
 
 if (empty($_GET['type'])) {
 ?>
-<h2>View Survey Results</h2>
-<p>Pick Survey to View</p>
+<h2>View survey results</h2>
+
+<p>Pick survey below to view the results</p>
 
     <input type="hidden" name="rid" value="" />
     <input type="hidden" name="sid" value="" />
@@ -156,7 +158,7 @@ if (empty($_GET['type'])) {
 
 <br /><br />
 <table class="table table-hover">
-    <tr>
+    <tr class="active">
 <th>ID</th>
 <?php if (empty($_GET['type'])) { ?>
 <th>Respondent</th>

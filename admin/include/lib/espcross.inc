@@ -1,15 +1,8 @@
 <?php
 
-/* $Id$ */
+/*  proto void mkcrossformat (array weights, integer qid)
+    Builds HTML to allow for cross tabulation/analysis reporting. */
 
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-// Written by Kon Angelopoulos
-// <angekproductions@iprimus.com.au>
-
-/* {{{ proto void mkcrossformat (array weights, integer qid)
-   Builds HTML to allow for cross tabulation/analysis reporting.
- */
 function mkcrossformat($counts, $qid, $tid) {
     $cids = array();
     $cidCount = 0;
@@ -30,30 +23,24 @@ function mkcrossformat($counts, $qid, $tid) {
         db_close($result);
     }
 
-    $bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
-
 ?>
-<table width="90%" border="0">
+<table class="table table-hover">
 <tbody>
 <?php
 
     while(list($content,$num) = each($counts)) {
-        if($bg != $GLOBALS['ESPCONFIG']['bgalt_color1'])
-            $bg = $GLOBALS['ESPCONFIG']['bgalt_color1'];
-        else
-            $bg = $GLOBALS['ESPCONFIG']['bgalt_color2'];
 
         if ($cidCount >= count($cids))
             $cidCount = count($cids) - 1;
 
 ?>
-<tr bgcolor="<?php echo $bg; ?>">
-<td width="34" height="23" align="left" valign="top" bgcolor="#0099FF">
+<tr>
+<td width="34" height="23">
   <div align="center">
     <input type="checkbox" name="cids[]" value="<?php echo $cids[$cidCount++]; ?>" />
   </div>
 </td>
-<td width="506" align="left"><?php echo $content; ?></td>
+<td width="506"><?php echo $content; ?></td>
 </tr>
 <?php
     }
@@ -61,5 +48,5 @@ function mkcrossformat($counts, $qid, $tid) {
 </tbody></table>
 <?php
 }
-/* }}} */
+
 ?>

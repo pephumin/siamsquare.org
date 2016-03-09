@@ -1,10 +1,6 @@
 <?php
-/* $Id$ */
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-/**
-* espsurvey.inc -- Functions to work with phpESP surveys.
-* Original Author: Bishop Bettini <bishop@ideacode.com>
-*
+
+/*
 * @_PATTERNS_@
 * // get the ID, name, title, owner, and realm for all surveys the current user can access
 * $ok = survey_get_for_current_user($surveys);
@@ -25,61 +21,59 @@
 * STATUS_CLOSED_TOO_LATE   The current time is after the close date
 *
 */
-// {{{ constants
 
 define('STATUS_OPEN',             0);
 define('STATUS_CLOSED_TOO_EARLY', 1);
 define('STATUS_CLOSED_TOO_LATE',  2);
 
-// }}}
-
-/* survey inquisition */
+// survey inquisition 
 // ... when you know the survey ID only, use these
 
 // ... when you already have information from the survey, use these
-// {{{ survey_status_is_edit()         Is the survey being edited?
+// survey_status_is_edit()
+// Is the survey being edited?
 
 function survey_status_is_edit($status) {
     return (is_numeric($status) && (0 === (int)$status) ? true : false);
 }
 
-// }}}
-// {{{ survey_status_is_active()       Is the survey in active status?
+// survey_status_is_active()
+// Is the survey in active status?
 
 function survey_status_is_active($status) {
     return survey_status_is($status, STATUS_ACTIVE);
 }
 
-// }}}
-// {{{ survey_status_is_done()         Is the survey in done status?
+// survey_status_is_done()
+// Is the survey in done status?
 
 function survey_status_is_done($status) {
     return survey_status_is($status, STATUS_DONE);
 }
 
-// }}}
-// {{{ survey_status_is_deleted()      Is the survey in deleted status?
+//  survey_status_is_deleted()
+//  Is the survey in deleted status?
 
 function survey_status_is_deleted($status) {
     return survey_status_is($status, STATUS_DELETED);
 }
 
-// }}}
-// {{{ survey_status_is_test()         Is the survey in test status?
+//  survey_status_is_test()
+//  Is the survey in test status?
 
 function survey_status_is_test($status) {
     return survey_status_is($status, STATUS_TEST);
 }
 
-// }}}
-// {{{ survey_status_is()              Does the survey status match the given bit?
+//  survey_status_is()
+//  Does the survey status match the given bit?
 
 function survey_status_is($status, $bit) {
     return (is_numeric($status) && ($bit === ((int)$status & $bit)) ? true : false);
 }
 
-// }}}
-// {{{ survey_open()                   Is "now" within the given open and close date times?
+//  survey_open()
+//  Is "now" within the given open and close date times?
 
 function survey_open($open_date, $close_date, $now = null) {
     // figure out if we have valid open and closing dates
@@ -118,11 +112,9 @@ function survey_open($open_date, $close_date, $now = null) {
     }
 }
 
-// }}}
-
-
-/* designer/administrator survey recovery methods */
-// {{{ survey_get_for_current_user()   Get the ID and information about ACTIVE or DONE surveys the CURRENT user can see
+//  designer/administrator survey recovery methods
+//  survey_get_for_current_user()
+//  Get the ID and information about ACTIVE or DONE surveys the CURRENT user can see
 
 function survey_get_for_current_user(&$surveys) {
      // get the where clause appropriate for the current user
@@ -139,10 +131,10 @@ EOSQL;
     return survey_get_from_sql($sql, $surveys);
 }
 
-// }}}
-// {{{ survey_fetch_limiting_where()   Return the SQL where clause to apply to a survey table query for the current user
-// NOTE: The returned where clause is guaranteed to be well-formed and valid for the default table structure.
-// NOTE: If you are using this with aliases, pass the correct column name for status, owner, and realm.
+//  survey_fetch_limiting_where()
+//  Return the SQL where clause to apply to a survey table query for the current user
+//  NOTE: The returned where clause is guaranteed to be well-formed and valid for the default table structure.
+//  NOTE: If you are using this with aliases, pass the correct column name for status, owner, and realm.
 
 function survey_fetch_limiting_where($statusColumn = 'status', $ownerColumn = 'owner', $realmColumn = 'realm') {
      // we start by limiting everyone to just the active or done surveys
@@ -186,11 +178,9 @@ function survey_fetch_limiting_where($statusColumn = 'status', $ownerColumn = 'o
      return $where;
 }
 
-// }}}
-
-
-/* respondent survey (and associated information) recovery methods */
-// {{{ survey_get_in_realm()           Get the surveys that a given realm may access (as driven by access table)
+//  respondent survey (and associated information) recovery methods
+//  survey_get_in_realm()
+//  Get the surveys that a given realm may access (as driven by access table)
 
 function survey_get_in_realm($realm, &$surveys) {
      // get the survey data based on those limitations
@@ -210,8 +200,8 @@ EOSQL;
     return survey_get_from_sql($sql, $surveys);
 }
 
-// }}}
-// {{{ survey_get_public()             Get the surveys that are publically available
+//  survey_get_public()
+//  Get the surveys that are publically available
 
 function survey_get_public(&$surveys) {
      // get the survey data based on those limitations
@@ -226,8 +216,8 @@ EOSQL;
     return survey_get_from_sql($sql, $surveys);
 }
 
-// }}}
-// {{{ survey_get_privilege()          Get the access information for one or more surveys, optionally constrained by realm
+//  survey_get_privilege()
+//  Get the access information for one or more surveys, optionally constrained by realm
 
 function survey_get_privilege(&$privileges, $sids, $realm = null) {
     // construct the limit clauses
@@ -249,8 +239,8 @@ EOSQL;
     return survey_get_from_sql($sql, $privileges, 'survey_id');
 }
 
-// }}}
-// {{{ survey_get_responses()          Get the response information for one or more surveys, optionally constrained by username
+//  survey_get_responses()
+//  Get the response information for one or more surveys, optionally constrained by username
 
 function survey_get_responses(&$responses, $sids, $username = null) {
     if (is_scalar($sids)) {
@@ -269,8 +259,8 @@ EOSQL;
     return survey_get_from_sql($sql, $responses, 'survey_id');
 }
 
-// }}}
-// {{{ survey_get_accessibility()      Determine accessibility of one or more surveys, optionally pinned to user or realm
+//  survey_get_accessibility()
+//  Determine accessibility of one or more surveys, optionally pinned to user or realm
 
 /*
 NOTE1: A survey is "accessible" when it's:
@@ -374,11 +364,8 @@ EOSQL;
     return survey_get_from_sql($sql, $accessibility);
 }
 
-// }}}
-
-
-/* helper functions */
-// {{{ survey_get_from_sql()           Get an array of survey data from an SQL statement
+//  survey_get_from_sql()
+//  Get an array of survey data from an SQL statement
 
 function survey_get_from_sql($sql, &$surveys, $surveyIDCol = 'id') {
     // execute the SQL
@@ -419,8 +406,8 @@ function survey_get_from_sql($sql, &$surveys, $surveyIDCol = 'id') {
     return true;
 }
 
-// }}}
-// {{{ survey_merge_sets()             Combine two or more survey sets into one
+// survey_merge_sets()
+// Combine two or more survey sets into one
 // NOTE: This is like array_merge(), but squashes duplicate surveys that appear
 
 function survey_merge_sets(&$merged, $a /* ... */) {
@@ -445,12 +432,11 @@ function survey_merge_sets(&$merged, $a /* ... */) {
     return true;
 }
 
-// }}}
-// {{{ survey_fetch_url_by_survey_name() Return the URL to a survey with a given name
+//  survey_fetch_url_by_survey_name() 
+//  Return the URL to a survey with a given name
 function survey_fetch_url_by_survey_name($name) {
     return rtrim($GLOBALS['ESPCONFIG']['base_url'], '/') . '/public/survey.php?name=' . htmlentities($name);
 }
 
-// }}}
 
 ?>

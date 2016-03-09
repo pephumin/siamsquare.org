@@ -1,6 +1,7 @@
 <?php
 
 require_once($GLOBALS['ESPCONFIG']['adodb_path'].'adodb-xmlschema03.inc.php');
+
 function get_dbschema() {
    global $DB_PREFIX;
    $cfg =& $GLOBALS['ESPCONFIG'];

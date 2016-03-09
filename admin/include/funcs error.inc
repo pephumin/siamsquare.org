@@ -1,5 +1,7 @@
 <?php
 
+$base =& $GLOBALS['ESPCONFIG']['ME'];
+
 if (!defined('STATUS_ACTIVE')) {
     define('STATUS_EDIT',  0x00);
     define('STATUS_ACTIVE',  0x01);
@@ -19,9 +21,10 @@ if(get_magic_quotes_gpc()) {
 // If there are any errors in the standard libraries we want to know!
 error_reporting(E_ALL); 
 
-function esp_where($where = null)
-{
+function esp_where($where = null) {
+    global $base,
     $cfg =& $GLOBALS['ESPCONFIG'];
+
     if(empty($where))
         $where = 'index';
     $where = strtolower(preg_replace('/ +/','_',$where));
@@ -30,16 +33,18 @@ function esp_where($where = null)
     if(!file_exists($cfg['include_path'].'/where/'.$where.$cfg['extension']))
         $where = 'index';
     if(!file_exists($cfg['include_path'].'/where/'.$where.$cfg['extension'])) {
-        echo('<b>'. _('Unable to open include file. Check INI settings. Aborting.'). '</b>');
+        echo 'Unable to open include file. Check INI settings. Aborting.';
         exit;
     }
     return($cfg['include_path'].'/where/'.$where.$cfg['extension']);
 }
 
 function esp_init_adodb() {
+    global $base,
     $cfg =& $GLOBALS['ESPCONFIG'];
+
     if(!file_exists($cfg['adodb_path'].'adodb.inc.php')) {
-        echo('<b>Unable to open ADODB include file. Check INI settings. Aborting.</b>');
+        echo 'Unable to open ADODB include file. Check INI settings. Aborting.';
         exit;
     }
     else {
@@ -57,7 +62,7 @@ function esp_init_adodb() {
     }
     else {
         if (!isset($cfg['adodbi_persist']) or 
-    (isset($cfg['adodb_persist']) && $cfg['adodb_persist'])) {
+	(isset($cfg['adodb_persist']) && $cfg['adodb_persist'])) {
             // Use persistent connection (default)
             $dbconnected = $cfg['adodb_conn']->PConnect($cfg['db_host'], $cfg['db_user'], $cfg['db_pass'], $cfg['db_name']);
         } else {
@@ -82,15 +87,13 @@ function esp_init_adodb() {
 // redirect to thank you page for survey ID 'sid'
 // exits PHP!
 function goto_thankyou($sid,$referer) {
-    // submitting a survey for good
-    //esp_require_once('/lib/espsurveystat');
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurveystat.inc';
+    global $base,
+    $cfg =& $GLOBALS['ESPCONFIG'];
 
+    // submitting a survey for good
+    esp_require_once('/lib/espsurveystat');
     survey_stat_decrement(SURVEY_STAT_ABANDONED, $sid);
     survey_stat_increment(SURVEY_STAT_COMPLETED, $sid);
-
-    // render the thank you page
-    $cfg =& $GLOBALS['ESPCONFIG'];
 
     $sql = "SELECT thanks_page,thank_head,thank_body FROM ".$cfg['survey_table']." WHERE id=${sid}";
     $result = execute_sql($sql);
@@ -102,6 +105,7 @@ function goto_thankyou($sid,$referer) {
     $thank_url = str_replace("%0a", '', $thank_url);
     $thank_url = str_replace("\t", '', $thank_url);
     $thank_url = str_replace("\0", '', $thank_url);
+
     if(!empty($thank_url)) {
         if(!headers_sent()) {
             header("Location: $thank_url");
@@ -114,12 +118,13 @@ window.location="<?php echo($thank_url); ?>"
     //-->
 </script>
 <noscript>
-<h2>Thank You for completing this survey.</h2>
-<p>Please click<a href="<?php echo($thank_url); ?>">here</a> to continue.</p>
+<h2 class="thankhead">Thank You for completing this survey.</h2>
+<p>Please click <a href="<?php echo($thank_url); ?>">here</a> to continue.</p>
 </noscript>
 <?php
        exit;
     }
+
 
     if(empty($thank_body) && empty($thank_head)) {
         $thank_body = $GLOBALS['ESPCONFIG']['thank_body'];
@@ -128,21 +133,15 @@ window.location="<?php echo($thank_url); ?>"
 
     echo "<h2> $thank_head </h2>";
     echo "<p> $thank_body </p>";
+
     if ($GLOBALS['ESPCONFIG']['dashboard_enable']) {
-?>
-<a href="<?php echo $GLOBALS['ESPCONFIG']['base_url'] . '/public/dashboard.php'; ?>"><?php echo _('Go to my surveys'); ?></a>
-<?php
-
+    echo '<a href="'.$base.'/public/">Go to my surveys</a>';
     }
 
-    if (isset($_GET['where']) && $_GET['where'] == 'test'){
-       if ($GLOBALS['ESPCONFIG']['limit_double_postings']==0) {
-          $ref = "<a href=\"". $referer."\">Return</a><br />";
-   } else {
-      $ref = "";
-   }
-    }
-    else {
+    if (isset($_GET['where']) && $_GET['where'] == 'test') {
+       if ($GLOBALS['ESPCONFIG']['limit_double_postings']==0) { $ref = "<a href=\"". $referer."\">Return</a><br />"; } 
+       else { $ref = ""; }
+    } else {
        $ref = check_referer($referer);
     }
     echo $ref;
@@ -150,6 +149,9 @@ window.location="<?php echo($thank_url); ?>"
 }
 
 function check_referer($referer) {
+    global $base,
+    $cfg =& $GLOBALS['ESPCONFIG'];
+
     $pos = strpos($referer, $GLOBALS['ESPCONFIG']['autopub_url']);
     if ($pos === false) {
         if (!empty($_REQUEST['direct']) && $_REQUEST['direct'] === '1') {
@@ -157,9 +159,9 @@ function check_referer($referer) {
         } else {
             if ($GLOBALS['ESPCONFIG']['limit_double_postings']==0) {
                $retstr = "<a href=\"". $referer."\">Return</a>";
-    } else {
-       $retstr = "";
-    }
+	} else {
+	   $retstr = "";
+	}
         }
     } else {
         $retstr = "";
@@ -167,20 +169,24 @@ function check_referer($referer) {
     return $retstr;
 }
 
-    // {{{ blur()                      Go to a different URL, using the best method possible given the current output state
-    // NOTE: Does not return.
+//  blur()
+//  Go to a different URL, using the best method possible given the current output state
+//  NOTE: Does not return.
 
 function blur($url, $forwardingLabel = 'Please click here to continue...') {    
-     // close the session, as it's no longer needed and we don't want to delay waiters
-     session_write_close();
+    global $base,
+    $cfg =& $GLOBALS['ESPCONFIG'];
 
-     // make sure the URL is absolute, as the Location: header requires it
-     if (0 !== strpos($url, 'http')) {
-         $url = rtrim($GLOBALS['ESPCONFIG']['base_url'], '/') . '/' . ltrim($url, '/');
-     }
+    // close the session, as it's no longer needed and we don't want to delay waiters
+    session_write_close();
 
-     // go elsewhere
-     if (headers_sent()) {
+    // make sure the URL is absolute, as the Location: header requires it
+    if (0 !== strpos($url, 'http')) {
+        $url = rtrim($base, '/') . '/' . ltrim($url, '/');
+    }
+
+    // go elsewhere
+    if (headers_sent()) {
          echo <<<EOHTML
 <script type='text/javascript'>
 window.location = "$url";
@@ -189,31 +195,32 @@ window.location = "$url";
 <a href="$url">$forwardingLabel</a>
 </noscript>
 EOHTML;
-        } else {
-            header(sprintf('Location: %s', $url));
-        }
+    } else {
+        header(sprintf('Location: %s', $url));
+    }
 
-        // go no further
-        exit(0);
-    }    
+    // go no further
+    exit(0);
+}    
+
 
 function goto_saved($sid, $url) {
+    global $base,
+    $cfg =& $GLOBALS['ESPCONFIG'];
+
     // sticking a survey for later
-    //esp_require_once('/lib/espsurveystat');
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurveystat.inc';
+    esp_require_once('/lib/espsurveystat');
     survey_stat_decrement(SURVEY_STAT_ABANDONED, $sid);
     survey_stat_increment(SURVEY_STAT_SUSPENDED, $sid);
 ?>
-<p>Your progress has been saved.  You may return at any time to complete this survey.  
-    To do so, simply bookmark the link below.  You may be prompted for your username and password to complete the survey.</p>
+<p>Your progress has been saved.  You may return at any time to complete this survey. To do so, simply bookmark the link below. 
+    You may be prompted for your username and password to complete the survey.') ?></p>
 
-<a href="<?php echo $url; ?>"><?php echo _('Resume survey'); ?></a>&nbsp;
+<a href="<?php echo $url; ?>">Resume survey</a>&nbsp;
 
-<?php
-        if ($GLOBALS['ESPCONFIG']['dashboard_enable']) {
-?>
-<a class="returnlink" href="<?php echo $GLOBALS['ESPCONFIG']['base_url'] . '/public/dashboard.php'; ?>"><?php echo _('Go to my surveys'); ?></a>
-<?php
+<?php 
+    if ($GLOBALS['ESPCONFIG']['dashboard_enable']) {
+        echo '<a href="'.$base.'/public/">Go to my surveys</a>';
     }
     return;
 }
@@ -222,6 +229,9 @@ function goto_saved($sid, $url) {
 //  xWrap include file loading, so that paths are resolved centrally
 
 function esp_require_once($path) {
+    global $base,
+    $cfg =& $GLOBALS['ESPCONFIG'];
+
     // expose the global 'ESPCONFIG' as if it were local
     $ESPCONFIG = $GLOBALS['ESPCONFIG'];
 
@@ -232,6 +242,9 @@ function esp_require_once($path) {
 }
 
 function esp_file_get_contents($file) {
+    global $base,
+    $cfg =& $GLOBALS['ESPCONFIG'];
+
     if (function_exists('file_get_contents')) return file_get_contents($file);
 
     $f = fopen($file,'r');
@@ -244,38 +257,15 @@ function esp_file_get_contents($file) {
 }
 
 function check_checksum($file) {
+    global $base,
+    $cfg =& $GLOBALS['ESPCONFIG'];
+
     $checksum=trim(esp_file_get_contents($file.".checksum"));
     if (md5_file($file) != $checksum) {
         $file=str_replace(ESP_BASE,"",$file);
         print mkwarn("WARNING: Checksum for file $file doesn't match");
     }
 }
-
-function remove_magic_quotes($input) {
-    if(get_magic_quotes_gpc()) $input= stripslashes($input);
-    return $input;
-}
-//esp_require_once('/lib/espcross');
-//esp_require_once('/lib/espauth');
-//esp_require_once('/lib/esphtml.forms');
-//esp_require_once('/lib/esphtml.results');
-//esp_require_once('/lib/espmerge');
-//esp_require_once('/lib/espresponse');
-//esp_require_once('/lib/espsql');
-//esp_require_once('/lib/espdatalib');
-//esp_require_once('/function/survey_copy');
-//esp_require_once('/function/survey_merge');
-//esp_require_once('/function/survey_purge');
-//esp_require_once('/function/survey_render');
-//esp_require_once('/function/survey_report');
-//esp_require_once('/function/survey_results');
-//esp_require_once('/function/survey_update');
-//esp_require_once('/function/survey_export_csv');
-//esp_require_once('/function/account_upload');
-//esp_require_once('/function/response_purge');
-//esp_require_once('/function/question_render');
-//esp_require_once('/function/question_conditioncheck');
-//esp_require_once('/function/db_update');
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espcross.inc';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espauth.inc';
@@ -298,5 +288,27 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/function/response_purge
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/function/question_render.inc';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/function/question_conditioncheck.inc';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/function/db_update.inc';
+
+//esp_require_once('/lib/espcross');
+//esp_require_once('/lib/espauth');
+//esp_require_once('/lib/esphtml.forms');
+//esp_require_once('/lib/esphtml.results');
+//esp_require_once('/lib/espmerge');
+//esp_require_once('/lib/espresponse');
+//esp_require_once('/lib/espsql');
+//esp_require_once('/lib/espdatalib');
+//esp_require_once('/function/survey_copy');
+//esp_require_once('/function/survey_merge');
+//esp_require_once('/function/survey_purge');
+//esp_require_once('/function/survey_render');
+//esp_require_once('/function/survey_report');
+//esp_require_once('/function/survey_results');
+//esp_require_once('/function/survey_update');
+//esp_require_once('/function/survey_export_csv');
+//esp_require_once('/function/account_upload');
+//esp_require_once('/function/response_purge');
+//esp_require_once('/function/question_render');
+//esp_require_once('/function/question_conditioncheck');
+//esp_require_once('/function/db_update');
 
 ?>

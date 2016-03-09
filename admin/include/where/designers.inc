@@ -1,6 +1,7 @@
 <?php
 
 $base =& $GLOBALS['ESPCONFIG']['ME'];
+$mine = $base . htmlentities("?where=designers");
 
 /* SuperUser or Designers with "Administer Designers(pgroup)" permissions only*/
 if(($_SESSION['acl']['superuser'] != 'Y') && count($_SESSION['acl']['pgroup']) == 0 && !auth_no_access(_('to access this form'))) {
@@ -85,18 +86,18 @@ $result = execute_sql($sql);
 <p><Click on a username to edit, or click on add new user below.</p>
 
 <p>
-	<a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=admdesigner")); ?>">Add a new designer</a> / 
-	<a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=upload&account_type=designers")); ?>">Bulk upload designers</a>
+	<a class="btn btn-warning" href="<?php echo($base .htmlentities("?where=admdesigner")); ?>"><i class="fa fa-user"></i>&nbsp; Add a new designer</a>&nbsp;
+	<a class="btn btn-warning" href="<?php echo($base .htmlentities("?where=upload&account_type=designers")); ?>"><i class="fa fa-upload"></i>&nbsp; Bulk upload designers</a>
 </p>
 
 <br />
 
 <table class="table table-hover">
-	<tr>
-		<th><a href="<?php echo(htmlentities($base . $u)); ?>">Username</a></th>
-		<th><a href="<?php echo(htmlentities($base . $f)); ?>">First Name</a></th>
-		<th><a href="<?php echo(htmlentities($base . $l)); ?>">Last Name</a></th>
-		<th><a href="<?php echo(htmlentities($base . $g)); ?>">Company</a></th>
+	<tr class="active">
+		<th><a href="<?php echo(htmlentities($mine . $u)); ?>">Username</a></th>
+		<th><a href="<?php echo(htmlentities($mine . $f)); ?>">First Name</a></th>
+		<th><a href="<?php echo(htmlentities($mine . $l)); ?>">Last Name</a></th>
+		<th><a href="<?php echo(htmlentities($mine . $g)); ?>">Group</a></th>
 		<th>&nbsp;</th>
 	</tr>
 <?php
@@ -110,14 +111,10 @@ $result = execute_sql($sql);
 		if (empty($fname)) $fname = '&nbsp;';
 		if (empty($lname)) $lname = '&nbsp;';
 		
-		//if ($bg == $ESPCONFIG['bgalt_color1'])
-		//	$bg =& $ESPCONFIG['bgalt_color2'];
-		//else
-		//	$bg =& $ESPCONFIG['bgalt_color1'];
 ?>
 	<tr>
 		<td>
-			<a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=admdesigner&u=$u&r=$r")); ?>"><?php echo($u); ?></a>
+			<a href="<?php echo($base .htmlentities("?where=admdesigner&u=$u&r=$r")); ?>"><?php echo($u); ?></a>
 		</td>
 		<td><?php echo($fname); ?></td>
 		<td><?php echo($lname); ?></td>

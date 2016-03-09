@@ -1,12 +1,5 @@
 <?php
 
-/* $Id$ */
-
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-// Written by James Flemer
-// <jflemer@alum.rpi.edu>
-
 /**
  * Load the GNU Gettext module if it is not loaded.
  * If it cannot be loaded, define the NOP wrapper.

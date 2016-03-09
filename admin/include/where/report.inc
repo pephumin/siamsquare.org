@@ -1,5 +1,7 @@
 <?php
 
+$base =& $GLOBALS['ESPCONFIG']['ME'];
+
 if(!empty($_GET['sid'])) {
 	$sid = intval($_GET['sid']);
 	if(empty($_GET['details']))
@@ -27,7 +29,7 @@ if(!empty($_GET['sid'])) {
 ?>
 </td></tr>
 </table>
-<?php echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=report\">Go back to Report Menu</a>\n"); ?>
+
 <?php
 		return;
 	}
@@ -54,12 +56,12 @@ if($_SESSION['acl']['superuser'] == 'Y') {
 $result = execute_sql($sql);
 
 ?>
-<h2>Report</h2>
+<h2>Survey reports</h2>
 
-<p>Pick Form to View</p>
+<p>Pick survey from below to view the reports</p>
 
 <table class="table table-hover">
-	<tr>
+	<tr class="active">
 		<th>ID</th>
 		<th>Name</th>
 		<th>Title</th>
@@ -70,14 +72,10 @@ $result = execute_sql($sql);
     $bg = '';
 	while(list($sid, $name, $title, $owner, $realm) = fetch_row($result)) {
         $result->MoveNext();
-		//if($bg != $ESPCONFIG['bgalt_color1'])
-		//	$bg = $ESPCONFIG['bgalt_color1'];
-		//else
-		//	$bg = $ESPCONFIG['bgalt_color2'];
 ?>
 	<tr>
 		<td><?php echo($sid); ?></td>
-		<td><a href="<?php echo("". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=report&sid=${sid}")); ?>">
+		<td><a href="<?php echo("". $base .htmlentities("?where=report&sid=${sid}")); ?>">
 			<?php echo($name); ?></a>
 		</td>
 		<td><?php echo($title); ?></td>

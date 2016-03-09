@@ -19,6 +19,12 @@ function displayHeader($title) {
 	//if(!empty($ESPCONFIG['favicon'])) {
 	//echo '	<link rel="cshortcut icon" href=".$ESPCONFIG['favicon']."';
 	//}
+	$jsfiles = array("js/admin.js");
+	foreach ($jsfiles as $filename) {
+		//$path = dirname(dirname(__FILE__)).'/js/'.$filename;
+		echo '<script type="text/javascript" src="' . $filename . '"></script>'."\n";
+ 	}
+	//echo '<script type="text/javascript" src="js/admin.js"></script>'."\n";
 	echo '
 </head>
 <body>';
@@ -35,12 +41,22 @@ function displayNav() {
 	if ($_SERVER['REQUEST_URI'] == "/admin/contact.php") { $b = '<li class="active">'; } else { $b = '<li>'; }
 	if ($_SERVER['REQUEST_URI'] == "/admin/help.php") { $c = '<li class="active">'; } else { $c = '<li>'; }
 	if(!empty($_SESSION['acl']['username'])) {
-		$id = "";
-		if($_SESSION['acl']['superuser'] == 'Y') { $id .= 'Superuser: <tt>'. $_SESSION['acl']['username'] .'</tt>'; }
-		else { $id .= 'Login: <tt>'. $_SESSION['acl']['username'] .'</tt>'; }
+		//$id = "";
+		//if($_SESSION['acl']['superuser'] == 'Y') { $id .= 'Superuser: <tt>'. $_SESSION['acl']['username'] .'</tt>'; }
+		//else { $id .= 'Login: <tt>'. $_SESSION['acl']['username'] .'</tt>'; }
+		$user = $_SESSION['acl']['username'];
+		$group = $_SESSION['acl']['pgroup'];
+		$g = $group[0];
+		if ($g) { 
+			$show = "<mark>$user/$g</mark>"; 
+		} else {
+			$show = "<mark>$user</mark>"; 
+		}
+		//print_r($_SESSION['acl']['pgroup']);
 		echo "\n\n";
 		//echo "<!-- Fixed navbar -->\n";
-		echo "<nav class=\"navbar navbar-default navbar-fixed-top\">\n";
+		//echo "<nav class=\"navbar navbar-default navbar-fixed-top\">\n";
+		echo "<nav class=\"navbar navbar-default\">\n";
 		echo "<div class=\"container\">\n";
 		echo "  <div class=\"navbar-header\">\n";
 		echo "    <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\">\n";
@@ -49,14 +65,15 @@ function displayNav() {
 		echo "      <span class=\"icon-bar\"></span>\n";
 		echo "      <span class=\"icon-bar\"></span>\n";
 		echo "    </button>\n";
-		echo "    <a class=\"navbar-brand\" href=\"$base\">SiamSquare</a>\n";
+		echo "   <a class=\"navbar-brand\" href=\"$base\"><strong>SiamSquare</strong></a>\n";
 		echo "  </div> <!--/navbar-header -->\n";
+		//echo "    <p class=\"navbar-text navbar-left\">Signed in as $user [$g]</p>\n";
 		echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
 		echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
 		echo "      $a<a href=\"$home\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
 		echo "      $b<a href=\"/admin/contact.php\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
 		echo "      $c<a href=\"/admin/help.php\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
-		echo "      <li><a href=\"$home?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log Out</a></li>\n";
+		echo "      <li><a href=\"$home?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log out</a></li>\n";
 		echo "    </ul>\n";
 		echo "  </div> <!--/navbar-collapse -->\n";
 		echo "</div>\n";
@@ -64,7 +81,8 @@ function displayNav() {
 	} else {
 		echo "\n\n";
 		//echo "<!-- Fixed navbar -->\n";
-		echo "<nav class=\"navbar navbar-default navbar-fixed-top\">\n";
+		//echo "<nav class=\"navbar navbar-default navbar-fixed-top\">\n";
+		echo "<nav class=\"navbar navbar-default\">\n";
 		echo "<div class=\"container\">\n";
 		echo "  <div class=\"navbar-header\">\n";
 		echo "    <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\">\n";
@@ -73,7 +91,7 @@ function displayNav() {
 		echo "      <span class=\"icon-bar\"></span>\n";
 		echo "      <span class=\"icon-bar\"></span>\n";
 		echo "    </button>\n";
-		echo "    <a class=\"navbar-brand\" href=\"$base\">SiamSquare</a>\n";
+		echo "    <a class=\"navbar-brand\" href=\"$base\"><strong>SiamSquare</strong></a>\n";
 		echo "  </div> <!--/navbar-header -->\n";
 		echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
 		echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
@@ -91,26 +109,28 @@ function displayNav() {
 
 function displayTabNav() {
 	global $tab;
+	echo "<p>";
 	echo '<input type="hidden" name="where" value="tab" />';
 	echo "&nbsp;\n";
-	if ($tab == 'general') { echo '<input type="submit" name="tab_general" value="General" class="btn btn-warning active" />'; }
-	else { echo '<input type="submit" name="tab_general" value="General" class="btn btn-warning" />'; }
+	if ($tab == 'general') { echo '<input type="submit" name="tab_general" value="General" class="btn btn-default active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_general" value="General" class="btn btn-default btn-sm" />'; }
 	echo "&nbsp;\n";
-	if ($tab == 'questions') { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-warning active" />'; }
-	else { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-warning" />'; }
+	if ($tab == 'questions') { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-default active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-default btn-sm" />'; }
 	echo "&nbsp;\n";
-	if ($tab == 'order') { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-warning active" />'; }
-	else { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-warning" />'; }
+	if ($tab == 'order') { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-default active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-default btn-sm" />'; }
 	echo "&nbsp;\n";
-	if ($tab == 'conditions') { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-warning active" />'; }
-	else { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-warning" />'; }
+	if ($tab == 'conditions') { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-default active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-default btn-sm" />'; }
 	echo "&nbsp;\n";
-	if ($tab == 'preview') { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-warning active" />'; }
-	else { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-warning" />'; }
+	if ($tab == 'preview') { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-default active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-default btn-sm" />'; }
 	echo "&nbsp;\n";
-	if ($tab == 'finish') { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-warning active" />'; }
-	else { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-warning" />'; }
+	if ($tab == 'finish') { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-default active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-default btn-sm" />'; }
 	echo "&nbsp;\n";
+	echo "</p>";
 }
 
 function displayAdminBack() {
@@ -140,6 +160,22 @@ function displayPageHeaderTest($title) {
 }
 
 function displayPageFooter() {
+	//global $show;
+	$user = $_SESSION['acl']['username'];
+	$group = $_SESSION['acl']['pgroup'];
+	$g = $group[0];
+	if ($g) {
+		//$show = "<mark>$user/$g</mark>"; 
+		$show = "<kbd>$user</kbd>/<kbd>$g</kbd>"; 
+	} else {
+		//$show = "<mark>$user</mark>"; 
+		$show = "<kbd>$user</kbd>"; 
+	}
+	if(!empty($_SESSION['acl']['username'])) {
+		$signed = "[signed in as $show]";
+	} else {
+		$signed = "";
+	}
 	echo '
 </div> <!-- /container -->
 </form>
@@ -147,14 +183,15 @@ function displayPageFooter() {
 
 <footer class="footer">
   <div class="container">
-    <p class="text-muted">Powered by SiamSquare</p>
+    <div class="text-muted pull-left">Powered by SiamSquare</div>
+    <div class="text-muted pull-right">'.$signed.'</div>
   </div>
 </footer>';
 	echo "\n";
 }
 
 function displayFooter() {
-	$jsfiles = array("js/jquery-2.2.1.js", "js/bootstrap.min.js", "js/admin.js");
+	$jsfiles = array("js/jquery-2.2.1.js", "js/bootstrap.min.js");
 	foreach ($jsfiles as $filename) {
 		//$path = dirname(dirname(__FILE__)).'/js/'.$filename;
 		echo '<script type="text/javascript" src="' . $filename . '"></script>'."\n";

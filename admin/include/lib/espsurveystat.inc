@@ -1,9 +1,6 @@
 <?php
-/* $Id$ */
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
+
 /**
-* espsurveystat.inc -- Functions to work with phpESP survey statistics.
-* Original Author: Bishop Bettini <bishop@ideacode.com>
 *
 * @_PATTERNS_@
 * // To record a statistic:
@@ -59,9 +56,10 @@ define('SURVEY_STAT_SUSPENDED', 'suspended');
 define('SURVEY_STAT_COMPLETED', 'completed');
 
 
-// {{{ stat_fetch_with_summary()       Return all metrics for all surveys, with summary
-// NOTE: row keyed by '' is the summary row.
-// NOTE: If you want to get all statistics, overriding the access control on the user, pass false as first param.
+//  stat_fetch_with_summary()
+//  Return all metrics for all surveys, with summary
+//  NOTE: row keyed by '' is the summary row.
+//  NOTE: If you want to get all statistics, overriding the access control on the user, pass false as first param.
 
 function stat_fetch_with_summary($limitToCurrentUser = true) {
     $cfg =& $GLOBALS['ESPCONFIG'];
@@ -70,7 +68,9 @@ function stat_fetch_with_summary($limitToCurrentUser = true) {
     if ($limitToCurrentUser) {
         // NOTE: we are going to fully qualify the access control column names to prevent any collisions that might
         // NOTE: happen in the future owing a statistics column named "status", "owner", or "realm"
-        esp_require_once('/lib/espsurvey');
+        //esp_require_once('/lib/espsurvey');
+        require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurvey.inc';
+
         $where = survey_fetch_limiting_where(
                      "{$cfg['survey_table']}.status",
                      "{$cfg['survey_table']}.owner",
@@ -119,8 +119,8 @@ function stat_fetch_with_summary($limitToCurrentUser = true) {
     }
 }
 
-// }}}
-// {{{ survey_stat_fetch_all()         Return all metrics for a particular survey
+//  survey_stat_fetch_all()
+//  Return all metrics for a particular survey
 
 function survey_stat_fetch_all($sid) {
     $cfg =& $GLOBALS['ESPCONFIG'];
@@ -140,8 +140,8 @@ function survey_stat_fetch_all($sid) {
     }
 }
 
-// }}}
-// {{{ survey_stat_fetch()             Return a metric for a particular survey
+//  survey_stat_fetch()
+//  Return a metric for a particular survey
 
 function survey_stat_fetch($metric, $sid) {
     $cfg =& $GLOBALS['ESPCONFIG'];
@@ -160,9 +160,9 @@ function survey_stat_fetch($metric, $sid) {
     }
 }
 
-// }}}
-// {{{ survey_stat_increment()         Increment a metric for a particular survey
-// NOTE: This function must make the database update atomically -- do not do a SELECT then UPDATE
+//  survey_stat_increment()
+//  Increment a metric for a particular survey
+//  NOTE: This function must make the database update atomically -- do not do a SELECT then UPDATE
 
 function survey_stat_increment($metric, $sid) {
     $cfg =& $GLOBALS['ESPCONFIG'];
@@ -185,9 +185,9 @@ function survey_stat_increment($metric, $sid) {
     return true;
 }
 
-// }}}
-// {{{ survey_stat_decrement()         Decrement a non-zero metric for a particular survey
-// NOTE: This function must make the database update atomically -- do not do a SELECT then UPDATE
+//  survey_stat_decrement()
+//  Decrement a non-zero metric for a particular survey
+//  NOTE: This function must make the database update atomically -- do not do a SELECT then UPDATE
 
 function survey_stat_decrement($metric, $sid) {
     $cfg =& $GLOBALS['ESPCONFIG'];
@@ -212,9 +212,9 @@ function survey_stat_decrement($metric, $sid) {
     }
 }
 
-// }}}
-// {{{ survey_stat_set()               Set a metric for a particular survey to a particular value
-// NOTE: This function must make the database update atomically -- do not do a SELECT then UPDATE
+//  survey_stat_set()
+//  Set a metric for a particular survey to a particular value
+//  NOTE: This function must make the database update atomically -- do not do a SELECT then UPDATE
 
 function survey_stat_set($metric, $sid, $value) {
     $cfg =& $GLOBALS['ESPCONFIG'];
@@ -243,8 +243,8 @@ function survey_stat_set($metric, $sid, $value) {
     return true;
 }
 
-// }}}
-// {{{ survey_stat_reset()             Reset all the metrics for a particular survey
+//  survey_stat_reset()
+//  Reset all the metrics for a particular survey
 
 function survey_stat_reset($sid) {
     $ok = true;
@@ -253,8 +253,8 @@ function survey_stat_reset($sid) {
     return $ok;
 }
 
-// }}}
-// {{{ survey_stat_init()              Initialize all the metrics for a given survey
+//  survey_stat_init()
+//  Initialize all the metrics for a given survey
 
 function survey_stat_init($sid) {
     $cfg =& $GLOBALS['ESPCONFIG'];
@@ -272,8 +272,8 @@ function survey_stat_init($sid) {
     return true;
 }
 
-// }}}
-// {{{ survey_stat_purge()             Remove all statistics for a given survey
+// survey_stat_purge()
+//  Remove all statistics for a given survey
 
 function survey_stat_purge($sid) {
     $cfg =& $GLOBALS['ESPCONFIG'];
@@ -290,7 +290,5 @@ function survey_stat_purge($sid) {
     // delete succeeded, sweet
     return true;
 }
-
-// }}}
 
 ?>

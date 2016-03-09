@@ -11,7 +11,7 @@ $bg = '';
 ?>
 </form>
 
-<h2>Export Data</h2>
+<h2>Export survey data</h2>
 
 <br />
 
@@ -24,7 +24,7 @@ $bg = '';
  */
 if(!$sid) {
 ?>
-	<tr>
+	<tr class="active">
 		<th>ID</th>
 		<th>Name</th>
 		<th>Title</th>

@@ -13,9 +13,6 @@ $_SESSION['acl']['superuser'] != 'Y' &&
     return;
 }
 
-//$bg1 =& $ESPCONFIG['bgalt_color1'];
-//$bg2 =& $ESPCONFIG['bgalt_color2'];
-
 $errstr = '';
 //$success = '';
 $u = '';
@@ -46,6 +43,7 @@ if(isset($_POST['delete'])) {
 	/* check acl */
 	if(isset($_SESSION['acl']['superuser']) && $_SESSION['acl']['superuser'] == 'Y' ||
 		in_array($r2, $_SESSION['acl']['pgroup']) ||
+		//in_array(trim($r, "'"), $_SESSION['acl']['pgroup']) ||
 		auth_no_access(_('to access this group'))) {
 		$sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['designer_table']." WHERE username=$u AND realm=$r";
 		if(!execute_sql($sql) || affected_rows() < 1) {
@@ -157,6 +155,7 @@ if(isset($_POST['submit'])) {
     /* check acl */
     if($_SESSION['acl']['superuser'] == 'Y' ||
         in_array($r2, $_SESSION['acl']['pgroup']) ||
+        //in_array(trim($r, "'"), $_SESSION['acl']['pgroup']) ||
         auth_no_access(_('to access this group'))) {
         #$sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['designer_table']." WHERE username=".db_qstr($u)." AND realm=".db_qstr($r);
         $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['designer_table']." WHERE username=$u";
@@ -245,9 +244,9 @@ if(!empty($u) && !empty($r)) {
 		#if(intval($expiration) > 0) {
 		$u =$arr['username'];
 		$r =$arr['realm'];
-		$fname = $arr['fname'];
-		$lname = $arr['lname'];
-		$email = $arr['email'];
+		//$fname = $arr['fname'];
+		//$lname = $arr['lname'];
+		//$email = $arr['email'];
 		if(intval($arr['expiration']) > 0) {
 			$arr['ex_year']  = substr($arr['expiration'],0,4);
 			$arr['ex_month'] = substr($arr['expiration'],5,2);
@@ -262,9 +261,10 @@ if(!empty($u) && !empty($r)) {
 	}
 }
 
+
 ?>
-</div>
 </form>
+
 
 <h2>Managing designer accounts</h2>
 
@@ -272,32 +272,40 @@ if(!empty($u) && !empty($r)) {
 
 <br />
 
-<div class="container">
 <form class="form-horizontal" method="post" id="phpesp" action="<?php echo($base); ?>">
   <div class="form-group">
-    <label class="col-sm-3 control-label" for="user">Username <span class="label label-danger">required</span></label>
+    <label class="col-sm-3 control-label">Username <span class="label label-danger">required</span></label>
     <div class="col-sm-9">
 		<?php
-		if(empty($u)) { echo '<input class="form-control" type="text" name="u" placeholder="Username" />'; }
-		else { echo '<input class="form-control" type="text" name="u" placeholder='.$u.' disabled/>'; }
+		if(empty($u)) { 
+			//echo '<input class="form-control" type="text" name="u" placeholder="Username" />'; 
+			//echo "\n";
+			//echo '<input class="form-control" type="text" name="u" placeholder="Account name / login" />';
+			//$u_u = mktext('u', 16, 16, $GLOBALS);
+			$u_u = mktext('u', 16, 16, $GLOBALS);
+		} else { 
+    		$u_u = '<input class="form-control" type="text" name="u" value="'.$u.'" disabled/>'; 
+    		$u_u .= '<input type="hidden" name="u" value="'.$u.'" />';
+			//$u_u = mkhidden('u', $GLOBALS) . '<strong>'.$u.'</strong>';
+    		//echo "\n";
+		}
+		echo $u_u;
 		?>
 		<p class="text-muted">Assign an user name which will be used as a login.</p>
-		<input type="hidden" name="u" value="<?php echo $u; ?>" />
     </div>
   </div>
   <div class="form-group">
-    <label class="col-sm-3 control-label" for="password">Password <span class="label label-danger">required</span></label>
+    <label class="col-sm-3 control-label">Password <span class="label label-danger">required</span></label>
     <div class="col-sm-9">
-    	<input type="password" class="form-control" name="password" placeholder="Password">
+    	<!-- <input type="password" class="form-control" name="password" placeholder="Password"> -->
+    	<?php echo mkpass('password'); ?>
     	<p class="text-muted">Password must be more than 8 charters with a combination of letters and numbers.</p>
-    	<input type="hidden" name="password" value="<?php echo $u_password; ?>" />
     </div>
   </div>
   <div class="form-group">
-    <label class="col-sm-3 control-label" for="group">Group</label>
+    <label class="col-sm-3 control-label">Group <span class="label label-danger">required</span></label>
     <div class="col-sm-9">
 		<?php
-		$u_r = '<select name="r" class="form-control"><option></option>';
 		$groups = array();
 		if($_SESSION['acl']['superuser'] == 'Y') {
 			$sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['realm_table'];
@@ -307,91 +315,75 @@ if(!empty($u) && !empty($r)) {
 				$result->MoveNext();
 			}
 			db_close($result);
+			$u_r = '<select name="r" class="form-control">';
+			//$u_r .= '<option></option>';
+			foreach($groups as $g) {
+				if (!empty($r) && $g===$r)
+				   $u_r .= "<option value=\"$g\" selected>$g</option>";
+				else
+				   $u_r .= "<option value=\"$g\">$g</option>";
+			}
+			$u_r .= "</select>\n";
 		} else {
 			$groups =& $_SESSION['acl']['pgroup'];
+			//print_r($_SESSION['acl']['pgroup']);
+			$u_r = '<input class="form-control" type="text" name="r" value="'.$groups[0].'" disabled/>'; 
+			$u_r .= '<input type="hidden" name="r" value="'.$groups[0].'" />';
+			//$u_r .= mkhidden('r', $arr);
 		}
-		foreach($groups as $g) {
-			if (!empty($r) && $g===$r)
-			   $u_r .= "<option value=\"$g\" selected>$g</option>";
-			else
-			   $u_r .= "<option value=\"$g\">$g</option>";
-		}
-		$u_r .= "</select>\n";
 		echo $u_r;
 		?>
 		<p class="text-muted">Select appropriate group for this user.</p>
     </div>
   </div>
   <div class="form-group form-inline">
-    <label class="col-sm-3 control-label" for="name">Name <span class="label label-danger">required</span></label>
+    <label class="col-sm-3 control-label">Name <span class="label label-warning">optional</span></label>
     <div class="col-sm-9">
-		<?php if(empty($u)) { ?>
-    		First name: <input class="form-control" type="text" name="fname" placeholder="Jane" />
-    		Last name: <input class="form-control" type="text" name="lname" placeholder="Doe" />
-    	<?php } else { ?>
-    		First name: <input class="form-control" type="text" name="fname" placeholder="<?php echo $fname; ?>" />
-    		Last name: <input class="form-control" type="text" name="lname" placeholder="<?php echo $lname; ?>" />
-    	<?php } ?>
-    	<p class="text-muted">Enter the full name of this user including first and last name.</p>
-    	<input type="hidden" name="fname" value="<?php echo $fname; ?>" />
-    	<input type="hidden" name="lname" value="<?php echo $lname; ?>" />
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="lname">Last name <span class="label label-danger">required</span></label>
-    <div class="col-sm-9">
-		<?php if(empty($u)) { ?>
-
-    	<?php } else { ?>
-
-    	<?php } ?>
+		First name: <?php echo mktext('fname', 16, 16, $arr); ?>
+		Last name: <?php echo mktext('lname', 24, 24, $arr); ?>
     	<p class="text-muted">Enter the full name of this user including first and last name.</p>
     </div>
   </div>
   <div class="form-group">
-    <label class="col-sm-3 control-label" for="email">Email <span class="label label-danger">required</span></label>
+    <label class="col-sm-3 control-label">Email <span class="label label-warning">optional</span></label>
     <div class="col-sm-9">    	
-    	<?php if(empty($u)) { ?>
-    		<input class="form-control" type="text" name="email" placeholder="email@compnay.com" />
-    	<?php } else { ?>
-    		<input class="form-control" type="text" name="email" placeholder="<?php echo $email; ?>" />
-    	<?php } ?>
+    	<?php echo mktext('email', 24, 64, $arr); ?>
     	<p class="text-muted">Enter correct email.</p>
     </div>
   </div>
   <div class="form-group form-inline">
-    <label class="col-sm-3 control-label" for="expiration">Expiration</label>
+    <label class="col-sm-3 control-label">Expiration <span class="label label-warning">optional</span></label>
     <div class="col-sm-9">
-		Year: <input class="form-control" type="text" size="4" name="ex_year" placeholder="2017" />&nbsp;
-		Month: <input class="form-control" type="text" size="2" name="ex_month" placeholder="01" />&nbsp;
-		Day: <input class="form-control" type="text" size="2" name="ex_day" placeholder="01" />
+		<?php 		
+		//echo "Year: ";
+		//echo mktext('ex_year',4,4, $arr);
+		//echo "Month: ";
+		//echo mktext('ex_month',2,2, $arr);
+		//echo "Day: ";
+		//echo mktext('ex_day',2,2, $arr);
+		//echo "\n"; 
+		?>
+		Year: <input class="form-control" type="text" size="4" maxlength="4" name="ex_year" placeholder="2017" />
+		Month: <input class="form-control" type="text" size="2" maxlength="2" name="ex_month" placeholder="02" />
+		Day: <input class="form-control" type="text" size="2" maxlength="2" name="ex_day" placeholder="26"/>
 		<p class="text-muted">Assign expiration date (if any).</p>
     </div>
   </div>
   <div class="form-group">
-    <label class="col-sm-3 control-label" for="disable">Disable</label>
+    <label class="col-sm-3 control-label">Disable</label>
     <div class="col-sm-9">
     	<select class="form-control" name="disabled">
     		<option value="Y">Yes</option>
     		<option value="N" selected>No</option>
     	</select>
+		<?php // echo mkselect('disabled',array('Y' => 'Yes', 'N' => 'No'), $arr); ?>
     	<p class="text-muted">Disable this user from using the system.</p>
 
     </div>
   </div>
 
-  <!-- 
   <div class="form-group">
-    <label class="col-sm-3 control-label" for="Username">NOT USE</label>
-    <div class="col-sm-9">NOT USE
-			<input type="submit" name="submit" value="<?php echo(_('Update')); ?>">&nbsp;
-			<input type="submit" name="cancel" value="<?php echo(_('Cancel')); ?>">&nbsp;
-			<input type="submit" name="delete" value="<?php echo(_('Delete')); ?>">
-    </div>
-  </div>
--->
-  <div class="form-group">
-    <label class="col-sm-3 control-label" for="pdesign">Design Surveys</label>
+    <label class="col-sm-3 control-label">Design surveys</label>
     <div class="col-sm-9">
     	<select class="form-control" name="pdesign">
     		<option value="Y" selected>Yes</option>
@@ -402,7 +394,7 @@ if(!empty($u) && !empty($r)) {
   </div>
 
   <div class="form-group">
-    <label class="col-sm-3 control-label" for="pstatus">Change Survey Status</label>
+    <label class="col-sm-3 control-label">Change survey status</label>
     <div class="col-sm-9">
      	<select class="form-control" name="pstatus">
     		<option value="Y" selected>Yes</option>
@@ -412,7 +404,7 @@ if(!empty($u) && !empty($r)) {
     </div>
   </div>
   <div class="form-group">
-    <label class="col-sm-3 control-label" for="pdata">Export Survey Data</label>
+    <label class="col-sm-3 control-label">Export survey data</label>
     <div class="col-sm-9">
      	<select class="form-control" name="pdata">
     		<option value="Y" selected>Yes</option>
@@ -422,17 +414,17 @@ if(!empty($u) && !empty($r)) {
     </div>
   </div>
   <div class="form-group">
-    <label class="col-sm-3 control-label" for="pall">Group Editor</label>
+    <label class="col-sm-3 control-label">Group Editor</label>
     <div class="col-sm-9">
      	<select class="form-control" name="pall">
     		<option value="Y">Yes</option>
     		<option value="N" selected>No</option>
     	</select>
-    	<p class="text-muted">By default, users can only perform any of the three actions above on their own surveys. If the Group Editor flag is on, the above permissions are widened to include all surveys created by members of the group.</p>
+    	<p class="text-muted">By default, users can only perform any of these actions (create / edit / change status / export survey data) on their own surveys. Group Editor will get these permissions for all surveys that are created by any members of the group.</p>
     </div>
   </div>
   <div class="form-group">
-    <label class="col-sm-3 control-label" for="pgroup">Administer Designers</label>
+    <label class="col-sm-3 control-label">Administer Designers</label>
     <div class="col-sm-9">
      	<select class="form-control" name="pgroup">
     		<option value="Y">Yes</option>
@@ -442,7 +434,7 @@ if(!empty($u) && !empty($r)) {
     </div>
   </div>
   <div class="form-group">
-    <label class="col-sm-3 control-label" for="puser">Administer Respondents</label>
+    <label class="col-sm-3 control-label">Administer Respondents</label>
     <div class="col-sm-9">
      	<select class="form-control" name="puser">
     		<option value="Y">Yes</option>
@@ -460,10 +452,6 @@ if(!empty($u) && !empty($r)) {
   	<?php } ?>
   </div>
 </form>
-</div>
-
-
-<br />
 
 <br /><br />
 <?php displayAdminBack(); ?>

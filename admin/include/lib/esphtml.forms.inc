@@ -114,7 +114,7 @@ function mkselect ($_name, $options, $varr = null) {
     	if ($varr == null)
         	$varr =& $_POST;
 	$str  = "<select class=\"form-control\" name=\"${_name}\">\n";
-	$str .= "<option></option>\n";
+	//$str .= "<option></option>\n";
 	while(list($cid, $content) = each($options)) {
 		$checked = '';
 		if (isset($varr[$_name]) && $varr[$_name] == $cid)
@@ -209,6 +209,7 @@ function mkloginbox() {
     <form name="loginform" id="loginform" method="post" class="form-horizontal">
     <div class="dashboardPanel" id="my_login">
     <h2 class="form-signin-heading">Client Login</h2>
+    <br />
         <div class="form-group">
            <label for="username" class="col-sm-3 control-label">Username:</label>
            <div class="col-sm-9">
@@ -241,58 +242,5 @@ END;
     return $extra;
 }
 
-function show_login_old($_surveyname = null, $_message = null, $_css = null, $_title = "Client Login") {
-    //$str = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n";
-    $str = "<!DOCTYPE html>\n";
-    $str .= "<html>\n";
-    $str .= "<head>\n";
-    $str .= "<meta charset=\"utf-8\">\n";
-    $str .= "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
-    $str .= "<title>$_title</title>\n";
-    $str .= '<link href="css/bootstrap.css" rel="stylesheet" type="text/css">';
-    $str .= '<link href="css/admin.css" rel="stylesheet" type="text/css">';
-    $str .=  "\n</head>\n<body>\n";
-    if ($_message) {
-        $str .= mkerror($_message);
-    }
-    $str .= '<div class="container">';
-    $str .= '<div class="dashboardPanel" id="my_login">';
-    $str .= '  <form name="loginform" id="loginform" method="post" class="form-horizontal">';
-    $str .= '    <h2 class="form-signin-heading">Client Login</h2><br>';
-    $str .= '    <div class="form-group">';
-    $str .= '    <label for="username" class="col-sm-3 control-label">Username:</label>';
-    $str .= '    <div class="col-sm-9">';
-    $str .= '    <input type="text" name="username" class="form-control" placeholder="Username">';
-    $str .= '    </div></div>';
-    $str .= '    <div class="form-group">';
-    $str .= '    <label for="password" class="col-sm-3 control-label">Password:</label>';
-    $str .= '    <div class="col-sm-9">';
-    $str .= '    <input type="password" name="password" class="form-control" placeholder="Password">';
-    $str .= '    </div></div>';
-    $str .= '    <div class="form-group">';
-    $str .= '    <div class="col-sm-offset-3 col-sm-9">';
-    $str .= '    <div class="checkbox">';
-    $str .= '      <label>';
-    $str .= '        <input type="checkbox" value="remember-me" checked> Remember me';
-    $str .= '      </label>';
-    $str .= '    </div></div>';
-    $str .= '    <div class="form-group">';
-    $str .= '    <div class="col-sm-offset-3 col-sm-9">';
-    $str .= '    <button class="btn btn-lg btn-primary btn-block" name="Login" type="submit">Sign in</button>';
-    $str .= '    </div></div></div>';
-    $str .= '  </form> <!-- /container -->';
-
-    if ($_surveyname != "") {
-        $str .= '<input type="hidden" name="'."$_surveyname".'"';
-    }
-
-    $str .= "<br />";
-    $str .= mkalert();
-    $str .= "</div>";
-    $str .= "</div>";
-    $str .= "\n</body>\n</html>";
-
-    return $str;
-}
 
 ?>

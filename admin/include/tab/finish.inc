@@ -1,56 +1,45 @@
 <?php
 
-/* $Id$ */
+$_SESSION['new_survey'] = false;
+$survey_name = "";
+$sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id = ". $_SESSION['survey_id'];
+if ($result = execute_sql($sql)) {
+    if (record_count($result) > 0)
+	    $survey_name = $result->fields[0];
+	db_close($result);
+}
 
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-// Written by James Flemer
-// For eGrad2000.com
-// <jflemer@alum.rpi.edu>
-
-	$_SESSION['new_survey'] = false;
-	$survey_name = "";
-    $sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id = ". $_SESSION['survey_id'];
-    if ($result = execute_sql($sql)) {
-	    if (record_count($result) > 0)
-		    $survey_name = $result->fields[0];
-		db_close($result);
-	}
-
-    // initialize the survey's statistics
-    esp_require_once('/lib/espsurveystat');
-    survey_stat_init($_SESSION['survey_id']);
+// initialize the survey's statistics
+//esp_require_once('/lib/espsurveystat');
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurveystat.inc';
+survey_stat_init($_SESSION['survey_id']);
 ?>
+
 <script type="text/javascript">
 function validate() {
     return true;
 }
 </script>
+
 <br />
-<strong><?php echo(_('Survey Design Completed')); ?></strong>
-<div class="left">
-	<p><?php echo(_('You have completed this survey design.')); ?></p>
 
-	<p><?php echo(_('To insert this survey into your web page, copy the text
-below, and paste it into the HTML of your page.')); ?></p>
+<h4>Completion the survey design</h4>
 
-<blockquote><div><tt>
-	&lt;?php $sid=<?php echo($_SESSION['survey_id']); ?>;
-	include("<?php echo($ESPCONFIG['handler']); ?>");?&gt;
-</tt></div></blockquote>
+<p>You have completed this survey design.</p>
 
-	<p><?php echo(_('Once activated you can also access the survey directly
-from the following URL.')); ?></p>
-<blockquote><div><tt>
-	<?php echo($ESPCONFIG['autopub_url']."?name=".$survey_name); ?>
-</tt></div></blockquote>
+<p><i class="fa fa-check-square-o fa-4x"></i></p>
 
-	<p><?php echo(_('You must activate this survey before you can collect
-results. Once a survey is active, you may no longer make any
-changes to it. You may activate this survey by choosing
-<b>Change the Status of an Existing Survey</b> from the
-Management Interface.')); ?></p>
-</div>
+<br />
 
-<?php echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n"); ?>
-<br />&nbsp;
+<p>To insert this survey into your web page, copy the text below, and paste it into the HTML of your page.</p>
+
+<p><code>&lt;?php $sid=<?php echo($_SESSION['survey_id']); ?>; include("<?php echo($ESPCONFIG['handler']); ?>");?&gt;</code></p>
+
+<br />
+
+<p>Once activated you can also access the survey directly from the following URL.</p>
+
+<p><code><?php echo($ESPCONFIG['autopub_url']."?name=".$survey_name); ?></code> <a href="<?php echo($ESPCONFIG['autopub_url']."?name=".$survey_name); ?>" target="_blank"><i class="fa fa-external-link fa-fw"></i></a></p>
+
+<p>You must activate this survey before you can collect results. Once a survey is active, you may no longer make any changes to it. You may activate this survey by choosing <b>Change the Status of an Existing Survey</b> from the Management Interface.</p>
+
