@@ -434,9 +434,27 @@ function survey_merge_sets(&$merged, $a /* ... */) {
 
 //  survey_fetch_url_by_survey_name() 
 //  Return the URL to a survey with a given name
+
 function survey_fetch_url_by_survey_name($name) {
     return rtrim($GLOBALS['ESPCONFIG']['base_url'], '/') . '/public/survey.php?name=' . htmlentities($name);
 }
 
+//  survey_assign_new_name()
+//  auto-generate the survey name e.g. PEB0001
+
+function survey_assign_new_name() {
+  $sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['survey_table']." ORDER BY id DESC";
+  $result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
+  if($arr = fetch_row($result)) {
+    $curr = $arr['name'];
+  }
+  db_close($result);
+  $currentNo = substr($curr, -4);
+  $newNo = $currentNo + "1";
+  $newFormattedNo = sprintf("%04d", $newNo);
+  $newName = "PEB".$newFormattedNo;
+  //return $newFormattedNo;
+  return $newName;
+}
 
 ?>

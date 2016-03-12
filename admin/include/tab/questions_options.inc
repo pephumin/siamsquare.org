@@ -21,13 +21,21 @@ else
  </tr>
 </table>
 
-<p><input class="btn btn-success" type="submit" value="Make changes" /></p><br />
+<p><input class="btn btn-success btn-sm" type="submit" value="Make changes" /></p><br />
 
-<p>Enter the possible answers (if applicable). Enter <code>!other</code> on an line by itself to create a fill-in-the-blank answer at the end of this question. Any blank lines will be suppressed.</p>
+<p>Enter the possible answers (if applicable).</p> 
 
+<p>Enter <code>!other</code> on an line by itself to create a fill-in-the-blank answer at the end of this question. Any blank lines will be suppressed.</p>
+
+<p>Enter <code>!other Record here:</code> will create a fill-in-the-blank answer leaded by the word "Record here:".</p> 
+
+<p>The most common usage is <code>!other Other (please specify):</code> which can be applied for variety of question types.</p>
+
+<!--
 <p>To assign numeric credit for a particular answer, enter the associated credit beside each possible answer.  Only question types of Radio Buttons, Check Boxes, and Dropdown Box may have credit. Credit for a multiple selection is the sum of the individual credit.</p>
 
 <p>To provide feedback to the survey respondent when selecting a particular answer, enter that feedback beside the answer.  Only question types of Radio Buttons, Check Boxes, and Dropdown Box may have feedback. The feedback may include HTML, if desired.</p>
+-->
 
 <br />
 
@@ -74,8 +82,8 @@ else
 	<tr>
 		<td>&nbsp;</td>
 		<td>
-			<input class="btn btn-sm" type="submit" name="extra_choices" onclick="addAnswerLine()" value="Add another answer line" />
-			<input class="btn btn-sm" type="submit" name="clear" value="Clear all answer lines" onclick="clearTextInputs()" />
+			<input class="btn btn-default btn-sm" type="submit" name="extra_choices" onclick="addAnswerLine()" value="Add another answer line" />
+			<input class="btn btn-default btn-sm" type="submit" name="clear" value="Clear all answer lines" onclick="clearTextInputs()" />
 		</td>
 	</tr>
 </table>

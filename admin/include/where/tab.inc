@@ -117,18 +117,13 @@ $errstr = '';
 $updated = survey_update($_SESSION['survey_id'],$tab,$_SESSION['last_tab']);
 
 echo "</div>\n";
-echo "</form>\n";
+echo "</form>\n\n";
 
-echo "<form method=\"post\" id=\"tabs\" onsubmit=\"validate();\" action=\"$base\" class=\"form-horizontal\" method=\"post\" id=\"phpesp\">\n";
+echo "<form method=\"post\" id=\"tabs\" onsubmit=\"validate();\" action=\"$base\" class=\"form-horizontal\" method=\"get\" id=\"phpesp\">\n\n";
 
-echo "<div class=\"container\">\n";
+echo "<div class=\"container\">\n\n";
 
-if(!empty($_GET['newid'])) {
-	echo "<h2>Editing a survey</h2>\n";
-} else {
-	echo "<h2>Designing a survey</h2>\n";
-}
-
+echo "<h2>Designing a survey</h2>\n";
 
 if (!empty($errstr)) {
 	//echo "<div class=\"alert alert-danger\" role=\"alert\">\n";
@@ -148,39 +143,26 @@ if($tab=='finish') {
     //return;
 }
 
-echo "<div class=\"form-group\">\n";
-echo "  <label class=\"col-sm-3 control-label\">&nbsp;</label>\n";
-echo "  <div class=\"col-sm-9\">\n";
-//echo "    <input type=\"hidden\" name=\"theme\" value=\"ssq.css\" />\n";
-//echo "    <input type=\"hidden\" name=\"auto_num\" value=\"Y\" />\n";
-echo "    <br />\n";
-//echo "<p class=\"text-center\">\n";
-
-	if($_SESSION['new_survey']) {
-	    echo "    <input class=\"btn btn-default\" type=\"submit\" name=\"where\" value=\"Cancel\" onclick='return cancelConfirm()' />";
+if($_SESSION['new_survey']) {
+    echo "    <input class=\"btn btn-default\" type=\"submit\" name=\"where\" value=\"Cancel\" onclick='return cancelConfirm()' />";
+    echo "&nbsp;\n";
+    if($tab=='preview') {
+	    echo "    <input class=\"btn btn-success\" type=\"submit\" name=\"tab_finish\" value=\"Finish\" />";
 	    echo "&nbsp;\n";
-	    if($tab=='preview') {
-		    echo "    <input class=\"btn btn-success\" type=\"submit\" name=\"tab_finish\" value=\"Finish\" />";
-		    echo "&nbsp;\n";
-	    } else { 
-	        echo "    <input class=\"btn btn-success\" type=\"submit\" name=\"tab_continue\" value=\"Continue &gt;&gt;\" />";
-	        echo "&nbsp;\n";
-	    }
-	    echo "    <p class=\"text-muted\">Click cancel to cancel this survey, or click continue to proceed to the next tab.</p>";
-	    //return; 
-	}
-
-//echo "</p>\n";
-//echo "    <br />\n";
-echo "  </div>\n";
-echo "</div>\n";
+    } else { 
+        echo "    <input class=\"btn btn-success\" type=\"submit\" name=\"tab_continue\" value=\"Continue &gt;&gt;\" />";
+        echo "&nbsp;\n";
+    }
+    echo "    <p class=\"text-muted\">Click cancel to cancel this survey, or click continue to proceed to the next tab.</p>";
+    //return; 
+}
 
 //displayTabNav();
 
 echo "<hr />\n";
 echo "<br />\n";
 
-echo "<p>Designing a survey requires to complete these 6 tabs as follows\n";
+echo "<p>Designing a survey requires to complete these 6 tabs as follows</p>\n";
 echo "<ul class=\"fa-ul\">\n";
 echo "  <li><i class=\"fa-li fa fa-check-square\"></i>The survey title and other general fields are on the <strong>General</strong> tab.\n";
 echo "  <li><i class=\"fa-li fa fa-check-square\"></i>Individual survey questions are added and modified on the <strong>Questions</strong> tab.\n";
@@ -188,8 +170,7 @@ echo "  <li><i class=\"fa-li fa fa-check-square\"></i>Questions may be re-ordere
 echo "  <li><i class=\"fa-li fa fa-check-square\"></i>Setting questionf flow on the <strong>Conditions</strong> tab.\n";
 echo "  <li><i class=\"fa-li fa fa-check-square\"></i>You may see a preview of your survey at any time, by going to the <strong>Preview</strong> tab.\n";
 echo "  <li><i class=\"fa-li fa fa-check-square\"></i>Click <strong>Finish</strong> when it is done and go back to the Management Interface.\n";
-echo "</ul>\n";
-echo "</p>\n";
+echo "</ul>\n\n";
 
 displayAdminBack(); 
 

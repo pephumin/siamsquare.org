@@ -153,7 +153,7 @@ function show_login($_surveyname = null, $_message = null, $_css = null, $_title
     if ($_message) {
         $str .= mkerror($_message);
     }
-    //$str .= "<div class=\"container\">\n";
+    //$str .= "</div\n";
     $str .= "</form>\n";
     $str .= mkloginbox();
 

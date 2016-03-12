@@ -119,7 +119,8 @@ function survey_select_section_sql($sid, $section, $table = '') {
 
 function esp_type_has_choices() {
 	$has_choices = array();
-	$sql = 'SELECT id, has_choices FROM '.$GLOBALS['ESPCONFIG']['question_type_table'].' ORDER BY id';
+	//$sql = 'SELECT id, has_choices FROM '.$GLOBALS['ESPCONFIG']['question_type_table'].' ORDER BY id';
+	$sql = 'SELECT typeid, has_choices FROM '.$GLOBALS['ESPCONFIG']['question_type_table'].' ORDER BY id';
 	$result = execute_sql($sql);
 	while(list($tid,$answ) = fetch_row($result)) {
 		$result->MoveNext();

@@ -2,6 +2,7 @@
 
 $title = "Designing a survey";
 $base =& $GLOBALS['ESPCONFIG']['ME'];
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurvey.inc';
 
 unset($sid);
 $sid = $_SESSION['survey_id'];
@@ -14,7 +15,8 @@ if(!empty($sid) && $updated) {
 	$survey = fetch_row($result);
 	db_close($result);
 } else {
-	$fields = array('name','realm','title','subtitle','email','theme','thanks_page','thank_head','thank_body','info','public','auto_num','open_date','close_date');
+	//$fields = array('name','realm','title','subtitle','email','theme','thanks_page','thank_head','thank_body','info','public','auto_num','open_date','close_date');
+  $fields = array('name','owner','realm','title','subtitle','email','theme','thanks_page','thank_head','thank_body','info','public','auto_num','open_date','close_date');
    	foreach ($fields as $f) {
         if(!empty($_POST[$f]))
     	    $survey[$f] = _stripslashes($_POST[$f]);
@@ -30,6 +32,7 @@ if ('0000-00-00 00:00:00' == $survey['open_date']) {
 if ('0000-00-00 00:00:00' == $survey['close_date']) {
     $survey['close_date'] = '';
 }
+
 ?>
 
 </form>
@@ -91,7 +94,7 @@ function validate() {
      <?php echo mktext('thanks_page', 60, 255, $survey); ?>
     <?php else: ?>
       <input class="form-control" type="text" name="thanks_page" placeholder="http://www.website.com/thanks.html" />
-      <p class="text-muted">Text to be displayed on this survey before any fields. (i.e. instructions, background info, etc.)</p>
+      <p class="text-muted">Thank you page URL which should be located at your website (client's). If there is no such pageg available, please use the form below.</p>
     <?php endif; ?>
     <p><strong>OR</strong></p>
 
@@ -109,7 +112,7 @@ function validate() {
       Body:<br />
       <textarea class="form-control" rows="5" name="thank_body" placeholder="Your opinions are value to us. We make sure your opinons will be analysed at an aggregated level. And your opinions will be kept at the highest level of confidentiality."></textarea>
     <?php endif; ?>
-    <p class="text-muted">If there is no "Thank you" page at your company website, you can fill in with this form instead.</p>
+    <p class="text-muted">Use this form (including Header and Body) to be your temporary "Thank you" page.</p>
   </div>
 </div>
 
@@ -120,7 +123,7 @@ function validate() {
      <input class="form-control" type="text" name="email" value="<?php echo $survey['email']; ?>" />
     <?php else: ?>
       <input class="form-control" type="text" name="email" placeholder="email@company.com" />
-      <p class="text-muted">Sends a copy of each submission to address (or leave blank for no email backup).</p>
+      <p class="text-muted">Sends a copy of each submission to this email. Leave blank if you do not need an email backup.</p>
     <?php endif; ?>
   </div>
 </div>
@@ -131,7 +134,7 @@ function validate() {
     <?php if ($survey['open_date']): ?>
      <input class="form-control" type="text" name="open_date" value="<?php echo $survey['open_date']; ?>" />
     <?php else: ?>
-      <input class="form-control" type="text" name="open_date" placeholder="2017-02-26" />
+      <input class="form-control" type="text" name="open_date" placeholder="2017-02-26 00:00:00" />
       <!--
      Year: <input class="form-control" type="text" size="4" maxlength="4" name="open_year" placeholder="2017" />
      Month: <input class="form-control" type="text" size="2" maxlength="2" name="open_month" placeholder="02" />
@@ -148,7 +151,7 @@ function validate() {
     <?php if ($survey['close_date']): ?>
      <input class="form-control" type="text" name="close_date" value="<?php echo $survey['close_date']; ?>" />
     <?php else: ?>
-      <input class="form-control" type="text" name="close_date" placeholder="2017-02-26" />
+      <input class="form-control" type="text" name="close_date" placeholder="2017-02-26 00:00:00" />
       <!--
      Year: <input class="form-control" type="text" size="4" maxlength="4" name="open_year" placeholder="2017" />
      Month: <input class="form-control" type="text" size="2" maxlength="2" name="open_month" placeholder="02" />
@@ -166,7 +169,8 @@ function validate() {
      <input class="form-control" type="text" name="name" value="<?php echo $survey['name']; ?>" disabled />
      <input type="hidden" name="name" value="<?php echo $survey['name']; ?>" />
     <?php else: ?>
-      <input class="form-control" type="text" name="name" placeholder="Project ID" />
+      <input class="form-control" type="text" name="name" value="<?php echo survey_assign_new_name(); ?>" disabled />
+      <input type="hidden" name="name" value="<?php echo survey_assign_new_name(); ?>" />
       <p class="text-muted">This is used for all further access to this survey. (no spaces, alpha-numeric only)</p>
     <?php endif; ?>
   </div>
@@ -176,69 +180,44 @@ function validate() {
   <label class="col-sm-3 control-label"><strong>Owner</strong> <span class="label label-danger">required</span></label>
   <div class="col-sm-9">
     <div class="form-inline">
-    <?php
-    $realms = array();
-    if(isset($_SESSION['acl']['superuser']) && $_SESSION['acl']['superuser'] == 'Y') {
-      $sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['realm_table'];
-      $rr = execute_sql($sql);
-      while(list($r) = fetch_row($rr)) {
-        $rr->MoveNext();
-        $realms[$r] = $r;
+    <?php if ($survey['owner']): ?>
+     <input class="form-control" type="text" name="username" value="<?php echo $survey['owner']; ?>" disabled />
+     <input type="hidden" name="username" value="<?php echo $survey['owner']; ?>" />
+     &nbsp;/&nbsp;
+     <input class="form-control" type="text" name="realm" value="<?php echo $survey['realm']; ?>" disabled />
+     <input type="hidden" name="realm" value="<?php echo $survey['realm']; ?>" />     
+    <?php else: ?>
+      <?php
+      $realms = array();
+      if(isset($_SESSION['acl']['superuser']) && $_SESSION['acl']['superuser'] == 'Y') {
+        $sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['realm_table'];
+        $rr = execute_sql($sql);
+        while(list($r) = fetch_row($rr)) {
+          $rr->MoveNext();
+          $realms[$r] = $r;
+        }
+        db_close($rr);
+        $out = '<input type="text" class="form-control" name="username" placeholder="'.$_SESSION['acl']['username'].'" disabled>'; 
+        $out .= "&nbsp;/&nbsp;";
+        $out .= mkselect('realm',$realms, $survey);
+      } else {
+        foreach($_SESSION['acl']['pdesign'] as $r) {
+          $realms[$r] = $r;          
+        }
+        $out = '<input type="text" class="form-control" name="username" placeholder="'.$_SESSION['acl']['username'].'" disabled>'; 
+        $out .= "&nbsp;/&nbsp;";
+        $out .= '<input type="text" class="form-control" name="realm" placeholder="'.$realms[$r].'" disabled>';
+        $out .= '<input type="hidden" name="realm" value="'.$realms[$r].'" />';
       }
-      db_close($rr);
-      $out = '<input type="text" class="form-control" name="username" placeholder="'.$_SESSION['acl']['username'].'" disabled>'; 
-      $out .= "&nbsp;/&nbsp;";
-      $out .= mkselect('realm',$realms, $survey);
-    } else {
-      foreach($_SESSION['acl']['pdesign'] as $r) {
-        $realms[$r] = $r;          
-      }
-      $out = '<input type="text" class="form-control" name="username" placeholder="'.$_SESSION['acl']['username'].'" disabled>'; 
-      $out .= "&nbsp;/&nbsp;";
-      $out .= '<input type="text" class="form-control" name="realm" placeholder="'.$realms[$r].'" disabled>';
-      $out .= '<input type="hidden" name="realm" value="'.$realms[$r].'" />';
-    }
-    //echo(htmlspecialchars($_SESSION['acl']['username']) . "&nbsp;/&nbsp;");
-    //echo(mkselect('realm',$realms, $survey) . "\n");
-    echo $out;
-    
-    ?>
-
+      //echo(htmlspecialchars($_SESSION['acl']['username']) . "&nbsp;/&nbsp;");
+      //echo(mkselect('realm',$realms, $survey) . "\n");
+      echo $out;
+      ?>
+    <?php endif; ?>
     <p class="text-muted">User and group that owns this survey.</p>
   </div>
   </div>
 </div>
-
-<!--
-<div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Theme</strong></label>
-  <div class="col-sm-9">
-    <?php
-    $themes_array = array();
-    $dir = dir($ESPCONFIG['css_path']);
-    $dir->rewind();
-    while ($file=$dir->read()) {
-      if (stristr($file,".css")) {
-        $pos = strrpos($file, ".");
-        $name = substr($file, 0,$pos);
-        $themes_array[$file] = $name;
-      }
-    }
-    $dir->close();
-    echo(mkselect('theme',$themes_array, $survey) . '<p class="text-muted">Select a theme (css) to use with this survey.</p>'); 
-    ?>
-  </div>
-</div>
-<div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Automatic numbering</strong> <span class="label label-danger">required</span></label>
-  <div class="col-sm-9">
-    <?php
-    if (empty($survey["auto_num"])) { $survey["auto_num"]='Y'; }
-    echo(mkselect('auto_num',array('Y'=>_('Yes'),'N'=>_('No')), $survey) . '<p class="text-muted">Select if questions are to be numbered automatically when showing the survey.</p>'); 
-    ?>
-  </div>
-</div>
--->
 
 <div class="form-group">
   <label class="col-sm-3 control-label">&nbsp;</label>
@@ -246,7 +225,7 @@ function validate() {
     <input type="hidden" name="theme" value="ssq.css" />
     <input type="hidden" name="auto_num" value="Y" />
     <input type="hidden" name="sid" value="<?php echo $sid; ?>" />
-    <input class="btn btn-success" type="submit" name="submit" value="Update" />&nbsp;
-    <input class="btn btn-default" type="submit" name="cancel" value="Cancel" />&nbsp;
+    <input class="btn btn-default btn-sm" type="submit" name="submit" value="Update" />&nbsp;
+    <input class="btn btn-default btn-sm" type="submit" name="cancel" value="Cancel" />&nbsp;
   </div>
 </div>

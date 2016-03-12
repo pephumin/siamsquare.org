@@ -84,12 +84,15 @@ db_close($result);
 </select>
 <br />
 
-<input class="btn btn-sm" type="submit" name="edit_question" value="Edit Question" />
-<input class="btn btn-sm" type="submit" name="new_question" value="New Question" />
+<input class="btn btn-default btn-sm" type="submit" name="edit_question" value="Edit Question" />
+<input class="btn btn-default btn-sm" type="submit" name="new_question" value="New Question" />
 
 <br /><br /> 
 
-<?php if(!$curr_q) { echo('<span class="red">'._('New Question').'</span>'); } ?>
+<?php 
+if(!$curr_q) { echo "<p><mark>Add a new question</mark></p>\n"; } 
+else { echo "<p><mark>Edit a question</mark></p>\n"; } 
+?>
 
 <table class="table table-hover">
 	<tr class="active">
@@ -124,20 +127,20 @@ db_close($result);
 			echo(mktext("precise",6));
 		?></td>
 		<td><?php
-			if(empty($_POST['required'])) $_POST['required'] = 'N';
+			if(empty($_POST['required'])) $_POST['required'] = 'Y';
 			echo(mkselect("required",array(
-				"Y" => _('Yes') . '               ',
+				"Y" => _('Yes'),
 				"N" => _('No')
 			))); ?></td>
 		<td><?php
 			if(empty($_POST['ans_uniq'])) $_POST['ans_uniq'] = 'N';
 			echo(mkselect("ans_uniq",array(
-				"Y" => _('Yes') . '               ',
+				"Y" => _('Yes'),
 				"N" => _('No')
 			))); ?></td>
 	</tr>
 	<tr>
-		<th>Text</th>
+		<th>Question text</th>
 		<td colspan="6"><?php
 			echo(mktextarea("content",4,60,"VIRTUAL"));
 		?></td>
@@ -146,7 +149,8 @@ db_close($result);
 
 <?php
 // has answer options ... so show that part of the form
-$sql = "SELECT has_choices FROM ".$GLOBALS['ESPCONFIG']['question_type_table']." WHERE id=" . $_POST['type_id'];
+//$sql = "SELECT has_choices FROM ".$GLOBALS['ESPCONFIG']['question_type_table']." WHERE id=" . $_POST['type_id'];
+$sql = "SELECT has_choices FROM ".$GLOBALS['ESPCONFIG']['question_type_table']." WHERE typeid=" . $_POST['type_id'];
 $choices = get_one($sql);
 if($curr_q == 0 ||
 	empty($_POST['type_id']) || $choices =='Y') {
@@ -154,6 +158,3 @@ if($curr_q == 0 ||
 	}
 ?>
 
-<input class="btn btn-success" type="submit" value="Make change"> 
-
-<hr />

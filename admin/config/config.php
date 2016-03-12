@@ -65,7 +65,7 @@ $ESPCONFIG['support_email_address'] = "webmaster@siamsquare.org";
 
 $ESPCONFIG['default_lang'] = 'en_US';
 $ESPCONFIG['charset'] = 'UTF-8';
-$ESPCONFIG['default_num_choices'] = 10; // Default number of option lines for new questions
+$ESPCONFIG['default_num_choices'] = 5; // Default number of option lines for new questions
 
 //$ESPCONFIG['main_bgcolor']      = '#FFFFFF';
 //$ESPCONFIG['link_color']        = '#0000CC';

@@ -2,15 +2,16 @@
 
 $sid = _addslashes($_SESSION['survey_id']);
 
-$sql = "SELECT COUNT(*) FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id=${sid}
-AND deleted='N' AND type_id='99'";
+$sql = "SELECT COUNT(*) FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id=${sid} AND deleted='N' AND type_id='99'";
 $result = execute_sql($sql);
 $num_sections = 1 + $result->fields[0];
 db_close($result);
 
 if(empty($_POST['section']))
 	$_POST['section']=1;
+
 ?>
+
 <script type="text/javascript">
 <!-- // Begin <?php // This should really go into <head> tag ?>
 
@@ -29,17 +30,11 @@ function validate() {
     return true;
 }
 
-
 // End -->
 </script>
-<?php echo "This is a preview of how this survey will look. The survey will use the background color of the document in which it is embedded. If you have no further changes click <b>Finish</b> at the bottom of this page."; ?>
 
-<?php	if($num_sections > 1) { ?>
-<br /><strong>Section:</strong>
-<?php		for($i=0;$i<$num_sections;$i++) {	?>
-<input type="submit" name="section" value="<?php echo($i+1); ?>" />
-<?php		}
-	} ?>
+<p>This is a preview of how this survey will look (from a view of respondents). If you have no further changes, just click <b>Finish</b> to save this survey.</p>
+
 <input type="hidden" name="where" value="tab" />
 <input type="hidden" name="old_tab" value="preview" />
 <hr />
@@ -55,9 +50,7 @@ function validate() {
 //    }
 ?>
 
-<div class="bg-info">
 <?php survey_render($sid,$_POST['section']); ?>
-</div>
 
 <?php
 #	if ($ESPCONFIG['auth_response']) {
@@ -73,3 +66,13 @@ function validate() {
 #	}
 ?>
 
+<br />
+
+<?php if($num_sections > 1): ?>
+  <strong>Section:</strong>
+  <?php for($i=0;$i<$num_sections;$i++):  ?>
+    <input type="submit" name="section" value="<?php echo($i+1); ?>" />
+  <?php endfor; ?>
+<?php endif; ?>
+
+<br />
