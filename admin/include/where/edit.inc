@@ -28,7 +28,7 @@ $result = execute_sql($sql);
 <p>Pick Survey to Edit</p>
 
 <table class="table table-hover">
-	<tr>
+	<tr class="active">
 		<th>ID</th>
 		<th>Name</th>
 		<th>Title</th>
@@ -38,12 +38,8 @@ $result = execute_sql($sql);
 <?php
 	while(list($sid,$name,$title,$owner,$realm) = fetch_row($result)) {
         $result->MoveNext();
-		//if($bg != $ESPCONFIG['bgalt_color1'])
-		//	$bg = $ESPCONFIG['bgalt_color1'];
-		//else
-		//	$bg = $ESPCONFIG['bgalt_color2'];
+
 ?>
-	<!-- Alternating Colors are set in the phpESP.ini.php file -->
 	<tr>
 		<td><?php echo($sid); ?></td>
 		<td>

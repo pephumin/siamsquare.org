@@ -1,5 +1,7 @@
 <?php
 
+$base =& $GLOBALS['ESPCONFIG']['ME'];
+
 /* SuperUser or Designers with "Administer Respondents(puser)" permissions only*/
 if($GLOBALS['ESPCONFIG']['auth_type'] != 'ldap_both' &&
 $GLOBALS['ESPCONFIG']['auth_type'] != 'ldap_resp' &&
@@ -21,7 +23,7 @@ if($_SESSION['acl']['superuser'] != 'Y') {
 }
 
 $sql .= ' ORDER BY ';
-$base = $GLOBALS['ESPCONFIG']['ME'] .'?where=respondents';
+//$base = $GLOBALS['ESPCONFIG']['ME'] .'?where=respondents';
 if(!isset($_GET['u'])) $_GET['u'] = '';
 if(!isset($_GET['g'])) $_GET['g'] = '';
 if(!isset($_GET['f'])) $_GET['f'] = '';
@@ -88,18 +90,18 @@ $result = execute_sql($sql);
 <p><Click on a username to edit, or click on add new user below.</p>
 
 <p>
-	<a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=admrespondent")); ?>">Add a new respodent</a> / 
-	<a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=upload&account_type=respondents")); ?>">Bulk upload respondents</a>
+	<a class="btn btn-warning" href="<?php echo($base .htmlentities("?where=admrespondent")); ?>"><i class="fa fa-user"></i>&nbsp; Add a new respodent</a>&nbsp;
+	<a class="btn btn-warning" href="<?php echo($base .htmlentities("?where=upload&account_type=respondents")); ?>"><i class="fa fa-upload"></i>&nbsp; Bulk upload respondents</a>
 </p>
 
 <br />
 
 <table class="table table-hover">
-	<tr>
+	<tr class="active">
 		<th><a href="<?php echo(htmlentities($base . $u)); ?>">Username</a></th>
 		<th><a href="<?php echo(htmlentities($base . $f)); ?>">First Name</a></th>
 		<th><a href="<?php echo(htmlentities($base . $l)); ?>">Last Name</a></th>
-		<th><a href="<?php echo(htmlentities($base . $g)); ?>">Company</a></th>
+		<th><a href="<?php echo(htmlentities($base . $g)); ?>">Group</a></th>
 		<th>&nbsp;</th>
 	</tr>
 <?php
@@ -118,14 +120,14 @@ $result = execute_sql($sql);
 		//else
 		//	$bg =& $ESPCONFIG['bgalt_color1'];
 ?>
-	<tr style="background-color: <?php echo($bg); ?>">
-		<td class="left">
-			<a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=admrespondent&u=$u&r=$r")); ?>"><?php echo($u); ?></a>
+	<tr>
+		<td>
+			<a href="<?php echo($base .htmlentities("?where=admrespondent&u=$u&r=$r")); ?>"><?php echo($u); ?></a>
 		</td>
-		<td class="left"><?php echo($fname); ?></td>
-		<td class="left"><?php echo($lname); ?></td>
-		<td class="left"><?php echo($r); ?></td>
-		<td class="left"><?php echo($d); ?></td>
+		<td><?php echo($fname); ?></td>
+		<td><?php echo($lname); ?></td>
+		<td><?php echo($r); ?></td>
+		<td><?php echo($d); ?></td>
 	</tr>
 <?php
 }

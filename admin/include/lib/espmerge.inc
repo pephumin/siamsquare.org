@@ -1,15 +1,8 @@
 <?php
 
-/* $Id$ */
+/*  proto array merge_expand_qids(int target_qid, array surveys)
+	Returns an array of question ids spanning the given survey ids. */
 
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-// Written by James Flemer
-// <jflemer@alum.rpi.edu>
-
-/* {{{ proto array merge_expand_qids(int target_qid, array surveys)
-   Returns an array of question ids spanning the given
-   survey ids. */
 function merge_expand_qids($targetq, $surveys) {
 	$sql = "SELECT survey_id FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE id ". array_to_insql($targetq);
 	$targets = get_one($sql);
@@ -41,11 +34,10 @@ ORDER BY Q.survey_id, Q.position, Q.id";
 	}
 	return($qids);
 }
-/* }}} */
 
-/* {{{ proto array merge_expand_cids(int target_cid, array questions)
-   Returns an array of choice ids spanning the given
-   question ids. */
+/*  proto array merge_expand_cids(int target_cid, array questions)
+	Returns an array of choice ids spanning the given question ids. */
+
 function merge_expand_cids($targetc, $questions) {
 	$sql = "SELECT question_id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE id ". array_to_insql($targetc);
 	$result = execute_sql($sql);
@@ -80,6 +72,5 @@ ORDER BY C.question_id, C.id";
 	}
 	return($cids);
 }
-/* }}} */
 	
 ?>

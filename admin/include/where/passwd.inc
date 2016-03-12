@@ -21,6 +21,7 @@ if(isset($_POST['newpass1']) &&
 } else if(isset($_POST['newpass1'])) {
 	echo(mkerror(_('New passwords do not match or are blank.')));
 }
+
 ?>
 
 </form>
@@ -32,25 +33,26 @@ if(isset($_POST['newpass1']) &&
 <div class="container">
 <form class="form-horizontal" method="post" id="phpesp" action="<?php echo($base); ?>">
   <div class="form-group">
-    <label class="col-sm-3 control-label" for="Username">Username</label>
+    <label class="col-sm-3 control-label">Username</label>
     <div class="col-sm-9">
-    	<input type="text" class="form-control" name="Username" placeholder="<?php echo($_SESSION['acl']['username']); ?>" disabled>
+    	<input type="text" class="form-control" name="username" placeholder="<?php echo($_SESSION['acl']['username']); ?>" disabled>
+      <?php echo mkhidden('username', $GLOBALS); ?>
     </div>
   </div>
   <div class="form-group">
-    <label class="col-sm-3 control-label" for="oldpass">Old password</label>
+    <label class="col-sm-3 control-label">Old password</label>
     <div class="col-sm-9">
     	<input type="password" class="form-control" name="oldpass" placeholder="Current password">
     </div>
   </div>
   <div class="form-group">
-    <label class="col-sm-3 control-label" for="Username">New password</label>
+    <label class="col-sm-3 control-label">New password</label>
     <div class="col-sm-9">
     	<input type="password" class="form-control" name="newpass1" placeholder="New password">
     </div>
   </div>
   <div class="form-group">
-    <label class="col-sm-3 control-label" for="Username">Confirm new password</label>
+    <label class="col-sm-3 control-label">Confirm new password</label>
     <div class="col-sm-9">
     	<input type="password" class="form-control" name="newpass2" placeholder="New password again">
     </div>

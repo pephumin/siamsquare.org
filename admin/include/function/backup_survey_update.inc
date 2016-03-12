@@ -1,6 +1,6 @@
 <?php
 
-/* $Id: survey_update.inc 1121 2009-05-28 18:54:25Z bishopb $ */
+/* $Id$ */
 
 /* vim: set tabstop=4 shiftwidth=4 expandtab: */
 
@@ -122,8 +122,8 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 			$str1 = $_POST['content'];
 			do {
 				$str2 = $str1;
-				$str1 = eregi_replace(
-						"(^| )(what|which|why|how|who|where|how|is|are|were|the|a|it|of|do|you|your|please|enter)[ ?]",
+				$str1 = preg_replace(
+						"/(^| )(what|which|why|how|who|where|how|is|are|were|the|a|it|of|do|you|your|please|enter)[ ?]/i",
 						" ", $str2);
 			} 
 			while ($str1 != $str2);
@@ -327,7 +327,7 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 				ORDER BY position";
 			$result = execute_sql($sql);
 			$max = record_count($result);
-			$order = split('\|', $questions_order);
+			$order = preg_split('/\|/', $questions_order);
 			for($i = 0; $i < count($order); $i++) {
 				$ord = _addslashes($order[$i]);
 				$sql = "UPDATE ".$GLOBALS['ESPCONFIG']['question_table']." SET position=$i WHERE id=$ord AND survey_id=$sid";

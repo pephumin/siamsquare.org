@@ -14,9 +14,9 @@ if(!empty($_POST['r']) && !empty($_POST['t'])) {
     VALUES (". _addslashes($_POST['r']) .", ".
     _addslashes($_POST['t']).", ". sys_time_stamp().")";
 	if(!execute_sql($sql)) {
-		$errstr = _('Error adding a new company.') . ' (' . ErrorMsg() .')';
+		$errstr = _('Error adding a new group.') . ' (' . ErrorMsg() .')';
 	} else {
-		$success = _('A new company has been added successfully.');
+		$success = _('A new group has been added successfully.');
 	}
 		
 }
@@ -31,9 +31,9 @@ if(!empty($_GET['del'])) {
 		} else {
 			$sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['realm_table']." WHERE name=". _addslashes($_GET['del']);
 			if(!execute_sql($sql)) {
-				$errstr = _('Error deleting a company.');
+				$errstr = _('Error deleting a group.');
 			} else {
-				$success = _('A company has been deleted successfully.');
+				$success = _('A group has been deleted successfully.');
 			}
 		}
 	}
@@ -45,7 +45,7 @@ $result2 = execute_sql($sql2);
 
 $i = 0;
 ?>
-<h2>Managing companies</h2>
+<h2>Managing groups</h2>
 
 <?php if(!empty($errstr)) echo(mkerror($errstr)); ?>
 <?php if(!empty($success)) echo(mksuccess($success)); ?>
@@ -54,7 +54,7 @@ $i = 0;
 <br />
 <table class="table table-hover">
 	<tr>
-		<th>Company</th>
+		<th>Group</th>
 		<th>Description</th>
 		<th class="text-center">Members</th>
 		<td class="text-center">&nbsp;</td>
@@ -88,7 +88,7 @@ $i = 0;
 	//	$bg =& $ESPCONFIG['bgalt_color1'];
 ?>
 	<tr>
-		<td><input type="text" class="form-control" name="r" placeholder="Company Name" /></td>
+		<td><input type="text" class="form-control" name="r" placeholder="Group name" /></td>
 		<td><input type="text" class="form-control" name="t" placeholder="Description" /></td>
 		<td>&nbsp;</td>
 		<td class="text-center"><input class="btn btn-success btn-sm" type="submit" name="add" value="Add"/></td>

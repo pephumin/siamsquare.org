@@ -1,17 +1,9 @@
 <?php
 
-/* $Id$ */
-
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-// Written by James Flemer
-// For eGrad2000.com
-// <jflemer@alum.rpi.edu>
+$base =& $GLOBALS['ESPCONFIG']['ME'];
 
 if(!empty($_GET['sid']))
 	$sid = intval($_GET['sid']);
-
-$bg = '';
 
 /* operation selected ... */
 if(!empty($_GET['op'])) {
@@ -114,26 +106,26 @@ if(!empty($_GET['op'])) {
 ?>
 <h2>Survey Status</h2>
 
-<ul>
-	<li><b>Test</b> transitions a survey into testing mode. At which point you may perform a live test by taking the survey, and viewing the results. The survey may be switched back into <b>Edit</b> mode if additional edits are needed.</li>
-	<li><b>Activate</b> transitions a survey into active mode. In this mode the survey is open for production use, and may be put online. This will clear any results from testing mode (if any). No further editing of survey is allowed.</li>
-	<li><b>End</b> transitions a survey into ended mode. In this mode, no edits are possible, no users may take the survey (it is inactive), but results are still viewable from the results menu.</li>
-	<li><b>Archive</b> removes this survey. It is still stored in the database, but no further interaction is allowed. You may <b>not</b> view the results of an archived survey.</li>
+<ul class="fa-ul">
+	<li><i class="fa-li fa fa-check-square"></i><strong>Test</strong> transitions a survey into testing mode. At which point you may perform a live test by taking the survey, and viewing the results. The survey may be switched back into <strong>Edit</strong> mode if additional edits are needed.</li>
+	<li><i class="fa-li fa fa-check-square"></i><strong>Activate</strong> transitions a survey into active mode. In this mode the survey is open for production use, and may be put online. This will clear any results from testing mode (if any). No further editing of survey is allowed.</li>
+	<li><i class="fa-li fa fa-check-square"></i><strong>End</strong> transitions a survey into ended mode. In this mode, <u>no edits are possible</u>, no users may take the survey (it is inactive), but results are still viewable from the results menu.</li>
+	<li><i class="fa-li fa fa-check-square"></i><strong>Archive</strong> removes this survey. It is still stored in the database, but no further interaction is allowed. You may <b>not</b> view the results of an archived survey.</li>
 </ul>
 
 <br />
 <table class="table table-hover">
-	<tr>
+	<tr class="active">
 		<th>ID</th>
 		<th>Name</th>
 		<th>Title</th>
 		<th>Owner</th>
-		<th>Company</th>
+		<th>Group</th>
 		<th>Status</th>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Test</td>
+		<td>Activate</td>
+		<td>End</td>
+		<td>Archive</td>
 	</tr>
 
 <?php
@@ -163,11 +155,11 @@ $realms = array_intersect(
 
 while(list($sid,$name,$title,$status,$owner,$realm) = fetch_row($result)) {
     $result->MoveNext();
-	$stat = _('Editing');
-	$test = "<a href=\"". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=status&op=t&sid=${sid}")."\">". _('Test') ."</a>";
-	$act  = "<a href=\"". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=status&op=a&sid=${sid}")."\" onclick='return activateConfirm()'>". _('Activate') ."</a>";
-	$done = "<a href=\"". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=status&op=e&sid=${sid}")."\">". _('End') ."</a>";
-	$del  = "<a href=\"". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=status&op=d&sid=${sid}")."\">". _('Archive') ."</a>";
+	$stat = 'Editing';
+	$test = "<a href=\"". $base .htmlentities("?where=status&op=t&sid=${sid}")."\">Test</a>";
+	$act  = "<a href=\"". $base .htmlentities("?where=status&op=a&sid=${sid}")."\" onclick='return activateConfirm()'>Activate</a>";
+	$done = "<a href=\"". $base .htmlentities("?where=status&op=e&sid=${sid}")."\">End</a>";
+	$del  = "<a href=\"". $base .htmlentities("?where=status&op=d&sid=${sid}")."\">Archive</a>";
 
 	if($status & STATUS_DELETED) {
 		$stat = _('Archived');
@@ -182,7 +174,7 @@ while(list($sid,$name,$title,$status,$owner,$realm) = fetch_row($result)) {
 	} elseif($status & STATUS_TEST) {
 		$stat = _('Testing');
 		$done = '&nbsp;';
-		$test = "<a href=\"". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=status&op=m&sid=${sid}")."\">". _('Edit') ."</a>";
+		$test = "<a href=\"". $base .htmlentities("?where=status&op=m&sid=${sid}")."\">Edit</a>";
 	} else {
 		$done = '&nbsp;';
 	}
@@ -196,10 +188,6 @@ while(list($sid,$name,$title,$status,$owner,$realm) = fetch_row($result)) {
 		$del  = '&nbsp;';
 	}
 
-	//if($bg != $ESPCONFIG['bgalt_color1'])
-	//	$bg = $ESPCONFIG['bgalt_color1'];
-	//else
-	//	$bg = $ESPCONFIG['bgalt_color2'];
 ?>
 	<tr>
 		<td><?php echo($sid); ?></td>
@@ -211,7 +199,7 @@ while(list($sid,$name,$title,$status,$owner,$realm) = fetch_row($result)) {
 	   	<td><a href="<?php print $ESPCONFIG['autopub_url']."?name=".$name."&test=1"; ?>"><?php echo($name); ?></a></td>
         <?php
 		} elseif ($stat == 'Editing') { ?>
-	   	<td><a href="<?php print $ESPCONFIG['ME'].htmlentities("?where=tab&newid=${sid}"); ?>"><?php echo($name); ?></a></td>
+	   	<td><a href="<?php print $base.htmlentities("?where=tab&newid=${sid}"); ?>"><?php echo($name); ?></a></td>
 		<?php
         } else { ?>
 		<td><?php echo($name); ?></td>

@@ -1,9 +1,9 @@
 <?php
 
+$base =& $GLOBALS['ESPCONFIG']['ME'];
+
 if(!empty($_REQUEST['sid']))
 	$sid = intval($_REQUEST['sid']);
-
-$bg = '';
 
 /* sid selected for testing */
 if(!empty($sid)) {
@@ -35,7 +35,7 @@ if(!empty($sid)) {
  * this should really go into the head section ...
  * but should still work */
 if (!empty($theme))
-	echo('<link rel="stylesheet" href="' . $GLOBALS['ESPCONFIG']['css_url'].$theme . '" type="text/css">');
+	echo('<link rel="stylesheet" href="/css/default.css" type="text/css">');
 ?>
 <b>Testing Survey...</b> (<?php echo(_('SID')." = $sid"); ?>)
 <p>
@@ -49,12 +49,17 @@ define('ESP-FIRST-INCLUDED', true);
 # define('ESP-AUTH-OK', true);
 $_POST['sec'] = empty($_POST['sec']) ? 1 : intval($_POST['sec']);
 $_POST['rid'] = empty($_POST['rid']) ? 0 : intval($_POST['rid']);
-include($ESPCONFIG['handler']);
+
+//include($ESPCONFIG['handler']);
+include $_SERVER['DOCUMENT_ROOT'] . '/public/handler.php';
+
 ?>
-<a href="<?php echo(htmlentities($ESPCONFIG['ME']."?where=results&sid=".$sid)) ?>&test=1">View Results</a>
+
+<a href="<?php echo(htmlentities($base."?where=results&sid=".$sid)) ?>&test=1">View results</a>
 <br /><br />
 <?php displayAdminBack(); ?>
 <form><div>
+
 <?php
 	db_close($result);
 	return;
@@ -93,7 +98,7 @@ $result = execute_sql($sql);
 <p>Pick a survey from the list below to test</p>
 <br />
 <table class="table table-hover">
-	<tr>
+	<tr class="active">
 		<th>ID</th>
 		<th>Name</th>
 		<th>Title</th>
@@ -103,14 +108,10 @@ $result = execute_sql($sql);
 		<td>&nbsp;</td>
 		<th>Export</th>
 	</tr>
+
 <?php
 	while(list($sid,$name,$title,$owner,$realm) = fetch_row($result)) {
         $result->MoveNext();
-
-		//if($bg != $ESPCONFIG['bgalt_color1'])
-		//	$bg = $ESPCONFIG['bgalt_color1'];
-		//else
-		//	$bg = $ESPCONFIG['bgalt_color2'];
 ?>
 	<tr>
 		<td><?php echo($sid); ?></td>
@@ -118,10 +119,10 @@ $result = execute_sql($sql);
 		<td><?php echo($title); ?></td>
 		<td><?php echo($owner); ?></td>
 		<td><?php echo($realm); ?></td>
-        <td><a href="<?php echo(htmlentities("". $GLOBALS['ESPCONFIG']['ME'] ."?where=test&sid=${sid}&test=1")); ?>">Test</a> (<a href="<?php echo (htmlentities("". $GLOBALS['ESPCONFIG']['autopub_url'] ."?name=${name}&test=1")); ?>">standalone</td>
-		<td><a href="<?php echo(htmlentities("". $GLOBALS['ESPCONFIG']['ME'] ."?where=results&test=1&sid=${sid}")); ?>">Results</a></td>
+        <td><a href="<?php echo(htmlentities("". $base ."?where=test&sid=${sid}&test=1")); ?>">Test</a> (<a href="<?php echo (htmlentities("". $GLOBALS['ESPCONFIG']['autopub_url'] ."?name=${name}&test=1")); ?>">standalone</td>
+		<td><a href="<?php echo(htmlentities("". $base ."?where=results&test=1&sid=${sid}")); ?>">Results</a></td>
 		<td style="font-size: xx-small; vertical-align: top;">
-        <form id="export<?php echo($sid) ?>" action="<?php echo($GLOBALS['ESPCONFIG']['ME']) ?>">
+        <form id="export<?php echo($sid) ?>" action="<?php echo($base) ?>">
 	<div>
         <select name="type">
             <option value="csv_full_header" selected="selected">CSV Full Headers</option>
@@ -136,8 +137,8 @@ $result = execute_sql($sql);
             echo("\n");?>
 			| <?php
 			echo('<a href="javascript: exportSubmit(\'download\', document.getElementById(\'export'.$sid.'\'));" title="Download CSV Long Header (old method). Download the results for \''.$name.'\' to your computer in CSV Format (Comma Delimted File). Column Titles are based on the question text. Click this link and select \'Save\' when prompted by your browser.">' . _('Download') . '</a>'); ?>
-            </div>
-            </div></form>
+        </div>
+        </div></form>
 		</td>
 	</tr>
 <?php

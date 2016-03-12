@@ -1,23 +1,14 @@
 <?php
 
-/* $Id$ */
-
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-// Written by James Flemer
-// For eGrad2000.com
-// <jflemer@alum.rpi.edu>
-
 $sid = $_SESSION['survey_id'];
-$sql = "SELECT id,type_id,position,content FROM ".$GLOBALS['ESPCONFIG']['question_table']."
-WHERE survey_id=$sid AND deleted='N'
-ORDER BY position";
+$sql = "SELECT id,type_id,position,content FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id=$sid AND deleted='N' ORDER BY position";
 $result = execute_sql($sql);
 $max = record_count($result);
+
 ?>
-<?php echo(_('Change the order that questions are
-presented by selecting a question from the list, then use the up/down 
-buttons to change its position.')); ?>
+
+<p>Change the order that questions are presented by selecting a question from the list, then use the up/down buttons to change its position.</p>
+
 <hr>
 <script type="text/javascript">
 <!-- // comment
@@ -69,32 +60,37 @@ function removeItem() {
 </script>
 <input type="hidden" name="removeit" value="" />
 <input type="hidden" name="questions_order" value="" />
-        <?php
-            if ($max > 20) {
-                $max = 20;
-            }
-        ?>
-    <select name="questions" id="questions" size="<?php echo($max)?>">
-        <?php
-        $i = 1;
-        while( list($qid, $tid, $pos, $content) = fetch_row($result)) {
-            $result->MoveNext();
-            $dots = "";
-            $content = strip_tags($content);
-            if($tid != 99) {
-                if (strlen($content) > 100) {
-                   $dots = "...";
-                }
-                echo('<option value="'.$qid.'">'.$i++.'. '.substr($content,0, 100).$dots.'</option>');
-            }
-            else {
-                //++$sec;
-                echo('<option value="'.$qid.'"><strong>'._('----- Section Break -----').'</strong></option>\n');
-			}
+
+<?php if ($max > 10) { $max = 10; } ?>
+
+<select name="questions" id="questions" size="<?php echo($max)?>" class="form-control">
+
+<?php
+$i = 1;
+while( list($qid, $tid, $pos, $content) = fetch_row($result)) {
+    $result->MoveNext();
+    $dots = "";
+    $content = strip_tags($content);
+    if($tid != 99) {
+        if (strlen($content) > 100) {
+           $dots = "...";
         }
-		db_close($result);
-        ?>
-        </select>
+        echo('<option value="'.$qid.'">'.$i++.'. '.substr($content,0, 100).$dots.'</option>');
+    }
+    else {
+        //++$sec;
+        echo('<option value="'.$qid.'"><strong>'._('----- Section Break -----').'</strong></option>\n');
+	}
+}
+db_close($result);
+?>
+
+</select>
 <hr />
-<input type="button" value="<?php echo(_('Up')); ?>" onclick="javascript:move(this.form,true,'questions')" /> | <input type="button" value="<?php echo(_('Down')); ?>" onclick="javascript:move(this.form, false, 'questions')"> | <input type="submit" name="addbreak" value="<?php echo(_('Add Section Break')); ?>"> | <input type="button" value="<?php echo(_('Remove')); ?>" name="remove" onclick="javascript:removeItem()" />
-    <br /><br />
+
+<input class="btn btn-sm" type="button" value="Up" onclick="javascript:move(this.form,true,'questions')" />&nbsp;
+<input class="btn btn-sm" type="button" value="Down" onclick="javascript:move(this.form, false, 'questions')">&nbsp;
+<input class="btn btn-sm" type="submit" name="addbreak" value="Add Section Break">&nbsp;
+<a class="btn btn-danger btn-sm" role="button" href="javascript:removeItem()"><i class="fa fa-trash"></i> Remove</a>
+
+<br /><br />

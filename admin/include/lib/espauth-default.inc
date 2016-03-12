@@ -67,7 +67,8 @@ function survey_auth($sid, $username, $password, $raw_password, $css, $title) {
 	if ( ! $auth ) {
         // record the fact that authentication failed
         if ($loginAttempt) {
-            esp_require_once('/lib/espsurveystat');
+            //esp_require_once('/lib/espsurveystat');
+            require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurveystat.inc';
             survey_stat_increment(SURVEY_STAT_LOGINFAIL, $sid);
         }
 
@@ -92,7 +93,8 @@ function survey_auth($sid, $username, $password, $raw_password, $css, $title) {
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $error_message = _('Incorrect User ID or Password, or your account has been disabled/expired.');
             }
-            require_once 'include/template.php';
+            //require_once 'include/template.php';
+            require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/template.php';
             $title = 'Login Page';
             displayHeader($title);
             displayNav();
@@ -136,7 +138,8 @@ function survey_auth($sid, $username, $password, $raw_password, $css, $title) {
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $error_message = _('Your account has been disabled or you have already completed this survey.');
             }
-            require_once 'include/template.php';
+            //require_once 'include/template.php';
+            require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/template.php';
             $title = 'Login Page';
             displayHeader($title);
             displayNav();
@@ -227,7 +230,8 @@ function manage_auth($username, $password, $raw_password="") {
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $error_message = _('Incorrect User ID or Password, or your account has been disabled/expired.');
             }
-            require_once 'include/template.php';
+            //require_once 'include/template.php';
+            require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/template.php';
             $title = 'Login Page';
             displayHeader($title);
             displayNav();
@@ -290,8 +294,8 @@ function manage_logout() {
 	$_SESSION['acl'] = array('expired' => 2);
 }
 
-/* {{{ proto boolean auth_is_owner(int surveyId, string user)
-   Returns true if user owns the survey. */
+/*  proto boolean auth_is_owner(int surveyId, string user)
+    Returns true if user owns the survey. */
 
 function auth_is_owner($sid, $user) {
 	$val = false;
@@ -303,8 +307,8 @@ function auth_is_owner($sid, $user) {
 	return $val;
 }
 
-/* proto string auth_get_survey_realm(int surveyId)
-   Returns the realm of the survey. */
+/*  proto string auth_get_survey_realm(int surveyId)
+    Returns the realm of the survey. */
 
 function auth_get_survey_realm($sid) {
 	$val = '';

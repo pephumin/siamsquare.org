@@ -139,15 +139,15 @@ if ($sid) {
 
 <?php if(!empty($errstr)) echo("<p>$errstr</p>\n"); ?>
 
-<p><?php
-	echo(_('This lets you control who has access to fill out a form.
-Public surveys let anyone submit data.
-Private surveys are restricted by Respondent Groups.')); ?></p>
+<p>This lets you control who has access to fill out a form.</p>
 
-<p><b>Note:</b>
-<?php printf(_('You must use %s when using private surveys.'),
-	'<tt>'. substr(strrchr($ESPCONFIG['handler_prefix'], '/'), 1) .
-	' &amp; '. substr(strrchr($ESPCONFIG['handler'], '/'), 1) . '</tt>'); ?></p>
+<ul class="fa-ul">
+<li><i class="fa-li fa fa-check-square"></i>Public surveys let anyone submit data.</li>
+<li><i class="fa-li fa fa-check-square"></i>Private surveys are restricted by Respondent Groups.</li>
+</ul>
+
+<p><b>Note:</b> You must use <code>handler-prefix.php</code> & <code>handler.php</code> when using private surveys.</p>
+<br />
 
 <?php if ($sid) { ?>
 <input type="hidden" name="where" value="access" />
@@ -156,12 +156,12 @@ Private surveys are restricted by Respondent Groups.')); ?></p>
 
 <br />
 <table class="table table-hover">
-	<tr><th align="left">ID</th><td colspan="5"><?php echo($sid); ?></td></tr>
-	<tr><th align="left">Name</th><td colspan="5"><?php echo($name); ?></td></tr>
-	<tr><th align="left">Title</th><td colspan="5"><?php echo($title); ?></td></tr>
-	<tr><th align="left">Owner</th><td colspan="5"><?php echo($owner); ?></td></tr>
-	<tr><th align="left">Group</th><td colspan="5"><?php echo($realm); ?></td></tr>
-	<tr><th align="left">Public</th><td colspan="5"><?php echo($public); ?></td></tr>
+	<tr><th>ID</th><td colspan="5"><?php echo($sid); ?></td></tr>
+	<tr><th>Name</th><td colspan="5"><?php echo($name); ?></td></tr>
+	<tr><th>Title</th><td colspan="5"><?php echo($title); ?></td></tr>
+	<tr><th>Owner</th><td colspan="5"><?php echo($owner); ?></td></tr>
+	<tr><th>Group</th><td colspan="5"><?php echo($realm); ?></td></tr>
+	<tr><th>Public</th><td colspan="5"><?php echo($public); ?></td></tr>
 	<tr><td colspan="6"><hr /></td></tr>
 	<tr><th>Company</th>
 		<th>Max Responses</th>
