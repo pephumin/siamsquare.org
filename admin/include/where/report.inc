@@ -62,11 +62,10 @@ $result = execute_sql($sql);
 
 <table class="table table-hover">
 	<tr class="active">
-		<th>ID</th>
-		<th>Name</th>
 		<th>Title</th>
 		<th>Owner</th>
 		<th>Group</th>
+		<th>View report</th>
 	</tr>
 <?php
     $bg = '';
@@ -74,13 +73,10 @@ $result = execute_sql($sql);
         $result->MoveNext();
 ?>
 	<tr>
-		<td><?php echo($sid); ?></td>
-		<td><a href="<?php echo("". $base .htmlentities("?where=report&sid=${sid}")); ?>">
-			<?php echo($name); ?></a>
-		</td>
-		<td><?php echo($title); ?></td>
+		<td><a href="<?php echo("". $base .htmlentities("?where=report&sid=${sid}")); ?>"><?php echo($title); ?></a></td>
 		<td><?php echo($owner); ?></td>
 		<td><?php echo($realm); ?></td>
+		<td><a href="<?php echo("". $base .htmlentities("?where=report&sid=${sid}")); ?>"><i class="fa fa-line-chart fa-fw"></i></a></td>
 	</tr>
 <?php
 	}

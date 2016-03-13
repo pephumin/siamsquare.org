@@ -90,7 +90,7 @@ $ESPCONFIG['extension'] = '.inc';
 $ESPCONFIG['handler'] = ESP_BASE . '/public/handler.php';
 $ESPCONFIG['handler_prefix'] = ESP_BASE . '/public/handler-prefix.php';
 $ESPCONFIG['include_path'] = ESP_BASE . '/admin/include'; 
-$ESPCONFIG['css_path'] = ESP_BASE . '/css'; // css path
+$ESPCONFIG['css_path'] = ESP_BASE . '/admin/css'; // css path
 $ESPCONFIG['locale_path'] = ESP_BASE . '/locale'; // locale path
 
 $ESPCONFIG['image_url'] = $ESPCONFIG['base_url'] . '/images/'; // URL of the images directory (for <img src='...'> tags)

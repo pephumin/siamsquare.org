@@ -163,7 +163,7 @@ if ($sid) {
 	<tr><th>Group</th><td colspan="5"><?php echo($realm); ?></td></tr>
 	<tr><th>Public</th><td colspan="5"><?php echo($public); ?></td></tr>
 	<tr><td colspan="6"><hr /></td></tr>
-	<tr><th>Company</th>
+	<tr class="active"><th>Group</th>
 		<th>Max Responses</th>
 		<th>Save/Restore</th>
 		<th>Back/Forward</th>

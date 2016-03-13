@@ -1,15 +1,8 @@
 <?php
 
-/* $Id$ */
+/*  proto void response_purge(array/int response_id)
+    Purges all traces of response_id from the database. Returns void. */
 
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-// Written by James Flemer
-// <jflemer@alum.rpi.edu>
-
-/* {{{ proto void response_purge(array/int response_id)
-   Purges all traces of response_id from the database.
-   Returns void. */
 function response_purge($qids) {
 	if(is_int($qids)) {
 		$qidstr = '='.$qids;
@@ -21,7 +14,8 @@ function response_purge($qids) {
 	}
 
     // decrement the completion statistic for all surveys associated with these responses
-    esp_require_once('/lib/espsurveystat');
+    //esp_require_once('/lib/espsurveystat');
+	require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurveystat.inc';
     $sql = sprintf('SELECT survey_id FROM %s WHERE id %s', $GLOBALS['ESPCONFIG']['response_table'], $qidstr);
     $res = execute_sql($sql);
     while ($row = fetch_row($res)) {
@@ -42,6 +36,5 @@ function response_purge($qids) {
 
 	return;
 }
-/* }}} */
 
 ?>

@@ -1,13 +1,5 @@
 <?php
 
-/* $Id$ */
-
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-// Written by James Flemer
-// For eGrad2000.com
-// <jflemer@alum.rpi.edu>
-
 /* if survey has been selected ... */
 if(!empty($_GET['sid'])) {
 	$sid = intval($_GET['sid']);
@@ -59,20 +51,17 @@ $result = execute_sql($sql);
 ?>
 
 <h2>Copy Survey</h2>
-
+<br />
 <p>Choose a survey of which to make a copy. The copy will have the same
 status of a newly created survey. You will be able to edit the
 survey, and will have to activate it before use.</p>
 
-<br />
 <table class="table table-hover">
-	<tr>
-		<th>ID</th>
-		<th>Name</th>
+	<tr class="active">
 		<th>Title</th>
-		<th>Status</th>
 		<th>Owner</th>
 		<th>Group</th>
+		<th>Status</th>
 	</tr>
 <?php
 	while(list($sid,$name,$title,$status,$owner,$realm) = fetch_row($result)) {
@@ -95,12 +84,10 @@ survey, and will have to activate it before use.</p>
 		//	$bg = $ESPCONFIG['bgalt_color2'];
 ?>
 	<tr>
-		<td><?php echo($sid); ?></td>
-		<td><a href="<?php echo(htmlentities("". $GLOBALS['ESPCONFIG']['ME'] ."?where=copy&sid=${sid}")); ?>"><?php echo($name); ?></a></td>
-		<td><?php echo($title); ?></td>
-		<td><?php echo($stat); ?></td>
+		<td><a href="<?php echo(htmlentities("". $GLOBALS['ESPCONFIG']['ME'] ."?where=copy&sid=${sid}")); ?>"><?php echo($title); ?></a></td>
 		<td><?php echo($owner); ?></td>
 		<td><?php echo($realm); ?></td>
+		<td><?php echo($stat); ?></td>
 	</tr>
 <?php
 	}

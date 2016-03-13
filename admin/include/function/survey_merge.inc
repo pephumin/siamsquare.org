@@ -1,20 +1,12 @@
 <?php
 
-/* $Id$ */
-
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-// Written by James Flemer
-// <jflemer@alum.rpi.edu>
-
 if(empty($GLOBALS['ESPCONFIG']['DEBUG_MERGE']))
 	$GLOBALS['ESPCONFIG']['DEBUG_MERGE'] = $GLOBALS['ESPCONFIG']['DEBUG'];
 
-/* {{{ proto string survey_merge(array survey_ids, int precision, bool show_totals)
-   Builds a HTML result page after merging the results from
-   each of the survey ids.
-   Return an empty string on sucess, else a string with an
-   error message. */
+//   proto string survey_merge(array survey_ids, int precision, bool show_totals)
+//   Builds a HTML result page after merging the results from each of the survey ids.
+//   Return an empty string on sucess, else a string with an error message.
+
 function survey_merge($sids, $precision = 1, $showTotals = 1) {
 	// sanity check arguments
 	if(!is_array($sids)) {
@@ -366,6 +358,6 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
 <?php
 	return;
 }
-/* }}} */
+
 
 ?>

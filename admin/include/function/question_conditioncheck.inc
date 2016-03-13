@@ -1,11 +1,8 @@
 <?php
 
-/* $Id$ */
+/*  proto bool question_render(int $question_id, int respnse_number)
+    Checks if conditions for qid are met */
 
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-/* {{{ proto bool question_render(int $question_id, int respnse_number)
-   Checks if conditions for qid are met */
 function isequal (&$val1,&$val2) {
      return $val1==$val2;
 }
@@ -54,5 +51,5 @@ function question_conditioncheck($sid,$qid,$rid) {
   }
   return false;
 }
-/* }}} */
+
 ?>

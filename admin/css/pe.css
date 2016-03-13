@@ -13,3 +13,7 @@ footer {
   padding: 10px;
   font-size: 90%;
 }
+
+.pagination-centered {
+  text-align: center;
+}

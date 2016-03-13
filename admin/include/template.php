@@ -30,7 +30,6 @@ function displayHeader($title, $scrollspy = NULL) {
 		//$path = dirname(dirname(__FILE__)).'/js/'.$filename;
 		echo "	<script type=\"text/javascript\" src=\"$filename\"></script>\n";
  	}
-	//echo '<script type="text/javascript" src="js/admin.js"></script>'."\n";
 	echo "</head>\n";
 	if ($scrollspy) { echo "<body data-spy=\"scroll\" data-target=\"#ssqscrollspy\" data-offset=\"20\">\n"; }
 	else { echo "<body>\n"; }
@@ -120,31 +119,23 @@ function displayPageFooter() {
 	$user = $_SESSION['acl']['username'];
 	$group = $_SESSION['acl']['pgroup'];
 	$g = $group[0];
-	if ($g) {
-		//$show = "<mark>$user/$g</mark>"; 
-		$show = "<kbd>$user</kbd>/<kbd>$g</kbd>"; 
-	} else {
-		//$show = "<mark>$user</mark>"; 
-		$show = "<kbd>$user</kbd>"; 
-	}
-	if(!empty($_SESSION['acl']['username'])) {
-		$signed = "[signed in as $show]";
-	} else {
-		$signed = "";
-	}
+	if ($g) { $show = "<kbd>$user</kbd>/<kbd>$g</kbd>"; } 
+	else { $show = "<kbd>$user</kbd>"; }
+	if(!empty($_SESSION['acl']['username'])) { $signed = "Signed in as <i class=\"fa fa-user\"> $show </i>"; } 
+	else { $signed = ""; }
 	echo "</div> <!-- /container -->\n";
 	echo "</form>\n";
 	echo "<br /><br />\n\n";
 	echo "<footer class=\"footer\">\n";
 	echo "  <div class=\"container\">\n";
-	echo "    <div class=\"text-muted pull-left\">Powered by SiamSquare</div>\n";
+	echo "    <div class=\"text-muted pull-left\"><i class=\"fa fa-graduation-cap\"></i> Website development by Phumin</div>\n";
 	echo "    <div class=\"text-muted pull-right\">".$signed."</div>\n";
 	echo "  </div>\n";
 	echo "</footer>\n\n";
 }
 
 function displayFooter() {
-	$jsfiles = array("js/jquery-2.2.1.js", "js/bootstrap.min.js");
+	$jsfiles = array("js/jquery-2.2.1.js", "js/bootstrap.js");
 	foreach ($jsfiles as $filename) {
 		//$path = dirname(dirname(__FILE__)).'/js/'.$filename;
 		echo '<script type="text/javascript" src="' . $filename . '"></script>'."\n";
@@ -156,8 +147,7 @@ function displayFooter() {
 	echo "</script>\n\n";
 	echo "</body>\n";
 	echo "</html>\n\n";
-	//if($ESPCONFIG['DEBUG']) { include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; }
-	include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php';
+	if ($_SESSION['acl']['superuser'] == 'Y') { include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; }
 }
 
 

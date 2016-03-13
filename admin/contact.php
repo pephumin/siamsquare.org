@@ -1,7 +1,7 @@
 <?php
 
 $_SERVER['BASE_PAGE'] = 'contact.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/template.php';
 
 //$base =& $GLOBALS['ESPCONFIG']['ME'];

@@ -19,31 +19,41 @@ if(get_magic_quotes_gpc()) {
 // If there are any errors in the standard libraries we want to know!
 error_reporting(E_ALL); 
 
-function esp_where($where = null)
-{
+function esp_where($where = null) {
     $cfg =& $GLOBALS['ESPCONFIG'];
     if(empty($where))
         $where = 'index';
     $where = strtolower(preg_replace('/ +/','_',$where));
     if(!preg_match('/^[A-Za-z0-9_]+$/',$where))    // Valid chars are [A-Za-z0-9_]
         $where = 'index';
-    if(!file_exists($cfg['include_path'].'/where/'.$where.$cfg['extension']))
+    //if(!file_exists($cfg['include_path'].'/where/'.$where.$cfg['extension']))
+    $filecheck = $_SERVER['DOCUMENT_ROOT'] . '/admin/include/where/'.$where.'.inc';
+    if(!file_exists($filecheck))
         $where = 'index';
-    if(!file_exists($cfg['include_path'].'/where/'.$where.$cfg['extension'])) {
+    if(!file_exists($filecheck)) {
         echo('<b>'. _('Unable to open include file. Check INI settings. Aborting.'). '</b>');
-        exit;
+        exit;        
     }
-    return($cfg['include_path'].'/where/'.$where.$cfg['extension']);
+    return($filecheck);
+    //if(!file_exists($cfg['include_path'].'/where/'.$where.$cfg['extension']))
+    //    $where = 'index';
+    //if(!file_exists($cfg['include_path'].'/where/'.$where.$cfg['extension'])) {
+    //    echo('<b>'. _('Unable to open include file. Check INI settings. Aborting.'). '</b>');
+    //    exit;
+    //}
+    //return($cfg['include_path'].'/where/'.$where.$cfg['extension']);
 }
 
 function esp_init_adodb() {
     $cfg =& $GLOBALS['ESPCONFIG'];
-    if(!file_exists($cfg['adodb_path'].'adodb.inc.php')) {
+    $dbcheck = $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/adodb/adodb.inc.php';
+    //if(!file_exists($cfg['adodb_path'].'adodb.inc.php')) {
+    if(!file_exists($dbcheck)) {
         echo('<b>Unable to open ADODB include file. Check INI settings. Aborting.</b>');
         exit;
-    }
-    else {
-        include($cfg['adodb_path'].'adodb.inc.php');
+    } else {
+        //include($cfg['adodb_path'].'adodb.inc.php');
+        include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/adodb/adodb.inc.php';
     }
     if (isset($cfg['adodb_conn'])) {
         return;
@@ -54,10 +64,8 @@ function esp_init_adodb() {
     //$cfg['adodb_conn']->debug=1;
     if ($cfg['adodb_database_type'] == "sqlite") {
         $dbconnected = $cfg['adodb_conn']->Connect($cfg['adodb_pathto_db']);
-    }
-    else {
-        if (!isset($cfg['adodbi_persist']) or 
-    (isset($cfg['adodb_persist']) && $cfg['adodb_persist'])) {
+    } else {
+        if (!isset($cfg['adodbi_persist']) or (isset($cfg['adodb_persist']) && $cfg['adodb_persist'])) {
             // Use persistent connection (default)
             $dbconnected = $cfg['adodb_conn']->PConnect($cfg['db_host'], $cfg['db_user'], $cfg['db_pass'], $cfg['db_name']);
         } else {
@@ -204,15 +212,18 @@ function goto_saved($sid, $url) {
     survey_stat_decrement(SURVEY_STAT_ABANDONED, $sid);
     survey_stat_increment(SURVEY_STAT_SUSPENDED, $sid);
 ?>
-<p>Your progress has been saved.  You may return at any time to complete this survey.  
-    To do so, simply bookmark the link below.  You may be prompted for your username and password to complete the survey.</p>
+<p>Your progress has been saved.  You may return at any time to complete this survey.</p>
 
-<a href="<?php echo $url; ?>"><?php echo _('Resume survey'); ?></a>&nbsp;
+<p>To do so, simply bookmark the link below.</p>
+
+<p>You may be prompted for your username and password to complete the survey.</p>
+
+<a href="<?php echo $url; ?>">Resume survey</a>&nbsp;
 
 <?php
         if ($GLOBALS['ESPCONFIG']['dashboard_enable']) {
 ?>
-<a class="returnlink" href="<?php echo $GLOBALS['ESPCONFIG']['base_url'] . '/public/dashboard.php'; ?>"><?php echo _('Go to my surveys'); ?></a>
+<a class="returnlink" href="<?php echo $GLOBALS['ESPCONFIG']['base_url'] . '/public/dashboard.php'; ?>">Go to my surveys</a>
 <?php
     }
     return;
@@ -255,27 +266,6 @@ function remove_magic_quotes($input) {
     if(get_magic_quotes_gpc()) $input= stripslashes($input);
     return $input;
 }
-//esp_require_once('/lib/espcross');
-//esp_require_once('/lib/espauth');
-//esp_require_once('/lib/esphtml.forms');
-//esp_require_once('/lib/esphtml.results');
-//esp_require_once('/lib/espmerge');
-//esp_require_once('/lib/espresponse');
-//esp_require_once('/lib/espsql');
-//esp_require_once('/lib/espdatalib');
-//esp_require_once('/function/survey_copy');
-//esp_require_once('/function/survey_merge');
-//esp_require_once('/function/survey_purge');
-//esp_require_once('/function/survey_render');
-//esp_require_once('/function/survey_report');
-//esp_require_once('/function/survey_results');
-//esp_require_once('/function/survey_update');
-//esp_require_once('/function/survey_export_csv');
-//esp_require_once('/function/account_upload');
-//esp_require_once('/function/response_purge');
-//esp_require_once('/function/question_render');
-//esp_require_once('/function/question_conditioncheck');
-//esp_require_once('/function/db_update');
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espcross.inc';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espauth.inc';
@@ -298,5 +288,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/function/response_purge
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/function/question_render.inc';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/function/question_conditioncheck.inc';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/function/db_update.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/function/ssq.inc';
 
 ?>

@@ -30,15 +30,15 @@ foreach (array(
     }
 }
 
-$str = "<table cellspacing=\"0\" cellpadding=\"0\" width=\"590\">\n";
+$str = "<table>\n";
 foreach ($arr as $key) {
     if (is_array($key)) {
-        $str .= '<tr><td bgcolor="#ccccff">' .
+        $str .= '<tr><td bgcolor="#808080">' .
                 htmlspecialchars($key[0]) . '</td>';
         $str .= '<td bgcolor="#cccccc">' .
                 @htmlspecialchars($key[1]) . "</td></tr>\n";
     } else {
-        $str .= '<tr><th align="left" colspan="2" bgcolor="#ccccff">' .
+        $str .= '<tr><th align="left" colspan="2" bgcolor="#808080">' .
                 htmlspecialchars($key) . "</th></tr>\n";
     }
 }
@@ -60,5 +60,5 @@ function debugWindow () {
 }
 // End -->
 </script>
-<form name="debug"><input type="button" value="debug" onClick="debugWindow()"></form>
+<form name="debug"><input class="btn btn-xs btn-block btn-danger" type="button" value="debug" onClick="debugWindow()"></form>
 
