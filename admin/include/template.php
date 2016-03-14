@@ -135,7 +135,7 @@ function displayPageFooter() {
 }
 
 function displayFooter() {
-	$jsfiles = array("js/jquery-2.2.1.js", "js/bootstrap.js");
+	$jsfiles = array("js/jquery.js", "js/bootstrap.js");
 	foreach ($jsfiles as $filename) {
 		//$path = dirname(dirname(__FILE__)).'/js/'.$filename;
 		echo '<script type="text/javascript" src="' . $filename . '"></script>'."\n";
