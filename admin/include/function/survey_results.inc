@@ -1,19 +1,11 @@
 <?php
 
-/* $Id$ */
-
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-// Written by James Flemer
-// <jflemer@alum.rpi.edu>
-
 if(empty($GLOBALS['ESPCONFIG']['DEBUG_RESULTS']))
 	$GLOBALS['ESPCONFIG']['DEBUG_RESULTS'] = $GLOBALS['ESPCONFIG']['DEBUG'];
 
-/* {{{ proto void survey_results_navbar(int survey_id, int response_id)
-   Builds HTML for a response navigation bar to move between individual
-   responses.
- */
+//  proto void survey_results_navbar(int survey_id, int response_id)
+//  Builds HTML for a response navigation bar to move between individual responses.
+
 function survey_results_navbar($sid, $curr_rid) {
 	$sql = "SELECT R.id
 		FROM ".$GLOBALS['ESPCONFIG']['response_table']." R
@@ -72,15 +64,12 @@ function survey_results_navbar($sid, $curr_rid) {
 		</center>
 		<?php
 }
-/* }}} */
 
-/* {{{ proto string survey_results(int survey_id, int precision, bool show_totals, int question_id, array choice_ids, int response_id)
-	Builds HTML for the results for the survey. If a
-	question id and choice id(s) are given, then the results
-	are only calculated for respodants who chose from the
-	choice ids for the given question id.
-	Returns empty string on sucess, else returns an error
-	string. */
+//  proto string survey_results(int survey_id, int precision, bool show_totals, int question_id, array choice_ids, int response_id)
+//	Builds HTML for the results for the survey. If a question id and choice id(s) are given, then the results
+//	are only calculated for respodants who chose from the choice ids for the given question id.
+//	Returns empty string on sucess, else returns an error string.
+
 function survey_results($sid, $precision = 1, $showTotals = 1, $qid = '', $cids = '', $rid = '', $guicross='') {
 	$bg = '';
 	if(empty($precision))	$precision  = 1;
@@ -499,10 +488,11 @@ switch ($table) {
 	</tr>
 <?php } // end while ?>
 </table>
+
 <?php
 	db_close($questions_result);
 	return;
 }
-/* }}} */
+
 
 ?>

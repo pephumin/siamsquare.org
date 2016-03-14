@@ -160,7 +160,7 @@ if($_SESSION['new_survey']) {
 //displayTabNav();
 
 echo "<hr />\n";
-echo "<br />\n";
+//echo "<br />\n";
 
 echo "<p>Designing a survey requires to complete these 6 tabs as follows</p>\n";
 echo "<ul class=\"fa-ul\">\n";

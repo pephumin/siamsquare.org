@@ -37,42 +37,38 @@ function validate() {
 
 <input type="hidden" name="where" value="tab" />
 <input type="hidden" name="old_tab" value="preview" />
+
 <hr />
 
-<?php // lets make the css style available during the preview.
-      // this should really go into the head section.....but should still work
-//  $sql = "SELECT theme FROM ".$GLOBALS['ESPCONFIG']['survey_table']." where id = ${sid}";
-//  if ($result = execute_sql($sql)) {
-//    if (record_count($result) > 0) {
-//      list($css_file) = fetch_row($result);
-//      db_close($result);
-//      echo("<link rel=\"stylesheet\" href=\"".$GLOBALS['ESPCONFIG']['css_url'].$css_file."\"  type=\"text/css\">\n");                }
-//    }
+<?php 
+
+// css style during the preview - to be added to <header>
+//$sql = "SELECT theme FROM ".$GLOBALS['ESPCONFIG']['survey_table']." where id = ${sid}";
+//if ($result = execute_sql($sql)) {
+//  if (record_count($result) > 0) {
+//    list($css_file) = fetch_row($result);
+//    db_close($result);
+//    echo "<link rel=\"stylesheet\" href=\"".$GLOBALS['ESPCONFIG']['css_url'].$css_file."\"  type=\"text/css\">\n";
+//  }
+//}
+
+survey_render($sid,$_POST['section']); 
+
+if($num_sections > 1) {
+
+  echo "<nav class=\"pagination-centered\">\n";
+  echo "  <ul class=\"pagination\">\n";
+  for($a=0; $a < $num_sections; $a++) {
+    $b = $a + 1;
+    if ($b == $_POST['section']) {
+     echo "    <li class=\"disabled\"><input class=\"btn btn-sm btn-warning\" type=\"submit\" name=\"section\" value=\"$b\" /></li>\n"; 
+   } else {
+     echo "    <li><input class=\"btn btn-sm btn-default\" type=\"submit\" name=\"section\" value=\"$b\" /></li>\n";
+   }
+    
+  }
+  echo "  </ul>\n";
+  echo "</nav>\n\n";
+}
+
 ?>
-
-<?php survey_render($sid,$_POST['section']); ?>
-
-<?php
-#	if ($ESPCONFIG['auth_response']) {
-#		if ($_POST['section'] > 1) {
-#        	echo('<input type="button" value="' . _('Previous Page'). '" /> ');
-#        }
-#	    echo ('<input type="button" value="'. _('Save') .'" /> ');
-#	}
-#	if($_POST['section'] != $num_sections) {
-#		echo('<input type="button" value="'. _('Next Page') .'" /> ');
-#	} else {
-#		echo('<input type="button" value="'. _('Submit Survey') .'" />');
-#	}
-?>
-
-<br />
-
-<?php if($num_sections > 1): ?>
-  <strong>Section:</strong>
-  <?php for($i=0;$i<$num_sections;$i++):  ?>
-    <input type="submit" name="section" value="<?php echo($i+1); ?>" />
-  <?php endfor; ?>
-<?php endif; ?>
-
-<br />
