@@ -36,7 +36,7 @@ $background_color=$background_colors[rand(0,3)];
 imagefilledrectangle($im, 0, 0, 120, 38, $background_color);
 
 // replace font.ttf with the location of your own ttf font file
-$font = 'font.ttf';
+$font = 'captcha.font.ttf';
 
 // add shadow
 imagettftext($im, 25, 8, 15, 28, $grey, $font, $random1);
