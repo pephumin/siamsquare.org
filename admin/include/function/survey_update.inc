@@ -267,24 +267,30 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 				if ($choice_content != '') {
 					$choice_content = _addslashes($choice_content);
 				}
-				if ($choice_content_th != '') {
-					$choice_content_th = _addslashes($choice_content_th);
-				}
+				//if ($choice_content_th != '') {
+				//	$choice_content_th = _addslashes($choice_content_th);
+				//}
+                $choice_content_th = _addslashes($choice_content_th);
                 $choice_feedback = _addslashes($choice_feedback);
                 $choice_credit   = _addslashes($choice_credit);
 
-				// each of the submitted choices
-				if($choice_id=='' && ($choice_content!='' || $choice_content_th!='')) {
+				// error
+				//if(($choice_id=='' && $choice_content!='') || ($choice_id=='' && $choice_content_th!='')) {
+                if($choice_id=='' && $choice_content!='') {
 					// insert (new)
 					$sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['question_choice_table']." (question_id,content,content_th,feedback,credit) VALUES (${qid},${choice_content},${choice_content_th},${choice_feedback},${choice_credit})";
 					++$count;
-				} elseif($choice_id!='' && ($choice_content=='' && $choice_content_th=='')) {
+				//} elseif($choice_id!='' && ($choice_content=='' && $choice_content_th=='')) {
+				} elseif($choice_id!='' && $choice_content=='') {
 					// delete (old)
 					$sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE id=${choice_id}";
-				} elseif($choice_id!='' && ($choice_content!='' || $choice_content!='' || $choice_feedback!='' || $choice_credit!='') && in_array($choice_id, $cids)) {
+				//} elseif($choice_id!='' && ($choice_content!='' || $choice_content!='' || $choice_feedback!='' || $choice_credit!='') && in_array($choice_id, $cids)) {
+				} elseif($choice_id!='' && ($choice_content!='' || $choice_feedback!='' || $choice_credit!='') && in_array($choice_id, $cids)) {
 					// update (old)
 					//$sql = "UPDATE ".$GLOBALS['ESPCONFIG']['question_choice_table']." SET content=${choice_content},content_th=${choice_content_th},feedback=${choice_feedback},credit=${choice_credit} WHERE id=${choice_id}";
-					$sql = "UPDATE ".$GLOBALS['ESPCONFIG']['question_choice_table']." SET content=${choice_content},content_th=${choice_content_th} WHERE id=${choice_id}";
+					
+					$sql = "UPDATE ".$GLOBALS['ESPCONFIG']['question_choice_table']." SET content=${choice_content}, content_th=${choice_content_th} WHERE id=${choice_id}";
+					//echo $sql;
 					++$count;
 				}
 				if($sql != '') {
