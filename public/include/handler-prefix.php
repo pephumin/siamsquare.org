@@ -1,8 +1,23 @@
 <?php
 
+<<<<<<< HEAD
+if (!defined('ESP-FIRST-INCLUDED')) {
+    echo "In order to conduct surveys, please include phpESP.first.php (not handler-prefix.php)";
+    exit;
+}
+
+if (defined('ESP-HANDLER-PREFIX'))
+    return;
+
+define('ESP-HANDLER-PREFIX', true);
+
+//if (!defined('ESP-FIRST-INCLUDED')) { echo "In order to conduct surveys, please include first.php (not handler-prefix.php)"; exit; }
+//if (defined('ESP-HANDLER-PREFIX')) return; define('ESP-HANDLER-PREFIX', true);
+=======
 if (!defined('ESP-FIRST-INCLUDED')) { echo "In order to conduct surveys, please include first.php (not handler-prefix.php)"; exit; }
 
 if (defined('ESP-HANDLER-PREFIX')) return; define('ESP-HANDLER-PREFIX', true);
+>>>>>>> master
 
 $GLOBALS['errmsg'] = '';
 
@@ -44,7 +59,12 @@ else
 
 if($ESPCONFIG['auth_response']) {
     // check for authorization on the survey
+<<<<<<< HEAD
+    //require_once($ESPCONFIG['include_path']."/lib/espauth".$ESPCONFIG['extension']);
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espauth.inc';
+=======
     require_once($ESPCONFIG['include_path']."/lib/espauth".$ESPCONFIG['extension']);
+>>>>>>> master
     if ($GLOBALS['ESPCONFIG']['auth_mode'] == 'basic') {
         $espuser = ''; $esppass = '';
         if (isset($_SERVER['PHP_AUTH_USER']))

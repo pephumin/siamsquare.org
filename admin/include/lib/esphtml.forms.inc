@@ -179,67 +179,50 @@ function make_element_attrs_from_array($attrs) {
 }
 
 function login_warning() {
-    //$extra = "";
-    //$extra .= "<div class=\"alert alert-warning\" role=\"alert\">\n";
-    $text = <<< END
-    <p><strong>UNAUTHORIZED ACCESS TO THIS COMPUTER SYSTEM IS PROHIBITED BY LAW</strong></p>
-
-    <p>You are accessing a private computer network which includes: (1) this computer, (2) this computer network, (3) all computers connected to this network, and (4) all devices and storage media attached to this network or to a computer on this network. This information system is provided for registered clients authorized use only. Unauthorized or improper use of this system may result in disciplinary action, as well as civil and criminal penalties.</p>
-
-    <p>If you do not have an access, please contact sales for setting up a master login/password for your company.</p>
-
-    <p>By using this information system, you understand and consent to the following:</p>
-
-    <p>* You have no reasonable expectation of privacy regarding any communication or data transiting or stored on this information system. At any time, and for any lawful purpose, we may monitor, intercept, and search and seize any communication or data transiting or stored on this information system.</p>
-
-    <p>* Any communication or data transiting or stored on this information system may be disclosed or used for any lawful purpose.</p>
-END;
-    //$extra .= nl2br($text);
-    //$extra .= $text;
-    //$extra .= "</div>\n\n";
-    $extra = mkwarn ($text);
+    $text .= "<p><strong>UNAUTHORIZED ACCESS TO THIS COMPUTER SYSTEM IS PROHIBITED BY LAW</strong></p>\n";
+    $text .= "<p>You are accessing a private computer network which includes: (1) this computer, (2) this computer network, (3) all computers connected to this network, and (4) all devices and storage media attached to this network or to a computer on this network. This information system is provided for registered clients authorized use only. Unauthorized or improper use of this system may result in disciplinary action, as well as civil and criminal penalties.</p>\n";
+    $text .= "<p>If you do not have an access, please contact sales for setting up a master login/password for your company.</p>\n";
+    $text .= "<p>By using this information system, you understand and consent to the following:</p>\n";
+    $text .= "<p>* You have no reasonable expectation of privacy regarding any communication or data transiting or stored on this information system. At any time, and for any lawful purpose, we may monitor, intercept, and search and seize any communication or data transiting or stored on this information system.</p>\n";
+    $text .= "<p>* Any communication or data transiting or stored on this information system may be disclosed or used for any lawful purpose.</p>\n";
+    $extra = mkwarn($text);
     $extra .= "\n\n";
     return $extra;
 }
 
 function mkloginbox() {
-
-    $extra = "";
-    $text = <<< END
-    <form name="loginform" id="loginform" method="post" class="form-horizontal">
-    <div class="dashboardPanel" id="my_login">
-    <h2 class="form-signin-heading">Client Login</h2>
-    <br />
-        <div class="form-group">
-           <label for="username" class="col-sm-3 control-label">Username:</label>
-           <div class="col-sm-9">
-           <input type="text" name="username" class="form-control" placeholder="Username">
-           </div>
-        </div>
-        <div class="form-group">
-            <label for="password" class="col-sm-3 control-label">Password:</label>
-            <div class="col-sm-9">
-            <input type="password" name="password" class="form-control" placeholder="Password">
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-offset-3 col-sm-9">
-            <div class="checkbox">
-                <label><input type="checkbox" checked> Remember me</label>
-            </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-offset-3 col-sm-9">
-                <button class="btn btn-lg btn-primary btn-block" name="Login" type="submit">Sign in</button>
-            </div>
-        </div>
-    </div> 
-    </form>
-END;
-    $extra .= $text;
-    $extra .= "\n\n";
-    return $extra;
+    $text = "<form name=\"loginform\" id=\"loginform\" method=\"post\" class=\"form-horizontal\">\n";
+    $text .= "  <div class=\"dashboardPanel\" id=\"login\">\n";
+    $text .= "  <h2>Client Login</h2>\n";
+    $text .= "  <br />\n";
+    $text .= "    <div class=\"form-group\">\n";
+    $text .= "      <label for=\"username\" class=\"col-sm-3 control-label\">Username:</label>\n";
+    $text .= "        <div class=\"col-sm-9\">\n";
+    $text .= "        <input type=\"text\" name=\"username\" class=\"form-control\" placeholder=\"Username\">\n";
+    $text .= "        </div>\n";
+    $text .= "     </div>\n";
+    $text .= "     <div class=\"form-group\">\n";
+    $text .= "       <label for=\"password\" class=\"col-sm-3 control-label\">Password:</label>\n";
+    $text .= "         <div class=\"col-sm-9\">\n";
+    $text .= "         <input type=\"password\" name=\"password\" class=\"form-control\" placeholder=\"Password\">\n";
+    $text .= "       </div>\n";
+    $text .= "     </div>\n";
+    $text .= "     <div class=\"form-group\">\n";
+    $text .= "       <div class=\"col-sm-offset-3 col-sm-9\">\n";
+    $text .= "         <div class=\"checkbox\">\n";
+    $text .= "           <label><input type=\"checkbox\" checked> Remember me</label>\n";
+    $text .= "          </div>\n";
+    $text .= "       </div>\n";
+    $text .= "     </div>\n";
+    $text .= "     <div class=\"form-group\">\n";
+    $text .= "       <div class=\"col-sm-offset-3 col-sm-9\">\n";
+    $text .= "         <button class=\"btn btn-lg btn-primary btn-block\" name=\"Login\" type=\"submit\">Sign in</button>\n";
+    $text .= "       </div>\n";
+    $text .= "     </div>\n";
+    $text .= "  </div>\n";
+    $text .= "</form>\n";
+    $text .= "\n\n";
+    return $text;
 }
 
 

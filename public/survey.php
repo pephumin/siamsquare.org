@@ -1,5 +1,12 @@
 <?php
 
+<<<<<<< HEAD
+//$results = 1; Making all results public 
+$_SERVER['BASE_PAGE'] = 'survey.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
+=======
+>>>>>>> master
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
 
 $_name = '';
@@ -29,6 +36,39 @@ if (!empty($_name)) {
     unset($_sql);
     unset($_result);
 }
+<<<<<<< HEAD
+
+if (empty($_name) && isset($sid) && $sid) {
+    $_sql = "SELECT title,theme FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id = '$sid'";
+    if ($_result = execute_sql($_sql)) {
+        if (record_count($_result) > 0){
+            list($_title, $_css) = fetch_row($_result);
+        }
+        db_close($_result);
+    }
+    unset($_sql);
+    unset($_result);
+}
+
+// call the handler-prefix once $sid is set to handle authentication / authorization
+//include $_SERVER['DOCUMENT_ROOT'] . '/public/include/handler-prefix.php';
+
+// --------------------------------------------------------------------------------
+
+displayHeader($title);
+displayNav();
+displayPageHeader();
+unset($_name);
+unset($_title);
+include $_SERVER['DOCUMENT_ROOT'] . '/public/include/handler.php';
+//if ($_SESSION['acl']['superuser'] == 'Y') { include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; }
+displayPageFooter();
+displayFooter();
+
+// --------------------------------------------------------------------------------
+
+?>
+=======
 
 //$results = 1; Making all results public 
 
@@ -80,3 +120,4 @@ include $_SERVER['DOCUMENT_ROOT'] . '/public/include/handler.php';
 
 </body>
 </html>
+>>>>>>> master
