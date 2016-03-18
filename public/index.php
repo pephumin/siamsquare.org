@@ -28,10 +28,16 @@
 */
 	
 $_SERVER['BASE_PAGE'] = 'index.php';
+<<<<<<< HEAD
 $title = "Main Interface";
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
+=======
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
+>>>>>>> master
 
 // survey status
 define('STATUS_NOT_STARTED',  'Not Started');
@@ -48,15 +54,19 @@ if (! $GLOBALS['ESPCONFIG']['dashboard_enable']) {
     exit;
 }
 
+<<<<<<< HEAD
 // --------------------------------------------------------------------------------
 
 displayHeader($title);
 displayNav();
 //displayPageHeader();
+=======
+>>>>>>> master
 handleLogin();
 handleLogout();
 handleChangeProfile();
 handleChangePassword();
+<<<<<<< HEAD
 //handleHelp();
 if (is_session_authenticated()) { paint_authenticated(); } 
 else { paint_non_authenticated(); }
@@ -64,5 +74,11 @@ displayPageFooter();
 displayFooter();
 
 // --------------------------------------------------------------------------------
+=======
+handleHelp();
+
+if (is_session_authenticated()) { paint_authenticated(); } 
+else { paint_non_authenticated(); }
+>>>>>>> master
 
 ?>

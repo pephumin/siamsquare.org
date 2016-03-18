@@ -4,7 +4,11 @@ $home = "http://www.siamsquare.org";
 $public = $home."/public";
 $self = $_SERVER['PHP_SELF'];
 $base = $_SERVER['BASE_PAGE'];
+<<<<<<< HEAD:public/include/template.php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/esphtml.forms.inc';
+=======
+
+>>>>>>> master:public/include/template.php
 
 function handleLogin() {
     $handleLogin = (
@@ -175,6 +179,7 @@ function handleChangePassword() {
 //  handleHelp()
 //  Handle a help button press
 
+<<<<<<< HEAD:public/include/template.php
 //function handleHelp() {
 //    global $base, $public, $admin;
 //    $handleHelp = (isset($_REQUEST['doHelp']) && is_session_authenticated() ? true : false);
@@ -189,6 +194,22 @@ function handleChangePassword() {
 //	require_once($target);
 //    }
 //}
+=======
+function handleHelp() {
+    global $base, $public, $admin;
+    $handleHelp = (isset($_REQUEST['doHelp']) && is_session_authenticated() ? true : false);
+    if ($handleHelp) {
+        //$base  = $GLOBALS['ESPCONFIG']['base_url'];
+        $title = _('Help');
+	echo '<a href="'.$public.'">Back</a>';
+	//require_once('help/index.php');
+	$target = ESP_BASE . 'public/help/index.php';
+	//include($target);
+	echo $target;
+	require_once($target);
+    }
+}
+>>>>>>> master:public/include/template.php
 
 
 function paint_header() {
@@ -237,7 +258,11 @@ function displayHeader($title, $scrollspy = NULL) {
 	if (isset($_SERVER['BASE_PAGE'])) {
 		echo "	<link rel=\"canonical\" href=\"$admin/$base\">\n";
 	}
+<<<<<<< HEAD:public/include/template.php
 	$jsfiles = array("js/public.js");
+=======
+	$jsfiles = array("js/admin.js");
+>>>>>>> master:public/include/template.php
 	foreach ($jsfiles as $filename) {
 		//$path = dirname(dirname(__FILE__)).'/js/'.$filename;
 		echo "	<script type=\"text/javascript\" src=\"$filename\"></script>\n";
@@ -245,6 +270,7 @@ function displayHeader($title, $scrollspy = NULL) {
 	echo "</head>\n";
 	if ($scrollspy) { echo "<body data-spy=\"scroll\" data-target=\"#ssqscrollspy\" data-offset=\"20\">\n"; }
 	else { echo "<body>\n"; }
+<<<<<<< HEAD:public/include/template.php
 }
 
 function displayPageHeader() {
@@ -280,6 +306,20 @@ function displayPageFooter() {
   echo "  </div>\n";
   echo "</footer>\n\n";
 }
+=======
+}
+
+function paint_footer() {
+    global $base, $public, $admin;
+    echo '<div class="dashboard">';
+    echo '<p><a href="'.$public.'/help">Help</a></p>';
+    echo '</div>';
+    echo '</div></body></html>';
+}
+
+// }}}
+// {{{ paint_non_authenticated()       Paint the page for non-authenticated users
+>>>>>>> master:public/include/template.php
 
 function displayFooter() {
   $jsfiles = array("js/jquery.js", "js/bootstrap.js");
@@ -299,11 +339,16 @@ function displayFooter() {
 }
 function paint_non_authenticated() {
     // throw it up
+<<<<<<< HEAD:public/include/template.php
     //paint_header();
     //$title = "Login";
     //displayHeader($title);
     //paint_login_panel();
     render_login_form();
+=======
+    paint_header();
+    paint_login_panel();
+>>>>>>> master:public/include/template.php
     paint_public_survey_list();
     //paint_footer();
     //displayPageFooter();
@@ -650,6 +695,7 @@ function fetch_availability($survey, &$rc) {
     }
 }
 
+<<<<<<< HEAD:public/include/template.php
 //  render_login_form()
 //  Render a login form
 
@@ -708,6 +754,19 @@ function render_login_form($action = null, $usernameVar = 'username', $passwordV
   //echo "</div>\n";
   echo "<br />\n";
   echo login_warning();
+=======
+// }}}
+
+// {{{ render_login_form()             Render a login form
+
+function render_login_form($action = null, $usernameVar = 'username', $passwordVar = 'password', $loginButtonVar = 'doLogin') {
+    global $base, $public, $admin;
+    $cfg =& $GLOBALS['ESPCONFIG'];
+    if (empty($action)) {
+        //$action = $cfg['base_url'] . '/public/';
+        $action = $public . '/';
+    }
+>>>>>>> master:public/include/template.php
 
 }
 
@@ -805,9 +864,17 @@ function render_passwd_change_form(
 EOHTML;
 }
 
+<<<<<<< HEAD:public/include/template.php
 function displayNav() {
 	global $self, $home, $public;
 	echo "\n";
+=======
+
+
+function displayNav() {
+	global $self, $home, $public, $base;
+	echo "\n\n";
+>>>>>>> master:public/include/template.php
 	echo "<nav class=\"navbar navbar-default\">\n";
 	echo "<div class=\"container\">\n";
 	echo "  <div class=\"navbar-header\">\n";
@@ -818,6 +885,7 @@ function displayNav() {
 	echo "      <span class=\"icon-bar\"></span>\n";
 	echo "    </button>\n";
 	echo "    <a class=\"navbar-brand\" href=\"$home\"><strong>SiamSquare</strong></a>\n";	
+<<<<<<< HEAD:public/include/template.php
 	if ($_SERVER['REQUEST_URI'] == "/public/") { $a = '<li class="active">'; } else { $a = '<li>'; }
 	if ($_SERVER['REQUEST_URI'] == "/public/signup.php") { $b = '<li class="active">'; } else { $b = '<li>'; }
   if ($_SERVER['REQUEST_URI'] == "/public/contact.php") { $c = '<li class="active">'; } else { $c = '<li>'; }
@@ -831,10 +899,24 @@ function displayNav() {
 		echo "      $c<a href=\"/public/contact.php\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
 		echo "      $d<a href=\"/public/help.php\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
 		echo "      <li><a href=\"$public/index.php?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log out</a></li>\n";
+=======
+	if ($_SERVER['REQUEST_URI'] == "/admin/index.php") { $a = '<li class="active">'; } else { $a = '<li>'; }
+	if ($_SERVER['REQUEST_URI'] == "/admin/contact.php") { $b = '<li class="active">'; } else { $b = '<li>'; }
+	if ($_SERVER['REQUEST_URI'] == "/admin/help.php") { $c = '<li class="active">'; } else { $c = '<li>'; }
+	if(!empty($_SESSION['acl']['username'])) {
+		echo "  </div> <!--/navbar-header -->\n";
+		echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
+		echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
+		echo "      $a<a href=\"$admin\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
+		echo "      $b<a href=\"/admin/contact.php\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
+		echo "      $c<a href=\"/admin/help.php\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
+		echo "      <li><a href=\"$admin/index.php?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log out</a></li>\n";
+>>>>>>> master:public/include/template.php
 		echo "    </ul>\n";
 		echo "  </div> <!--/navbar-collapse -->\n";
 		echo "</div>\n";
 		echo "</nav>\n";
+<<<<<<< HEAD:public/include/template.php
 //	} else {
 //		echo "  </div> <!--/navbar-header -->\n";
 //		echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
@@ -849,6 +931,22 @@ function displayNav() {
 //		echo "</div>\n";
 //		echo "</nav>\n\n";		
 //	}
+=======
+	} else {
+		echo "  </div> <!--/navbar-header -->\n";
+		echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
+		echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
+		//echo "      $a<a href=\"$admin\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
+		echo "      $a<a href=\"$admin\"><i class=\"fa fa-power-off fa-lg\"></i>&nbsp; Log-in</a></li>\n";
+		echo "      $b<a href=\"/admin/contact.php\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
+		echo "      $c<a href=\"/admin/help.php\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
+		//echo "      <li><a href=\"$admin/index.php?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log Out</a></li>\n";
+		echo "    </ul>\n";
+		echo "  </div> <!--/navbar-collapse -->\n";
+		echo "</div>\n";
+		echo "</nav>\n";		
+	}
+>>>>>>> master:public/include/template.php
 }
 
 function displayTabNav() {
@@ -881,6 +979,7 @@ function displayAdminBack() {
 	echo '<a class="btn btn-default pull-right" role="button" href="/admin/index.php?where=manage">Go back to Management Interface</a>';
 }
 
+<<<<<<< HEAD:public/include/template.php
 function respondent_signup() {
   global $home, $self;
   $page = $home.$self;
@@ -942,5 +1041,48 @@ function respondent_signup() {
   echo login_warning();
 
 }
+=======
+function displayPageHeader() {
+	global $self, $home, $public, $base;
+	echo "<form method=\"post\" id=\"phpesp\" action=".$self.">\n";
+	echo "<div class=\"container\">\n\n";
+}
+
+function displayPageFooter() {
+	$user = $_SESSION['acl']['username'];
+	$group = $_SESSION['acl']['pgroup'];
+	$g = $group[0];
+	if ($g) { $show = "<kbd>$user</kbd>/<kbd>$g</kbd>"; } 
+	else { $show = "<kbd>$user</kbd>"; }
+	if(!empty($_SESSION['acl']['username'])) { $signed = "Signed in as <i class=\"fa fa-user\"> $show </i>"; } 
+	else { $signed = ""; }
+	echo "</div> <!-- /container -->\n";
+	echo "</form>\n";
+	echo "<br /><br />\n\n";
+	echo "<footer class=\"footer\">\n";
+	echo "  <div class=\"container\">\n";
+	echo "    <div class=\"text-muted pull-left\"><i class=\"fa fa-graduation-cap\"></i> Website developed by <abbr title=\"Phumin Chesdmethee (phumin@sawasdee.org)\">Phumin</abbr></div>\n";
+	echo "    <div class=\"text-muted pull-right\">".$signed."</div>\n";
+	echo "  </div>\n";
+	echo "</footer>\n\n";
+}
+
+function displayFooter() {
+	$jsfiles = array("js/jquery-2.2.1.js", "js/bootstrap.js");
+	foreach ($jsfiles as $filename) {
+		//$path = dirname(dirname(__FILE__)).'/js/'.$filename;
+		echo '<script type="text/javascript" src="' . $filename . '"></script>'."\n";
+ 	}
+	echo "<script type=\"text/javascript\">\n";
+	echo "	var activateConfirmMsg=\"Warning! Once activated, this survey can no longer be edited. Any further changes must be done on a copy.\"\n";
+	echo "	var cancelConfirmMsg=\"Warning! This survey has not been saved. Canceling now will remove any changes.\"\n";
+	echo "	var mergeMsg=\"<h2>You must select at least two surveys before you can merge</h2>\"\n";
+	echo "</script>\n\n";
+	echo "</body>\n";
+	echo "</html>\n\n";
+	if ($_SESSION['acl']['superuser'] == 'Y') { include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; }
+}
+
+>>>>>>> master:public/include/template.php
 
 ?>
