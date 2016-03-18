@@ -1,15 +1,9 @@
 <?php
 
-/* $Id$ */
+//  proto string survey_report(int survey_id, bool details, string format)
+//  Build a description of a survey, including all unique ids.
+//	Rerturns an empty string on success, else an error message.
 
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-// Written by James Flemer
-// <jflemer@alum.rpi.edu>
-
-/* {{{ proto string survey_report(int survey_id, bool details, string format)
-    Build a description of a survey, including all unique ids.
-	Rerturns an empty string on success, else an error message. */
 function survey_report($sid, $details = 0, $format = '') {
 	if(empty($sid)) return;
 	$bg = '';
@@ -116,6 +110,5 @@ function survey_report($sid, $details = 0, $format = '') {
 <?php
 	return;
 }
-/* }}} */
 
 ?>

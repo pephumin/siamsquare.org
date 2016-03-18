@@ -1,15 +1,8 @@
 <?php
 
-/* $Id$ */
+//   proto void survey_purge(array survey_ids)
+//   Purges all traces of survey(s) from the database. Returns void. 
 
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-// Written by James Flemer
-// <jflemer@alum.rpi.edu>
-
-/* {{{ proto void survey_purge(array survey_ids)
-   Purges all traces of survey(s) from the database.
-   Returns void. */
 function survey_purge($sids) {
 	if(is_int($sids)) {
 		$sidstr = '='.$sids;
@@ -79,6 +72,5 @@ function survey_purge($sids) {
 
 	return;
 }
-/* }}} */
 
 ?>

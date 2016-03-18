@@ -37,7 +37,7 @@ $ESPCONFIG['allow_email'] = true;
 $ESPCONFIG['human_email'] = true;
 $ESPCONFIG['email_from_name'] = "SiamSquare";
 $ESPCONFIG['email_from_address'] = "survey@siamsquare.org";
-$ESPCONFIG['email_return_path'] = "survey@siamsquare.org"; // the email return path for bounces ...
+//$ESPCONFIG['email_return_path'] = "survey@siamsquare.org"; // the email return path for bounces ...
 
 $ESPCONFIG['auth_mode'] = 'form'; // { 'basic', 'form' }
 $ESPCONFIG['auth_design'] = true;
@@ -61,10 +61,10 @@ $ESPCONFIG['dashboard_enable'] = true; // For respondents
 $ESPCONFIG['dashboard_show_public_surveys'] = true;
 $ESPCONFIG['dashboard_allow_change_profile'] = true; // Allow respondents to change their profile?
 $ESPCONFIG['dashboard_allow_change_password'] = true; // Allow respondents to change their password?
-$ESPCONFIG['support_email_address'] = "webmaster@siamsquare.org";
+//$ESPCONFIG['support_email_address'] = "webmaster@siamsquare.org";
 
 $ESPCONFIG['default_lang'] = 'en_US';
-$ESPCONFIG['charset'] = 'UTF-8';
+$ESPCONFIG['charset'] = 'utf-8';
 $ESPCONFIG['default_num_choices'] = 5; // Default number of option lines for new questions
 
 //$ESPCONFIG['main_bgcolor']      = '#FFFFFF';
@@ -87,10 +87,10 @@ $ESPCONFIG['unsupported'] = array('cgi', 'sapi'); // Unsuported web server confi
 $ESPCONFIG['gettext'] = extension_loaded('gettext');
 $ESPCONFIG['extension'] = '.inc';
 
-$ESPCONFIG['handler'] = ESP_BASE . '/public/handler.php';
-$ESPCONFIG['handler_prefix'] = ESP_BASE . '/public/handler-prefix.php';
+$ESPCONFIG['handler'] = ESP_BASE . '/public/include/handler.php';
+$ESPCONFIG['handler_prefix'] = ESP_BASE . '/public/include/handler-prefix.php';
 $ESPCONFIG['include_path'] = ESP_BASE . '/admin/include'; 
-$ESPCONFIG['css_path'] = ESP_BASE . '/css'; // css path
+$ESPCONFIG['css_path'] = ESP_BASE . '/admin/css'; // css path
 $ESPCONFIG['locale_path'] = ESP_BASE . '/locale'; // locale path
 
 $ESPCONFIG['image_url'] = $ESPCONFIG['base_url'] . '/images/'; // URL of the images directory (for <img src='...'> tags)

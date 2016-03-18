@@ -46,10 +46,9 @@ function survey_render($sid, $section = 1, $rid=0, $message = '') {
 	echo "<h3>".$survey["subtitle"]."</h3>\n\n";
 	echo "<p class=\"bg-info\">".nl2br($survey["info"])."</p>\n\n";
 
-	if($num_sections>1) { echo "<p>"; printf(_('Page %d of %d'), $section+1, $num_sections); echo "</p>\n\n"; }
+	//if($num_sections>1) { echo "<p>"; printf(_('Page %d of %d'), $section+1, $num_sections); echo "</p>\n\n"; }
 
 	// if ($section==0) echo($survey["info"]);
-	// echo($message);
 
 	echo "<div class=\"row\">\n";
 
@@ -81,7 +80,7 @@ function survey_render($sid, $section = 1, $rid=0, $message = '') {
 
 	echo "</div>\n\n";
 
-	if($num_sections>1) { echo "<p>"; printf(_('Page %d of %d'), $section+1, $num_sections); echo "</p>\n\n"; }
+	//if($num_sections>1) { echo "<p>"; printf(_('Page %d of %d'), $section+1, $num_sections); echo "</p>\n\n"; }
 	
 	return;
 }

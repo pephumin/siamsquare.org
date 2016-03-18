@@ -1,17 +1,8 @@
 <?php
 
-/* $Id: survey_update.inc 1121 2009-05-28 18:54:25Z bishopb $ */
+//  proto bool survey_update(int* survey_id, string* tab, string old_tab)
+//  Reads current form variables from _POST. Returns an true on sucess, else returns false and sets global $errstr with an error message.
 
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-// Written by James Flemer
-// For eGrad2000.com
-// <jflemer@alum.rpi.edu>
-
-/* {{{ proto bool survey_update(int* survey_id, string* tab, string old_tab)
-   Reads current form variables from _POST.
-   Returns an true on sucess, else returns false and
-   sets global $errstr with an error message. */
 function survey_update(&$survey_id, &$tab, $old_tab) {
 
 	global $errstr;
@@ -212,7 +203,7 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 			//   $_POST['required']='N';
 			//}
 
-			$fields = array('name','type_id','length','precise','required','content','ans_uniq');
+			$fields = array('name','type_id','length','precise','required','content','content_th','ans_uniq');
 			foreach($fields as $f) {
 				if(isset($_POST[$f]))
 					array_push($f_arr,$f."="._addslashes($_POST[$f]));
@@ -227,7 +218,7 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 
 			$_POST['survey_id'] = $survey_id;
 
-			$fields = array('survey_id','name','type_id','length','precise','required','content','position');
+			$fields = array('survey_id','name','type_id','length','precise','required','content','content_th','position');
 			foreach($fields as $f) {
 				if(isset($_POST[$f])) {
 					array_push($f_arr, $f);
@@ -260,10 +251,11 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 			$count = 0;
 			for($i=1;$i<$_POST['num_choices']+1;$i++) {
 				$sql='';
-				$choice_id       = intval($_POST["choice_id_${i}"]);
-				$choice_content  = $_POST["choice_content_${i}"];
-				$choice_feedback = $_POST["choice_feedback_${i}"];
-				$choice_credit   = $_POST["choice_credit_${i}"];
+				$choice_id       	= intval($_POST["choice_id_${i}"]);
+				$choice_content  	= $_POST["choice_content_${i}"];
+				$choice_content_th 	= $_POST["choice_content_th_${i}"];
+				$choice_feedback 	= $_POST["choice_feedback_${i}"];
+				$choice_credit   	= $_POST["choice_credit_${i}"];
 				//constraint: for rate questions (type_id=8)
 				// we don't allow "!other" as a choice
 				if ($_POST['type_id']==8 && $choice_content=='!other') {
@@ -275,20 +267,30 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 				if ($choice_content != '') {
 					$choice_content = _addslashes($choice_content);
 				}
+				//if ($choice_content_th != '') {
+				//	$choice_content_th = _addslashes($choice_content_th);
+				//}
+                $choice_content_th = _addslashes($choice_content_th);
                 $choice_feedback = _addslashes($choice_feedback);
                 $choice_credit   = _addslashes($choice_credit);
 
-				// each of the submitted choices
-				if($choice_id=='' && $choice_content!='') {
+				// error
+				//if(($choice_id=='' && $choice_content!='') || ($choice_id=='' && $choice_content_th!='')) {
+                if($choice_id=='' && $choice_content!='') {
 					// insert (new)
-					$sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['question_choice_table']." (question_id,content,feedback,credit) VALUES (${qid},${choice_content},${choice_feedback},${choice_credit})";
+					$sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['question_choice_table']." (question_id,content,content_th,feedback,credit) VALUES (${qid},${choice_content},${choice_content_th},${choice_feedback},${choice_credit})";
 					++$count;
+				//} elseif($choice_id!='' && ($choice_content=='' && $choice_content_th=='')) {
 				} elseif($choice_id!='' && $choice_content=='') {
 					// delete (old)
 					$sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE id=${choice_id}";
+				//} elseif($choice_id!='' && ($choice_content!='' || $choice_content!='' || $choice_feedback!='' || $choice_credit!='') && in_array($choice_id, $cids)) {
 				} elseif($choice_id!='' && ($choice_content!='' || $choice_feedback!='' || $choice_credit!='') && in_array($choice_id, $cids)) {
 					// update (old)
-					$sql = "UPDATE ".$GLOBALS['ESPCONFIG']['question_choice_table']." SET content=${choice_content},feedback=${choice_feedback},credit=${choice_credit} WHERE id=${choice_id}";
+					//$sql = "UPDATE ".$GLOBALS['ESPCONFIG']['question_choice_table']." SET content=${choice_content},content_th=${choice_content_th},feedback=${choice_feedback},credit=${choice_credit} WHERE id=${choice_id}";
+					
+					$sql = "UPDATE ".$GLOBALS['ESPCONFIG']['question_choice_table']." SET content=${choice_content}, content_th=${choice_content_th} WHERE id=${choice_id}";
+					//echo $sql;
 					++$count;
 				}
 				if($sql != '') {
@@ -387,6 +389,5 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 	}
 	return(1);
 }
-/* }}} */
 
 ?>

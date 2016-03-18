@@ -1,8 +1,9 @@
 <?php
 
 $_SERVER['BASE_PAGE'] = 'contact.php';
+$title = 'Contact us';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/template.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
 
 //$base =& $GLOBALS['ESPCONFIG']['ME'];
 
@@ -46,14 +47,16 @@ if (isset($_POST["submit"])) {
     }
 }
 
-$title = 'Contact us';
 displayHeader($title);
 displayNav();
-displayPageHeader($title);
+//displayPageHeader();
 
 ?>
 
 </form>
+
+<div class="container">
+
 <h2>Contact us</h2>
 
 <br />
@@ -98,6 +101,7 @@ displayPageHeader($title);
         </div>
     </div>
 </form> 
+</div>
 
 <?php
 

@@ -1,14 +1,12 @@
 <?php
-/* $Id$ */
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-/**
+
+/*
 * survey_aggregate.inc -- Create a new, editable survey by aggregating the questions of one or more other surveys.
-* Original Author: Bishop Bettini <bishop@ideacode.com>
-*
 */
 
-// {{{ survey_aggregate()              Aggregate multiple surveys together to create a brand new survey
-// NOTE: Top-most survey information (name, title, owner, etc.) comes from first survey in aggregate list.
+//  survey_aggregate()
+//  Aggregate multiple surveys together to create a brand new survey
+//  NOTE: Top-most survey information (name, title, owner, etc.) comes from first survey in aggregate list.
 
 function survey_aggregate($sids) {
     // make sure we have valid arguments
@@ -83,8 +81,9 @@ function survey_aggregate($sids) {
     return $new_sid;
 }
 
-// }}}
-// {{{ survey_copy_questions()         Copy questions from one survey to another, starting at a given position
+
+//  survey_copy_questions()
+//  Copy questions from one survey to another, starting at a given position
 
 function survey_copy_questions_and_conditions($sid, $new_sid, $pos = 0) {
     $has_choices = esp_type_has_choices();
@@ -177,8 +176,8 @@ SELECT NULL, $new_sid,  qnew1.id, qnew2.id, cond, cond_value
     return $pos;
 }
 
-// }}}
-// {{{ sql_for_insert_into_table()     Insert into a table
+//  sql_for_insert_into_table()      
+//  Insert into a table
 
 function sql_for_insert_into_table($table, $values) {
     foreach ($values as $field => $value) {
@@ -205,6 +204,5 @@ function sql_for_insert_into_table($table, $values) {
     );
 }
 
-// }}}
 
 ?>

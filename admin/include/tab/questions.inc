@@ -22,7 +22,7 @@ if(!$updated || isset($_POST['extra_choices'])) {
 	if($curr_q<0) $curr_q = 1;
 }
 
-$fields = array('name','type_id','length','precise','required','content','position','ans_uniq');
+$fields = array('name','type_id','length','precise','required','content','content_th','position','ans_uniq');
 if($updated && $curr_q) {
 	// survey questions exist already
 	// load values from DB
@@ -38,7 +38,7 @@ if($updated && $curr_q) {
 } else if ($updated) {
 	// adding a new question (possibly because there are no questions yet)
 	$curr_q = 0;
-	foreach(array('name','length','precise','content','position') as $f) {
+	foreach(array('name','length','precise','content','content_th','position') as $f) {
 		$_POST[$f] = '';
 	}
 } else {
@@ -60,18 +60,18 @@ if($updated && $curr_q) {
 <?php
 $i = 1;
 // build array of question IDs
-$sql = "SELECT id,type_id,position,content FROM ".$GLOBALS['ESPCONFIG']['question_table']."
+$sql = "SELECT id,type_id,position,content,content_th FROM ".$GLOBALS['ESPCONFIG']['question_table']."
 	WHERE survey_id=$sid AND deleted='N' AND type_id != 99
 	ORDER BY position";
 
 $result = execute_sql($sql);
-while( list($qid, $tid, $pos, $content) = fetch_row($result)) {
+while( list($qid, $tid, $pos, $content, $content_th) = fetch_row($result)) {
        $result->MoveNext();
        $dots = "";
        $content = strip_tags($content);
-       if (strlen($content) > 30) {
-          $dots = "...";
-       }
+       $content_th = strip_tags($content_th);
+       if (strlen($content) > 30) { $dots = "..."; }
+       if (strlen($content_th) > 30) { $dots = "..."; }
        if ($qid==$curr_q) {
           echo('<option selected value="'.$qid.'">'.$i++.'. '.substr($content,0, 30).$dots.'</option>');
       } else {
@@ -140,9 +140,15 @@ else { echo "<p><mark>Edit a question</mark></p>\n"; }
 			))); ?></td>
 	</tr>
 	<tr>
-		<th>Question text</th>
+		<th>Question in English</th>
 		<td colspan="6"><?php
 			echo(mktextarea("content",4,60,"VIRTUAL"));
+		?></td>
+	</tr>
+	<tr>
+		<th>Question in Thai</th>
+		<td colspan="6"><?php
+			echo(mktextarea("content_th",4,60,"VIRTUAL"));
 		?></td>
 	</tr>
 </table>
@@ -154,7 +160,8 @@ $sql = "SELECT has_choices FROM ".$GLOBALS['ESPCONFIG']['question_type_table']."
 $choices = get_one($sql);
 if($curr_q == 0 ||
 	empty($_POST['type_id']) || $choices =='Y') {
-	include($GLOBALS['ESPCONFIG']['include_path']."/tab/questions_options".$GLOBALS['ESPCONFIG']['extension']);
+	//include($GLOBALS['ESPCONFIG']['include_path']."/tab/questions_options".$GLOBALS['ESPCONFIG']['extension']);
+	include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/tab/questions_options.inc';
 	}
 ?>
 

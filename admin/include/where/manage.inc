@@ -1,120 +1,20 @@
 <?php
 
 $base =& $GLOBALS['ESPCONFIG']['ME'];
+$kt = htmlentities($base."?where=status");
+$show = 5;
+
+echo "<h2>Management Interface</h2>\n";
+echo "<br />\n";
+//echo "<p class=\"pull-left\">Last $show projects</p>\n";
+echo "<h4>Last $show projects <small>(a newer project is on top of the list)</small></h4>\n";
+
+survey_status(0,$show,'');
+
+//echo "<div class=\"pull-right\">[<a href=\"$kt\">View the full list</a>]</div>\n";
+//echo "<br />\n";
 
 ?>
-
-<h2>Management Interface</h2>
-<br />
-
-<?php // include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/where/edit_insert.inc'; ?>
-
-<?php 
-
-if($_SESSION['acl']['superuser'] == 'Y') {
-  $sql = "SELECT s.id, s.name, s.title, s.owner, s.realm FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s WHERE s.status = 0 ORDER BY s.id DESC";
-} else {
-  $realms = array_to_insql(
-    array_intersect($_SESSION['acl']['pall'], $_SESSION['acl']['pdesign']));
-  $sql = "SELECT s.id, s.name, s.title, s.owner, s.realm FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s WHERE s.status = 0 AND (s.owner = "._addslashes($_SESSION['acl']['username']) ." || s.realm $realms) ORDER BY id DESC";
-}
-$result = execute_sql($sql);
-
-?>
-
-<h4>Current survey <small>[<a href="<?php echo($base."?where=new"); ?>"><i class="fa fa-pencil-square-o"></i> create new</a>]</small></h4>
-
-<table class="table table-hover">
-  <tr class="active">
-    <th>Title</th>
-    <th>Owner</th>
-    <th>Group</th>
-    <th>Status</th>
-  </tr>
-
-<?php
-
-/* load names and titles of all surveys available to _this_ user */
-
-if($_SESSION['acl']['superuser'] == 'Y') {
-  $sql = 'SELECT id,name,title,status,owner,realm FROM '.$GLOBALS['ESPCONFIG']['survey_table'].' ORDER BY id DESC';
-} else {
-  $realms = array_to_insql(
-    array_intersect(
-      $_SESSION['acl']['pall'],
-      array_merge(
-        $_SESSION['acl']['pall'],
-        $_SESSION['acl']['pdesign'])));
-  $sql = "SELECT id,name,title,status,owner,realm
-    FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE (owner = ".
-    _addslashes($_SESSION['acl']['username']) ." || realm $realms) ORDER BY id DESC";
-}
-$result = execute_sql($sql);
-
-$realms = array_intersect(
-    $_SESSION['acl']['pstatus'],
-    array_merge(
-      $_SESSION['acl']['pall'],
-      $_SESSION['acl']['pstatus']));
-
-while(list($sid,$name,$title,$status,$owner,$realm) = fetch_row($result)) {
-    $result->MoveNext();
-  $stat = 'Editing';
-  $test = "<a href=\"". $base .htmlentities("?where=status&op=t&sid=${sid}")."\">Test</a>";
-  $act  = "<a href=\"". $base .htmlentities("?where=status&op=a&sid=${sid}")."\" onclick='return activateConfirm()'>Activate</a>";
-  $done = "<a href=\"". $base .htmlentities("?where=status&op=e&sid=${sid}")."\">End</a>";
-  $del  = "<a href=\"". $base .htmlentities("?where=status&op=d&sid=${sid}")."\">Archive</a>";
-
-  if($status & STATUS_DELETED) {
-    $stat = _('Archived');
-    $test = $act = $done = $del = '&nbsp;';
-    continue;
-  } elseif($status & STATUS_DONE) {
-    $stat = _('Ended');
-    $test = $act = $done = '&nbsp;';
-  } elseif($status & STATUS_ACTIVE) {
-    $stat = _('Active');
-    $test = $act = '&nbsp;';
-  } elseif($status & STATUS_TEST) {
-    $stat = _('Testing');
-    $done = '&nbsp;';
-    $test = "<a href=\"". $base .htmlentities("?where=status&op=m&sid=${sid}")."\">Edit</a>";
-  } else {
-    $done = '&nbsp;';
-  }
-
-  /* whack things back to permissions set by ACL
-   * for everyone _not_ superuser */
-  if($_SESSION['acl']['superuser'] != 'Y' &&
-      !in_array($realm, $realms)) {
-    $act  = '&nbsp;';
-    $done = '&nbsp;';
-    $del  = '&nbsp;';
-  }
-
-?>
-  <tr>
-    <?php 
-    if ($stat == 'Active') {?>
-    <td><a href="<?php print $ESPCONFIG['autopub_url']."?name=".$name; ?>"><?php echo($title); ?></a></td>
-    <?php } elseif ($stat == 'Testing') { ?>
-    <td><a href="<?php print $ESPCONFIG['autopub_url']."?name=".$name."&test=1"; ?>"><?php echo($title); ?></a></td>
-    <?php } elseif ($stat == 'Editing') { ?>
-    <td><a href="<?php print $base.htmlentities("?where=tab&newid=${sid}"); ?>"><?php echo($title); ?></a></td>
-    <?php } else { ?>
-    <td><?php echo($name); ?></td>
-    <?php } ?>
-    <td><?php echo($owner); ?></td>
-    <td><?php echo($realm); ?></td>
-    <?php if ($stat == 'Testing') { echo "<td><mark>$stat</mark></td>"; } ?>
-    <?php if ($stat == 'Editing') { echo "<td><mark>$stat</mark></td>"; } ?>
-  </tr>
-<?php
-  }
-?>
-</table>
-<p class="text-right">[ <a href="<?php print $base.htmlentities("?where=status"); ?>">View the full list (for making changes)</a> ]</p>
-<br />
 
 <div class="row">
 

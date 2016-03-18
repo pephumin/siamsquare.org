@@ -1,21 +1,8 @@
 <?php
 
-/* $Id$ */
+/*  proto array parse_file_tab(string group, array file)
+	Parse uploaded tab delimited text file into an array. */
 
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-
-// Written by James Flemer
-// For eGrad2000.com
-// <jflemer@alum.rpi.edu>
-
-// account_upload written by Matthew Gregg
-// <greggmc@musc.edu>
-// Upload Bulk Respondents from Tab Delimited text file.
-
-/* {{{ proto array parse_file_tab(string group, array file)
-	Parse uploaded tab delimited text file
-	into an array.
-	*/
 function parse_file_tab($group, $file) {
 	$tab_array = array();
 	foreach($file as $row) {
@@ -29,11 +16,10 @@ function parse_file_csv(){}
 
 function parse_file_xml(){}
 
-/* {{{ proto bool account_upload(array* exceptions, string upload_type,
-	string account_type, array group_acl, file upload_file)
-	exceptions array is populated with failed SQL inserts.
-	Returns a true on success, else returns false.
-	*/
+/*  proto bool account_upload(array* exceptions, string upload_type,
+	string account_type, array group_acl, file upload_file) exceptions array is populated with failed SQL inserts.
+	Returns a true on success, else returns false. */
+
 function account_upload(&$exceptions, $upload_type, $account_type, $group_acl, $upload_file) {
 
 	$error = 0;
@@ -119,7 +105,7 @@ function account_upload(&$exceptions, $upload_type, $account_type, $group_acl, $
 					}
 					else
 						$expir = "0";
-;
+					
 					if(!in_array($disabled, $bool_validate))
 						$disabled = 'N';
 					/* Make sure user is authorized to upload this realm */
@@ -155,7 +141,7 @@ function account_upload(&$exceptions, $upload_type, $account_type, $group_acl, $
 					array_push($exceptions, array($username, $password,
 						$realm, $fname, $lname, $email, $expir,
 						 $disabled, ErrorMsg()));
-		}
+				}
 			}
 			break;
 		case 'designers':

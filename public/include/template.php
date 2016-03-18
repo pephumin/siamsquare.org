@@ -1,80 +1,10 @@
 <?php
-/* $Id$ */
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-/**
-* dashboard.php -- Implements a respondent's portal into the survey tool.
-* Original Author: Bishop Bettini <bishop@ideacode.com>
-*
-* Administrators and designers have a management interface where they can select various operations to carry out within
-* the phpESP survey tool.  Respondents benefit from a similar interface, where they can see the surveys they can complete,
-* the surveys they have already completed, change their password, and get help.
-*
-* There are two distinct operating modes: authenticated and non-authenticated.  When not authenticated, this page presents
-* a login form as well as a list of links to all public surveys.  Once authenticated, this page presents a list of links to
-* all user-specific surveys (private and public surveys), a history showing his previously completed surveys, and a
-* toolbox through which he can change his password, access the user manual, logout, etc.
-*
-* @_PATTERNS_@
-*
-* @_NOTES_@
-* MEANING/INTERPREATION OF SURVEY STATUS
-* The following table describes the meaning of the status constants:
-*
-* Constant             Interpretation
-* -------------------- ---------------------------------------------------------------------------------------------------
-* STATUS_NOT_STARTED   The user has never submitted a response.  The user may have looked at the survey.
-* STATUS_ALL_PARTIAL   The user has submitted a single, incomplete response.
-* STATUS_SOME_PARTIAL  The user has submitted at least one complete, but at least one incomplete, response.
-* STATUS_FINISHED      The user has submitted at least one complete, but no incomplete, response.
-*
-* @_TODO_@
-* o On login page, add link to reset a forgotten password
-* o In table of surveys, add:
-*   - response ID/confirmation number to finished surveys
-*   - opening/closing date (FUTURE ENHANCEMENT NEEDED TO WHOLE APP)
-*
-*/
-// hook into the phpESP environment
-require_once('./phpESP.first.php');
 
-// {{{ constants
-
-// survey status
-define('STATUS_NOT_STARTED',  _('Not Started'));
-define('STATUS_ALL_PARTIAL',  _('Started, but Incomplete'));
-define('STATUS_SOME_PARTIAL', _('Some Finished, some Incomplete'));
-define('STATUS_FINISHED',     _('Finished'));
-
-// miscellaneous
-define('FORMAT_OUTPUT_DATE', isset($ESPCONFIG['date_format'])?$ESPCONFIG['date_format']:'%Y-%m-%d');
-
-// }}}
-
-
-// ensure we are configured to want this page
-if (! $GLOBALS['ESPCONFIG']['dashboard_enable']) {
-    paint_header();
-    echo mkerror(_('Feature disabled; set dashboard_enable = true in your configuration to engage.'));
-    paint_footer();
-    exit;
-}
-
-// handle any button press events
-handleLogin();
-handleLogout();
-handleChangeProfile();
-handleChangePassword();
-handleHelp();
-
-// dispatch to the right painter
-if (is_session_authenticated()) {
-    paint_authenticated();
-} else {
-    paint_non_authenticated();
-}
-
-/* button handlers */
-// {{{ handleLogin()                   Handle a log in button press
+$home = "http://www.siamsquare.org";
+$public = $home."/public";
+$self = $_SERVER['PHP_SELF'];
+$base = $_SERVER['BASE_PAGE'];
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/esphtml.forms.inc';
 
 function handleLogin() {
     $handleLogin = (
@@ -92,24 +22,24 @@ function handleLogin() {
             $ok = set_current_respondent($_REQUEST['username'], current($realms), $_REQUEST['password']);
             if ($ok) {
                 set_session_authentication($isAuthenticated);
-                blur('/public/dashboard.php');
+                blur('/public/');
                 assert('false; // NOTREACHED');
             }
 
         // if the login is recognized but not-unique, we can't figure out what to do... panic
         // NOTE: if email were mandatory, then we could use that as a key...
         } else if ($isAuthenticated && 2 <= $realmsCnt) {
-            $GLOBALS['errmsg'] = mkerror(_('Please contact an administrator: multi-realm'));
+            $GLOBALS['errmsg'] = mkerror('Please contact an administrator: multi-realm');
 
         // otherwise, not recognized, throw error
         } else {
-            $GLOBALS['errmsg'] = mkerror(_('Incorrect User ID or Password, or your account has been disabled/expired.'));
+            $GLOBALS['errmsg'] = mkerror('Incorrect User ID or Password, or your account has been disabled/expired.');
         }
     }
 }
 
-// }}}
-// {{{ handleLogout()                  Handle a log out button press
+//  handleLogout()
+//  Handle a log out button press
 
 function handleLogout() {
     $handleLogout = (isset($_REQUEST['doLogout']) && is_session_authenticated() ? true : false);
@@ -119,8 +49,8 @@ function handleLogout() {
     }
 }
 
-// }}}
-// {{{ handleChangeProfile()           Handle a profile change button press
+//  handleChangeProfile()
+//  Handle a profile change button press
 
 function handleChangeProfile() {
     // are we in change profile mode?
@@ -148,6 +78,7 @@ function handleChangeProfile() {
               );
         if ($ok) {
             $showChangeProfile = false;
+            $GLOBALS['errmsg'] = mkerror(_('Your profile has been updated successfully'));
         } else {
             $GLOBALS['errmsg'] = mkerror(_('Unable to change your password; contact an administrator'));
         }
@@ -165,18 +96,21 @@ function handleChangeProfile() {
             $_REQUEST['emailAddress'] = $respondent['email'];
         }
 
-        paint_header();
+        //paint_header();
+        $title = "Login";
+        displayHeader($title);
         echo '<div class="dashboardPanel">' .
              '<h1>' . _('Change My Profile') . '</h1>' .
              render_profile_change_form() .
              '</div>';
-        paint_footer();
+        //paint_footer();
+        displayPageFooter();
         exit;
     }
 }
 
-// }}}
-// {{{ handleChangePassword()          Handle a password change button press
+//  handleChangePassword()
+//  Handle a password change button press
 
 function handleChangePassword() {
     // are we in change password mode?
@@ -208,6 +142,7 @@ function handleChangePassword() {
             $ok = change_password($respondent['username'], $respondent['realm'], $_REQUEST['newPassword']);
             if ($ok) {
                 $showChangePassword = false;
+                $GLOBALS['errmsg'] = mkerror(_('Your password has been changed successfully'));
             } else {
                 $GLOBALS['errmsg'] = mkerror(_('Unable to change your password; contact an administrator'));
             }
@@ -224,51 +159,43 @@ function handleChangePassword() {
 
     // if we're showing the change password form, do so
     if ($showChangePassword) {
-        paint_header();
+        //paint_header();
+        $title = "Login";
+        displayHeader($title);
         echo '<div class="dashboardPanel">' .
              '<h1>' . _('Change My Password') . '</h1>' .
              render_passwd_change_form() .
              '</div>';
-        paint_footer();
+        //paint_footer();
+        displayPageFooter();
         exit;
     }
 }
 
-// }}}
-// {{{ handleHelp()                    Handle a help button press
+//  handleHelp()
+//  Handle a help button press
 
-function handleHelp() {
-    $handleHelp = (isset($_REQUEST['doHelp']) && is_session_authenticated() ? true : false);
-    if ($handleHelp) {
-        $base  = $GLOBALS['ESPCONFIG']['base_url'];
-        $title = _('Help');
-        echo <<<EOHTML
-<script type='text/javascript'>
-window.open("$base/public/help/help.php", "$title");
-if (window) {
-    window.location="$base/public/dashboard.php";
-}
-</script>
-<noscript>
-<a href="$base/public/dashboard.php">Back</a>
-EOHTML;
-        require_once('help/help.php');
-        echo <<<EOHTML
-</noscript>
-<a href="$base/public/dashboard.php">Back</a>
-EOHTML;
-    }
-}
+//function handleHelp() {
+//    global $base, $public, $admin;
+//    $handleHelp = (isset($_REQUEST['doHelp']) && is_session_authenticated() ? true : false);
+//    if ($handleHelp) {
+//        //$base  = $GLOBALS['ESPCONFIG']['base_url'];
+//        $title = _('Help');
+//	echo '<a href="'.$public.'">Back</a>';
+//	//require_once('help/index.php');
+//	$target = ESP_BASE . 'public/help/index.php';
+//	//include($target);
+//	echo $target;
+//	require_once($target);
+//    }
+//}
 
-// }}}
-
-/* page painters */
-// {{{ paint_header()
 
 function paint_header() {
+    global $base, $public, $admin;
     $cfg =& $GLOBALS['ESPCONFIG'];
 
-    $title = _('phpESP Respondent Dashboard');
+    $title = _('Respondent Dashboard');
     echo <<<EOHTML
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" 
 "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
@@ -290,52 +217,116 @@ EOHTML;
     echo @$GLOBALS['errmsg'];
 }
 
-// }}}
-// {{{ paint_footer()
-
-function paint_footer() {
-    echo '</div></body></html>';
+function displayHeader($title, $scrollspy = NULL) {
+	global $self, $home, $public, $base;
+	header("Content-language: en");
+	header("Content-type: text/html; charset=utf-8");
+	echo "<!DOCTYPE html>\n";
+	echo "<html>\n";
+	echo "<head>\n";
+	echo "	<meta charset=\"utf-8\">\n";
+	echo "	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
+	echo "	<title>Respondent Dashboard: $title</title>\n";
+	$cssfiles = array("css/bootstrap.css", "css/font-awesome.css", "css/pe.css");
+	foreach ($cssfiles as $filename) {
+		echo "	<link href=\"$filename\" rel=\"stylesheet\" type=\"text/css\" />\n";
+ 	}
+	//if(!empty($ESPCONFIG['favicon'])) {
+	//echo "	<link rel=\"shortcut icon\" href=\"$ESPCONFIG['favicon']\"\n";
+	//}
+	if (isset($_SERVER['BASE_PAGE'])) {
+		echo "	<link rel=\"canonical\" href=\"$admin/$base\">\n";
+	}
+	$jsfiles = array("js/public.js");
+	foreach ($jsfiles as $filename) {
+		//$path = dirname(dirname(__FILE__)).'/js/'.$filename;
+		echo "	<script type=\"text/javascript\" src=\"$filename\"></script>\n";
+ 	}
+	echo "</head>\n";
+	if ($scrollspy) { echo "<body data-spy=\"scroll\" data-target=\"#ssqscrollspy\" data-offset=\"20\">\n"; }
+	else { echo "<body>\n"; }
 }
 
-// }}}
+function displayPageHeader() {
+  global $self, $home, $public, $base;
+  echo "<form method=\"post\" id=\"phpesp\" action=".$self.">\n";
+  echo "<div class=\"container\">\n\n";
+}
 
-// {{{ paint_non_authenticated()       Paint the page for non-authenticated users
+//function paint_footer() {
+//    global $base, $public, $admin;
+//    echo '<div class="dashboard">';
+//    echo '<p><a href="'.$public.'/help">Help</a></p>';
+//    echo '</div>';
+//    echo '</div></body></html>';
+//}
 
+function displayPageFooter() {
+  $user = $_SESSION['acl']['username'];
+  $group = $_SESSION['acl']['pgroup'];
+  $g = $group[0];
+  if ($g) { $show = "<kbd>$user</kbd>/<kbd>$g</kbd>"; } 
+  else { $show = "<kbd>$user</kbd>"; }
+  if(!empty($_SESSION['acl']['username'])) { $signed = "Signed in as <i class=\"fa fa-user\"> $show </i>"; } 
+  else { $signed = ""; }
+  //echo '<p><a href="'.$public.'/help">Help</a></p>';
+  echo "</div> <!-- /container -->\n";
+  echo "</form>\n";
+  echo "<br /><br />\n\n";
+  echo "<footer class=\"footer\">\n";
+  echo "  <div class=\"container\">\n";
+  echo "    <div class=\"text-muted pull-left\"><i class=\"fa fa-graduation-cap\"></i> Website developed by <abbr title=\"Phumin Chesdmethee (phumin@sawasdee.org)\">Phumin</abbr></div>\n";
+  echo "    <div class=\"text-muted pull-right\">".$signed."</div>\n";
+  echo "  </div>\n";
+  echo "</footer>\n\n";
+}
+
+function displayFooter() {
+  $jsfiles = array("js/jquery.js", "js/bootstrap.js");
+  foreach ($jsfiles as $filename) {
+    //$path = dirname(dirname(__FILE__)).'/js/'.$filename;
+    echo '<script type="text/javascript" src="' . $filename . '"></script>'."\n";
+  }
+  echo "<script type=\"text/javascript\">\n";
+  echo "  var activateConfirmMsg=\"Warning! Once activated, this survey can no longer be edited. Any further changes must be done on a copy.\"\n";
+  echo "  var cancelConfirmMsg=\"Warning! This survey has not been saved. Canceling now will remove any changes.\"\n";
+  echo "  var mergeMsg=\"<h2>You must select at least two surveys before you can merge</h2>\"\n";
+  echo "</script>\n\n";
+  echo "</body>\n";
+  echo "</html>\n\n";
+  //if ($_SESSION['acl']['superuser'] == 'Y') { include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; }
+  include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php';
+}
 function paint_non_authenticated() {
     // throw it up
-    paint_header();
-    paint_login_panel();
-    echo <<<EOHTML
-<div class='dashboard'>
-<p><a href='help/help.php'>Help</a></p>
-</div>
-EOHTML;
+    //paint_header();
+    //$title = "Login";
+    //displayHeader($title);
+    //paint_login_panel();
+    render_login_form();
     paint_public_survey_list();
-    paint_footer();
+    //paint_footer();
+    //displayPageFooter();
 }
 
-// }}}
-// {{{ paint_login_panel()             Paint the login panel
+//  paint_login_panel()
+//  Paint the login panel
 
-function paint_login_panel() {
-    echo '<div class="dashboardPanel" id="my_login">' .
-         '<h1>' . _('Login') . '</h1>' .
-         render_login_form() .
-         (
-           empty($GLOBALS['ESPCONFIG']['signup_realm']) ?
-           '' :
-           '<a href="signup.php">' . _("Don't have an account? Sign up."). '</a>'
-         ) .
-         (
-           empty($GLOBALS['ESPCONFIG']['support_email_address']) ?
-           '' :
-           "<a href='mailto:{$GLOBALS['ESPCONFIG']['support_email_address']}'>" . _('Need help? E-mail us.'). '</a>'
-         ) .
-         '</div>';
-}
+//function paint_login_panel() {
+//    //echo "<div class=\"container\">\n";
+//    //echo "</div>\n";
+//    //echo "</form>\n\n";
+//    //echo "<div class=\"dashboardPanel\" id=\"my_login\">\n";
+//    //echo "<h1>Login</h1>\n";
+//    render_login_form();
+//    //render_login_form($action = null, $usernameVar = 'username', $passwordVar = 'password', $loginButtonVar = 'doLogin', $_message = null);
+//    //if (!empty($GLOBALS['ESPCONFIG']['signup_realm'])) { echo "<p><a href=\"signup.php\">Don't have an account? Sign up.</a></p>\n"; }
+//    //if (!empty($GLOBALS['ESPCONFIG']['email_from_address'])) { echo "<p><a href=\"mailto:".$GLOBALS['ESPCONFIG']['email_from_name']."(".$GLOBALS['ESPCONFIG']['email_from_address'].")\">Need help? E-mail us.</a></p>\n"; }
+//    //echo "</div>\n";
+//}
 
-// }}}
-// {{{ paint_public_survey_list()      Paint a list of links to take the given surveys
+//  paint_public_survey_list()
+//  Paint a list of links to take the given surveys
 
 function paint_public_survey_list() {
     // make sure we're configured to show this
@@ -366,9 +357,8 @@ function paint_public_survey_list() {
     }
 }
 
-// }}}
-
-// {{{ paint_authenticated()           Paint the page for authenticated users
+// paint_authenticated()
+// Paint the page for authenticated users
 
 function paint_authenticated() {
     // get the needed data
@@ -376,12 +366,15 @@ function paint_authenticated() {
     partition_surveys($surveys, $responses, $accessibility, $current, $historical);
 
     // throw it up
-    paint_header();
+    //paint_header();
+    //$title = "Login";
+    //displayHeader($title);
     paint_welcome();
     paint_respondent_surveys($current);
     paint_respondent_history($historical);
     paint_respondent_tools();
-    paint_footer();
+    //paint_footer();
+    displayPageFooter();
 }
 
 // }}}
@@ -405,8 +398,8 @@ function paint_welcome() {
     printf(_('Right now, my watch shows %s.'), strftime(FORMAT_OUTPUT_DATE));
 }
 
-// }}}
-// {{{ paint_respondent_surveys()      Paint a panel of links to surveys available to the current respondent
+//  paint_respondent_surveys()
+//  Paint a panel of links to surveys available to the current respondent
 
 function paint_respondent_surveys($current) {
     echo '<div class="dashboardPanel" id="my_surveys">';
@@ -435,8 +428,8 @@ function paint_respondent_surveys($current) {
     echo '</div>';
 }
 
-// }}}
-// {{{ paint_respondent_history()      Paint a historical list of surveys this respondent has completed
+//  paint_respondent_history()
+//  Paint a historical list of surveys this respondent has completed
 
 function paint_respondent_history($historical) {
     echo '<div class="dashboardPanel" id="my_history">';
@@ -465,26 +458,29 @@ function paint_respondent_history($historical) {
     echo '</div>';
 }
 
-// }}}
-// {{{ paint_respondent_tools()        Paint a panel of tools available to this respondent
+//  paint_respondent_tools()
+//  Paint a panel of tools available to this respondent
 
 function paint_respondent_tools() {
+    global $base, $public, $admin;
     $cfg =& $GLOBALS['ESPCONFIG'];
 
     // figure out what tools to make available
     // ... the standard, always available ones
     $tools  = array (
-                  "{$cfg['base_url']}/public/dashboard.php?doHelp=1"   => _('Help'),
-                  "{$cfg['base_url']}/public/dashboard.php?doLogout=1" => _('Logout'),
+                  "$public/?doChangeProfile=1" => _('Edit my profile'),
+                  "$public/?doChangePassword=1" => _('Change my password'),
+                  "$public/?doLogout=1" => _('Logout'),
+                  "$public/help"   => _('Help'),
               );
 
     // ... profile and password changing
-    if ($GLOBALS['ESPCONFIG']['dashboard_allow_change_profile']) {
-        $tools["{$cfg['base_url']}/public/dashboard.php?doChangeProfile=1"] = _('Change my profile');
-    }
-    if ($GLOBALS['ESPCONFIG']['dashboard_allow_change_password']) {
-        $tools["{$cfg['base_url']}/public/dashboard.php?doChangePassword=1"] = _('Change my password');
-    }
+    //if ($GLOBALS['ESPCONFIG']['dashboard_allow_change_profile']) {
+    //    $tools["$public/?doChangeProfile=1"] = _('Change my profile');
+    //}
+    //if ($GLOBALS['ESPCONFIG']['dashboard_allow_change_password']) {
+    //    $tools["$public/?doChangePassword=1"] = _('Change my password');
+    //}
 
     // ... contacting support
     if (! empty($GLOBALS['ESPCONFIG']['support_email_address'])) {
@@ -507,10 +503,8 @@ EOHTML;
 EOHTML;
 }
 
-// }}}
-
-/* helpers */
-// {{{ get_survey_info()               Get the surveys, the responses, and the accessibility of surveys for the current user
+//  get_survey_info()
+//  Get the surveys, the responses, and the accessibility of surveys for the current user
 
 function get_survey_info(&$surveys, &$responses, &$accessibility) {
     // initialize return values
@@ -542,8 +536,8 @@ function get_survey_info(&$surveys, &$responses, &$accessibility) {
     return true;
 }
 
-// }}}
-// {{{ partition_surveys()             Divide the user's surveys into those that are active and those that aren't
+//  partition_surveys()
+//  Divide the user's surveys into those that are active and those that aren't
 
 function partition_surveys($surveys, $responses, $accessibility, &$current, &$historical) {
     foreach ($surveys as $sid => $survey) {
@@ -574,8 +568,8 @@ function partition_surveys($surveys, $responses, $accessibility, &$current, &$hi
     }
 }
 
-// }}}
-// {{{ fetch_status()                  Given a set of responses and a survey ID, determine the status of those responses
+//  fetch_status()
+//  Given a set of responses and a survey ID, determine the status of those responses
 
 function fetch_status($sid, $responses) {
     // get the status
@@ -601,8 +595,8 @@ function fetch_status($sid, $responses) {
     return $status;
 }
 
-// }}}
-// {{{ fetch_latest_submission_date()  Given a set of responses and a survey ID, determine the latest submission date
+//  fetch_latest_submission_date()
+//  Given a set of responses and a survey ID, determine the latest submission date
 
 function fetch_latest_submission_date($sid, $responses) {
     if (isset($responses[$sid])) {
@@ -632,8 +626,8 @@ function fetch_latest_submission_date($sid, $responses) {
     return $date;
 }
 
-// }}}
-// {{{ fetch_availability()            Given a survey, determine its availability
+//  fetch_availability()
+//  Given a survey, determine its availability
 
 function fetch_availability($survey, &$rc) {
     $rc = survey_open($survey['open_date'], $survey['close_date']);
@@ -656,41 +650,69 @@ function fetch_availability($survey, &$rc) {
     }
 }
 
-// }}}
+//  render_login_form()
+//  Render a login form
 
-// {{{ render_login_form()             Render a login form
+function render_login_form($action = null, $usernameVar = 'username', $passwordVar = 'password', $loginButtonVar = 'doLogin', $_message = null) {
+  global $home, $self, $public;
+  $page = $home.$self;
+  $cfg =& $GLOBALS['ESPCONFIG'];
+  if (empty($action)) {
+      //$action = $cfg['base_url'] . '/public/';
+      $action = $public . '/';
+  }
 
-function render_login_form($action = null, $usernameVar = 'username', $passwordVar = 'password', $loginButtonVar = 'doLogin') {
-    $cfg =& $GLOBALS['ESPCONFIG'];
-    if (empty($action)) {
-        $action = $cfg['base_url'] . '/public/dashboard.php';
-    }
+  $usernameLabel = _('User ID');
+  $passwordLabel = _('Password');
+  $loginLabel    = _('Login');
+  $username      = (isset($_REQUEST['username']) ? $_REQUEST['username'] : '');
 
-    $usernameLabel = _('User ID');
-    $passwordLabel = _('Password');
-    $loginLabel    = _('Login');
-    $username      = (isset($_REQUEST['username']) ? $_REQUEST['username'] : '');
-    return <<<EOHTML
-<form id='login' action='{$action}' method='post'>
-<fieldset>
-  <div class='row'>
-    <label for='{$usernameVar}'>{$usernameLabel}</label>
-    <input type='text' name='{$usernameVar}' id='{$usernameVar}' value='{$username}' />
-  </div>
-  <div class='row'>
-    <label for='{$passwordVar}'>{$passwordLabel}</label>
-    <input type='password' name='{$passwordVar}' id='{$passwordVar}' />
-  </div>
-  <div class='buttons'>
-    <input type='submit' name='{$loginButtonVar}' value='{$loginLabel}' />
-  </div>
-</fieldset>
-</form>
-EOHTML;
+  $str = "";
+  if ($_message) {
+      echo mkerror($_message);
+  }
+  //echo "</div\n";
+  //echo "</form>\n";
+  echo "\n";
+  echo "<div class=\"container\">\n";
+  echo "<form name=\"login\" id=\"login\" method=\"post\" class=\"form-horizontal\" action=\"$page\">\n";
+  echo "  <div class=\"dashboardPanel\" id=\"login\">\n";
+  echo "  <h2 class=\"form-signin-heading\">Respondent Login</h2>\n";
+  echo "  <br />\n";
+  echo "    <div class=\"form-group\">\n";
+  echo "      <label for=\"$usernameVar\" class=\"col-sm-3 control-label\">Username:</label>\n";
+  echo "        <div class=\"col-sm-9\">\n";
+  echo "        <input type=\"text\" name=\"$usernameVar\" class=\"form-control\" placeholder=\"Username\">\n";
+  echo "        </div>\n";
+  echo "     </div>\n";
+  echo "     <div class=\"form-group\">\n";
+  echo "       <label for=\"$passwordVar\" class=\"col-sm-3 control-label\">Password:</label>\n";
+  echo "         <div class=\"col-sm-9\">\n";
+  echo "         <input type=\"password\" name=\"$passwordVar\" class=\"form-control\" placeholder=\"Password\">\n";
+  echo "       </div>\n";
+  echo "     </div>\n";
+  echo "     <div class=\"form-group\">\n";
+  echo "       <div class=\"col-sm-offset-3 col-sm-9\">\n";
+  echo "         <div class=\"checkbox\">\n";
+  echo "           <label><input type=\"checkbox\" checked> Remember me</label>\n";
+  echo "          </div>\n";
+  echo "       </div>\n";
+  echo "     </div>\n";
+  echo "     <div class=\"form-group\">\n";
+  echo "       <div class=\"col-sm-offset-3 col-sm-9\">\n";
+  echo "         <button class=\"btn btn-lg btn-primary btn-block\" name=\"$loginButtonVar\" type=\"submit\">Sign in</button>\n";
+  echo "       </div>\n";
+  echo "     </div>\n";
+  echo "  </div>\n";
+  echo "</form>\n";
+  //echo "</div>\n";
+  echo "<br />\n";
+  echo login_warning();
+
 }
 
-// }}}
-// {{{ render_profile_change_form()    Render a profile change form
+//  render_profile_change_form()
+//  Render a profile change form
 
 function render_profile_change_form(
     $action = null,
@@ -698,9 +720,11 @@ function render_profile_change_form(
     $changeButtonVar = 'doChangeProfile', $cancelButtonVar = 'doChangeProfileCancel'
     ) {
 
+    global $base, $public, $admin;
     $cfg =& $GLOBALS['ESPCONFIG'];
     if (empty($action)) {
-        $action = $cfg['base_url'] . '/public/dashboard.php';
+        //$action = $cfg['base_url'] . '/public/';
+        $action = $public . '/';
     }
 
     $firstNameLabel    = _('First Name');
@@ -745,9 +769,11 @@ function render_passwd_change_form(
     $changeButtonVar = 'doChangePassword', $cancelButtonVar = 'doChangePasswordCancel'
     ) {
 
+    global $base, $public, $admin;
     $cfg =& $GLOBALS['ESPCONFIG'];
     if (empty($action)) {
-        $action = $cfg['base_url'] . '/public/dashboard.php';
+        //$action = $cfg['base_url'] . '/public/';
+        $action = $public . '/';
     }
 
     $oldPasswordLabel        = _('Old Password');
@@ -779,6 +805,142 @@ function render_passwd_change_form(
 EOHTML;
 }
 
-// }}}
+function displayNav() {
+	global $self, $home, $public;
+	echo "\n";
+	echo "<nav class=\"navbar navbar-default\">\n";
+	echo "<div class=\"container\">\n";
+	echo "  <div class=\"navbar-header\">\n";
+	echo "    <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\">\n";
+	echo "      <span class=\"sr-only\">Toggle navigation</span>\n";
+	echo "      <span class=\"icon-bar\"></span>\n";
+	echo "      <span class=\"icon-bar\"></span>\n";
+	echo "      <span class=\"icon-bar\"></span>\n";
+	echo "    </button>\n";
+	echo "    <a class=\"navbar-brand\" href=\"$home\"><strong>SiamSquare</strong></a>\n";	
+	if ($_SERVER['REQUEST_URI'] == "/public/") { $a = '<li class="active">'; } else { $a = '<li>'; }
+	if ($_SERVER['REQUEST_URI'] == "/public/signup.php") { $b = '<li class="active">'; } else { $b = '<li>'; }
+  if ($_SERVER['REQUEST_URI'] == "/public/contact.php") { $c = '<li class="active">'; } else { $c = '<li>'; }
+	if ($_SERVER['REQUEST_URI'] == "/public/help.php") { $d = '<li class="active">'; } else { $d = '<li>'; }
+//	if(!empty($_SESSION['acl']['username'])) {
+		echo "  </div> <!--/navbar-header -->\n";
+		echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
+		echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
+		echo "      $a<a href=\"$public\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
+    echo "      $b<a href=\"/public/signup.php\"><i class=\"fa fa-user fa-lg\"></i><i class=\"fa fa-plus\"></i>&nbsp; Sign-up</a></li>\n";
+		echo "      $c<a href=\"/public/contact.php\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
+		echo "      $d<a href=\"/public/help.php\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
+		echo "      <li><a href=\"$public/index.php?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log out</a></li>\n";
+		echo "    </ul>\n";
+		echo "  </div> <!--/navbar-collapse -->\n";
+		echo "</div>\n";
+		echo "</nav>\n";
+//	} else {
+//		echo "  </div> <!--/navbar-header -->\n";
+//		echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
+//		echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
+//    echo "      $a<a href=\"$public\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
+//    echo "      $b<a href=\"/public/signup.php\"><i class=\"fa fa-user fa-lg\"></i><i class=\"fa fa-plus\"></i>&nbsp; Sign-up</a></li>\n";
+//    echo "      $c<a href=\"/public/contact.php\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
+//    echo "      $d<a href=\"/public/help.php\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
+//    //echo "      <li><a href=\"$public/index.php?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log out</a></li>\n";
+//		echo "    </ul>\n";
+//		echo "  </div> <!--/navbar-collapse -->\n";
+//		echo "</div>\n";
+//		echo "</nav>\n\n";		
+//	}
+}
+
+function displayTabNav() {
+	global $tab;
+	echo "<p>";
+	echo '<input type="hidden" name="where" value="tab" />';
+	echo "&nbsp;\n";
+	if ($tab == 'general') { echo '<input type="submit" name="tab_general" value="General" class="btn btn-default active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_general" value="General" class="btn btn-default btn-sm" />'; }
+	echo "&nbsp;\n";
+	if ($tab == 'questions') { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-default active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-default btn-sm" />'; }
+	echo "&nbsp;\n";
+	if ($tab == 'order') { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-default active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-default btn-sm" />'; }
+	echo "&nbsp;\n";
+	if ($tab == 'conditions') { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-default active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-default btn-sm" />'; }
+	echo "&nbsp;\n";
+	if ($tab == 'preview') { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-default active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-default btn-sm" />'; }
+	echo "&nbsp;\n";
+	if ($tab == 'finish') { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-default active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-default btn-sm" />'; }
+	echo "&nbsp;\n";
+	echo "</p>";
+}
+
+function displayAdminBack() {
+	echo '<a class="btn btn-default pull-right" role="button" href="/admin/index.php?where=manage">Go back to Management Interface</a>';
+}
+
+function respondent_signup() {
+  global $home, $self;
+  $page = $home.$self;
+  $str = "";
+  if ($_message) {
+      echo mkerror($_message);
+  }
+  echo "\n";
+  echo "<div class=\"container\">\n";
+  echo "<form class=\"form-horizontal\" method=\"post\" id=\"phpesp\" action=\"$page\">\n";
+  echo "  <div class=\"dashboardPanel\" id=\"login\">\n";
+  echo "  <h2 class=\"form-signin-heading\">Respondent sign up</h2>\n";
+  echo "  <br />\n";
+  echo "    <div class=\"form-group\">\n";
+  echo "      <label for=\"fname\" class=\"col-sm-3 control-label\">First Name:</label>\n";
+  echo "        <div class=\"col-sm-9\">\n";
+  echo "        <input type=\"text\" name=\"fname\" class=\"form-control\" placeholder=\"John\">\n";
+  echo "        </div>\n";
+  echo "     </div>\n";
+  echo "    <div class=\"form-group\">\n";
+  echo "      <label for=\"lname\" class=\"col-sm-3 control-label\">Last Name:</label>\n";
+  echo "        <div class=\"col-sm-9\">\n";
+  echo "        <input type=\"text\" name=\"lname\" class=\"form-control\" placeholder=\"Doe\">\n";
+  echo "        </div>\n";
+  echo "     </div>\n";
+  echo "    <div class=\"form-group\">\n";
+  echo "      <label for=\"email\" class=\"col-sm-3 control-label\">Email:</label>\n";
+  echo "        <div class=\"col-sm-9\">\n";
+  echo "        <input type=\"text\" name=\"email\" class=\"form-control\" placeholder=\"email@company.com\">\n";
+  echo "        </div>\n";
+  echo "     </div>\n";
+  echo "    <div class=\"form-group\">\n";
+  echo "      <label for=\"username\" class=\"col-sm-3 control-label\">Login:</label>\n";
+  echo "        <div class=\"col-sm-9\">\n";
+  echo "        <input type=\"text\" name=\"username\" class=\"form-control\" placeholder=\"Login\">\n";
+  echo "        </div>\n";
+  echo "     </div>\n";
+  echo "     <div class=\"form-group\">\n";
+  echo "       <label for=\"password\" class=\"col-sm-3 control-label\">Password:</label>\n";
+  echo "         <div class=\"col-sm-9\">\n";
+  echo "         <input type=\"password\" name=\"password\" class=\"form-control\" placeholder=\"Password\">\n";
+  echo "       </div>\n";
+  echo "     </div>\n";
+  echo "     <div class=\"form-group\">\n";
+  echo "       <label for=\"password\" class=\"col-sm-3 control-label\">Confirm new password:</label>\n";
+  echo "         <div class=\"col-sm-9\">\n";
+  echo "         <input type=\"password\" name=\"password2\" class=\"form-control\" placeholder=\"Password\">\n";
+  echo "       </div>\n";
+  echo "     </div>\n";
+  echo "     <div class=\"form-group\">\n";
+  echo "       <div class=\"col-sm-offset-3 col-sm-9\">\n";
+  echo "         <button type=\"submit\" class=\"btn btn-success\">Sign up a new user</button>\n";
+  echo "       </div>\n";
+  echo "     </div>\n";
+  echo "  </div>\n";
+  echo "</form>\n";
+  //echo "</div>\n";
+  echo "<br />\n";
+  echo login_warning();
+
+}
 
 ?>
