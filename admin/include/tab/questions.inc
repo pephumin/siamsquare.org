@@ -65,13 +65,13 @@ $sql = "SELECT id,type_id,position,content,content_th FROM ".$GLOBALS['ESPCONFIG
 	ORDER BY position";
 
 $result = execute_sql($sql);
-while( list($qid, $tid, $pos, $content) = fetch_row($result)) {
+while( list($qid, $tid, $pos, $content, $content_th) = fetch_row($result)) {
        $result->MoveNext();
        $dots = "";
        $content = strip_tags($content);
-       if (strlen($content) > 30) {
-          $dots = "...";
-       }
+       $content_th = strip_tags($content_th);
+       if (strlen($content) > 30) { $dots = "..."; }
+       if (strlen($content_th) > 30) { $dots = "..."; }
        if ($qid==$curr_q) {
           echo('<option selected value="'.$qid.'">'.$i++.'. '.substr($content,0, 30).$dots.'</option>');
       } else {
