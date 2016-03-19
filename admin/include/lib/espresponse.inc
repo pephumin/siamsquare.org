@@ -8,10 +8,7 @@
 function response_check_answers($sid, $rid, $section) {
     //angek: may need to keep for backwards compatability
     //global $_POST;
-    $sql = "SELECT id,type_id,content,required,ans_uniq FROM ".$GLOBALS['ESPCONFIG']['question_table']."
-    ". survey_select_section_sql($sid,$section) ." AND
-    deleted='N' AND type_id < 98
-    ORDER BY position";
+    $sql = "SELECT id,type_id,content,required,ans_uniq FROM ".$GLOBALS['ESPCONFIG']['question_table']. survey_select_section_sql($sid,$section) ." AND deleted='N' AND type_id < 98 ORDER BY position";
 
     $result = execute_sql($sql);
     if(record_count($result) < 1) {
@@ -87,7 +84,7 @@ function response_check_answers($sid, $rid, $section) {
 
     if(count($missing) > 0) {
         // missing required variables
-        $message .= _('You are missing the following required questions:') ."<br>\n";
+        $message .= "You are missing the following required questions:<br>\n";
         while(list($qid,$content)=each($missing)) {
             if($GLOBALS['ESPCONFIG']['DEBUG'])
                $message .= "<!-- ${qid} -->";
@@ -97,7 +94,7 @@ function response_check_answers($sid, $rid, $section) {
 
     if(count($not_numeric) > 0) {
         // missing required variables
-        $message .= _('Please only use numbers for the following questions:') ."<br>\n";
+        $message .= "Please only use numbers for the following questions:<br>\n";
         while(list($qid,$content)=each($not_numeric)) {
             if($GLOBALS['ESPCONFIG']['DEBUG'])
                $message .= "<!-- ${qid} -->";
@@ -107,7 +104,7 @@ function response_check_answers($sid, $rid, $section) {
 
     if(count($unique_answers) > 0) {
         // double responses where unique one is needed
-        $message .= _('Please use a different answer for the following questions:') ."<br>\n";
+        $message .= "Please use a different answer for the following questions:<br>\n";
         while(list($qid,$content)=each($unique_answers)) {
             if($GLOBALS['ESPCONFIG']['DEBUG'])
                $message .= "<!-- ${qid} -->";
@@ -200,7 +197,7 @@ function response_insert($sid,$section,$rid) {
         $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['response_table']." (survey_id,submitted,username,ip) VALUES ( ${sid},".sys_time_stamp().",${userid},'${ip}')";
         $result = execute_sql($sql);
 	    if (!$result) {
-	$msg = '<font color="red">'. _('Request failed, please contact the administrator.') .'</font>';
+	$msg = "Request failed, please contact the administrator.";
 	if ($GLOBALS['ESPCONFIG']['DEBUG'])
 	   $msg .= mkerror(ErrorNo() . ': ' . ErrorMsg());
 	print $msg;
@@ -209,13 +206,8 @@ function response_insert($sid,$section,$rid) {
 
         $rid = insert_id("response_id_seq");
     }
-    $sql = "
-    SELECT Q.id, Q.type_id, Q.length, Q.precise, T.response_table
-    FROM ".$GLOBALS['ESPCONFIG']['question_table']." Q, ".$GLOBALS['ESPCONFIG']['question_type_table']." T
-    ". survey_select_section_sql($sid,$section,'Q') ." AND
-    Q.survey_id=${sid} AND
-    Q.deleted='N' AND Q.type_id < 50 AND
-    Q.type_id=T.id";
+    $sql = "SELECT Q.id, Q.type_id, Q.length, Q.precise, T.response_table FROM ".$GLOBALS['ESPCONFIG']['question_table']." Q, ".$GLOBALS['ESPCONFIG']['question_type_table']." T ". survey_select_section_sql($sid,$section,'Q') ." AND Q.survey_id=${sid} AND Q.deleted='N' AND Q.type_id < 50 AND Q.type_id=T.id";
+
     $q_result = execute_sql($sql);
     while(list($qid, $tid, $length, $prec, $table) = fetch_row($q_result)) {
         $q_result->MoveNext();
@@ -235,6 +227,7 @@ function response_insert($sid,$section,$rid) {
 
     // don't allow >1 responses for the same response ID and the same question ID
     $sql  = "SELECT COUNT(*) from ".$GLOBALS['ESPCONFIG'][$table.'_table']." WHERE response_id=${rid} AND question_id=${qid}";
+
     $count = get_one($sql);
         if ($count > 0) {
 	return $rid;
@@ -455,31 +448,21 @@ function response_key_cmp($l, $r) {
 function response_select($sid, $rid, $col = null, $qids = null) {
     $values = array();
 
-    if ($col == null) {
-        $col = '';
-    }
-    if (!is_array($col) && !empty($col)) {
-        $col = explode(',', preg_replace("/\s/",'', $col));
-    }
-    if (is_array($col) && count($col) > 0) {
-        $col = ',' . implode(',', array_map(create_function('$a','return "q.$a";'), $col));
-    }
+    if ($col == null) { $col = ''; }
+    if (!is_array($col) && !empty($col)) { $col = explode(',', preg_replace("/\s/",'', $col)); }
+    if (is_array($col) && count($col) > 0) { $col = ',' . implode(',', array_map(create_function('$a','return "q.$a";'), $col)); }
 
-    if ($qids == null) {
-        $qids = '';
-    } elseif (is_array($qids)) {
-        $qids = 'AND a.question_id ' . array_to_insql($qids);
-    } elseif (intval($qids) > 0) {
-        $qids = 'AND a.question_id = ' . intval($qids);
-    } else {
-        $qids = '';
-    }
+    if ($qids == null) { $qids = ''; } 
+    elseif (is_array($qids)) { $qids = 'AND a.question_id ' . array_to_insql($qids); } 
+    elseif (intval($qids) > 0) { $qids = 'AND a.question_id = ' . intval($qids); } 
+    else { $qids = ''; }
 
     // --------------------- response_bool ---------------------
-    $sql = "SELECT q.id $col,a.choice_id
-    FROM ".$GLOBALS['ESPCONFIG']['response_bool_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q
-    WHERE a.response_id=${rid} AND a.question_id=q.id $qids";
+
+    $sql = "SELECT q.id $col,a.choice_id FROM ".$GLOBALS['ESPCONFIG']['response_bool_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q WHERE a.response_id=${rid} AND a.question_id=q.id $qids";
+
     $result = execute_sql($sql);
+
     while(!$result->EOF) {
         $row = fetch_row($result);
         $qid = array_shift($row);
@@ -487,21 +470,21 @@ function response_select($sid, $rid, $col = null, $qids = null) {
         $values[$qid] = $row;
 
         $ivalue = '';
-        if ($val == 'Y') {
-	       $ivalue = _('Yes');
-        } elseif ($val == 'N') {
-	       $ivalue =  _('No');
-        }
+        if ($val == 'Y') { $ivalue = "Yes"; } 
+        elseif ($val == 'N') { $ivalue =  "No"; }
+
         array_push($values["$qid"], $ivalue, $val);
         $result->MoveNext();
     }
+
     db_close($result);
 
     // --------------------- response_single ---------------------
-    $sql = "SELECT q.id $col,c.content,c.id,c.feedback,c.credit
-    FROM ".$GLOBALS['ESPCONFIG']['response_single_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c
-    WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids";
+
+    $sql = "SELECT q.id $col,c.content,c.id,c.feedback,c.credit FROM ".$GLOBALS['ESPCONFIG']['response_single_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids";
+
     $result = execute_sql($sql);
+
     while(!$result->EOF) {
         $row = fetch_row($result);
         $qid = array_shift($row);
@@ -514,16 +497,17 @@ function response_select($sid, $rid, $col = null, $qids = null) {
         $values[$qid] = $row;
         $result->MoveNext();
     }
+
     db_close($result);
 
     // --------------------- response_multiple ---------------------
-    $sql = "SELECT q.id $col,c.content,c.id,c.feedback,c.credit
-    FROM ".$GLOBALS['ESPCONFIG']['response_multiple_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c
-    WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids
-    ORDER BY a.question_id,c.id";
+
+    $sql = "SELECT q.id $col,c.content,c.id,c.feedback,c.credit FROM ".$GLOBALS['ESPCONFIG']['response_multiple_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids ORDER BY a.question_id,c.id";
+
     $result = execute_sql($sql);
     $arr = array();
     $tmp = null;
+
     while(!$result->EOF) {
         $row = fetch_row($result);
 
@@ -545,6 +529,7 @@ function response_select($sid, $rid, $col = null, $qids = null) {
         $arr = array($row);
         $result->MoveNext();
     }
+
     if($tmp != null)
     $values["$tmp"]=$arr;
     db_close($result);
@@ -553,11 +538,10 @@ function response_select($sid, $rid, $col = null, $qids = null) {
     unset($row);
 
     // --------------------- response_other ---------------------
-    $sql = "SELECT q.id,c.id $col,a.response
-    FROM ".$GLOBALS['ESPCONFIG']['response_other_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c
-    WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids
-    ORDER BY a.question_id,c.id";
+    $sql = "SELECT q.id,c.id $col,a.response FROM ".$GLOBALS['ESPCONFIG']['response_other_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids ORDER BY a.question_id,c.id";
+
     $result = execute_sql($sql);
+
     while(!$result->EOF) {
         $row = fetch_row($result);
         $qid = array_shift($row);
@@ -566,14 +550,15 @@ function response_select($sid, $rid, $col = null, $qids = null) {
         $values["${qid}_${cid}"] = $row;
         $result->MoveNext();
     }
+
     db_close($result);
 
     // --------------------- response_rank ---------------------
-    $sql = "SELECT (". $GLOBALS['ESPCONFIG']['adodb_conn']->Concat("q.id","'_'","c.id") .") AS id $col,c.content,a.rank
-    FROM ".$GLOBALS['ESPCONFIG']['response_rank_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c
-    WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids
-    ORDER BY a.question_id,c.id";
+
+    $sql = "SELECT (". $GLOBALS['ESPCONFIG']['adodb_conn']->Concat("q.id","'_'","c.id") .") AS id $col,c.content,a.rank FROM ".$GLOBALS['ESPCONFIG']['response_rank_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids ORDER BY a.question_id,c.id";
+
     $result = execute_sql($sql);
+
     while(!$result->EOF) {
         $row = fetch_row($result);
         $qid = array_shift($row);
@@ -586,13 +571,14 @@ function response_select($sid, $rid, $col = null, $qids = null) {
         $values[$qid] = $row;
         $result->MoveNext();
     }
+
     db_close($result);
 
     // --------------------- response_text ---------------------
-    $sql = "SELECT q.id $col,a.response
-    FROM ".$GLOBALS['ESPCONFIG']['response_text_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q
-    WHERE a.response_id=${rid} AND a.question_id=q.id $qids";
+    $sql = "SELECT q.id $col,a.response FROM ".$GLOBALS['ESPCONFIG']['response_text_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q WHERE a.response_id=${rid} AND a.question_id=q.id $qids";
+
     $result = execute_sql($sql);
+
     while(!$result->EOF) {
         $row = fetch_row($result);
         $qid = array_shift($row);
@@ -601,13 +587,14 @@ function response_select($sid, $rid, $col = null, $qids = null) {
         array_push($values["$qid"], $val, $val);
         $result->MoveNext();
     }
+
     db_close($result);
 
     // --------------------- response_date ---------------------
-    $sql = "SELECT q.id $col,a.response
-    FROM ".$GLOBALS['ESPCONFIG']['response_date_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q
-    WHERE a.response_id=${rid} AND a.question_id=q.id $qids";
+    $sql = "SELECT q.id $col,a.response FROM ".$GLOBALS['ESPCONFIG']['response_date_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q WHERE a.response_id=${rid} AND a.question_id=q.id $qids";
+
     $result = execute_sql($sql);
+
     while(!$result->EOF) {
         $row = fetch_row($result);
         $qid = array_shift($row);
@@ -616,6 +603,7 @@ function response_select($sid, $rid, $col = null, $qids = null) {
         array_push($values["$qid"], $val, $val);
         $result->MoveNext();
     }
+
     db_close($result);
 
     // --------------------- return ---------------------
@@ -698,7 +686,7 @@ function response_select_human($sid, $rid, $qids = null) {
         array_push($hmn, array($tmpk, $tmpv));
         $tmpk = null;
         $tmpv = array();
-}
+    }
     return $hmn;
 }
 
@@ -804,11 +792,10 @@ function response_select_name($sid, $rid, $qids = null) {
     Retrieves the response from the database and sends an email with the values.  Returns true if mail sent. */
 
 function response_send_email($sid, $rid) {
-    if (!$GLOBALS['ESPCONFIG']['allow_email']) {
-        return true;
-    }
+    if (!$GLOBALS['ESPCONFIG']['allow_email']) { return true; }
 
     $sql = "SELECT name, email, public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id=${sid}";
+
     $result = execute_sql($sql);
     list($name, $email, $survey_public) = fetch_row($result);
     db_close($result);
@@ -817,23 +804,11 @@ function response_send_email($sid, $rid) {
     return(false);
 
     //lets check to see if user wants human readable email
-    if ($GLOBALS['ESPCONFIG']['human_email']) {
-        $answers = response_select_human($sid, $rid);
-        $qsep = "\n\t";
-        $isep = "\n\t";
-        $end = "\n\n";
-    } else {
-        $answers = response_select_compact($sid, $rid);
-        $qsep = ' : ';
-        $isep = ',';
-        $end = "\n";
-    }
+    if ($GLOBALS['ESPCONFIG']['human_email']) { $answers = response_select_human($sid, $rid); $qsep = "\n\t"; $isep = "\n\t"; $end = "\n\n"; } 
+    else { $answers = response_select_compact($sid, $rid); $qsep = ' : '; $isep = ','; $end = "\n"; }
 
-    $user = array(
-        'survey.id' => $sid,
-        'survey.name' => $name,
-        'survey.response' => $rid,
-    );
+    $user = array('survey.id' => $sid, 'survey.name' => $name, 'survey.response' => $rid,);
+
     if ($survey_public=="N") {
         $userid = "";
         if ($GLOBALS['ESPCONFIG']['auth_mode'] == 'basic' &&
@@ -863,21 +838,19 @@ function response_send_email($sid, $rid) {
     while (list($k, $v) = each($user))
     $body .= $k . $qsep . $v . $end;
 
-    if (isset($GLOBALS['ESPCONFIG']['email_from_name']) &&
-        isset($GLOBALS['ESPCONFIG']['email_from_address']) && 
-        isset($GLOBALS['ESPCONFIG']['email_return_path'])) {
+    if (isset($GLOBALS['ESPCONFIG']['email_from_name']) && isset($GLOBALS['ESPCONFIG']['email_from_address']) && isset($GLOBALS['ESPCONFIG']['email_return_path'])) {
         $headers = "From: ".addslashes($GLOBALS['ESPCONFIG']['email_from_name']).
                     "<".addslashes($GLOBALS['ESPCONFIG']['email_from_address']).">\n";
         $headers .= "Return-Path: <". addslashes($GLOBALS['ESPCONFIG']['email_return_path']).">\n";
     } else {
-       $headers = "From: \"phpESP ".
+       $headers = "From: \"SiamSquare ".
        addslashes($GLOBALS['ESPCONFIG']['version']) .
        "\" <phpesp@". $_SERVER['SERVER_NAME'] .">\n";
        $headers .= "Return-Path: <". $_SERVER['SERVER_ADMIN'] ."@".
                    $_SERVER['SERVER_NAME'] . ">\n";
-       $headers .= "X-Sender: <phpesp@". $_SERVER['SERVER_NAME'] .">\n";
+       $headers .= "X-Sender: <siamsquare@". $_SERVER['SERVER_NAME'] .">\n";
     }
-    $headers .= "X-Mailer: phpESP\n";
+    $headers .= "X-Mailer: SiamSquare\n";
 
     reset($answers);
     while($arr = array_shift($answers)) {
@@ -919,11 +892,7 @@ function response_select_max_pos($sid, $rid) {
     $max = 0;
 
     foreach (array('bool', 'single', 'multiple', 'rank', 'text', 'other', 'date') as $tbl) {
-        $sql = "SELECT MAX(q.position) FROM ".$GLOBALS['ESPCONFIG']['response_'.$tbl.'_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q
-        WHERE a.response_id = $rid AND
-        q.id = a.question_id AND
-        q.survey_id = $sid AND
-        q.deleted = 'N'";
+        $sql = "SELECT MAX(q.position) FROM ".$GLOBALS['ESPCONFIG']['response_'.$tbl.'_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q WHERE a.response_id = $rid AND q.id = a.question_id AND q.survey_id = $sid AND q.deleted = 'N'";
         #$res = execute_sql($sql);
         #if ($num = get_one($res) > $max)
         $num = get_one($sql);
@@ -938,11 +907,7 @@ function response_select_max_pos($sid, $rid) {
 
 function response_select_max_sec($sid, $rid) {
     $pos = response_select_max_pos($sid, $rid);
-    $sql = "SELECT COUNT(*)+1 FROM ".$GLOBALS['ESPCONFIG']['question_table']." q
-    WHERE q.survey_id = $sid AND
-    q.type_id = 99 AND
-    q.position < $pos AND
-    q.deleted = 'N'";
+    $sql = "SELECT COUNT(*)+1 FROM ".$GLOBALS['ESPCONFIG']['question_table']." q WHERE q.survey_id = $sid AND q.type_id = 99 AND q.position < $pos AND q.deleted = 'N'";
     #$res = execute_sql($sql);
     #$max = get_one($res);
     $max = get_one($sql);
@@ -963,12 +928,8 @@ function response_import_sec($sid, $rid, $sec, $varr = null) {
 
     reset($vals);
     foreach ($vals as $id => $arr) {
-        if (isset($arr[0]) && is_array($arr[0])) {
-            // multiple
-            $varr[$id] = array_map('array_pop', $arr);
-        } else {
-            $varr[$id] = array_pop($arr);
-        }
+        if (isset($arr[0]) && is_array($arr[0])) { $varr[$id] = array_map('array_pop', $arr); } 
+        else { $varr[$id] = array_pop($arr); }
     }    
 }
 

@@ -103,9 +103,4 @@ displayNav();
 </form> 
 </div>
 
-<?php
-
-displayPageFooter();
-displayFooter();
-
-?>
+<?php displayFooter(); ?>

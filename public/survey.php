@@ -61,7 +61,6 @@ unset($_title);
 include $_SERVER['DOCUMENT_ROOT'] . '/public/include/handler.php';
 //if ($_SESSION['acl']['superuser'] == 'Y') { include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; }
 echo "</div>\n";
-displayPageFooter();
 displayFooter();
 
 // --------------------------------------------------------------------------------

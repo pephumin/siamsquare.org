@@ -119,9 +119,9 @@ function displayPageFooter() {
 	$user = $_SESSION['acl']['username'];
 	$group = $_SESSION['acl']['pgroup'];
 	$g = $group[0];
-	if ($g) { $show = "<kbd>$user</kbd>/<kbd>$g</kbd>"; } 
+	if ($g) { $show = "<kbd>$user</kbd> (<kbd>$g</kbd>)"; } 
 	else { $show = "<kbd>$user</kbd>"; }
-	if(!empty($_SESSION['acl']['username'])) { $signed = "Signed in as <i class=\"fa fa-user\"> $show </i>"; } 
+	if(!empty($_SESSION['acl']['username'])) { $signed = "Signed in as <i class=\"fa fa-user\"></i> $show"; } 
 	else { $signed = ""; }
 	echo "</div> <!-- /container -->\n";
 	echo "</form>\n";

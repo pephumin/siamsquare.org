@@ -59,17 +59,18 @@ if ($signup_realm == null || empty($signup_realm)) {
 //do if (isset($post['submit'])) {
 
 //print_r($post);
-do if (isset($post['username'])) {
+//do if (isset($post['username'])) {
+do if (isset($post['email'])) {
 
   /* check for required fields */
   foreach ($rqd_fields as $f) {
     //echo "PE";
     //print_r($post[$f]);
-    if (!isset($post[$f]) || empty($post[$f])) {
-      //$msg = '<font color="red">'. _('Please complete all required fields.') . '</font>';
-      $msg = mkerror("Please complete all required fields.");
-      break;
-    }
+    //if (!isset($post[$f]) || empty($post[$f])) {
+    //  //$msg = '<font color="red">'. _('Please complete all required fields.') . '</font>';
+    //  $msg = mkerror("Please complete all required fields.");
+    //  break;
+    //}
     //print_r($rqd_fields);
   }
   if (isset($msg))
@@ -82,6 +83,8 @@ do if (isset($post['username'])) {
     break;
   }
   
+  if (empty($post['username'])) { $post['username'] = $post['email']; }
+
   /* prepare sql statement */
   $sqlf = array();
   $sqlv = array();
