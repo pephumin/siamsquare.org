@@ -121,12 +121,13 @@ function survey_get_for_current_user(&$surveys) {
      $where = survey_fetch_limiting_where();
 
      // get the survey data based on those limitations
-     $sql =<<<EOSQL
-SELECT id,name,title,owner,realm
- FROM {$GLOBALS['ESPCONFIG']['survey_table']}
-WHERE {$where}
-ORDER BY id DESC
-EOSQL;
+     $sql = "SELECT id,name,title,owner,realm FROM {$GLOBALS['ESPCONFIG']['survey_table']} WHERE {$where} ORDER BY id DESC";
+//    $sql =<<<EOSQL
+//ELECT id,name,title,owner,realm
+//FROM {$GLOBALS['ESPCONFIG']['survey_table']}
+//HERE {$where}
+//RDER BY id DESC
+//OSQL;
 
     return survey_get_from_sql($sql, $surveys);
 }
@@ -188,14 +189,15 @@ function survey_get_in_realm($realm, &$surveys) {
      // NOTE: (tblSurvey.realm and tblAccess.realm).
      $where = survey_fetch_limiting_where('status','owner',array ('tblSurvey.realm', 'tblAccess.realm'));
      $realm = _addslashes($realm);
-     $sql =<<<EOSQL
-SELECT DISTINCT tblSurvey.id, tblSurvey.name, tblSurvey.title, tblSurvey.owner, tblSurvey.open_date, tblSurvey.close_date
-  FROM {$GLOBALS['ESPCONFIG']['survey_table']} AS tblSurvey
-  JOIN {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess
-    ON tblAccess.survey_id=tblSurvey.id
- WHERE (tblSurvey.realm = $realm OR tblAccess.realm = $realm) AND ($where)
- ORDER BY id DESC
-EOSQL;
+     $sql = "SELECT DISTINCT tblSurvey.id, tblSurvey.name, tblSurvey.title, tblSurvey.owner, tblSurvey.open_date, tblSurvey.close_date FROM {$GLOBALS['ESPCONFIG']['survey_table']} AS tblSurvey JOIN {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess ON tblAccess.survey_id=tblSurvey.id WHERE (tblSurvey.realm = $realm OR tblAccess.realm = $realm) AND ($where) ORDER BY id DESC";
+//     $sql =<<<EOSQL
+//SELECT DISTINCT tblSurvey.id, tblSurvey.name, tblSurvey.title, tblSurvey.owner, tblSurvey.open_date, tblSurvey.close_date
+//  FROM {$GLOBALS['ESPCONFIG']['survey_table']} AS tblSurvey
+//  JOIN {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess
+//    ON tblAccess.survey_id=tblSurvey.id
+// WHERE (tblSurvey.realm = $realm OR tblAccess.realm = $realm) AND ($where)
+// ORDER BY id DESC
+//EOSQL;
 
     return survey_get_from_sql($sql, $surveys);
 }
@@ -206,12 +208,13 @@ EOSQL;
 function survey_get_public(&$surveys) {
      // get the survey data based on those limitations
      $where = survey_fetch_limiting_where();
-     $sql =<<<EOSQL
-SELECT id,name,title,owner,open_date,close_date
-  FROM {$GLOBALS['ESPCONFIG']['survey_table']}
- WHERE (public = 'Y') AND ($where)
- ORDER BY id DESC
-EOSQL;
+     $sql = "SELECT id,name,title,owner,open_date,close_date FROM {$GLOBALS['ESPCONFIG']['survey_table']} WHERE (public = 'Y') AND ($where) ORDER BY id DESC";
+//     $sql =<<<EOSQL
+//SELECT id,name,title,owner,open_date,close_date
+//  FROM {$GLOBALS['ESPCONFIG']['survey_table']}
+// WHERE (public = 'Y') AND ($where)
+// ORDER BY id DESC
+//EOSQL;
 
     return survey_get_from_sql($sql, $surveys);
 }
@@ -230,11 +233,12 @@ function survey_get_privilege(&$privileges, $sids, $realm = null) {
     $limit .= (isset($realm) ? sprintf(' AND (tblAccess.realm=%s)', _addslashes($realm)) : '');
 
     // get the access columns
-    $sql =<<<EOSQL
-SELECT survey_id, realm, maxlogin, resume, navigate
-  FROM {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess
- WHERE $limit
-EOSQL;
+    $sql = "SELECT survey_id, realm, maxlogin, resume, navigate FROM {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess WHERE $limit";
+//    $sql =<<<EOSQL
+//SELECT survey_id, realm, maxlogin, resume, navigate
+//  FROM {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess
+// WHERE $limit
+//EOSQL;
 
     return survey_get_from_sql($sql, $privileges, 'survey_id');
 }
@@ -251,11 +255,12 @@ function survey_get_responses(&$responses, $sids, $username = null) {
     $limit  = sprintf('(survey_id %s)', array_to_insql($sids));
     $limit .= (isset($username) ? sprintf(' AND (tblResponse.username=%s)', _addslashes($username)) : '');
 
-    $sql =<<<EOSQL
-SELECT survey_id, username, submitted, complete, ip
-  FROM {$GLOBALS['ESPCONFIG']['response_table']} AS tblResponse
- WHERE $limit
-EOSQL;
+    $sql = "SELECT survey_id, username, submitted, complete, ip FROM {$GLOBALS['ESPCONFIG']['response_table']} AS tblResponse WHERE $limit";
+//    $sql =<<<EOSQL
+//SELECT survey_id, username, submitted, complete, ip
+//  FROM {$GLOBALS['ESPCONFIG']['response_table']} AS tblResponse
+// WHERE $limit
+//EOSQL;
     return survey_get_from_sql($sql, $responses, 'survey_id');
 }
 
@@ -308,21 +313,23 @@ EOSQL;
     // ... available
     if (isset($username)) {
         $username = _addslashes($username);
-        $mayRespond =<<<EOSQL
-            CASE WHEN (
-                       0 = COALESCE(maxlogin,0) OR
-                       (
-                         SELECT COUNT(*)
-                           FROM {$GLOBALS['ESPCONFIG']['response_table']} as tblResponse
-                          WHERE tblResponse.survey_id=tblAccess.survey_id AND
-                                tblResponse.username=$username AND
-                                tblResponse.complete=$yes
-                       ) < maxlogin
-                      )
-            THEN 1
-            ELSE 0
-            END
-EOSQL;
+        $mayRespond = "CASE WHEN ( 0 = COALESCE(maxlogin,0) OR (SELECT COUNT(*) FROM {$GLOBALS['ESPCONFIG']['response_table']} as tblResponse WHERE tblResponse.survey_id=tblAccess.survey_id AND tblResponse.username=$username AND tblResponse.complete=$yes) < maxlogin) THEN 1 ELSE 0 END";
+
+//        $mayRespond =<<<EOSQL
+//            CASE WHEN (
+//                       0 = COALESCE(maxlogin,0) OR
+//                       (
+//                         SELECT COUNT(*)
+//                           FROM {$GLOBALS['ESPCONFIG']['response_table']} as tblResponse
+//                          WHERE tblResponse.survey_id=tblAccess.survey_id AND
+//                                tblResponse.username=$username AND
+//                                tblResponse.complete=$yes
+//                       ) < maxlogin
+//                      )
+//            THEN 1
+//            ELSE 0
+//            END
+//EOSQL;
     } else {
         $mayRespond = '1';
     }
@@ -348,18 +355,20 @@ EOSQL;
     }
 
     // compute
-    $sql =<<<EOSQL
-SELECT tblSurvey.id,
-       ($statusActive) AS active,
-       ($openForBiz)   AS open,
-       ($mayRespond)   AS available,
-       1               AS visible
-  FROM {$GLOBALS['ESPCONFIG']['survey_table']} AS tblSurvey
-  LEFT
-  JOIN {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess
-    ON tblAccess.survey_id=tblSurvey.id
- WHERE $limit
-EOSQL;
+    $sql = "SELECT tblSurvey.id, ($statusActive) AS active, ($openForBiz) AS open, ($mayRespond) AS available, 1 AS visible FROM {$GLOBALS['ESPCONFIG']['survey_table']} AS tblSurvey LEFT JOIN {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess ON tblAccess.survey_id=tblSurvey.id WHERE $limit";
+
+//    $sql =<<<EOSQL
+//SELECT tblSurvey.id,
+//       ($statusActive) AS active,
+//       ($openForBiz)   AS open,
+//       ($mayRespond)   AS available,
+//       1               AS visible
+//  FROM {$GLOBALS['ESPCONFIG']['survey_table']} AS tblSurvey
+//  LEFT
+//  JOIN {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess
+//    ON tblAccess.survey_id=tblSurvey.id
+// WHERE $limit
+//EOSQL;
 
     return survey_get_from_sql($sql, $accessibility);
 }

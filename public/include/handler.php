@@ -10,13 +10,20 @@
 // add this at the top of every php script using this one:
 // require_once("./phpESP.first.php");
 
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
+
 if (!defined('ESP-FIRST-INCLUDED')) {
 	echo "In order to conduct surveys, please include first.php";
 	exit;
 }
 
-require_once($ESPCONFIG['include_path']."/funcs".$ESPCONFIG['extension']);
-require_once($ESPCONFIG['handler_prefix']);
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/funcs.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/handler-prefix.php';
+
+//require_once($ESPCONFIG['include_path']."/funcs".$ESPCONFIG['extension']);
+//require_once($ESPCONFIG['handler_prefix']);
+
+
 if(!defined('ESP-AUTH-OK')) {
 	if (!empty($GLOBALS['errmsg']))
 		echo($GLOBALS['errmsg']);
@@ -45,7 +52,7 @@ if (($GLOBALS['ESPCONFIG']['limit_double_postings']>0) &&
      isset($_COOKIE["$cookiename"]) &&
      $survey_public=='Y' &&
      !($ESPCONFIG['auth_response'] && auth_get_option('resume'))) {
-		echo (mkerror(_('You have already completed this survey.')));
+		echo (mkerror('You have already completed this survey.'));
 		return;
 }
 	
@@ -62,18 +69,18 @@ if (!empty($_REQUEST['referer'])) {
 	$request_direct = 1;
 }
 
-$num_sections = survey_num_sections($sid);
-if (!isset($_SESSION['sec']) || empty($_SESSION['sec']) || $_SESSION['sec']>$num_sections) {
-      	$_SESSION['sec'] = 1;
-  	} else {
-      	$_SESSION['sec'] = (intval($_SESSION['sec']) > 0) ?
-              		    intval($_SESSION['sec']) : 1;
-}
+//  $num_sections = survey_num_sections($sid);
+//  if (!isset($_SESSION['sec']) || empty($_SESSION['sec']) || $_SESSION['sec']>$num_sections) {
+//          $_SESSION['sec'] = 1;
+//      } else {
+//          $_SESSION['sec'] = (intval($_SESSION['sec']) > 0) ?
+//                          intval($_SESSION['sec']) : 1;
+//  }
 
-ets wrong for resumed surveys
-if ($_SESSION['sec'] == 1) {
-    $_SESSION['rid'] = 0;
-}
+// gets wrong for resumed surveys
+//  if ($_SESSION['sec'] == 1) {
+//      $_SESSION['rid'] = 0;
+//  }
 
 if (!isset($_SESSION['rid'])) {
         $_SESSION['rid'] = 0;
@@ -106,7 +113,9 @@ if(isset($results) && $results) {
 }
 
 // may this survey be accessed?
-esp_require_once('/lib/espsurvey');
+//esp_require_once('/lib/espsurvey');
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurvey.inc';
+
 if (survey_status_is_edit($status) || survey_status_is_done($status) || survey_status_is_deleted($status)) {
     $isActive = false;
 } else if (survey_status_is_test($status)) {
@@ -121,19 +130,32 @@ if (survey_status_is_edit($status) || survey_status_is_done($status) || survey_s
     $isActive = true;
 }
 if (! $isActive) {
-	echo(mkerror(_('Error processing survey: Survey is not active.')));
+	echo(mkerror('Error processing survey: Survey is not active.'));
     return;
 }
 
-if ($request_referer == $ESPCONFIG['autopub_url'])
-   	    $request_referer .= "?name=$name";
 
 // let's build the correct return/submit/resume link
-$action = $ESPCONFIG['proto'] . $_SERVER['HTTP_HOST'] . htmlspecialchars($_SERVER['PHP_SELF']);
+
+$home = "http://www.siamsquare.org";
+$public = $home."/public";
+$self = $_SERVER['PHP_SELF'];
+$base = $_SERVER['BASE_PAGE'];
+
+$action = $home . $self;
+//$action = $ESPCONFIG['proto'] . $_SERVER['HTTP_HOST'] . htmlspecialchars($_SERVER['PHP_SELF']);
+
+if ($request_referer == $action)
+        $request_referer .= "?name=$name";
+
+//echo $action;
+//echo $request_referer;
+
 $query_string="";
-// we need to remove "sec=xx" from the query string, otherwise
-// the resume link will contain this also and the user will always
-// return to the same filled in section
+
+// we need to remove "sec=xx" from the query string, otherwise the resume link will contain this also 
+// and the user will always return to the same filled in section
+
 if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) {
     $query_string=$_SERVER['QUERY_STRING'];
 }
@@ -150,14 +172,16 @@ if(!empty($_REQUEST['submit'])) {
 
     # we only check the captcha if no all required 
     if (empty($msg) && $ESPCONFIG['use_captcha']) {
-        require_once(ESP_BASE.'public/captcha_check.php');
+        //require_once(ESP_BASE.'public/captcha_check.php');
+        require_once $_SERVER['DOCUMENT_ROOT'] . '/public/captcha.check.php';
         $msg .= response_check_captcha("captcha_check",1);
     }   
 
     if (empty($msg)) {
         if ($ESPCONFIG['auth_response'] && auth_get_option('resume')) {
             // submitting a previously saved survey
-            esp_require_once('/lib/espsurveystat');
+            //esp_require_once('/lib/espsurveystat');
+            require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurveystat.inc';
             survey_stat_decrement(SURVEY_STAT_SUSPENDED, $sid);
 
             // delete the previous responses
@@ -210,11 +234,14 @@ if (!empty($_REQUEST['prev']) && $ESPCONFIG['auth_response'] && auth_get_option(
 	}
 }
 
+// --------------------------------------------------------------------------------
+
 // record start statistics
 // ... increment the attempt
 // ... assume the user will abandon the survey
 // ... NOTE: this will be remedied if there is a save or a submit
-esp_require_once('/lib/espsurveystat');
+//esp_require_once('/lib/espsurveystat');
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurveystat.inc';
 survey_stat_increment(SURVEY_STAT_ATTEMPTED, $sid);
 survey_stat_increment(SURVEY_STAT_ABANDONED, $sid);
 
@@ -223,40 +250,37 @@ if ($ESPCONFIG['auth_response'] && auth_get_option('resume') && $_SESSION['rid']
     response_import_sec($sid, $_SESSION['rid'], $_SESSION['sec']);
     survey_stat_decrement(SURVEY_STAT_SUSPENDED, $sid);
 }
-	
-?>
-<?php
-    paint_submission_form_open();
-    survey_render($sid,$_SESSION['sec'],$_SESSION['rid'],$msg);
-    echo '<fieldset>';
-    if ($ESPCONFIG['auth_response']) {
-        if (auth_get_option('navigate') && $_SESSION['sec'] > 1) {
-            echo(mksubmit("prev", _('Previous Page')));
-        }
-        if (auth_get_option('resume')) {
-            echo(mksubmit("resume", _('Save')));
-        }
+
+// --------------------------------------------------------------------------------
+
+paint_submission_form_open();
+survey_render($sid,$_SESSION['sec'],$_SESSION['rid'],$msg);
+echo '<fieldset>';
+if ($ESPCONFIG['auth_response']) {
+    if (auth_get_option('navigate') && $_SESSION['sec'] > 1) {
+        echo(mksubmit("prev", 'Previous Page'));
     }
-    if($_SESSION['sec'] == $num_sections) {
-        if ($ESPCONFIG['use_captcha']) {
-            print '<table><tr><td><img src="'.$ESPCONFIG['base_url'].'public/captcha.php"></td>';
-            print '<td>';
-            echo _("Please fill in the code displayed here.");
-            print '<br><input type="text" name="captcha_check"></td></tr></table>';
-        }
-        echo(mksubmit("submit", _('Submit Survey')));
-    } else {
-        echo(mksubmit("next", _('Next Page')));
+    if (auth_get_option('resume')) {
+        echo(mksubmit("resume", 'Save'));
     }
-    echo '</fieldset>';
-    paint_submission_form_close();
-?>
-<?php
-/**
-Functions to display feedback, if any, on the selected responses.
-See SFID 2771740
-See SFID 2771716
-*/
+}
+if($_SESSION['sec'] == $num_sections) {
+    if ($ESPCONFIG['use_captcha']) {
+        print '<table><tr><td><img src="'.$ESPCONFIG['base_url'].'public/captcha.php"></td>';
+        print '<td>';
+        echo _("Please fill in the code displayed here.");
+        print '<br><input type="text" name="captcha_check"></td></tr></table>';
+    }
+    echo(mksubmit("submit", 'Submit Survey'));
+} else {
+    echo(mksubmit("next", 'Next Page'));
+}
+if ($isActive == true) { echo "<input type=\"hidden\" name=\"test\" value=\"1\" />\n"; }
+echo '</fieldset>';
+paint_submission_form_close();
+
+// --------------------------------------------------------------------------------
+
 function paint_feedback_end_of_survey($sid, $rid, $sec) {
     // paint the feedback
     // NOTE: if there is any, this function exits
@@ -305,13 +329,6 @@ function paint_feedback($sid, $rid, $sec, $additional = array ()) {
     }
 }
 
-/**
-Returns (via PBR first parameter) the responses for the given survey ($sid), identified by the given response ID ($rid),
-in the indicated section ($sec).  The format of $responses is:
-array (
-   // 'question number' => array ('Question?', array ('Choice1', 'Feedback1'), ..., array ('ChoiceN', 'FeedbackN'));
-);
-*/
 function get_feedback(&$responses, &$totalCredit, $sid, $rid, $sec) {
     // get the questions for each section (by ID)
     // NOTE: we're given section 1-base, but this method has section 0-base
@@ -404,12 +421,11 @@ function paint_feedback_row($response, $number) {
     $label3 = _('Credit:');
 
     // output the question
-    echo <<<EOHTML
-<tr>
-  <td style='padding-top: .5em; text-align: right;'>{$number}.</td>
-  <td style='padding-top: .5em;'>{$question}</td>
-</tr>
-EOHTML;
+
+    echo "<tr>\n";
+    echo "  <td style='padding-top: .5em; text-align: right;'>{$number}.</td>\n";
+    echo "  <td style='padding-top: .5em;'>{$question}</td>\n";
+    echo "</tr>\n";
 
     // output each choice and feedback
     foreach ($response as $info) {
@@ -417,64 +433,49 @@ EOHTML;
         list ($choice, $feedback, $credit) = $info;
 
         // output the choice
-        echo <<<EOHTML
-<tr>
-  <td style='text-align: right;'>{$label1}</td>
-  <td>{$choice}</td>
-</tr>
-EOHTML;
+        echo "<tr>\n";
+        echo "  <td style='text-align: right;'>{$label1}</td>\n";
+        echo "  <td>{$choice}</td>\n";
+        echo "</tr>\n";
 
         // if there's feedback, output it
         if (! empty($feedback)) {
-            echo <<<EOHTML
-<tr>
-  <td style='text-align: right;'>{$label2}</td>
-  <td>{$feedback}</td>
-</tr>
-EOHTML;
+            echo "<tr>\n";
+            echo "  <td style='text-align: right;'>{$label2}</td>\n";
+            echo "  <td>{$feedback}</td>\n";
+            echo "</tr>\n";
         }
 
         // if there's credit, output it
         if (! empty($credit)) {
-            echo <<<EOHTML
-<tr>
-  <td style='text-align: right;'>{$label3}</td>
-  <td>{$credit}</td>
-</tr>
-EOHTML;
+            echo "<tr>\n";
+            echo "  <td style='text-align: right;'>{$label3}</td>\n";
+            echo "  <td>{$credit}</td>\n";
+            echo "</tr>\n";
         }
     }
 }
 
-/**
-Refactored methods.
-*/
 function paint_submission_form_open($additional = array ()) {
     global $action, $sid, $name, $request_referer, $request_direct;
-    echo <<<EOHTML
-<form method="post" id="phpesp_response" action="$action">
-<fieldset class="hidden">
-<input type="hidden" name="referer" value="{$request_referer}" />
-<input type="hidden" name="direct"  value="{$request_direct}" />
-<input type="hidden" name="sid"     value="{$sid}" />
-<input type="hidden" name="rid"     value="{$_SESSION['rid']}" />
-<input type="hidden" name="sec"     value="{$_SESSION['sec']}" />
-<input type="hidden" name="name"    value="{$name}" />
-EOHTML;
+    echo "<form method=\"post\" id=\"phpesp_response\" action=\"$action\">\n";
+    echo "<fieldset class=\"hidden\">\n";
+    echo "<input type=\"hidden\" name=\"referer\" value=\"{$request_referer}\" />\n";
+    echo "<input type=\"hidden\" name=\"direct\" value=\"{$request_direct}\" />\n";
+    echo "<input type=\"hidden\" name=\"sid\" value=\"{$sid}\" />\n";
+    echo "<input type=\"hidden\" name=\"rid\" value=\"{$_SESSION['rid']}\" />\n";
+    echo "<input type=\"hidden\" name=\"sec\" value=\"{$_SESSION['sec']}\" />\n";
+    echo "<input type=\"hidden\" name=\"name\" value=\"{$name}\" />\n";
 
     foreach ($additional as $field => $value) {
         echo "<input type='hidden' name='$field' value='$value' />";
     }
 
-    echo <<<EOHTML
-</fieldset>
-EOHTML;
+    echo "</fieldset>\n";
 }
 
 function paint_submission_form_close() {
-    echo <<<EOHTML
-</form>
-EOHTML;
+    echo "</form>\n";
 }
 
 function all_done() {

@@ -128,7 +128,11 @@ function displayPageFooter() {
 	echo "<br /><br />\n\n";
 	echo "<footer class=\"footer\">\n";
 	echo "  <div class=\"container\">\n";
-	echo "    <div class=\"text-muted pull-left\"><i class=\"fa fa-graduation-cap\"></i> Website developed by <abbr title=\"Phumin Chesdmethee (phumin@sawasdee.org)\">Phumin</abbr></div>\n";
+	echo "    <div class=\"text-muted pull-left\"><i class=\"fa fa-graduation-cap\"></i> Website developed by <abbr title=\"Phumin Chesdmethee\">Phumin</abbr>: ";
+	echo "	  [<a href=\"https://fb.me/phumin\"><i class=\"fa fa-facebook-square\"></i></a>|";
+	echo "    <a href=\"https://twitter.com/pephumin\"><i class=\"fa fa-twitter\"></i></a>|";
+	echo "	  <a href=\"mailto:phumin@sawasdee.org\"><i class=\"fa fa-envelope-o\"></i></a>|";
+	echo "	  <a href=\"sms:66-81-806-8899\"><i class=\"fa fa-mobile\"></i></a>]</div>\n";
 	echo "    <div class=\"text-muted pull-right\">".$signed."</div>\n";
 	echo "  </div>\n";
 	echo "</footer>\n\n";

@@ -29,14 +29,18 @@ if(isset($_POST['cancel'])) {
 /* delete user */
 if(isset($_POST['delete'])) {
 	unset($_POST['submit']);
-	$u = _addslashes($_POST['u']);
+	//$u = _addslashes($_POST['u']);
 	$r = _addslashes($_POST['r']);
 	$r2 = _stripslashes($_POST['r']);
+	$u = $_POST['u'];
+	//$r = $_POST['r'];
+	//$r2 = _stripslashes($_POST['r']);
 	/* check acl */
 	if($_SESSION['acl']['superuser'] == 'Y' ||
 		in_array($r2, $_SESSION['acl']['puser']) ||
-		auth_no_access(_('to access this group'))) {
+		auth_no_access('to access this group')) {
 		$sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['respondent_table']." WHERE username=$u AND realm=$r";
+		echo $sql;
 		if(!execute_sql($sql) || affected_rows() < 1) {
 			/* unsucessfull -- abort */
 			//$errstr .= mkerror(_('Cannot delete account.') .' ('. ErrorMsg() .')');
@@ -224,8 +228,8 @@ if(!empty($u) && !empty($r)) {
 			//echo "\n";
 			$u_u = mktext('u', 16, 16, $arr);
 		} else { 
-    		$u_u = '<input class="form-control" type="text" name="u" value="'.$u.'" disabled/>'; 
-    		$u_u .= '<input type="hidden" name="u" value="'.$u.'" />';
+    		$u_u = "<input class=\"form-control\" type=\"text\" name=\"u\" value=\"".$u."\" disabled/>\n"; 
+    		$u_u .= "<input type=\"hidden\" name=\"u\" value=\"".$u."\" />\n";
 			//$u_u = mkhidden('u', $arr);
     		//echo "\n";
 		}
@@ -246,7 +250,7 @@ if(!empty($u) && !empty($r)) {
     <label class="col-sm-3 control-label">Group <span class="label label-danger">required</span></label>
     <div class="col-sm-9">
 		<?php
-		if(empty($r)) {
+		//if(empty($r)) {
 			$groups = array();
 			if($_SESSION['acl']['superuser'] == 'Y') {
 				$sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['realm_table'];
@@ -272,7 +276,7 @@ if(!empty($u) && !empty($r)) {
 				$u_r .= '<input type="hidden" name="r" value="'.$groups[0].'" />';
 				//$u_r .= mkhidden('r', $arr);
 			}
-		}
+		//}
 		echo $u_r;
 		?>
 		<p class="text-muted">Select appropriate group for this user.</p>

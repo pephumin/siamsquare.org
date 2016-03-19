@@ -11,15 +11,15 @@ if(isset($_POST['newpass1']) &&
 			_addslashes($_POST['oldpass']),
 			_addslashes($_POST['newpass1']))) {
 		//echo(_('Your password has been successfully changed.') ."<br>\n");
-		echo(mksuccess(_('Your password has been successfully changed.')));
+		echo(mksuccess('Your password has been successfully changed.'));
 		displayAdminBack();
 		header("Refresh: 10; URL=$base");
 		return;
 	} else {
-		echo(mkerror(_('Password not set, check your old password.')));
+		echo(mkerror('Password not set, check your old password.'));
 	}
 } else if(isset($_POST['newpass1'])) {
-	echo(mkerror(_('New passwords do not match or are blank.')));
+	echo(mkerror('New passwords do not match or are blank.'));
 }
 
 ?>
