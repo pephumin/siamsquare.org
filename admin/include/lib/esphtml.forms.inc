@@ -148,18 +148,14 @@ function mksubmit($_name, $_value = null, $_attrs = array ()) {
 /* proto string show_login(string surveyname, string message, string css, string title)
    Returns HTML login form */
 
-function show_login($_surveyname = null, $_message = null, $_css = null, $_title = "Client Login") {
+function show_login($_surveyname = null, $_message = null, $_css = null, $_title = "Client login") {
     $str = "";
-    if ($_message) {
-        $str .= mkerror($_message);
-    }
+    if ($_message) { $str .= mkerror($_message); }
     //$str .= "</div\n";
     $str .= "</form>\n";
     $str .= mkloginbox();
 
-    if ($_surveyname != "") {
-        $str .= '<input type="hidden" name="'."$_surveyname".'"';
-    }
+    if ($_surveyname != "") { $str .= '<input type="hidden" name="'."$_surveyname".'"'; }
 
     $str .= "<br />\n";
     $str .= login_warning();
@@ -193,7 +189,11 @@ function login_warning() {
 function mkloginbox() {
     $text = "<form name=\"loginform\" id=\"loginform\" method=\"post\" class=\"form-horizontal\">\n";
     $text .= "  <div class=\"dashboardPanel\" id=\"login\">\n";
+<<<<<<< HEAD
     $text .= "  <h2>Client Login</h2>\n";
+=======
+    $text .= "  <h2>Client login</h2>\n";
+>>>>>>> master
     $text .= "  <br />\n";
     $text .= "    <div class=\"form-group\">\n";
     $text .= "      <label for=\"username\" class=\"col-sm-3 control-label\">Username:</label>\n";

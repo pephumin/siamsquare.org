@@ -1,6 +1,5 @@
 <?php
-                                                                                                                                         
-                                                                                                                                              
+
 /*  proto adodb_recordset execute_sql(string message, integer limit, string assoc)
     Executes $command and Returns a adodb_recordset */
 
@@ -206,10 +205,7 @@ function password_upgrade($username, $password, $table) {
         $version = $info['version'];
         if ($version > 4.0) {
             $username = _addslashes($username);
-            $sql = "SELECT * FROM ".$table." WHERE
-            username = ".$username." AND
-            password = OLD_PASSWORD($password) AND
-            disabled = 'N' AND
+            $sql = "SELECT * FROM ".$table." WHERE username = ".$username." AND password = OLD_PASSWORD($password) AND disabled = 'N' AND
             (expiration = '0000-00-00 00:00:00' OR expiration > ". sys_time_stamp().")";
             $accres = execute_sql( $sql, "", ADODB_FETCH_ASSOC );
             if (!$accres) {

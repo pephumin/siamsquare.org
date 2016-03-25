@@ -1,8 +1,13 @@
 <?php
 
+$home = "http://www.siamsquare.org";
+$admin = $home."/admin";
+$self = $_SERVER['PHP_SELF'];
+$base = $_SERVER['BASE_PAGE'];
+
 function survey_status($start = "0", $limit = "5", $page = NULL) {
 
-	$base =& $GLOBALS['ESPCONFIG']['ME'];
+	$base =& $self;
 	$public =& $GLOBALS['ESPCONFIG']['autopub_url'];
 	$me = $_SERVER['REQUEST_URI'];
 
@@ -168,5 +173,193 @@ $offset = ($currentpage - 1) * $rowsperpage;
 	echo "<br />\n\n";
 }
 
-
+/*
+* function list_access($sid) {
+* 
+* 	global $self;
+* 	$errstr = "";
+* 	$output = "";
+* 	
+* //	if($_SESSION['acl']['superuser'] == "Y") {
+* //		$sql = "SELECT s.name, s.title, s.owner, s.realm, s.public FROM "'.$GLOBALS['ESPCONFIG']['survey_table'].'" s WHERE s.id = $sid";
+* //		$sql1 = "SELECT a.realm, a.maxlogin, a.resume, a.navigate FROM "'.$GLOBALS['ESPCONFIG']['access_table'].'" a WHERE a.survey_id = $sid ORDER BY a.* //	realm";
+* //	} else {
+* //		$realms = array_to_insql(
+* //			array_intersect(
+* //				$_SESSION['acl']['pall'],
+* //				array_merge(
+* //					$_SESSION['acl']['pall'],
+* //					$_SESSION['acl']['pdesign'])));
+* //            $sql = "SELECT s.name, s.title, s.owner, s.realm, s.public FROM "'.$GLOBALS['ESPCONFIG']['survey_table'].'" s WHERE s.id = $sid AND NOT (* //status & "'.STATUS_DELETED. '") AND (s.owner = "'._addslashes($_SESSION['acl']['username']) .'" || s.realm $realms)";
+* //		    
+* //		    $sql1 = "SELECT a.realm, a.maxlogin, a.resume, a.navigate FROM "'.$GLOBALS['ESPCONFIG']['access_table'].'" a, "'.$GLOBALS['ESPCONFIG']['	* //survey_table'].'" s WHERE a.survey_id = $sid AND s.id=a.survey_id AND (s.owner = "'._addslashes($_SESSION['acl']['username']) .'" || s.//realm $realms) * ORDER BY a.realm";
+* //	}
+* 
+* 	$result = execute_sql($sql);
+* 	
+* 	if (record_count($result) < 1) { $sid = 0; }
+* 
+* 	list($name,$title,$owner,$realm,$public) = fetch_row($result); 
+* 
+* 	db_close($result);
+* 
+* 	if (!empty($_POST['op'])) $op = $_POST['op'];
+* 	elseif (!empty($_GET['op'])) $op = $_GET['op'];
+* 	else $op = '';
+* 
+* 	if (!empty($_POST['realm'])) $arealm = _addslashes($_POST['realm']);
+* 	elseif (!empty($_GET['realm'])) $arealm = _addslashes($_GET['realm']);
+* 
+* 	if (isset($_POST['resume'])) $resume = 'Y';
+* 	else $resume = 'N'; $resume = _addslashes($resume);	
+* 	
+* 	if (isset($_POST['navigate'])) $navigate = 'Y';
+* 	else $navigate = 'N'; $navigate = _addslashes($navigate);
+* 	
+* 	if (!empty($_POST['max'])) $max = intval($_POST['max']);
+* 	elseif (!empty($_GET['max'])) $max = intval($_GET['max']);
+* 	else $max = 0;
+* 
+* 	if ($op == 'a') {
+* 		if (empty($_POST['realm'])) {
+* 			$errstr = mkerror('Please select a group.');
+* 		} else {
+* 			$sql = "INSERT INTO "'.$GLOBALS['ESPCONFIG']['access_table'].'" (survey_id, realm, maxlogin, resume, navigate) VALUES ($sid, $arealm, $max, * $resume, $navigate)";
+* 			execute_sql($sql);
+* 		}
+* 	} elseif ($op == 'r') {
+* 		$sql = "DELETE FROM "'.$GLOBALS['ESPCONFIG']['access_table'].'" WHERE survey_id = $sid AND realm = $arealm ";
+* 		execute_sql($sql);
+* 	} elseif ($op == 'v') {
+* 		$sql = "UPDATE "'.$GLOBALS['ESPCONFIG']['survey_table'].'" SET public = 'N' WHERE id = $sid ";
+* 		execute_sql($sql);
+* 		$sid = 0;
+* 	} elseif ($op == 'p') {
+* 		$sql = "UPDATE "'.$GLOBALS['ESPCONFIG']['survey_table'].'" SET public = 'Y' WHERE id = $sid ";
+* 		execute_sql($sql);
+* 		$sid = 0;
+* 	}
+* 
+* 	if ($public == 'N') { $public = "<span class=\"label label-danger\"><i class=\"fa fa-paper-plane fa-fw\"></i> Private</span> "; }
+* 	else { $public = "<span class=\"label label-warning\"><i class=\"fa fa-paper-plane fa-fw\"></i> Public</span> "; }
+* 
+* //		$r = '<select name="realm"><option></option>';
+* //		$groups = array();
+* //	    $selected_groups = array();
+* //	
+* //	    // if realm has already been added then do not include it for reselection.
+* //	    $result = execute_sql($sql1);
+* //	   	while (list($sg) = fetch_row($result)) {
+* //	   		array_push($selected_groups, $sg);
+* //	  		$result->MoveNext();
+* //	   	}
+* //	
+* //	    db_close($result);
+* //	
+* //		if($_SESSION['acl']['superuser'] == 'Y') {
+* //	
+* //			$sql = "SELECT name FROM "'.$GLOBALS['ESPCONFIG']['realm_table']';
+* //			$result = execute_sql($sql);
+* //			while( list($g) = fetch_row($result) ) {
+* //	            if (!in_array($g, $selected_groups)) {
+* //				    array_push($groups, $g);
+* //	            }
+* //	            $result->MoveNext();
+* //			}
+* //			db_close($result);
+* //	    } else {
+* //	        $g =& $_SESSION['acl']['pdesign'];
+* //	        foreach ($g as $t) {
+* //	            if (!in_array($t, $selected_groups)) {
+* //	                array_push($groups, $t);
+* //	            }
+* //	        }
+* //	    }
+* //		//oreach($groups as $g) {
+* //		//	$r .= "<option value=\"$g\">$g</option>";
+* //		//
+* //		//r .= '</select>';
+* //	}
+* 	
+* //		$output .= "	<input type=\"hidden\" name=\"where\" value=\"access\" />\n";
+* //		$output .= "	<input type=\"hidden\" name=\"sid\" value=\"$sid\" />\n";
+* //		$output .= "	<input type=\"hidden\" name=\"op\" value=\"a\" />\n";	
+* //		$output .= "	<br />\n";
+* //		$output .= "	<table class=\"table table-hover\">\n";
+* //		$output .= "		<tr><th>ID</th><td colspan=\"5\">$sid</td></tr>\n";
+* //		$output .= "		<tr><th>Name</th><td colspan=\"5\">$name</td></tr>\n";
+* //		$output .= "		<tr><th>Title</th><td colspan=\"5\">$title</td></tr>\n"
+* //		$output .= "		<tr><th>Owner</th><td colspan=\"5\">$owner</td></tr>\n";
+* //		$output .= "		<tr><th>Group</th><td colspan=\"5\">$realm</td></tr>\n";
+* //		$output .= "		<tr><th>Public</th><td colspan=\"5\">$public</td></tr>\n";
+* //		$output .= "		<tr><td colspan=\"6\"><hr /></td></tr>\n";
+* //		$output .= "		<tr class=\"active\"><th>Group</th>\n";
+* //		$output .= "			<th>Max Responses</th>\n";
+* //		$output .= "			<th>Save/Restore</th>\n";
+* //		$output .= "			<th>Back/Forward</th>\n";
+* //		$result = execute_sql($sql1);
+* //		while ( list($arealm, $amax, $aresume, $anavigate) = fetch_row($result) ) { 
+* //			$result->MoveNext();
+* //			$output .= "		<tr><td>$arealm</td>\n";
+* //			$output .= "			<td>$amax</td>\n";
+* //			//$output .= "		<td>($aresume == "Y") ? "Yes" : "No"</td>\n";
+* //			//$output .= "			<td>($anavigate == "Y") ? "Yes" : "No"</td>\n";
+* //			//$output .= " 			<td><a href=\"$self .htmlentities("?where=access&sid=$sid&op=r&realm=").urlencode($arealm)\">Remove</a></td></tr>\n";
+* //		}
+* //		$output .= "		<tr><td>$r</td>\n";
+* //		$output .= "			<td><input type=\"text\" name=\"max\" size=\"5\"></td>\n";
+* //		$output .= "			<td><input type=\"checkbox\" name=\"resume\" /></td>\n";
+* //		$output .= "			<td><input type=\"checkbox\" name=\"navigate\" /></td>\n";
+* //		$output .= "			<td><input type=\"submit\" value=\"Add\"></td></tr>\n";
+* //		$output .= "	</table>\n";
+* //		$output .= "	<br /><br />\n";
+* //		//return;
+* //	}
+* 
+* //	$output .= "	<table class=\"table table-hover\">\n";
+* //	$output .= "		<tr class=\"active\">\n";
+* //	$output .= "			<th>Title</th>\n";
+* //	$output .= "			<th>Owner (Group)</th>\n";
+* //	$output .= "			<th>Public</th>\n";
+* //	$output .= "		</tr>\n";
+* //	
+* //	// load names and titles of all surveys available to _this_ user
+* //	
+* //	if($_SESSION['acl']['superuser'] == "Y") {
+* //		$sql = "SELECT id,name,title,owner,realm,public FROM "'.$GLOBALS['ESPCONFIG']['survey_table'].'" WHERE NOT "'.db_bin('status',STATUS_DELETED).'" * //ORDER BY id DESC";
+* //	} else {
+* //		$realms = array_to_insql(
+* //			array_intersect(
+* //				$_SESSION['acl']['pall'],
+* //				array_merge(
+* //					$_SESSION['acl']['pall'],
+* //					$_SESSION['acl']['pdesign'])));
+* //		$sql = "SELECT id,name,title,owner,realm,public FROM "'.$GLOBALS['ESPCONFIG']['survey_table'].'" WHERE NOT "'.db_bin('status',STATUS_DELETED).'" * //AND (	owner = "'._addslashes($_SESSION['acl']['username']) .'" || realm $realms) ORDER BY id DESC";
+* //	}
+* //	
+* //	$result = execute_sql($sql);
+* //
+* //	while(list($sid,$name,$title,$owner,$realm,$public) = fetch_row($result)) {
+* //	     $result->MoveNext();
+* //	
+* //		if ($public == "N") {
+* //			$public = "<span class=\"label label-danger\"><i class=\"fa fa-paper-plane fa-fw\"></i> Private</span> ";
+* //			//$op = '<small>[<a href="'. $self .htmlentities("?where=access&sid=$sid&op=p").'">change to Public</a>]</small>';
+* //		} else {
+* //			$public = "<span class=\"label label-warning\"><i class=\"fa fa-paper-plane fa-fw\"></i> Public</span>";
+* //			//$op = '<small>[<a href="'. $self .htmlentities("?where=access&sid=$sid&op=v").'">change to Private</a>]</small>';
+* //		}
+* //
+* //		$output .= "		<tr>\n";
+* //		//$output .= "			<td><a href=\"htmlentities($self ."?where=access&sid=$sid")\">$title</a></td>\n";
+* //		$output .= "			<td>$owner ($realm)</td>\n";
+* //		$output .= "			<td>$public $op</td>\n";
+* //		$output .= "		</tr>\n";
+* //		$output .= "	</table>\n";
+* //		$output .= "	<br /><br />\n";
+* 	
+* //	}
+* //	return $output;
+* }
+*/
 ?>

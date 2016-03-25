@@ -73,6 +73,11 @@ function esp_init_adodb() {
             $dbconnected = $cfg['adodb_conn']->Connect($cfg['db_host'], $cfg['db_user'], $cfg['db_pass'], $cfg['db_name']);
         }
     }
+    
+    // pe adds utf-8
+    $charset = "SET NAMES utf8";
+    mysql_query($charset) or die('Invalid query: ' . mysql_error()); 
+
     if (!$dbconnected) {
         header('HTTP/1.0 503 '. _('Service Unavailable'));
         echo('<html><head><title>HTTP 503 '. _('Service Unavailable') .'</title></head>');
@@ -84,6 +89,7 @@ function esp_init_adodb() {
         echo('</body></html>');
         exit;
     }
+    //mysql_query("set names 'utf8'",$dbconnected);
     error_reporting(E_ALL);       // Show errors from now on.
 }
     

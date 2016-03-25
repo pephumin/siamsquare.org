@@ -121,12 +121,13 @@ function survey_get_for_current_user(&$surveys) {
      $where = survey_fetch_limiting_where();
 
      // get the survey data based on those limitations
-     $sql =<<<EOSQL
-SELECT id,name,title,owner,realm
- FROM {$GLOBALS['ESPCONFIG']['survey_table']}
-WHERE {$where}
-ORDER BY id DESC
-EOSQL;
+     $sql = "SELECT id,name,title,owner,realm FROM {$GLOBALS['ESPCONFIG']['survey_table']} WHERE {$where} ORDER BY id DESC";
+//    $sql =<<<EOSQL
+//ELECT id,name,title,owner,realm
+//FROM {$GLOBALS['ESPCONFIG']['survey_table']}
+//HERE {$where}
+//RDER BY id DESC
+//OSQL;
 
     return survey_get_from_sql($sql, $surveys);
 }
@@ -137,45 +138,43 @@ EOSQL;
 //  NOTE: If you are using this with aliases, pass the correct column name for status, owner, and realm.
 
 function survey_fetch_limiting_where($statusColumn = 'status', $ownerColumn = 'owner', $realmColumn = 'realm') {
-     // we start by limiting everyone to just the active or done surveys
-     $statusok = db_bin($statusColumn, STATUS_ACTIVE | STATUS_DONE);
-     $statusno = db_bin($statusColumn, STATUS_DELETED);
-     $where = "($statusok) AND (NOT $statusno)";
+  // we start by limiting everyone to just the active or done surveys
+  $statusok = db_bin($statusColumn, STATUS_ACTIVE | STATUS_DONE);
+  $statusno = db_bin($statusColumn, STATUS_DELETED);
+  $where = "($statusok) AND (NOT $statusno)";
 
-     // now if we're not a superuser, we also limit to those we own or are in our realm
-     if (isset($_SESSION['acl']) && is_array($_SESSION['acl'])) {
-         if (isset($_SESSION['acl']['superuser']) && 'Y' != $_SESSION['acl']['superuser']) {
-             // get the realms to which the user has access
-             // NOTE: $realms will include the SQL operator: IS, =, etc.
-             $realms = array_to_insql(
-                           array_intersect($_SESSION['acl']['pall'], $_SESSION['acl']['pdata'])
-                       );
+  // now if we're not a superuser, we also limit to those we own or are in our realm
+  if (isset($_SESSION['acl']) && is_array($_SESSION['acl'])) {
+    if (isset($_SESSION['acl']['superuser']) && 'Y' != $_SESSION['acl']['superuser']) {
+      // get the realms to which the user has access
+      // NOTE: $realms will include the SQL operator: IS, =, etc.
+      $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'], $_SESSION['acl']['pdata']));
 
-             // if we are looking for that realm in just one column
-             if (is_string($realmColumn)) {
-                 // get the access to that one column
-                 $access = sprintf('%s %s', $realmColumn, $realms);
+      // if we are looking for that realm in just one column
+      if (is_string($realmColumn)) {
+        // get the access to that one column
+        $access = sprintf('%s %s', $realmColumn, $realms);
 
-             // but if we're looking for that realm in multiple columns
-             } else if (is_array($realmColumn)) {
-                 // get the access to any of those columns
-                 $access = array ();
-                 foreach ($realmColumn as $column) {
-                     $access[] = sprintf('%s %s', $column, $realms);
-                 }
-                 $access = implode(' OR ', $access);
+      // but if we're looking for that realm in multiple columns
+      } else if (is_array($realmColumn)) {
+        // get the access to any of those columns
+        $access = array ();
+        foreach ($realmColumn as $column) {
+            $access[] = sprintf('%s %s', $column, $realms);
+        }
+        $access = implode(' OR ', $access);
 
-             // if we're given something else, fail gracefully closed
-             } else {
-                 $access = '1=0';
-             }
+      // if we're given something else, fail gracefully closed
+      } else {
+          $access = '1=0';
+      }
 
-             // build the SQL where the user owns the survey or has access to it
-             $where .= sprintf(' AND (%s=%s OR %s)', $ownerColumn, _addslashes($_SESSION['acl']['username']), $access);
-         }
-     }
+      // build the SQL where the user owns the survey or has access to it
+      $where .= sprintf(' AND (%s=%s OR %s)', $ownerColumn, _addslashes($_SESSION['acl']['username']), $access);
+    }
+  }
 
-     return $where;
+  return $where;
 }
 
 //  respondent survey (and associated information) recovery methods
@@ -188,14 +187,15 @@ function survey_get_in_realm($realm, &$surveys) {
      // NOTE: (tblSurvey.realm and tblAccess.realm).
      $where = survey_fetch_limiting_where('status','owner',array ('tblSurvey.realm', 'tblAccess.realm'));
      $realm = _addslashes($realm);
-     $sql =<<<EOSQL
-SELECT DISTINCT tblSurvey.id, tblSurvey.name, tblSurvey.title, tblSurvey.owner, tblSurvey.open_date, tblSurvey.close_date
-  FROM {$GLOBALS['ESPCONFIG']['survey_table']} AS tblSurvey
-  JOIN {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess
-    ON tblAccess.survey_id=tblSurvey.id
- WHERE (tblSurvey.realm = $realm OR tblAccess.realm = $realm) AND ($where)
- ORDER BY id DESC
-EOSQL;
+     $sql = "SELECT DISTINCT tblSurvey.id, tblSurvey.name, tblSurvey.title, tblSurvey.owner, tblSurvey.open_date, tblSurvey.close_date FROM {$GLOBALS['ESPCONFIG']['survey_table']} AS tblSurvey JOIN {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess ON tblAccess.survey_id=tblSurvey.id WHERE (tblSurvey.realm = $realm OR tblAccess.realm = $realm) AND ($where) ORDER BY id DESC";
+//     $sql =<<<EOSQL
+//SELECT DISTINCT tblSurvey.id, tblSurvey.name, tblSurvey.title, tblSurvey.owner, tblSurvey.open_date, tblSurvey.close_date
+//  FROM {$GLOBALS['ESPCONFIG']['survey_table']} AS tblSurvey
+//  JOIN {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess
+//    ON tblAccess.survey_id=tblSurvey.id
+// WHERE (tblSurvey.realm = $realm OR tblAccess.realm = $realm) AND ($where)
+// ORDER BY id DESC
+//EOSQL;
 
     return survey_get_from_sql($sql, $surveys);
 }
@@ -206,12 +206,13 @@ EOSQL;
 function survey_get_public(&$surveys) {
      // get the survey data based on those limitations
      $where = survey_fetch_limiting_where();
-     $sql =<<<EOSQL
-SELECT id,name,title,owner,open_date,close_date
-  FROM {$GLOBALS['ESPCONFIG']['survey_table']}
- WHERE (public = 'Y') AND ($where)
- ORDER BY id DESC
-EOSQL;
+     $sql = "SELECT id,name,title,owner,open_date,close_date FROM {$GLOBALS['ESPCONFIG']['survey_table']} WHERE (public = 'Y') AND ($where) ORDER BY id DESC";
+//     $sql =<<<EOSQL
+//SELECT id,name,title,owner,open_date,close_date
+//  FROM {$GLOBALS['ESPCONFIG']['survey_table']}
+// WHERE (public = 'Y') AND ($where)
+// ORDER BY id DESC
+//EOSQL;
 
     return survey_get_from_sql($sql, $surveys);
 }
@@ -221,20 +222,18 @@ EOSQL;
 
 function survey_get_privilege(&$privileges, $sids, $realm = null) {
     // construct the limit clauses
-    if (is_scalar($sids)) {
-        $sids = array ($sids);
-    } else if (! is_array($sids)) {
-        return false;
-    }
+    if (is_scalar($sids)) { $sids = array ($sids); } 
+    elseif (! is_array($sids)) { return false; }
     $limit  = sprintf('(tblAccess.survey_id %s)', array_to_insql($sids));
     $limit .= (isset($realm) ? sprintf(' AND (tblAccess.realm=%s)', _addslashes($realm)) : '');
 
     // get the access columns
-    $sql =<<<EOSQL
-SELECT survey_id, realm, maxlogin, resume, navigate
-  FROM {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess
- WHERE $limit
-EOSQL;
+    $sql = "SELECT survey_id, realm, maxlogin, resume, navigate FROM {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess WHERE $limit";
+//    $sql =<<<EOSQL
+//SELECT survey_id, realm, maxlogin, resume, navigate
+//  FROM {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess
+// WHERE $limit
+//EOSQL;
 
     return survey_get_from_sql($sql, $privileges, 'survey_id');
 }
@@ -243,19 +242,17 @@ EOSQL;
 //  Get the response information for one or more surveys, optionally constrained by username
 
 function survey_get_responses(&$responses, $sids, $username = null) {
-    if (is_scalar($sids)) {
-        $sids = array ($sids);
-    } else if (! is_array($sids)) {
-        return false;
-    }
+    if (is_scalar($sids)) { $sids = array ($sids); } 
+    elseif (! is_array($sids)) { return false; }
     $limit  = sprintf('(survey_id %s)', array_to_insql($sids));
     $limit .= (isset($username) ? sprintf(' AND (tblResponse.username=%s)', _addslashes($username)) : '');
 
-    $sql =<<<EOSQL
-SELECT survey_id, username, submitted, complete, ip
-  FROM {$GLOBALS['ESPCONFIG']['response_table']} AS tblResponse
- WHERE $limit
-EOSQL;
+    $sql = "SELECT survey_id, username, submitted, complete, ip FROM {$GLOBALS['ESPCONFIG']['response_table']} AS tblResponse WHERE $limit";
+//    $sql =<<<EOSQL
+//SELECT survey_id, username, submitted, complete, ip
+//  FROM {$GLOBALS['ESPCONFIG']['response_table']} AS tblResponse
+// WHERE $limit
+//EOSQL;
     return survey_get_from_sql($sql, $responses, 'survey_id');
 }
 
@@ -308,58 +305,53 @@ EOSQL;
     // ... available
     if (isset($username)) {
         $username = _addslashes($username);
-        $mayRespond =<<<EOSQL
-            CASE WHEN (
-                       0 = COALESCE(maxlogin,0) OR
-                       (
-                         SELECT COUNT(*)
-                           FROM {$GLOBALS['ESPCONFIG']['response_table']} as tblResponse
-                          WHERE tblResponse.survey_id=tblAccess.survey_id AND
-                                tblResponse.username=$username AND
-                                tblResponse.complete=$yes
-                       ) < maxlogin
-                      )
-            THEN 1
-            ELSE 0
-            END
-EOSQL;
+        $mayRespond = "CASE WHEN ( 0 = COALESCE(maxlogin,0) OR (SELECT COUNT(*) FROM {$GLOBALS['ESPCONFIG']['response_table']} as tblResponse WHERE tblResponse.survey_id=tblAccess.survey_id AND tblResponse.username=$username AND tblResponse.complete=$yes) < maxlogin) THEN 1 ELSE 0 END";
+
+//        $mayRespond =<<<EOSQL
+//            CASE WHEN (
+//                       0 = COALESCE(maxlogin,0) OR
+//                       (
+//                         SELECT COUNT(*)
+//                           FROM {$GLOBALS['ESPCONFIG']['response_table']} as tblResponse
+//                          WHERE tblResponse.survey_id=tblAccess.survey_id AND
+//                                tblResponse.username=$username AND
+//                                tblResponse.complete=$yes
+//                       ) < maxlogin
+//                      )
+//            THEN 1
+//            ELSE 0
+//            END
+//EOSQL;
     } else {
         $mayRespond = '1';
     }
 
     // ... visible
-    if (is_scalar($sids)) {
-        $sids = array ($sids);
-    } else if (! is_array($sids)) {
-        return false;
-    }
+    if (is_scalar($sids)) { $sids = array ($sids); } 
+    elseif (! is_array($sids)) { return false; }
 
     if (isset($realm)) {
         $realm = _addslashes($realm);
-        $limit = sprintf(
-                     '(tblSurvey.id %s) AND (tblSurvey.public=%s OR tblAccess.realm=%s)',
-                     array_to_insql($sids), $yes, $realm
-                 );
+        $limit = sprintf('(tblSurvey.id %s) AND (tblSurvey.public=%s OR tblAccess.realm=%s)', array_to_insql($sids), $yes, $realm);
     } else {
-        $limit = sprintf(
-                     '(tblSurvey.id %s) AND (tblSurvey.public=%s)',
-                     array_to_insql($sids), $yes
-                 );
+        $limit = sprintf('(tblSurvey.id %s) AND (tblSurvey.public=%s)', array_to_insql($sids), $yes);
     }
 
     // compute
-    $sql =<<<EOSQL
-SELECT tblSurvey.id,
-       ($statusActive) AS active,
-       ($openForBiz)   AS open,
-       ($mayRespond)   AS available,
-       1               AS visible
-  FROM {$GLOBALS['ESPCONFIG']['survey_table']} AS tblSurvey
-  LEFT
-  JOIN {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess
-    ON tblAccess.survey_id=tblSurvey.id
- WHERE $limit
-EOSQL;
+    $sql = "SELECT tblSurvey.id, ($statusActive) AS active, ($openForBiz) AS open, ($mayRespond) AS available, 1 AS visible FROM {$GLOBALS['ESPCONFIG']['survey_table']} AS tblSurvey LEFT JOIN {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess ON tblAccess.survey_id=tblSurvey.id WHERE $limit";
+
+//    $sql =<<<EOSQL
+//SELECT tblSurvey.id,
+//       ($statusActive) AS active,
+//       ($openForBiz)   AS open,
+//       ($mayRespond)   AS available,
+//       1               AS visible
+//  FROM {$GLOBALS['ESPCONFIG']['survey_table']} AS tblSurvey
+//  LEFT
+//  JOIN {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess
+//    ON tblAccess.survey_id=tblSurvey.id
+// WHERE $limit
+//EOSQL;
 
     return survey_get_from_sql($sql, $accessibility);
 }
@@ -372,7 +364,7 @@ function survey_get_from_sql($sql, &$surveys, $surveyIDCol = 'id') {
     $res = execute_sql($sql, null, ADODB_FETCH_ASSOC);
     if (! $res) {
         // give up, select bombed
-        $GLOBALS['errmsg'] = mkerror(_('Unable to get list of surveys for current user'));
+        $GLOBALS['errmsg'] = mkerror('Unable to get list of surveys for current user');
         return false;
     }
 
@@ -383,11 +375,8 @@ function survey_get_from_sql($sql, &$surveys, $surveyIDCol = 'id') {
     while ($row = fetch_row($res)) {
         $res->MoveNext();
         // make sure we have an ID column
-        if (isset($row[$surveyIDCol])) {
-            $id = $row[$surveyIDCol];
-        } else {
-            continue;
-        }
+        if (isset($row[$surveyIDCol])) { $id = $row[$surveyIDCol]; } 
+        else { continue; }
 
         // add in the survey information to the previous survey information
         if (isset($surveys[$id])) {
@@ -436,7 +425,10 @@ function survey_merge_sets(&$merged, $a /* ... */) {
 //  Return the URL to a survey with a given name
 
 function survey_fetch_url_by_survey_name($name) {
-    return rtrim($GLOBALS['ESPCONFIG']['base_url'], '/') . '/public/survey.php?name=' . htmlentities($name);
+  $home = "http://www.siamsquare.org";
+  $target = $home."/public/survey.php?name=".htmlentities($name);
+  //return rtrim($GLOBALS['ESPCONFIG']['base_url'], '/') . '/public/survey.php?name=' . htmlentities($name);
+  return rtrim($target);
 }
 
 //  survey_assign_new_name()

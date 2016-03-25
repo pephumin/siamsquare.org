@@ -13,12 +13,7 @@ function array_to_insql($array) {
 	Returns the number of sections in the survey. */
 
 function survey_num_sections($sid) {
-	$sql = "
-		SELECT COUNT(*) + 1
-		FROM ".$GLOBALS['ESPCONFIG']['question_table']."
-		WHERE survey_id=${sid} AND
-		type_id='99' AND
-		deleted='N'";
+	$sql = "SELECT COUNT(*) + 1 FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id=${sid} AND type_id='99' AND deleted='N'";
 	$result = execute_sql($sql);
 	$count = $result->fields[0];
 	db_close($result);
@@ -32,9 +27,7 @@ function survey_get_sections($sid, $field = 'id') {
 	if (empty($field))
 		$field = 'id';
 
-	$sql = "SELECT $field, type_id FROM ".$GLOBALS['ESPCONFIG']['question_table']."
-		WHERE survey_id = $sid AND deleted = 'N'
-		ORDER BY position";
+	$sql = "SELECT $field, type_id FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id = $sid AND deleted = 'N' ORDER BY position";
 	if (!($result = execute_sql($sql)))
 		return array();
 	$ret = array();
@@ -60,9 +53,7 @@ function survey_get_section_questions($sid, $field = 'id') {
 	if (empty($field))
 		$field = 'id';
 
-	$sql = "SELECT $field, type_id FROM ".$GLOBALS['ESPCONFIG']['question_table']."
-		WHERE survey_id = $sid AND deleted = 'N'
-		ORDER BY position";
+	$sql = "SELECT $field, type_id FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id = $sid AND deleted = 'N' ORDER BY position";
 	if (!($result = execute_sql($sql)))
 		return array();
 	$ret = array();
@@ -89,11 +80,7 @@ function survey_get_section_questions($sid, $field = 'id') {
 function survey_select_section_sql($sid, $section, $table = '') {
 	if(!empty($table))
 		$table .= '.';
-	$sql = "SELECT position FROM ".$GLOBALS['ESPCONFIG']['question_table']."
-		WHERE survey_id=${sid} AND
-		type_id='99' AND
-		deleted='N'
-		ORDER BY position,id";
+	$sql = "SELECT position FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id=${sid} AND type_id='99' AND deleted='N' ORDER BY position,id";
 	$result = execute_sql($sql);
 	$num_sections = record_count($result) + 1;
 

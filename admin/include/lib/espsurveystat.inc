@@ -71,20 +71,14 @@ function stat_fetch_with_summary($limitToCurrentUser = true) {
         //esp_require_once('/lib/espsurvey');
         require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurvey.inc';
 
-        $where = survey_fetch_limiting_where(
-                     "{$cfg['survey_table']}.status",
-                     "{$cfg['survey_table']}.owner",
-                     "{$cfg['survey_table']}.realm"
-                 );
-        $sql = sprintf(
-                   'SELECT * FROM %1$s JOIN %2$s ON %2$s.id=%1$s.survey_id WHERE %3$s',
-                   $cfg['survey_statistics_table'],
-                   $cfg['survey_table'],
-                   $where
-               );
+        $where = survey_fetch_limiting_where("{$cfg['survey_table']}.status", "{$cfg['survey_table']}.owner", "{$cfg['survey_table']}.realm");
+
+        $sql = sprintf('SELECT * FROM %1$s JOIN %2$s ON %2$s.id=%1$s.survey_id WHERE %3$s', $cfg['survey_statistics_table'], $cfg['survey_table'], $where);
+
     } else {
         $sql = sprintf('SELECT * FROM %1$s', $cfg['survey_statistics_table']);
     }
+
     $res = execute_sql($sql, null, ADODB_FETCH_ASSOC);
 
     // turn the record set into a nice array, with a summary line
@@ -114,7 +108,7 @@ function stat_fetch_with_summary($limitToCurrentUser = true) {
         }
         return $results;
     } else {
-        $GLOBALS['errmsg'] = mkerror(_('Unable to fetch statistics from table'));
+        $GLOBALS['errmsg'] = mkerror('Unable to fetch statistics from table');
         return false;
     }
 }
@@ -127,6 +121,7 @@ function survey_stat_fetch_all($sid) {
 
     // try and get all the columns for this survey
     $sql = sprintf('SELECT * FROM %1$s WHERE survey_id=%2$s', $cfg['survey_statistics_table'], $sid);
+
     $res = execute_sql($sql, null, ADODB_FETCH_ASSOC);
     if ($res) {
         // now get them from the set, remove the bookkeeping values, and return them
@@ -135,7 +130,7 @@ function survey_stat_fetch_all($sid) {
         return $values;
     } else {
         // oh well, can't do anything but move along
-        $GLOBALS['errmsg'] = mkerror(_('Unable to fetch statistics for survey'));
+        $GLOBALS['errmsg'] = mkerror('Unable to fetch statistics for survey');
         return false;
     }
 }
@@ -148,6 +143,7 @@ function survey_stat_fetch($metric, $sid) {
 
     // get the particular metric
     $sql = sprintf('SELECT %1$s FROM %2$s WHERE survey_id=%3$s', $metric, $cfg['survey_statistics_table'], $sid);
+
     $res = execute_sql($sql);
     if ($res) {
         // pull it out and return it
@@ -155,7 +151,7 @@ function survey_stat_fetch($metric, $sid) {
         return $value;
     } else {
         // oh well, give up and move along
-        $GLOBALS['errmsg'] = mkerror(_('Unable to fetch statistic for survey'));
+        $GLOBALS['errmsg'] = mkerror('Unable to fetch statistic for survey');
         return false;
     }
 }
@@ -169,6 +165,7 @@ function survey_stat_increment($metric, $sid) {
 
     // try and update
     $sql = sprintf('UPDATE %1$s SET %2$s=%2$s+1 WHERE survey_id=%3$s', $cfg['survey_statistics_table'], $metric, $sid);
+    
     $res = execute_sql($sql);
     if (0 == affected_rows()) {
         // well, no update, try an insert
@@ -176,7 +173,7 @@ function survey_stat_increment($metric, $sid) {
         $res = execute_sql($sql);
         if (0 == affected_rows()) {
             // alright, give up as neither the update nor the insert worked
-            $GLOBALS['errmsg'] = mkwarn(_('Unable to increment statistic for survey'));
+            $GLOBALS['errmsg'] = mkwarn('Unable to increment statistic for survey');
             return false;
         }
     }
@@ -195,10 +192,7 @@ function survey_stat_decrement($metric, $sid) {
     // try and update the value
     // NOTE: only decrement when current value is more than 0
     // NOTE: if you need to set negative statistics, use survey_stat_set();
-    $sql = sprintf(
-               'UPDATE %1$s SET %2$s=%2$s-1 WHERE survey_id=%3$s AND 0 < %2$s',
-               $cfg['survey_statistics_table'], $metric, $sid
-           );
+    $sql = sprintf('UPDATE %1$s SET %2$s=%2$s-1 WHERE survey_id=%3$s AND 0 < %2$s', $cfg['survey_statistics_table'], $metric, $sid);
     $res = execute_sql($sql);
     if (0 < affected_rows()) {
         // yay, it worked... move along
@@ -207,7 +201,7 @@ function survey_stat_decrement($metric, $sid) {
         // either the table structure is wrong (for example, someone gave a metric that isn't a column) or the
         // row does not yet exist.  Either way, it's a code problem, because you shouldn't be trying to update
         // columns that don't exist, and you shouldn't be decrementing statistics that haven't been incremented.
-        $GLOBALS['errmsg'] = mkwarn(_('Unable to decrement statistic for survey'));
+        $GLOBALS['errmsg'] = mkwarn('Unable to decrement statistic for survey');
         return false;
     }
 }
@@ -220,21 +214,15 @@ function survey_stat_set($metric, $sid, $value) {
     $cfg =& $GLOBALS['ESPCONFIG'];
 
     // try and update with the given value
-    $sql = sprintf(
-               'UPDATE %1$s SET %2$s=%4$s WHERE survey_id=%3$s',
-               $cfg['survey_statistics_table'], $metric, $sid, $value
-           );
+    $sql = sprintf('UPDATE %1$s SET %2$s=%4$s WHERE survey_id=%3$s', $cfg['survey_statistics_table'], $metric, $sid, $value);
     $res = execute_sql($sql);
     if (0 == affected_rows()) {
         // well, that failed, try to insert with the given value
-        $sql = sprintf(
-                   'INSERT INTO %1$s (survey_id,%2$s) VALUES (%3$s,%4$s)',
-                   $cfg['survey_statistics_table'], $metric, $sid, $value
-               );
+        $sql = sprintf('INSERT INTO %1$s (survey_id,%2$s) VALUES (%3$s,%4$s)', $cfg['survey_statistics_table'], $metric, $sid, $value);
         $res = execute_sql($sql);
         if (0 == affected_rows()) {
             // alright, we're out of options... warn and move along
-            $GLOBALS['errmsg'] = mkwarn(_('Unable to set statistic for survey'));
+            $GLOBALS['errmsg'] = mkwarn('Unable to set statistic for survey');
             return false;
         }
     }
@@ -264,7 +252,7 @@ function survey_stat_init($sid) {
     $res = execute_sql($sql);
     if (0 == affected_rows()) {
         // well, that failed... not too bad, though: warn and move along
-        $GLOBALS['errmsg'] = mkerror(_('Unable to initialize statistics for survey'));
+        $GLOBALS['errmsg'] = mkerror('Unable to initialize statistics for survey');
         return false;
     }
 
@@ -283,7 +271,7 @@ function survey_stat_purge($sid) {
     $res = execute_sql($sql);
     if (0 == affected_rows()) {
         // alright, that failed and we're out of options... error and move along
-        $GLOBALS['errmsg'] = mkerror(_('Unable to purge statistics for survey'));
+        $GLOBALS['errmsg'] = mkerror('Unable to purge statistics for survey');
         return false;
     }
 

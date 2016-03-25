@@ -6,6 +6,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
 
+<<<<<<< HEAD
 // figure out a nice way to say who our support is (this is a HELP document!)
 if (empty($GLOBALS['ESPCONFIG']['email_from_address'])) {
     $adminLink   = '';
@@ -20,6 +21,10 @@ if (empty($GLOBALS['ESPCONFIG']['email_from_address'])) {
 displayHeader($title);
 displayNav();
 //displayPageHeader();
+=======
+displayHeader($title, $scrollspy = 1);
+displayNav();
+>>>>>>> master
 
 ?>
 
@@ -30,6 +35,10 @@ displayNav();
 
 <div class="row">
   <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+<<<<<<< HEAD
+=======
+    <nav id="ssqscrollspy" class="navbar" role="navigation">
+>>>>>>> master
     <p><a href="#overview">Overview</a></p>
     <ul class="fa-ul">
       <li><small><i class="fa-li fa fa-check-square"></i> <a href="#login">Logging in</a></small></li>
@@ -59,7 +68,13 @@ displayNav();
       <li><small><i class="fa-li fa fa-check-square"></i> <a href="#topic1060">Topic 10.60</a></small></li>
     </ul>
     -->
+<<<<<<< HEAD
   </div>
+=======
+  </nav>
+  </div>
+
+>>>>>>> master
   <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
     <h3 id="overview">Overview <small>(<a href="#top"><i class="fa fa-arrow-circle-up fa-lg"></i>&nbsp; Back to top</a>)</small></h3>
     <p>Welcome to our online survey system!</p>
@@ -149,9 +164,14 @@ displayNav();
     -->
   </div>
 </div>
+<<<<<<< HEAD
 <?php
 
 displayPageFooter();
 displayFooter();
 
 ?>
+=======
+
+<?php displayFooter(); ?>
+>>>>>>> master

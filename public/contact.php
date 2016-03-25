@@ -103,9 +103,13 @@ displayNav();
 </form> 
 </div>
 
+<<<<<<< HEAD
 <?php
 
 displayPageFooter();
 displayFooter();
 
 ?>
+=======
+<?php displayFooter(); ?>
+>>>>>>> master
