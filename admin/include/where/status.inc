@@ -3,10 +3,11 @@
 $base =& $GLOBALS['ESPCONFIG']['ME'];
 $public =& $GLOBALS['ESPCONFIG']['autopub_url'];
 
-if(!empty($_GET['sid']))
-	$sid = intval($_GET['sid']);
+if(!empty($_GET['sid'])) { $sid = intval($_GET['sid']); }
 
 if($_GET['p']) { $p = $_GET['p']; }
+
+if ($p == '') { $p = "1"; }
 
 /* operation selected ... */
 if(!empty($_GET['op'])) {
@@ -21,33 +22,20 @@ if(!empty($_GET['op'])) {
 		switch(strtolower($_GET['op'])) {
 			case 'c':	// Clear
 				/* only _superuser_s can do this */
-				if($_SESSION['acl']['superuser'] == 'Y') {
-					$access = true;
-				} else {
-					$access = false;
-				}
+				if($_SESSION['acl']['superuser'] == 'Y') { $access = true; } 
+				else { $access = false; }
 				$status = 0;
 				break;
 			case 't':	// test
 				/* only the owner or a group editor+design */
-				if($owner == $_SESSION['acl']['username'] ||
-					in_array($realm, array_intersect(
-						$_SESSION['acl']['pall'],
-						$_SESSION['acl']['pdesign']))) {
-					$access = true;
-				}
+				if($owner == $_SESSION['acl']['username'] || in_array($realm, array_intersect($_SESSION['acl']['pall'],$_SESSION['acl']['pdesign']))) { $access = true; }
 				$status = STATUS_TEST;
 				if($old_status & ( STATUS_DELETED | STATUS_DONE | STATUS_ACTIVE ) )
 					$err = true;
 				break;
 			case 'm':	// Edit
 				/* only the owner or a group editor+design */
-				if($owner == $_SESSION['acl']['username'] ||
-					in_array($realm, array_intersect(
-						$_SESSION['acl']['pall'],
-						$_SESSION['acl']['pdesign']))) {
-					$access = true;
-				}
+				if($owner == $_SESSION['acl']['username'] || in_array($realm, array_intersect($_SESSION['acl']['pall'], $_SESSION['acl']['pdesign']))) { $access = true; }
 				$status = STATUS_EDIT;
 				if($old_status & ( STATUS_DELETED | STATUS_DONE | STATUS_ACTIVE ) )
 					$err = true;
@@ -56,11 +44,7 @@ if(!empty($_GET['op'])) {
 				break;
 			case 'a':	// activate
 				/* only the owner+stauts or a group editor+status */
-				if(in_array($realm, $_SESSION['acl']['pstatus']) &&
-					($owner == $_SESSION['acl']['username'] ||
-					in_array($realm, $_SESSION['acl']['pall']))) {
-					$access = true;
-				}
+				if(in_array($realm, $_SESSION['acl']['pstatus']) && ($owner == $_SESSION['acl']['username'] || in_array($realm, $_SESSION['acl']['pall']))) { $access = true; }
 				$status = STATUS_ACTIVE;
                  // here we also check that we don't activate twice, because
                  // it would delete all current responses ...
@@ -71,22 +55,14 @@ if(!empty($_GET['op'])) {
 				break;
 			case 'e':	// End
 				/* only the owner+stauts or a group editor+status */
-				if(in_array($realm, $_SESSION['acl']['pstatus']) &&
-					($owner == $_SESSION['acl']['username'] ||
-					in_array($realm, $_SESSION['acl']['pall']))) {
-					$access = true;
-				}
+				if(in_array($realm, $_SESSION['acl']['pstatus']) && ($owner == $_SESSION['acl']['username'] || in_array($realm, $_SESSION['acl']['pall']))) { $access = true; }
 				$status = STATUS_DONE;
 				if($old_status & (STATUS_DONE | STATUS_DELETED) )
 					$err = true;
 				break;
 			case 'd':	// Delete
 				/* only the owner+stauts or a group editor+status */
-				if(in_array($realm, $_SESSION['acl']['pstatus']) &&
-					($owner == $_SESSION['acl']['username'] ||
-					in_array($realm, $_SESSION['acl']['pall']))) {
-					$access = true;
-				}
+				if(in_array($realm, $_SESSION['acl']['pstatus']) && ($owner == $_SESSION['acl']['username'] || in_array($realm, $_SESSION['acl']['pall']))) { $access = true; }
 				$status = STATUS_DELETED;
 				if($old_status & STATUS_DELETED)
 					$err = true;
@@ -100,14 +76,14 @@ if(!empty($_GET['op'])) {
 				$sql = "UPDATE ".$GLOBALS['ESPCONFIG']['survey_table']." SET status=$status WHERE id=${sid}";
 				execute_sql($sql);
 			} else {
-				print mkwarn(_('Can not set survey status.'));
-				print mkerror(_('Status') .': '. $old_status);
+				print mkwarn('Can not set survey status.');
+				print mkerror('Status' .': '. $old_status);
 			}
 		}
 	}
 }
 
-echo "<h2>Survey Status</h2>\n";
+echo "<h2>Survey status</h2>\n";
 echo "<br />\n";
 echo "<ul class=\"fa-ul\">\n";
 echo "	<li><i class=\"fa-li fa fa-check-square\"></i><strong>Test</strong> transitions a survey into testing mode. At which point you may perform a live test by taking the survey, and viewing the results. The survey may be switched back into <strong>Edit</strong> mode if additional edits are needed.</li>\n";

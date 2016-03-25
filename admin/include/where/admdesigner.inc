@@ -372,11 +372,7 @@ if(!empty($u) && !empty($r)) {
   <div class="form-group">
     <label class="col-sm-3 control-label">Disable</label>
     <div class="col-sm-9">
-    	<select class="form-control" name="disabled">
-    		<option value="Y">Yes</option>
-    		<option value="N" selected>No</option>
-    	</select>
-		<?php // echo mkselect('disabled',array('Y' => 'Yes', 'N' => 'No'), $arr); ?>
+		<?php echo mkselect('disabled',array('Y' => 'Yes', 'N' => 'No'), $arr); ?>
     	<p class="text-muted">Disable this user from using the system.</p>
 
     </div>
@@ -385,10 +381,7 @@ if(!empty($u) && !empty($r)) {
   <div class="form-group">
     <label class="col-sm-3 control-label">Design surveys</label>
     <div class="col-sm-9">
-    	<select class="form-control" name="pdesign">
-    		<option value="Y" selected>Yes</option>
-    		<option value="N">No</option>
-    	</select>
+    	<?php echo mkselect('pdesign',array('Y' => 'Yes', 'N' => 'No'), $arr); ?>
     	<p class="text-muted">Allow the user to create, edit and test surveys. This option is on by default, and is probably desired for most situations.</p>
     </div>
   </div>
@@ -396,50 +389,35 @@ if(!empty($u) && !empty($r)) {
   <div class="form-group">
     <label class="col-sm-3 control-label">Change survey status</label>
     <div class="col-sm-9">
-     	<select class="form-control" name="pstatus">
-    		<option value="Y" selected>Yes</option>
-    		<option value="N">No</option>
-    	</select>
+    	<?php echo mkselect('pstatus',array('Y' => 'Yes', 'N' => 'No'), $arr); ?>
     	<p class="text-muted">This lets a user change the status of a survey. Essentially this gives them the ability to release, end, and archive surveys.</p>
     </div>
   </div>
   <div class="form-group">
     <label class="col-sm-3 control-label">Export survey data</label>
     <div class="col-sm-9">
-     	<select class="form-control" name="pdata">
-    		<option value="Y" selected>Yes</option>
-    		<option value="N">No</option>
-    	</select>
+    	<?php echo mkselect('pdata',array('Y' => 'Yes', 'N' => 'No'), $arr); ?>
     	<p class="text-muted">Users with this flag, have the option to download the data collected from a survey.</p>
     </div>
   </div>
   <div class="form-group">
     <label class="col-sm-3 control-label">Group Editor</label>
     <div class="col-sm-9">
-     	<select class="form-control" name="pall">
-    		<option value="Y">Yes</option>
-    		<option value="N" selected>No</option>
-    	</select>
+    	<?php echo mkselect('pall',array('Y' => 'Yes', 'N' => 'No'), $arr); ?>
     	<p class="text-muted">By default, users can only perform any of these actions (create / edit / change status / export survey data) on their own surveys. Group Editor will get these permissions for all surveys that are created by any members of the group.</p>
     </div>
   </div>
   <div class="form-group">
     <label class="col-sm-3 control-label">Administer Designers</label>
     <div class="col-sm-9">
-     	<select class="form-control" name="pgroup">
-    		<option value="Y">Yes</option>
-    		<option value="N" selected>No</option>
-    	</select>
+    	<?php echo mkselect('pgroup',array('Y' => 'Yes', 'N' => 'No'), $arr); ?>
     	<p class="text-muted">This grants the user permission to change flags on users in their group, and to add new users to the group.</p>
     </div>
   </div>
   <div class="form-group">
     <label class="col-sm-3 control-label">Administer Respondents</label>
     <div class="col-sm-9">
-     	<select class="form-control" name="puser">
-    		<option value="Y">Yes</option>
-    		<option value="N" selected>No</option>
-    	</select>
+    	<?php echo mkselect('puser',array('Y' => 'Yes', 'N' => 'No'), $arr); ?>
     	<p class="text-muted">Allows a user to add users to the list of allowed respondents, within their group.</p>
     </div>
   </div>

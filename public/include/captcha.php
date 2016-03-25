@@ -32,7 +32,7 @@ $green = imagecolorallocate($im, 0, 255, 0);
 $background_colors=array($red,$blue,$green,$black);
 
 // draw rectangle in random color
-$background_color=$background_colors[rand(0,3)];
+$background_color = $background_colors[rand(0,3)];
 imagefilledrectangle($im, 0, 0, 120, 38, $background_color);
 
 // replace font.ttf with the location of your own ttf font file

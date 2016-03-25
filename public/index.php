@@ -28,57 +28,43 @@
 */
 	
 $_SERVER['BASE_PAGE'] = 'index.php';
-<<<<<<< HEAD
 $title = "Main Interface";
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
-=======
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
->>>>>>> master
 
 // survey status
-define('STATUS_NOT_STARTED',  'Not Started');
-define('STATUS_ALL_PARTIAL',  'Started, but Incomplete');
+define('STATUS_NOT_STARTED', 'Not Started');
+define('STATUS_ALL_PARTIAL', 'Started, but Incomplete');
 define('STATUS_SOME_PARTIAL', 'Some Finished, some Incomplete');
-define('STATUS_FINISHED',     'Finished');
+define('STATUS_FINISHED', 'Finished');
 define('FORMAT_OUTPUT_DATE', isset($ESPCONFIG['date_format'])?$ESPCONFIG['date_format']:'%Y-%m-%d');
 
 // ensure we are configured to want this page
 if (! $GLOBALS['ESPCONFIG']['dashboard_enable']) {
-    paint_header();
-    echo mkerror(_('Feature disabled; set dashboard_enable = true in your configuration to engage.'));
-    paint_footer();
+    displayHeader($title);
+    echo mkerror('Feature disabled; set dashboard_enable = true in your configuration to engage.');
+    displayPageFooter();
+    displayFooter();
     exit;
 }
 
-<<<<<<< HEAD
 // --------------------------------------------------------------------------------
 
 displayHeader($title);
 displayNav();
 //displayPageHeader();
-=======
->>>>>>> master
+echo "<div class=\"container\">\n";
 handleLogin();
 handleLogout();
 handleChangeProfile();
 handleChangePassword();
-<<<<<<< HEAD
 //handleHelp();
 if (is_session_authenticated()) { paint_authenticated(); } 
 else { paint_non_authenticated(); }
-displayPageFooter();
+echo "</div>\n";
 displayFooter();
 
 // --------------------------------------------------------------------------------
-=======
-handleHelp();
-
-if (is_session_authenticated()) { paint_authenticated(); } 
-else { paint_non_authenticated(); }
->>>>>>> master
 
 ?>

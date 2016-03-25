@@ -11,15 +11,15 @@ if(isset($_POST['newpass1']) &&
 			_addslashes($_POST['oldpass']),
 			_addslashes($_POST['newpass1']))) {
 		//echo(_('Your password has been successfully changed.') ."<br>\n");
-		echo(mksuccess(_('Your password has been successfully changed.')));
+		echo(mksuccess('Your password has been successfully changed.'));
 		displayAdminBack();
 		header("Refresh: 10; URL=$base");
 		return;
 	} else {
-		echo(mkerror(_('Password not set, check your old password.')));
+		echo(mkerror('Password not set, check your old password.'));
 	}
 } else if(isset($_POST['newpass1'])) {
-	echo(mkerror(_('New passwords do not match or are blank.')));
+	echo(mkerror('New passwords do not match or are blank.'));
 }
 
 ?>
@@ -30,7 +30,6 @@ if(isset($_POST['newpass1']) &&
 
 <br />
 
-<div class="container">
 <form class="form-horizontal" method="post" id="phpesp" action="<?php echo($base); ?>">
   <div class="form-group">
     <label class="col-sm-3 control-label">Username</label>
@@ -58,11 +57,11 @@ if(isset($_POST['newpass1']) &&
     </div>
   </div>
   <div class="col-sm-offset-3 col-sm-9">
-  	<button type="submit" class="btn btn-success">Change password</button>
+  	<button type="submit" class="btn btn-success">Change password</button> &nbsp;
+    <button type="submit" class="btn btn-default">Cancel</button>
   	<input type="hidden" name="where" value="passwd" />
   </div>
 </form>
-</div>
 
 <br /><br />
 <?php displayAdminBack(); ?>

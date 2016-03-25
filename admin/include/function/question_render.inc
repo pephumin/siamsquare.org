@@ -22,42 +22,31 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 
 	if($question['required']=='Y') { $x = "<mark>"; $y = "*</mark>"; }
 	$questionname = "$x<a name=\"Q".$question_number."\">Q".$question_number.".</a>$y &nbsp;&nbsp;";
-	$questionname .= $question['content'];
+
+	if ($question['content_th']) { $questionname .= $question['content_th']; }
+	else { $questionname .= $question['content']; }
+	
 	echo "\n";
 
 	// If question is of type "section text"... (tid=100)
 	if ($tid == 100) {
-		//echo "<tr>\n";
-		//echo "	<td>".$question['content']."</td>\n";
-		//echo "</tr>\n";
 		echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
-		//echo "    <div class=\"panel panel-default\">\n";
-		//echo "      <div class=\"panel-heading\">$questionname</div>\n";
-		echo "        <p class=\"bg-success\">".nl2br($question['content'])."</p>\n";
-		//echo "    </div>\n";
+		if ($question['content_th']) { echo "        <p class=\"bg-success\">".nl2br($question['content_th'])."</p>\n"; }
+		else { echo "        <p class=\"bg-success\">".nl2br($question['content'])."</p>\n"; }
 		echo "  </div>\n\n";
 		return;
 	}
 
-	//echo "<div class=\"row\">\n";
 	echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n";
 	echo "    <div class=\"panel panel-default\">\n";
 	echo "      <div class=\"panel-heading\">$questionname</div>\n";
 
-	//echo "     <div class=\"panel-body\"><p class=\"small\">Single answer</p></div>\n";
-	//echo "     <div class=\"list-group\">\n";
-	//echo "        <a class=\"list-group-item\" href=\"/admin/index.php\">Change your info</a>\n";
-	//echo "     </div>\n";
-
 	switch($tid) {
 
 		case '1':	// Yes/No
-		echo "      <div class=\"radio\">\n";
-		echo "        <label><input type=\"radio\" name=\"".$qid."\" value=\"Y\">Yes</label>\n";
-		echo "      </div>\n";
-		echo "      <div class=\"radio\">\n";
-		echo "        <label><input type=\"radio\" name=\"".$qid."\" value=\"N\">No</label>\n";
-		echo "      </div>\n";
+		echo "      <div class=\"radio\"><label>" . mkradio($qid,'Y') . " Yes</label></div>\n";
+		echo "      <div class=\"radio\"><label>" . mkradio($qid,'N') . " No</label></div>\n";
+
 		break;
 
 		case '2':	// single text line
@@ -69,12 +58,10 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 		break;
 
 		case '4':	// radio
-		//echo "<div class=\"btn-group\" data-toggle=\"buttons\">\n";
 		while($choice = fetch_row($choices_result)) {	
 			$choices_result->MoveNext();
-			echo "      <div class=\"radio\">\n";
-			echo "        <label><input type=\"radio\" name=\"".$qid."\" value=\"".$choice['id']."\">".$choice['content']."</label>\n";
-			echo "      </div>\n";
+			if ($choice['content_th']) { echo "      <div class=\"radio\"><label>" . mkradio($qid,$choice['id']) . $choice['content_th'] . "</label></div>\n"; }
+			else { echo "      <div class=\"radio\"><label>" . mkradio($qid,$choice['id']) . $choice['content'] . "</label></div>\n"; }
 		}
 		$j=0;
 		while($other = fetch_row($others_result)) {
@@ -82,15 +69,12 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 			$cid = $other['id'];
 			if (!strcmp($other['content'],"!other")) { $other_text = 'Other:'; } 
 			else { $other_text = preg_replace(array("/^!other=/","/^!other/"), array('',''), $other['content']); }
-			echo "      <div class=\"radio\">\n";
-			echo "        <label><input type=\"radio\" name=\"".$qid."\" value=\"other_$cid\">";
+			echo "      <div class=\"radio\"><label>" . mkradio($qid,"other_$cid") . "</label></div>\n";
 			$cid = "${qid}_${cid}";
     	    echo("$other_text&nbsp;<input type=\"text\" name=\"$cid\" onKeyPress=\"other_check(this.name)\"");
     	    if (isset($_POST[$cid]))
             	echo(' value="'. _stripslashes(htmlspecialchars($_POST[$cid])) .'"');
                 echo(" />");
-			echo "</label>\n";
-			echo "</div>\n";
             $j++;
 		}
 		break;
@@ -98,9 +82,9 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 		case '5':	// check boxes
 		while($choice = fetch_row($choices_result)) {
 			$choices_result->MoveNext();
-			echo "      <div class=\"checkbox\">\n";
-			echo "        <label><input type=\"checkbox\" name=\"".$qid."\" value=\"".$choice['id']."\">".$choice['content']."</label>\n";
-			echo "      </div>\n";
+			if ($choice['content_th']) { echo "      <div class=\"checkbox\"><label>" . mkcheckbox($qid,$choice['id']) . $choice['content_th'] . "</label></div>\n"; }
+			else { echo "      <div class=\"checkbox\"><label>" . mkcheckbox($qid,$choice['id']) . $choice['content'] . "</label></div>\n"; }
+
 		}
 		$j=0;
 		while($other = fetch_row($others_result)) {
@@ -108,14 +92,12 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 			$cid = $other['id'];
 			if (!strcmp($other['content'],"!other")) { $other_text = 'Other:'; } 
 			else { $other_text = preg_replace(array("/^!other=/","/^!other/"), array('',''), $other['content']); }
-			echo "      <div class=\"checkbox\">\n";
-			echo "        <label><input type=\"checkbox\" name=\"".$qid."\" value=\"other_$cid\">";
+			echo "      <div class=\"checkbox\"><label>" . mkcheckbox($qid,"other_$cid") . "</label></div>\n";
     	    $cid = "${qid}_${cid}";
     	    echo("$other_text&nbsp;<input type=\"text\" name=\"$cid\" onKeyPress=\"other_check(this.name)\"");
     	    if (isset($_POST[$cid]))
             	echo(' value="'. _stripslashes(htmlspecialchars($_POST[$cid])) .'"');
                 echo(" />");
-			echo "</div>\n";
 			$j++;
 		}
 		break;
@@ -130,12 +112,13 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 		break;
 
 		case '7':	// rating
-		echo "<label class=\"radio-inline\"><input type=\"radio\" name=\"".$qid."\" value=\"1\"> 1</label>\n";
-		echo "<label class=\"radio-inline\"><input type=\"radio\" name=\"".$qid."\" value=\"2\"> 2</label>\n";
-		echo "<label class=\"radio-inline\"><input type=\"radio\" name=\"".$qid."\" value=\"3\"> 3</label>\n";
-		echo "<label class=\"radio-inline\"><input type=\"radio\" name=\"".$qid."\" value=\"4\"> 4</label>\n";
-		echo "<label class=\"radio-inline\"><input type=\"radio\" name=\"".$qid."\" value=\"5\"> 5</label>\n";
-		echo "<label class=\"radio-inline\"><input type=\"radio\" name=\"".$qid."\" value=\"N/A\"> N/A</label>\n";
+		echo "      <div class=\"radio\"><label>" . mkradio($qid,1) . " 1</label></div>\n";
+		echo "      <div class=\"radio\"><label>" . mkradio($qid,2) . " 2</label></div>\n";
+		echo "      <div class=\"radio\"><label>" . mkradio($qid,3) . " 3</label></div>\n";
+		echo "      <div class=\"radio\"><label>" . mkradio($qid,4) . " 4</label></div>\n";
+		echo "      <div class=\"radio\"><label>" . mkradio($qid,5) . " 5</label></div>\n";
+		echo "      <div class=\"radio\"><label>" . mkradio($qid,'N/A') . " N/A</label></div>\n";
+
 		break;
 
 		case '8':	// ranking
@@ -170,7 +153,7 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 
 		case '9':	// date
 		echo mktext($qid, 10, 10);
-		echo "<em>(e.g. ". strftime ($GLOBALS['ESPCONFIG']['date_format'],strtotime("now")) ."</em>\n";
+		echo "<em>(type in this format only: ". strftime ($GLOBALS['ESPCONFIG']['date_format'],strtotime("now")) ."</em>\n";
 		break;
 
 		case '10':	// numeric
