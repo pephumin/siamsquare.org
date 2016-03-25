@@ -16,6 +16,35 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
 //require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
 
+<<<<<<< HEAD
+//if (!defined('ESP_BASE'))
+//  define('ESP_BASE', dirname(dirname(__FILE__)) .'/');
+//
+//$CONFIG = ESP_BASE . 'admin/config/phpESP.ini.php';
+//$DEFAULT_CONFIG = $CONFIG.'.default';
+//$FIXED_CONFIG = $CONFIG.'.fixed';
+//if(!file_exists($DEFAULT_CONFIG)) {
+//        echo("<b>FATAL: Unable to open default config file. Aborting.</b>");
+//        exit;
+//}
+//if(!file_exists($CONFIG)) {
+//        echo("<b>FATAL: Unable to open config file. Aborting.</b>");
+//        exit;
+//}
+//if(!file_exists($FIXED_CONFIG)) {
+//        echo("<b>FATAL: Unable to open fixed config file. Aborting.</b>");
+//        exit;
+//}
+//if(!extension_loaded('mysql')) {
+//        echo('<b>FATAL: Mysql extension not loaded. Aborting.</b>');
+//        exit;
+//}
+//require_once($DEFAULT_CONFIG);
+//require_once($CONFIG);
+//require_once($FIXED_CONFIG);
+
+=======
+>>>>>>> master
 esp_init_adodb();
 
 $fields = array(
@@ -41,12 +70,70 @@ $embed = true;
 
 //$post =& $GLOBALS['HTTP_POST_VARS'];
 $post =& $_POST;
+<<<<<<< HEAD
+=======
 //print_r($post);
+>>>>>>> master
 unset($msg);
 
 /* sanity check the signup_realm */
 if ($signup_realm == null || empty($signup_realm))
   $signup_realm = $GLOBALS['ESPCONFIG']['signup_realm'];
+<<<<<<< HEAD
+if ($signup_realm == null || empty($signup_realm)) {
+  echo mkerror(_('Sorry, the account request form is disabled.'));
+  return;
+}
+
+/* process form values */
+do if (isset($post['submit'])) {
+  /* check for required fields */
+  foreach ($rqd_fields as $f) {
+    if (!isset($post[$f]) || empty($post[$f])) {
+      $msg = '<font color="red">'. _('Please complete all required fields.') . '</font>';
+      break;
+    }
+  }
+  if (isset($msg))
+    break;
+  
+  /* make sure passwords match */
+  if ($post['password'] != $post['password2']) {
+    $msg = '<font color="red">'. _('Passwords do not match.') . '</font>';
+    break;
+  }
+  
+  /* prepare sql statement */
+  $sqlf = array();
+  $sqlv = array();
+  
+  foreach ($fields as $f) {
+  	if (isset($post[$f]) && !empty($post[$f])) {
+      	array_push($sqlf, $f);
+      	if ($f == 'password') {
+        		array_push($sqlv, db_crypt(_addslashes($post[$f])));
+      	}
+      	else {
+        		array_push($sqlv,  _addslashes($post[$f]) );
+    		}
+  	}
+  }
+  array_push($sqlf, 'realm');
+  array_push($sqlv, _addslashes($signup_realm) );
+
+  $sqlf = implode(',', $sqlf);
+  $sqlv = implode(',', $sqlv);
+  
+  $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['respondent_table']." ($sqlf) VALUES ($sqlv)";
+  
+  /* execute statement */
+  $res = execute_sql($sql);
+  if (!$res) {
+    $msg = '<font color="red">'. _('Request failed, please choose a different username.') .'</font>';
+    if ($GLOBALS['ESPCONFIG']['DEBUG'])
+      $msg .= mkerror(ErrorNo() . ': ' . ErrorMsg());
+    break;
+=======
 
 if ($signup_realm == null || empty($signup_realm)) {
   echo mkerror("Sorry, the account request form is disabled.");
@@ -99,6 +186,7 @@ do if (isset($post['email'])) {
         		array_push($sqlv,  _addslashes($post[$f]) );
     		}
   	}
+>>>>>>> master
   }
   array_push($sqlf, 'realm');
   array_push($sqlv, _addslashes($signup_realm) );
@@ -106,6 +194,9 @@ do if (isset($post['email'])) {
   $sqlf = implode(',', $sqlf);
   $sqlv = implode(',', $sqlv);
   
+<<<<<<< HEAD
+  $msg = sprintf(_('Your account, %s, has been created!'), htmlspecialchars($post['username']));
+=======
   print_r($sqlf);
   print_r($sqlv);
   $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['respondent_table']." ($sqlf) VALUES ($sqlv)";
@@ -123,32 +214,49 @@ do if (isset($post['email'])) {
   
   //$msg = sprintf(_('Your account, %s, has been created!'), htmlspecialchars($post['username']));
   $msg = mksuccess("Your account has been created.");
+>>>>>>> master
 
   foreach ($fields as $f) {
     $post[$f] = null;
     unset($post[$f]);
   }
+<<<<<<< HEAD
+} while(0);
+
+  if (!$embed) {
+  }
+
+if (isset($msg) && !empty($msg)) { echo "<p>$msg</p>\n"; }
+=======
 
 } while(0);
 
   //if (!$embed) {
   //}
 
+>>>>>>> master
 
 // --------------------------------------------------------------------------------
 
 displayHeader($title);
 displayNav();
 //displayPageHeader();
+<<<<<<< HEAD
+respondent_signup();
+=======
 echo "\n";
 echo "<div class=\"container\">\n";
 if (isset($msg) && !empty($msg)) { echo "<p>$msg</p>\n"; }
 respondent_signup();
 echo "</div> <!-- /container -->\n";
+>>>>>>> master
 displayPageFooter();
 displayFooter();
 
 // --------------------------------------------------------------------------------
 
 
+<<<<<<< HEAD
+=======
 ?>
+>>>>>>> master

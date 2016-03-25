@@ -5,8 +5,11 @@ $public = $home."/public";
 $self = $_SERVER['PHP_SELF'];
 $base = $_SERVER['BASE_PAGE'];
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/esphtml.forms.inc';
+<<<<<<< HEAD
+=======
 get_current_respondent($respondent);
 
+>>>>>>> master
 
 function displayHeader($title, $scrollspy = NULL) {
   global $self, $home, $public, $base;
@@ -53,6 +56,17 @@ function displayHeader($title, $scrollspy = NULL) {
   echo "<body>\n"; 
 }
 
+<<<<<<< HEAD
+        // if the login is recognized but not-unique, we can't figure out what to do... panic
+        // NOTE: if email were mandatory, then we could use that as a key...
+        } else if ($isAuthenticated && 2 <= $realmsCnt) {
+            $GLOBALS['errmsg'] = mkerror('Please contact an administrator: multi-realm');
+
+        // otherwise, not recognized, throw error
+        } else {
+            $GLOBALS['errmsg'] = mkerror('Incorrect User ID or Password, or your account has been disabled/expired.');
+        }
+=======
 function displayNav() {
   global $self, $public, $respondent;
   echo "\n";
@@ -160,6 +174,7 @@ function handleLogin() {
     // otherwise, not recognized, throw error
     } else {
       $GLOBALS['errmsg'] = mkerror('Incorrect User ID or Password, or your account has been disabled/expired.');
+>>>>>>> master
     }
   }
 }
@@ -195,23 +210,84 @@ function handleChangeProfile() {
     }
   }
 
+<<<<<<< HEAD
+    // if we're showing the change profile form, do so
+    if ($showChangeProfile) {
+        if (empty($_REQUEST['firstName'])) {
+            $_REQUEST['firstName'] = $respondent['fname'];
+        }
+        if (empty($_REQUEST['lastName'])) {
+            $_REQUEST['lastName'] = $respondent['lname'];
+        }
+        if (empty($_REQUEST['emailAddress'])) {
+            $_REQUEST['emailAddress'] = $respondent['email'];
+        }
+
+        //paint_header();
+        $title = "Login";
+        displayHeader($title);
+        echo '<div class="dashboardPanel">' .
+             '<h1>' . _('Change My Profile') . '</h1>' .
+             render_profile_change_form() .
+             '</div>';
+        //paint_footer();
+        displayPageFooter();
+        exit;
+=======
   // if we're showing the change profile form, do so
   if ($showChangeProfile) {
     if (empty($_REQUEST['firstName'])) {
         $_REQUEST['firstName'] = $respondent['fname'];
+>>>>>>> master
     }
     if (empty($_REQUEST['lastName'])) {
         $_REQUEST['lastName'] = $respondent['lname'];
     }
+<<<<<<< HEAD
+
+    // if we're showing the change password form, do so
+    if ($showChangePassword) {
+        //paint_header();
+        $title = "Login";
+        displayHeader($title);
+        echo '<div class="dashboardPanel">' .
+             '<h1>' . _('Change My Password') . '</h1>' .
+             render_passwd_change_form() .
+             '</div>';
+        //paint_footer();
+        displayPageFooter();
+        exit;
+=======
     if (empty($_REQUEST['emailAddress'])) {
         $_REQUEST['emailAddress'] = $respondent['email'];
+>>>>>>> master
     }
 
+<<<<<<< HEAD
+//  handleHelp()
+//  Handle a help button press
+
+//function handleHelp() {
+//    global $base, $public, $admin;
+//    $handleHelp = (isset($_REQUEST['doHelp']) && is_session_authenticated() ? true : false);
+//    if ($handleHelp) {
+//        //$base  = $GLOBALS['ESPCONFIG']['base_url'];
+//        $title = _('Help');
+//	echo '<a href="'.$public.'">Back</a>';
+//	//require_once('help/index.php');
+//	$target = ESP_BASE . 'public/help/index.php';
+//	//include($target);
+//	echo $target;
+//	require_once($target);
+//    }
+//}
+=======
     render_profile_change_form();
     displayFooter();
     exit;
   }
 }
+>>>>>>> master
 
 //  handleChangePassword()
 //  Handle a password change button press
@@ -245,6 +321,107 @@ function handleChangePassword() {
     } else {
       $GLOBALS['errmsg'] = mkerror('Old password incorrect; check your typing');
     }
+<<<<<<< HEAD
+    echo <<<EOHTML
+  <title>{$title}</title>
+  <link rel="stylesheet" href="{$cfg['css_url']}/default.css" type="text/css" />
+  <script type="text/javascript" src="{$cfg['js_url']}/default.js"></script>
+EOHTML;
+    echo '</head><body><div id="dashboard">';
+    echo @$GLOBALS['errmsg'];
+}
+
+function displayHeader($title, $scrollspy = NULL) {
+	global $self, $home, $public, $base;
+	header("Content-language: en");
+	header("Content-type: text/html; charset=utf-8");
+	echo "<!DOCTYPE html>\n";
+	echo "<html>\n";
+	echo "<head>\n";
+	echo "	<meta charset=\"utf-8\">\n";
+	echo "	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
+	echo "	<title>Respondent Dashboard: $title</title>\n";
+	$cssfiles = array("css/bootstrap.css", "css/font-awesome.css", "css/pe.css");
+	foreach ($cssfiles as $filename) {
+		echo "	<link href=\"$filename\" rel=\"stylesheet\" type=\"text/css\" />\n";
+ 	}
+	//if(!empty($ESPCONFIG['favicon'])) {
+	//echo "	<link rel=\"shortcut icon\" href=\"$ESPCONFIG['favicon']\"\n";
+	//}
+	if (isset($_SERVER['BASE_PAGE'])) {
+		echo "	<link rel=\"canonical\" href=\"$admin/$base\">\n";
+	}
+	$jsfiles = array("js/public.js");
+	foreach ($jsfiles as $filename) {
+		//$path = dirname(dirname(__FILE__)).'/js/'.$filename;
+		echo "	<script type=\"text/javascript\" src=\"$filename\"></script>\n";
+ 	}
+	echo "</head>\n";
+	if ($scrollspy) { echo "<body data-spy=\"scroll\" data-target=\"#ssqscrollspy\" data-offset=\"20\">\n"; }
+	else { echo "<body>\n"; }
+}
+
+function displayPageHeader() {
+  global $self, $home, $public, $base;
+  echo "<form method=\"post\" id=\"phpesp\" action=".$self.">\n";
+  echo "<div class=\"container\">\n\n";
+}
+
+//function paint_footer() {
+//    global $base, $public, $admin;
+//    echo '<div class="dashboard">';
+//    echo '<p><a href="'.$public.'/help">Help</a></p>';
+//    echo '</div>';
+//    echo '</div></body></html>';
+//}
+
+function displayPageFooter() {
+  $user = $_SESSION['acl']['username'];
+  $group = $_SESSION['acl']['pgroup'];
+  $g = $group[0];
+  if ($g) { $show = "<kbd>$user</kbd>/<kbd>$g</kbd>"; } 
+  else { $show = "<kbd>$user</kbd>"; }
+  if(!empty($_SESSION['acl']['username'])) { $signed = "Signed in as <i class=\"fa fa-user\"> $show </i>"; } 
+  else { $signed = ""; }
+  //echo '<p><a href="'.$public.'/help">Help</a></p>';
+  echo "</div> <!-- /container -->\n";
+  echo "</form>\n";
+  echo "<br /><br />\n\n";
+  echo "<footer class=\"footer\">\n";
+  echo "  <div class=\"container\">\n";
+  echo "    <div class=\"text-muted pull-left\"><i class=\"fa fa-graduation-cap\"></i> Website developed by <abbr title=\"Phumin Chesdmethee (phumin@sawasdee.org)\">Phumin</abbr></div>\n";
+  echo "    <div class=\"text-muted pull-right\">".$signed."</div>\n";
+  echo "  </div>\n";
+  echo "</footer>\n\n";
+}
+
+function displayFooter() {
+  $jsfiles = array("js/jquery.js", "js/bootstrap.js");
+  foreach ($jsfiles as $filename) {
+    //$path = dirname(dirname(__FILE__)).'/js/'.$filename;
+    echo '<script type="text/javascript" src="' . $filename . '"></script>'."\n";
+  }
+  echo "<script type=\"text/javascript\">\n";
+  echo "  var activateConfirmMsg=\"Warning! Once activated, this survey can no longer be edited. Any further changes must be done on a copy.\"\n";
+  echo "  var cancelConfirmMsg=\"Warning! This survey has not been saved. Canceling now will remove any changes.\"\n";
+  echo "  var mergeMsg=\"<h2>You must select at least two surveys before you can merge</h2>\"\n";
+  echo "</script>\n\n";
+  echo "</body>\n";
+  echo "</html>\n\n";
+  //if ($_SESSION['acl']['superuser'] == 'Y') { include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; }
+  include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php';
+}
+function paint_non_authenticated() {
+    // throw it up
+    //paint_header();
+    //$title = "Login";
+    //displayHeader($title);
+    //paint_login_panel();
+    render_login_form();
+    paint_public_survey_list();
+    //paint_footer();
+    //displayPageFooter();
+=======
   }
 
   // if we're showing the change password form, do so
@@ -258,6 +435,7 @@ function handleChangePassword() {
 function paint_non_authenticated() {
     paint_public_survey_list();
     render_login_form();
+>>>>>>> master
 }
 
 //  paint_login_panel()
@@ -306,12 +484,29 @@ function paint_public_survey_list() {
 // Paint the page for authenticated users
 
 function paint_authenticated() {
+<<<<<<< HEAD
+    // get the needed data
+    get_survey_info($surveys, $responses, $accessibility);
+    partition_surveys($surveys, $responses, $accessibility, $current, $historical);
+
+    // throw it up
+    //paint_header();
+    //$title = "Login";
+    //displayHeader($title);
+    paint_welcome();
+    paint_respondent_surveys($current);
+    paint_respondent_history($historical);
+    paint_respondent_tools();
+    //paint_footer();
+    displayPageFooter();
+=======
   get_survey_info($surveys, $responses, $accessibility);
   partition_surveys($surveys, $responses, $accessibility, $current, $historical);
   paint_respondent_tools();
   //paint_welcome();
   paint_respondent_surveys($current);
   paint_respondent_history($historical);
+>>>>>>> master
 }
 
 //  paint_welcome()
@@ -376,6 +571,12 @@ function paint_respondent_tools() {
 
 }
 
+<<<<<<< HEAD
+//  paint_respondent_surveys()
+//  Paint a panel of links to surveys available to the current respondent
+
+=======
+>>>>>>> master
 function paint_respondent_surveys($current) {
   //echo '<div class="dashboardPanel" id="my_surveys">';
   echo "<h3>Surveys participated</h3>\n";
@@ -423,9 +624,54 @@ function paint_respondent_history($historical) {
       list ($name, $status, $date, $avail) = $info;
       printf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>', $name, $status, $date, $avail);
     }
+<<<<<<< HEAD
+
+    echo '</div>';
+}
+
+//  paint_respondent_tools()
+//  Paint a panel of tools available to this respondent
+
+function paint_respondent_tools() {
+    global $base, $public, $admin;
+    $cfg =& $GLOBALS['ESPCONFIG'];
+
+    // figure out what tools to make available
+    // ... the standard, always available ones
+    $tools  = array (
+                  "$public/?doChangeProfile=1" => _('Edit my profile'),
+                  "$public/?doChangePassword=1" => _('Change my password'),
+                  "$public/?doLogout=1" => _('Logout'),
+                  "$public/help"   => _('Help'),
+              );
+
+    // ... profile and password changing
+    //if ($GLOBALS['ESPCONFIG']['dashboard_allow_change_profile']) {
+    //    $tools["$public/?doChangeProfile=1"] = _('Change my profile');
+    //}
+    //if ($GLOBALS['ESPCONFIG']['dashboard_allow_change_password']) {
+    //    $tools["$public/?doChangePassword=1"] = _('Change my password');
+    //}
+
+    // ... contacting support
+    if (! empty($GLOBALS['ESPCONFIG']['support_email_address'])) {
+        $tools["mailto:{$GLOBALS['ESPCONFIG']['support_email_address']}"] = _('E-mail support');
+    }
+
+    // throw it up
+    $header = _('My Tools');
+    echo <<<EOHTML
+<div class='dashboardPanel' id='my_tools'>
+<h1>$header</h1>
+<ul>
+EOHTML;
+    foreach ($tools as $url => $label) {
+        printf('<li><a href="%s">%s</a></li>', $url, $label);
+=======
     echo "</table>\n";
     } else {
        echo "You have no historical survey at this time.";
+>>>>>>> master
     }
     //echo '</div>';
     echo "<br />\n\n";
@@ -534,6 +780,104 @@ function fetch_latest_submission_date($sid, $responses) {
         }
     }
 
+<<<<<<< HEAD
+    return $date;
+}
+
+//  fetch_availability()
+//  Given a survey, determine its availability
+
+function fetch_availability($survey, &$rc) {
+    $rc = survey_open($survey['open_date'], $survey['close_date']);
+    switch ($rc) {
+    case STATUS_OPEN:
+        return _('Now taking submissions');
+        break;
+
+    case STATUS_CLOSED_TOO_EARLY:
+        return _('Not yet taking submissions');
+        break;
+
+    case STATUS_CLOSED_TOO_LATE:
+        return _('No longer taking submissions');
+        break;
+
+    default:
+        assert('false; // unexpected case reached; code bug');
+        return '';
+    }
+}
+
+//  render_login_form()
+//  Render a login form
+
+function render_login_form($action = null, $usernameVar = 'username', $passwordVar = 'password', $loginButtonVar = 'doLogin', $_message = null) {
+  global $home, $self, $public;
+  $page = $home.$self;
+  $cfg =& $GLOBALS['ESPCONFIG'];
+  if (empty($action)) {
+      //$action = $cfg['base_url'] . '/public/';
+      $action = $public . '/';
+  }
+
+  $usernameLabel = _('User ID');
+  $passwordLabel = _('Password');
+  $loginLabel    = _('Login');
+  $username      = (isset($_REQUEST['username']) ? $_REQUEST['username'] : '');
+
+  $str = "";
+  if ($_message) {
+      echo mkerror($_message);
+  }
+  //echo "</div\n";
+  //echo "</form>\n";
+  echo "\n";
+  echo "<div class=\"container\">\n";
+  echo "<form name=\"login\" id=\"login\" method=\"post\" class=\"form-horizontal\" action=\"$page\">\n";
+  echo "  <div class=\"dashboardPanel\" id=\"login\">\n";
+  echo "  <h2 class=\"form-signin-heading\">Respondent Login</h2>\n";
+  echo "  <br />\n";
+  echo "    <div class=\"form-group\">\n";
+  echo "      <label for=\"$usernameVar\" class=\"col-sm-3 control-label\">Username:</label>\n";
+  echo "        <div class=\"col-sm-9\">\n";
+  echo "        <input type=\"text\" name=\"$usernameVar\" class=\"form-control\" placeholder=\"Username\">\n";
+  echo "        </div>\n";
+  echo "     </div>\n";
+  echo "     <div class=\"form-group\">\n";
+  echo "       <label for=\"$passwordVar\" class=\"col-sm-3 control-label\">Password:</label>\n";
+  echo "         <div class=\"col-sm-9\">\n";
+  echo "         <input type=\"password\" name=\"$passwordVar\" class=\"form-control\" placeholder=\"Password\">\n";
+  echo "       </div>\n";
+  echo "     </div>\n";
+  echo "     <div class=\"form-group\">\n";
+  echo "       <div class=\"col-sm-offset-3 col-sm-9\">\n";
+  echo "         <div class=\"checkbox\">\n";
+  echo "           <label><input type=\"checkbox\" checked> Remember me</label>\n";
+  echo "          </div>\n";
+  echo "       </div>\n";
+  echo "     </div>\n";
+  echo "     <div class=\"form-group\">\n";
+  echo "       <div class=\"col-sm-offset-3 col-sm-9\">\n";
+  echo "         <button class=\"btn btn-lg btn-primary btn-block\" name=\"$loginButtonVar\" type=\"submit\">Sign in</button>\n";
+  echo "       </div>\n";
+  echo "     </div>\n";
+  echo "  </div>\n";
+  echo "</form>\n";
+  //echo "</div>\n";
+  echo "<br />\n";
+  echo login_warning();
+
+}
+
+//  render_profile_change_form()
+//  Render a profile change form
+
+function render_profile_change_form(
+    $action = null,
+    $firstNameVar = 'firstName', $lastNameVar = 'lastName', $emailVar = 'emailAddress',
+    $changeButtonVar = 'doChangeProfile', $cancelButtonVar = 'doChangeProfileCancel'
+    ) {
+=======
     // don't need the date down to the second, so just go down to the minute
     $datets = strtotime($date);
     if (-1 !== $datets) {
@@ -548,6 +892,7 @@ function fetch_latest_submission_date($sid, $responses) {
 
 //  fetch_availability()
 //  Given a survey, determine its availability
+>>>>>>> master
 
 function fetch_availability($survey, &$rc) {
   $rc = survey_open($survey['open_date'], $survey['close_date']);
@@ -620,6 +965,52 @@ function render_login_form($action = null, $usernameVar = 'username', $passwordV
 
 }
 
+<<<<<<< HEAD
+function displayNav() {
+	global $self, $home, $public;
+	echo "\n";
+	echo "<nav class=\"navbar navbar-default\">\n";
+	echo "<div class=\"container\">\n";
+	echo "  <div class=\"navbar-header\">\n";
+	echo "    <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\">\n";
+	echo "      <span class=\"sr-only\">Toggle navigation</span>\n";
+	echo "      <span class=\"icon-bar\"></span>\n";
+	echo "      <span class=\"icon-bar\"></span>\n";
+	echo "      <span class=\"icon-bar\"></span>\n";
+	echo "    </button>\n";
+	echo "    <a class=\"navbar-brand\" href=\"$home\"><strong>SiamSquare</strong></a>\n";	
+	if ($_SERVER['REQUEST_URI'] == "/public/") { $a = '<li class="active">'; } else { $a = '<li>'; }
+	if ($_SERVER['REQUEST_URI'] == "/public/signup.php") { $b = '<li class="active">'; } else { $b = '<li>'; }
+  if ($_SERVER['REQUEST_URI'] == "/public/contact.php") { $c = '<li class="active">'; } else { $c = '<li>'; }
+	if ($_SERVER['REQUEST_URI'] == "/public/help.php") { $d = '<li class="active">'; } else { $d = '<li>'; }
+//	if(!empty($_SESSION['acl']['username'])) {
+		echo "  </div> <!--/navbar-header -->\n";
+		echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
+		echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
+		echo "      $a<a href=\"$public\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
+    echo "      $b<a href=\"/public/signup.php\"><i class=\"fa fa-user fa-lg\"></i><i class=\"fa fa-plus\"></i>&nbsp; Sign-up</a></li>\n";
+		echo "      $c<a href=\"/public/contact.php\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
+		echo "      $d<a href=\"/public/help.php\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
+		echo "      <li><a href=\"$public/index.php?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log out</a></li>\n";
+		echo "    </ul>\n";
+		echo "  </div> <!--/navbar-collapse -->\n";
+		echo "</div>\n";
+		echo "</nav>\n";
+//	} else {
+//		echo "  </div> <!--/navbar-header -->\n";
+//		echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
+//		echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
+//    echo "      $a<a href=\"$public\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
+//    echo "      $b<a href=\"/public/signup.php\"><i class=\"fa fa-user fa-lg\"></i><i class=\"fa fa-plus\"></i>&nbsp; Sign-up</a></li>\n";
+//    echo "      $c<a href=\"/public/contact.php\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
+//    echo "      $d<a href=\"/public/help.php\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
+//    //echo "      <li><a href=\"$public/index.php?where=logout\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log out</a></li>\n";
+//		echo "    </ul>\n";
+//		echo "  </div> <!--/navbar-collapse -->\n";
+//		echo "</div>\n";
+//		echo "</nav>\n\n";		
+//	}
+=======
 //  render_profile_change_form()
 //  Render a profile change form
 
@@ -660,6 +1051,7 @@ function render_profile_change_form ($action = null, $firstNameVar = 'firstName'
   echo "  </div>\n";
   echo "</form>\n";
 
+>>>>>>> master
 }
 
 //  render_passwd_change_form()
@@ -717,6 +1109,11 @@ function respondent_signup() {
   if ($_message) {
       echo mkerror($_message);
   }
+<<<<<<< HEAD
+  echo "\n";
+  echo "<div class=\"container\">\n";
+=======
+>>>>>>> master
   echo "<form class=\"form-horizontal\" method=\"post\" id=\"phpesp\" action=\"$page\">\n";
   echo "  <div class=\"dashboardPanel\" id=\"login\">\n";
   echo "  <h2 class=\"form-signin-heading\">Respondent sign up</h2>\n";
@@ -739,6 +1136,15 @@ function respondent_signup() {
   echo "        <input type=\"text\" name=\"email\" class=\"form-control\" placeholder=\"email@company.com\">\n";
   echo "        </div>\n";
   echo "     </div>\n";
+<<<<<<< HEAD
+  echo "    <div class=\"form-group\">\n";
+  echo "      <label for=\"username\" class=\"col-sm-3 control-label\">Login:</label>\n";
+  echo "        <div class=\"col-sm-9\">\n";
+  echo "        <input type=\"text\" name=\"username\" class=\"form-control\" placeholder=\"Login\">\n";
+  echo "        </div>\n";
+  echo "     </div>\n";
+=======
+>>>>>>> master
   echo "     <div class=\"form-group\">\n";
   echo "       <label for=\"password\" class=\"col-sm-3 control-label\">Password:</label>\n";
   echo "         <div class=\"col-sm-9\">\n";
@@ -753,12 +1159,19 @@ function respondent_signup() {
   echo "     </div>\n";
   echo "     <div class=\"form-group\">\n";
   echo "       <div class=\"col-sm-offset-3 col-sm-9\">\n";
+<<<<<<< HEAD
+=======
   //echo "         <input type=\"hidden\" name=\"username\" class=\"form-control\" value=\"Password\">\n";
+>>>>>>> master
   echo "         <button type=\"submit\" class=\"btn btn-success\">Sign up a new user</button>\n";
   echo "       </div>\n";
   echo "     </div>\n";
   echo "  </div>\n";
   echo "</form>\n";
+<<<<<<< HEAD
+  //echo "</div>\n";
+=======
+>>>>>>> master
   echo "<br />\n";
   echo login_warning();
 
