@@ -37,7 +37,7 @@ $ESPCONFIG['allow_email'] = true;
 $ESPCONFIG['human_email'] = true;
 $ESPCONFIG['email_from_name'] = "SiamSquare";
 $ESPCONFIG['email_from_address'] = "survey@siamsquare.org";
-$ESPCONFIG['email_return_path'] = "survey@siamsquare.org"; // the email return path for bounces ...
+//$ESPCONFIG['email_return_path'] = "survey@siamsquare.org"; // the email return path for bounces ...
 
 $ESPCONFIG['auth_mode'] = 'form'; // { 'basic', 'form' }
 $ESPCONFIG['auth_design'] = true;
@@ -61,10 +61,10 @@ $ESPCONFIG['dashboard_enable'] = true; // For respondents
 $ESPCONFIG['dashboard_show_public_surveys'] = true;
 $ESPCONFIG['dashboard_allow_change_profile'] = true; // Allow respondents to change their profile?
 $ESPCONFIG['dashboard_allow_change_password'] = true; // Allow respondents to change their password?
-$ESPCONFIG['support_email_address'] = "webmaster@siamsquare.org";
+//$ESPCONFIG['support_email_address'] = "webmaster@siamsquare.org";
 
 $ESPCONFIG['default_lang'] = 'en_US';
-$ESPCONFIG['charset'] = 'UTF-8';
+$ESPCONFIG['charset'] = 'utf-8';
 $ESPCONFIG['default_num_choices'] = 5; // Default number of option lines for new questions
 
 //$ESPCONFIG['main_bgcolor']      = '#FFFFFF';

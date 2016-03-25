@@ -7,6 +7,11 @@ define ('ESP-FIRST-INCLUDED',true);
 
 esp_init_adodb();
 
+//print_r (ESP-FIRST-INCLUDED);
+//echo "PE";
+//echo $GLOBALS['ESPCONFIG']['survey_table'];
+//echo $GLOBALS['ESPCONFIG']['limit_double_postings'];
+
 // submit is the last "page" of the survey 
 // to prevent cookie issues and such we already check here for the captcha and set the cookie
 // since this php page needs to be included at the top of any html code using this survey
