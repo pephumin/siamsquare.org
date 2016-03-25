@@ -2,10 +2,7 @@
 
 //$results = 1; Making all results public 
 $_SERVER['BASE_PAGE'] = 'survey.php';
-<<<<<<< HEAD
-=======
 $title = "Conduct a survey  ";
->>>>>>> master
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
@@ -57,21 +54,13 @@ if (empty($_name) && isset($sid) && $sid) {
 
 displayHeader($title);
 displayNav();
-<<<<<<< HEAD
-displayPageHeader();
-=======
 //displayPageHeader();
 echo "<div class=\"container\">\n";
->>>>>>> master
 unset($_name);
 unset($_title);
 include $_SERVER['DOCUMENT_ROOT'] . '/public/include/handler.php';
 //if ($_SESSION['acl']['superuser'] == 'Y') { include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; }
-<<<<<<< HEAD
-displayPageFooter();
-=======
 echo "</div>\n";
->>>>>>> master
 displayFooter();
 
 // --------------------------------------------------------------------------------

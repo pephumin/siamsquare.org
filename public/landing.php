@@ -1,24 +1,6 @@
 <?php
-/* $Id$ */
-/* vim: set tabstop=4 shiftwidth=4 expandtab: */
-/**
-* landing.php -- Implements a respondent's portal into the survey tool.
-* Original Author: Bishop Bettini <bishop@ideacode.com>
-*
-* Administrators and designers have a management interface where they can select various operations to carry out within
-* the phpESP survey tool.  Respondents benefit from a similar interface, where they can see the surveys they can complete,
-* the surveys they have already completed, change their password, and get help.
-*
-* There are two distinct operating modes: authenticated and non-authenticated.  When not authenticated, this page presents
-* a login form as well as a list of links to all public surveys.  Once authenticated, this page presents a list of links to
-* all user-specific surveys (private and public surveys), a history showing his previously completed surveys, and a
-* toolbox through which he can change his password, access the user manual, logout, etc.
-*
-* @_PATTERNS_@
-*
-* @_NOTES_@
-* MEANING/INTERPREATION OF SURVEY STATUS
-* The following table describes the meaning of the status constants:
+
+/*
 *
 * Constant             Interpretation
 * -------------------- ---------------------------------------------------------------------------------------------------
@@ -28,17 +10,15 @@
 * STATUS_FINISHED      The user has submitted at least one complete, but no incomplete, response.
 *
 */
-// {{{ constants
 
 define('STATUS_NOT_STARTED',  'Not Started');
 define('STATUS_ALL_PARTIAL',  'Started, but Incomplete');
 define('STATUS_SOME_PARTIAL', 'Some Finished, some Incomplete');
 define('STATUS_FINISHED',     'Finished');
 
-// }}}
-
-// hook into the phpESP environment
-require_once("./phpESP.first.php");
+$_SERVER['BASE_PAGE'] = 'landing.php';
+$title = "Landing page";
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
 
 // ensure we are configured to want this page
 if (! $GLOBALS['ESPCONFIG']['use_landing']) {
@@ -62,8 +42,6 @@ if (is_session_authenticated()) {
     paint_non_authenticated();
 }
 
-/* button handlers */
-// {{{ handleLogin()                   Handle a log in button press
 
 function handleLogin() {
     $handleLogin = (
@@ -97,8 +75,6 @@ function handleLogin() {
     }
 }
 
-// }}}
-// {{{ handleLogout()                  Handle a log out button press
 
 function handleLogout() {
     $handleLogout = (isset($_REQUEST['doLogout']) && is_session_authenticated() ? true : false);
@@ -108,8 +84,6 @@ function handleLogout() {
     }
 }
 
-// }}}
-// {{{ handleChangeProfile()           Handle a profile change button press
 
 function handleChangeProfile() {
     // are we in change profile mode?
@@ -161,9 +135,6 @@ function handleChangeProfile() {
         exit;
     }
 }
-
-// }}}
-// {{{ handleChangePassword()          Handle a password change button press
 
 function handleChangePassword() {
     // are we in change password mode?
@@ -219,9 +190,6 @@ function handleChangePassword() {
     }
 }
 
-// }}}
-// {{{ handleHelp()                    Handle a help button press
-
 function handleHelp() {
     $handleHelp = (isset($_REQUEST['doHelp']) && is_session_authenticated() ? true : false);
     if ($handleHelp) {
@@ -245,10 +213,7 @@ EOHTML;
     }
 }
 
-// }}}
-
-/* page painters */
-// {{{ paint_header()
+// paint_header()
 
 function paint_header() {
     $cfg =& $GLOBALS['ESPCONFIG'];
@@ -280,9 +245,8 @@ function paint_footer() {
 EOHTML;
 }
 
-// }}}
-
-// {{{ paint_non_authenticated()       Paint the page for non-authenticated users
+//  paint_non_authenticated()
+//  Paint the page for non-authenticated users
 
 function paint_non_authenticated() {
     // get the public surveys
@@ -300,8 +264,8 @@ EOHTML;
     paint_footer();
 }
 
-// }}}
-// {{{ paint_login_panel()             Paint the login panel
+//  paint_login_panel()
+//  Paint the login panel
 
 function paint_login_panel() {
     echo '<div class="landingPanel" id="my_login">' .
@@ -320,8 +284,8 @@ function paint_login_panel() {
          '</div>';
 }
 
-// }}}
-// {{{ paint_survey_list()             Paint a list of links to take the given surveys
+//  paint_survey_list()
+//  Paint a list of links to take the given surveys
 
 function paint_survey_list($surveys) {
     if (0 < count($surveys)) {
@@ -336,9 +300,8 @@ function paint_survey_list($surveys) {
     }
 }
 
-// }}}
-
-// {{{ paint_authenticated()           Paint the page for authenticated users
+//  paint_authenticated()
+//  Paint the page for authenticated users
 
 function paint_authenticated() {
     // get the needed data
@@ -353,8 +316,8 @@ function paint_authenticated() {
     paint_footer();
 }
 
-// }}}
-// {{{ paint_respondent_surveys()      Paint a panel of links to surveys available to the current respondent
+//  paint_respondent_surveys()
+//  Paint a panel of links to surveys available to the current respondent
 
 function paint_respondent_surveys($current) {
     echo '<div class="landingPanel" id="my_surveys">';
@@ -382,8 +345,8 @@ function paint_respondent_surveys($current) {
     echo '</div>';
 }
 
-// }}}
-// {{{ paint_respondent_history()      Paint a historical list of surveys this respondent has completed
+//  paint_respondent_history()
+//  Paint a historical list of surveys this respondent has completed
 
 function paint_respondent_history($historical) {
     echo '<div class="landingPanel" id="my_history">';
@@ -411,8 +374,8 @@ function paint_respondent_history($historical) {
     echo '</div>';
 }
 
-// }}}
-// {{{ paint_respondent_tools()        Paint a panel of tools available to this respondent
+//  paint_respondent_tools()
+//  Paint a panel of tools available to this respondent
 
 function paint_respondent_tools() {
     $cfg =& $GLOBALS['ESPCONFIG'];
@@ -441,10 +404,8 @@ EOHTML;
 EOHTML;
 }
 
-// }}}
-
-/* helpers */
-// {{{ get_survey_info()               Get the surveys, the responses, and the availability of surveys for the current user
+//  get_survey_info()
+//  Get the surveys, the responses, and the availability of surveys for the current user
 
 function get_survey_info(&$surveys, &$responses, &$availability) {
     // initialize return values
@@ -472,8 +433,8 @@ function get_survey_info(&$surveys, &$responses, &$availability) {
     return true;
 }
 
-// }}}
-// {{{ partition_surveys()             Divide the user's surveys into those that are active and those that aren't
+//  partition_surveys()
+//  Divide the user's surveys into those that are active and those that aren't
 
 function partition_surveys($surveys, $responses, $availability, &$current, &$historical) {
     foreach ($surveys as $sid => $survey) {
@@ -496,8 +457,8 @@ function partition_surveys($surveys, $responses, $availability, &$current, &$his
     }
 }
 
-// }}}
-// {{{ fetch_status()                  Given a set of responses and a survey ID, determine the status of those responses
+//  fetch_status()
+//  Given a set of responses and a survey ID, determine the status of those responses
 
 function fetch_status($sid, $responses) {
     // get the status
@@ -523,8 +484,8 @@ function fetch_status($sid, $responses) {
     return $status;
 }
 
-// }}}
-// {{{ fetch_latest_submission_date()  Given a set of responses and a survey ID, determine the latest submission date
+//  fetch_latest_submission_date()
+//  Given a set of responses and a survey ID, determine the latest submission date
 
 function fetch_latest_submission_date($sid, $responses) {
     if (isset($responses[$sid])) {
@@ -548,9 +509,8 @@ function fetch_latest_submission_date($sid, $responses) {
     return $date;
 }
 
-// }}}
-
-// {{{ render_login_form()             Render a login form
+//  render_login_form()
+//  Render a login form
 
 function render_login_form($action = null, $usernameVar = 'username', $passwordVar = 'password', $loginButtonVar = 'doLogin') {
     $cfg =& $GLOBALS['ESPCONFIG'];
@@ -581,8 +541,8 @@ function render_login_form($action = null, $usernameVar = 'username', $passwordV
 EOHTML;
 }
 
-// }}}
-// {{{ render_profile_change_form()    Render a profile change form
+//  render_profile_change_form()
+//  Render a profile change form
 
 function render_profile_change_form(
     $action = null,
@@ -628,8 +588,8 @@ function render_profile_change_form(
 EOHTML;
 }
 
-// }}}
-// {{{ render_passwd_change_form()     Render a password change form
+//  render_passwd_change_form()
+//  Render a password change form
 
 function render_passwd_change_form(
     $action = null,
@@ -671,6 +631,5 @@ function render_passwd_change_form(
 EOHTML;
 }
 
-// }}}
 
 ?>
