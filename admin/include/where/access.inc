@@ -1,21 +1,16 @@
 <?php
 
 
-if (!empty($_POST['sid']))
-	$sid = intval($_POST['sid']);
-elseif (!empty($_GET['sid']))
-	$sid = intval($_GET['sid']);
-else
-	$sid = '';
+if (!empty($_POST['sid'])) $sid = intval($_POST['sid']);
+elseif (!empty($_GET['sid'])) $sid = intval($_GET['sid']);
+else $sid = '';
 
 $errstr = "";
-$bg = '';
 
 if ($sid) {
 	if($_SESSION['acl']['superuser'] == 'Y') {
 		$sql = "SELECT s.name, s.title, s.owner, s.realm, s.public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s WHERE s.id = $sid";
-		$sql1 = "SELECT a.realm, a.maxlogin, a.resume, a.navigate FROM ".$GLOBALS['ESPCONFIG']['access_table']." a
-			WHERE a.survey_id = $sid ORDER BY a.realm";
+		$sql1 = "SELECT a.realm, a.maxlogin, a.resume, a.navigate FROM ".$GLOBALS['ESPCONFIG']['access_table']." a WHERE a.survey_id = $sid ORDER BY a.realm";
 	} else {
 		$realms = array_to_insql(
 			array_intersect(
@@ -56,7 +51,7 @@ if ($sid) {
 
 	if ($op == 'a') {
 		if (empty($_POST['realm'])) {
-			$errstr = mkerror(_('Please select a group.'));
+			$errstr = mkerror('Please select a group.');
 		} else {
 			$sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['access_table']." (survey_id, realm, maxlogin, resume, navigate)
 					VALUES ($sid, $arealm, $max, $resume, $navigate)";
@@ -182,8 +177,9 @@ if ($sid) {
 		<th>Public</th>
 	</tr>
 <?php
-/* load names and titles of all surveys available to
- * _this_ user */
+
+/* load names and titles of all surveys available to _this_ user */
+
 if($_SESSION['acl']['superuser'] == 'Y') {
 	$sql = "SELECT id,name,title,owner,realm,public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE NOT ".db_bin("status",STATUS_DELETED)." ORDER BY id DESC";
 } else {
@@ -195,16 +191,17 @@ if($_SESSION['acl']['superuser'] == 'Y') {
 				$_SESSION['acl']['pdesign'])));
 	$sql = "SELECT id,name,title,owner,realm,public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE NOT ".db_bin("status",STATUS_DELETED)." AND (owner = "._addslashes($_SESSION['acl']['username']) ." || realm $realms) ORDER BY id DESC";
 }
+
 $result = execute_sql($sql);
 while(list($sid,$name,$title,$owner,$realm,$public) = fetch_row($result)) {
      $result->MoveNext();
 
 	if ($public == 'N') {
-		$public = "Private";
-		$op = '[<a href="'. $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=access&sid=$sid&op=p").'">change to Public</a>]';
+		$public = "<span class=\"label label-danger\"><i class=\"fa fa-paper-plane fa-fw\"></i> Private</span> ";
+		$op = '<small>[<a href="'. $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=access&sid=$sid&op=p").'">change to Public</a>]</small>';
 	} else {
-		$public = "Public";
-		$op = '[<a href="'. $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=access&sid=$sid&op=v").'">change to Private</a>]';
+		$public = "<span class=\"label label-warning\"><i class=\"fa fa-paper-plane fa-fw\"></i> Public</span>";
+		$op = '<small>[<a href="'. $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=access&sid=$sid&op=v").'">change to Private</a>]</small>';
 	}
 ?>
 	<tr>
