@@ -5,6 +5,7 @@ $public = $home."/public";
 $self = $_SERVER['PHP_SELF'];
 $base = $_SERVER['BASE_PAGE'];
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/esphtml.forms.inc';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/public/funcs.inc';
 get_current_respondent($respondent);
 
 
@@ -99,10 +100,6 @@ function displayNav() {
   }
 }
 
-//function paint_footer() {
-//  displayFooter();
-//}
-
 function displayFooter() {
   global $respondent;
   if(!empty($respondent['username'])) { $signed = "Signed in as <i class=\"fa fa-user\"></i> <kbd>".$respondent['username']."</kbd>"; } 
@@ -154,29 +151,18 @@ function handleLogin() {
 
     // if the login is recognized but not-unique, we can't figure out what to do... panic
     // NOTE: if email were mandatory, then we could use that as a key...
-    } else if ($isAuthenticated && 2 <= $realmsCnt) {
-      $GLOBALS['errmsg'] = mkerror('Please contact an administrator: multi-realm');
-
-    // otherwise, not recognized, throw error
-    } else {
-      $GLOBALS['errmsg'] = mkerror('Incorrect User ID or Password, or your account has been disabled/expired.');
-    }
+    } 
+    elseif ($isAuthenticated && 2 <= $realmsCnt) { $GLOBALS['errmsg'] = mkerror('Please contact an administrator: multi-realm'); } 
+    else { $GLOBALS['errmsg'] = mkerror('Incorrect User ID or Password, or your account has been disabled/expired.'); }
   }
 }
 
-//  handleLogout()
-//  Handle a log out button press
 
 function handleLogout() {
   $handleLogout = (isset($_REQUEST['doLogout']) && is_session_authenticated() ? true : false);
-  if ($handleLogout) {
-    // tag the session as no longer authenticated
-    set_session_authentication(false);
-  }
+  if ($handleLogout) { set_session_authentication(false); }
 }
 
-//  handleChangeProfile()
-//  Handle a profile change button press
 
 function handleChangeProfile() {
   // are we in change profile mode?
@@ -190,31 +176,21 @@ function handleChangeProfile() {
     if ($ok) {
       $showChangeProfile = false;
       $GLOBALS['errmsg'] = mkerror('Your profile has been updated successfully');
-    } else {
-      $GLOBALS['errmsg'] = mkerror('Unable to change your password; contact an administrator');
-    }
+    } 
+    else { $GLOBALS['errmsg'] = mkerror('Unable to change your password; contact an administrator'); }
   }
 
   // if we're showing the change profile form, do so
   if ($showChangeProfile) {
-    if (empty($_REQUEST['firstName'])) {
-        $_REQUEST['firstName'] = $respondent['fname'];
-    }
-    if (empty($_REQUEST['lastName'])) {
-        $_REQUEST['lastName'] = $respondent['lname'];
-    }
-    if (empty($_REQUEST['emailAddress'])) {
-        $_REQUEST['emailAddress'] = $respondent['email'];
-    }
-
+    if (empty($_REQUEST['firstName'])) { $_REQUEST['firstName'] = $respondent['fname']; }
+    if (empty($_REQUEST['lastName'])) { $_REQUEST['lastName'] = $respondent['lname']; }
+    if (empty($_REQUEST['emailAddress'])) { $_REQUEST['emailAddress'] = $respondent['email']; }
     render_profile_change_form();
     displayFooter();
     exit;
   }
 }
 
-//  handleChangePassword()
-//  Handle a password change button press
 
 function handleChangePassword() {
   // are we in change password mode?
@@ -235,19 +211,12 @@ function handleChangePassword() {
       if ($ok) {
         $showChangePassword = false;
         $GLOBALS['errmsg'] = mkerror('Your password has been changed successfully');
-      } else {
-        $GLOBALS['errmsg'] = mkerror('Unable to change your password; contact an administrator');
-      }
+      } else { $GLOBALS['errmsg'] = mkerror('Unable to change your password; contact an administrator'); }
     // if the old password authenticates but the confirmation doesn't match
-    } else if ($isAuthenticated && ! $isMatch) {
-      $GLOBALS['errmsg'] = mkerror('Passwords do not match; check your typing');
-    // otherwise, bad original password, puke
-    } else {
-      $GLOBALS['errmsg'] = mkerror('Old password incorrect; check your typing');
-    }
+    } elseif ($isAuthenticated && ! $isMatch) { $GLOBALS['errmsg'] = mkerror('Passwords do not match; check your typing'); } 
+    else { $GLOBALS['errmsg'] = mkerror('Old password incorrect; check your typing'); }
   }
 
-  // if we're showing the change password form, do so
   if ($showChangePassword) {
     render_passwd_change_form();
     displayFooter();
@@ -260,30 +229,9 @@ function paint_non_authenticated() {
     render_login_form();
 }
 
-//  paint_login_panel()
-//  Paint the login panel
-
-//function paint_login_panel() {
-//    //echo "<div class=\"container\">\n";
-//    //echo "</div>\n";
-//    //echo "</form>\n\n";
-//    //echo "<div class=\"dashboardPanel\" id=\"my_login\">\n";
-//    //echo "<h1>Login</h1>\n";
-//    render_login_form();
-//    //render_login_form($action = null, $usernameVar = 'username', $passwordVar = 'password', $loginButtonVar = 'doLogin', $_message = null);
-//    //if (!empty($GLOBALS['ESPCONFIG']['signup_realm'])) { echo "<p><a href=\"signup.php\">Don't have an account? Sign up.</a></p>\n"; }
-//    //if (!empty($GLOBALS['ESPCONFIG']['email_from_address'])) { echo "<p><a href=\"mailto:".$GLOBALS['ESPCONFIG']['email_from_name']."(".$GLOBALS['ESPCONFIG']['email_from_address'].")\">Need help? E-mail us.</a></p>\n"; }
-//    //echo "</div>\n";
-//}
-
-//  paint_public_survey_list()
-//  Paint a list of links to take the given surveys
 
 function paint_public_survey_list() {
-  // make sure we're configured to show this
   if (! $GLOBALS['ESPCONFIG']['dashboard_show_public_surveys']) { return; }
-
-  // get the available public surveys
   get_survey_info($surveys, $_, $accessibility);
   foreach ($surveys as $sid => $survey) {
     if (isset($accessibility[$sid]['available']) && true === (bool)$accessibility[$sid]['available']) { continue; }
@@ -302,43 +250,15 @@ function paint_public_survey_list() {
   }
 }
 
-// paint_authenticated()
-// Paint the page for authenticated users
 
 function paint_authenticated() {
   get_survey_info($surveys, $responses, $accessibility);
   partition_surveys($surveys, $responses, $accessibility, $current, $historical);
   paint_respondent_tools();
-  //paint_welcome();
   paint_respondent_surveys($current);
   paint_respondent_history($historical);
 }
 
-//  paint_welcome()
-//  Paint a friendly welcome message
-
-//function paint_welcome() {
-//  echo '<h2>Respondent dashboard</h2>';
-//  $ok = get_current_respondent($respondent);
-//  if ($ok) {
-//    // spew a nice welcome message, if we know the person's name
-//    if (! empty($respondent['fname'])) {
-//      echo '<em>Welcome, ' . $respondent['fname'];
-//      if (! empty($respondent['lname'])) {
-//          echo ' ' . $respondent['lname'];
-//      }
-//      echo '.</em>  ';
-//    }
-//  }
-//  // spew the time
-//  printf(_('Right now, my watch shows %s.'), strftime(FORMAT_OUTPUT_DATE));
-//}
-
-//  paint_respondent_surveys()
-//  Paint a panel of links to surveys available to the current respondent
-
-//  paint_respondent_tools()
-//  Paint a panel of tools available to this respondent
 
 function paint_respondent_tools() {
   global $public, $user, $group, $respondent;
@@ -373,14 +293,11 @@ function paint_respondent_tools() {
   echo "  </div>\n";
   echo "</div>\n";
   echo "<br />\n\n";
-
 }
 
-function paint_respondent_surveys($current) {
-  //echo '<div class="dashboardPanel" id="my_surveys">';
-  echo "<h3>Surveys participated</h3>\n";
 
-  // make surveys into a list
+function paint_respondent_surveys($current) {
+  echo "<h3>Surveys participated</h3>\n";
   if (0 < count($current)) {
     echo "<table class=\"table table-hover\">\n";
     echo "  <tr class=\"active\">\n";
@@ -395,21 +312,14 @@ function paint_respondent_surveys($current) {
       printf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>', $name, $status, $date, $avail);
     }
     echo "</table>\n";
-  } else {
-     echo "You do not have any surveys at this time.";
-  }
-  //echo '</div>';
+  } 
+  else { echo "You do not have any surveys at this time."; }
   echo "<br />\n\n";
 }
 
-//  paint_respondent_history()
-//  Paint a historical list of surveys this respondent has completed
 
 function paint_respondent_history($historical) {
-  //echo '<div class="dashboardPanel" id="my_history">';
   echo "<h3>History</h3>\n";
-
-  // make surveys into a list
   if (0 < count($historical)) {
     echo "<table class=\"table table-hover\">\n";
     echo "  <tr class=\"active\">\n";
@@ -418,21 +328,16 @@ function paint_respondent_history($historical) {
     echo "    <th>Last access</th>\n";
     echo "    <th>Availability</th>\n";
     echo "  </tr>\n";
-
     foreach ($historical as $sid => $info) {
       list ($name, $status, $date, $avail) = $info;
       printf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>', $name, $status, $date, $avail);
     }
     echo "</table>\n";
-    } else {
-       echo "You have no historical survey at this time.";
     }
-    //echo '</div>';
+    else { echo "You have no historical survey at this time."; }
     echo "<br />\n\n";
 }
 
-//  get_survey_info()
-//  Get the surveys, the responses, and the accessibility of surveys for the current user
 
 function get_survey_info(&$surveys, &$responses, &$accessibility) {
   // initialize return values
@@ -464,8 +369,6 @@ function get_survey_info(&$surveys, &$responses, &$accessibility) {
   return true;
 }
 
-//  partition_surveys()
-//  Divide the user's surveys into those that are active and those that aren't
 
 function partition_surveys($surveys, $responses, $accessibility, &$current, &$historical) {
   foreach ($surveys as $sid => $survey) {
@@ -493,8 +396,6 @@ function partition_surveys($surveys, $responses, $accessibility, &$current, &$hi
   }
 }
 
-//  fetch_status()
-//  Given a set of responses and a survey ID, determine the status of those responses
 
 function fetch_status($sid, $responses) {
   // get the status
@@ -504,19 +405,13 @@ function fetch_status($sid, $responses) {
       $status = ('Y' == $responses[$sid]['complete'] ? STATUS_FINISHED : STATUS_ALL_PARTIAL); 
     } else { // more than one response
       $status = STATUS_FINISHED;
-      foreach ($responses[$sid] as $response) {
-        if ('N' == $response['complete']) { $status = STATUS_SOME_PARTIAL; }
-      }
+      foreach ($responses[$sid] as $response) { if ('N' == $response['complete']) { $status = STATUS_SOME_PARTIAL; } }
     }
-  } else {
-      // no responses made, but since survey is available, this is an incomplete survey
-      $status = STATUS_NOT_STARTED;
   }
+  else { $status = STATUS_NOT_STARTED; }
   return $status;
 }
 
-//  fetch_latest_submission_date()
-//  Given a set of responses and a survey ID, determine the latest submission date
 
 function fetch_latest_submission_date($sid, $responses) {
   if (isset($responses[$sid])) {
@@ -536,54 +431,31 @@ function fetch_latest_submission_date($sid, $responses) {
 
     // don't need the date down to the second, so just go down to the minute
     $datets = strtotime($date);
-    if (-1 !== $datets) {
-      $date = strftime(FORMAT_OUTPUT_DATE, $datets);
-    }
-  } else {
-      $date = '';
-  }
-
+    if (-1 !== $datets) { $date = strftime(FORMAT_OUTPUT_DATE, $datets); }
+  } 
+  else { $date = ''; }
   return $date;
 }
 
-//  fetch_availability()
-//  Given a survey, determine its availability
 
 function fetch_availability($survey, &$rc) {
   $rc = survey_open($survey['open_date'], $survey['close_date']);
   switch ($rc) {
-    
-  case STATUS_OPEN:
-      return "Now taking submissions";
-      break;
-
-  case STATUS_CLOSED_TOO_EARLY:
-      return "Not yet taking submissions";
-      break;
-
-  case STATUS_CLOSED_TOO_LATE:
-      return "No longer taking submissions";
-      break;
-
-  default:
-      assert('false; // unexpected case reached; code bug');
-      return '';
+    case STATUS_OPEN: return "Now taking submissions"; break;
+    case STATUS_CLOSED_TOO_EARLY: return "Not yet taking submissions"; break;
+    case STATUS_CLOSED_TOO_LATE: return "No longer taking submissions"; break;
+    default: assert('false; // unexpected case reached; code bug'); return '';
   }
 }
 
-//  render_login_form()
-//  Render a login form
 
 function render_login_form($action = null, $usernameVar = 'username', $passwordVar = 'password', $loginButtonVar = 'doLogin', $_message = null) {
   global $public;
   $cfg =& $GLOBALS['ESPCONFIG'];
   if (empty($action)) { $action = $public . '/'; }
-
   $username = (isset($_REQUEST['username']) ? $_REQUEST['username'] : '');
-
   $str = "";
   if ($_message) { echo mkerror($_message); }
-
   echo "\n";
   echo "<form name=\"login\" id=\"login\" method=\"post\" class=\"form-horizontal\" action=\"$action\">\n";
   echo "  <div class=\"dashboardPanel\" id=\"login\">\n";
@@ -617,21 +489,16 @@ function render_login_form($action = null, $usernameVar = 'username', $passwordV
   echo "</form>\n";
   echo "<br />\n";
   echo login_warning();
-
 }
 
-//  render_profile_change_form()
-//  Render a profile change form
 
 function render_profile_change_form ($action = null, $firstNameVar = 'firstName', $lastNameVar = 'lastName', $emailVar = 'emailAddress', $changeButtonVar = 'doChangeProfile', $cancelButtonVar = 'doChangeProfileCancel' ) {
   global $public, $respondent;
   $cfg =& $GLOBALS['ESPCONFIG'];
   if (empty($action)) { $action = $public . '/'; }
-
   $firstName = (isset($_REQUEST[$firstNameVar]) ? htmlentities($_REQUEST[$firstNameVar]) : '');
   $lastName = (isset($_REQUEST[$lastNameVar]) ? htmlentities($_REQUEST[$lastNameVar]) : '');
   $emailAddress = (isset($_REQUEST[$emailVar]) ? htmlentities($_REQUEST[$emailVar]) : '');
-
   echo "<h2>Changing your profile</h2>\n\n";
   echo "<br />\n\n";
   echo "<form class=\"form-horizontal\" method=\"post\" id=\"profile_change\" action=\"$action\">\n";
@@ -659,11 +526,8 @@ function render_profile_change_form ($action = null, $firstNameVar = 'firstName'
   echo "    <button type=\"submit\" class=\"btn btn-default\" name=\"$cancelButtonVar\">Cancel</button>\n";
   echo "  </div>\n";
   echo "</form>\n";
-
 }
 
-//  render_passwd_change_form()
-//  Render a password change form
 
 function render_passwd_change_form ($action = null, $oldPasswordVar = 'oldPassword', $newPasswordVar = 'newPassword', $newPasswordConfirmVar = 'newPasswordConfirm', $changeButtonVar = 'doChangePassword', $cancelButtonVar = 'doChangePasswordCancel') {
   global $public, $respondent;
@@ -672,7 +536,6 @@ function render_passwd_change_form ($action = null, $oldPasswordVar = 'oldPasswo
 
   echo "<h2>Changing your password</h2>\n\n";
   echo "<br />\n\n";
-  //echo "<div class=\"container\">\n";
   echo "<form class=\"form-horizontal\" method=\"post\" id=\"passwd_change\" action=\"$action\">\n";
   echo "  <div class=\"form-group\">\n";
   echo "    <label class=\"col-sm-3 control-label\">Username</label>\n";
@@ -700,23 +563,19 @@ function render_passwd_change_form ($action = null, $oldPasswordVar = 'oldPasswo
   echo "    </div>\n";
   echo "  </div>\n";
   echo "  <div class=\"col-sm-offset-3 col-sm-9\">\n";
-  //echo "    <input type=\"submit\" name=\"$changeButtonVar\" value=\"Change\" class=\"btn btn-success\" />\n";
   echo "    <button type=\"submit\" class=\"btn btn-success\" name=\"$changeButtonVar\">Change password</button> &nbsp;\n";
   echo "    <button type=\"submit\" class=\"btn btn-default\" name=\"$cancelButtonVar\">Cancel</button>\n";
-  //echo "    <input type=\"submit\" name=\"$cancelButtonVar\" value=\"Cancel\" class=\"btn btn-default\" />\n";
   echo "  </div>\n";
   echo "</form>\n";
-  //echo "</div>\n";
 
 }
+
 
 function respondent_signup() {
   global $home, $self;
   $page = $home.$self;
   $str = "";
-  if ($_message) {
-      echo mkerror($_message);
-  }
+  if ($_message) { echo mkerror($_message); }
   echo "<form class=\"form-horizontal\" method=\"post\" id=\"phpesp\" action=\"$page\">\n";
   echo "  <div class=\"dashboardPanel\" id=\"login\">\n";
   echo "  <h2 class=\"form-signin-heading\">Respondent sign up</h2>\n";
