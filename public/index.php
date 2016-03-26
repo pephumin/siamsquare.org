@@ -54,7 +54,10 @@ if (! $GLOBALS['ESPCONFIG']['dashboard_enable']) {
 displayHeader($title);
 displayNav();
 //displayPageHeader();
+<<<<<<< HEAD
+=======
 echo "<div class=\"container\">\n";
+>>>>>>> master
 handleLogin();
 handleLogout();
 handleChangeProfile();
@@ -62,7 +65,11 @@ handleChangePassword();
 //handleHelp();
 if (is_session_authenticated()) { paint_authenticated(); } 
 else { paint_non_authenticated(); }
+<<<<<<< HEAD
+displayPageFooter();
+=======
 echo "</div>\n";
+>>>>>>> master
 displayFooter();
 
 // --------------------------------------------------------------------------------
