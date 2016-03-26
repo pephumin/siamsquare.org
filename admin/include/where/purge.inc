@@ -1,8 +1,8 @@
 <?php
 
 if($_SESSION['acl']['superuser'] != 'Y') {
-	echo(mkerror(_('Only superusers allowed.'))."<br>\n");
-	echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n");
+	echo(mkerror('Only superusers allowed.')."<br>\n");
+	//echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n");
 	return;
 }
 
@@ -17,81 +17,58 @@ if(!empty($_POST['list'])) {
 //	$sql = "
 //SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count
 //FROM survey s LEFT JOIN question q ON
-	$sql = "
-SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count
-FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s LEFT JOIN ".$GLOBALS['ESPCONFIG']['question_table']." q ON
-	s.id = q.survey_id AND q.deleted = 'N'
-GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm
-ORDER BY s.id DESC";
-	$result = execute_sql($sql);
+$sql = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s LEFT JOIN ".$GLOBALS['ESPCONFIG']['question_table']." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC";
 
-	//$bg = $ESPCONFIG['bgalt_color2'];
-?>
+$result = execute_sql($sql);
 
-<h2>Purge Surveys</h2>
+echo "<h2>Purge Surveys</h2>\n";
 
-<p>This page is not directly on the main menu because it is dangerous. This <b>completely</b> removes everything about a survey from the database <b>forever</b>. All question info, general info, results, etc. are purged from the database. Do not do anything here that you are not completely certain about. There is no confirmation, there is no turning back.</p>
-<br />
+echo "<p>This page is not directly on the main menu because it is dangerous. This <b>completely</b> removes everything about a survey from the database <b>forever</b>. All question info, general info, results, etc. are purged from the database. Do not do anything here that you are not completely certain about. There is no confirmation, there is no turning back.</p>\n";
 
-<table class="table table-hover">
-	<tr>
-		<td>&nbsp;</td>
-		<th>ID</th>
-		<th>Name</th>
-		<th>Title</th>
-		<th>Owner</th>
-		<th>Group</th>
-		<th><?php echo(_("# Q's")); ?></th>
-		<th>Status</th>
-	</tr>
-<?php
-	while(list($sid,$name,$title,$status,$owner,$realm,$qnum) = fetch_row($result)) {
-        $result->MoveNext();
-		if($status & STATUS_DELETED) {
-			$stat = _('Archived');
-		} elseif($status & STATUS_DONE) {
-			$stat = _('Ended');
-		} elseif($status & STATUS_ACTIVE) {
-			$stat = _('Active');
-		} elseif($status & STATUS_TEST) {
-			$stat = _('Testing');
-		} else {
-			$stat = _('Editing');
-		}
-		
-		//if($bg != $ESPCONFIG['bgalt_color1'])
-		//	$bg = $ESPCONFIG['bgalt_color1'];
-		//else
-		//	$bg = $ESPCONFIG['bgalt_color2'];
-?>
-	<tr>
-		<td><input type="checkbox" name="list[]" value="<?php echo($sid); ?>" /></td>
-		<td><?php echo($sid); ?></td>
-		<td><?php echo($name); ?></td>
-		<td><?php echo($title); ?></td>
-		<td><?php echo($owner); ?></td>
-		<td><?php echo($realm); ?></td>
-		<td><?php echo($qnum); ?></td>
-		<td><?php echo($stat); ?></td>
-	</tr>
-<?php
-	}
+echo "<br />\n";
+
+echo "<table class=\"table table-hover\">\n";
+echo "	<tr class=\"active\">\n";
+echo "		<td>&nbsp;</td>\n";
+//echo "		<th>ID</th>\n";
+echo "		<th>Name</th>\n";
+echo "		<th>Title</th>\n";
+echo "		<th>Owner (Group)</th>\n";
+echo "		<th>Questions</th>\n";
+echo "		<th>Status</th>\n";
+echo "	</tr>\n";
+
+while(list($sid,$name,$title,$status,$owner,$realm,$qnum) = fetch_row($result)) {
+    $result->MoveNext();
+	if ($status & STATUS_DELETED) { $stat = "Archived"; }
+	elseif ($status & STATUS_DONE) { $stat = "Ended"; } 
+	elseif ($status & STATUS_ACTIVE) { $stat = "Active"; } 
+	elseif ($status & STATUS_TEST) { $stat = "Testing"; } 
+	else { $stat = "Editing"; }
 	
-	//if($bg != $ESPCONFIG['bgalt_color1'])
-	//	$bg = $ESPCONFIG['bgalt_color1'];
-	//else
-	//	$bg = $ESPCONFIG['bgalt_color2'];
+	echo "	<tr>\n";
+	echo "	  <td><input type=\"checkbox\" name=\"list[]\" value=\"$sid\" /></td>\n";
+	//echo "    <td>$sid</td>\n";
+	echo "    <td>$name</td>\n";
+	echo "    <td>$title</td>\n";
+	echo "    <td>$owner ($realm)</td>\n";
+	echo "    <td>$qnum</td>\n";
+	echo "    <td>$stat</td>\n";
+	echo "	</tr>\n";
+
+}
+
+echo "</table>\n";
+
+echo "<input type=\"hidden\" name=\"where\" value=\"purge\" />\n";
+echo "<input class=\"btn btn-default\" type=\"reset\" name=\"reset\" value=\"Clear Checkboxes\" />\n";
+
+$confirmText = "You are about to PERMANENTLY and IRREVOCABLY remove ALL information about the selected surveys. Click Ok if you are absolutely sure this is what you want to do.";
+
+echo "<input class=\"btn btn-danger\" type=\"submit\" name=\"submit\" onclick='return confirm(\"You are about to PERMANENTLY and IRREVOCABLY remove ALL information about the selected surveys. Click Ok if you are absolutely sure this is what you want to do.\")' onkeypress='return confirm (\"You are about to PERMANENTLY and IRREVOCABLY remove ALL information about the selected surveys. Click Ok if you are absolutely sure this is what you want to do.\");' value=\"Delete data\" />\n";
+
+echo "<br /><br />\n";
+
+displayAdminBack(); 
+
 ?>
-</table>
-
-<input type="hidden" name="where" value="purge" />
-<input class="btn btn-default" type="reset" name="reset" value="Clear Checkboxes" />
-
-<?php
-$confirmText = _('You are about to PERMANENTLY and IRREVOCABLY remove ALL information about the selected surveys. Click Ok if you are absolutely sure this is what you want to do.');
-?>
-
-<input class="btn btn-danger" type="submit" name="submit" onclick='return confirm("<?php echo $confirmText; ?>")' onkeypress='return confirm ("<?php echo $confirmText; ?>");' value="Delete data" />
-
-<br /><br />
-<?php displayAdminBack(); ?>

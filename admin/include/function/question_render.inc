@@ -1,7 +1,21 @@
 <?php
 
-/*  proto bool question_render($question, int question_number)
-    Builds HTML for the question */
+//  proto bool question_render($question, int question_number)
+
+//		ID 		Question type 			Has choice? 	Table
+//  	1 		'Single answer (SA)'	'Y'				'response_single'
+//  	2 		'Multiple answer (MA)'	'Y'				'response_multiple'
+//  	3 		'Single-line open-end'	'N'				'response_text'
+//  	4		'Multi-line open-end'	'N'				'response_text'
+//  	5		'Rating scale'			'Y'				'response_rank'
+//  	6 		'Attribute rating'		'Y'				'response_rank'
+//  	7 		'Drop down'				'Y'				'response_single'
+//  	8 		'Date'					'N'				'response_date'
+//  	9 		'Numeric'				'N'				'response_text'
+//  	10 		'Others'				'N'				'response_text'
+//  	99 		'Page Break'			'N'				''
+//  	100 	'Section Text'			'N'				''
+
 
 function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 	// process each question
@@ -28,7 +42,7 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 	
 	echo "\n";
 
-	// If question is of type "section text"... (tid=100)
+	// Section text (tid=100)
 	if ($tid == 100) {
 		echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
 		if ($question['content_th']) { echo "        <p class=\"bg-success\">".nl2br($question['content_th'])."</p>\n"; }
@@ -43,21 +57,8 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 
 	switch($tid) {
 
-		case '1':	// Yes/No
-		echo "      <div class=\"radio\"><label>" . mkradio($qid,'Y') . " Yes</label></div>\n";
-		echo "      <div class=\"radio\"><label>" . mkradio($qid,'N') . " No</label></div>\n";
-
-		break;
-
-		case '2':	// single text line
-		echo(mktext($qid, $size, $prec));
-		break;
-
-		case '3':	// essay
-		echo(mktextarea($qid, $prec, $size, 'virtual'));
-		break;
-
-		case '4':	// radio
+		// Single answer (SA) - radio (tid=1)
+		case '1':	
 		while($choice = fetch_row($choices_result)) {	
 			$choices_result->MoveNext();
 			if ($choice['content_th']) { echo "      <div class=\"radio\"><label>" . mkradio($qid,$choice['id']) . $choice['content_th'] . "</label></div>\n"; }
@@ -79,7 +80,8 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 		}
 		break;
 
-		case '5':	// check boxes
+		// Multiple answer (MA) - checkbox (tid=2)
+		case '2':	
 		while($choice = fetch_row($choices_result)) {
 			$choices_result->MoveNext();
 			if ($choice['content_th']) { echo "      <div class=\"checkbox\"><label>" . mkcheckbox($qid,$choice['id']) . $choice['content_th'] . "</label></div>\n"; }
@@ -102,26 +104,34 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 		}
 		break;
 
-		case '6':	// dropdown box
-		$options = array();
-		while($choice = fetch_row($choices_result)) {
+		// Single-line open-end (tid=3)
+		case '3':	
+		echo(mktext($qid, $size, $prec));
+		break;
+
+		// Multi-line open-end (tid=4)
+		case '4':	
+		echo(mktextarea($qid, $prec, $size, 'virtual'));
+		break;
+
+		// Rating scale (tid=5)
+		case '5':	
+		while($choice = fetch_row($choices_result)) {	
 			$choices_result->MoveNext();
-			$options[$choice['id']] = $choice['content'];
+			if ($choice['content_th']) { echo "      <div class=\"radio\"><label>" . mkradio($qid,$choice['content_th']) . " ".$choice['content_th']."</label></div>\n"; }
+			else { echo "      <div class=\"radio\"><label>" . mkradio($qid,$choice['content']) . " ".$choice['content']."</label></div>\n"; }
 		}
-		echo mkselect($qid,$options);
+		//echo "      <div class=\"radio\"><label>" . mkradio($qid,1) . " 1</label></div>\n";
+		//echo "      <div class=\"radio\"><label>" . mkradio($qid,2) . " 2</label></div>\n";
+		//echo "      <div class=\"radio\"><label>" . mkradio($qid,3) . " 3</label></div>\n";
+		//echo "      <div class=\"radio\"><label>" . mkradio($qid,4) . " 4</label></div>\n";
+		//echo "      <div class=\"radio\"><label>" . mkradio($qid,5) . " 5</label></div>\n";
+		//echo "      <div class=\"radio\"><label>" . mkradio($qid,'N/A') . " N/A</label></div>\n";
 		break;
 
-		case '7':	// rating
-		echo "      <div class=\"radio\"><label>" . mkradio($qid,1) . " 1</label></div>\n";
-		echo "      <div class=\"radio\"><label>" . mkradio($qid,2) . " 2</label></div>\n";
-		echo "      <div class=\"radio\"><label>" . mkradio($qid,3) . " 3</label></div>\n";
-		echo "      <div class=\"radio\"><label>" . mkradio($qid,4) . " 4</label></div>\n";
-		echo "      <div class=\"radio\"><label>" . mkradio($qid,5) . " 5</label></div>\n";
-		echo "      <div class=\"radio\"><label>" . mkradio($qid,'N/A') . " N/A</label></div>\n";
-
-		break;
-
-		case '8':	// ranking
+		// Attribute rating (tid=6)
+		case '6':	
+		if ($size == '0') { $size = '5'; }
 		echo "      <table class=\"table table-hover table-condensed\">\n";
 		echo "        <tr class=\"active\">\n";
 		echo "          <td>Attributes</td>\n";
@@ -151,18 +161,36 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 		echo "      </table>\n";
 		break;
 
-		case '9':	// date
-		echo mktext($qid, 10, 10);
-		echo "<em>(type in this format only: ". strftime ($GLOBALS['ESPCONFIG']['date_format'],strtotime("now")) ."</em>\n";
+		// Drop down (tid=7)
+		case '7':	
+		$options = array();
+		while($choice = fetch_row($choices_result)) {
+			$choices_result->MoveNext();
+			$options[$choice['id']] = $choice['content'];
+		}
+		echo mkselect($qid,$options);
 		break;
 
-		case '10':	// numeric
+		// Date (tid=8)
+		case '8':	
+		echo mktext($qid, 10, 10);
+		echo "<em>(This format only: ". strftime ($GLOBALS['ESPCONFIG']['date_format'],strtotime("now")) .")</em>\n";
+		break;
+
+		// Numeric (tid=9)
+		case '9':	
 		$size++; // for sign
 		if($prec)
 			$size += 1 + $prec;
 		echo mktext($qid, $size, $size);
 		break;
-	}	// end switch
+
+		// Others (tid=10)
+		case '10':	
+		echo(mktext($qid, $size, $prec));
+		break;
+
+	}
 	echo "    </div>\n";
 	echo "  </div>\n\n";
 	return;

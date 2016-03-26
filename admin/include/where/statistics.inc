@@ -65,9 +65,13 @@ if (0 < count($stats)) {
     }
     echo '</table>';
     $confirm = sprintf('return confirm("%s");','You are about to make permanent and irrevocable changes. Click OK if you are certain this is what you want to do.');
-    echo mksubmit('doRefresh', 'Refresh') .
-         '&nbsp;' .
-         mksubmit('doReset', 'Reset statistics', array ('onclick' => $confirm, 'onkeypress' => $confirm));
+    //echo mksubmit('doRefresh', 'Refresh') .
+    //     '&nbsp;' .
+    //     mksubmit('doReset', 'Reset statistics', array ('onclick' => $confirm, 'onkeypress' => $confirm));
+    echo "<p class=\"text-right\">\n";
+    echo "<input class=\"btn btn-default btn-danger\" type=\"submit\" name=\"doReset\" value=\"Reset statistics\" onclick=\"return confirm(\"You are about to make permanent and irrevocable changes. Click OK if you are certain this is what you want to do.\");\" onkeypress=\"return confirm(\"You are about to make permanent and irrevocable changes. Click OK if you are certain this is what you want to do.\");\" />\n";
+    echo "<input class=\"btn btn-default\" type=\"submit\" name=\"doRefresh\" value=\"Refresh\" />&nbsp;\n";
+    echo "</p>\n\n";
 } else {
     echo "You have no active or done surveys. Check back later.";
 }
