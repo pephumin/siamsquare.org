@@ -140,14 +140,10 @@ window.location="<?php echo($thank_url); ?>"
         $thank_head = $GLOBALS['ESPCONFIG']['thank_head'];
     }
 
+    $redir = $GLOBALS['ESPCONFIG']['base_url'] . '/public';
     echo "<h2> $thank_head </h2>";
     echo "<p> $thank_body </p>";
-    if ($GLOBALS['ESPCONFIG']['dashboard_enable']) {
-?>
-<a href="<?php echo $GLOBALS['ESPCONFIG']['base_url'] . '/public/dashboard.php'; ?>"><?php echo _('Go to my surveys'); ?></a>
-<?php
-
-    }
+    echo "<a href=\"$redir\" class=\"btn btn-default\" role=\"button\">Back to Dashboard</a>\n\n";
 
     if (isset($_GET['where']) && $_GET['where'] == 'test'){
        if ($GLOBALS['ESPCONFIG']['limit_double_postings']==0) {
@@ -181,8 +177,7 @@ function check_referer($referer) {
     return $retstr;
 }
 
-    // {{{ blur()                      Go to a different URL, using the best method possible given the current output state
-    // NOTE: Does not return.
+//  Go to a different URL, using the best method possible given the current output state
 
 function blur($url, $forwardingLabel = 'Please click here to continue...') {    
      // close the session, as it's no longer needed and we don't want to delay waiters
@@ -212,26 +207,31 @@ EOHTML;
     }    
 
 function goto_saved($sid, $url) {
-    // sticking a survey for later
-    //esp_require_once('/lib/espsurveystat');
+
+    if ($_REQUEST['test']) { $url = $url."&test=1"; }
+    
     require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurveystat.inc';
     survey_stat_decrement(SURVEY_STAT_ABANDONED, $sid);
     survey_stat_increment(SURVEY_STAT_SUSPENDED, $sid);
 ?>
+
+<h2>Your survey has been saved</h2>
+
+<br />
+
 <p>Your progress has been saved.  You may return at any time to complete this survey.</p>
 
 <p>To do so, simply bookmark the link below.</p>
 
 <p>You may be prompted for your username and password to complete the survey.</p>
 
-<a href="<?php echo $url; ?>">Resume survey</a>&nbsp;
+<br />
 
-<?php
-        if ($GLOBALS['ESPCONFIG']['dashboard_enable']) {
-?>
-<a class="returnlink" href="<?php echo $GLOBALS['ESPCONFIG']['base_url'] . '/public/dashboard.php'; ?>">Go to my surveys</a>
-<?php
-    }
+<a href="<?php echo $url; ?>" class="btn btn-success" role="button">Continue survey</a>&nbsp;
+
+<a href="<?php echo $GLOBALS['ESPCONFIG']['base_url'] . '/public'; ?>" class="btn btn-default" role="button">Back to Dashboard</a>
+
+<?php 
     return;
 }
 

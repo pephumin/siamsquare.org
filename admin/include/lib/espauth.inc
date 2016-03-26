@@ -17,16 +17,12 @@ if (empty($auth_type)) { $auth_type = 'default'; }
 //	exit;
 //}
 
-if (!file_exists($_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espauth-default.inc')) {
-    echo "FATAL: Unable to set up authentication for type $auth_type. Aborting."; exit;
-}
+if (!file_exists($_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espauth-default.inc')) { echo "FATAL: Unable to set up authentication for type $auth_type. Aborting."; exit; }
 
-//require($ESPCONFIG['include_path']."/lib/espauth-$auth_type".$ESPCONFIG['extension']);
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espauth-default.inc';
 
 
-/* respondent authentication methods authenticate_in_realm()
-   Determine if a <username,password> credential is valid for a given realm */
+//  Determine if a <username,password> credential is valid for a given realm
 
 function authenticate_in_realm($username, $password, $realm) {
     assert('is_callable("authenticate"); // expecting an authenticate function to be defined');
@@ -34,8 +30,7 @@ function authenticate_in_realm($username, $password, $realm) {
     return ($isAuthenticated && in_array($realm, $realms) ? true : false);
 }
 
-/* set_session_authentication()
-   Set session authentication bit */
+//  set_session_authentication()
 
 function set_session_authentication($isAuthenticated) {
     // IE6 has a serious problem with cookies in multi-home framed sites. Force it to shut up.
@@ -63,15 +58,13 @@ function set_session_authentication($isAuthenticated) {
     }
 }
 
-/* is_session_authenticated()
-   Determine if this session has been authenticated */
+//  Determine if this session has been authenticated
 
 function is_session_authenticated() {
     return (array_key_exists('authenticated', $_SESSION) ? $_SESSION['authenticated'] : false);
 }
 
-/* set_current_respondent()
-   Set the current respondent */
+//  Set the current respondent
 
 function set_current_respondent($username, $realm, $password = null) {
     $cfg =& $GLOBALS['ESPCONFIG'];
@@ -84,7 +77,7 @@ function set_current_respondent($username, $realm, $password = null) {
     $res = execute_sql($sql, null, ADODB_FETCH_ASSOC);
     if (! $res) {
         // give up, select bombed
-        $GLOBALS['errmsg'] = mkerror(_('Unable to set current respondent'));
+        $GLOBALS['errmsg'] = mkerror('Unable to set current respondent');
         return false;
     }   
 
@@ -93,7 +86,7 @@ function set_current_respondent($username, $realm, $password = null) {
         $row = fetch_row($res);
         $_SESSION['respondent'] = $row;
     } else {
-        $GLOBALS['errmsg'] = mkerror(_('Unable to set current respondent'));
+        $GLOBALS['errmsg'] = mkerror('Unable to set current respondent');
         return false;
     }
     db_close($res);
@@ -107,21 +100,14 @@ function set_current_respondent($username, $realm, $password = null) {
     return true;
 }
 
-/* get_current_respondent()  
-   Get the respondent currently logged in */
+//  Get the respondent currently logged in
 
 function get_current_respondent(&$respondent) {
-    if (isset($_SESSION['respondent'])) {
-        $respondent = $_SESSION['respondent'];
-        return true;
-    } else {
-        $respondent = null;
-        return false;
-    }
+    if (isset($_SESSION['respondent'])) { $respondent = $_SESSION['respondent']; return true; } 
+    else { $respondent = null; return false; }
 }
 
-/* change_profile()
-   Change the profile for a user (in a given realm) */
+//  Change the profile for a user (in a given realm)
 
 function change_profile($username, $realm, $firstName, $lastName, $emailAddress) {
     // build the change SQL
@@ -134,26 +120,12 @@ function change_profile($username, $realm, $firstName, $lastName, $emailAddress)
     $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['response_table']." 
             SET fname = $_firstName, lname = $_lastName, email = $_emailAddress, changed = $changed
             WHERE username = $_username AND realm = $_realm";
-//	$sql =<<<EOSQL
-//UPDATE {$GLOBALS['ESPCONFIG']['respondent_table']}
-//   SET fname={$_firstName}, lname={$_lastName}, email={$_emailAddress}, changed={$changed}
-// WHERE username={$_username} AND realm={$_realm}
-//EOSQL;
-
-    // throw it at the DB
-    // NOTE: There is a small race condition here on some databases: see the note in change_password()
 	$res = execute_sql($sql);
-    if (1 === affected_rows()) {
-        set_current_respondent($username, $realm);
-        db_close($res);
-        return true;
-    } else {
-        return false;
-    }
+    if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); return true; } 
+    else { return false; }
 }
 
-/* change_password()
-   Change a password for a user (in a given realm) */
+//   Change a password for a user (in a given realm)
 
 function change_password($username, $realm, $password) {
     // build the change SQL
@@ -164,25 +136,9 @@ function change_password($username, $realm, $password) {
     $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['response_table']." 
             SET password = $_password, changed =$changed
             WHERE username = $_username AND realm = $_realm";
-//	$sql =<<<EOSQL
-//UPDATE {$GLOBALS['ESPCONFIG']['respondent_table']}
-//   SET password={$_password}, changed={$changed}
-// WHERE username={$_username} AND realm={$_realm}
-//EOSQL;
-    // throw it at the DB
-    // NOTE: There is a small race condition here on some databases: this will fail if the password is changed to the same password
-    // NOTE: as originally within 1 second of the last change.  In other words, if you changed your password to "bob" 500ms ago,
-    // NOTE: and you change it to "bob" again, the second time will fail, because the database will not update the row so
-    // NOTE: affected_rows() === 0.  Prevent this case by preventing the user from changing their password to the current password
-    // NOTE: in the UI code.
 	$res = execute_sql($sql);
-    if (1 === affected_rows()) {
-        set_current_respondent($username, $realm);
-        db_close($res);
-        return true;
-    } else {
-        return false;
-    }
+    if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); return true; } 
+    else { return false; }
 }
 
 ?>

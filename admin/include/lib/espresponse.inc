@@ -35,16 +35,17 @@ function response_check_answers($sid, $rid, $section) {
 
         if ($question_was_shown) {
 
-            // if an answer has to be unique, only for text boxes, essay or numerical questions  
-            if ($ans_uniq=='Y' && ($tid==2 || $tid==3 || $tid==10)) {
+            // response_text 
+            //if ($ans_uniq=='Y' && ($tid==3 || $tid==4 || $tid==9 || $tid==10)) {
+            if ($ans_uniq=='Y' && ($tid==3 || $tid==4 || $tid==10)) {
                 $tmp_response=_addslashes($_POST[$qid]);
                 $sql = "SELECT COUNT(*) FROM ".$GLOBALS['ESPCONFIG']['response_text_table']." WHERE question_id=$qid && response="._addslashes($_POST[$qid]);
                 $count_result = get_one($sql);
                 if ($count_result) { $unique_answers[$qid] = $content; }
             }
             
-            // Rank
-            if($required=='Y' && $tid == 8) {
+            // response_rank
+            if($required=='Y' && ($tid == 5 || $tid==6)) {
                 $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=$qid";
                 $cid_result = execute_sql($sql);
                 while(list($cid) = fetch_row($cid_result)) {
@@ -58,11 +59,12 @@ function response_check_answers($sid, $rid, $section) {
             }
             
             // Numeric
-            if ($required=='Y' && $tid == 10 && $_POST[$qid] === '0') { $result->MoveNext(); continue; } 
-            elseif ($tid == 10 && !empty($_POST[$qid]) && !is_numeric($_POST[$qid])) { $not_numeric[$qid] = $content; }
+            if ($required=='Y' && $tid == 9 && $_POST[$qid] === '0') { $result->MoveNext(); continue; } 
+            elseif ($tid == 9 && !empty($_POST[$qid]) && !is_numeric($_POST[$qid])) { $not_numeric[$qid] = $content; }
 
             if (!isset($_POST[$qid])) { $_POST[$qid] = ''; }
-            if($required=='Y' && $tid!=8 && empty($_POST[$qid]) && $_POST[$qid] != '0') { $missing[$qid] = $content; }
+            //if ($required=='Y' && $tid!=6 && empty($_POST[$qid]) && $_POST[$qid] != '0') { $missing[$qid] = $content; }
+            if ($required=='Y' && empty($_POST[$qid]) && $_POST[$qid] != '0') { $missing[$qid] = $content; }
         }
         $result->MoveNext();
     }
@@ -217,6 +219,7 @@ function response_insert($sid,$section,$rid) {
 
     // don't allow >1 responses for the same response ID and the same question ID
     $sql  = "SELECT COUNT(*) from ".$GLOBALS['ESPCONFIG'][$table.'_table']." WHERE response_id=${rid} AND question_id=${qid}";
+    //echo "SELECT COUNT(*) from ".$GLOBALS['ESPCONFIG'][$table.'_table']." WHERE response_id=${rid} AND question_id=${qid}";
     $count = get_one($sql);
         if ($count > 0) {
     return $rid;
@@ -225,15 +228,15 @@ function response_insert($sid,$section,$rid) {
 
     switch($table) {
 
-        case 'response_bool':
-            $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." ( response_id,question_id,choice_id ) VALUES ( ${rid},${qid},${val} )";
-            if (!empty($val))
-            $result = execute_sql($sql);
-            break;
+        //case 'response_bool':
+        //    $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." ( response_id,question_id,choice_id ) VALUES ( ${rid},${qid},${val} )";
+        //    if (!empty($val))
+        //    $result = execute_sql($sql);
+        //    break;
 
         case 'response_text':
             // only insert if non-empty content
-            if($tid == 10) { // numeric
+            if($tid == 9) { // numeric
                 #$bareval = ereg_replace("[^0-9.\-]*(-?[0-9]*\.?[0-9]*).*", '\1', $bareval);
                 # replace "," by "."
                 if (ereg (",",$bareval)) {
@@ -330,9 +333,9 @@ function response_insert($sid,$section,$rid) {
                 }
             }
             db_close($c_result);
-            #if(!isset($_POST[$qid]) || count($_POST[$qid]) < 1)
             if(!isset($_POST[$qid]) || !is_array($_POST[$qid]))
             break;
+
             foreach($_POST[$qid] as $cid) {
                 $cid = _addslashes($cid);
                 if(ereg("other_[0-9]+", $cid))
@@ -343,7 +346,8 @@ function response_insert($sid,$section,$rid) {
             break;
 
         case 'response_rank':
-            if($tid == 8) { // Rank
+            //if($tid == 5 || $tid == 6) { 
+            if($tid == 6) { 
             $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=${qid}";
             $cid_result = execute_sql($sql);
             while(!$cid_result->EOF) {
@@ -729,10 +733,9 @@ function response_select_compact($sid, $rid, $qids = null) {
     return $cpq;
 }
 
-/* {{{ proto array response_select_name(int survey_id, int response_id, array question_ids)
-A wrapper around response_select(), that returns an array of
-key/value pairs using the field name as the key.
-*/
+//  proto array response_select_name(int survey_id, int response_id, array question_ids)
+//  A wrapper around response_select(), that returns an array of key/value pairs using the field name as the key.
+
 function response_select_name($sid, $rid, $qids = null) {
     $res = response_select($sid, $rid, 'type_id,name', $qids);
     $nam = array();

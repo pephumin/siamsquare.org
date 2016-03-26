@@ -1,7 +1,7 @@
 <?php
 
-/*  proto void mkcrossformat (array weights, integer qid)
-    Builds HTML to allow for cross tabulation/analysis reporting. */
+//   proto void mkcrossformat (array weights, integer qid)
+//   Builds HTML to allow for cross tabulation/analysis reporting.
 
 function mkcrossformat($counts, $qid, $tid) {
     $cids = array();
@@ -23,30 +23,21 @@ function mkcrossformat($counts, $qid, $tid) {
         db_close($result);
     }
 
-?>
-<table class="table table-hover">
-<tbody>
-<?php
+    $output .= "<table class=\"table table-hover\">\n";
+    $output .= "<tbody>\n";
 
     while(list($content,$num) = each($counts)) {
-
-        if ($cidCount >= count($cids))
-            $cidCount = count($cids) - 1;
-
-?>
-<tr>
-<td width="34" height="23">
-  <div align="center">
-    <input type="checkbox" name="cids[]" value="<?php echo $cids[$cidCount++]; ?>" />
-  </div>
-</td>
-<td width="506"><?php echo $content; ?></td>
-</tr>
-<?php
+        if ($cidCount >= count($cids)) $cidCount = count($cids) - 1;
+        $new = $cids[$cidCount++];
+        $output .= "<tr>\n";
+        $output .= "<td width=\"34\" class=\"text-center\">\n";
+        $output .= "  <input type=\"checkbox\" name=\"cids[]\" value=\"$new\" />\n";
+        $output .= "</td>\n";
+        $output .= "<td>$content</td>\n";
+        $output .= "</tr>\n";
     }
-?>
-</tbody></table>
-<?php
+    $output .= "</tbody></table>\n";
+    return $output;
 }
 
 ?>
