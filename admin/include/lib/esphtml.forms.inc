@@ -189,11 +189,7 @@ function login_warning() {
 function mkloginbox() {
     $text = "<form name=\"loginform\" id=\"loginform\" method=\"post\" class=\"form-horizontal\">\n";
     $text .= "  <div class=\"dashboardPanel\" id=\"login\">\n";
-<<<<<<< HEAD
-    $text .= "  <h2>Client Login</h2>\n";
-=======
     $text .= "  <h2>Client login</h2>\n";
->>>>>>> master
     $text .= "  <br />\n";
     $text .= "    <div class=\"form-group\">\n";
     $text .= "      <label for=\"username\" class=\"col-sm-3 control-label\">Username:</label>\n";
