@@ -1,25 +1,17 @@
 <?php
 
 // add this at the top of every php script using this one:
-// require_once("./phpESP.first.php");
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
 
-if (!defined('ESP-FIRST-INCLUDED')) {
-    echo "In order to conduct surveys, please include first.php";
-    exit;
-}
+//$GLOBALS['auth_options']['navigate'] = 'Y';
+//$GLOBALS['auth_options']['resume'] = 'Y';
+
+if (!defined('ESP-FIRST-INCLUDED')) { echo "In order to conduct surveys, please include first.php"; exit; }
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/funcs.inc';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/handler-prefix.php';
 
-if(!defined('ESP-AUTH-OK')) {
-    if (!empty($GLOBALS['errmsg']))
-        echo($GLOBALS['errmsg']);
-    return;
-}
-
-// did we show feedback on the last page of the survey?
-// SFID: 2771740
-// if (isset($_REQUEST['feedback']) && is_scalar($feedback = $_REQUEST['feedback']) && 'finished' == $feedback) { all_done(); }
+if(!defined('ESP-AUTH-OK')) { if (!empty($GLOBALS['errmsg'])) echo($GLOBALS['errmsg']); return; }
 
 // get the survey
 $sql = "SELECT status, name, public, open_date, close_date FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id=${sid}";
@@ -29,8 +21,7 @@ $result = execute_sql($sql);
     else
        $status = 0;
 
-// Added for cookie auth, to eliminate double submits
-// only for public surveys
+// Added for cookie auth, to eliminate double submits - only for public surveys
 $cookiename="survey_".$sid;
 if (($GLOBALS['ESPCONFIG']['limit_double_postings']>0) && isset($_COOKIE["$cookiename"]) && $survey_public=='Y' && !($ESPCONFIG['auth_response'] && auth_get_option('resume'))) { echo (mkerror('You have already completed this survey.')); return; }
     
@@ -89,15 +80,14 @@ if ($request_referer == $ESPCONFIG['autopub_url']) { $request_referer .= "?name=
 
 // let's build the correct return/submit/resume link
 $action = $ESPCONFIG['proto'] . $_SERVER['HTTP_HOST'] . htmlspecialchars($_SERVER['PHP_SELF']);
+$formaction = $action;
 
 $query_string="";
 
-// we need to remove "sec=xx" from the query string, otherwise
-// the resume link will contain this also and the user will always
-// return to the same filled in section
-if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) {
-    $query_string=$_SERVER['QUERY_STRING'];
-}
+// we need to remove "sec=xx" from the query string, otherwise the resume link will contain this 
+// and the user will always return to the same filled in section
+
+if (isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) { $query_string=$_SERVER['QUERY_STRING']; }
 
 $query_string=preg_replace ('/sec=\d+/s','',$query_string);
 $query_string=preg_replace ('/\?$|\&$/s','',$query_string);
@@ -107,31 +97,23 @@ if (!empty($query_string)) { $action .= "?" . htmlspecialchars($query_string); }
 
 $msg = '';
 
+$GLOBALS['auth_options']['navigate'] = "Y";
+$GLOBALS['auth_options']['resume'] = "Y";
+
 if(!empty($_REQUEST['submit'])) {
     $msg .= response_check_answers($sid,$_SESSION['rid'],$_SESSION['sec']);
-
-    # we only check the captcha if no all required 
-    if (empty($msg) && $ESPCONFIG['use_captcha']) {
-        //require_once(ESP_BASE.'public/captcha_check.php');
-        require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/captcha.check.php';
-        $msg .= response_check_captcha("captcha_check",1);
-    }   
-
     if (empty($msg)) {
         if ($ESPCONFIG['auth_response'] && auth_get_option('resume')) {
             require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurveystat.inc';
             survey_stat_decrement(SURVEY_STAT_SUSPENDED, $sid);
             response_delete($sid, $_SESSION['rid'], $_SESSION['sec']);
         }
-
         $_SESSION['rid'] = response_insert($sid,$_SESSION['sec'],$_SESSION['rid']);
         paint_feedback_end_of_survey($sid, $_SESSION['rid'], $_SESSION['sec']);
         all_done();
     }
 }
 
-// if we encounter the variable resume in the $_REQUEST
-// the user wants to come back later
 if(!empty($_REQUEST['resume']) && $ESPCONFIG['auth_response'] && auth_get_option('resume')) {
     response_delete($sid, $_SESSION['rid'], $_SESSION['sec']);
     $_SESSION['rid'] = response_insert($sid,$_SESSION['sec'],$_SESSION['rid']);
@@ -149,7 +131,7 @@ if(!empty($_REQUEST['next'])) {
         if ($ESPCONFIG['auth_response'] && auth_get_option('resume'))
             response_delete($sid, $_SESSION['rid'], $_SESSION['sec']);
         $_SESSION['rid'] = response_insert($sid,$_SESSION['sec'],$_SESSION['rid']);
-        // paint_feedback_end_of_section($sid, $_SESSION['rid'], $_SESSION['sec']);
+        paint_feedback_end_of_section($sid, $_SESSION['rid'], $_SESSION['sec']);
     } else {
         echo mkerror($msg);
     }
@@ -166,11 +148,7 @@ if (!empty($_REQUEST['prev']) && $ESPCONFIG['auth_response'] && auth_get_option(
     }
 }
 
-// record start statistics
-// ... increment the attempt
-// ... assume the user will abandon the survey
-// ... NOTE: this will be remedied if there is a save or a submit
-
+// record statistics
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurveystat.inc';
 survey_stat_increment(SURVEY_STAT_ATTEMPTED, $sid);
 survey_stat_increment(SURVEY_STAT_ABANDONED, $sid);
@@ -183,28 +161,56 @@ if ($ESPCONFIG['auth_response'] && auth_get_option('resume') && $_SESSION['rid']
 
 paint_submission_form_open();
 survey_render($sid,$_SESSION['sec'],$_SESSION['rid'],$msg);
-//echo '<fieldset>';
-if ($ESPCONFIG['auth_response']) {
-    if (auth_get_option('navigate') && $_SESSION['sec'] > 1) {
-        echo(mksubmit("prev", 'Previous Page'));
+
+//if ($ESPCONFIG['auth_response']) {
+//    if (auth_get_option('navigate') && $_SESSION['sec'] > 1) {
+//        echo(mksubmit("prev", 'Previous Page'));
+//    }
+//    if (auth_get_option('resume')) {
+//        echo(mksubmit("resume", 'Save'));
+//    }
+//}
+
+echo "<p class=\"text-center\">\n";
+if (auth_get_option('navigate') && $_SESSION['sec'] > 1) { echo "<input class=\"btn btn-default\" type=\"submit\" name=\"prev\" value=\"&lt;&lt; Previous\" />&nbsp;\n"; }
+if (auth_get_option('resume')) { echo "<input class=\"btn btn-success\" type=\"submit\" name=\"resume\" value=\"Save\" />&nbsp;\n"; }
+if($_SESSION['sec'] == $num_sections) { echo "<input class=\"btn btn-default\" type=\"submit\" name=\"submit\" value=\"Submit\" />&nbsp;\n"; } 
+else { echo "<input class=\"btn btn-default\" type=\"submit\" name=\"next\" value=\"Next &gt;&gt;\" />&nbsp;\n"; }
+//paint_submission_form_close();
+echo "</p>\n";
+echo "</form>\n";
+
+
+function paint_submission_form_open($additional = array ()) {
+    global $formaction, $action, $sid, $name, $request_referer, $request_direct;
+    echo "<form method=\"post\" id=\"phpesp_response\" action=\"$formaction\">\n";
+    echo "<input type=\"hidden\" name=\"referer\" value=\"{$request_referer}\" />\n";
+    echo "<input type=\"hidden\" name=\"direct\" value=\"{$request_direct}\" />\n";
+    echo "<input type=\"hidden\" name=\"sid\" value=\"{$sid}\" />\n";
+    echo "<input type=\"hidden\" name=\"rid\" value=\"{$_SESSION['rid']}\" />\n";
+    echo "<input type=\"hidden\" name=\"sec\" value=\"{$_SESSION['sec']}\" />\n";
+    echo "<input type=\"hidden\" name=\"name\" value=\"{$name}\" />\n";
+    foreach ($additional as $field => $value) {
+        echo "<input type='hidden' name='$field' value='$value' />";
     }
-    if (auth_get_option('resume')) {
-        echo(mksubmit("resume", 'Save'));
-    }
+    if ($_REQUEST['test']) { echo "<input type=\"hidden\" name=\"test\" value=\"{$_REQUEST['test']}\" />\n"; }
 }
-if($_SESSION['sec'] == $num_sections) {
-    //if ($ESPCONFIG['use_captcha']) {
-    //    print '<table><tr><td><img src="'.$ESPCONFIG['base_url'].'public/captcha.php"></td>';
-    //    print '<td>';
-    //    echo _("Please fill in the code displayed here.");
-    //    print '<br><input type="text" name="captcha_check"></td></tr></table>';
-    //}
-    echo(mksubmit("submit", 'Submit Survey'));
-} else {
-    echo(mksubmit("next", 'Next Page'));
+
+function all_done() {
+    global $sid;
+
+    // commit the response and send an email
+    response_commit($_SESSION['rid']);
+    response_send_email($sid,$_SESSION['rid']);
+
+    // initialize the state variables
+    $_SESSION['rid']="";
+    $_SESSION['sec']="";
+
+    // go to the thank you
+    goto_thankyou($sid, $_REQUEST['referer']);
+    exit;
 }
-//echo '</fieldset>';
-paint_submission_form_close();
 
 function paint_feedback_end_of_survey($sid, $rid, $sec) {
     // paint the feedback
@@ -280,11 +286,10 @@ function get_feedback(&$responses, &$totalCredit, $sid, $rid, $sec) {
             // pull it out
             unset($allResponses[$qid]);
 
-            /* TODO: If we ever support rank and !other as types with feedback or credit
+            // TODO: If we ever support rank and !other as types with feedback or credit
             // store it as multi
             list ($qid,$sub) = explode('_', $qid);
             $allResponses[$qid][] = $feedback;
-            */
         }
     }
 
@@ -380,42 +385,5 @@ function paint_feedback_row($response, $number) {
         }
     }
 }
-
-function paint_submission_form_open($additional = array ()) {
-    global $action, $sid, $name, $request_referer, $request_direct;
-    echo "<form method=\"post\" id=\"phpesp_response\" action=\"$action\">\n";
-    //echo "<fieldset class=\"hidden\">\n";
-    echo "<input type=\"hidden\" name=\"referer\" value=\"{$request_referer}\" />\n";
-    echo "<input type=\"hidden\" name=\"direct\" value=\"{$request_direct}\" />\n";
-    echo "<input type=\"hidden\" name=\"sid\" value=\"{$sid}\" />\n";
-    echo "<input type=\"hidden\" name=\"rid\" value=\"{$_SESSION['rid']}\" />\n";
-    echo "<input type=\"hidden\" name=\"sec\" value=\"{$_SESSION['sec']}\" />\n";
-    echo "<input type=\"hidden\" name=\"name\" value=\"{$name}\" />\n";
-    foreach ($additional as $field => $value) {
-        echo "<input type='hidden' name='$field' value='$value' />";
-    }
-    //echo "</fieldset>\n";
-}
-
-function paint_submission_form_close() {
-    echo "</form>\n";
-}
-
-function all_done() {
-    global $sid;
-
-    // commit the response and send an email
-    response_commit($_SESSION['rid']);
-    response_send_email($sid,$_SESSION['rid']);
-
-    // initialize the state variables
-    $_SESSION['rid']="";
-    $_SESSION['sec']="";
-
-    // go to the thank you
-    goto_thankyou($sid, $_REQUEST['referer']);
-    exit;
-}
-
 
 ?>
