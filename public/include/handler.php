@@ -172,6 +172,7 @@ survey_render($sid,$_SESSION['sec'],$_SESSION['rid'],$msg);
 //}
 
 echo "<p class=\"text-center\">\n";
+<<<<<<< HEAD
 if (auth_get_option('navigate') && $_SESSION['sec'] > 1) { echo(mksubmit("prev", '<< Previous')); }
 echo "&nbsp;\n";
 if (auth_get_option('resume')) { echo(mksubmit("resume", 'Save')); }
@@ -228,6 +229,48 @@ function all_done() {
     exit;
 }
 
+=======
+if (auth_get_option('navigate') && $_SESSION['sec'] > 1) { echo "<input class=\"btn btn-default\" type=\"submit\" name=\"prev\" value=\"&lt;&lt; Previous\" />&nbsp;\n"; }
+if (auth_get_option('resume')) { echo "<input class=\"btn btn-success\" type=\"submit\" name=\"resume\" value=\"Save\" />&nbsp;\n"; }
+if($_SESSION['sec'] == $num_sections) { echo "<input class=\"btn btn-default\" type=\"submit\" name=\"submit\" value=\"Submit\" />&nbsp;\n"; } 
+else { echo "<input class=\"btn btn-default\" type=\"submit\" name=\"next\" value=\"Next &gt;&gt;\" />&nbsp;\n"; }
+//paint_submission_form_close();
+echo "</p>\n";
+echo "</form>\n";
+
+
+function paint_submission_form_open($additional = array ()) {
+    global $formaction, $action, $sid, $name, $request_referer, $request_direct;
+    echo "<form method=\"post\" id=\"phpesp_response\" action=\"$formaction\">\n";
+    echo "<input type=\"hidden\" name=\"referer\" value=\"{$request_referer}\" />\n";
+    echo "<input type=\"hidden\" name=\"direct\" value=\"{$request_direct}\" />\n";
+    echo "<input type=\"hidden\" name=\"sid\" value=\"{$sid}\" />\n";
+    echo "<input type=\"hidden\" name=\"rid\" value=\"{$_SESSION['rid']}\" />\n";
+    echo "<input type=\"hidden\" name=\"sec\" value=\"{$_SESSION['sec']}\" />\n";
+    echo "<input type=\"hidden\" name=\"name\" value=\"{$name}\" />\n";
+    foreach ($additional as $field => $value) {
+        echo "<input type='hidden' name='$field' value='$value' />";
+    }
+    if ($_REQUEST['test']) { echo "<input type=\"hidden\" name=\"test\" value=\"{$_REQUEST['test']}\" />\n"; }
+}
+
+function all_done() {
+    global $sid;
+
+    // commit the response and send an email
+    response_commit($_SESSION['rid']);
+    response_send_email($sid,$_SESSION['rid']);
+
+    // initialize the state variables
+    $_SESSION['rid']="";
+    $_SESSION['sec']="";
+
+    // go to the thank you
+    goto_thankyou($sid, $_REQUEST['referer']);
+    exit;
+}
+
+>>>>>>> d91c6cd2aa676cf6d74d80c0256b6152ba8a7c9a
 function paint_feedback_end_of_survey($sid, $rid, $sec) {
     // paint the feedback
     // NOTE: if there is any, this function exits

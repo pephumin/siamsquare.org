@@ -68,9 +68,15 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 	echo "	  <th>Edit</th>\n";
 	echo "	  <th>Copy</th>\n";
 	echo "	  <th>Questions</th>\n";
+<<<<<<< HEAD
 	echo "	  <th>Activate</th>\n";
 	echo "	  <th>End</th>\n";
 	echo "	  <th>Status</th>\n";
+=======
+	echo "	  <th>Status</th>\n";
+	echo "	  <th>Activate</th>\n";
+	echo "	  <th>End</th>\n";
+>>>>>>> d91c6cd2aa676cf6d74d80c0256b6152ba8a7c9a
 	//if($_SESSION['acl']['superuser'] == 'Y') { echo "	  <th>Delete?</th>\n"; }
 
 	echo "	</tr>\n";
@@ -156,6 +162,11 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 		echo "    <td><a href=\"$tt4\"><i class=\"fa fa-files-o fa-fw\"></i></a></td>\n";
 		// question numbers
 		echo "    <td class=\"text-center\">$qnum</td>\n";
+<<<<<<< HEAD
+=======
+		// test or edit
+		echo "    <td>$test</td>\n";
+>>>>>>> d91c6cd2aa676cf6d74d80c0256b6152ba8a7c9a
 		// activate
 		echo "    <td>$act</td>\n";
 		// end
