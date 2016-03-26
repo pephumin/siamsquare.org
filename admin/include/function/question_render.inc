@@ -153,7 +153,7 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 
 		case '9':	// date
 		echo mktext($qid, 10, 10);
-		echo "<em>(type in this format only: ". strftime ($GLOBALS['ESPCONFIG']['date_format'],strtotime("now")) ."</em>\n";
+		echo "<em>(This format only: ". strftime ($GLOBALS['ESPCONFIG']['date_format'],strtotime("now")) .")</em>\n";
 		break;
 
 		case '10':	// numeric

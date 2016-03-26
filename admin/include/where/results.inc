@@ -84,11 +84,6 @@ if (!empty($sid)) {
     return;
 }
 
-// No SurveyId specified, so build a table of
-// surveys to choose from ...
-
-/* load names and titles of all surveys available to
-* _this_ user */
 $statusok = (STATUS_ACTIVE | STATUS_DONE | STATUS_TEST);
 $statusno = STATUS_DELETED;
 if ($_SESSION['acl']['superuser'] == 'Y') {
@@ -105,7 +100,7 @@ if (empty($_GET['type'])) {
 
 <h2>View survey results</h2>
 
-<p>Pick survey below to view the results</p>
+<p>Pick survey below to view the results. Only show surveys that are currently active.</p>
 
     <input type="hidden" name="rid" value="" />
     <input type="hidden" name="sid" value="" />
@@ -166,7 +161,7 @@ if (empty($_GET['type'])) {
     <td><?php echo $owner . " (" . $realm . ")"; ?></td>
     <td class="text-center"><?php echo($resp); ?></td>
     <td class="text-center">
-        [ <a href="<?php echo("". $base .htmlentities("?where=reports&sid=${sid}")); ?>">Result <i class="fa fa-pie-chart fa-fw"></i></a> | 
+        [ <a href="<?php echo("". $base .htmlentities("?where=results&sid=${sid}")); ?>">Result <i class="fa fa-pie-chart fa-fw"></i></a> | 
         <a href="<?php echo("". $base .htmlentities("?where=results&sid=${sid}&type=cross")); ?>">Cross tab <i class="fa fa-bar-chart fa-fw"></i></a> | 
         <a href="<?php echo("". $base .htmlentities("?where=report&sid=${sid}")); ?>">Report <i class="fa fa-line-chart fa-fw"></i></a> ]
     </td>

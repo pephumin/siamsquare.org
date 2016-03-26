@@ -14,6 +14,11 @@ survey_status(0,$show,'');
 //echo "<div class=\"pull-right\">[<a href=\"$kt\">View the full list</a>]</div>\n";
 //echo "<br />\n";
 
+$sql = 'SELECT id FROM '.$GLOBALS['ESPCONFIG']['survey_table'].' ORDER BY id DESC';
+$result = execute_sql($sql);
+$rows = record_count($result);
+db_close($result);
+
 ?>
 
 <div class="row">
@@ -27,11 +32,11 @@ survey_status(0,$show,'');
       </div>
       -->
       <div id="surveyAdmin" class="list-group">
-        <a class="list-group-item" href="<?php echo("$base?where=new"); ?>"><i class="fa fa-file-o fa-fw"></i>&nbsp; Create a new survey <span class="badge">new</span></a>
+        <a class="list-group-item" href="<?php echo("$base?where=new"); ?>"><i class="fa fa-file-o fa-fw"></i>&nbsp; Create a new survey <span class="badge">start</span></a>
         <a class="list-group-item" href="<?php echo("$base?where=edit"); ?>"><i class="fa fa-pencil-square-o fa-fw"></i>&nbsp; Edit a survey</a>
         <a class="list-group-item" href="<?php echo("$base?where=test"); ?>"><i class="fa fa-paper-plane fa-fw"></i>&nbsp; Test a survey</a>
         <a class="list-group-item" href="<?php echo("$base?where=copy"); ?>"><i class="fa fa-files-o fa-fw"></i>&nbsp; Copy a survey</a>
-        <a class="list-group-item" href="<?php echo("$base?where=status"); ?>"><i class="fa fa-tachometer fa-fw"></i>&nbsp; Survey status</a>
+        <a class="list-group-item" href="<?php echo("$base?where=status"); ?>"><i class="fa fa-tachometer fa-fw"></i>&nbsp; Survey status <span class="badge"><?php echo $rows; ?></span></a>
       </div>
     </div> 
   </div> 
@@ -49,7 +54,7 @@ survey_status(0,$show,'');
         <a class="list-group-item" href="<?php echo(htmlentities("$base?where=results&type=cross")); ?>"><i class="fa fa-bar-chart fa-fw"></i>&nbsp; Cross tabulate results</a>
         <a class="list-group-item" href="<?php echo("$base?where=report"); ?>"><i class="fa fa-line-chart fa-fw"></i>&nbsp; View survey reports</a>
         <a class="list-group-item" href="<?php echo("$base?where=export"); ?>"><i class="fa fa-table fa-fw"></i>&nbsp; Export data</a>
-        <a class="list-group-item" href="<?php echo("$base?where=statistics"); ?>"><i class="fa fa-area-chart fa-fw"></i>&nbsp; View survey statistics <span class="badge">14</span></a>
+        <a class="list-group-item" href="<?php echo("$base?where=statistics"); ?>"><i class="fa fa-area-chart fa-fw"></i>&nbsp; View survey statistics <span class="badge"><?php echo $rows; ?></span></a>
       </div>
     </div> 
   </div> 

@@ -45,54 +45,40 @@ if($_SESSION['acl']['superuser'] == 'Y') {
 		FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE NOT (status & ". STATUS_DELETED .") AND (owner = ".
 		_addslashes($_SESSION['acl']['username']) ." || realm $realms) ORDER BY id DESC";
 }
+
 $result = execute_sql($sql);
-	$bg = '';
+
+echo "<h2>Copy survey</h2>\n";
+echo "<br />\n";
+echo "<p>Choose a survey of which to make a copy. The copy will have the same status of a newly created survey. You will be able to edit the survey, and will have to activate it before use.</p>\n";
+echo "<table class=\"table table-hover\">\n";
+echo "	<tr class=\"active\">\n";
+echo "		<th>Title</th>\n";
+echo "		<th>Owner (Group)</th>\n";
+echo "		<th>Status</th>\n";
+echo "	</tr>\n";
+
+while(list($sid,$name,$title,$status,$owner,$realm) = fetch_row($result)) {
+	$result->MoveNext();
+	if($status & STATUS_DELETED) { $stat = "Archived"; } 
+	elseif($status & STATUS_DONE) { $stat = "Ended"; } 
+	elseif($status & STATUS_ACTIVE) { $stat = "Active"; } 
+	elseif($status & STATUS_TEST) { $stat = "Testing"; } 
+	else { $stat = "Editing"; }
+
+	$target = htmlentities("". $GLOBALS['ESPCONFIG']['ME'] ."?where=copy&sid=${sid}");
+	echo "	<tr>\n";
+	echo "		<td><a href=\"$target\">$title</a></td>\n";
+	echo "		<td>$owner ($realm)</td>\n";
+	echo "		<td>$stat</td>\n";
+	echo "	</tr>\n";
+}
+
+db_close($result);
+
+echo "</table>\n";
+echo "<br /><br />\n\n";
+
+displayAdminBack(); 
 
 ?>
-
-<h2>Copy Survey</h2>
-<br />
-<p>Choose a survey of which to make a copy. The copy will have the same
-status of a newly created survey. You will be able to edit the
-survey, and will have to activate it before use.</p>
-
-<table class="table table-hover">
-	<tr class="active">
-		<th>Title</th>
-		<th>Owner</th>
-		<th>Group</th>
-		<th>Status</th>
-	</tr>
-<?php
-	while(list($sid,$name,$title,$status,$owner,$realm) = fetch_row($result)) {
-        $result->MoveNext();
-		if($status & STATUS_DELETED) {
-			$stat = _('Archived');
-		} elseif($status & STATUS_DONE) {
-			$stat = _('Ended');
-		} elseif($status & STATUS_ACTIVE) {
-			$stat = _('Active');
-		} elseif($status & STATUS_TEST) {
-			$stat = _('Testing');
-		} else {
-			$stat = _('Editing');
-		}
-		
-		//if($bg != $ESPCONFIG['bgalt_color1'])
-		//	$bg = $ESPCONFIG['bgalt_color1'];
-		//else
-		//	$bg = $ESPCONFIG['bgalt_color2'];
-?>
-	<tr>
-		<td><a href="<?php echo(htmlentities("". $GLOBALS['ESPCONFIG']['ME'] ."?where=copy&sid=${sid}")); ?>"><?php echo($title); ?></a></td>
-		<td><?php echo($owner); ?></td>
-		<td><?php echo($realm); ?></td>
-		<td><?php echo($stat); ?></td>
-	</tr>
-<?php
-	}
-	db_close($result);
-?>
-</table>
-<br /><br />
-<?php displayAdminBack(); ?>
