@@ -274,8 +274,9 @@ function auth_get_survey_realm($sid) {
 
 function auth_no_access($description) {
   echo(mkerror(_('This account does not have permission') .' '. $description .'.'));
-  echo("\n<br>\n");
-  echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n");
+  //echo("\n<br>\n");
+  //echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n");
+  //displayAdminBack(); 
   return false;
 }
 
