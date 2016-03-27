@@ -21,9 +21,10 @@ $result = execute_sql($sql);
     else
        $status = 0;
 
+// ------------------ PE ------------------
 // Added for cookie auth, to eliminate double submits - only for public surveys
-$cookiename="survey_".$sid;
-if (($GLOBALS['ESPCONFIG']['limit_double_postings']>0) && isset($_COOKIE["$cookiename"]) && $survey_public=='Y' && !($ESPCONFIG['auth_response'] && auth_get_option('resume'))) { echo (mkerror('You have already completed this survey.')); return; }
+//$cookiename="survey_".$sid;
+//if (($GLOBALS['ESPCONFIG']['limit_double_postings']>0) && isset($_COOKIE["$cookiename"]) && $survey_public=='Y' && !($ESPCONFIG['auth_response'] && auth_get_option('resume'))) { echo (mkerror('You have already completed this survey.')); return; }
     
 $request_direct = 0;
 $request_referer = '';
@@ -74,7 +75,8 @@ elseif (survey_status_is_test($status)) {
 elseif (STATUS_OPEN !== survey_open($open_date, $close_date)) { $isActive = false; } 
 else { $isActive = true; }
 
-if (! $isActive) { echo(mkerror('Error processing survey: Survey is not active.')); return; }
+// ------------------ PE ------------------
+//if (! $isActive) { echo(mkerror('Error processing survey: Survey is not active.')); return; }
 
 if ($request_referer == $ESPCONFIG['autopub_url']) { $request_referer .= "?name=$name"; }
 
@@ -158,6 +160,9 @@ if ($ESPCONFIG['auth_response'] && auth_get_option('resume') && $_SESSION['rid']
     response_import_sec($sid, $_SESSION['rid'], $_SESSION['sec']);
     survey_stat_decrement(SURVEY_STAT_SUSPENDED, $sid);
 }
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/function/ssq.inc';
+echo progressbar($_SESSION['sec'], $num_sections);
 
 paint_submission_form_open();
 survey_render($sid,$_SESSION['sec'],$_SESSION['rid'],$msg);

@@ -285,16 +285,16 @@
     <h4 id="analysis">Cross Analysis</h4>
     <ul>
       <li>To cross analyse results from a survey choose a question by selecting the appropriate radio button to the left of the question. You must then choose one or more of the question's choices by selecting the appropriate checkbox under the chosen question. This will display the entire results of this survey based on the criteria you have chosen.</li>
-      <li>At present, Cross Analysis is limited to single questions.<br /><img src="/images/cross_analysis.jpg" style="width: 500;" alt="Cross Analysis" /><br /></li>
-      <li> This will produce the following result:<br /><img src="/images/cross_analysis_result.jpg" style="width: 500;" alt="Cross Analysis Result" /><br /></li>
+      <li>At present, Cross Analysis is limited to single questions.<br /><img src="images/cross_analysis.jpg" style="width: 500;" alt="Cross Analysis" /><br /></li>
+      <li> This will produce the following result:<br /><img src="images/cross_analysis_result.jpg" style="width: 500;" alt="Cross Analysis Result" /><br /></li>
       <li>The resulting display shows all the responses where question 1 choice was &quot;Yes&quot;.</li>
     </ul>
     <h3 id="tabulation">Cross Tabulation</h4>
     <ul>
-      <li>Cross tabulation returns a result set based on a two question selection. This is achieved by choosing which question's options will form the rows or columns for the cross tabulated result set. Selecting a radio button in the red box to the right of the question indicates the row selection and selecting a radio button in the blue box to the right of the question indicates the column selection.<br /><img src="/images/cross_tabulate.jpg" style="width: 500;" alt="Cross Tabulate" /></li>
-      <li>In the above example we have chosen to cross tabulate question1 and question 4 where question 1 is the row selection and question 4 is the column selection. This returns the following result set:<br /><img src="/images/cross_tabulate_result1.jpg" style="width: 500;" alt="Cross Tabulate Result" /><br /></li>
-      <li>Alternatively we can cross tabulate the same 2 questions but set question 4 as the row selection and question 1 as the column selection as shown below:<br /><img src="/images/cross_tabulate2.jpg" style="width: 500;" alt="Cross Tabulate 2" /><br /></li>
-      <li>This produces the following result set:<br /><img src="/images/cross_tabulate_result2.jpg" style="width: 500;" alt="Cross Tabulate 2 Result" /><br /></li>
+      <li>Cross tabulation returns a result set based on a two question selection. This is achieved by choosing which question's options will form the rows or columns for the cross tabulated result set. Selecting a radio button in the red box to the right of the question indicates the row selection and selecting a radio button in the blue box to the right of the question indicates the column selection.<br /><img src="images/cross_tabulate.jpg" style="width: 500;" alt="Cross Tabulate" /></li>
+      <li>In the above example we have chosen to cross tabulate question1 and question 4 where question 1 is the row selection and question 4 is the column selection. This returns the following result set:<br /><img src="images/cross_tabulate_result1.jpg" style="width: 500;" alt="Cross Tabulate Result" /><br /></li>
+      <li>Alternatively we can cross tabulate the same 2 questions but set question 4 as the row selection and question 1 as the column selection as shown below:<br /><img src="images/cross_tabulate2.jpg" style="width: 500;" alt="Cross Tabulate 2" /><br /></li>
+      <li>This produces the following result set:<br /><img src="images/cross_tabulate_result2.jpg" style="width: 500;" alt="Cross Tabulate 2 Result" /><br /></li>
     </ul>
     <h3 id="csv">Exporting to CSV</h4>
     <ul>

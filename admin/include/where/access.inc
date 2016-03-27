@@ -24,10 +24,9 @@ if ($sid) {
 			_addslashes($_SESSION['acl']['username']) ." || s.realm $realms) ORDER BY a.realm";
 	}
 	$result = execute_sql($sql);
-	if (record_count($result) < 1) {
-		$sid = 0;
-	}
+	if (record_count($result) < 1) { $sid = 0; }
 }
+
 if ($sid) {
 	list($name,$title,$owner,$realm,$public) = fetch_row($result);
 	db_close($result);
@@ -79,8 +78,7 @@ if ($sid) {
 	$r = '<select name="realm"><option></option>';
 	$groups = array();
     $selected_groups = array();
-    // if realm has already been added then do not include it for
-    // reselection.
+    // if realm has already been added then do not include it for reselection.
     $result = execute_sql($sql1);
     while (list($sg) = fetch_row($result)) {
         array_push($selected_groups, $sg);
@@ -92,18 +90,14 @@ if ($sid) {
 		$sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['realm_table'];
 		$result = execute_sql($sql);
 		while( list($g) = fetch_row($result) ) {
-            if (!in_array($g, $selected_groups)) {
-			    array_push($groups, $g);
-            }
+            if (!in_array($g, $selected_groups)) { array_push($groups, $g); }
             $result->MoveNext();
 		}
 		db_close($result);
     } else {
         $g =& $_SESSION['acl']['pdesign'];
         foreach ($g as $t) {
-            if (!in_array($t, $selected_groups)) {
-                array_push($groups, $t);
-            }
+            if (!in_array($t, $selected_groups)) { array_push($groups, $t); }
         }
     }
 	foreach($groups as $g) {
@@ -128,58 +122,92 @@ if ($sid) {
 <br />
 
 <?php if ($sid) { ?>
-<input type="hidden" name="where" value="access" />
-<input type="hidden" name="sid" value="<?php echo($sid); ?>" />
-<input type="hidden" name="op" value="a" />
 
-<br />
-<table class="table table-hover">
-	<tr><th>ID</th><td colspan="5"><?php echo($sid); ?></td></tr>
-	<tr><th>Name</th><td colspan="5"><?php echo($name); ?></td></tr>
-	<tr><th>Title</th><td colspan="5"><?php echo($title); ?></td></tr>
-	<tr><th>Owner</th><td colspan="5"><?php echo($owner); ?></td></tr>
-	<tr><th>Group</th><td colspan="5"><?php echo($realm); ?></td></tr>
-	<tr><th>Public</th><td colspan="5"><?php echo($public); ?></td></tr>
-	<tr><td colspan="6"><hr /></td></tr>
-	<tr class="active"><th>Group</th>
-		<th>Max Responses</th>
-		<th>Save/Restore</th>
-		<th>Back/Forward</th>
-		<td>&nbsp;</td></tr>
-<?php
+	<h4>Current access</h4>
+
+	<input type="hidden" name="where" value="access" />
+	<input type="hidden" name="sid" value="<?php echo($sid); ?>" />
+	<input type="hidden" name="op" value="a" />
+
+	<table class="table table-hover">
+		<tr class="active">
+			<th class="col-xs-4 col-sm-4 col-md-4 col-lg-4">Vairable</td>
+			<th class="col-xs-8 col-sm-8 col-md-8 col-lg-8">Value</td>
+		</tr>
+		<tr>
+			<td class="col-xs-4 col-sm-4 col-md-4 col-lg-4">Name</td>
+			<td class="col-xs-8 col-sm-8 col-md-8 col-lg-8"><?php echo($name); ?></td>
+		</tr>
+		<tr>
+			<td class="col-xs-4 col-sm-4 col-md-4 col-lg-4">Title</td>
+			<td class="col-xs-8 col-sm-8 col-md-8 col-lg-8"><?php echo($title); ?></td>
+		</tr>
+		<tr>
+			<td class="col-xs-4 col-sm-4 col-md-4 col-lg-4">Owner (Group)</td>
+			<td class="col-xs-8 col-sm-8 col-md-8 col-lg-8"><?php echo($owner); ?> (<?php echo($realm); ?>)</td>
+		</tr>
+		<tr>
+			<td class="col-xs-4 col-sm-4 col-md-4 col-lg-4">Public / Private</td>
+			<td class="col-xs-8 col-sm-8 col-md-8 col-lg-8"><?php echo($public); ?></td>
+		</tr>
+	</table>
+
+	<br />
+
+	<h4>Managing access</h4>
+
+	<table class="table table-hover">
+		<tr class="active">
+			<th class="text-center">Group</th>
+			<th class="text-center">Max responses</th>
+			<th class="text-center">Resume (add Save)</th>
+			<th class="text-center">Previous/Next button</th>
+			<th class="text-center">&nbsp;</th>
+		</tr>
+
+	<?php
 		$result = execute_sql($sql1);
 		while ( list($arealm, $amax, $aresume, $anavigate) = fetch_row($result) ) { 
             $result->MoveNext();
-            ?>
-	<tr><td><?php echo($arealm); ?></td>
-		<td><?php echo($amax); ?></td>
-		<td><?php echo(($aresume == 'Y') ? _('Yes') : _('No')); ?></td>
-		<td><?php echo(($anavigate == 'Y') ? _('Yes') : _('No')); ?></td>
-		<td><a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=access&sid=$sid&op=r&realm=") . urlencode($arealm)); ?>">
-		<?php echo(_('Remove')); ?></a></td></tr>
-<?php	} ?>
-	<tr><td><?php echo($r); ?></td>
-		<td><input type="text" name="max" size="5"></td>
-		<td><input type="checkbox" name="resume" /></td>
-		<td><input type="checkbox" name="navigate" /></td>
-		<td><input type="submit" value="<?php echo(_('Add')); ?>"></td></tr>
-</table>
-<br /><br />
+    ?>
+
+		<tr>
+			<td class="text-center"><?php echo($realm); ?></td>
+			<td class="text-center"><?php echo($amax); ?></td>
+			<td class="text-center"><?php echo(($aresume == 'Y') ? '<i class="fa fa-check"></i> Yes' : '<i class="fa fa-times"></i> No'); ?></td>
+			<td class="text-center"><?php echo(($anavigate == 'Y') ? '<i class="fa fa-check"></i> Yes' : '<i class="fa fa-times"></i> No'); ?></td>
+			<td class="text-center"><a href="<?php echo($GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=access&sid=$sid&op=r&realm=").urlencode($arealm)); ?>" class="btn btn-danger btn-sm" role="button">Remove</a></td>
+		</tr>
+
+	<?php } ?>
+
+		<tr>
+			<td class="text-center"><?php echo($r); ?></td>
+			<td class="text-center"><input type="text" name="max" size="5"></td>
+			<td class="text-center"><input type="checkbox" name="resume" checked /></td>
+			<td class="text-center"><input type="checkbox" name="navigate" checked /></td>
+			<td class="text-center"><input type="submit" value="Add" class="btn btn-success btn-sm"></td>
+		</tr>
+	</table>
+	<br /><br />
+
 <?php displayAdminBack(); ?>
+
 <?php
-		return;
+	return;
 	}
 ?>
+
 <table class="table table-hover">
 	<tr class="active">
 		<th>Title</th>
 		<th>Owner (Group)</th>
 		<th>Public</th>
 	</tr>
+
 <?php
 
-/* load names and titles of all surveys available to _this_ user */
-
+// load names and titles of all surveys available to _this_ user
 if($_SESSION['acl']['superuser'] == 'Y') {
 	$sql = "SELECT id,name,title,owner,realm,public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE NOT ".db_bin("status",STATUS_DELETED)." ORDER BY id DESC";
 } else {
@@ -204,14 +232,18 @@ while(list($sid,$name,$title,$owner,$realm,$public) = fetch_row($result)) {
 		$op = '<small>[<a href="'. $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=access&sid=$sid&op=v").'">change to Private</a>]</small>';
 	}
 ?>
+
 	<tr>
 		<td><a href="<?php echo(htmlentities($GLOBALS['ESPCONFIG']['ME'] ."?where=access&sid=$sid")); ?>"><?php echo($title); ?></a></td>
 		<td><?php echo $owner . " (".$realm.")"; ?></td>
 		<td><?php echo($public); ?> <?php echo($op); ?></td>
 	</tr>
+
 <?php
 	}
 ?>
+
 </table>
 <br /><br />
+
 <?php displayAdminBack(); ?>

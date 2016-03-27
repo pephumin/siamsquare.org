@@ -18,6 +18,7 @@ function displayHeader($title, $scrollspy = NULL) {
   echo "<head>\n";
   echo "  <meta charset=\"utf-8\">\n";
   echo "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
+  echo "  <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n";
   echo "  <title>Respondent Dashboard: $title</title>\n";
   $cssfiles = array("css/bootstrap.css", "css/font-awesome.css", "css/pe.css");
   foreach ($cssfiles as $filename) {
@@ -89,6 +90,8 @@ function displayNav() {
     echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
     echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
     echo "      $a<a href=\"$public\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
+    //echo "      <button type=\"button\" class=\"btn btn-default navbar-btn\">Sign-in</button>\n";
+    //echo "      <button type=\"button\" class=\"btn btn-success navbar-btn\">Sign up</button>\n";
     echo "      $b<a href=\"/public/signup.php\"><i class=\"fa fa-user fa-lg\"></i><i class=\"fa fa-plus\"></i>&nbsp; Sign-up</a></li>\n";
     echo "      $c<a href=\"/public/contact.php\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
     echo "      $d<a href=\"/public/help.php\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";

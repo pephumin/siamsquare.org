@@ -16,22 +16,16 @@ if(!empty($sid) && $updated) {
 	db_close($result);
 } else {
 	//$fields = array('name','realm','title','subtitle','email','theme','thanks_page','thank_head','thank_body','info','public','auto_num','open_date','close_date');
-  $fields = array('name','owner','realm','title','subtitle','email','theme','thanks_page','thank_head','thank_body','info','public','auto_num','open_date','close_date');
+  $fields = array('name','owner','realm','public','status','open_date','close_date','title','email','subtitle','subtitle_th','info','info_th','theme','thanks_page','thank_head','thank_body','changed','auto_num');
    	foreach ($fields as $f) {
-        if(!empty($_POST[$f]))
-    	    $survey[$f] = _stripslashes($_POST[$f]);
-        else
-            $survey[$f] = '';
+        if(!empty($_POST[$f])) { $survey[$f] = _stripslashes($_POST[$f]); }
+        else { $survey[$f] = ''; }
     }
 }
 
-// if the date values are zeroes, something bad went in -- correct it on the display so as to not panic the user
-if ('0000-00-00 00:00:00' == $survey['open_date']) {
-    $survey['open_date'] = '';
-}
-if ('0000-00-00 00:00:00' == $survey['close_date']) {
-    $survey['close_date'] = '';
-}
+// fix if the date values are zeroes
+if ('0000-00-00 00:00:00' == $survey['open_date']) { $survey['open_date'] = ''; }
+if ('0000-00-00 00:00:00' == $survey['close_date']) { $survey['close_date'] = ''; }
 
 ?>
 
@@ -51,51 +45,70 @@ function validate() {
   <label class="col-sm-3 control-label"><strong>Title</strong> <span class="label label-danger">required</span></label>
   <div class="col-sm-9">
     <?php // if ($sid): echo mktext('title', 60, 60, $survey); ?>
+    <p class="text-muted">Survey title (project name).</p>
     <?php if ($survey['title']): ?>
       <input class="form-control" type="text" name="title" value="<?php echo $survey['title']; ?>" />
-      <p class="text-muted">Title of this survey. This appears at the top of every page of this survey. (free-form, including spaces)</p>
     <?php else: ?>
-     <input class="form-control" type="text" name="title" placeholder="Name of the survey e.g. Project Hawk" />
-  <?php endif; ?>
+     <input class="form-control" type="text" name="title" placeholder="[English]: The name or the title of this survey." />
+    <?php endif; ?>
   </div>
 </div>
+
+<hr>
 
 <div class="form-group">
   <label class="col-sm-3 control-label"><strong>Project type <span class="label label-warning">optional</span></strong></label>
   <div class="col-sm-9">
     <?php // if ($sid): echo mktext('subtitle', 60, 128, $survey['subtitle']); ?>
+    <p class="text-muted">Short summary on the type of study e.g. Customer satisfactin, Event evaluation, etc.</p>
     <?php if ($survey['subtitle']): ?>
       <input class="form-control" type="text" name="subtitle" value="<?php echo $survey['subtitle']; ?>" />
-      <p class="text-muted">Survey type. For example, Customer satisfactin, Event evaluation, etc.</p>
     <?php else: ?>
-      <input class="form-control" type="text" name="subtitle" placeholder="Type of the survey e.g. Customer satisfaction survey, Event evaluation, etc." />
+      <input class="form-control" type="text" name="subtitle" placeholder="[English]: Type of study." />
+    <?php endif; ?>
+    <br />
+    <?php if ($survey['subtitle_th']): ?>
+      <input class="form-control" type="text" name="subtitle_th" value="<?php echo $survey['subtitle_th']; ?>" />
+    <?php else: ?>
+      <input class="form-control" type="text" name="subtitle_th" placeholder="[Thai]: Type of study." />
     <?php endif; ?>
   </div>
 </div>
 
+<hr>
+
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Additional Info <span class="label label-warning">optional</span></strong></label>
+  <label class="col-sm-3 control-label"><strong>Detailed information <span class="label label-warning">optional</span></strong></label>
   <div class="col-sm-9">
     <?php // if ($sid): echo mktextarea('info', 10, 60, 'virtual', $survey); ?>
+    <p class="text-muted">Detailed information about this survey including the target audiences, length of interview, survey period, sample size expected, etc.</p>
     <?php if ($survey['info']): ?>
-     <?php echo mktextarea('info', 10, 60, 'virtual', $survey); ?>
-     <p class="text-muted">Text to be displayed on this survey before any fields. (i.e. instructions, background info, etc.)</p>
+     <?php echo mktextarea('info', 8, 0, 'virtual', $survey); ?>
     <?php else: ?>
-      <textarea class="form-control" rows="10" name="info" placeholder="Detailed information about this survey including the target audiences, length of interview, survey period, sample size expected, etc."></textarea>
+      <textarea class="form-control" rows="8" name="info" placeholder="[English]: Detailed information about this survey. Multiple lines should be used for a nice and neat format."></textarea>
+    <?php endif; ?>
+    <br />
+    <?php if ($survey['info_th']): ?>
+     <?php echo mktextarea('info_th', 8, 0, 'virtual', $survey); ?>
+    <?php else: ?>
+      <textarea class="form-control" rows="8" name="info_th" placeholder="[Thai]: Detailed information about this survey. Multiple lines should be used for a nice and neat format."></textarea>
     <?php endif; ?>
   </div>
 </div>
+
+<hr>
 
 <div class="form-group">
   <label class="col-sm-3 control-label"><strong>Confirmation Page</strong> <span class="label label-warning">optional</span></label>
   <div class="col-sm-9">
     <?php // if ($sid): echo mktext('thanks_page', 60, 255, $survey); ?>
+    <p class="text-muted">Thank you page which should be located at your website. If there is no such page available, leave this box blank and use the Header/Body box instead.</p>
     <?php if ($survey['thanks_page']): ?>
      <?php echo mktext('thanks_page', 60, 255, $survey); ?>
     <?php else: ?>
       <input class="form-control" type="text" name="thanks_page" placeholder="http://www.website.com/thanks.html" />
-      <p class="text-muted">Thank you page URL which should be located at your website (client's). If there is no such pageg available, please use the form below.</p>
     <?php endif; ?>
+    <br />
     <p><strong>OR</strong></p>
 
     <?php if ($survey['thank_head']): ?>
@@ -103,34 +116,38 @@ function validate() {
       <input class="form-control" type="text" name="thank_head" value="<?php echo $survey['thank_head']; ?>" />
     <?php else: ?>
       Header:<br />
-      <input class="form-control" type="text" name="thank_head" placeholder="Heading e.g. Thank you for taking part of this survey" />
+      <input class="form-control" type="text" name="thank_head" placeholder="[English or Thai]: Thank you for taking part of this survey" />
     <?php endif; ?>
     <?php if ($survey['thank_body']): ?>
       Body:<br />
      <?php echo mktextarea('thank_body', 10, 60, 'virtual', $survey); ?>
     <?php else: ?>
       Body:<br />
-      <textarea class="form-control" rows="5" name="thank_body" placeholder="Your opinions are value to us. We make sure your opinons will be analysed at an aggregated level. And your opinions will be kept at the highest level of confidentiality."></textarea>
+      <textarea class="form-control" rows="5" name="thank_body" placeholder="[English or Thai]: Your opinions are value to us. We make sure your opinons will be analysed at an aggregated level. And your opinions will be kept at the highest level of confidentiality."></textarea>
     <?php endif; ?>
-    <p class="text-muted">Use this form (including Header and Body) to be your temporary "Thank you" page.</p>
   </div>
 </div>
+
+<hr>
 
 <div class="form-group">
   <label class="col-sm-3 control-label"><strong>Email</strong> <span class="label label-warning">optional</span></label>
   <div class="col-sm-9">
+    <p class="text-muted">Sends a copy of each submission to this email. Leave blank if you do not need an email backup.</p>
     <?php if ($survey['email']): ?>
      <input class="form-control" type="text" name="email" value="<?php echo $survey['email']; ?>" />
     <?php else: ?>
       <input class="form-control" type="text" name="email" placeholder="email@company.com" />
-      <p class="text-muted">Sends a copy of each submission to this email. Leave blank if you do not need an email backup.</p>
     <?php endif; ?>
   </div>
 </div>
 
+<hr>
+
 <div class="form-group">
   <label class="col-sm-3 control-label"><strong>Survey starting date</strong> <span class="label label-warning">optional</span></label>
   <div class="col-sm-9">
+    <p class="text-muted">Only enter this when there will be a time-frame limitation, otherwise this can be skipped.</p>
     <?php if ($survey['open_date']): ?>
      <input class="form-control" type="text" name="open_date" value="<?php echo $survey['open_date']; ?>" />
     <?php else: ?>
@@ -140,14 +157,16 @@ function validate() {
      Month: <input class="form-control" type="text" size="2" maxlength="2" name="open_month" placeholder="02" />
      Day: <input class="form-control" type="text" size="2" maxlength="2" name="open_day" placeholder="26"/>
      -->
-      <p class="text-muted">The earliest date and time respondents may respond to survey. If date given without a time, midnight on the given date is assumed. If not supplied, respondents may respond immediately once survey activated.</p>
     <?php endif; ?>  	
   </div>
 </div>
 
+<hr>
+
 <div class="form-group">
   <label class="col-sm-3 control-label"><strong>Survey closing date</strong> <span class="label label-warning">optional</span></label>
   <div class="col-sm-9">
+    <p class="text-muted">Only enter this when there will be a time-frame limitation, otherwise this can be skipped.</p>
     <?php if ($survey['close_date']): ?>
      <input class="form-control" type="text" name="close_date" value="<?php echo $survey['close_date']; ?>" />
     <?php else: ?>
@@ -157,21 +176,22 @@ function validate() {
      Month: <input class="form-control" type="text" size="2" maxlength="2" name="open_month" placeholder="02" />
      Day: <input class="form-control" type="text" size="2" maxlength="2" name="open_day" placeholder="26"/>
      -->
-      <p class="text-muted">When provided, the latest date and time respondents may respond to survey. If date given without a time, midnight on the given date is assumed. If not supplied, respondents may respond indefinitely until survey marked as done.</p>
     <?php endif; ?>   
   </div>
 </div>
 
+<hr>
+
 <div class="form-group">
   <label class="col-sm-3 control-label"><strong>Project ID</strong> <span class="label label-danger">required</span></label>
   <div class="col-sm-9">
+    <p class="text-muted">Internal project ID (non-editable).</p>
     <?php if ($survey['name']): ?>
      <input class="form-control" type="text" name="name" value="<?php echo $survey['name']; ?>" disabled />
      <input type="hidden" name="name" value="<?php echo $survey['name']; ?>" />
     <?php else: ?>
       <input class="form-control" type="text" name="name" value="<?php echo survey_assign_new_name(); ?>" disabled />
       <input type="hidden" name="name" value="<?php echo survey_assign_new_name(); ?>" />
-      <p class="text-muted">This is used for all further access to this survey. (no spaces, alpha-numeric only)</p>
     <?php endif; ?>
   </div>
 </div>
@@ -180,6 +200,7 @@ function validate() {
   <label class="col-sm-3 control-label"><strong>Owner</strong> <span class="label label-danger">required</span></label>
   <div class="col-sm-9">
     <div class="form-inline">
+    <p class="text-muted">User and group that owns this survey.</p>
     <?php if ($survey['owner']): ?>
      <input class="form-control" type="text" name="username" value="<?php echo $survey['owner']; ?>" disabled />
      <input type="hidden" name="username" value="<?php echo $survey['owner']; ?>" />
@@ -214,10 +235,11 @@ function validate() {
       echo $out;
       ?>
     <?php endif; ?>
-    <p class="text-muted">User and group that owns this survey.</p>
   </div>
   </div>
 </div>
+
+<hr>
 
 <div class="form-group">
   <label class="col-sm-3 control-label">&nbsp;</label>
@@ -229,3 +251,5 @@ function validate() {
     <input class="btn btn-default btn-sm" type="submit" name="cancel" value="Cancel" />&nbsp;
   </div>
 </div>
+
+<br />

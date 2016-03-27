@@ -10,7 +10,8 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 	global $self;
 	$base =& $self;
 	$public =& $GLOBALS['ESPCONFIG']['autopub_url'];
-	$me = $_SERVER['REQUEST_URI'];
+	//$me = $_SERVER['REQUEST_URI'];
+	$me = "/admin/index.php?where=status";
 
 	$sids = array();
 	if(!empty($_POST['list'])) {
@@ -60,7 +61,7 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 	if ($to_record > $rows) { $to_record = $rows; }
 	$from_record = $start + 1;
 
-	echo "<p class=\"text-right\">showing results $from_record to $to_record [total of $rows]</p>";
+	echo "<p class=\"text-right\">showing results $from_record to $to_record [<a href=\"".$me."\">total of $rows</a>]</p>";
 	echo "<table class=\"table table-hover\">\n";
 	echo "	<tr class=\"active\">\n";
 	echo "	  <th>Project</th>\n";
@@ -162,6 +163,7 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 		echo "    <td>$act</td>\n";
 		// end
 		echo "    <td>$done</td>\n";
+		
 		// delete (disable)
 		//echo "    <td>$del</td>\n";
 		//if($_SESSION['acl']['superuser'] == 'Y') { 
@@ -195,18 +197,10 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 	//}
 
 	// pagination
-
-	//if (preg_match('status', $_SERVER['REQUEST_URI'])) {
 	if (strpos($_SERVER['REQUEST_URI'],'status')) {
-
-		$me = "/admin/index.php?where=status";
+		
 		$total = ceil($rows/$limit);
-
-		//if ($page > $total) { $page = $total; }
-		//if ($page < 1) { $page = 1; }
-
-	// the offset of the list, based on current page 
-	$offset = ($currentpage - 1) * $rowsperpage;
+		$offset = ($currentpage - 1) * $rowsperpage;
 		
 		echo "<nav class=\"pagination-centered\">\n";
 		echo "  <ul class=\"pagination\">\n";
@@ -214,7 +208,7 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 		if ($page > 1) { $previous = $page-1; echo "    <li><a class=\"btn btn-sm btn-default\" href=\"".$me."&p=".$previous."\">&laquo;</a></li>\n"; }
 		else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm btn-default\" href=\"\">&laquo;</a></li>\n"; }
 		
-		for($i=1;$i<=$total;$i++) {
+		for ($i=1;$i<=$total;$i++) {
 			if($i==$page) { echo "    <li class=\"active\"><a class=\"btn btn-sm btn-default\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
 			else { echo "    <li><a class=\"btn btn-sm btn-default\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
 		}
@@ -228,6 +222,18 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 	}
 
 	echo "<br />\n\n";
+}
+
+
+function progressbar($section, $total) {
+	$progress = ($section/$total) * 100;
+	$progress = round ($progress, 1);
+	$output = "<div class=\"progress\">\n";
+	$output .= "  <div class=\"progress-bar progress-bar-warning\" role=\"progressbar\" aria-valuenow=\"$progress\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: $progress%\">\n";
+	$output .= "   $progress% <span class=\"sr-only\">$progress% Complete (warning)</span>\n";
+	$output .= "  </div>\n";
+	$output .= "</div>\n";
+	return $output;
 }
 
 /*

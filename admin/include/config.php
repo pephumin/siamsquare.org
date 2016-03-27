@@ -102,7 +102,7 @@ $ESPCONFIG['style_sheet'] = $ESPCONFIG['base_url'] . '/css/admin.css'; // CSS st
 
 $ESPCONFIG['ME'] = $server['PHP_SELF'];
 $ESPCONFIG['tabs'] = array('general', 'questions', 'order', 'conditions', 'preview', 'finish');
-$ESPCONFIG['thank_head'] = _('Thank You For Completing This Survey.');
+$ESPCONFIG['thank_head'] = _('Thank you for completing this survey.');
 $ESPCONFIG['thank_body'] = _('Please do not use the back button on your browser to go back.');
 
 // Database Table Names:

@@ -6,13 +6,12 @@ $show = 5;
 
 echo "<h2>Management Interface</h2>\n";
 echo "<br />\n";
-//echo "<p class=\"pull-left\">Last $show projects</p>\n";
 echo "<h4>Last $show projects <small>(a newer project is on top of the list)</small></h4>\n";
 
 survey_status(0,$show,'');
 
 //echo "<div class=\"pull-right\">[<a href=\"$kt\">View the full list</a>]</div>\n";
-//echo "<br />\n";
+//echo "<br class=\"clearfix\"/>\n";
 
 $sql = 'SELECT id FROM '.$GLOBALS['ESPCONFIG']['survey_table'].' ORDER BY id DESC';
 $result = execute_sql($sql);

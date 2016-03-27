@@ -4,28 +4,28 @@
    Returns HTML format for an success message. */
 
 function mksuccess ($msg) {
-    return("<div class=\"alert alert-success\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-check-square-o\"></i>&nbsp; ${msg}</div>\n");
+    return("<div class=\"alert alert-success alert-dismissible\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-check-square-o\"></i>&nbsp; ${msg}</div>\n");
 }
 
 /* proto string mkinfo(string message)
    Returns HTML format for an info message. */
 
 function mkinfo ($msg) {
-    return("<div class=\"alert alert-info\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-info-circle\"></i>&nbsp; ${msg}</div>\n");
+    return("<div class=\"alert alert-info alert-dismissible\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-info-circle\"></i>&nbsp; ${msg}</div>\n");
 }
 
 /* proto string mkwarn(string message)
    Returns HTML format for an warning message. */
 
 function mkwarn ($msg) {
-	return("<div class=\"alert alert-warning\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-bullhorn\"></i>&nbsp; ${msg}</div>\n");
+	return("<div class=\"alert alert-warning alert-dismissible\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-bullhorn\"></i>&nbsp; ${msg}</div>\n");
 }
 
 /* proto string mkerror(string message)
    Returns HTML format for an error message. */
 
 function mkerror ($msg) {
-	return("<div class=\"alert alert-danger\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-exclamation-circle\"></i>&nbsp; ${msg}</div>\n");
+	return("<div class=\"alert alert-danger alert-dismissible\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-exclamation-circle\"></i>&nbsp; ${msg}</div>\n");
 }
 
 /* proto string mkradio(string name, string value)

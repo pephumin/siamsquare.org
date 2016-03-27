@@ -44,13 +44,13 @@ if(isset($_POST['delete'])) {
 		if(!execute_sql($sql) || affected_rows() < 1) {
 			/* unsucessfull -- abort */
 			//$errstr .= mkerror(_('Cannot delete account.') .' ('. ErrorMsg() .')');
-			$errstr .= _('Cannot delete account.') .' ('. ErrorMsg() .')';
+			$errstr .= 'Cannot delete account.' .' ('. ErrorMsg() .')';
 		} else {
-			$success .= _('Account has been deleted successfully.');
+			$success .= 'Account has been deleted successfully.';
 		}
 	}
 	if(empty($errstr)) {
-		echo mksuccess(_('Account has been deleted successfully.'));
+		echo mksuccess('Account has been deleted successfully.');
 		include(esp_where('respondents'));
 		return;
 	}
@@ -128,7 +128,7 @@ if(isset($_POST['submit'])) {
         $result = execute_sql($sql);
         if(record_count($result) < 1) {
         	if(empty($u) || empty($r) || empty($u_password)) {
-        		$errstr .= _('Username, Password, and Group are required.');
+        		$errstr .= 'Username, Password, and Group are required.';
         	} else {
         		$sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['respondent_table']."
         			(username,realm,password,changed)
@@ -136,9 +136,9 @@ if(isset($_POST['submit'])) {
         		if(!execute_sql($sql)) {
         			$u = '';
         			$r = '';
-        			$errstr .= _('Error adding account.') .' ('. ErrorMsg() .')';
+        			$errstr .= 'Error adding account.' .' ('. ErrorMsg() .')';
         		} else {
-        			$success .= _('New account has been added successfully.');
+        			$success .= 'New account has been added successfully.';
         		}
         	}
         }
@@ -158,14 +158,14 @@ if(isset($_POST['submit'])) {
         		expiration=$u_expiration WHERE username=$u AND realm=$r";
         	if(!execute_sql($sql)) {
         		/* unsucessfull -- abort */
-        		$errstr .= _('Cannot change account data.') .' ('. ErrorMsg() .')';
+        		$errstr .= 'Cannot change account data.' .' ('. ErrorMsg() .')';
         	} else {
-        		$success .= _('Account has been updated successfully.');
+        		$success .= 'Account has been updated successfully.';
         	}
         }
     }
     if(empty($errstr)) {
-        echo mksuccess(_('Account has been added/updated successfully.'));
+        echo mksuccess('Account has been added/updated successfully.');
         include(esp_where('respondents'));
         return;
     }
@@ -203,7 +203,7 @@ if(!empty($u) && !empty($r)) {
 			$arr['ex_day']   = '';
 		}
 	} else {
-		$errstr .= _('Account not found.') .' ('. ErrorMsg() .')';
+		$errstr .= 'Account not found.' .' ('. ErrorMsg() .')';
 	}
     db_close($result);
 }
