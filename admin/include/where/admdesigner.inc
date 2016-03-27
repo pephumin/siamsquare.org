@@ -85,41 +85,26 @@ if(isset($_POST['submit'])) {
 	$u_lname = _addslashes($_POST['lname']);
 	$u_email = _addslashes($_POST['email']);
 
-	if (!empty($_POST['pdesign'])) {
-		$u_pdesign = _addslashes($_POST['pdesign']);
-	} else {
-		$u_pdesign = _addslashes("Y");
-	}
-	if (!empty($_POST['pstatus'])) {
-		$u_pstatus = _addslashes($_POST['pstatus']);
-	} else {
-		$u_pstatus = _addslashes("N");
-	}
-	if (!empty($_POST['pdata'])) {
-		$u_pdata = _addslashes($_POST['pdata']);
-	} else {
-		$u_pdata = _addslashes("N");
-	}
-	if (!empty($_POST['pall'])) {
-		$u_pall = _addslashes($_POST['pall']);
-	} else {
-		$u_pall = _addslashes("N");
-	}
-	if (!empty($_POST['pgroup'])) {
-		$u_pgroup = _addslashes($_POST['pgroup']);
-	} else {
-		$u_pgroup = _addslashes("N");
-	}
-	if (!empty($_POST['puser'])) {
-		$u_puser = _addslashes($_POST['puser']);
-	} else {
-		$u_puser = _addslashes("N");
-	}
-	if (!empty($_POST['disabled'])) {
-		$u_disabled = _addslashes($_POST['disabled']);
-	} else {
-		$u_disabled = _addslashes("N");
-	}
+	if (!empty($_POST['pdesign'])) { $u_pdesign = _addslashes($_POST['pdesign']); } 
+	else { $u_pdesign = _addslashes("Y"); }
+
+	if (!empty($_POST['pstatus'])) { $u_pstatus = _addslashes($_POST['pstatus']); } 
+	else { $u_pstatus = _addslashes("N"); }
+	
+	if (!empty($_POST['pdata'])) { $u_pdata = _addslashes($_POST['pdata']); } 
+	else { $u_pdata = _addslashes("N"); }
+	
+	if (!empty($_POST['pall'])) { $u_pall = _addslashes($_POST['pall']); } 
+	else { $u_pall = _addslashes("N"); }
+
+	if (!empty($_POST['pgroup'])) { $u_pgroup = _addslashes($_POST['pgroup']); } 
+	else { $u_pgroup = _addslashes("N"); }
+
+	if (!empty($_POST['puser'])) { $u_puser = _addslashes($_POST['puser']); } 
+	else { $u_puser = _addslashes("N"); }
+
+	if (!empty($_POST['disabled'])) { $u_disabled = _addslashes($_POST['disabled']); } 
+	else { $u_disabled = _addslashes("N"); }
 
 	if(!empty($_POST['ex_year']) ||
 			!empty($_POST['ex_month']) ||
@@ -171,9 +156,9 @@ if(isset($_POST['submit'])) {
         		if(!execute_sql($sql)) {
         			$u = '';
         			$r = '';
-        			$errstr .= _('Error adding account.') .' ('. ErrorMsg() .')';
+        			$errstr .= 'Error adding account.' .' ('. ErrorMsg() .')';
         		} else {
-        			$success .= _('New account has been added successfully.');
+        			$success .= 'New account has been added successfully.';
         		}
         	}
         }
@@ -201,14 +186,14 @@ if(isset($_POST['submit'])) {
         	#WHERE username=$u AND realm=$r;
         	if(!execute_sql($sql)) {
         		/* unsucessfull -- abort */
-        		$errstr .= _('Cannot change account data.') .' ('. ErrorMsg() .')';
+        		$errstr .= 'Cannot change account data.' .' ('. ErrorMsg() .')';
         	} else {
-        		$success .= _('Account has been updated successfully.');
+        		$success .= 'Account has been updated successfully.';
         	}
         }
     }
     if(empty($errstr)) {
-    	echo mksuccess(_('Account has been added/updated successfully.'));
+    	echo mksuccess('Account has been added/updated successfully.');
     	include(esp_where('designers'));
     	return;
     }
@@ -257,7 +242,7 @@ if(!empty($u) && !empty($r)) {
 			$arr['ex_day']   = '';
 		}
 	} else {
-		$errstr .= _('Account not found.') .' ('. ErrorMsg() .')';
+		$errstr .= 'Account not found.' .' ('. ErrorMsg() .')';
 	}
 }
 

@@ -14,6 +14,7 @@ function displayHeader($title, $scrollspy = NULL) {
 	echo "<head>\n";
 	echo "	<meta charset=\"utf-8\">\n";
 	echo "	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
+	echo "	<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n";
 	echo "	<title>Client Section: $title</title>\n";
 	$cssfiles = array("css/bootstrap.css", "css/font-awesome.css", "css/pe.css");
 	foreach ($cssfiles as $filename) {
@@ -113,16 +114,26 @@ function displayPageHeader() {
 	global $self, $home, $admin, $base;
 	echo "<form method=\"post\" id=\"phpesp\" action=".$self.">\n";
 	echo "<div class=\"container\">\n\n";
+	// bootlint
+	$target = $home.$self;
+	echo "<p class=\"pull-right\"><a class=\"btn btn-info btn-xs\" href=\"http://www.bootlint.com/?url={$target}\" target=\"_blank\" role=\"button\">bootlint</a></p>\n\n";
+
 }
 
 function displayPageFooter() {
+
+	global $self, $home, $admin, $base;
+	
 	$user = $_SESSION['acl']['username'];
 	$group = $_SESSION['acl']['pgroup'];
 	$g = $group[0];
+	
 	if ($g) { $show = "<kbd>$user</kbd> (<kbd>$g</kbd>)"; } 
 	else { $show = "<kbd>$user</kbd>"; }
+	
 	if(!empty($_SESSION['acl']['username'])) { $signed = "Signed in as <i class=\"fa fa-user\"></i> $show"; } 
 	else { $signed = ""; }
+	
 	echo "</div> <!-- /container -->\n";
 	echo "</form>\n";
 	echo "<br /><br />\n\n";
@@ -151,7 +162,8 @@ function displayFooter() {
 	echo "</script>\n\n";
 	echo "</body>\n";
 	echo "</html>\n\n";
-	if ($_SESSION['acl']['superuser'] == 'Y') { include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; }
+	//if ($_SESSION['acl']['superuser'] == 'Y') { include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; }
+	include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; 
 }
 
 

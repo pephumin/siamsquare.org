@@ -230,6 +230,18 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 	echo "<br />\n\n";
 }
 
+
+function progressbar($section, $total) {
+	$progress = ($section/$total) * 100;
+	$progress = round ($progress, 1);
+	$output = "<div class=\"progress\">\n";
+	$output .= "  <div class=\"progress-bar progress-bar-warning\" role=\"progressbar\" aria-valuenow=\"$progress\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: $progress%\">\n";
+	$output .= "   $progress% <span class=\"sr-only\">$progress% Complete (warning)</span>\n";
+	$output .= "  </div>\n";
+	$output .= "</div>\n";
+	return $output;
+}
+
 /*
 * function list_access($sid) {
 * 

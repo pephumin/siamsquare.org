@@ -1,15 +1,14 @@
 <?php
 
-/*  proto bool survey_render(int survey_id, int section, int resonse_id, string message)
-    Reads current form variables from $_POST. Builds HTML for the survey (prefixed w/ message). */
+//   proto bool survey_render(int survey_id, int section, int resonse_id, string message)
+//   Reads current form variables from $_POST. Builds HTML for the survey (prefixed w/ message).
 
 function survey_render($sid, $section = 1, $rid=0, $message = '') {
 	
 	//global $_POST;
 	@reset($_POST);
 
-	if(empty($section))
-		$section = 1;
+	if(empty($section)) { $section = 1; }
 
 	// load survey title (and other globals)
 	$sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id=${sid}";
@@ -59,29 +58,21 @@ function survey_render($sid, $section = 1, $rid=0, $message = '') {
 		// process each question
 		$qid  = &$question['id'];
 		$tid  = &$question['type_id'];
-		if ($tid == 100) {
-			// this type should not increase the question number
-			$i--;
-		}
-		#if (!question_conditioncheck($sid,$qid,$_POST['rid'])) {
-		if (question_conditioncheck($sid,$qid,$rid)) {
-		   $questions_shown=1;
-		   question_render($question,$i,$survey['auto_num']);
-		} elseif (isset($_POST['tab']) && ($_POST['tab']=="preview")) {
-		   // also show in preview
-		   $questions_shown=1;
-		   question_render($question,$i,$survey['auto_num']);
-		}
+		if ($tid == 100) { $i--; }
+
+		if (question_conditioncheck($sid,$qid,$rid)) { $questions_shown = 1; question_render($question,$i,$survey['auto_num']); } 
+		elseif (isset($_POST['tab']) && ($_POST['tab']=="preview")) { $questions_shown = 1; question_render($question,$i,$survey['auto_num']); }
 	}
-	if ($questions_shown==0) {
-        echo "<p>No questions in this section.</p>\n";
-        echo "<br /><br />\n\n";
-	}
+
+	if ($questions_shown==0) { echo "<p>No questions in this section.</p>\n"; echo "<br /><br />\n\n"; }
 
 	echo "</div>\n\n";
 
 	//if($num_sections>1) { echo "<p>"; printf(_('Page %d of %d'), $section+1, $num_sections); echo "</p>\n\n"; }
 	
+	//require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/function/ssq.inc';
+	//echo progressbar($section, $num_sections);
+
 	return;
 }
 
