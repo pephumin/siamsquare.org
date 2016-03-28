@@ -10,7 +10,8 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 	global $self;
 	$base =& $self;
 	$public =& $GLOBALS['ESPCONFIG']['autopub_url'];
-	$me = $_SERVER['REQUEST_URI'];
+	//$me = $_SERVER['REQUEST_URI'];
+	$me = "/admin/index.php?where=status";
 
 	$sids = array();
 	if(!empty($_POST['list'])) {
@@ -60,17 +61,14 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 	if ($to_record > $rows) { $to_record = $rows; }
 	$from_record = $start + 1;
 
-	echo "<p class=\"text-right\">showing results $from_record to $to_record [total of $rows]</p>";
+	echo "<p class=\"text-right\">showing results $from_record to $to_record [<a href=\"".$me."\">total of $rows</a>]</p>";
 	echo "<table class=\"table table-hover\">\n";
 	echo "	<tr class=\"active\">\n";
 	echo "	  <th>Project</th>\n";
 	echo "	  <th>Owner (Group)</th>\n";
-	echo "	  <th>Edit</th>\n";
-	echo "	  <th>Copy</th>\n";
-	echo "	  <th>Questions</th>\n";
+	echo "	  <th>No. of questions</th>\n";
 	echo "	  <th>Status</th>\n";
-	echo "	  <th>Activate</th>\n";
-	echo "	  <th>End</th>\n";
+	echo "	  <th>Tools<br /><small>[edit/copy/activate]</small></th>\n";
 	//if($_SESSION['acl']['superuser'] == 'Y') { echo "	  <th>Delete?</th>\n"; }
 
 	echo "	</tr>\n";
@@ -112,21 +110,22 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 			$del = '&nbsp;';
 		} elseif($status & STATUS_ACTIVE) {
 			$stat = "Active";
-			$test = "<span class=\"label label-success\"><i class=\"fa fa-pencil-square-o fa-fw\"></i> Active</span> <br /><small>[".$results."]</small>";
+			$test = "<span class=\"label label-success\"><i class=\"fa fa-check fa-fw\"></i> Active</span> <small>[".$results."]</small>";
 			$done = '&nbsp;';
 			$act = '&nbsp;';
 			$del = '&nbsp;';
 		} elseif($status & STATUS_TEST) {
 			$stat = "Testing";
-			$test = "<span class=\"label label-warning\"><i class=\"fa fa-paper-plane fa-fw\"></i> Testing</span> <br /><small>[ <a href=\"". $base .htmlentities("?where=status&op=m&sid=${sid}")."\">change to Editing</a> ]</small>";
+			$test = "<span class=\"label label-warning\"><i class=\"fa fa-paper-plane fa-fw\"></i> Testing</span> <small>[ <a href=\"". $base .htmlentities("?where=status&op=m&sid=${sid}")."\">change to Editing</a> ]</small>";
 			$done = '&nbsp;';
 			$act = '&nbsp;';
 			$del = '&nbsp;';
 		} else {
 			$stat = "Editing";
-			$test = "<span class=\"label label-danger\"><i class=\"fa fa-pencil-square-o fa-fw\"></i> Editing</span> <br /><small>[ <a href=\"". $base .htmlentities("?where=status&op=t&sid=${sid}")."\">change to Testing</a> ]</small>";
-			$done = "<a href=\"". $base .htmlentities("?where=status&op=e&sid=$sid")."\">End</a>";
-			$act  = "<a href=\"". $base .htmlentities("?where=status&op=a&sid=$sid")."\" onclick='return activateConfirm()'>Activate</a>";
+			$test = "<span class=\"label label-danger\"><i class=\"fa fa-pencil-square-o fa-fw\"></i> Editing</span> <small>[ <a href=\"". $base .htmlentities("?where=status&op=t&sid=${sid}")."\">change to Testing</a> ]</small>";
+			if ($_SESSION['acl']['superuser'] == 'Y') { $done = "<a href=\"". $base .htmlentities("?where=status&op=e&sid=$sid")."\"><i class=\"fa fa-trash-o fa-fw\"></i></a>"; }
+			else { $done = '&nbsp;'; }
+			$act  = "<a href=\"". $base .htmlentities("?where=status&op=a&sid=$sid")."\" onclick='return activateConfirm()'><i class=\"fa fa-toggle-on fa-fw\"></i></a>";
 			$del  = "<a href=\"". $base .htmlentities("?where=status&op=d&sid=$sid")."\"><i class=\"fa fa-archive fa-fw\"></i></a>";
 		}
 	
@@ -146,22 +145,19 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 		else { echo "    <td>$title</td>\n"; }
 		// user/group
 		echo "    <td>$owner ($realm)</td>\n";
-		// edit
-		if ($stat == 'Active') { echo "    <td>&nbsp;</td>\n"; } 
-		elseif ($stat == 'Testing') { echo "    <td><a href=\"$tt2\"><i class=\"fa fa-pencil-square-o fa-fw\"></i></a></td>\n"; } 
-		elseif ($stat == 'Editing') { echo "    <td><a href=\"$tt3\"><i class=\"fa fa-pencil-square-o fa-fw\"></i></a></td>\n"; } 
-		elseif ($stat == 'Archived') { echo "    <td>&nbsp;</td>\n"; } 
-		else { echo "    <td><i class=\"fa fa-pencil-square-o fa-fw\"></i></td>\n"; }
-		// copy
-		echo "    <td><a href=\"$tt4\"><i class=\"fa fa-files-o fa-fw\"></i></a></td>\n";
 		// question numbers
 		echo "    <td class=\"text-center\">$qnum</td>\n";
 		// test or edit
 		echo "    <td>$test</td>\n";
-		// activate
-		echo "    <td>$act</td>\n";
-		// end
-		echo "    <td>$done</td>\n";
+		// 
+		// edit/copy & activate/end
+ 		$copy = "<a href=\"$tt4\"><i class=\"fa fa-files-o fa-fw\"></i></a>\n";
+		if ($stat == 'Active') { echo "    <td>&nbsp;</td>\n"; } 
+		elseif ($stat == 'Testing') { echo "    <td><a href=\"$tt2\"><i class=\"fa fa-paper-plane fa-fw\"></i></a> $copy $act $done</td>\n"; } 
+		elseif ($stat == 'Editing') { echo "    <td><a href=\"$tt3\"><i class=\"fa fa-pencil-square-o fa-fw\"></i></a> $copy $act $done</td>\n"; } 
+		elseif ($stat == 'Archived') { echo "    <td>&nbsp;</td>\n"; } 
+		else { echo "    <td><i class=\"fa fa-pencil-square-o fa-fw\"></i></td>\n"; }
+		
 		// delete (disable)
 		//echo "    <td>$del</td>\n";
 		//if($_SESSION['acl']['superuser'] == 'Y') { 
@@ -195,18 +191,10 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 	//}
 
 	// pagination
-
-	//if (preg_match('status', $_SERVER['REQUEST_URI'])) {
 	if (strpos($_SERVER['REQUEST_URI'],'status')) {
-
-		$me = "/admin/index.php?where=status";
+		
 		$total = ceil($rows/$limit);
-
-		//if ($page > $total) { $page = $total; }
-		//if ($page < 1) { $page = 1; }
-
-	// the offset of the list, based on current page 
-	$offset = ($currentpage - 1) * $rowsperpage;
+		$offset = ($currentpage - 1) * $rowsperpage;
 		
 		echo "<nav class=\"pagination-centered\">\n";
 		echo "  <ul class=\"pagination\">\n";
@@ -214,7 +202,7 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 		if ($page > 1) { $previous = $page-1; echo "    <li><a class=\"btn btn-sm btn-default\" href=\"".$me."&p=".$previous."\">&laquo;</a></li>\n"; }
 		else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm btn-default\" href=\"\">&laquo;</a></li>\n"; }
 		
-		for($i=1;$i<=$total;$i++) {
+		for ($i=1;$i<=$total;$i++) {
 			if($i==$page) { echo "    <li class=\"active\"><a class=\"btn btn-sm btn-default\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
 			else { echo "    <li><a class=\"btn btn-sm btn-default\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
 		}
@@ -228,6 +216,18 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 	}
 
 	echo "<br />\n\n";
+}
+
+
+function progressbar($section, $total) {
+	$progress = ($section/$total) * 100;
+	$progress = round ($progress, 1);
+	$output = "<div class=\"progress\">\n";
+	$output .= "  <div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"$progress\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: $progress%\">\n";
+	$output .= "   $progress% <span class=\"sr-only\">$progress% Complete (warning)</span>\n";
+	$output .= "  </div>\n";
+	$output .= "</div>\n";
+	return $output;
 }
 
 /*

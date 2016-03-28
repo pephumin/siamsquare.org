@@ -34,8 +34,8 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 		$others = record_count($others_result);
 	} else { $choices_result = ''; }
 
-	if($question['required']=='Y') { $x = "<mark>"; $y = "*</mark>"; }
-	$questionname = "$x<a name=\"Q".$question_number."\">Q".$question_number.".</a>$y &nbsp;&nbsp;";
+	//if($question['required']=='Y') { $x = "<mark>"; $y = "*</mark>"; }
+	$questionname = "<a name=\"Q".$question_number."\">Q".$question_number.".</a> ";
 
 	if ($question['content_th']) { $questionname .= $question['content_th']; }
 	else { $questionname .= $question['content']; }
@@ -70,13 +70,14 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 			$cid = $other['id'];
 			if (!strcmp($other['content'],"!other")) { $other_text = 'Other:'; } 
 			else { $other_text = preg_replace(array("/^!other=/","/^!other/"), array('',''), $other['content']); }
-			echo "      <div class=\"radio\"><label>" . mkradio($qid,"other_$cid") . "</label></div>\n";
+			//echo "      <div class=\"radio\"><label>" . mkradio($qid,"other_$cid") . "</label></div>\n";
+			echo "      <div class=\"radio\"><label>" . mkradio($qid,"other_$cid");
 			$cid = "${qid}_${cid}";
-    	    echo("$other_text&nbsp;<input type=\"text\" name=\"$cid\" onKeyPress=\"other_check(this.name)\"");
+    	    echo("$other_text <input type=\"text\" name=\"$cid\" onKeyPress=\"other_check(this.name)\"");
     	    if (isset($_POST[$cid]))
-            	echo(' value="'. _stripslashes(htmlspecialchars($_POST[$cid])) .'"');
-                echo(" />");
+            	echo " value=". _stripslashes(htmlspecialchars($_POST[$cid])) . " />";
             $j++;
+            echo "</label></div>\n";
 		}
 		break;
 
@@ -94,13 +95,14 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 			$cid = $other['id'];
 			if (!strcmp($other['content'],"!other")) { $other_text = 'Other:'; } 
 			else { $other_text = preg_replace(array("/^!other=/","/^!other/"), array('',''), $other['content']); }
-			echo "      <div class=\"checkbox\"><label>" . mkcheckbox($qid,"other_$cid") . "</label></div>\n";
+			//echo "      <div class=\"checkbox\"><label>" . mkcheckbox($qid,"other_$cid") . "</label></div>\n";
+			echo "      <div class=\"checkbox\"><label>" . mkcheckbox($qid,"other_$cid");
     	    $cid = "${qid}_${cid}";
-    	    echo("$other_text&nbsp;<input type=\"text\" name=\"$cid\" onKeyPress=\"other_check(this.name)\"");
+    	    echo("$other_text <input type=\"text\" name=\"$cid\" onKeyPress=\"other_check(this.name)\"");
     	    if (isset($_POST[$cid]))
-            	echo(' value="'. _stripslashes(htmlspecialchars($_POST[$cid])) .'"');
-                echo(" />");
+            	echo " value=". _stripslashes(htmlspecialchars($_POST[$cid])) . " />";
 			$j++;
+			echo "</label></div>\n";
 		}
 		break;
 

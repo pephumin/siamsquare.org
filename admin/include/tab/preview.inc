@@ -7,8 +7,7 @@ $result = execute_sql($sql);
 $num_sections = 1 + $result->fields[0];
 db_close($result);
 
-if(empty($_POST['section']))
-	$_POST['section']=1;
+if(empty($_POST['section'])) { $_POST['section'] = 1; }
 
 ?>
 
@@ -41,16 +40,6 @@ function validate() {
 <hr />
 
 <?php 
-
-// css style during the preview - to be added to <header>
-//$sql = "SELECT theme FROM ".$GLOBALS['ESPCONFIG']['survey_table']." where id = ${sid}";
-//if ($result = execute_sql($sql)) {
-//  if (record_count($result) > 0) {
-//    list($css_file) = fetch_row($result);
-//    db_close($result);
-//    echo "<link rel=\"stylesheet\" href=\"".$GLOBALS['ESPCONFIG']['css_url'].$css_file."\"  type=\"text/css\">\n";
-//  }
-//}
 
 survey_render($sid,$_POST['section']); 
 

@@ -1,9 +1,7 @@
 <?php
 
-//require ($ESPCONFIG['include_path']."where/crosstab.inc");
 require $_SERVER['DOCUMENT_ROOT'] . '/admin/include/where/crosstab.inc';
 
-// see if a survey has been selected
 $sid = '';
 if (!empty($_POST['sid'])) $sid = intval($_POST['sid']);
 elseif (!empty($_GET['sid'])) $sid = intval($_GET['sid']);
@@ -12,15 +10,12 @@ if (!empty($sid)) {
     $srealm = auth_get_survey_realm(_addslashes($sid));
     if(!empty($_GET['test'])) {
 
-        /* check ACL to see if user is allowed to test
-        * _this_ survey */
         if($_SESSION['acl']['superuser'] != 'Y' && !auth_is_owner($sid, $_SESSION['acl']['username']) && !in_array($srealm, array_intersect($_SESSION['acl']['pdesign'], $_SESSION['acl']['pall'])) && !auth_no_access(_('to access this survey'))) { return; }
+
         echo("<p>Testing survey... (". _('SID') ." = $sid)</p>\n");
 
     } else {
 
-        /* check ACL to see if user is allowed to get results to
-        * _this_ survey */
         if($_SESSION['acl']['superuser'] != 'Y' && !auth_is_owner($sid, $_SESSION['acl']['username']) && !in_array($srealm, array_intersect($_SESSION['acl']['pdata'], $_SESSION['acl']['pall'])) && !auth_no_access(_('to access this survey'))) { return; }
     }
 
@@ -35,7 +30,9 @@ if (!empty($sid)) {
 
 <table class="table table-hover">
     <tr class="active"><td>
+
 <?php
+
     $precision = '';
     if (!empty($_GET['precision'])) $precision = intval($_GET['precision']);
     $totals = '';
@@ -60,9 +57,9 @@ if (!empty($sid)) {
     else if (!empty($qidc) || !empty($qidr)) { cross_tabulation($sid, $qidc, $qidr, $qid, $cids); } 
     else { $ret = survey_results($sid, $precision, $totals, $qid, $cids); }
 
-    if(!empty($ret)) echo("<font color=\"". $ESPCONFIG['error_color'] ."\">$ret</font>\n");
+    if(!empty($ret)) echo $ret;
 
-    if(!empty($_GET['test'])) { echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=test&test=1&sid=". $_GET['sid']) ."\">". _('Test Survey') ."</a><br>\n"); }
+    if(!empty($_GET['test'])) { echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=test&test=1&sid=". $_GET['sid']) ."\">Test survey</a><br>\n"); }
 
     if (!empty($_GET['type'])) {
 
@@ -70,7 +67,7 @@ if (!empty($sid)) {
     </td></tr>
     <tr><td align="center">
 <input class="btn btn-default" type="reset" value="Reset" />
-<?php echo mksubmit('cross', _('Cross Tabulate')); ?>
+<?php echo mksubmit('cross', 'Cross Tabulate'); ?>
 <br />
 
 <?php } ?>
@@ -100,86 +97,104 @@ if (empty($_GET['type'])) {
 
 <h2>View survey results</h2>
 
-<p>Pick survey below to view the results. Only show surveys that are currently active.</p>
+<p>Pick a survey below to view the results. Only show surveys that are currently active.</p>
 
     <input type="hidden" name="rid" value="" />
     <input type="hidden" name="sid" value="" />
     <input type="hidden" name="where" value="results" />
+
     <?php
     } else {
         echo("<h2>Cross Tabulation</h2>\n");
-        echo("<p>Pick Survey to Cross Tabulate</p>");
+        echo("<p>Pick a survey below to see a cross tabulation.</p>");
     }
-?>
+    ?>
 
 <br /><br />
+
 <table class="table table-hover">
     <tr class="active">
-        <th>Title</th>
+        <th>Project</th>
         <th>Owner (Group)</th>
-        <th class="text-center">Completion</th>
+        <th class="text-center">Completions</th>
         <th class="text-center">Results</th>
         <?php if (empty($_GET['type'])) { ?>
-        <th class="text-center">Respondent</th>
-        <?php } else { ?>
+        <th class="text-center">Respondents</th>
+    
+    <?php
+    } else { 
+    ?>
+        
         <th></th>
-        <?php } ?>
+    <?php 
+    } 
+    ?>
+    
     </tr>
 
 <?php
+
     $count = 0;
     while(list($sid,$name,$title,$owner,$realm) = fetch_row($result)) {	
         $result->MoveNext();
-        //let's see how many respondents we have for each survey.
-        //angek: let's not include incomplete surveys in the count.
-        // this occurs for multipage surveys as each page completed
-        // is submitted and stored.
         $sql2 = "SELECT count(*) FROM ".$GLOBALS['ESPCONFIG']['response_table']." WHERE survey_id = $sid AND complete = 'Y'";
         $result2 = execute_sql($sql2);
         list($resp) = fetch_row($result2);
         db_close($result2);
 
 ?>
-<tr>
-    <?php
-        if (empty($_GET['type'])) {
-            // grab all the rid values for the particular survey
-            $sql = "SELECT R.id FROM ".$GLOBALS['ESPCONFIG']['response_table']." R WHERE R.survey_id = ${sid} AND R.complete = 'Y' ORDER BY R.id";
-            $rid_result = execute_sql($sql);
-            $count++;
-        }
-    ?>
-    <td>
-    <?php if (!empty($_GET['type'])) { ?>	
-    <a href="<?php echo("". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=results&sid=${sid}&type=cross")); ?>">
-    <?php } else { ?>
-    <a href="<?php echo("". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=results&sid=${sid}")); ?>">
-    <?php } ?>
-    <?php echo($title); ?>
-    </a>
-    </td>
-    <td><?php echo $owner . " (" . $realm . ")"; ?></td>
-    <td class="text-center"><?php echo($resp); ?></td>
-    <td class="text-center">
-        [ <a href="<?php echo("". $base .htmlentities("?where=results&sid=${sid}")); ?>">Result <i class="fa fa-pie-chart fa-fw"></i></a> | 
-        <a href="<?php echo("". $base .htmlentities("?where=results&sid=${sid}&type=cross")); ?>">Cross tab <i class="fa fa-bar-chart fa-fw"></i></a> | 
-        <a href="<?php echo("". $base .htmlentities("?where=report&sid=${sid}")); ?>">Report <i class="fa fa-line-chart fa-fw"></i></a> ]
-    </td>
-    <td class="text-center">
-    <?php if (empty($_GET['type'])) { ?>
-    <select name="rid<?php echo $count; ?>" onchange="javascript:this.form.rid.value=this.form.rid<?php echo $count; ?>.options[this.form.rid<?php echo $count; ?>.selectedIndex].value; this.form.sid.value=<?php echo $sid; ?>; this.form.submit(); return false;">
-        <option value=""></option>
-        <?php $i = 0; while (list($rid) = fetch_row($rid_result)) { $rid_result->MoveNext(); ?>
-        <option value="<?php echo $rid; ?>"><?php echo ++$i; ?></option>
-        <?php } ?>
-        </select> 
-    <?php } ?>
-    </td>
-</tr>
+
+    <tr>
+
 <?php
+
+    if (empty($_GET['type'])) {
+        // grab all the rid values for the particular survey
+        $sql = "SELECT R.id FROM ".$GLOBALS['ESPCONFIG']['response_table']." R WHERE R.survey_id = ${sid} AND R.complete = 'Y' ORDER BY R.id";
+        $rid_result = execute_sql($sql);
+        $count++;
+    }
+
+?>
+
+       <td>
+       <?php if (!empty($_GET['type'])) { ?>	
+       <a href="<?php echo("". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=results&sid=${sid}&type=cross")); ?>">
+       <?php } else { ?>
+       <a href="<?php echo("". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=results&sid=${sid}")); ?>">
+       <?php } ?>
+       <?php echo($title); ?>
+       </a>
+       </td>
+
+       <td><?php echo $owner . " (" . $realm . ")"; ?></td>
+       
+       <td class="text-center"><?php echo($resp); ?></td>
+       
+       <td class="text-center">
+           [ <a href="<?php echo("". $base .htmlentities("?where=results&sid=${sid}")); ?>">Result <i class="fa fa-pie-chart fa-fw"></i></a> | 
+           <a href="<?php echo("". $base .htmlentities("?where=results&sid=${sid}&type=cross")); ?>">Cross tab <i class="fa fa-bar-chart fa-fw"></i></a> | 
+           <a href="<?php echo("". $base .htmlentities("?where=report&sid=${sid}")); ?>">Report <i class="fa fa-line-chart fa-fw"></i></a> ]
+       </td>
+       
+       <td class="text-center">
+       <?php if (empty($_GET['type'])) { ?>
+       <select name="rid<?php echo $count; ?>" onchange="javascript:this.form.rid.value=this.form.rid<?php echo $count; ?>.options[this.form.rid<?php echo $count; ?>.selectedIndex].value; this.form.sid.value=<?php echo $sid; ?>; this.form.submit(); return false;">
+           <option value=""></option>
+           <?php $i = 0; while (list($rid) = fetch_row($rid_result)) { $rid_result->MoveNext(); ?>
+           <option value="<?php echo $rid; ?>"><?php echo ++$i; ?></option>
+           <?php } ?>
+           </select> 
+       <?php } ?>
+       </td>
+   </tr>
+
+    <?php
     }
     db_close($result);
-?>
+    ?>
+
 </table>
 <br /><br />
+
 <?php displayAdminBack(); ?>

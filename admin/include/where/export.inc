@@ -1,14 +1,14 @@
 <?php
 
-if(!empty($_POST['sid']))
-	$sid = intval($_POST['sid']);
-elseif(!empty($_GET['sid']))
-	$sid = intval($_GET['sid']);
-else
-	$sid = '';
-$bg = '';
+if(!empty($_POST['sid'])) $sid = intval($_POST['sid']);
+elseif(!empty($_GET['sid'])) $sid = intval($_GET['sid']);
+else $sid = '';
+
+$home = "http://www.siamsquare.org";
+$page = $home."/public/survey.php?name=";
 
 ?>
+
 </form>
 
 <h2>Export survey data</h2>
@@ -19,23 +19,18 @@ $bg = '';
 
 <?php
 
-/* If the Survey ID is not given, then build
- * a menu of available surveys to chose from.
- */
 if(!$sid) {
+
 ?>
 	<tr class="active">
-		<th>ID</th>
-		<th>Name</th>
 		<th>Title</th>
-		<th>Owner</th>
-		<th>Group</th>
+		<th>Owner (Group)</th>
 		<th>Status</th>
 		<th colspan="2">Format</th>
 	</tr>
+
 <?php
-	/* load names and titles of all surveys available to
-	 * _this_ user */
+
 	$statusok = (STATUS_ACTIVE | STATUS_DONE | STATUS_DELETED);
 	if($_SESSION['acl']['superuser'] == 'Y') {
 		$sql = "SELECT id,name,title,status,owner,realm FROM ".$GLOBALS['ESPCONFIG']['survey_table']."
@@ -55,27 +50,17 @@ if(!$sid) {
         $result->MoveNext();
 		$stat = _('Editing');
 
-		if($status & STATUS_DELETED) {
-			$stat = _('Archived');
-		} elseif($status & STATUS_DONE) {
-			$stat = _('Ended');
-		} elseif($status & STATUS_ACTIVE) {
-			$stat = _('Active');
-		} elseif($status & STATUS_TEST) {
-			$stat = _('Testing');
-		}
+		if($status & STATUS_DELETED) { $stat = 'Archived'; } 
+		elseif($status & STATUS_DONE) { $stat = 'Ended'; } 
+		elseif($status & STATUS_ACTIVE) { $stat = 'Active'; } 
+		elseif($status & STATUS_TEST) { $stat = 'Testing'; }
 
-		//if($bg != $ESPCONFIG['bgalt_color1'])
-		//	$bg = $ESPCONFIG['bgalt_color1'];
-		//else
-		//	$bg = $ESPCONFIG['bgalt_color2'];
+		$mpage = $page.$name;
+
 ?>
 	<tr>
-		<td><?php echo($sid); ?></td>
-		<td><?php echo($name); ?></td>
-		<td><?php echo($title); ?></td>
-		<td><?php echo($owner); ?></td>
-		<td><?php echo($realm); ?></td>
+		<td><a href="<?php echo($mpage); ?>" target="_blank"><?php echo($title); ?></a></td>
+		<td><?php echo($owner); ?> (<?php echo($realm); ?>)</td>
 		<td><?php echo($stat); ?></td>
 		<td style="font-size: xx-small; vertical-align: top;">
     <form id="export<?php echo($sid) ?>" action="<?php echo($GLOBALS['ESPCONFIG']['ME']) ?>">
@@ -97,26 +82,26 @@ if(!$sid) {
             </div></form>
 		</td>
 	</tr>
+
 <?php
 	}
 ?>
+
 </table>
 <br />
-<form method="post" id="null" action="">
+
 <?php displayAdminBack(); ?>
+
 <?php
 	return;
 	}
 
-	/* sid supplied ... continue */
 	$sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id = $sid";
 	$name = get_one($sql);
 
-	/* check ACLs for permissions */
 	$srealm = auth_get_survey_realm($sid);
 	if(isset($_GET['test'])) {
-		/* check ACL to see if user is allowed to test
-		 * _this_ survey */
+
 		if($_SESSION['acl']['superuser'] != 'Y' &&
 				!auth_is_owner($sid, $_SESSION['acl']['username']) &&
 				!in_array($srealm, array_intersect(
@@ -125,10 +110,9 @@ if(!$sid) {
 				!auth_no_access(_('to access this survey'))) {
 			return;
 		}
-		echo("<p><b>". _('Testing Survey...') ."</b> (". _('SID') ." = $sid)</p>\n");
+		echo("<p><b>Testing survey...</b> (". _('SID') ." = $sid)</p>\n");
 	} else {
-		/* check ACL to see if user is allowed to export
-		 * _this_ survey */
+
 		if($_SESSION['acl']['superuser'] != 'Y' &&
 				!auth_is_owner($sid, $_SESSION['acl']['username']) &&
 				!in_array($srealm, array_intersect(
@@ -161,7 +145,7 @@ if(!$sid) {
                 $ret = survey_export_dbf($sid, $file);
             } else {
                 $ret = 0;
-                echo("<tr><td>" . mkerror(_('The PHP dBase Extension is not installed.')) . "</td></tr>");
+                echo("<tr><td>" . mkerror('The PHP dBase Extension is not installed.') . "</td></tr>");
             }
             break;
 
@@ -172,12 +156,12 @@ if(!$sid) {
 
 	echo("<tr><td>");
 	if(isset($_GET['test'])) {
-		echo("<p><b>". _('Testing Survey...') ."</b> (". _('SID') ." = $sid)</p>\n");
+		echo("<p><b>Testing survey...</b> (". _('SID') ." = $sid)</p>\n");
 	}
 	if($ret) {
-		echo(_('Survey exported as:') . " <tt>$file</tt>");
+		echo('Survey exported as:' . " <tt>$file</tt>");
 	} else {
-		echo(mkwarn(_('Error exporting survey as:') . " <tt>$file</tt>"));
+		echo(mkwarn('Error exporting survey as:' . " <tt>$file</tt>"));
 	}
 	echo("</td></tr></table>\n");
 	echo("<br />\n");

@@ -12,14 +12,11 @@ if ($updated && $curr_q) {
 		$c = $GLOBALS['ESPCONFIG']['default_num_choices'];
 }
 
-if(isset($_POST['extra_choices']))
+if (isset($_POST['extra_choices']))
 	$num_choices = max($c, $_POST['num_choices']) + 1;
 else
 	$num_choices = $c;
 ?>
-
- </tr>
-</table>
 
 <p class="text-center"><input class="btn btn-success btn-sm" type="submit" value="Make changes" /></p><br />
 
@@ -30,12 +27,6 @@ else
 <p>Enter <code>!other Record here:</code> will create a fill-in-the-blank answer leaded by the word "Record here:".</p> 
 
 <p>The most common usage is <code>!other Other (please specify):</code> which can be applied for variety of question types.</p>
-
-<!--
-<p>To assign numeric credit for a particular answer, enter the associated credit beside each possible answer.  Only question types of Radio Buttons, Check Boxes, and Dropdown Box may have credit. Credit for a multiple selection is the sum of the individual credit.</p>
-
-<p>To provide feedback to the survey respondent when selecting a particular answer, enter that feedback beside the answer.  Only question types of Radio Buttons, Check Boxes, and Dropdown Box may have feedback. The feedback may include HTML, if desired.</p>
--->
 
 <br />
 
