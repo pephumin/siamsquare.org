@@ -16,7 +16,7 @@ function displayHeader($title, $scrollspy = NULL) {
 	echo "	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
 	echo "	<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n";
 	echo "	<title>Client Section: $title</title>\n";
-	$cssfiles = array("css/bootstrap.css", "css/font-awesome.css", "css/pe.css");
+	$cssfiles = array("css/bootstrap.css", "css/font-awesome.css", "css/typicons.css", "css/pe.css");
 	foreach ($cssfiles as $filename) {
 		echo "	<link href=\"$filename\" rel=\"stylesheet\" type=\"text/css\" />\n";
  	}
@@ -26,7 +26,7 @@ function displayHeader($title, $scrollspy = NULL) {
 	if (isset($_SERVER['BASE_PAGE'])) {
 		echo "	<link rel=\"canonical\" href=\"$admin/$base\">\n";
 	}
-	$jsfiles = array("js/admin.js");
+	$jsfiles = array("js/pe.js");
 	foreach ($jsfiles as $filename) {
 		//$path = dirname(dirname(__FILE__)).'/js/'.$filename;
 		echo "	<script type=\"text/javascript\" src=\"$filename\"></script>\n";
@@ -85,23 +85,23 @@ function displayTabNav() {
 	echo "<p>";
 	echo '<input type="hidden" name="where" value="tab" />';
 	echo "&nbsp;\n";
-	if ($tab == 'general') { echo '<input type="submit" name="tab_general" value="General" class="btn btn-default active btn-sm" />'; }
-	else { echo '<input type="submit" name="tab_general" value="General" class="btn btn-default btn-sm" />'; }
+	if ($tab == 'general') { echo '<input type="submit" name="tab_general" value="General" class="btn btn-warning active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_general" value="General" class="btn btn-warning btn-sm" />'; }
 	echo "&nbsp;\n";
-	if ($tab == 'questions') { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-default active btn-sm" />'; }
-	else { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-default btn-sm" />'; }
+	if ($tab == 'questions') { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-warning active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-warning btn-sm" />'; }
 	echo "&nbsp;\n";
-	if ($tab == 'order') { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-default active btn-sm" />'; }
-	else { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-default btn-sm" />'; }
+	if ($tab == 'order') { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-warning active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-warning btn-sm" />'; }
 	echo "&nbsp;\n";
-	if ($tab == 'conditions') { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-default active btn-sm" />'; }
-	else { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-default btn-sm" />'; }
+	if ($tab == 'conditions') { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-warning active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-warning btn-sm" />'; }
 	echo "&nbsp;\n";
-	if ($tab == 'preview') { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-default active btn-sm" />'; }
-	else { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-default btn-sm" />'; }
+	if ($tab == 'preview') { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-warning active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-warning btn-sm" />'; }
 	echo "&nbsp;\n";
-	if ($tab == 'finish') { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-default active btn-sm" />'; }
-	else { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-default btn-sm" />'; }
+	if ($tab == 'finish') { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-warning active btn-sm" />'; }
+	else { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-warning btn-sm" />'; }
 	echo "&nbsp;\n";
 	echo "</p>";
 }
@@ -115,7 +115,7 @@ function displayPageHeader() {
 	echo "<form method=\"post\" id=\"phpesp\" action=".$self.">\n";
 	echo "<div class=\"container\">\n\n";
 	// bootlint
-	$target = $home.$self;
+	$target = $home.$sbtn-defaultelf;
 	echo "<p class=\"pull-right\"><a class=\"btn btn-info btn-xs\" href=\"http://www.bootlint.com/?url={$target}\" target=\"_blank\" role=\"button\">bootlint</a></p>\n\n";
 
 }

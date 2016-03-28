@@ -1,25 +1,16 @@
 <?php
 
-/*
-* survey_aggregate.inc -- Create a new, editable survey by aggregating the questions of one or more other surveys.
-*/
-
 //  survey_aggregate()
 //  Aggregate multiple surveys together to create a brand new survey
 //  NOTE: Top-most survey information (name, title, owner, etc.) comes from first survey in aggregate list.
 
 function survey_aggregate($sids) {
     // make sure we have valid arguments
-    if (is_scalar($sids) && is_numeric($sids)) {
-        $sids = array ($sids);
-    } else if (! is_array($sids)) {
-        return false;
-    }
+    if (is_scalar($sids) && is_numeric($sids)) { $sids = array ($sids); } 
+    elseif (! is_array($sids)) { return false; }
 
     // don't be silly
-    if (0 == count($sids)) {
-        return true;
-    }
+    if (0 == count($sids)) { return true; }
 
     // get the survey data from the first survey
     reset($sids);
@@ -27,13 +18,9 @@ function survey_aggregate($sids) {
 
     $sql = sprintf('SELECT * FROM %s WHERE id=%d', $GLOBALS['ESPCONFIG']['survey_table'], $first_sid);
     $res = execute_sql($sql, '', ADODB_FETCH_ASSOC);
-    if (1 == record_count($res)) {
-        $survey = fetch_row($res);
-    }
+    if (1 == record_count($res)) { $survey = fetch_row($res); }
     db_close($res);
-    if (! isset($survey)) {
-        return false;
-    }
+    if (! isset($survey)) { return false; }
 
     // update its data so that it's a new survey
     // ... clear the sid
@@ -42,29 +29,28 @@ function survey_aggregate($sids) {
     // ... reset the status
     $survey['id']     = null;
     $survey['owner']  = (isset($_SESSION['acl']['username']) ? $_SESSION['acl']['username'] : $survey['owner']);
-    $survey['name']  .= '_'. _('copy');
+    //$survey['name']  .= '_'. _('copy');
+    //$survey['name']  = null;
     $survey['status'] = 0;
 
     // check for 'name' conflict, and resolve
-    $i = 0;
-    $sql = "SELECT COUNT(*) FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE name=". _addslashes($survey['name']);
-    $res = execute_sql($sql);
-    while (0 < $res->fields[0]) {
-        $res->MoveNext();
-        $sql = "SELECT COUNT(*) FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE name=". _addslashes($survey['name'].++$i);
-        $res = execute_sql($sql);
-    }
-    if ($i) {
-        $survey['name'] .= $i;
-    }
+    //$i = 0;
+    //$sql = "SELECT COUNT(*) FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE name=". _addslashes($survey['name']);
+    //$res = execute_sql($sql);
+    //while (0 < $res->fields[0]) {
+    //    $res->MoveNext();
+    //    $sql = "SELECT COUNT(*) FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE name=". _addslashes($survey['name'].++$i);
+    //    $res = execute_sql($sql);
+    //}
+    //if ($i) {
+    //    $survey['name'] .= $i;
+    //}
 
     // create new survey
     $survey['changed'] = sys_time_stamp();
     $sql = sql_for_insert_into_table($GLOBALS['ESPCONFIG']['survey_table'], $survey);
     $res = execute_sql($sql);
-    if (! $res) {
-        return false;
-    }
+    if (! $res) { return false; }
     $new_sid = insert_id('survey_id_seq');
 
     // copy the questions for each of the surveys
@@ -86,12 +72,14 @@ function survey_aggregate($sids) {
 //  Copy questions from one survey to another, starting at a given position
 
 function survey_copy_questions_and_conditions($sid, $new_sid, $pos = 0) {
+    
     $has_choices = esp_type_has_choices();
 
     // make copies of all the questions
     // NOTE: This is done the hard way: SELECT and then iterated INSERT
     $question_fields = array('id', 'survey_id', 'name', 'type_id', 'result_id', 'length', 'precise', 
-            'position', 'content', 'required', 'deleted', 'public');
+            'position', 'content', 'content_th', 'required', 'deleted', 'public');
+
     $sql = "SELECT ". join(', ',$question_fields)." FROM ".$GLOBALS['ESPCONFIG']['question_table']."
         WHERE survey_id=${sid} AND deleted='N'
         ORDER by position, id";
@@ -113,6 +101,7 @@ function survey_copy_questions_and_conditions($sid, $new_sid, $pos = 0) {
         }
         $question['name'] = _addslashes($question['name']);
         $question['content'] = _addslashes($question['content']);
+        $question['content_th'] = _addslashes($question['content_th']);
         $question['required'] = _addslashes($question['required']);
         $question['deleted'] = _addslashes($question['deleted']);
         $question['public'] = _addslashes($question['public']);
@@ -125,7 +114,7 @@ function survey_copy_questions_and_conditions($sid, $new_sid, $pos = 0) {
 
         // make copies of all the question choices (if exist)
         if($has_choices[$tid]) {
-            $question_choice_fields = array('question_id', 'content', 'value', 'feedback', 'credit');
+            $question_choice_fields = array('question_id', 'content', 'content_th', 'value', 'feedback', 'credit');
             $sql = "SELECT ". join(', ',$question_choice_fields)."
                 FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']."
                 WHERE question_id=${qid}
@@ -135,6 +124,7 @@ function survey_copy_questions_and_conditions($sid, $new_sid, $pos = 0) {
                 $result2->MoveNext();
                 $choice['question_id'] = $new_qid;
                 $choice['content']     = _addslashes($choice['content']);
+                $choice['content_th']     = _addslashes($choice['content_th']);
                 $choice['value']       = _addslashes($choice['value']);
                 $choice['feedback']    = _addslashes($choice['feedback']);
                 $choice['credit']      = _addslashes($choice['credit']);

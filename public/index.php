@@ -1,16 +1,6 @@
 <?php
 
 /*
-* There are two distinct operating modes: authenticated and non-authenticated.  When not authenticated, this page presents
-* a login form as well as a list of links to all public surveys.  Once authenticated, this page presents a list of links to
-* all user-specific surveys (private and public surveys), a history showing his previously completed surveys, and a
-* toolbox through which he can change his password, access the user manual, logout, etc.
-*
-* @_PATTERNS_@
-*
-* @_NOTES_@
-* MEANING/INTERPREATION OF SURVEY STATUS
-* The following table describes the meaning of the status constants:
 *
 * Constant             Interpretation
 * -------------------- ---------------------------------------------------------------------------------------------------
@@ -24,19 +14,18 @@
 * o In table of surveys, add:
 *   - response ID/confirmation number to finished surveys
 *   - opening/closing date (FUTURE ENHANCEMENT NEEDED TO WHOLE APP)
-*
 */
 	
 $_SERVER['BASE_PAGE'] = 'index.php';
-$title = "Main Interface";
+$title = "Respondent Section: Dashboard";
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
 
 // survey status
 define('STATUS_NOT_STARTED', 'Not Started');
-define('STATUS_ALL_PARTIAL', 'Started, but Incomplete');
-define('STATUS_SOME_PARTIAL', 'Some Finished, some Incomplete');
+define('STATUS_ALL_PARTIAL', 'Started, but incomplete');
+define('STATUS_SOME_PARTIAL', 'Some Finished, some incomplete');
 define('STATUS_FINISHED', 'Finished');
 define('FORMAT_OUTPUT_DATE', isset($ESPCONFIG['date_format'])?$ESPCONFIG['date_format']:'%Y-%m-%d');
 
