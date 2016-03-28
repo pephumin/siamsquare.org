@@ -1,12 +1,14 @@
 <?php
 
-/* if survey has been selected ... */
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/esphtml.forms.inc';
+
+// if survey has been selected ...
+
 if(!empty($_GET['sid'])) {
 	$sid = intval($_GET['sid']);
 	
 	$srealm = auth_get_survey_realm($sid);
-	/* check ACL to see if user is allowed to copy
-	 * _this_ survey */
+
 	if($_SESSION['acl']['superuser'] != 'Y' &&
 			!auth_is_owner($sid, $_SESSION['acl']['username']) &&
 			!in_array($srealm, array_intersect(
@@ -16,24 +18,17 @@ if(!empty($_GET['sid'])) {
 		return;
 	}
 
-	/* copy the survey */
 	if(!survey_copy($sid)) {
-		echo(mkerror(_('Error copying survey.') ." (". ErrorMsg() .")") . "<br>\n");
-		echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n");
+		echo(mkerror('Error copying survey.' ." (". ErrorMsg() .")") . "<br>\n");
+		//echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n");
+		displayAdminBack();
 		return;
 	}
-?>
-<script language="JavaScript"><!--
-window.location="<?php echo($GLOBALS['ESPCONFIG']['ME'] ."?where=manage"); ?>"
-//-->
-</script>
-<?php
-	echo("<noscript><a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a></noscript>\n");
+	//echo("<noscript><a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a></noscript>\n");
+	mksuccess ("The new copy of a survey has been created.");
 	return;
 }
 
-/* load names and titles of all surveys available to
- * _this_ user */
 if($_SESSION['acl']['superuser'] == 'Y') {
 	$sql = 'SELECT id,name,title,status,owner,realm FROM '.$GLOBALS['ESPCONFIG']['survey_table'].' ORDER BY id DESC';
 } else {
@@ -60,11 +55,11 @@ echo "	</tr>\n";
 
 while(list($sid,$name,$title,$status,$owner,$realm) = fetch_row($result)) {
 	$result->MoveNext();
-	if($status & STATUS_DELETED) { $stat = "Archived"; } 
-	elseif($status & STATUS_DONE) { $stat = "Ended"; } 
-	elseif($status & STATUS_ACTIVE) { $stat = "Active"; } 
-	elseif($status & STATUS_TEST) { $stat = "Testing"; } 
-	else { $stat = "Editing"; }
+	if ($status & STATUS_DELETED) { $stat = "<span class=\"label label-success\"><i class=\"fa fa-check fa-fw\"></i> Deleted</span>"; } 
+	elseif ($status & STATUS_DONE) { $stat = "<span class=\"label label-success\"><i class=\"fa fa-check fa-fw\"></i> Ended</span>"; } 
+	elseif ($status & STATUS_ACTIVE) { $stat = "<span class=\"label label-success\"><i class=\"fa fa-check fa-fw\"></i> Active</span>"; } 
+	elseif ($status & STATUS_TEST) { $stat = "<span class=\"label label-warning\"><i class=\"fa fa-paper-plane fa-fw\"></i> Testing</span>"; } 
+	else { $stat = "<span class=\"label label-danger\"><i class=\"fa fa-pencil-square-o fa-fw\"></i> Editing</span>"; }
 
 	$target = htmlentities("". $GLOBALS['ESPCONFIG']['ME'] ."?where=copy&sid=${sid}");
 	echo "	<tr>\n";
