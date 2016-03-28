@@ -26,38 +26,22 @@ function esp_where($where = null) {
     $where = strtolower(preg_replace('/ +/','_',$where));
     if(!preg_match('/^[A-Za-z0-9_]+$/',$where))    // Valid chars are [A-Za-z0-9_]
         $where = 'index';
-    //if(!file_exists($cfg['include_path'].'/where/'.$where.$cfg['extension']))
     $filecheck = $_SERVER['DOCUMENT_ROOT'] . '/admin/include/where/'.$where.'.inc';
     if(!file_exists($filecheck))
         $where = 'index';
-    if(!file_exists($filecheck)) {
-        echo('<b>'. _('Unable to open include file. Check INI settings. Aborting.'). '</b>');
-        exit;        
-    }
+    if(!file_exists($filecheck)) { echo('<b>Unable to open include file. Check INI settings. Aborting.</b>'); exit; }
     return($filecheck);
-    //if(!file_exists($cfg['include_path'].'/where/'.$where.$cfg['extension']))
-    //    $where = 'index';
-    //if(!file_exists($cfg['include_path'].'/where/'.$where.$cfg['extension'])) {
-    //    echo('<b>'. _('Unable to open include file. Check INI settings. Aborting.'). '</b>');
-    //    exit;
-    //}
-    //return($cfg['include_path'].'/where/'.$where.$cfg['extension']);
 }
 
 function esp_init_adodb() {
     $cfg =& $GLOBALS['ESPCONFIG'];
     $dbcheck = $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/adodb/adodb.inc.php';
-    //if(!file_exists($cfg['adodb_path'].'adodb.inc.php')) {
-    if(!file_exists($dbcheck)) {
-        echo('<b>Unable to open ADODB include file. Check INI settings. Aborting.</b>');
-        exit;
-    } else {
-        //include($cfg['adodb_path'].'adodb.inc.php');
-        include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/adodb/adodb.inc.php';
-    }
-    if (isset($cfg['adodb_conn'])) {
-        return;
-    }
+
+    if (!file_exists($dbcheck)) { echo('<b>Unable to open ADODB include file. Check INI settings. Aborting.</b>'); exit; } 
+    else { include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/adodb/adodb.inc.php'; }
+
+    if (isset($cfg['adodb_conn'])) { return; }
+
     $cfg['adodb_conn'] = &ADONewConnection($cfg['adodb_database_type']);
     error_reporting(0);  // Hide errors 
 
@@ -89,15 +73,14 @@ function esp_init_adodb() {
         echo('</body></html>');
         exit;
     }
-    //mysql_query("set names 'utf8'",$dbconnected);
     error_reporting(E_ALL);       // Show errors from now on.
 }
     
 // redirect to thank you page for survey ID 'sid'
-// exits PHP!
+
 function goto_thankyou($sid,$referer) {
+
     // submitting a survey for good
-    //esp_require_once('/lib/espsurveystat');
     require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurveystat.inc';
 
     survey_stat_decrement(SURVEY_STAT_ABANDONED, $sid);
@@ -145,8 +128,8 @@ window.location="<?php echo($thank_url); ?>"
     echo "<p> $thank_body </p>";
     echo "<a href=\"$redir\" class=\"btn btn-default\" role=\"button\">Back to Dashboard</a>\n\n";
 
-    if (isset($_GET['where']) && $_GET['where'] == 'test'){
-       if ($GLOBALS['ESPCONFIG']['limit_double_postings']==0) {
+    if (isset($_GET['where']) && $_GET['where'] == 'test') {
+       if ($GLOBALS['ESPCONFIG']['limit_double_postings'] == 0) {
           $ref = "<a href=\"". $referer."\">Return</a><br />";
    } else {
       $ref = "";
@@ -180,17 +163,17 @@ function check_referer($referer) {
 //  Go to a different URL, using the best method possible given the current output state
 
 function blur($url, $forwardingLabel = 'Please click here to continue...') {    
-     // close the session, as it's no longer needed and we don't want to delay waiters
-     session_write_close();
+    // close the session, as it's no longer needed and we don't want to delay waiters
+    session_write_close();
 
-     // make sure the URL is absolute, as the Location: header requires it
-     if (0 !== strpos($url, 'http')) {
-         $url = rtrim($GLOBALS['ESPCONFIG']['base_url'], '/') . '/' . ltrim($url, '/');
-     }
+    // make sure the URL is absolute, as the Location: header requires it
+    if (0 !== strpos($url, 'http')) {
+        $url = rtrim($GLOBALS['ESPCONFIG']['base_url'], '/') . '/' . ltrim($url, '/');
+    }
 
-     // go elsewhere
-     if (headers_sent()) {
-         echo <<<EOHTML
+    // go elsewhere
+    if (headers_sent()) {
+        echo <<<EOHTML
 <script type='text/javascript'>
 window.location = "$url";
 </script>
@@ -198,13 +181,14 @@ window.location = "$url";
 <a href="$url">$forwardingLabel</a>
 </noscript>
 EOHTML;
-        } else {
-            header(sprintf('Location: %s', $url));
-        }
+    } else {
+        header(sprintf('Location: %s', $url));
+    }
 
-        // go no further
-        exit(0);
-    }    
+    // go no further
+    exit(0);
+}    
+
 
 function goto_saved($sid, $url) {
 
@@ -219,7 +203,7 @@ function goto_saved($sid, $url) {
 
 <br />
 
-<p>Your progress has been saved.  You may return at any time to complete this survey.</p>
+<p>Your progress has been saved. You may return at any time to complete this survey.</p>
 
 <p>To do so, simply bookmark the link below.</p>
 
@@ -243,7 +227,8 @@ function esp_require_once($path) {
     $ESPCONFIG = $GLOBALS['ESPCONFIG'];
 
     // load the file in
-    require_once($ESPCONFIG['include_path'] . $path . $ESPCONFIG['extension']);
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include' . $path . '.inc';
+    //require_once($ESPCONFIG['include_path'] . $path . $ESPCONFIG['extension']);
 
     return true;
 }

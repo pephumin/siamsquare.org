@@ -7,8 +7,10 @@ $curr_q =& $_SESSION['curr_q'];
 $sid =& $_SESSION['survey_id'];
 	$id = intval($_POST['id']);
 
-if (isset($_POST['type_id'])) { $_POST['type_id'] = intval($_POST['type_id']) ?  $_POST['type_id'] : ''; }
-else { $_POST['type_id'] = ''; }
+if (isset($_POST['type_id']))
+	$_POST['type_id'] = intval($_POST['type_id']) ?  $_POST['type_id'] : '';
+else
+	$_POST['type_id'] = '';
 
 // update failed, stay on same question
 
@@ -33,7 +35,7 @@ if($updated && $curr_q) {
 		}
 	}
 	db_close($result);
-} elseif ($updated) {
+} else if ($updated) {
 	// adding a new question (possibly because there are no questions yet)
 	$curr_q = 0;
 	foreach(array('name','length','precise','content','content_th','position') as $f) {
@@ -51,7 +53,7 @@ if($updated && $curr_q) {
 
 <input type="hidden" name="id" value="<?php echo($curr_q); ?>" />
 
-<p>Edit this question, or click the number of the question you would like to edit:</p>
+<?php echo "<p>Edit this question, or click the number of the question you would like to edit:</p>"; ?>
 
 <select class="form-control" name="q_id" id="q_id">
 
@@ -65,17 +67,15 @@ $sql = "SELECT id,type_id,position,content,content_th FROM ".$GLOBALS['ESPCONFIG
 $result = execute_sql($sql);
 while( list($qid, $tid, $pos, $content, $content_th) = fetch_row($result)) {
        $result->MoveNext();
-       //$dots = "";
-       //$content = strip_tags($content);
-       //$content_th = strip_tags($content_th);
-       //if (strlen($content) > 30) { $dots = "..."; }
-       //if (strlen($content_th) > 30) { $dots = "..."; }
+       $dots = "";
+       $content = strip_tags($content);
+       $content_th = strip_tags($content_th);
+       if (strlen($content) > 30) { $dots = "..."; }
+       if (strlen($content_th) > 30) { $dots = "..."; }
        if ($qid==$curr_q) {
-          //echo('<option selected value="'.$qid.'">'.$i++.'. '.substr($content,0, 30).$dots.'</option>');
-       	  echo('<option selected value="'.$qid.'">'.$i++.'. '.$content.'</option>');
+          echo('<option selected value="'.$qid.'">'.$i++.'. '.substr($content,0, 30).$dots.'</option>');
       } else {
-          //echo('<option value="'.$qid.'">'.$i++.'. '.substr($content,0, 30).$dots.'</option>');
-          echo('<option value="'.$qid.'">'.$i++.'. '.$content.'</option>');
+          echo('<option value="'.$qid.'">'.$i++.'. '.substr($content,0, 30).$dots.'</option>');
    }
 }
 db_close($result);
@@ -97,7 +97,7 @@ else { echo "<p><mark>Edit a question</mark></p>\n"; }
 <table class="table table-hover">
 	<tr class="active">
 		<th>&nbsp;</th>
-		<th>Question short name</th>
+		<th>Question Name</th>
 		<th>Type</th>
 		<th>Length</th>
 		<th>Precision</th>
@@ -142,29 +142,25 @@ else { echo "<p><mark>Edit a question</mark></p>\n"; }
 	<tr>
 		<th>Question in English</th>
 		<td colspan="6"><?php
-			echo(mktextarea("content",4,60,"virtual"));
+			echo(mktextarea("content",4,60,"VIRTUAL"));
 		?></td>
 	</tr>
 	<tr>
 		<th>Question in Thai</th>
 		<td colspan="6"><?php
-			echo(mktextarea("content_th",4,60,"virtual"));
+			echo(mktextarea("content_th",4,60,"VIRTUAL"));
 		?></td>
 	</tr>
 </table>
 
-
 <?php
-
 // has answer options ... so show that part of the form
 //$sql = "SELECT has_choices FROM ".$GLOBALS['ESPCONFIG']['question_type_table']." WHERE id=" . $_POST['type_id'];
 $sql = "SELECT has_choices FROM ".$GLOBALS['ESPCONFIG']['question_type_table']." WHERE typeid=" . $_POST['type_id'];
 $choices = get_one($sql);
-
-if ($curr_q == 0 || empty($_POST['type_id']) || $choices == 'Y') {
+if($curr_q == 0 ||
+	empty($_POST['type_id']) || $choices =='Y') {
 	//include($GLOBALS['ESPCONFIG']['include_path']."/tab/questions_options".$GLOBALS['ESPCONFIG']['extension']);
 	include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/tab/questions_options.inc';
-}
-
+	}
 ?>
-

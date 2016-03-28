@@ -21,9 +21,10 @@ $result = execute_sql($sql);
     else
        $status = 0;
 
+// ------------------ PE ------------------
 // Added for cookie auth, to eliminate double submits - only for public surveys
-$cookiename="survey_".$sid;
-if (($GLOBALS['ESPCONFIG']['limit_double_postings']>0) && isset($_COOKIE["$cookiename"]) && $survey_public=='Y' && !($ESPCONFIG['auth_response'] && auth_get_option('resume'))) { echo (mkerror('You have already completed this survey.')); return; }
+//$cookiename="survey_".$sid;
+//if (($GLOBALS['ESPCONFIG']['limit_double_postings']>0) && isset($_COOKIE["$cookiename"]) && $survey_public=='Y' && !($ESPCONFIG['auth_response'] && auth_get_option('resume'))) { echo (mkerror('You have already completed this survey.')); return; }
     
 $request_direct = 0;
 $request_referer = '';
@@ -74,7 +75,8 @@ elseif (survey_status_is_test($status)) {
 elseif (STATUS_OPEN !== survey_open($open_date, $close_date)) { $isActive = false; } 
 else { $isActive = true; }
 
-if (! $isActive) { echo(mkerror('Error processing survey: Survey is not active.')); return; }
+// ------------------ PE ------------------
+//if (! $isActive) { echo(mkerror('Error processing survey: Survey is not active.')); return; }
 
 if ($request_referer == $ESPCONFIG['autopub_url']) { $request_referer .= "?name=$name"; }
 
@@ -159,6 +161,9 @@ if ($ESPCONFIG['auth_response'] && auth_get_option('resume') && $_SESSION['rid']
     survey_stat_decrement(SURVEY_STAT_SUSPENDED, $sid);
 }
 
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/function/ssq.inc';
+echo progressbar($_SESSION['sec'], $num_sections);
+
 paint_submission_form_open();
 survey_render($sid,$_SESSION['sec'],$_SESSION['rid'],$msg);
 
@@ -174,9 +179,8 @@ survey_render($sid,$_SESSION['sec'],$_SESSION['rid'],$msg);
 echo "<p class=\"text-center\">\n";
 if (auth_get_option('navigate') && $_SESSION['sec'] > 1) { echo "<input class=\"btn btn-default\" type=\"submit\" name=\"prev\" value=\"&lt;&lt; Previous\" />&nbsp;\n"; }
 if (auth_get_option('resume')) { echo "<input class=\"btn btn-success\" type=\"submit\" name=\"resume\" value=\"Save\" />&nbsp;\n"; }
-if($_SESSION['sec'] == $num_sections) { echo "<input class=\"btn btn-default\" type=\"submit\" name=\"submit\" value=\"Submit\" />&nbsp;\n"; } 
+if ($_SESSION['sec'] == $num_sections) { echo "<input class=\"btn btn-default\" type=\"submit\" name=\"submit\" value=\"Submit\" />&nbsp;\n"; } 
 else { echo "<input class=\"btn btn-default\" type=\"submit\" name=\"next\" value=\"Next &gt;&gt;\" />&nbsp;\n"; }
-//paint_submission_form_close();
 echo "</p>\n";
 echo "</form>\n";
 
@@ -204,8 +208,8 @@ function all_done() {
     response_send_email($sid,$_SESSION['rid']);
 
     // initialize the state variables
-    $_SESSION['rid']="";
-    $_SESSION['sec']="";
+    $_SESSION['rid'] = "";
+    $_SESSION['sec'] = "";
 
     // go to the thank you
     goto_thankyou($sid, $_REQUEST['referer']);
@@ -245,17 +249,10 @@ function paint_feedback($sid, $rid, $sec, $additional = array ()) {
             echo 'Total credit:' . ' ' . $totalCredit;
         }
 
-        // paint the next button
-        // NOTE: don't call it "next", because the logic above has specific expectations about
-        // NOTE: the cases when that button is pressed
-        //echo '<fieldset>';
         echo mksubmit("go", 'Next Page');
-        //echo '</fieldset>';
 
         // close the form
         paint_submission_form_close();
-
-        // all done
         exit;
     }
 }
