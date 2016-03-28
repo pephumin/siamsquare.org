@@ -115,7 +115,11 @@ function displayPageHeader() {
 	echo "<form method=\"post\" id=\"phpesp\" action=".$self.">\n";
 	echo "<div class=\"container\">\n\n";
 	// bootlint
+<<<<<<< HEAD
 	$target = $home.$sbtn-defaultelf;
+=======
+	$target = $home.$self;
+>>>>>>> origin/master
 	echo "<p class=\"pull-right\"><a class=\"btn btn-info btn-xs\" href=\"http://www.bootlint.com/?url={$target}\" target=\"_blank\" role=\"button\">bootlint</a></p>\n\n";
 
 }
