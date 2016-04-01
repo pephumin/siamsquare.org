@@ -191,6 +191,9 @@ function mkloginbox() {
     $text .= "  <div class=\"dashboardPanel\" id=\"login\">\n";
     $text .= "  <h2>Client login</h2>\n";
     $text .= "  <br />\n";
+    $text .= "  <p>This section is reserved only for our clients whom we have granted with a high level of secured access. Within this section you will be able to access to a highly confidential data such as questionnaire design, data collected from respondents, reports, etc. We carefully design our system to ensure such high important data is kept separately for different users or user groups.</p>\n";
+    $text .= "  <p>Should you need any support for accessing this section, please do not hesitate to contact our staff right away.</p>\n";
+    $text .= "  <br />\n";
     $text .= "    <div class=\"form-group\">\n";
     $text .= "      <label for=\"username\" class=\"col-sm-3 control-label\">Username:</label>\n";
     $text .= "        <div class=\"col-sm-9\">\n";
@@ -212,7 +215,7 @@ function mkloginbox() {
     $text .= "     </div>\n";
     $text .= "     <div class=\"form-group\">\n";
     $text .= "       <div class=\"col-sm-offset-3 col-sm-9\">\n";
-    $text .= "         <button class=\"btn btn-lg btn-primary btn-block\" name=\"Login\" type=\"submit\">Sign in</button>\n";
+    $text .= "         <button class=\"btn btn-success\" name=\"Login\" type=\"submit\">Sign in</button>\n";
     $text .= "       </div>\n";
     $text .= "     </div>\n";
     $text .= "  </div>\n";

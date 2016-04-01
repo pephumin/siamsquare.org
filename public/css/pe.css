@@ -2,6 +2,7 @@
 
 body {
   /*padding-top: 70px;*/
+  /*margin-top:30px; */
   font-family: 'Open Sans';
   font-size: 14px;
   line-height: 1.42857143;
@@ -16,4 +17,8 @@ footer {
 
 .pagination-centered {
   text-align: center;
+}
+
+#login-nav input { 
+  margin-bottom: 15px; 
 }
