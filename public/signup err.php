@@ -8,10 +8,9 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
 
 esp_init_adodb();
 
-$fields = array('username','password','email','fname','lname');
+$fields = array('username','password','email','fname','lname',);
 
-//$rqd_fields = array('username','password','password2','email',);
-$rqd_fields = array('password','password2','email','fname','lname');
+$rqd_fields = array('username','password','password2','email',);
 
 // set value to override config.php
 $signup_realm = null;
@@ -24,8 +23,8 @@ if ($signup_realm == null || empty($signup_realm)) { $signup_realm = $GLOBALS['E
 
 if ($signup_realm == null || empty($signup_realm)) { echo mkerror("Sorry, the account request form is disabled."); return; }
 
-//do if (isset($post['submit'])) {
-do if (isset($post['email'])) {
+do if (isset($post['submit'])) {
+//do if (isset($post['email'])) {
 
   foreach ($rqd_fields as $f) { if (!isset($post[$f]) || empty($post[$f])) { $msg = mkerror("Please complete all required fields."); break; } }
 
@@ -35,11 +34,10 @@ do if (isset($post['email'])) {
   
   if (empty($post['username'])) { $post['username'] = $post['email']; }
 
-  $checksql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['respondent_table']." WHERE username = "._addslashes($post['email']);
-  //echo $checksql;
-  $checkresult = execute_sql($checksql);
-  if (record_count($checkresult) > 0) { $msg = mkerror("Your email is already registered in our system. You either need to recover password or register with a different email."); break; }
-  db_close($checkresult);
+  //$checksql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['respondent_table']." WHERE username = ".$post['email'];
+  //$checkresult = execute_sql($checksql);
+  //if ($checkresult) { $msg = mkerror("Your email is already registered in our system. You either need to recover password or register with a different email."); break; }
+  //db_close($checkresult);
 
   $sqlf = array();
   $sqlv = array();
@@ -58,14 +56,14 @@ do if (isset($post['email'])) {
   $sqlf = implode(',', $sqlf);
   $sqlv = implode(',', $sqlv);
   
-  //print_r($sqlf);
-  //print_r($sqlv);
+  print_r($sqlf);
+  print_r($sqlv);
 
   $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['respondent_table']." ($sqlf) VALUES ($sqlv)";
 
   $res = execute_sql($sql);
   if (!$res) { $msg = mkerror("Request failed, please choose a different username."); break; }
-  else { $msg = mksuccess("Your account has been created. Please sign in from the main page."); }
+  else { $msg = mksuccess("Your account has been created."); }
   
   foreach ($fields as $f) { $post[$f] = null; unset($post[$f]); }
 

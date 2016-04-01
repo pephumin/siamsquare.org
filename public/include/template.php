@@ -20,7 +20,7 @@ function displayHeader($title, $scrollspy = NULL) {
   echo "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
   echo "  <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n";
   echo "  <title>Respondent Dashboard: $title</title>\n";
-  $cssfiles = array("css/bootstrap.css", "css/font-awesome.css", "css/pe.css");
+  $cssfiles = array("css/bootstrap.css", "css/font-awesome.css", "css/typicons.css", "css/pe.css");
   foreach ($cssfiles as $filename) {
     echo "  <link href=\"$filename\" rel=\"stylesheet\" type=\"text/css\" />\n";
   }
@@ -30,10 +30,10 @@ function displayHeader($title, $scrollspy = NULL) {
   if (isset($_SERVER['BASE_PAGE'])) {
     echo "  <link rel=\"canonical\" href=\"$admin/$base\">\n";
   }
-  $jsfiles = array("js/public.js");
-  foreach ($jsfiles as $filename) {
-    echo "  <script type=\"text/javascript\" src=\"$filename\"></script>\n";
-  }
+  //$jsfiles = array("js/pe.js");
+  //foreach ($jsfiles as $filename) {
+  //  echo "  <script type=\"text/javascript\" src=\"$filename\"></script>\n";
+  //}
   echo "</head>\n";
   //if ($scrollspy) { 
   //  echo "  <style type=\"text/css\">\n";
@@ -55,8 +55,8 @@ function displayHeader($title, $scrollspy = NULL) {
   echo "<body>\n"; 
 }
 
-function displayNav() {
-  global $self, $public, $respondent;
+function displayNav_original() {
+  global $home, $self, $public, $respondent;
   echo "\n";
   echo "<nav class=\"navbar navbar-default\">\n";
   echo "<div class=\"container\">\n";
@@ -103,6 +103,89 @@ function displayNav() {
   }
 }
 
+function displayNav() {
+  global $home, $self, $public, $respondent;
+  echo "<nav class=\"navbar navbar-default\" role=\"navigation\">\n";
+  echo "  <div class=\"container\">\n";
+  echo "    <div class=\"navbar-header\">\n";
+  echo "      <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\"#ssq-navbar\">\n";
+  echo "      <span class=\"sr-only\">Toggle navigation</span>\n";
+  echo "      <span class=\"icon-bar\"></span>\n";
+  echo "      <span class=\"icon-bar\"></span>\n";
+  echo "      <span class=\"icon-bar\"></span>\n";
+  echo "      </button>\n";
+  echo "      <a class=\"navbar-brand\" href=\"$public\">SiamSquare <small>[Respondent Zone]</small></a>\n";
+  echo "   </div>\n";
+  //echo "   <!-- Collect the nav links, forms, and other content for toggling -->\n";
+  echo "   <div class=\"collapse navbar-collapse\" id=\"ssq-navbar\">\n";
+  echo "      <ul class=\"nav navbar-nav\">\n";
+  echo "         <li><a href=\"http://www.jquery2dotnet.com\">About Us</a></li>\n";
+  echo "         <li class=\"dropdown\">\n";
+  echo "            <a href=\"http://www.jquery2dotnet.com\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Pages <b class=\"caret\"></b></a>\n";
+  echo "            <ul class=\"dropdown-menu\">\n";
+  echo "               <li><a href=\"http://www.jquery2dotnet.com\">Action</a></li>\n";
+  echo "               <li><a href=\"http://www.jquery2dotnet.com\">Another action</a></li>\n";
+  echo "               <li><a href=\"http://www.jquery2dotnet.com\">Something else here</a></li>\n";
+  echo "               <li class=\"divider\"></li>\n";
+  echo "               <li><a href=\"http://www.jquery2dotnet.com\">Separated link</a></li>\n";
+  echo "               <li class=\"divider\"></li>\n";
+  echo "               <li><a href=\"http://www.jquery2dotnet.com\">One more separated link</a></li>\n";
+  echo "            </ul>\n";
+  echo "         </li>\n";
+  echo "         <li class=\"active\"><a href=\"$home\">Front page</a></li>\n";
+  echo "      </ul>\n";
+  //echo "      <form class=\"navbar-form navbar-left\" role=\"search\">\n";
+  //echo "         <div class=\"form-group\">\n";
+  //echo "            <input type=\"text\" class=\"form-control\" placeholder=\"Search\">\n";
+  //echo "         </div>\n";
+  //echo "         <button type=\"submit\" class=\"btn btn-default\">Submit</button>\n";
+  //echo "      </form>\n";
+  echo "      <ul class=\"nav navbar-nav navbar-right\">\n";
+  //echo "         $b<li><a href=\"/public/signup.php\"><i class=\"fa fa-user fa-lg\"></i><i class=\"fa fa-plus\"></i>&nbsp; Sign Up</a></li>\n";
+  echo "         <li><button type=\"button\" class=\"btn btn-success navbar-btn\">Sign in</button></li>\n";
+  //echo "         <li><button type=\"button\" class=\"btn btn-success navbar-btn\">Sign in</button></li>\n";
+  //echo "         <li><a href=\"#\" class=\"btn btn-default navbar-btn\">Sign in</a></li>\n";
+  //echo "         <li><a href=\"/public/signup.php\"><i class=\"fa fa-user-plus\"></i>&nbsp; Sign Up</a></li>\n";
+  echo "         <li class=\"dropdown\">\n";
+  echo "            <a href=\"http://www.jquery2dotnet.com\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Sign in <span class=\"caret\"></span></a>\n";
+  echo "            <ul class=\"dropdown-menu\" style=\"padding: 15px;min-width: 250px;\">\n";
+  echo "               <li>\n";
+  echo "                  <div class=\"row\">\n";
+  echo "                     <div class=\"col-md-12\">\n";
+  echo "                        <form class=\"form\" role=\"form\" method=\"post\" action=\"login\" accept-charset=\"UTF-8\" id=\"login-nav\">\n";
+  echo "                           <div class=\"form-group\">\n";
+  echo "                              <label class=\"sr-only\" for=\"exampleInputEmail2\">Email address</label>\n";
+  echo "                              <input type=\"email\" class=\"form-control\" id=\"exampleInputEmail2\" placeholder=\"Email address\" required>\n";
+  echo "                           </div>\n";
+  echo "                           <div class=\"form-group\">\n";
+  echo "                              <label class=\"sr-only\" for=\"exampleInputPassword2\">Password</label>\n";
+  echo "                              <input type=\"password\" class=\"form-control\" id=\"exampleInputPassword2\" placeholder=\"Password\" required>\n";
+  echo "                           </div>\n";
+  echo "                           <div class=\"checkbox\">\n";
+  echo "                              <label>\n";
+  echo "                              <input type=\"checkbox\"> Remember me\n";
+  echo "                              </label>\n";
+  echo "                           </div>\n";
+  echo "                           <div class=\"form-group\">\n";
+  echo "                              <button type=\"submit\" class=\"btn btn-success btn-block\">Sign in</button>\n";
+  echo "                           </div>\n";
+  echo "                        </form>\n";
+  echo "                     </div>\n";
+  echo "                  </div>\n";
+  echo "               </li>\n";
+  echo "               <li class=\"divider\"></li>\n";
+  echo "               <li>\n";
+  echo "                  <input class=\"btn btn-primary btn-block\" type=\"button\" id=\"sign-in-google\" value=\"Sign In with Google\">\n";
+  echo "                  <input class=\"btn btn-primary btn-block\" type=\"button\" id=\"sign-in-twitter\" value=\"Sign In with Twitter\">\n";
+  echo "               </li>\n";
+  echo "            </ul>\n";
+  echo "         </li>\n";
+  echo "      </ul>\n";
+  echo "   </div>\n";
+  echo "  </div>\n";
+  echo "</nav>\n";  
+}
+
 function displayFooter() {
   global $respondent;
   if(!empty($respondent['username'])) { $signed = "Signed in as <i class=\"fa fa-user\"></i> <kbd>".$respondent['username']."</kbd>"; } 
@@ -120,7 +203,7 @@ function displayFooter() {
   echo "    <div class=\"text-muted pull-right\">".$signed."</div>\n";
   echo "  </div>\n";
   echo "</footer>\n\n";
-  $jsfiles = array("js/jquery.js", "js/bootstrap.js");
+  $jsfiles = array("js/jquery.js", "js/bootstrap.js", "js/pe.js");
   foreach ($jsfiles as $filename) {
     //$path = dirname(dirname(__FILE__)).'/js/'.$filename;
     echo '<script type="text/javascript" src="' . $filename . '"></script>'."\n";
@@ -244,12 +327,17 @@ function paint_public_survey_list() {
   // spit them out
   if (0 < count($surveys)) {
     echo "<h2>Public surveys</h2>\n";
-    echo "<p>If you have an account, please log in before taking these public surveys.</p>\n";
-    echo "<ul>\n";
+    echo "<br />\n";
+    echo "<p>Below is a list of the current available surveys. Please complete these surveys.</p>\n";
+    echo "<p>If you are a registered member, make sure you sign in before taking these public surveys in order to get the full benefits.</p>\n";
+    echo "<br />\n";
+    //echo "<ul>\n";
     foreach ($surveys as $survey) {
-      printf('<li><a href="%s">%s</a></li>', survey_fetch_url_by_survey_name($survey['name']), $survey['title']);
+      //printf('<li><a href="%s">%s</a></li>', survey_fetch_url_by_survey_name($survey['name']), $survey['title']);
+      printf('<a href="%s" class="btn btn-info btn-lg" role="button"><i class="fa fa-flag"></i> %s</a> &nbsp;', survey_fetch_url_by_survey_name($survey['name']), $survey['title']);
     }
-    echo "</ul>\n";
+    //echo "</ul>\n";
+    echo "<br />\n";
   }
 }
 
@@ -461,13 +549,15 @@ function render_login_form($action = null, $usernameVar = 'username', $passwordV
   if ($_message) { echo mkerror($_message); }
   echo "\n";
   echo "<form name=\"login\" id=\"login\" method=\"post\" class=\"form-horizontal\" action=\"$action\">\n";
-  echo "  <div class=\"dashboardPanel\" id=\"login\">\n";
   echo "  <h2 class=\"form-signin-heading\">Respondent login</h2>\n";
   echo "  <br />\n";
+  echo "  <p>This section is reserved only for our registered members who are willing to spend some of their spare time with our surveys (both public or specific to some target groups). Within this section you will be able to access to a highly confidential data such as questionnaire design, data collected from respondents, reports, etc. We carefully design our system to ensure such high important data is kept separately for different users or user groups.</p>\n";
+  echo "  <p>Despite the registration processs can be done by yourself, please feel free to contact us should you need any support for accessing this section.</p>\n";
+  echo "  <br />\n";
   echo "    <div class=\"form-group\">\n";
-  echo "      <label for=\"$usernameVar\" class=\"col-sm-3 control-label\">Username:</label>\n";
+  echo "      <label for=\"$usernameVar\" class=\"col-sm-3 control-label\">Email (login):</label>\n";
   echo "        <div class=\"col-sm-9\">\n";
-  echo "        <input type=\"text\" name=\"$usernameVar\" class=\"form-control\" placeholder=\"Username\">\n";
+  echo "        <input type=\"text\" name=\"$usernameVar\" class=\"form-control\" placeholder=\"email@company.com\">\n";
   echo "        </div>\n";
   echo "     </div>\n";
   echo "     <div class=\"form-group\">\n";
@@ -485,10 +575,37 @@ function render_login_form($action = null, $usernameVar = 'username', $passwordV
   echo "     </div>\n";
   echo "     <div class=\"form-group\">\n";
   echo "       <div class=\"col-sm-offset-3 col-sm-9\">\n";
-  echo "         <button class=\"btn btn-lg btn-primary btn-block\" name=\"$loginButtonVar\" type=\"submit\">Sign in</button>\n";
+  echo "         <button class=\"btn btn-success\" name=\"$loginButtonVar\" type=\"submit\">Sign in</button>\n";
   echo "       </div>\n";
   echo "     </div>\n";
-  echo "  </div>\n";
+  echo "</form>\n";
+  echo "<br />\n";
+  echo login_warning();
+}
+
+function render_login_form_short($action = null, $usernameVar = 'username', $passwordVar = 'password', $loginButtonVar = 'doLogin', $_message = null) {
+  global $public;
+  $cfg =& $GLOBALS['ESPCONFIG'];
+  if (empty($action)) { $action = $public . '/'; }
+  $username = (isset($_REQUEST['username']) ? $_REQUEST['username'] : '');
+  $str = "";
+  if ($_message) { echo mkerror($_message); }
+  echo "\n";
+  echo "<form name=\"login\" id=\"login\" method=\"post\" class=\"form-horizontal\" action=\"$action\">\n";
+  echo "  <h2 class=\"form-signin-heading\">Respondent login</h2>\n";
+  echo "  <br />\n";
+  echo "  <p>This section is reserved only for our registered members who are willing to spend some of their spare time with our surveys (both public or specific to some target groups). Within this section you will be able to access to a highly confidential data such as questionnaire design, data collected from respondents, reports, etc. We carefully design our system to ensure such high important data is kept separately for different users or user groups.</p>\n";
+  echo "  <p>Despite the registration processs can be done by yourself, please feel free to contact us should you need any support for accessing this section.</p>\n";
+  echo "  <br />\n";
+  echo "    <div class=\"input-group\">\n";
+  echo "      <span class=\"input-group-addon\"><i class=\"fa fa-envelope fa-fw\"></i></span>\n";
+  echo "      <input class=\"form-control\" type=\"text\" placeholder=\"Email address\">\n";
+  echo "    </div>\n";
+  echo "    <br />\n";
+  echo "    <div class=\"input-group\">\n";
+  echo "      <span class=\"input-group-addon\"><i class=\"fa fa-key fa-fw\"></i></span>\n";
+  echo "      <input class=\"form-control\" type=\"password\" placeholder=\"Password\">\n";
+  echo "    </div>\n";
   echo "</form>\n";
   echo "<br />\n";
   echo login_warning();
@@ -506,20 +623,20 @@ function render_profile_change_form ($action = null, $firstNameVar = 'firstName'
   echo "<br />\n\n";
   echo "<form class=\"form-horizontal\" method=\"post\" id=\"profile_change\" action=\"$action\">\n";
   echo "  <div class=\"form-group\">\n";
-  echo "    <label class=\"col-sm-3 control-label\">Email</label>\n";
+  echo "    <label class=\"col-sm-3 control-label\">Email (login): </label>\n";
   echo "    <div class=\"col-sm-9\">\n";
   echo "      <input type=\"text\" class=\"form-control\" name=\"$emailVar\" placeholder=\"$emailAddress\" disabled>\n";
   echo "      <input type=\"hidden\" name=\"$emailVar\" value=\"$emailAddress\" />\n";
   echo "    </div>\n";
   echo "  </div>\n";
   echo "  <div class=\"form-group\">\n";
-  echo "    <label class=\"col-sm-3 control-label\" for=\"$firstNameVar\">First name</label>\n";
+  echo "    <label class=\"col-sm-3 control-label\" for=\"$firstNameVar\">First name:</label>\n";
   echo "    <div class=\"col-sm-9\">\n";
   echo "      <input type=\"text\" class=\"form-control\" name=\"$firstNameVar\" value=\"$firstName\">\n";
   echo "    </div>\n";
   echo "  </div>\n";
   echo "  <div class=\"form-group\">\n";
-  echo "    <label class=\"col-sm-3 control-label\" for=\"$lastNameVar\">Last name</label>\n";
+  echo "    <label class=\"col-sm-3 control-label\" for=\"$lastNameVar\">Last name:</label>\n";
   echo "    <div class=\"col-sm-9\">\n";
   echo "      <input type=\"text\" class=\"form-control\" name=\"$lastNameVar\" value=\"$lastName\">\n";
   echo "    </div>\n";
@@ -548,19 +665,19 @@ function render_passwd_change_form ($action = null, $oldPasswordVar = 'oldPasswo
   echo "    </div>\n";
   echo "  </div>\n";
   echo "  <div class=\"form-group\">\n";
-  echo "    <label class=\"col-sm-3 control-label\" for=\"$oldPasswordVar\">Old password</label>\n";
+  echo "    <label class=\"col-sm-3 control-label\" for=\"$oldPasswordVar\">Old password: <span class=\"label label-danger\">required</span></label>\n";
   echo "    <div class=\"col-sm-9\">\n";
   echo "      <input type=\"password\" class=\"form-control\" name=\"$oldPasswordVar\" id=\"$oldPasswordVar\" placeholder=\"Current password\">\n";
   echo "    </div>\n";
   echo "  </div>\n";
   echo "  <div class=\"form-group\">\n";
-  echo "    <label class=\"col-sm-3 control-label\" for=\"$newPasswordVar\">New password</label>\n";
+  echo "    <label class=\"col-sm-3 control-label\" for=\"$newPasswordVar\">New password: <span class=\"label label-danger\">required</span></label>\n";
   echo "    <div class=\"col-sm-9\">\n";
   echo "      <input type=\"password\" class=\"form-control\" name=\"$newPasswordVar\" id=\"$newPasswordVar\" placeholder=\"New password\">\n";
   echo "    </div>\n";
   echo "  </div>\n";
   echo "  <div class=\"form-group\">\n";
-  echo "    <label class=\"col-sm-3 control-label\" for=\"$newPasswordConfirmVar\">Confirm new password</label>\n";
+  echo "    <label class=\"col-sm-3 control-label\" for=\"$newPasswordConfirmVar\">Confirm new password: <span class=\"label label-danger\">required</span></label>\n";
   echo "    <div class=\"col-sm-9\">\n";
   echo "      <input type=\"password\" class=\"form-control\" name=\"$newPasswordConfirmVar\" id=\"$newPasswordConfirmVar\" placeholder=\"New password again\">\n";
   echo "    </div>\n";
@@ -570,53 +687,54 @@ function render_passwd_change_form ($action = null, $oldPasswordVar = 'oldPasswo
   echo "    <button type=\"submit\" class=\"btn btn-default\" name=\"$cancelButtonVar\">Cancel</button>\n";
   echo "  </div>\n";
   echo "</form>\n";
-
 }
-
 
 function respondent_signup() {
   global $home, $self;
   $page = $home.$self;
   $str = "";
   if ($_message) { echo mkerror($_message); }
+
   echo "<form class=\"form-horizontal\" method=\"post\" id=\"phpesp\" action=\"$page\">\n";
   echo "  <div class=\"dashboardPanel\" id=\"login\">\n";
-  echo "  <h2 class=\"form-signin-heading\">Respondent sign up</h2>\n";
+  echo "  <h2 class=\"form-signin-heading\">New account sign up</h2>\n";
   echo "  <br />\n";
+  echo "  <p>Sign up for free. What you have to do is to spend 2 minutes completing this page and that's it!</p>\n";
+  echo "  <p>All registered members will be automatically enrolled to our reward system (click for more info).</p>\n";
+  echo "  <br /><br />\n";
   echo "    <div class=\"form-group\">\n";
-  echo "      <label for=\"fname\" class=\"col-sm-3 control-label\">First Name:</label>\n";
-  echo "        <div class=\"col-sm-9\">\n";
-  echo "        <input type=\"text\" name=\"fname\" class=\"form-control\" placeholder=\"John\">\n";
-  echo "        </div>\n";
-  echo "     </div>\n";
-  echo "    <div class=\"form-group\">\n";
-  echo "      <label for=\"lname\" class=\"col-sm-3 control-label\">Last Name:</label>\n";
-  echo "        <div class=\"col-sm-9\">\n";
-  echo "        <input type=\"text\" name=\"lname\" class=\"form-control\" placeholder=\"Doe\">\n";
-  echo "        </div>\n";
-  echo "     </div>\n";
-  echo "    <div class=\"form-group\">\n";
-  echo "      <label for=\"email\" class=\"col-sm-3 control-label\">Email:</label>\n";
+  echo "      <label for=\"email\" class=\"col-sm-3 control-label\">Email (login): <span class=\"label label-danger\">required</span></label>\n";
   echo "        <div class=\"col-sm-9\">\n";
   echo "        <input type=\"text\" name=\"email\" class=\"form-control\" placeholder=\"email@company.com\">\n";
   echo "        </div>\n";
   echo "     </div>\n";
   echo "     <div class=\"form-group\">\n";
-  echo "       <label for=\"password\" class=\"col-sm-3 control-label\">Password:</label>\n";
+  echo "       <label for=\"password\" class=\"col-sm-3 control-label\">Password: <span class=\"label label-danger\">required</span></label>\n";
   echo "         <div class=\"col-sm-9\">\n";
   echo "         <input type=\"password\" name=\"password\" class=\"form-control\" placeholder=\"Password\">\n";
   echo "       </div>\n";
   echo "     </div>\n";
   echo "     <div class=\"form-group\">\n";
-  echo "       <label for=\"password\" class=\"col-sm-3 control-label\">Confirm new password:</label>\n";
+  echo "       <label for=\"password\" class=\"col-sm-3 control-label\">Confirm password: <span class=\"label label-danger\">required</span></label>\n";
   echo "         <div class=\"col-sm-9\">\n";
-  echo "         <input type=\"password\" name=\"password2\" class=\"form-control\" placeholder=\"Password\">\n";
+  echo "         <input type=\"password\" name=\"password2\" class=\"form-control\" placeholder=\"Password again\">\n";
   echo "       </div>\n";
+  echo "     </div>\n";
+  echo "    <div class=\"form-group\">\n";
+  echo "      <label for=\"fname\" class=\"col-sm-3 control-label\">First name: <span class=\"label label-danger\">required</span></label>\n";
+  echo "        <div class=\"col-sm-9\">\n";
+  echo "        <input type=\"text\" name=\"fname\" class=\"form-control\" placeholder=\"John\">\n";
+  echo "        </div>\n";
+  echo "     </div>\n";
+  echo "    <div class=\"form-group\">\n";
+  echo "      <label for=\"lname\" class=\"col-sm-3 control-label\">Last name: <span class=\"label label-danger\">required</span></label>\n";
+  echo "        <div class=\"col-sm-9\">\n";
+  echo "        <input type=\"text\" name=\"lname\" class=\"form-control\" placeholder=\"Doe\">\n";
+  echo "        </div>\n";
   echo "     </div>\n";
   echo "     <div class=\"form-group\">\n";
   echo "       <div class=\"col-sm-offset-3 col-sm-9\">\n";
-  //echo "         <input type=\"hidden\" name=\"username\" class=\"form-control\" value=\"Password\">\n";
-  echo "         <button type=\"submit\" class=\"btn btn-success\">Sign up a new user</button>\n";
+  echo "         <input type=\"submit\" value=\"Sign up\" class=\"btn btn-success\"></input>\n";
   echo "       </div>\n";
   echo "     </div>\n";
   echo "  </div>\n";

@@ -20,7 +20,7 @@ $ESPCONFIG['base_url'] = $ESPCONFIG['proto'] . $server['HTTP_HOST'];
 $ESPCONFIG['db_host'] = 'magenta.thaiweb.net';
 $ESPCONFIG['db_user'] = 'sinbad';
 $ESPCONFIG['db_pass'] = '2bbadd';
-$ESPCONFIG['db_name'] = 'ssq';
+$ESPCONFIG['db_name'] = 'siamsquare';
 $DB_PREFIX = "x_";
 $OLD_DB_PREFIX = "";
 
