@@ -149,7 +149,6 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 		echo "    <td class=\"text-center\">$qnum</td>\n";
 		// test or edit
 		echo "    <td>$test</td>\n";
-<<<<<<< HEAD
 		// 
 		// edit/copy & activate/end
  		$copy = "<a href=\"$tt4\"><i class=\"fa fa-files-o fa-fw\"></i></a>\n";
@@ -158,12 +157,6 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 		elseif ($stat == 'Editing') { echo "    <td><a href=\"$tt3\"><i class=\"fa fa-pencil-square-o fa-fw\"></i></a> $copy $act $done</td>\n"; } 
 		elseif ($stat == 'Archived') { echo "    <td>&nbsp;</td>\n"; } 
 		else { echo "    <td><i class=\"fa fa-pencil-square-o fa-fw\"></i></td>\n"; }
-=======
-		// activate
-		echo "    <td>$act</td>\n";
-		// end
-		echo "    <td>$done</td>\n";
->>>>>>> origin/master
 		
 		// delete (disable)
 		//echo "    <td>$del</td>\n";
@@ -230,11 +223,7 @@ function progressbar($section, $total) {
 	$progress = ($section/$total) * 100;
 	$progress = round ($progress, 1);
 	$output = "<div class=\"progress\">\n";
-<<<<<<< HEAD
 	$output .= "  <div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"$progress\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: $progress%\">\n";
-=======
-	$output .= "  <div class=\"progress-bar progress-bar-warning\" role=\"progressbar\" aria-valuenow=\"$progress\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: $progress%\">\n";
->>>>>>> origin/master
 	$output .= "   $progress% <span class=\"sr-only\">$progress% Complete (warning)</span>\n";
 	$output .= "  </div>\n";
 	$output .= "</div>\n";
