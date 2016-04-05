@@ -162,19 +162,10 @@ if ($ESPCONFIG['auth_response'] && auth_get_option('resume') && $_SESSION['rid']
 }
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/function/ssq.inc';
-echo progressbar($_SESSION['sec'], $num_sections);
+//echo progressbar($_SESSION['sec'], $num_sections);
 
 paint_submission_form_open();
 survey_render($sid,$_SESSION['sec'],$_SESSION['rid'],$msg);
-
-//if ($ESPCONFIG['auth_response']) {
-//    if (auth_get_option('navigate') && $_SESSION['sec'] > 1) {
-//        echo(mksubmit("prev", 'Previous Page'));
-//    }
-//    if (auth_get_option('resume')) {
-//        echo(mksubmit("resume", 'Save'));
-//    }
-//}
 
 echo "<p class=\"text-center\">\n";
 if (auth_get_option('navigate') && $_SESSION['sec'] > 1) { echo "<input class=\"btn btn-default\" type=\"submit\" name=\"prev\" value=\"&lt;&lt; Previous\" />&nbsp;\n"; }

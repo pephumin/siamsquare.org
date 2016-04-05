@@ -49,6 +49,9 @@ function survey_render($sid, $section = 1, $rid=0, $message = '') {
 	if ($survey["info_th"]) { echo "<p class=\"bg-info\">".nl2br($survey["info_th"])."</p>\n\n"; }
 	else { echo "<p class=\"bg-info\">".nl2br($survey["info"])."</p>\n\n"; }
 
+	echo "<br /><small>PROGRESS:</small>\n";
+	echo progressbar($_SESSION['sec'], $num_sections);
+
 	//if($num_sections>1) { echo "<p>"; printf(_('Page %d of %d'), $section+1, $num_sections); echo "</p>\n\n"; }
 
 	// if ($section==0) echo($survey["info"]);

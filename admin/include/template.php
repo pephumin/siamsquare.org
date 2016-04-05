@@ -80,6 +80,31 @@ function displayNav() {
 	}
 }
 
+function displayTabNav_tabs() {
+	global $tab;
+	echo "<ul class=\"nav nav-tabs\">\n";
+	echo "<input type=\"hidden\" name=\"where\" value=\"tab\" />";
+	if ($tab == "general") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_general\" value=\"General\" /></li>\n"; }
+	else { echo "<li><input type=\"submit\" name=\"tab_general\" value=\"General\" /></li>\n"; }
+	echo "&nbsp;\n";
+	if ($tab == "questions") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_questions\" value=\"Questions\" /></li>\n"; }
+	else { echo "<li><input type=\"submit\" name=\"tab_questions\" value=\"Questions\" /></li>\n"; }
+	echo "&nbsp;\n";
+	if ($tab == "order") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_order\" value=\"Order\" /></li>\n"; }
+	else { echo "<li><input type=\"submit\" name=\"tab_order\" value=\"Order\" /></li>\n"; }
+	echo "&nbsp;\n";
+	if ($tab == "conditions") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_conditions\" value=\"Conditions\" /></li>\n"; }
+	else { echo "<li><input type=\"submit\" name=\"tab_conditions\" value=\"Conditions\" /></li>\n"; }
+	echo "&nbsp;\n";
+	if ($tab == "preview") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_preview\" value=\"Preview\" /></li>\n"; }
+	else { echo "<li><input type=\"submit\" name=\"tab_preview\" value=\"Preview\" /></li>\n"; }
+	echo "&nbsp;\n";
+	if ($tab == "finish") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_finish\" value=\"Finish\" /></li>\n"; }
+	else { echo "<li><input type=\"submit\" name=\"tab_finish\" value=\"Finish\" /></li>\n"; }
+	echo "</ul>\n";
+	echo "<br /><br />\n";
+}
+
 function displayTabNav() {
 	global $tab;
 	echo "<p>";
@@ -107,7 +132,7 @@ function displayTabNav() {
 }
 
 function displayAdminBack() {
-	echo '<a class="btn btn-default pull-right" role="button" href="/admin/index.php?where=manage">Go back to Management Interface</a>';
+	echo "<a class=\"btn btn-default btn-sm pull-right\" role=\"button\" href=\"/admin/index.php?where=manage\"><i class=\"fa fa-hand-o-left\"></i> Back to Main Interface</a>";
 }
 
 function displayPageHeader() {

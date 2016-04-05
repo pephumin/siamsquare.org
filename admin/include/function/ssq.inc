@@ -230,6 +230,22 @@ function progressbar($section, $total) {
 	return $output;
 }
 
+function autotext($choice_content) {
+	if ($choice_content == '!other') { $choice_content_th = 'อื่นๆ (ะบุ)'; }
+	if ($choice_content == 'Refused to answer') { $choice_content_th = 'ปฏิเสธ'; }
+	if ($choice_content == 'Cannot remember') { $choice_content_th = 'จำไม่ได้'; }
+	if ($choice_content == 'Prefer not to answer') { $choice_content_th = 'ปฏิเสธ'; }
+	if ($choice_content == 'None of the above') { $choice_content_th = 'ไม่มีที่กล่าวข้างต้น'; }
+	if ($choice_content == 'Male') { $choice_content_th = 'ผู้ชาย'; }
+	if ($choice_content == 'Female') { $choice_content_th = 'ผู้หญฺิง'; }
+	if ($choice_content == 'SES-A') { $choice_content_th = 'สถานะภาพทางสังคม A'; }
+	if ($choice_content == 'SES-B') { $choice_content_th = 'สถานะภาพทางสังคม B'; }
+	if ($choice_content == 'SES-C') { $choice_content_th = 'สถานะภาพทางสังคม C'; }
+	if ($choice_content == 'SES-D') { $choice_content_th = 'สถานะภาพทางสังคม D'; }
+	if ($choice_content == 'SES-E') { $choice_content_th = 'สถานะภาพทางสังคม E'; }
+	return $choice_content_th;
+}
+
 /*
 * function list_access($sid) {
 * 
