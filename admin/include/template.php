@@ -16,7 +16,7 @@ function displayHeader($title, $scrollspy = NULL) {
 	echo "	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
 	echo "	<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n";
 	echo "	<title>Client Section: $title</title>\n";
-	$cssfiles = array("css/bootstrap.css", "css/font-awesome.css", "css/typicons.css", "css/pe.css");
+	$cssfiles = array("css/bootstrap.css", "css/font-awesome.css", "css/typicons.css", "css/animate.css", "css/pe.css");
 	foreach ($cssfiles as $filename) {
 		echo "	<link href=\"$filename\" rel=\"stylesheet\" type=\"text/css\" />\n";
  	}
