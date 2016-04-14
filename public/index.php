@@ -38,6 +38,24 @@ if (! $GLOBALS['ESPCONFIG']['dashboard_enable']) {
     exit;
 }
 
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/geopattern/loader.php';
+
+$geopattern = new \RedeyeVentures\GeoPattern\GeoPattern();
+$geopattern->setString('Mastering Markdown');
+
+//$geopattern->setBaseColor('#ffcc00');
+//$geopattern->setColor('#ffcc00');
+
+// From https://github.com/jasonlong/geo_pattern
+// chevrons, overlapping_circles, plus_signs, xes, sine_waves, hexagons, overlapping_rings, plaid, 
+// triangles, squares, nested_squares, mosaic_squares, concentric_circles, diamonds, tessellation
+$geopattern->setGenerator('tessellation');
+
+$svg = $geopattern->toSVG();
+$base64 = $geopattern->toBase64();
+$dataURI = $geopattern->toDataURI();
+//$dataURL = $geopattern->toDataURL();
+
 // --------------------------------------------------------------------------------
 
 displayHeader($title);
@@ -51,6 +69,7 @@ handleChangePassword();
 //handleHelp();
 if (is_session_authenticated()) { paint_authenticated(); } 
 else { paint_non_authenticated(); }
+//echo "<div class=\"jumbotron\" style=\"background-image: url($dataURI)\">PEPE</div>\n\n";
 echo "</div>\n";
 displayFooter();
 
