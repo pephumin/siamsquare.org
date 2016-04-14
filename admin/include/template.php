@@ -80,6 +80,31 @@ function displayNav() {
 	}
 }
 
+function displayTabNav_tabs() {
+	global $tab;
+	echo "<ul class=\"nav nav-tabs\">\n";
+	echo "<input type=\"hidden\" name=\"where\" value=\"tab\" />";
+	if ($tab == "general") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_general\" value=\"General\" /></li>\n"; }
+	else { echo "<li><input type=\"submit\" name=\"tab_general\" value=\"General\" /></li>\n"; }
+	echo "&nbsp;\n";
+	if ($tab == "questions") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_questions\" value=\"Questions\" /></li>\n"; }
+	else { echo "<li><input type=\"submit\" name=\"tab_questions\" value=\"Questions\" /></li>\n"; }
+	echo "&nbsp;\n";
+	if ($tab == "order") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_order\" value=\"Order\" /></li>\n"; }
+	else { echo "<li><input type=\"submit\" name=\"tab_order\" value=\"Order\" /></li>\n"; }
+	echo "&nbsp;\n";
+	if ($tab == "conditions") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_conditions\" value=\"Conditions\" /></li>\n"; }
+	else { echo "<li><input type=\"submit\" name=\"tab_conditions\" value=\"Conditions\" /></li>\n"; }
+	echo "&nbsp;\n";
+	if ($tab == "preview") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_preview\" value=\"Preview\" /></li>\n"; }
+	else { echo "<li><input type=\"submit\" name=\"tab_preview\" value=\"Preview\" /></li>\n"; }
+	echo "&nbsp;\n";
+	if ($tab == "finish") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_finish\" value=\"Finish\" /></li>\n"; }
+	else { echo "<li><input type=\"submit\" name=\"tab_finish\" value=\"Finish\" /></li>\n"; }
+	echo "</ul>\n";
+	echo "<br /><br />\n";
+}
+
 function displayTabNav() {
 	global $tab;
 	echo "<p>";
@@ -107,7 +132,7 @@ function displayTabNav() {
 }
 
 function displayAdminBack() {
-	echo '<a class="btn btn-default pull-right" role="button" href="/admin/index.php?where=manage">Go back to Management Interface</a>';
+	echo "<a class=\"btn btn-default btn-sm pull-right\" role=\"button\" href=\"/admin/index.php?where=manage\"><i class=\"fa fa-hand-o-left\"></i> Back to Main Interface</a>";
 }
 
 function displayPageHeader() {
@@ -160,11 +185,52 @@ function displayFooter() {
 	echo "	var cancelConfirmMsg=\"Warning! This survey has not been saved. Canceling now will remove any changes.\"\n";
 	echo "	var mergeMsg=\"<h2>You must select at least two surveys before you can merge</h2>\"\n";
 	echo "</script>\n\n";
+	//echo validateform();
+	echo "\n\n";
 	echo "</body>\n";
 	echo "</html>\n\n";
 	//if ($_SESSION['acl']['superuser'] == 'Y') { include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; }
 	include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; 
 }
 
+function validateform() {
+
+    $validate = <<<EOHTML
+<script>
+function validateText(id) {
+    if($("#"+id).val()==null || $("#"+id).val()=="") {
+        var div = $("#"+id).closest("div");
+        div.removeClass("has-success");
+        $("#glypcn"+id).remove()
+        div.addClass("has-error has-warning has-feedback");
+        div.append('<span id="glypcn'+id+'" class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>')
+        return false;
+    } else {
+        var div = $("#"+id).closest("div");
+        div.removeClass("has-error");
+        div.addClass("has-success has-feedback");
+        $("#glypcn"+id).remove()
+        div.append('<span id="glypcn'+id+'" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>')
+    	return true;
+    }
+}
+$(document).ready(
+    function() {
+        $("#loginbtn").click(function() {
+            if(!validateText("peusername")) {
+            	return false;
+            }
+            if(!validateText("pepassword")) {
+            	return false;
+            }
+            $("form#loginform").submit();
+        });
+    }
+);
+</script>
+EOHTML;
+
+    return $validate;
+}
 
 ?>

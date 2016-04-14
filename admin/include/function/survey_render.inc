@@ -5,6 +5,7 @@
 
 function survey_render($sid, $section = 1, $rid=0, $message = '') {
 	
+	global $preview;
 	//global $_POST;
 	@reset($_POST);
 
@@ -41,13 +42,27 @@ function survey_render($sid, $section = 1, $rid=0, $message = '') {
 	for($j=0;$j<$section;$j++)
 		$i += count($section_questions[$j]);
 
-	echo "<h2>".$survey["title"]."</h2>\n\n";
-	
-	if ($survey["subtitle_th"]) { echo "<h3>".$survey["subtitle_th"]."</h3>\n\n"; }
-	else { echo "<h3>".$survey["subtitle"]."</h3>\n\n"; }
+	//echo "<h2>".$survey["title"]."</h2>\n\n";
+	echo "<h2>Project ".$survey["title"]." ";
+	if ($survey["subtitle_th"]) { echo "<small>(".$survey["subtitle_th"].")</small>"; }
+	else { echo "<small>(".$survey["subtitle"].")</small>"; }
+	echo "</h2>\n";
+	echo "<br />\n\n";
 
-	if ($survey["info_th"]) { echo "<p class=\"bg-info\">".nl2br($survey["info_th"])."</p>\n\n"; }
-	else { echo "<p class=\"bg-info\">".nl2br($survey["info"])."</p>\n\n"; }
+	echo "<div class=\"jumbotron showprojectdetail\">\n";
+	if ($survey["info_th"]) { echo "<p class=\"lead\">".nl2br($survey["info_th"])."</p>\n\n"; }
+	else { echo "<p class=\"lead\">".nl2br($survey["info"])."</p>\n\n"; }
+	echo "</div>\n";
+	//echo "<br />\n";
+
+	//echo "PE";
+	//echo $preview;
+
+	if (!$preview) {
+		echo "<small>PROGRESS:</small>\n";
+		echo progressbar($_SESSION['sec'], $num_sections);
+		echo "\n\n";		
+	}
 
 	//if($num_sections>1) { echo "<p>"; printf(_('Page %d of %d'), $section+1, $num_sections); echo "</p>\n\n"; }
 

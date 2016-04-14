@@ -41,6 +41,8 @@ function validate() {
 
 <?php 
 
+$preview = 1;
+
 survey_render($sid,$_POST['section']); 
 
 if($num_sections > 1) {

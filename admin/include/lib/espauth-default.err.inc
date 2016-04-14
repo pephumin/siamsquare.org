@@ -8,8 +8,8 @@ function survey_auth($sid, $username, $password, $raw_password, $css, $title) {
   $auth = false;
 
   if (isset($_GET['auth_options']) || isset($_POST['auth_options'])) {
-    $GLOBALS['errmsg'] = mkerror('Error processing survey: Security violation.');
-    return(false);
+  	$GLOBALS['errmsg'] = mkerror('Error processing survey: Security violation.');
+  	return(false);
   }
   
   $GLOBALS['auth_options'] = array();
@@ -19,14 +19,14 @@ function survey_auth($sid, $username, $password, $raw_password, $css, $title) {
 
   $accres = execute_sql($sql);
   if(!$accres) {
-    $GLOBALS['errmsg'] = mkerror('Unable to execute query for access.');
-    return(false);
+  	$GLOBALS['errmsg'] = mkerror('Unable to execute query for access.');
+  	return(false);
   }
 
   // Get number of rows in $accres.
   if(record_count($accres) < 1) {
-    // no matching rows ... no authorization required
-    return(true);
+  	// no matching rows ... no authorization required
+  	return(true);
   }
 
   $realm = $accres->fields[0];
@@ -74,9 +74,8 @@ function survey_auth($sid, $username, $password, $raw_password, $css, $title) {
       elseif (isset($_POST['name'])) { $survey_name = $_POST['name']; }
 
       $error_message = "";
-
       if ($_SERVER['REQUEST_METHOD'] == 'POST') { $error_message = "Incorrect User ID or Password, or your account has been disabled/expired."; }
-
+      //print_r($_POST);
       require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/template.php';
       $title = 'Login Page';
       displayHeader($title);
@@ -91,9 +90,9 @@ function survey_auth($sid, $username, $password, $raw_password, $css, $title) {
   }
 
   if ( $maxlogin > 0 ) {
-    // see if user is over the MAX # of responses
-    $sql = "SELECT COUNT(*) < $maxlogin FROM ".$GLOBALS['ESPCONFIG']['response_table']." WHERE survey_id = ${sid} AND complete = 'Y' AND username = "._addslashes($username);
-    $auth = get_one($sql);
+  	// see if user is over the MAX # of responses
+  	$sql = "SELECT COUNT(*) < $maxlogin FROM ".$GLOBALS['ESPCONFIG']['response_table']." WHERE survey_id = ${sid} AND complete = 'Y' AND username = "._addslashes($username);
+  	$auth = get_one($sql);
   }
 
   if( !$auth ) {
@@ -134,15 +133,15 @@ function survey_auth($sid, $username, $password, $raw_password, $css, $title) {
 function manage_auth($username, $password, $raw_password="") {
   // see if session is expired, or has been logged out
   if(isset($_SESSION['acl']) && isset($_SESSION['acl']['expired'])) {
-    if($_SESSION['acl']['expired']-- > 0) { $username = ''; $password = ''; }
+  	if($_SESSION['acl']['expired']-- > 0) { $username = ''; $password = ''; }
   }
 
   // see if ACL is cached
   if (!empty($username) && !empty($password) && isset($_SESSION['acl']) && isset($_SESSION['acl']['username']) && $_SESSION['acl']['username'] == $username) {
-    #$sql = "SELECT ".db_crypt($password)." = ". $_SESSION['acl']['password'];
-    #$auth = get_one($sql);
-    #if($auth)
-    return(true);
+  	#$sql = "SELECT ".db_crypt($password)." = ". $_SESSION['acl']['password'];
+  	#$auth = get_one($sql);
+  	#if($auth)
+  	return(true);
   }
 
   $auth = false; // default to unauthorized
@@ -181,10 +180,8 @@ function manage_auth($username, $password, $raw_password="") {
     }
     elseif ( $GLOBALS['ESPCONFIG']['auth_mode'] == 'form') {
       $error_message = "";
-      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $error_message = 'Incorrect User ID or Password, or your account has been disabled/expired.';
-      }
-      //require_once 'include/template.php';
+      if ($_SERVER['REQUEST_METHOD'] == 'POST') { $error_message = 'Incorrect User ID or Password, or your account has been disabled/expired.'; }
+      //print_r($_POST);
       require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/template.php';
       $title = 'Authorisation';
       displayHeader($title);
@@ -201,13 +198,13 @@ function manage_auth($username, $password, $raw_password="") {
   // All tests passed ... create ACL array,
   // and stick it in the session
   $acl = array(
-    'username'  => $username,
-    'superuser' => 'N',
-    'home' => '/www/default/siamsquare.org/admin/tmp'
+  	'username'  => $username,
+  	'superuser' => 'N',
+  	'home' => '/www/default/siamsquare.org/admin/tmp'
   );
   $fields = array('pdesign', 'pstatus', 'pdata', 'pall', 'pgroup', 'puser');
   foreach($fields as $f) {
-    $$f = array();
+  	$$f = array();
   }
   while( !$accres->EOF ) {
     if($accres->fields['realm'] == 'superuser')
@@ -251,7 +248,7 @@ function auth_is_owner($sid, $user) {
   $sql = "SELECT s.owner = "._addslashes($user)."FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s WHERE s.id=$sid";
   $result = execute_sql($sql);
   if(!(list($val) = fetch_row($result)))
-    $val = false;
+  	$val = false;
   db_close($result);
   return $val;
 }
@@ -301,22 +298,22 @@ function auth_get_option($opt) {
 function auth_get_rid($sid, $username, $rid = 0) {
   $rid = intval($rid);
   if (isset($rid) && $rid != 0) {
-    // check for valid rid
-    $sql = "SELECT (r.username = "._addslashes($username)." && r.complete = 'N') AS valid FROM ".$GLOBALS['ESPCONFIG']['response_table']." r WHERE r.id = $rid AND r.survey_id = $sid";
-    $res = execute_sql($sql);
-    $valid = false;
-    if ($res && record_count($res) > 0 && $res->fields[0]) $valid = true;
-    if ($res) db_close($res);
-    return ($valid) ? $rid : '';
+  	// check for valid rid
+  	$sql = "SELECT (r.username = "._addslashes($username)." && r.complete = 'N') AS valid FROM ".$GLOBALS['ESPCONFIG']['response_table']." r WHERE r.id = $rid AND r.survey_id = $sid";
+  	$res = execute_sql($sql);
+  	$valid = false;
+  	if ($res && record_count($res) > 0 && $res->fields[0]) $valid = true;
+  	if ($res) db_close($res);
+  	return ($valid) ? $rid : '';
   } elseif (auth_get_option('resume')) {
-    // find latest in progress rid
-    $sql = "SELECT r.id FROM ".$GLOBALS['ESPCONFIG']['response_table']." r WHERE r.survey_id = $sid AND r.complete = 'N' AND r.username = "._addslashes($username)." ORDER BY submitted DESC";
-    $res = execute_sql($sql,1);
-    if ($res && record_count($res) > 0) $rid = $res->fields[0];
-    if ($res) db_close($res);
-    return ($rid != 0) ? $rid : '';
+  	// find latest in progress rid
+  	$sql = "SELECT r.id FROM ".$GLOBALS['ESPCONFIG']['response_table']." r WHERE r.survey_id = $sid AND r.complete = 'N' AND r.username = "._addslashes($username)." ORDER BY submitted DESC";
+  	$res = execute_sql($sql,1);
+  	if ($res && record_count($res) > 0) $rid = $res->fields[0];
+  	if ($res) db_close($res);
+  	return ($rid != 0) ? $rid : '';
   } else {
-    return '';
+  	return '';
   }
 }
 

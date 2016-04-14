@@ -501,6 +501,7 @@ function response_select($sid, $rid, $col = null, $qids = null) {
         $c = count($row);
         $val = $row[$c - 4];
         if (ereg('^!other', $val))
+        //if (preg_match('/^!other/', $val))
            $row[$c - 3] = 'other_' . $row[$c - 3];
         else
            settype($row[$c - 3], 'integer');

@@ -271,6 +271,8 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 						return(0);
 					}
 	
+					$choice_content_th = autotext($choice_content);
+
 					// for safety, we add slashes
 					if ($choice_content != '') {
 						$choice_content = _addslashes($choice_content);
