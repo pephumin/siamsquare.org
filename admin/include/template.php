@@ -185,11 +185,52 @@ function displayFooter() {
 	echo "	var cancelConfirmMsg=\"Warning! This survey has not been saved. Canceling now will remove any changes.\"\n";
 	echo "	var mergeMsg=\"<h2>You must select at least two surveys before you can merge</h2>\"\n";
 	echo "</script>\n\n";
+	//echo validateform();
+	echo "\n\n";
 	echo "</body>\n";
 	echo "</html>\n\n";
 	//if ($_SESSION['acl']['superuser'] == 'Y') { include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; }
 	include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; 
 }
 
+function validateform() {
+
+    $validate = <<<EOHTML
+<script>
+function validateText(id) {
+    if($("#"+id).val()==null || $("#"+id).val()=="") {
+        var div = $("#"+id).closest("div");
+        div.removeClass("has-success");
+        $("#glypcn"+id).remove()
+        div.addClass("has-error has-warning has-feedback");
+        div.append('<span id="glypcn'+id+'" class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>')
+        return false;
+    } else {
+        var div = $("#"+id).closest("div");
+        div.removeClass("has-error");
+        div.addClass("has-success has-feedback");
+        $("#glypcn"+id).remove()
+        div.append('<span id="glypcn'+id+'" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>')
+    	return true;
+    }
+}
+$(document).ready(
+    function() {
+        $("#loginbtn").click(function() {
+            if(!validateText("peusername")) {
+            	return false;
+            }
+            if(!validateText("pepassword")) {
+            	return false;
+            }
+            $("form#loginform").submit();
+        });
+    }
+);
+</script>
+EOHTML;
+
+    return $validate;
+}
 
 ?>

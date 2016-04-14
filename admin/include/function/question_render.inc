@@ -46,9 +46,12 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 	// Section text (tid=100)
 	if ($tid == 100) {
 		echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
-		if ($question['content_th']) { echo "        <p class=\"bg-success\">".nl2br($question['content_th'])."</p>\n"; }
-		else { echo "        <p class=\"bg-success\">".nl2br($question['content'])."</p>\n"; }
+		echo "    <div class=\"well well-lg showconcept\">\n";
+		if ($question['content_th']) { echo "      <p>".nl2br($question['content_th'])."</p>\n"; }
+		else { echo "      <p>".nl2br($question['content'])."</p>\n"; }
+		echo "    </div>\n";
 		echo "  </div>\n\n";
+		echo "<br />\n";
 		return;
 	}
 
@@ -145,15 +148,7 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
 			if ($choice['content_th']) { echo "      <div class=\"radio\"><label>" . mkradio($qid,$choice['content_th']) . " ".$choice['content_th']."</label></div>\n"; }
 			else { echo "      <div class=\"radio\"><label>" . mkradio($qid,$choice['content']) . " ".$choice['content']."</label></div>\n"; }
 		}
-		//echo "      <div class=\"radio\"><label>" . mkradio($qid,1) . " 1</label></div>\n";
-		//echo "      <div class=\"radio\"><label>" . mkradio($qid,2) . " 2</label></div>\n";
-		//echo "      <div class=\"radio\"><label>" . mkradio($qid,3) . " 3</label></div>\n";
-		//echo "      <div class=\"radio\"><label>" . mkradio($qid,4) . " 4</label></div>\n";
-		//echo "      <div class=\"radio\"><label>" . mkradio($qid,5) . " 5</label></div>\n";
-		//echo "      <div class=\"radio\"><label>" . mkradio($qid,'N/A') . " N/A</label></div>\n";
 		echo "      </div>\n";
-		echo "    </div>\n";
-		echo "  </div>\n\n";
 		break;
 
 		// Attribute rating (tid=6)

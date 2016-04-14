@@ -223,8 +223,8 @@ function progressbar($section, $total) {
 	$progress = ($section/$total) * 100;
 	$progress = round ($progress, 1);
 	$output = "<div class=\"progress\">\n";
-	$output .= "  <div class=\"progress-bar progress-bar-success\" role=\"progressbar\" aria-valuenow=\"$progress\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: $progress%\">\n";
-	$output .= "   $progress% <span class=\"sr-only\">$progress% Complete (warning)</span>\n";
+	$output .= "  <div class=\"progress-bar progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$progress\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: $progress%\">\n";
+	$output .= "   $progress% <span class=\"sr-only\">$progress% completion</span>\n";
 	$output .= "  </div>\n";
 	$output .= "</div>\n";
 	return $output;

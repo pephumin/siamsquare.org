@@ -126,9 +126,9 @@ function displayNav() {
   echo "               <li><a href=\"/public/contact.php\">Contact us</a></li>\n";
   echo "               <li><a href=\"/public/help.php\">Help</a></li>\n";
   echo "               <li class=\"divider\"></li>\n";
-  echo "               <li><a href=\"http://www.jquery2dotnet.com\">Separated link</a></li>\n";
+  echo "               <li><a href=\"http://www.jquery2dotnet.com\">Membership</a></li>\n";
   echo "               <li class=\"divider\"></li>\n";
-  echo "               <li><a href=\"http://www.jquery2dotnet.com\">One more separated link</a></li>\n";
+  echo "               <li><a href=\"http://www.jquery2dotnet.com\">Reward programme</a></li>\n";
   echo "            </ul>\n";
   echo "         </li>\n";
   echo "         <li class=\"active\"><a href=\"$home\"><i class=\"fa fa-hand-o-left\"></i> Back</a></li>\n";
@@ -141,12 +141,12 @@ function displayNav() {
   //echo "      </form>\n";
   echo "      <ul class=\"nav navbar-nav navbar-right\">\n";
   //echo "         $b<li><a href=\"/public/signup.php\"><i class=\"fa fa-user fa-lg\"></i><i class=\"fa fa-plus\"></i>&nbsp; Sign Up</a></li>\n";
-  echo "         <li><button type=\"button\" class=\"btn btn-success navbar-btn\">Sign in</button></li>\n";
+  echo "         <li><button type=\"button\" class=\"btn btn-success navbar-btn\">Join now!</button></li>\n";
   //echo "         <li><button type=\"button\" class=\"btn btn-success navbar-btn\">Sign in</button></li>\n";
   //echo "         <li><a href=\"#\" class=\"btn btn-default navbar-btn\">Sign in</a></li>\n";
   //echo "         <li><a href=\"/public/signup.php\"><i class=\"fa fa-user-plus\"></i>&nbsp; Sign Up</a></li>\n";
   echo "         <li class=\"dropdown\">\n";
-  echo "            <a href=\"http://www.jquery2dotnet.com\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Sign in <span class=\"caret\"></span></a>\n";
+  echo "            <a href=\"http://www.jquery2dotnet.com\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Member log-in <span class=\"caret\"></span></a>\n";
   echo "            <ul class=\"dropdown-menu\" style=\"padding: 15px;min-width: 250px;\">\n";
   echo "               <li>\n";
   echo "                  <div class=\"row\">\n";
@@ -169,9 +169,7 @@ function displayNav() {
   echo "                          <input type=\"password\" name=\"password\" class=\"form-control\" placeholder=\"Password\">\n";
   echo "                        </div>\n";
   echo "                           <div class=\"checkbox\">\n";
-  echo "                              <label>\n";
-  echo "                              <input type=\"checkbox\"> Remember me\n";
-  echo "                              </label>\n";
+  echo "                              <label><input type=\"checkbox\"> Remember me</label>\n";
   echo "                           </div>\n";
   echo "                           <div class=\"form-group\">\n";
   echo "                              <button type=\"submit\" class=\"btn btn-success btn-block\">Sign in</button>\n";
@@ -182,8 +180,8 @@ function displayNav() {
   echo "               </li>\n";
   echo "               <li class=\"divider\"></li>\n";
   echo "               <li>\n";
-  echo "                  <input class=\"btn btn-danger btn-block\" type=\"button\" id=\"sign-in-google\" value=\"Sign In with Google\" disabled>\n";
-  echo "                  <input class=\"btn btn-danger btn-block\" type=\"button\" id=\"sign-in-twitter\" value=\"Sign In with Twitter\" disabled>\n";
+  echo "                  <input class=\"btn btn-default btn-block\" type=\"button\" id=\"sign-in-google\" value=\"Sign In with Google\" disabled>\n";
+  echo "                  <input class=\"btn btn-default btn-block\" type=\"button\" id=\"sign-in-twitter\" value=\"Sign In with Twitter\" disabled>\n";
   echo "               </li>\n";
   echo "            </ul>\n";
   echo "         </li>\n";
