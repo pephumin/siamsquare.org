@@ -270,28 +270,29 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 						$errstr = 'For rate questions, "!other" is not a possible answer';
 						return(0);
 					}
-	
-					$choice_content_th = autotext($choice_content);
+
+					// autotext
+					$choice_content_th = autotext($choice_content, $choice_content_th);
 
 					// for safety, we add slashes
 					if ($choice_content != '') {
 						$choice_content = _addslashes($choice_content);
 					}
-					//if ($choice_content_th != '') {
-					//	$choice_content_th = _addslashes($choice_content_th);
-					//}
-	                $choice_content_th = _addslashes($choice_content_th);
+					
+	                $choice_content_th = _addslashes($choice_content_th); 
 	                $choice_feedback = _addslashes($choice_feedback);
 	                $choice_credit   = _addslashes($choice_credit);
 	
 	                if ($choice_id == '' && $choice_content != '') {
 						// new data injected to sql
-						$sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['question_choice_table']." (question_id,content,content_th,feedback,credit) VALUES (${qid},${choice_content},${choice_content_th},${choice_feedback},${choice_credit}) ";
+						$sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['question_choice_table']." (question_id, content, content_th, feedback, credit) VALUES (${qid}, ${choice_content}, ${choice_content_th}, ${choice_feedback}, ${choice_credit}) ";
+						//echo $sql;
 						++$count;
 					} elseif ($choice_id != '' && $choice_content == '') {
 						// remove data from sql
 						$sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE id=${choice_id} ";
-					} elseif($choice_id!='' && ($choice_content!='' || $choice_feedback!='' || $choice_credit!='') && in_array($choice_id, $cids)) {
+						//echo $sql;
+					} elseif ($choice_id != '' && ($choice_content != '' || $choice_feedback != '' || $choice_credit != '') && in_array($choice_id, $cids)) {
 						// update sql with new data
 						$sql = "UPDATE ".$GLOBALS['ESPCONFIG']['question_choice_table']." SET content=${choice_content}, content_th=${choice_content_th} 	WHERE id=${choice_id}";
 						//echo $sql;

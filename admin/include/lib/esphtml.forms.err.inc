@@ -1,25 +1,35 @@
 <?php
 
+/* proto string mksuccess(string message)
+   Returns HTML format for an success message. */
+
 function mksuccess ($msg) {
     return("<div class=\"alert alert-success alert-dismissible\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-check-square-o\"></i>&nbsp; ${msg}</div>\n");
 }
+
+/* proto string mkinfo(string message)
+   Returns HTML format for an info message. */
 
 function mkinfo ($msg) {
     return("<div class=\"alert alert-info alert-dismissible\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-info-circle\"></i>&nbsp; ${msg}</div>\n");
 }
 
+/* proto string mkwarn(string message)
+   Returns HTML format for an warning message. */
+
 function mkwarn ($msg) {
     return("<div class=\"alert alert-warning alert-dismissible\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-bullhorn\"></i>&nbsp; ${msg}</div>\n");
 }
+
+/* proto string mkerror(string message)
+   Returns HTML format for an error message. */
 
 function mkerror ($msg) {
     return("<div class=\"alert alert-danger alert-dismissible\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-exclamation-circle\"></i>&nbsp; ${msg}</div>\n");
 }
 
-function mkgeopattern ($msg, $no) {
-    return("<div class=\"alert alert-geopattern${no} alert-dismissible\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"fa fa-cog fa-spin fa-2x\"></i><br /><br />${msg}</div>\n");
-}
-
+/* proto string mkradio(string name, string value)
+   Returns HTML format for a radio button. */
 
 function mkradio ($_name, $value, $varr = null) {
         if ($varr == null)
@@ -30,6 +40,9 @@ function mkradio ($_name, $value, $varr = null) {
     $str .= ' />';
     return($str);
 }
+    
+/* proto string mkcheckbox(string name, string value)
+   Returns HTML format for a check box. */
 
 function mkcheckbox ($_name, $value, $varr = null) {
         if ($varr == null)
@@ -40,6 +53,9 @@ function mkcheckbox ($_name, $value, $varr = null) {
     $str .= ' />';
     return($str);
 }
+
+/* proto string mktext(string name, int size)
+   Returns HTML format for a text entry line. */
 
 function mktext ($_name, $size = 20, $max = 0, $varr = null) {
         if ($varr == null)
@@ -53,9 +69,15 @@ function mktext ($_name, $size = 20, $max = 0, $varr = null) {
     return('<input class="form-control" type="text" '. $str .' name="'. htmlspecialchars($_name) .'" />');
 }
 
+/* proto string mkpass(string name)
+   Returns HTML format for a password entry line. */
+
 function mkpass ($_name) {
     return('<input type="password" class="form-control" placeholder="Password" name="'. htmlspecialchars($_name) .'" />');
 }
+
+/* proto string mkhidden(string name)
+   Returns HTML format for a hidden form field. */
 
 function mkhidden ($_name, $varr = null) {
         if ($varr == null)
@@ -64,6 +86,9 @@ function mkhidden ($_name, $varr = null) {
         return('<input type="hidden" name="'. htmlspecialchars($_name) .'" value="'. _stripslashes(htmlspecialchars($varr[$_name])) .'" />');
     return('<input type="hidden" name="'. htmlspecialchars($_name) .'" />');
 }
+
+/* proto string mktextarea(string name, int rows, int cols, string wrap_type)
+   Returns HTML format for a text entry box. */
 
 function mktextarea ($_name, $rows, $cols, $wrap, $varr = null) {
         if ($varr == null)
@@ -81,7 +106,10 @@ function mktextarea ($_name, $rows, $cols, $wrap, $varr = null) {
     $str .= '</textarea>';
     return($str);
 }
+/* }}} */
 
+/* {{{ proto string mkselect(string name, array options)
+   Returns HTML format for a select box (dropdown). */
 function mkselect ($_name, $options, $varr = null) {
         if ($varr == null)
             $varr =& $_POST;
@@ -96,11 +124,17 @@ function mkselect ($_name, $options, $varr = null) {
     $str .= "</select>\n";
     return($str);
 }
+/* }}} */
 
+/* {{{ proto string mkfile(string name)
+   Returns HTML format for a file selection button. */
 function mkfile ($_name) {
     return('<input type="file" name="'.htmlspecialchars($_name) .'" />');
 }
+/* }}} */
 
+/* {{{ proto string mksubmit(string name, string value)
+   Returns HTML format for a submit button. */
 function mksubmit($_name, $_value = null, $_attrs = array ()) {
     if ($_value == null)
         $_value = _('Submit');
@@ -111,14 +145,8 @@ function mksubmit($_name, $_value = null, $_attrs = array ()) {
     return sprintf('<input class="btn btn-default" type="submit" name="%s" %s %s />', htmlspecialchars($_name), $_value, $_extra);
 }
 
-function make_element_attrs_from_array($attrs) {
-    $extra = '';
-    foreach ($attrs as $attr => $value) {
-        $extra .= sprintf(' %s="%s"', $attr, htmlspecialchars($value));
-    }
-
-    return trim($extra);
-}
+/* proto string show_login(string surveyname, string message, string css, string title)
+   Returns HTML login form */
 
 function show_login($_surveyname = null, $_message = null, $_css = null, $_title = "Client login") {
     $str = "";
@@ -131,30 +159,19 @@ function show_login($_surveyname = null, $_message = null, $_css = null, $_title
 
     $str .= "<br />\n";
     $str .= login_warning();
-    //$str .= mkgeopattern(login_warning(),8);
-    $str .= "<br />\n";
-    $str .= mkgeopattern($text,1);
-    $str .= "<br />\n";
-    $str .= mkgeopattern($text,2);
-    $str .= "<br />\n";
-    $str .= mkgeopattern($text,3);
-    $str .= "<br />\n";
-    $str .= mkgeopattern($text,4);
-    $str .= "<br />\n";
-    $str .= mkgeopattern($text,5);
-    $str .= "<br />\n";
-    $str .= mkgeopattern($text,6);
-    $str .= "<br />\n";
-    $str .= mkgeopattern($text,7);
-    $str .= "<br />\n";
-    $str .= mkgeopattern($text,8);
-    $str .= "<br />\n";
-    $str .= mkgeopattern($text,9);
-    $str .= "<br />\n";
-    $str .= mkgeopattern($text,10);
-    $str .= "<br />\n";
-    
     return $str;
+}
+
+/* proto string make_element_attrs_from_array(array attributes)
+   Convert an array of key => value pairs into an HTML attributes specification key="value" */
+
+function make_element_attrs_from_array($attrs) {
+    $extra = '';
+    foreach ($attrs as $attr => $value) {
+        $extra .= sprintf(' %s="%s"', $attr, htmlspecialchars($value));
+    }
+
+    return trim($extra);
 }
 
 function login_warning() {
@@ -165,45 +182,49 @@ function login_warning() {
     $text .= "<p>* You have no reasonable expectation of privacy regarding any communication or data transiting or stored on this information system. At any time, and for any lawful purpose, we may monitor, intercept, and search and seize any communication or data transiting or stored on this information system.</p>\n";
     $text .= "<p>* Any communication or data transiting or stored on this information system may be disclosed or used for any lawful purpose.</p>\n";
     $extra = mkwarn($text);
-    //$extra = mkgeopattern($text,8);
     $extra .= "\n\n";
     return $extra;
 }
 
 function mkloginbox() {
-    $text = "<form name=\"clientloginform\" id=\"clientloginform\" method=\"post\" class=\"form-horizontal\">\n";
+    $text = "<form name=\"loginform\" id=\"peloginform\" method=\"post\" class=\"form-horizontal\">\n";
+    //$text .= "  <div class=\"dashboardPanel\" id=\"login\">\n";
     $text .= "  <h2>Client login</h2>\n";
     $text .= "  <br />\n";
     $text .= "  <p>This section is reserved only for our clients whom we have granted with a high level of secured access. Within this section you will be able to access to a highly confidential data such as questionnaire design, data collected from respondents, reports, etc. We carefully design our system to ensure such high important data is kept separately for different users or user groups.</p>\n";
     $text .= "  <p>Should you need any support for accessing this section, please do not hesitate to contact our staff right away.</p>\n";
     $text .= "  <br />\n";
-    $text .= "    <div class=\"form-group has-feedback\">\n";
+    $text .= "    <div class=\"form-group\">\n";
     $text .= "      <label for=\"username\" class=\"col-sm-3 control-label\">Username:</label>\n";
     $text .= "        <div class=\"col-sm-9\">\n";
-    $text .= "        <input type=\"text\" name=\"username\" id=\"username\" class=\"form-control\" placeholder=\"Username\" />\n";
+    $text .= "        <input type=\"text\" name=\"username\" id=\"peusername\" class=\"form-control\" placeholder=\"Username\">\n";
     $text .= "        </div>\n";
-    $text .= "    </div>\n";
-    $text .= "    <div class=\"form-group has-feedback\">\n";
-    $text .= "      <label for=\"password\" class=\"col-sm-3 control-label\">Password:</label>\n";
-    $text .= "        <div class=\"col-sm-9\">\n";
-    $text .= "        <input type=\"password\" name=\"password\" id=\"password\" class=\"form-control\" placeholder=\"Password\">\n";
-    $text .= "        </div>\n";
-    $text .= "    </div>\n";
-    $text .= "    <div class=\"form-group\">\n";
-    $text .= "      <div class=\"col-sm-offset-3 col-sm-9\">\n";
-    $text .= "        <div class=\"checkbox\">\n";
-    $text .= "        <label><input type=\"checkbox\" checked> Remember me</label>\n";
-    $text .= "        </div>\n";
-    $text .= "      </div>\n";
-    $text .= "    </div>\n";
-    $text .= "    <div class=\"form-group\">\n";
-    $text .= "      <div class=\"col-sm-offset-3 col-sm-9\">\n";
-    $text .= "        <button class=\"btn btn-success\" name=\"Login\" type=\"submit\">Sign in</button>\n";
-    $text .= "      </div>\n";
-    $text .= "    </div>\n";
+    $text .= "     </div>\n";
+    $text .= "     <div class=\"form-group\">\n";
+    $text .= "       <label for=\"password\" class=\"col-sm-3 control-label\">Password:</label>\n";
+    $text .= "         <div class=\"col-sm-9\">\n";
+    $text .= "         <input type=\"password\" name=\"password\" id=\"pepassword\" class=\"form-control\" placeholder=\"Password\">\n";
+    $text .= "       </div>\n";
+    $text .= "     </div>\n";
+    $text .= "     <div class=\"form-group\">\n";
+    $text .= "       <div class=\"col-sm-offset-3 col-sm-9\">\n";
+    $text .= "         <div class=\"checkbox\">\n";
+    $text .= "           <label><input type=\"checkbox\" checked> Remember me</label>\n";
+    $text .= "          </div>\n";
+    $text .= "       </div>\n";
+    $text .= "     </div>\n";
+    $text .= "     <div class=\"form-group\">\n";
+    $text .= "       <div class=\"col-sm-offset-3 col-sm-9\">\n";
+    $text .= "         <button class=\"btn btn-success\" type=\"submit\" id=\"loginbtn\">Sign in</button>\n";
+    //$text .= "         <a class=\"btn btn-success\" type=\"button\" id=\"loginbtn\" href=\"javascript: submitform()\">Sign in</a>\n";
+    $text .= "       </div>\n";
+    $text .= "     </div>\n";
+    //$text .= "  </div>\n";
     $text .= "</form>\n";
     $text .= "\n\n";
+    //$text .= print_r($_POST);
     return $text;
 }
+
 
 ?>

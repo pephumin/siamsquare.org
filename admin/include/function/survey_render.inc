@@ -49,7 +49,8 @@ function survey_render($sid, $section = 1, $rid=0, $message = '') {
 	echo "</h2>\n";
 	echo "<br />\n\n";
 
-	echo "<div class=\"jumbotron showprojectdetail\">\n";
+	echo "<div class=\"well well-lg showprojectdetail\">\n";
+	//echo "<div class=\"jumbotron showprojectdetail\">\n";
 	if ($survey["info_th"]) { echo "<p class=\"lead\">".nl2br($survey["info_th"])."</p>\n\n"; }
 	else { echo "<p class=\"lead\">".nl2br($survey["info"])."</p>\n\n"; }
 	echo "</div>\n";

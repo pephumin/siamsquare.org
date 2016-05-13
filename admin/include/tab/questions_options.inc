@@ -52,9 +52,11 @@ else
 			   $choice_id = intval($_POST["choice_id_$i"]);
 			   if(isset($_POST["choice_content_$i"]))
 			      $choice_content  		= _stripslashes($_POST["choice_content_$i"]);
+			   if(isset($_POST["choice_content_th_$i"]))			  
 			  	  $choice_content_th 	= _stripslashes($_POST["choice_content_th_$i"]);
-			      $choice_credit   		= _stripslashes($_POST["choice_credit_$i"]);
-			      $choice_feedback 		= _stripslashes($_POST["choice_feedback_$i"]);
+
+			      //$choice_credit   		= _stripslashes($_POST["choice_credit_$i"]);
+			      //$choice_feedback 		= _stripslashes($_POST["choice_feedback_$i"]);
 			}
 		}
 ?>

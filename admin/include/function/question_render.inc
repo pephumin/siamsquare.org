@@ -5,8 +5,8 @@
 //		ID 		Question type 			Has choice? 	Table
 //  	1 		'Single answer (SA)'	'Y'				'response_single'
 //  	2 		'Multiple answer (MA)'	'Y'				'response_multiple'
-//  	3 		'Single-line open-end'	'N'				'response_text'
-//  	4		'Multi-line open-end'	'N'				'response_text'
+//  	3 		'Open-end (short)'		'N'				'response_text'
+//  	4		'Open-end (long)'		'N'				'response_text'
 //  	5		'Rating scale'			'Y'				'response_rank'
 //  	6 		'Attribute rating'		'Y'				'response_rank'
 //  	7 		'Drop down'				'Y'				'response_single'

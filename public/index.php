@@ -38,6 +38,8 @@ if (! $GLOBALS['ESPCONFIG']['dashboard_enable']) {
     exit;
 }
 
+// --------------------------------------------------------------------------------
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/geopattern/loader.php';
 
 $geopattern = new \RedeyeVentures\GeoPattern\GeoPattern();
@@ -69,10 +71,35 @@ handleChangePassword();
 //handleHelp();
 if (is_session_authenticated()) { paint_authenticated(); } 
 else { paint_non_authenticated(); }
-//echo "<div class=\"jumbotron\" style=\"background-image: url($dataURI)\">PEPE</div>\n\n";
+
+echo "<button class=\"btn btn-lg btn-default\"><span class=\"logo1\">pe</span><span class=\"logo2\">binary</span></button>\n\n";
+
+/*
+echo "<div id=\"geopattern\" class=\"jumbotron\">PEPE</div>\n\n";
+?>
+
+<script type="text/javascript" src="js/geopattern.min.js"></script>
+<script>
+var pattern = GeoPattern.generate('ssq');
+$('#geopattern').css('background-image', pattern.toDataUrl());
+</script>
+
+
+<?php
 echo "</div>\n";
+*/
+
+echo "<br />\n";
+echo "<p><div class=\"fb-like\" data-share=\"true\" data-width=\"450\" data-show-faces=\"true\"></div></p>\n\n";
+echo "<br />\n";
+echo "<p><fb:login-button scope=\"public_profile,email\" onlogin=\"checkLoginState();\"></fb:login-button></p>\n\n";
+echo "<br />\n";
+echo "<p><div id=\"status\"></div></p>\n\n";
+echo "<br />\n";
+
 displayFooter();
 
 // --------------------------------------------------------------------------------
 
 ?>
+

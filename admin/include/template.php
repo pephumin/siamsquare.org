@@ -16,7 +16,7 @@ function displayHeader($title, $scrollspy = NULL) {
 	echo "	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
 	echo "	<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n";
 	echo "	<title>Client Section: $title</title>\n";
-	$cssfiles = array("css/bootstrap.css", "css/font-awesome.css", "css/typicons.css", "css/animate.css", "css/pe.css");
+	$cssfiles = array("css/bootstrap.css", "css/font-awesome.css", "css/typicons.css", "css/animate.css", "css/pe.css", "css/geopattern.css");
 	foreach ($cssfiles as $filename) {
 		echo "	<link href=\"$filename\" rel=\"stylesheet\" type=\"text/css\" />\n";
  	}
@@ -26,7 +26,7 @@ function displayHeader($title, $scrollspy = NULL) {
 	if (isset($_SERVER['BASE_PAGE'])) {
 		echo "	<link rel=\"canonical\" href=\"$admin/$base\">\n";
 	}
-	$jsfiles = array("js/pe.js");
+	$jsfiles = array("js/top.js");
 	foreach ($jsfiles as $filename) {
 		//$path = dirname(dirname(__FILE__)).'/js/'.$filename;
 		echo "	<script type=\"text/javascript\" src=\"$filename\"></script>\n";
@@ -48,7 +48,9 @@ function displayNav() {
 	echo "      <span class=\"icon-bar\"></span>\n";
 	echo "      <span class=\"icon-bar\"></span>\n";
 	echo "    </button>\n";
-	echo "    <a class=\"navbar-brand\" href=\"$home\"><strong>SiamSquare</strong></a>\n";	
+	echo "    <a class=\"navbar-brand\" href=\"$home\">";
+	logo();
+	echo "</a>\n";	
 	if ($_SERVER['REQUEST_URI'] == "/admin/index.php") { $a = '<li class="active">'; } else { $a = '<li>'; }
 	if ($_SERVER['REQUEST_URI'] == "/admin/contact.php") { $b = '<li class="active">'; } else { $b = '<li>'; }
 	if ($_SERVER['REQUEST_URI'] == "/admin/help.php") { $c = '<li class="active">'; } else { $c = '<li>'; }
@@ -162,6 +164,7 @@ function displayPageFooter() {
 	echo "</div> <!-- /container -->\n";
 	echo "</form>\n";
 	echo "<br /><br />\n\n";
+	echo "<div class=\"scroll-to-top\"><i class=\"fa fa-arrow-up fa-lg\"></i></div>\n\n";
 	echo "<footer class=\"footer\">\n";
 	echo "  <div class=\"container\">\n";
 	echo "    <div class=\"text-muted pull-left\"><i class=\"fa fa-graduation-cap\"></i> Website developed by <abbr title=\"Phumin Chesdmethee\">Phumin</abbr>: ";
@@ -175,7 +178,7 @@ function displayPageFooter() {
 }
 
 function displayFooter() {
-	$jsfiles = array("js/jquery.js", "js/bootstrap.js");
+	$jsfiles = array("js/jquery.js", "js/bootstrap.js", "js/pe.js");
 	foreach ($jsfiles as $filename) {
 		//$path = dirname(dirname(__FILE__)).'/js/'.$filename;
 		echo '<script type="text/javascript" src="' . $filename . '"></script>'."\n";
@@ -185,7 +188,7 @@ function displayFooter() {
 	echo "	var cancelConfirmMsg=\"Warning! This survey has not been saved. Canceling now will remove any changes.\"\n";
 	echo "	var mergeMsg=\"<h2>You must select at least two surveys before you can merge</h2>\"\n";
 	echo "</script>\n\n";
-	//echo validateform();
+	//include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/scripts/datepicker';
 	echo "\n\n";
 	echo "</body>\n";
 	echo "</html>\n\n";
@@ -193,44 +196,8 @@ function displayFooter() {
 	include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; 
 }
 
-function validateform() {
-
-    $validate = <<<EOHTML
-<script>
-function validateText(id) {
-    if($("#"+id).val()==null || $("#"+id).val()=="") {
-        var div = $("#"+id).closest("div");
-        div.removeClass("has-success");
-        $("#glypcn"+id).remove()
-        div.addClass("has-error has-warning has-feedback");
-        div.append('<span id="glypcn'+id+'" class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>')
-        return false;
-    } else {
-        var div = $("#"+id).closest("div");
-        div.removeClass("has-error");
-        div.addClass("has-success has-feedback");
-        $("#glypcn"+id).remove()
-        div.append('<span id="glypcn'+id+'" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>')
-    	return true;
-    }
-}
-$(document).ready(
-    function() {
-        $("#loginbtn").click(function() {
-            if(!validateText("peusername")) {
-            	return false;
-            }
-            if(!validateText("pepassword")) {
-            	return false;
-            }
-            $("form#loginform").submit();
-        });
-    }
-);
-</script>
-EOHTML;
-
-    return $validate;
+function logo() {
+  echo "<span class=\"logo1\">pe</span><span class=\"logo2\">binary</span>";
 }
 
 ?>

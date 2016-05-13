@@ -230,20 +230,113 @@ function progressbar($section, $total) {
 	return $output;
 }
 
-function autotext($choice_content) {
-	if ($choice_content == '!other') { $choice_content_th = 'อื่นๆ (ะบุ)'; }
-	if ($choice_content == 'Refused to answer') { $choice_content_th = 'ปฏิเสธ'; }
-	if ($choice_content == 'Cannot remember') { $choice_content_th = 'จำไม่ได้'; }
-	if ($choice_content == 'Prefer not to answer') { $choice_content_th = 'ปฏิเสธ'; }
-	if ($choice_content == 'None of the above') { $choice_content_th = 'ไม่มีที่กล่าวข้างต้น'; }
-	if ($choice_content == 'Male') { $choice_content_th = 'ผู้ชาย'; }
-	if ($choice_content == 'Female') { $choice_content_th = 'ผู้หญฺิง'; }
-	if ($choice_content == 'SES-A') { $choice_content_th = 'สถานะภาพทางสังคม A'; }
-	if ($choice_content == 'SES-B') { $choice_content_th = 'สถานะภาพทางสังคม B'; }
-	if ($choice_content == 'SES-C') { $choice_content_th = 'สถานะภาพทางสังคม C'; }
-	if ($choice_content == 'SES-D') { $choice_content_th = 'สถานะภาพทางสังคม D'; }
-	if ($choice_content == 'SES-E') { $choice_content_th = 'สถานะภาพทางสังคม E'; }
+function autotext($choice_content, $choice_content_th) {
+	if ($choice_content_th == '') {
+		if ($choice_content == '!other') { $choice_content_th = 'อื่นๆ (ะบุ)'; }
+		if ($choice_content == 'Refused to answer') { $choice_content_th = 'ปฏิเสธ'; }
+		if ($choice_content == 'Cannot remember') { $choice_content_th = 'จำไม่ได้'; }
+		if ($choice_content == 'Prefer not to answer') { $choice_content_th = 'ปฏิเสธ'; }
+		if ($choice_content == 'None of the above') { $choice_content_th = 'ไม่มีที่กล่าวข้างต้น'; }
+		if ($choice_content == 'Male') { $choice_content_th = 'ผู้ชาย'; }
+		if ($choice_content == 'Female') { $choice_content_th = 'ผู้หญิง'; }
+		if ($choice_content == 'SES-A') { $choice_content_th = 'สถานะภาพทางสังคม A'; }
+		if ($choice_content == 'SES-B') { $choice_content_th = 'สถานะภาพทางสังคม B'; }
+		if ($choice_content == 'SES-C') { $choice_content_th = 'สถานะภาพทางสังคม C'; }
+		if ($choice_content == 'SES-D') { $choice_content_th = 'สถานะภาพทางสังคม D'; }
+		if ($choice_content == 'SES-E') { $choice_content_th = 'สถานะภาพทางสังคม E'; }		
+	} 
+
 	return $choice_content_th;
+}
+
+function ago($time) {
+    $periods = array("second", "minute", "hour", "day", "week", "month", "year", "decade");
+    $lengths = array("60","60","24","7","4.35","12","10");
+    $now = time();
+    $difference = $now - $time;
+    $tense = "ago";
+    for($j = 0; $difference >= $lengths[$j] && $j < count($lengths)-1; $j++) { $difference /= $lengths[$j]; }
+    $difference = round($difference);
+    if($difference != 1) { $periods[$j].= "s"; }
+    return "$difference $periods[$j] 'ago' ";
+}
+
+function textreplacement($text) {
+    $replace = array(
+            // 'WORD TO REPLACE' => 'REPLACE WORD WITH THIS'
+            'wordpress' => '<a href="#">wordpress</a>',
+            'excerpt' => '<a href="#">excerpt</a>',
+            'function' => '<a href="#">function</a>'
+    );
+    $text = str_replace(array_keys($replace), $replace, $text);
+    return $text;
+}
+
+
+function clickemail($text) {
+	$text = eregi_replace('([_\.0-9a-z-]+@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,3})','<a href="mailto:\\1">\\1</a>', $text);
+	return $text;
+}
+
+function fileWrite($file, $message) {
+	// append
+	fwrite(fopen($file, 'a'), $message . "\n");
+}
+
+function fileRead($file) {
+   $lines = file($file);
+   foreach ($lines as $line_num => $line) { echo "$line</br>\n"; }
+}
+
+function decode_json($json) {
+	//$json ='{"id":1,"name":"foo","interest":["wordpress","php"]} ';
+	$obj = json_decode($json);
+	return $obj->interest[1]; //prints php
+}
+
+function makelink($str) {
+	$reg_exUrl = "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
+	$urls = array();
+	$urlsToReplace = array();
+	if(preg_match_all($reg_exUrl, $str, $urls)) {
+		$numOfMatches = count($urls[0]);
+		$numOfUrlsToReplace = 0;
+		for($i=0; $i<$numOfMatches; $i++) {
+			$alreadyAdded = false;
+			$numOfUrlsToReplace = count($urlsToReplace);
+			for($j=0; $j<$numOfUrlsToReplace; $j++) {
+				if($urlsToReplace[$j] == $urls[0][$i]) { $alreadyAdded = true; }
+			}
+			if(!$alreadyAdded) { array_push($urlsToReplace, $urls[0][$i]); }
+		}
+		$numOfUrlsToReplace = count($urlsToReplace);
+		for($i=0; $i<$numOfUrlsToReplace; $i++) {
+			$str = str_replace($urlsToReplace[$i], "<a href=\"".$urlsToReplace[$i]."\">".$urlsToReplace[$i]."</a> ", $str);
+		}
+		return $str;
+	} else {
+		return $str;
+	}
+}
+
+function br2newline($input) {
+     $out = str_replace( "<br>", "\n", $input );
+     $out = str_replace( "<br/>", "\n", $out );
+     $out = str_replace( "<br />", "\n", $out );
+     $out = str_replace( "<BR>", "\n", $out );
+     $out = str_replace( "<BR/>", "\n", $out );
+     $out = str_replace( "<BR />", "\n", $out );
+     return $out;
+}
+
+function br2nl($input) {
+ return preg_replace('/<br(\s+)?\/?>/i', "\n", $input);
+}
+
+function dataURIs($file) {
+	// convert gif to data
+	$datafile = base64_encode(file_get_contents($file));
+	return $datafile;
 }
 
 /*

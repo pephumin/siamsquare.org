@@ -16,7 +16,7 @@ if(!empty($sid) && $updated) {
 	db_close($result);
 } else {
 	//$fields = array('name','realm','title','subtitle','email','theme','thanks_page','thank_head','thank_body','info','public','auto_num','open_date','close_date');
-  $fields = array('name','owner','realm','public','status','open_date','close_date','title','email','subtitle','subtitle_th','info','info_th','theme','thanks_page','thank_head','thank_body','changed','auto_num');
+  $fields = array('name','owner','realm','public','status','open_date','close_date','title','email','subtitle','subtitle_th','info','info_th','theme','thanks_page','thank_head','thank_head_th','thank_body','thank_body_th','changed','auto_num');
    	foreach ($fields as $f) {
         if(!empty($_POST[$f])) { $survey[$f] = _stripslashes($_POST[$f]); }
         else { $survey[$f] = ''; }
@@ -57,20 +57,14 @@ function validate() {
 <hr>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Project type <span class="label label-warning">optional</span></strong></label>
+  <label class="col-sm-3 control-label"><strong>Type of study <span class="label label-danger">required</span></strong></label>
   <div class="col-sm-9">
     <?php // if ($sid): echo mktext('subtitle', 60, 128, $survey['subtitle']); ?>
-    <p class="text-muted">Short summary on the type of study e.g. Customer satisfactin, Event evaluation, etc.</p>
+    <p class="text-muted">Short summary on the type of study e.g. Customer satisfaction, Event evaluation, etc.</p>
     <?php if ($survey['subtitle']): ?>
       <input class="form-control" type="text" name="subtitle" value="<?php echo $survey['subtitle']; ?>" />
     <?php else: ?>
       <input class="form-control" type="text" name="subtitle" placeholder="[English]: Type of study." />
-    <?php endif; ?>
-    <br />
-    <?php if ($survey['subtitle_th']): ?>
-      <input class="form-control" type="text" name="subtitle_th" value="<?php echo $survey['subtitle_th']; ?>" />
-    <?php else: ?>
-      <input class="form-control" type="text" name="subtitle_th" placeholder="[Thai]: Type of study." />
     <?php endif; ?>
   </div>
 </div>
@@ -78,7 +72,7 @@ function validate() {
 <hr>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Detailed information <span class="label label-warning">optional</span></strong></label>
+  <label class="col-sm-3 control-label"><strong>Detailed information <span class="label label-danger">required</span></strong></label>
   <div class="col-sm-9">
     <?php // if ($sid): echo mktextarea('info', 10, 60, 'virtual', $survey); ?>
     <p class="text-muted">Detailed information about this survey including the target audiences, length of interview, survey period, sample size expected, etc.</p>
@@ -116,14 +110,31 @@ function validate() {
       <input class="form-control" type="text" name="thank_head" value="<?php echo $survey['thank_head']; ?>" />
     <?php else: ?>
       Header:<br />
-      <input class="form-control" type="text" name="thank_head" placeholder="[English or Thai]: Thank you for taking part of this survey" />
+      <input class="form-control" type="text" name="thank_head" placeholder="[English]: Thank you for taking part of this survey" />
     <?php endif; ?>
+    <?php if ($survey['thank_head_th']): ?>
+      <br />
+      <input class="form-control" type="text" name="thank_head_th" value="<?php echo $survey['thank_head']; ?>" />
+    <?php else: ?>
+      <br />
+      <input class="form-control" type="text" name="thank_head_th" placeholder="[Thai]: Thank you for taking part of this survey" />
+    <?php endif; ?>
+
+    <br />
+
     <?php if ($survey['thank_body']): ?>
       Body:<br />
      <?php echo mktextarea('thank_body', 10, 60, 'virtual', $survey); ?>
     <?php else: ?>
       Body:<br />
-      <textarea class="form-control" rows="5" name="thank_body" placeholder="[English or Thai]: Your opinions are value to us. We make sure your opinons will be analysed at an aggregated level. And your opinions will be kept at the highest level of confidentiality."></textarea>
+      <textarea class="form-control" rows="5" name="thank_body" placeholder="[English]: Your opinions are value to us. We make sure your opinons will be analysed at an aggregated level. And your opinions will be kept at the highest level of confidentiality."></textarea>
+    <?php endif; ?>
+    <?php if ($survey['thank_body_th']): ?>
+      <br />
+     <?php echo mktextarea('thank_body_th', 10, 60, 'virtual', $survey); ?>
+    <?php else: ?>
+      <br />
+      <textarea class="form-control" rows="5" name="thank_body_th" placeholder="[Thai]: Your opinions are value to us. We make sure your opinons will be analysed at an aggregated level. And your opinions will be kept at the highest level of confidentiality."></textarea>
     <?php endif; ?>
   </div>
 </div>
@@ -170,8 +181,17 @@ function validate() {
     <?php if ($survey['close_date']): ?>
      <input class="form-control" type="text" name="close_date" value="<?php echo $survey['close_date']; ?>" />
     <?php else: ?>
-      <input class="form-control" type="text" name="close_date" placeholder="2017-02-26 00:00:00" />
+     <input class="form-control" type="text" name="close_date" placeholder="2017-02-26 00:00:00" />
+     
       <!--
+     <div class="input-group date">
+      <input class="form-control" type="text" name="close_date" placeholder="2017-02-26 00:00:00" />
+      <div class="input-group-addon" id="datepicker"><span class="glyphicon glyphicon-th"></span></div>
+     </div>
+     -->
+
+      <!--
+      <input class="form-control" type="text" name="close_date" placeholder="2017-02-26 00:00:00" />
      Year: <input class="form-control" type="text" size="4" maxlength="4" name="open_year" placeholder="2017" />
      Month: <input class="form-control" type="text" size="2" maxlength="2" name="open_month" placeholder="02" />
      Day: <input class="form-control" type="text" size="2" maxlength="2" name="open_day" placeholder="26"/>
@@ -183,7 +203,7 @@ function validate() {
 <hr>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Project ID</strong> <span class="label label-danger">required</span></label>
+  <label class="col-sm-3 control-label"><strong>Project ID</strong></label>
   <div class="col-sm-9">
     <p class="text-muted">Internal project ID (non-editable).</p>
     <?php if ($survey['name']): ?>
@@ -197,7 +217,7 @@ function validate() {
 </div>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Owner</strong> <span class="label label-danger">required</span></label>
+  <label class="col-sm-3 control-label"><strong>Project owner</strong></label>
   <div class="col-sm-9">
     <div class="form-inline">
     <p class="text-muted">User and group that owns this survey.</p>
