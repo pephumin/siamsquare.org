@@ -1,5 +1,19 @@
 <?php
 
+//      ID      Question type           Has choice?     Table
+//      1       'Single answer (SA)'    'Y'             'response_single'
+//      2       'Multiple answer (MA)'  'Y'             'response_multiple'
+//      3       'Open-end (short)'      'N'             'response_text'
+//      4       'Open-end (long)'       'N'             'response_text'
+//      5       'Rating scale'          'Y'             'response_rank'
+//      6       'Attribute rating'      'Y'             'response_rank'
+//      7       'Drop down'             'Y'             'response_single'
+//      8       'Date'                  'N'             'response_date'
+//      9       'Numeric'               'N'             'response_text'
+//      10      'Others'                'N'             'response_text'
+//      99      'Page Break'            'N'             ''
+//      100     'Section Text'          'N'             ''
+
 //  proto string response_check_answers(int survey_id, int section)
 //  Reads current form variables from HTTP_POST_VARS.
 //  Returns an empty string if all required fields are completed, 
@@ -8,10 +22,9 @@
 
 function response_check_answers($sid, $rid, $section) {
     //global $_POST;
+
     $sql = "SELECT id,type_id,content,required,ans_uniq FROM ".$GLOBALS['ESPCONFIG']['question_table']."
-    ". survey_select_section_sql($sid,$section) ." AND
-    deleted='N' AND type_id < 98
-    ORDER BY position";
+    ". survey_select_section_sql($sid,$section) ." AND deleted='N' AND type_id < 98 ORDER BY position";
 
     $result = execute_sql($sql);
     if(record_count($result) < 1) {
@@ -20,8 +33,8 @@ function response_check_answers($sid, $rid, $section) {
       return('');
     }
 
-    $missing = array(); // array of missing questions
-    $not_numeric = array(); // array of numerical questions that are non-numeric
+    $missing = array(); // array of missing answers
+    $not_numeric = array(); // array of numerical answers that are non-numeric
     $unique_answers = array(); // array of questions that must have a unique answer (only for Textbox or numerical types)
 
     // we loop through all the questions and check for missing and non-numerical issues, but only if the question
@@ -33,20 +46,24 @@ function response_check_answers($sid, $rid, $section) {
         // if the question has a condition:     $question_was_shown=true if condition is fulfilled, false otherwise
         $question_was_shown=question_conditioncheck($sid,$qid,$rid);
 
+        //var_dump($question_was_shown);
         if ($question_was_shown) {
 
             // response_text 
             //if ($ans_uniq=='Y' && ($tid==3 || $tid==4 || $tid==9 || $tid==10)) {
-            if ($ans_uniq=='Y' && ($tid==3 || $tid==4 || $tid==10)) {
-                $tmp_response=_addslashes($_POST[$qid]);
-                $sql = "SELECT COUNT(*) FROM ".$GLOBALS['ESPCONFIG']['response_text_table']." WHERE question_id=$qid && response="._addslashes($_POST[$qid]);
-                $count_result = get_one($sql);
-                if ($count_result) { $unique_answers[$qid] = $content; }
-            }
+            //if ($ans_uniq=='Y' && ($tid==3 || $tid==4 || $tid==10)) {
+            //    $tmp_response=_addslashes($_POST[$qid]);
+            //    //$sql = "SELECT COUNT(*) FROM ".$GLOBALS['ESPCONFIG']['response_text_table']." WHERE question_id=$qid && response="._addslashes($_POST[//$qid]);
+            //    $sql = "SELECT COUNT(id) FROM ".$GLOBALS['ESPCONFIG']['response_text_table']." WHERE question_id=$qid && response="._addslashes($_POST[$//qid]);
+            //    echo $sql;
+            //    $count_result = get_one($sql);
+            //    if ($count_result) { $unique_answers[$qid] = $content; }
+            //}
             
             // response_rank
-            if($required=='Y' && ($tid == 5 || $tid==6)) {
+            if ($required=='Y' && $tid==6) {
                 $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=$qid";
+
                 $cid_result = execute_sql($sql);
                 while(list($cid) = fetch_row($cid_result)) {
                     if(!isset($_POST["${qid}_${cid}"])) {
@@ -63,8 +80,8 @@ function response_check_answers($sid, $rid, $section) {
             elseif ($tid == 9 && !empty($_POST[$qid]) && !is_numeric($_POST[$qid])) { $not_numeric[$qid] = $content; }
 
             if (!isset($_POST[$qid])) { $_POST[$qid] = ''; }
-            //if ($required=='Y' && $tid!=6 && empty($_POST[$qid]) && $_POST[$qid] != '0') { $missing[$qid] = $content; }
-            if ($required=='Y' && empty($_POST[$qid]) && $_POST[$qid] != '0') { $missing[$qid] = $content; }
+            if ($required=='Y' && $tid!=6 && empty($_POST[$qid]) && $_POST[$qid] != '0') { $missing[$qid] = $content; }
+            //if ($required=='Y' && empty($_POST[$qid]) && $_POST[$qid] != '0') { $missing[$qid] = $content; }
         }
         $result->MoveNext();
     }
@@ -196,9 +213,7 @@ function response_insert($sid,$section,$rid) {
     SELECT Q.id, Q.type_id, Q.length, Q.precise, T.response_table
     FROM ".$GLOBALS['ESPCONFIG']['question_table']." Q, ".$GLOBALS['ESPCONFIG']['question_type_table']." T
     ". survey_select_section_sql($sid,$section,'Q') ." AND
-    Q.survey_id=${sid} AND
-    Q.deleted='N' AND Q.type_id < 50 AND
-    Q.type_id=T.id";
+    Q.survey_id=${sid} AND Q.deleted='N' AND Q.type_id < 50 AND Q.type_id=T.id";
     
     $q_result = execute_sql($sql);
     while(list($qid, $tid, $length, $prec, $table) = fetch_row($q_result)) {

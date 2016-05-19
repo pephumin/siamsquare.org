@@ -20,7 +20,7 @@ if(!$updated || isset($_POST['extra_choices'])) {
 	if($curr_q<0) $curr_q = 1;
 }
 
-$fields = array('name','type_id','length','precise','required','content','content_th','position','ans_uniq');
+$fields = array('name','type_id','length','precise','required','content','content_th','position','ans_uniq','extra','extra_th');
 if($updated && $curr_q) {
 	// survey questions exist already
 	// load values from DB
@@ -101,7 +101,6 @@ else { echo "<p><mark>Edit a question</mark></p>\n"; }
 		<th>Type</th>
 		<th>Length</th>
 		<th>Precision</th>
-		<th>Required</th>
 		<th>Unique answer</th>
 	</tr><tr>
 		<td>&nbsp;</td>
@@ -127,17 +126,19 @@ else { echo "<p><mark>Edit a question</mark></p>\n"; }
 			echo(mktext("precise",6));
 		?></td>
 		<td><?php
-			if(empty($_POST['required'])) $_POST['required'] = 'Y';
-			echo(mkselect("required",array(
-				"Y" => _('Yes'),
-				"N" => _('No')
-			))); ?></td>
-		<td><?php
 			if(empty($_POST['ans_uniq'])) $_POST['ans_uniq'] = 'N';
-			echo(mkselect("ans_uniq",array(
-				"Y" => _('Yes'),
-				"N" => _('No')
-			))); ?></td>
+			if ($_POST['type_id'] != 8 || $_POST['type_id'] != 9) {
+				echo "<select class=\"form-control\" name=\"ans_uniq\" disabled>\n";
+				echo "<option value=\"Y\">Yes</option>\n";
+				echo "<option value=\"N\" selected=\"selected\">No</option>\n";
+				echo "</select>\n";
+			} else {
+				echo(mkselect("ans_uniq",array(
+					"Y" => _('Yes'),
+					"N" => _('No')
+				))); 				
+			}
+		?></td>
 	</tr>
 	<tr>
 		<th>Question in English</th>
@@ -153,6 +154,26 @@ else { echo "<p><mark>Edit a question</mark></p>\n"; }
 	</tr>
 </table>
 
+<br />
+
+<?php
+if ($_POST['type_id'] == 7 || $_POST['type_id'] == 8 || $_POST['type_id'] == 9) {
+?>
+<table class="table table-hover">
+	<tr>
+		<th>Extra in English</th>
+		<th>Extra in Thai</th>
+	</tr>
+	<tr>
+		<td><?php echo(mktext("extra",20)); ?></td>
+		<td><?php echo(mktext("extra_th",20)); ?></td>
+	</tr>
+</table>
+<?php
+}
+?>
+
+<input type="hidden" name="required" value="Y">
 
 <?php
 

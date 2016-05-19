@@ -1,6 +1,6 @@
 <?php
 
-$home = "http://www.siamsquare.org";
+$home = $GLOBALS['ESPCONFIG']['base_url'];
 $public = $home."/public";
 $self = $_SERVER['PHP_SELF'];
 $base = $_SERVER['BASE_PAGE'];
@@ -52,55 +52,8 @@ function displayHeader($title, $scrollspy = NULL) {
   //else { 
   //  echo "<body>\n"; 
   //}
-  echo "<body>\n"; 
-}
-
-function displayNav_original() {
-  global $home, $self, $public, $respondent;
-  echo "\n";
-  echo "<nav class=\"navbar navbar-default\">\n";
-  echo "<div class=\"container\">\n";
-  echo "  <div class=\"navbar-header\">\n";
-  echo "    <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\">\n";
-  echo "      <span class=\"sr-only\">Toggle navigation</span>\n";
-  echo "      <span class=\"icon-bar\"></span>\n";
-  echo "      <span class=\"icon-bar\"></span>\n";
-  echo "      <span class=\"icon-bar\"></span>\n";
-  echo "    </button>\n";
-  echo "    <a class=\"navbar-brand\" href=\"$home\"><strong>SiamSquare</strong></a>\n";  
-  if ($_SERVER['REQUEST_URI'] == "/public/") { $a = '<li class="active">'; } else { $a = '<li>'; }
-  if ($_SERVER['REQUEST_URI'] == "/public/signup.php") { $b = '<li class="active">'; } else { $b = '<li>'; }
-  if ($_SERVER['REQUEST_URI'] == "/public/contact.php") { $c = '<li class="active">'; } else { $c = '<li>'; }
-  if ($_SERVER['REQUEST_URI'] == "/public/help.php") { $d = '<li class="active">'; } else { $d = '<li>'; }
-  if(!empty($respondent['username'])) {
-    echo "  </div> <!--/navbar-header -->\n";
-    echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
-    echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
-    echo "      $a<a href=\"$public\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
-    //echo "      $b<a href=\"/public/signup.php\"><i class=\"fa fa-user fa-lg\"></i><i class=\"fa fa-plus\"></i>&nbsp; Sign-up</a></li>\n";
-    echo "      $c<a href=\"/public/contact.php\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
-    echo "      $d<a href=\"/public/help.php\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
-    echo "      <li><a href=\"$public/index.php?doLogout=1\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log out</a></li>\n";
-    echo "    </ul>\n";
-    echo "  </div> <!--/navbar-collapse -->\n";
-    echo "</div>\n";
-    echo "</nav>\n\n";
-  } else {
-    echo "  </div> <!--/navbar-header -->\n";
-    echo "  <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
-    echo "    <ul class=\"nav navbar-nav navbar-right\">\n";
-    echo "      $a<a href=\"$public\"><i class=\"fa fa-home fa-lg\"></i>&nbsp; Home</a></li>\n";
-    //echo "      <button type=\"button\" class=\"btn btn-default navbar-btn\">Sign-in</button>\n";
-    //echo "      <button type=\"button\" class=\"btn btn-success navbar-btn\">Sign up</button>\n";
-    echo "      $b<a href=\"/public/signup.php\"><i class=\"fa fa-user fa-lg\"></i><i class=\"fa fa-plus\"></i>&nbsp; Sign-up</a></li>\n";
-    echo "      $c<a href=\"/public/contact.php\"><i class=\"fa fa-envelope-o fa-lg\"></i>&nbsp; Contact</a></li>\n";
-    echo "      $d<a href=\"/public/help.php\"><i class=\"fa fa-question fa-lg\"></i>&nbsp; Help</a></li>\n";
-    //echo "      <li><a href=\"$public/index.php?doLogout=1\"><i class=\"fa fa-sign-out fa-lg\"></i>&nbsp; Log out</a></li>\n";
-    echo "    </ul>\n";
-    echo "  </div> <!--/navbar-collapse -->\n";
-    echo "</div>\n";
-    echo "</nav>\n";  
-  }
+  echo "<body>\n\n"; 
+  //facebookLogin();
 }
 
 function displayNav() {
@@ -114,7 +67,10 @@ function displayNav() {
   echo "      <span class=\"icon-bar\"></span>\n";
   echo "      <span class=\"icon-bar\"></span>\n";
   echo "      </button>\n";
-  echo "      <a class=\"navbar-brand\" href=\"$public\">SiamSquare <small>[Respondent Zone]</small></a>\n";
+  //echo "      <a class=\"navbar-brand\" href=\"$public\">SiamSquare <small>[Respondent Zone]</small></a>\n";
+  echo "      <a class=\"navbar-brand\" href=\"$public\">";
+  logo();
+  echo "</a>\n";
   echo "   </div>\n";
   //echo "   <!-- Collect the nav links, forms, and other content for toggling -->\n";
   echo "   <div class=\"collapse navbar-collapse\" id=\"ssq-navbar\">\n";
@@ -126,9 +82,9 @@ function displayNav() {
   echo "               <li><a href=\"/public/contact.php\">Contact us</a></li>\n";
   echo "               <li><a href=\"/public/help.php\">Help</a></li>\n";
   echo "               <li class=\"divider\"></li>\n";
-  echo "               <li><a href=\"http://www.jquery2dotnet.com\">Membership</a></li>\n";
+  echo "               <li><a href=\"\">Membership</a></li>\n";
   echo "               <li class=\"divider\"></li>\n";
-  echo "               <li><a href=\"http://www.jquery2dotnet.com\">Reward programme</a></li>\n";
+  echo "               <li><a href=\"\">Reward programme</a></li>\n";
   echo "            </ul>\n";
   echo "         </li>\n";
   echo "         <li class=\"active\"><a href=\"$home\"><i class=\"fa fa-hand-o-left\"></i> Back</a></li>\n";
@@ -146,7 +102,7 @@ function displayNav() {
   //echo "         <li><a href=\"#\" class=\"btn btn-default navbar-btn\">Sign in</a></li>\n";
   //echo "         <li><a href=\"/public/signup.php\"><i class=\"fa fa-user-plus\"></i>&nbsp; Sign Up</a></li>\n";
   echo "         <li class=\"dropdown\">\n";
-  echo "            <a href=\"http://www.jquery2dotnet.com\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Member log-in <span class=\"caret\"></span></a>\n";
+  echo "            <a href=\"\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Member log-in <span class=\"caret\"></span></a>\n";
   echo "            <ul class=\"dropdown-menu\" style=\"padding: 15px;min-width: 250px;\">\n";
   echo "               <li>\n";
   echo "                  <div class=\"row\">\n";
@@ -188,7 +144,7 @@ function displayNav() {
   echo "      </ul>\n";
   echo "   </div>\n";
   echo "  </div>\n";
-  echo "</nav>\n";  
+  echo "</nav>\n\n";  
 }
 
 function displayFooter() {
@@ -198,17 +154,21 @@ function displayFooter() {
   echo "</div> <!-- /container -->\n";
   //echo "</form>\n";
   echo "<br /><br />\n\n";
+  echo "<div class=\"scroll-to-top\"><i class=\"fa fa-arrow-up fa-lg\"></i></div>\n\n";
   echo "<footer class=\"footer\">\n";
   echo "  <div class=\"container\">\n";
-  echo "    <div class=\"text-muted pull-left\"><i class=\"fa fa-graduation-cap\"></i> Website developed by <abbr title=\"Phumin Chesdmethee\">Phumin</abbr>: ";
-  echo "    [<a href=\"https://fb.me/phumin\"><i class=\"fa fa-facebook-square\"></i></a>|";
-  echo "    <a href=\"https://twitter.com/pephumin\"><i class=\"fa fa-twitter\"></i></a>|";
-  echo "    <a href=\"mailto:phumin@sawasdee.org\"><i class=\"fa fa-envelope-o\"></i></a>|";
-  echo "    <a href=\"sms:66-81-806-8899\"><i class=\"fa fa-mobile\"></i></a>]</div>\n";
-  echo "    <div class=\"text-muted pull-right\">".$signed."</div>\n";
+  //echo "    <div class=\"text-muted pull-left\"><i class=\"fa fa-graduation-cap\"></i> Website developed by <abbr title=\"Phumin Chesdmethee\">Phumin</abbr>: ";
+  //echo "    [<a href=\"https://fb.me/phumin\"><i class=\"fa fa-facebook-square\"></i></a>|";
+  //echo "    <a href=\"https://twitter.com/pephumin\"><i class=\"fa fa-twitter\"></i></a>|";
+  //echo "    <a href=\"mailto:phumin@sawasdee.org\"><i class=\"fa fa-envelope-o\"></i></a>|";
+  //echo "    <a href=\"sms:66-81-806-8899\"><i class=\"fa fa-mobile\"></i></a>]</div>\n";
+  //echo "    <div class=\"text-muted pull-right\">".$signed."</div>\n";
+  echo "    <div class=\"text-muted pull-left\">&copy; Copyright $copy ";
+  echo auto_copyright();
+  echo " </div>\n";
   echo "  </div>\n";
   echo "</footer>\n\n";
-  $jsfiles = array("js/jquery.js", "js/bootstrap.js", "js/pe.js");
+  $jsfiles = array("js/jquery.js", "js/bootstrap.js", "js/jquery-ui.js", "js/pe.js");
   foreach ($jsfiles as $filename) {
     //$path = dirname(dirname(__FILE__)).'/js/'.$filename;
     echo '<script type="text/javascript" src="' . $filename . '"></script>'."\n";
@@ -224,6 +184,12 @@ function displayFooter() {
   include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php';
 }
 
+function auto_copyright($year = 'auto') {
+   if(intval($year) == 'auto'){ $year = date('Y'); }
+   if(intval($year) == date('Y')){ echo intval($year); }
+   if(intval($year) < date('Y')){ echo intval($year) . ' - ' . date('Y'); }
+   if(intval($year) > date('Y')){ echo date('Y'); }
+ }
 
 function handleLogin() {
   $handleLogin = (! is_session_authenticated() && isset($_REQUEST['doLogin']) && ! empty($_REQUEST['username']) && ! empty($_REQUEST['password']) ? true : false);
@@ -342,7 +308,7 @@ function paint_public_survey_list() {
       printf('<a href="%s" class="btn btn-info btn-lg" role="button"><i class="fa fa-flag"></i> %s</a> &nbsp;', survey_fetch_url_by_survey_name($survey['name']), $survey['title']);
     }
     //echo "</ul>\n";
-    echo "<br />\n";
+    echo "<br /><br />\n";
   }
 }
 
@@ -748,5 +714,173 @@ function respondent_signup() {
   echo login_warning();
 
 }
+
+function logo() {
+  echo "<span class=\"logo1\">pe</span><span class=\"logo2\">binary</span>";
+}
+
+function facebookLogin() {
+
+?>
+<script>
+  // This is called with the results from from FB.getLoginStatus().
+  function statusChangeCallback(response) {
+    console.log('statusChangeCallback');
+    console.log(response);
+    // The response object is returned with a status field that lets the
+    // app know the current login status of the person.
+    // Full docs on the response object can be found in the documentation
+    // for FB.getLoginStatus().
+    if (response.status === 'connected') {
+      // Logged into your app and Facebook.
+      testAPI();
+    } else if (response.status === 'not_authorized') {
+      // The person is logged into Facebook, but not your app.
+      document.getElementById('status').innerHTML = 'Please log ' +
+        'into this app.';
+    } else {
+      // The person is not logged into Facebook, so we're not sure if
+      // they are logged into this app or not.
+      document.getElementById('status').innerHTML = 'Please log ' +
+        'into Facebook.';
+    }
+  }
+
+  // This function is called when someone finishes with the Login
+  // Button.  See the onlogin handler attached to it in the sample
+  // code below.
+  function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    });
+  }
+
+  window.fbAsyncInit = function() {
+  FB.init({
+    appId      : '499076173618599',
+    cookie     : true,  // enable cookies to allow the server to access 
+                        // the session
+    xfbml      : true,  // parse social plugins on this page
+    version    : 'v2.6' // use graph api version 2.5
+  });
+
+  // Now that we've initialized the JavaScript SDK, we call 
+  // FB.getLoginStatus().  This function gets the state of the
+  // person visiting this page and can return one of three states to
+  // the callback you provide.  They can be:
+  //
+  // 1. Logged into your app ('connected')
+  // 2. Logged into Facebook, but not your app ('not_authorized')
+  // 3. Not logged into Facebook and can't tell if they are logged into
+  //    your app or not.
+  //
+  // These three cases are handled in the callback function.
+
+  FB.getLoginStatus(function(response) {
+    statusChangeCallback(response);
+  });
+
+  };
+
+  // Load the SDK asynchronously
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+  // Here we run a very simple test of the Graph API after login is
+  // successful.  See statusChangeCallback() for when this call is made.
+  function testAPI() {
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me', function(response) {
+      console.log(response.authResponse.accessToken);
+      console.log('Successful login for: ' + response.name);
+      document.getElementById('status').innerHTML =
+        'Thanks for logging in, ' + response.name + '!';
+    });
+  }
+</script>
+
+<?php
+
+}
+
+function facebookLoginShort() {
+
+?>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '499076173618599',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<?php
+
+}
+
+function facebookLoginNew() {
+
+?>
+<!-- Load the Facebook JavaScript SDK -->
+<div id="fb-root"></div>
+<script src="//connect.facebook.net/en_US/all.js"></script>
+    
+<script type="text/javascript">
+      
+  // Initialize the Facebook JavaScript SDK
+  FB.init({
+    appId: '499076173618599',
+    xfbml: true,
+    status: true,
+    cookie: true,
+    version: '2.6',
+  });
+  
+  // Check if the current user is logged in and has authorized the app
+  FB.getLoginStatus(checkLoginStatus);
+  
+  // Login in the current user via Facebook and ask for email permission
+  function authUser() {
+    FB.login(checkLoginStatus, {scope:'email,user_likes'});
+  }
+  
+  // Check the result of the user status and display login button if necessary
+  function checkLoginStatus(response) {
+    if(response && response.status == 'connected') {
+      alert('User is authorized');
+      
+      // Hide the login button
+      document.getElementById('loginButton').style.display = 'none';
+      
+      // Now Personalize the User Experience
+      console.log('Access Token: ' + response.authResponse.accessToken);
+    } else {
+      alert('User is not authorized');
+      
+      // Display the login button
+      document.getElementById('loginButton').style.display = 'block';
+    }
+  }
+</script>
+
+<?php
+
+}
+
 
 ?>

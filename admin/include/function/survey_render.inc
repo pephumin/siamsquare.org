@@ -29,6 +29,7 @@ function survey_render($sid, $section = 1, $rid=0, $message = '') {
 	// load survey questions
 	$sec_sql = array_to_insql($sections[$section]);
 	$sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE id $sec_sql ORDER BY position,id";
+	//echo $sql;
 	$questions_result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
 	if(record_count($questions_result) < 1)
 		return(false);
@@ -49,9 +50,10 @@ function survey_render($sid, $section = 1, $rid=0, $message = '') {
 	echo "</h2>\n";
 	echo "<br />\n\n";
 
-	echo "<div class=\"jumbotron showprojectdetail\">\n";
-	if ($survey["info_th"]) { echo "<p class=\"lead\">".nl2br($survey["info_th"])."</p>\n\n"; }
-	else { echo "<p class=\"lead\">".nl2br($survey["info"])."</p>\n\n"; }
+	echo "<div class=\"well showprojectdetail\">\n";
+	//echo "<div class=\"jumbotron showprojectdetail\">\n";
+	if ($survey["info_th"]) { echo "<h4>".nl2br($survey["info_th"])."</h4>\n\n"; }
+	else { echo "<h4>".nl2br($survey["info"])."</h4>\n\n"; }
 	echo "</div>\n";
 	//echo "<br />\n";
 
@@ -59,7 +61,7 @@ function survey_render($sid, $section = 1, $rid=0, $message = '') {
 	//echo $preview;
 
 	if (!$preview) {
-		echo "<small>PROGRESS:</small>\n";
+		echo "<span class=\"ubuntu\"><small>PROGRESS:</small></span>\n";
 		echo progressbar($_SESSION['sec'], $num_sections);
 		echo "\n\n";		
 	}

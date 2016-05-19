@@ -20,13 +20,7 @@ if(!empty($_REQUEST['submit'])) {
     $sid=intval($_POST['sid']);
     $msg = response_check_answers($sid,$_SESSION['rid'],$_SESSION['sec']);
 
-    if ($ESPCONFIG['use_captcha']) {
-        require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/captcha.check.php';
-        $msg .= response_check_captcha("captcha_check",0);
-    }
-
     // if the parameter test is set in the URL and the survey is in fact in the test stage - then don't set the cookie
-
     if (isset($_REQUEST['test'])) {
     	$sql = "SELECT status, name FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id=${sid}";
     	$result = execute_sql($sql);

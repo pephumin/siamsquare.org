@@ -87,19 +87,19 @@ if (!file_exists( $_SERVER['DOCUMENT_ROOT'] . '/admin/include/tab/'.$tab.'.inc' 
 	echo "<b>Unable to open include file. Check INI settings. Aborting.</b>";
 	exit;
 }
-	
-$errstr = '';
 
+$errstr = '';
 $updated = survey_update($_SESSION['survey_id'],$tab,$_SESSION['last_tab']);
+
 
 echo "</div>\n";
 echo "</form>\n\n";
-
-echo "<form method=\"post\" id=\"tabs\" onsubmit=\"validate();\" action=\"$base\" class=\"form-horizontal\" id=\"phpesp\">\n\n";
+//echo "<form method=\"post\" id=\"tabs\" onsubmit=\"validate();\" action=\"$base\" class=\"form-horizontal\" id=\"phpesp\">\n\n";
+echo "<form method=\"post\" id=\"tabs\" onsubmit=\"validate();\" action=\"$base\" class=\"form-horizontal\">\n\n";
 
 echo "<div class=\"container\">\n\n";
-
 echo "<h2>Designing a survey</h2>\n";
+
 
 if (!empty($errstr)) { echo(mkerror($errstr)); }
 

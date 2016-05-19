@@ -16,6 +16,7 @@ if(get_cfg_var('register_globals')) {
     $_SESSION['acl'] = &$acl;
 }
 
+
 $db_version = get_dbversion();
 $where = '';
 if (version_compare($db_version,"0.0.0","eq")) {

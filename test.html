@@ -9,11 +9,12 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SiamSquare</title>
+    <title>PE Binary</title>
 
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/grayscale.css" rel="stylesheet">
-    <link href="css/font-awesome.css" rel="stylesheet" type="text/css">
+    <link href="public/css/bootstrap.css" rel="stylesheet">
+    <link href="public/css/grayscale.css" rel="stylesheet">
+    <link href="public/css/font-awesome.css" rel="stylesheet" type="text/css">
+    <link href="public/css/pe.css" rel="stylesheet" type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
 
@@ -28,8 +29,8 @@
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
                     <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand page-scroll" href="#page-top">
-                    <i class="fa fa-play-circle"></i>  <span class="light">siamsquare.org</span>
+                <a class="navbar-brand page-scroll" href="http://www.siamsquare.org/test.html#page-top">
+                    <span class="logo1">pe</span><span class="logo2">binary</span>
                 </a>
             </div>
 
@@ -41,16 +42,16 @@
                         <a href="#page-top"></a>
                     </li>
                     <li>
-                        <a class="page-scroll" href="#about">About</a>
+                        <a class="page-scroll" href="http://www.siamsquare.org/test.html#about"><i class="fa fa-play-circle"></i> About</a>
                     </li>
                     <li>
-                        <a class="page-scroll" href="/admin">Client</a>
+                        <a class="page-scroll" href="http://www.siamsquare.org/admin/"><i class="fa fa-play-circle"></i> Client</a>
                     </li>
                     <li>
-                        <a class="page-scroll" href="/public">Respondent</a>
+                        <a class="page-scroll" href="http://www.siamsquare.org/public/"><i class="fa fa-play-circle"></i> Respondent</a>
                     </li>
                     <li>
-                        <a class="page-scroll" href="#contact">Contact</a>
+                        <a class="page-scroll" href="http://www.siamsquare.org/test.html#contact"><i class="fa fa-play-circle"></i> Contact</a>
                     </li>
                 </ul>
             </div>
@@ -65,7 +66,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-8 col-md-offset-2">
-                        <h1 class="brand-heading">siamsquare</h1>
+                        <h1 class="brand-heading"><span class="logo1">pe</span><span class="logo2">binary</span></h1>
                         <p class="intro-text">A mobile research company located in Thailand.</p>
                         <a href="#about" class="btn btn-circle page-scroll">
                             <i class="fa fa-angle-double-down animated"></i>
@@ -130,17 +131,21 @@
     <!-- Footer -->
     <footer>
         <div class="container text-center">
-            <p>Copyright &copy; Your Website 2014</p>
+            <p>Copyright &copy; <small><span class="logo1">pe</span><span class="logo2">binary</span></small> 2016</p>
         </div>
     </footer>
 
-    <script src="js/jquery.js"></script>
-    <script src="js/bootstrap.js"></script>
-    <script src="js/jquery.easing.min.js"></script>
-    <script src="js/grayscale.js"></script>
-
-    <!-- Google Maps API Key - Use your own API key to enable the map feature. More information on the Google Maps API can be found at https://developers.google.com/maps/ -->
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRngKslUGJTlibkQ3FkfTxj3Xss1UlZDA&sensor=false"></script>
+    <script src="public/js/jquery.js"></script>
+    <script src="public/js/bootstrap.js"></script>
+    <script src="public/js/jquery.easing.min.js"></script>
+    <script src="public/js/grayscale.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDWdC1DwJeKAHo__5GlHdJjEKeoBLyl3TA&callback=initMap"></script>
+    <script>
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: {lat: -34.397, lng: 150.644},
+      zoom: 8
+    });
+    </script>
 
 </body>
 </html>

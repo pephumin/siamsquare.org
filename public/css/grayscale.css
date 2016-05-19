@@ -70,7 +70,9 @@ a:focus {
 }
 
 .navbar-custom .navbar-brand {
-    font-weight: 700;
+    font-family: Aqua;
+    text-transform: lowercase;
+    /*font-weight: 400;*/
 }
 
 .navbar-custom .navbar-brand:focus {
@@ -161,11 +163,13 @@ a:focus {
 }
 
 .intro .intro-body .brand-heading {
-    font-size: 40px;
+    font-size: 30px;
+    text-transform: lowercase;
 }
 
 .intro .intro-body .intro-text {
     font-size: 18px;
+    text-transform: lowercase;
 }
 
 @media(min-width:768px) {
@@ -175,11 +179,13 @@ a:focus {
     }
 
     .intro .intro-body .brand-heading {
-        font-size: 100px;
+        font-size: 60px;
+        text-transform: lowercase;
     }
 
     .intro .intro-body .intro-text {
         font-size: 26px;
+        text-transform: lowercase;
     }
 }
 
@@ -342,10 +348,12 @@ ul.banner-social-buttons {
 
 footer {
     padding: 50px 0;
+    font-size: 100%;
 }
 
 footer p {
     margin: 0;
+    font-size: 100%;
 }
 
 ::-moz-selection {
