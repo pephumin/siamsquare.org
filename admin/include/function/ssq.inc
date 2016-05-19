@@ -232,7 +232,8 @@ function progressbar($section, $total) {
 
 function autotext($choice_content, $choice_content_th) {
 	if ($choice_content_th == '') {
-		if ($choice_content == '!other') { $choice_content_th = 'อื่นๆ (ะบุ)'; }
+		if ($choice_content == '!others') { $choice_content_th = 'อื่นๆ (ระบุ)'; }
+		if ($choice_content == '!others Other (please specify)') { $choice_content_th = 'อื่นๆ (ระบุ)'; }
 		if ($choice_content == 'Refused to answer') { $choice_content_th = 'ปฏิเสธ'; }
 		if ($choice_content == 'Cannot remember') { $choice_content_th = 'จำไม่ได้'; }
 		if ($choice_content == 'Prefer not to answer') { $choice_content_th = 'ปฏิเสธ'; }

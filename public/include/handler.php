@@ -16,15 +16,12 @@ if(!defined('ESP-AUTH-OK')) { if (!empty($GLOBALS['errmsg'])) echo($GLOBALS['err
 // get the survey
 $sql = "SELECT status, name, public, open_date, close_date FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id=${sid}";
 $result = execute_sql($sql);
-    if ($result && record_count($result) > 0)
-       list ($status, $name, $survey_public, $open_date, $close_date) = fetch_row($result);
-    else
-       $status = 0;
+    if ($result && record_count($result) > 0) { list ($status, $name, $survey_public, $open_date, $close_date) = fetch_row($result); }
+    else { $status = 0; }
 
-// ------------------ PE ------------------
 // Added for cookie auth, to eliminate double submits - only for public surveys
-//$cookiename="survey_".$sid;
-//if (($GLOBALS['ESPCONFIG']['limit_double_postings']>0) && isset($_COOKIE["$cookiename"]) && $survey_public=='Y' && !($ESPCONFIG['auth_response'] && auth_get_option('resume'))) { echo (mkerror('You have already completed this survey.')); return; }
+$cookiename="survey_".$sid;
+if (($GLOBALS['ESPCONFIG']['limit_double_postings']>0) && isset($_COOKIE["$cookiename"]) && $survey_public=='Y' && !($ESPCONFIG['auth_response'] && auth_get_option('resume'))) { echo (mkerror('You have already completed this survey.')); return; }
     
 $request_direct = 0;
 $request_referer = '';
@@ -33,14 +30,12 @@ if (!empty($_REQUEST['referer'])) { $request_referer = htmlspecialchars($_REQUES
 elseif (isset($_SERVER['HTTP_REFERER'])) { $request_referer = htmlspecialchars($_SERVER['HTTP_REFERER']); } 
 else { $request_direct = 1; }
 
-$num_sections = survey_num_sections($sid);
-if (!isset($_SESSION['sec']) || empty($_SESSION['sec']) || $_SESSION['sec']>$num_sections) { $_SESSION['sec'] = 1; } 
-else { $_SESSION['sec'] = (intval($_SESSION['sec']) > 0) ? intval($_SESSION['sec']) : 1; }
+//$num_sections = survey_num_sections($sid);
+//if (!isset($_SESSION['sec']) || empty($_SESSION['sec']) || $_SESSION['sec']>$num_sections) { $_SESSION['sec'] = 1; } 
+//else { $_SESSION['sec'] = (intval($_SESSION['sec']) > 0) ? intval($_SESSION['sec']) : 1; }
 
 // gets wrong for resumed surveys
-if ($_SESSION['sec'] == 1) {
-    $_SESSION['rid'] = 0;
-}
+//if ($_SESSION['sec'] == 1) { $_SESSION['rid'] = 0; }
 
 if (!isset($_SESSION['rid'])) { $_SESSION['rid'] = 0; }
 
@@ -62,7 +57,6 @@ if(isset($results) && $results) {
     survey_results($sid,$precision,$totals,$qid,$cids);
     return;
 }
-
 
 // may this survey be accessed?
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurvey.inc';
@@ -99,30 +93,29 @@ if (!empty($query_string)) { $action .= "?" . htmlspecialchars($query_string); }
 
 $msg = '';
 
-$GLOBALS['auth_options']['navigate'] = "Y";
-$GLOBALS['auth_options']['resume'] = "Y";
-
 if(!empty($_REQUEST['submit'])) {
     $msg .= response_check_answers($sid,$_SESSION['rid'],$_SESSION['sec']);
     if (empty($msg)) {
         if ($ESPCONFIG['auth_response'] && auth_get_option('resume')) {
+            // submitting a previously saved survey
             require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espsurveystat.inc';
             survey_stat_decrement(SURVEY_STAT_SUSPENDED, $sid);
+            // delete the previous responses
             response_delete($sid, $_SESSION['rid'], $_SESSION['sec']);
         }
         $_SESSION['rid'] = response_insert($sid,$_SESSION['sec'],$_SESSION['rid']);
         paint_feedback_end_of_survey($sid, $_SESSION['rid'], $_SESSION['sec']);
         all_done();
+    } else {
+        echo mkerror($msg);
     }
 }
 
 if(!empty($_REQUEST['resume']) && $ESPCONFIG['auth_response'] && auth_get_option('resume')) {
     response_delete($sid, $_SESSION['rid'], $_SESSION['sec']);
     $_SESSION['rid'] = response_insert($sid,$_SESSION['sec'],$_SESSION['rid']);
-    if ($action == $ESPCONFIG['autopub_url'])
-        goto_saved($sid, "$action?name=$name");
-    else
-        goto_saved($sid, $action);
+    if ($action == $ESPCONFIG['autopub_url']) { goto_saved($sid, "$action?name=$name"); }
+    else { goto_saved($sid, $action); }
     return;
 }
 
@@ -160,9 +153,6 @@ if ($ESPCONFIG['auth_response'] && auth_get_option('resume') && $_SESSION['rid']
     response_import_sec($sid, $_SESSION['rid'], $_SESSION['sec']);
     survey_stat_decrement(SURVEY_STAT_SUSPENDED, $sid);
 }
-
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/function/ssq.inc';
-//echo progressbar($_SESSION['sec'], $num_sections);
 
 paint_submission_form_open();
 survey_render($sid,$_SESSION['sec'],$_SESSION['rid'],$msg);

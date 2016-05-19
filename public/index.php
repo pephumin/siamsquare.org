@@ -21,6 +21,7 @@ $title = "Respondent Section: Dashboard";
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/fb/autoload.php';
 
 // survey status
 define('STATUS_NOT_STARTED', 'Not Started');
@@ -30,33 +31,13 @@ define('STATUS_FINISHED', 'Finished');
 define('FORMAT_OUTPUT_DATE', isset($ESPCONFIG['date_format'])?$ESPCONFIG['date_format']:'%Y-%m-%d');
 
 // ensure we are configured to want this page
-if (! $GLOBALS['ESPCONFIG']['dashboard_enable']) {
-    displayHeader($title);
-    echo mkerror('Feature disabled; set dashboard_enable = true in your configuration to engage.');
-    displayPageFooter();
-    displayFooter();
-    exit;
-}
-
-// --------------------------------------------------------------------------------
-
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/geopattern/loader.php';
-
-$geopattern = new \RedeyeVentures\GeoPattern\GeoPattern();
-$geopattern->setString('Mastering Markdown');
-
-//$geopattern->setBaseColor('#ffcc00');
-//$geopattern->setColor('#ffcc00');
-
-// From https://github.com/jasonlong/geo_pattern
-// chevrons, overlapping_circles, plus_signs, xes, sine_waves, hexagons, overlapping_rings, plaid, 
-// triangles, squares, nested_squares, mosaic_squares, concentric_circles, diamonds, tessellation
-$geopattern->setGenerator('tessellation');
-
-$svg = $geopattern->toSVG();
-$base64 = $geopattern->toBase64();
-$dataURI = $geopattern->toDataURI();
-//$dataURL = $geopattern->toDataURL();
+//if (! $GLOBALS['ESPCONFIG']['dashboard_enable']) {
+//    displayHeader($title);
+//    echo mkerror('Feature disabled; set dashboard_enable = true in your configuration to engage.');
+//    displayPageFooter();
+//    displayFooter();
+//    exit;
+//}
 
 // --------------------------------------------------------------------------------
 
@@ -72,30 +53,32 @@ handleChangePassword();
 if (is_session_authenticated()) { paint_authenticated(); } 
 else { paint_non_authenticated(); }
 
-echo "<button class=\"btn btn-lg btn-default\"><span class=\"logo1\">pe</span><span class=\"logo2\">binary</span></button>\n\n";
+echo "<p><button class=\"btn btn-lg btn-default\">";
+logo();
+echo "</button></p>\n\n";
 
-/*
-echo "<div id=\"geopattern\" class=\"jumbotron\">PEPE</div>\n\n";
+echo "<p><button class=\"btn btn-lg btn-default\">";
+echo "<span class=\"logo1\">pe</span><span class=\"logo2\">b</span>";
+echo "</button></p>\n\n";
+
+
 ?>
 
-<script type="text/javascript" src="js/geopattern.min.js"></script>
-<script>
-var pattern = GeoPattern.generate('ssq');
-$('#geopattern').css('background-image', pattern.toDataUrl());
-</script>
+<!--
+  Below we include the Login Button social plugin. This button uses
+  the JavaScript SDK to present a graphical Login button that triggers
+  the FB.login() function when clicked.
 
+<input id="loginButton" type="button" value="Login!" onclick="authUser();" />
+
+-->
+
+
+<fb:login-button scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>
+
+<div id="status"></div>
 
 <?php
-echo "</div>\n";
-*/
-
-echo "<br />\n";
-echo "<p><div class=\"fb-like\" data-share=\"true\" data-width=\"450\" data-show-faces=\"true\"></div></p>\n\n";
-echo "<br />\n";
-echo "<p><fb:login-button scope=\"public_profile,email\" onlogin=\"checkLoginState();\"></fb:login-button></p>\n\n";
-echo "<br />\n";
-echo "<p><div id=\"status\"></div></p>\n\n";
-echo "<br />\n";
 
 displayFooter();
 

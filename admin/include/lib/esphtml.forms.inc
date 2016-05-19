@@ -22,34 +22,29 @@ function mkgeopattern ($msg, $no) {
 
 
 function mkradio ($_name, $value, $varr = null) {
-        if ($varr == null)
-            $varr =& $_POST;
+    if ($varr == null) { $varr =& $_POST; }
     $str = '<input type="radio" name="' . htmlspecialchars($_name) .'" value="' . htmlspecialchars($value) .'"';
-    if ( isset($varr[$_name]) && $varr[$_name] == $value )
-        $str .= " checked=\"checked\"";
+    if ( isset($varr[$_name]) && $varr[$_name] == $value ) { $str .= " checked=\"checked\""; }
     $str .= ' />';
     return($str);
 }
 
 function mkcheckbox ($_name, $value, $varr = null) {
-        if ($varr == null)
-            $varr =& $_POST;
+    if ($varr == null) { $varr =& $_POST; }
     $str = '<input type="checkbox" name="' . htmlspecialchars($_name) .'[]" value="' . htmlspecialchars($value) .'"';
-    if (isset($varr[$_name]) && is_array($varr[$_name]) && in_array($value, $varr[$_name]))
-        $str .= " checked=\"checked\"";
+    //$str = '<input type="checkbox" name="' . htmlspecialchars($_name) .'" value="' . htmlspecialchars($value) .'"';
+    if (isset($varr[$_name]) && is_array($varr[$_name]) && in_array($value, $varr[$_name])) { $str .= " checked=\"checked\""; }
     $str .= ' />';
     return($str);
 }
 
 function mktext ($_name, $size = 20, $max = 0, $varr = null) {
-        if ($varr == null)
-            $varr =& $_POST;
+    if ($varr == null) { $varr =& $_POST; }
     $size = intval($size);
     $max  = intval($max);
     $str = "size=\"$size\"";
     if ($max)   $str .= " maxlength=\"$max\"";
-    if (isset($varr[$_name]))
-        return('<input class="form-control" type="text" '. $str .' name="'. htmlspecialchars($_name) .'" value="'. _stripslashes(htmlspecialchars($varr[$_name])) .'" />');
+    if (isset($varr[$_name])) { return('<input class="form-control" type="text" '. $str .' name="'. htmlspecialchars($_name) .'" value="'. _stripslashes(htmlspecialchars($varr[$_name])) .'" />'); }
     return('<input class="form-control" type="text" '. $str .' name="'. htmlspecialchars($_name) .'" />');
 }
 
@@ -58,39 +53,29 @@ function mkpass ($_name) {
 }
 
 function mkhidden ($_name, $varr = null) {
-        if ($varr == null)
-            $varr =& $_POST;
-    if (isset($varr[$_name]))
-        return('<input type="hidden" name="'. htmlspecialchars($_name) .'" value="'. _stripslashes(htmlspecialchars($varr[$_name])) .'" />');
+    if ($varr == null) { $varr =& $_POST; }
+    if (isset($varr[$_name])) { return('<input type="hidden" name="'. htmlspecialchars($_name) .'" value="'. _stripslashes(htmlspecialchars($varr[$_name])) .'" />'); }
     return('<input type="hidden" name="'. htmlspecialchars($_name) .'" />');
 }
 
 function mktextarea ($_name, $rows, $cols, $wrap, $varr = null) {
-        if ($varr == null)
-            $varr =& $_POST;
+    if ($varr == null) { $varr =& $_POST; }
     $str = '<textarea class="form-control" name="' . htmlspecialchars($_name) .'"';
-    if($rows > 0)
-        $str .= ' rows="' . $rows . '"';
-    if($cols > 0)
-        $str .= ' cols="' . $cols . '"';
-    //if($wrap != '')
-    //  $str .= ' wrap="' . strtolower($wrap) . '"';
+    if($rows > 0) { $str .= ' rows="' . $rows . '"'; }
+    if($cols > 0) { $str .= ' cols="' . $cols . '"'; }
+    //if($wrap != '') { $str .= ' wrap="' . strtolower($wrap) . '"'; }
     $str .= '>';
-    if (isset($varr[$_name]))
-         $str .= _stripslashes(htmlspecialchars($varr[$_name]));
+    if (isset($varr[$_name])) { $str .= _stripslashes(htmlspecialchars($varr[$_name])); }
     $str .= '</textarea>';
     return($str);
 }
 
 function mkselect ($_name, $options, $varr = null) {
-        if ($varr == null)
-            $varr =& $_POST;
+    if ($varr == null) { $varr =& $_POST; }
     $str  = "<select class=\"form-control\" name=\"${_name}\">\n";
-    //$str .= "<option></option>\n";
     while(list($cid, $content) = each($options)) {
         $checked = '';
-        if (isset($varr[$_name]) && $varr[$_name] == $cid)
-            $checked = " selected=\"selected\"";
+        if (isset($varr[$_name]) && $varr[$_name] == $cid) { $checked = " selected=\"selected\""; }
         $str .= "<option value=\"${cid}\"${checked}>${content}</option>\n";
     }
     $str .= "</select>\n";
@@ -102,21 +87,15 @@ function mkfile ($_name) {
 }
 
 function mksubmit($_name, $_value = null, $_attrs = array ()) {
-    if ($_value == null)
-        $_value = _('Submit');
-    if (!empty($_value))
-        $_value = ' value="'.htmlspecialchars($_value).'"';
+    if ($_value == null) { $_value = _('Submit'); }
+    if (!empty($_value)) { $_value = ' value="'.htmlspecialchars($_value).'"'; }
     $_extra = make_element_attrs_from_array($_attrs);
-
     return sprintf('<input class="btn btn-default" type="submit" name="%s" %s %s />', htmlspecialchars($_name), $_value, $_extra);
 }
 
 function make_element_attrs_from_array($attrs) {
     $extra = '';
-    foreach ($attrs as $attr => $value) {
-        $extra .= sprintf(' %s="%s"', $attr, htmlspecialchars($value));
-    }
-
+    foreach ($attrs as $attr => $value) { $extra .= sprintf(' %s="%s"', $attr, htmlspecialchars($value)); }
     return trim($extra);
 }
 

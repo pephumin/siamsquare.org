@@ -1,45 +1,87 @@
+/* ---------- Main font for the whole website supporting both English and Thai ----------*/
+
 @font-face {
-  font-family: 'Boon300';
-  src: url('../fonts/boon300.eot');
-  src: url('../fonts/boon300.eot?#iefix') format('embedded-opentype'),
-       url('../fonts/boon300.otf') format('opentype'),
-       url('../fonts/boon300.woff') format('woff'),
-       url('../fonts/boon300.woff2') format('woff2'),
-       url('../fonts/boon300.ttf') format('truetype'),
-       url('../fonts/boon300.svg#boon300') format('svg');
+  font-family: 'boon';
+  src: url('../fonts/boon/boon-400.woff2') format('woff2'), url('../fonts/boon/boon-400.woff') format('woff'), url('../fonts/boon/boon-400.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
 }
 
 @font-face {
-  font-family: 'aqua';
-  src: url('../fonts/aqua.ttf') format('truetype')
-}
-
-.logo1 {
-  font-family: 'aqua';
-  font-size: 28px;
-  color: #a4a4a4;
-}
-
-.logo2 {
-  font-family: 'aqua';
-  font-size: 28px;
-  color: #1c6f22;
+  font-family: 'boon';
+  src: url('../fonts/boon/boon-400i.woff2') format('woff2'), url('../fonts/boon/boon-400i.woff') format('woff'), url('../fonts/boon/boon-400i.ttf') format('truetype');
+  font-weight: 400;
+  font-style: oblique;
 }
 
 body {
   /*padding-top: 70px;*/
-  font-size: 15px;
+  font-family: 'boon';
+  /*font-size: 15px;*/
   color: #333;
 }
 
+/* ---------- Special font for the company logo with a specific letter-spacing ----------*/
+
+@font-face {
+  font-family: 'aqua';
+  src: url('../fonts/aqua.ttf') format('truetype');
+}
+
+.logo1 {
+  font-family: 'aqua';
+  font-size: 175%;
+  color: #a4a4a4;
+  letter-spacing: -2px;
+}
+
+.logo2 {
+  font-family: 'aqua';
+  font-size: 175%;
+  color: #1c6f22;
+  letter-spacing: -2px;
+}
+
+.aqua {
+  font-family: 'aqua';
+  letter-spacing: -2px;
+}
+
+/* ---------- Misc font for the rest of the website which only supports English ----------*/
+
+@font-face {
+  font-family: 'ubuntu';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/ubuntu.woff') format('woff');
+}
+
+.navbar {
+  font-family: 'ubuntu';
+  font-size: 110%;
+}
+
 footer {
+  font-family: 'ubuntu';
   background-color: #ebebeb;
   padding: 10px;
   font-size: 90%;
 }
 
+.ubuntu {
+  font-family: 'ubuntu';
+}
+
+/* ---------- Other cool formats which are used bit and piece for the entire website ----------*/
+
 .pagination-centered {
+  font-family: 'ubuntu';
   text-align: center;
+}
+
+#login-nav input { 
+  /*margin-bottom: 15px; */
+  font-family: 'ubuntu';
 }
 
 .splash {
@@ -77,7 +119,8 @@ footer {
           transition: background-color 0.3s linear;
 }
 .scroll-to-top:hover {
-  background: #808080;
+  background: #1c6f22;
   opacity: .8;
 }
+
 

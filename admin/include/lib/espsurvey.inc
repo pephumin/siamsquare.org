@@ -112,6 +112,7 @@ function survey_get_for_current_user(&$surveys) {
   $where = survey_fetch_limiting_where();
   // get the survey data based on those limitations
   $sql = "SELECT id,name,title,owner,realm FROM {$GLOBALS['ESPCONFIG']['survey_table']} WHERE {$where} ORDER BY id DESC";
+  //echo $sql;
   return survey_get_from_sql($sql, $surveys);
 }
 
@@ -170,6 +171,7 @@ function survey_get_in_realm($realm, &$surveys) {
   $where = survey_fetch_limiting_where('status','owner',array ('tblSurvey.realm', 'tblAccess.realm'));
   $realm = _addslashes($realm);
   $sql = "SELECT DISTINCT tblSurvey.id, tblSurvey.name, tblSurvey.title, tblSurvey.owner, tblSurvey.open_date, tblSurvey.close_date FROM {$GLOBALS['ESPCONFIG']['survey_table']} AS tblSurvey JOIN {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess ON tblAccess.survey_id=tblSurvey.id WHERE (tblSurvey.realm = $realm OR tblAccess.realm = $realm) AND ($where) ORDER BY id DESC";
+  //echo $sql;
 
   return survey_get_from_sql($sql, $surveys);
 }
@@ -181,6 +183,7 @@ function survey_get_public(&$surveys) {
   // get the survey data based on those limitations
   $where = survey_fetch_limiting_where();
   $sql = "SELECT id,name,title,owner,open_date,close_date FROM {$GLOBALS['ESPCONFIG']['survey_table']} WHERE (public = 'Y') AND ($where) ORDER BY id DESC";
+  //echo $sql;
   return survey_get_from_sql($sql, $surveys);
 }
 
@@ -321,7 +324,8 @@ function survey_merge_sets(&$merged, $a /* ... */) {
 //  Return the URL to a survey with a given name
 
 function survey_fetch_url_by_survey_name($name) {
-  $home = "http://www.siamsquare.org";
+  //$home = "http://www.siamsquare.org";
+  $home = $GLOBALS['ESPCONFIG']['base_url'];
   $target = $home."/public/survey.php?name=".htmlentities($name);
   //return rtrim($GLOBALS['ESPCONFIG']['base_url'], '/') . '/public/survey.php?name=' . htmlentities($name);
   return rtrim($target);

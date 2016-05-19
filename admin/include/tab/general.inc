@@ -42,14 +42,14 @@ function validate() {
 <br /><br />
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Title</strong> <span class="label label-danger">required</span></label>
+  <label class="col-sm-3 control-label"><strong>Project title</strong> <span class="label label-danger">required</span></label>
   <div class="col-sm-9">
     <?php // if ($sid): echo mktext('title', 60, 60, $survey); ?>
     <p class="text-muted">Survey title (project name).</p>
     <?php if ($survey['title']): ?>
       <input class="form-control" type="text" name="title" value="<?php echo $survey['title']; ?>" />
     <?php else: ?>
-     <input class="form-control" type="text" name="title" placeholder="[English]: The name or the title of this survey." />
+     <input class="form-control" type="text" name="title" placeholder="English only." />
     <?php endif; ?>
   </div>
 </div>
@@ -64,7 +64,7 @@ function validate() {
     <?php if ($survey['subtitle']): ?>
       <input class="form-control" type="text" name="subtitle" value="<?php echo $survey['subtitle']; ?>" />
     <?php else: ?>
-      <input class="form-control" type="text" name="subtitle" placeholder="[English]: Type of study." />
+      <input class="form-control" type="text" name="subtitle" placeholder="English only." />
     <?php endif; ?>
   </div>
 </div>
@@ -72,77 +72,65 @@ function validate() {
 <hr>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Detailed information <span class="label label-danger">required</span></strong></label>
+  <label class="col-sm-3 control-label"><strong>Project information <span class="label label-danger">required</span></strong></label>
   <div class="col-sm-9">
-    <?php // if ($sid): echo mktextarea('info', 10, 60, 'virtual', $survey); ?>
-    <p class="text-muted">Detailed information about this survey including the target audiences, length of interview, survey period, sample size expected, etc.</p>
-    <?php if ($survey['info']): ?>
-     <?php echo mktextarea('info', 8, 0, 'virtual', $survey); ?>
-    <?php else: ?>
-      <textarea class="form-control" rows="8" name="info" placeholder="[English]: Detailed information about this survey. Multiple lines should be used for a nice and neat format."></textarea>
-    <?php endif; ?>
-    <br />
-    <?php if ($survey['info_th']): ?>
-     <?php echo mktextarea('info_th', 8, 0, 'virtual', $survey); ?>
-    <?php else: ?>
-      <textarea class="form-control" rows="8" name="info_th" placeholder="[Thai]: Detailed information about this survey. Multiple lines should be used for a nice and neat format."></textarea>
-    <?php endif; ?>
+    <p class="text-muted">A few sentenses describing this survey e.g. the target audience, survey period, sample size expected.</p>
+    <table class="table">
+      <tr>
+        <td>
+          <p>English</p>
+          <?php if ($survey['info']): ?>
+            <?php echo mktextarea('info', 7, 0, 'virtual', $survey); ?>
+          <?php else: ?>
+            <textarea class="form-control" rows="7" name="info" placeholder="Example: Branding study conducted among laptop users in Thailand. Survey period from June to August 2016."></textarea>
+          <?php endif; ?>          
+        </td>
+        <td>
+          <p>Thai</p>
+          <?php if ($survey['info_th']): ?>
+            <?php echo mktextarea('info_th', 7, 0, 'virtual', $survey); ?>
+          <?php else: ?>
+            <textarea class="form-control" rows="7" name="info_th" placeholder="ตัวอย่าง: งานวิจัยเรื่องยี่ห้อ ซึ่งทำการสำรวจกับกลุ่มผู้ใช้คอมพิวเตอร์แบบพกพาในประเทศไทย สำรวจในช่วง มิถุนายนถึงสิงหาคม 2559"></textarea>
+          <?php endif; ?>
+        </td>
+      </tr>
+    </table>
   </div>
 </div>
 
 <hr>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Confirmation Page</strong> <span class="label label-warning">optional</span></label>
+  <label class="col-sm-3 control-label"><strong>Thank you page <span class="label label-danger">required</span></strong></label>
   <div class="col-sm-9">
-    <?php // if ($sid): echo mktext('thanks_page', 60, 255, $survey); ?>
-    <p class="text-muted">Thank you page which should be located at your website. If there is no such page available, leave this box blank and use the Header/Body box instead.</p>
-    <?php if ($survey['thanks_page']): ?>
-     <?php echo mktext('thanks_page', 60, 255, $survey); ?>
-    <?php else: ?>
-      <input class="form-control" type="text" name="thanks_page" placeholder="http://www.website.com/thanks.html" />
-    <?php endif; ?>
-    <br />
-    <p><strong>OR</strong></p>
-
-    <?php if ($survey['thank_head']): ?>
-      Header:<br />
-      <input class="form-control" type="text" name="thank_head" value="<?php echo $survey['thank_head']; ?>" />
-    <?php else: ?>
-      Header:<br />
-      <input class="form-control" type="text" name="thank_head" placeholder="[English]: Thank you for taking part of this survey" />
-    <?php endif; ?>
-    <?php if ($survey['thank_head_th']): ?>
-      <br />
-      <input class="form-control" type="text" name="thank_head_th" value="<?php echo $survey['thank_head']; ?>" />
-    <?php else: ?>
-      <br />
-      <input class="form-control" type="text" name="thank_head_th" placeholder="[Thai]: Thank you for taking part of this survey" />
-    <?php endif; ?>
-
-    <br />
-
-    <?php if ($survey['thank_body']): ?>
-      Body:<br />
-     <?php echo mktextarea('thank_body', 10, 60, 'virtual', $survey); ?>
-    <?php else: ?>
-      Body:<br />
-      <textarea class="form-control" rows="5" name="thank_body" placeholder="[English]: Your opinions are value to us. We make sure your opinons will be analysed at an aggregated level. And your opinions will be kept at the highest level of confidentiality."></textarea>
-    <?php endif; ?>
-    <?php if ($survey['thank_body_th']): ?>
-      <br />
-     <?php echo mktextarea('thank_body_th', 10, 60, 'virtual', $survey); ?>
-    <?php else: ?>
-      <br />
-      <textarea class="form-control" rows="5" name="thank_body_th" placeholder="[Thai]: Your opinions are value to us. We make sure your opinons will be analysed at an aggregated level. And your opinions will be kept at the highest level of confidentiality."></textarea>
-    <?php endif; ?>
+    <p class="text-muted">This page will be displayed at the end of the survey.</p>
+    <table class="table">
+      <tr>
+        <td>
+          <p>English</p>
+          <?php if ($survey['thank_body']): ?>
+            <?php echo mktextarea('thank_body', 7, 0, 'virtual', $survey); ?>
+          <?php else: ?>
+            <textarea class="form-control" rows="7" name="thank_body" placeholder="Example: Your opinions are value to us. We make sure your opinons will be analysed at an aggregated level. And your opinions will be kept at the highest level of confidentiality."></textarea>
+          <?php endif; ?>
+        </td>
+        <td>
+          <p>Thai</p>
+          <?php if ($survey['thank_body_th']): ?>
+            <?php echo mktextarea('thank_body_th', 7, 0, 'virtual', $survey); ?>
+          <?php else: ?>
+            <textarea class="form-control" rows="7" name="thank_body_th" placeholder="ตัวอย่าง: ความคิดเห็นของคุณมีค่าอย่างยิ่งสำหรับเรา ผลวิจัยจะถูกประมวลผลจากกลุ่มตัวอย่างทั้งหมดเท่านั้น และเราจะปกปิดข้อมูลทุกอย่างของคุณไว้เป็นความลับอย่างสูงสุด"></textarea>
+          <?php endif; ?>
+        </td>
+      </tr>
+    </table>
   </div>
 </div>
 
 <hr>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Email</strong> <span class="label label-warning">optional</span></label>
+  <label class="col-sm-3 control-label"><strong>Email copy</strong> <span class="label label-warning">optional</span></label>
   <div class="col-sm-9">
     <p class="text-muted">Sends a copy of each submission to this email. Leave blank if you do not need an email backup.</p>
     <?php if ($survey['email']): ?>
@@ -156,106 +144,98 @@ function validate() {
 <hr>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Survey starting date</strong> <span class="label label-warning">optional</span></label>
+  <label class="col-sm-3 control-label"><strong>Date control <span class="label label-warning">optional</span></strong></label>
   <div class="col-sm-9">
     <p class="text-muted">Only enter this when there will be a time-frame limitation, otherwise this can be skipped.</p>
-    <?php if ($survey['open_date']): ?>
-     <input class="form-control" type="text" name="open_date" value="<?php echo $survey['open_date']; ?>" />
-    <?php else: ?>
-      <input class="form-control" type="text" name="open_date" placeholder="2017-02-26 00:00:00" />
-      <!--
-     Year: <input class="form-control" type="text" size="4" maxlength="4" name="open_year" placeholder="2017" />
-     Month: <input class="form-control" type="text" size="2" maxlength="2" name="open_month" placeholder="02" />
-     Day: <input class="form-control" type="text" size="2" maxlength="2" name="open_day" placeholder="26"/>
-     -->
-    <?php endif; ?>  	
+    <table class="table">
+      <tr>
+        <td>
+          <p>Starting date</p>
+          <?php if ($survey['open_date']): ?>
+            <input class="form-control" type="text" name="open_date" value="<?php echo $survey['open_date']; ?>" />
+          <?php else: ?>
+            <input class="form-control" type="text" name="open_date" placeholder="2017-02-26 00:00:00" />
+          <?php endif; ?>
+        </td>
+        <td>
+          <p>Closing date</p>
+          <?php if ($survey['close_date']): ?>
+            <input class="form-control" type="text" name="close_date" value="<?php echo $survey['close_date']; ?>" />
+          <?php else: ?>
+            <input class="form-control" type="text" name="close_date" placeholder="2017-02-26 00:00:00" />
+          <?php endif; ?>
+        </td>
+      </tr>
+    </table>
   </div>
 </div>
 
 <hr>
 
-<div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Survey closing date</strong> <span class="label label-warning">optional</span></label>
-  <div class="col-sm-9">
-    <p class="text-muted">Only enter this when there will be a time-frame limitation, otherwise this can be skipped.</p>
-    <?php if ($survey['close_date']): ?>
-     <input class="form-control" type="text" name="close_date" value="<?php echo $survey['close_date']; ?>" />
-    <?php else: ?>
-     <input class="form-control" type="text" name="close_date" placeholder="2017-02-26 00:00:00" />
-     
-      <!--
-     <div class="input-group date">
-      <input class="form-control" type="text" name="close_date" placeholder="2017-02-26 00:00:00" />
-      <div class="input-group-addon" id="datepicker"><span class="glyphicon glyphicon-th"></span></div>
-     </div>
-     -->
+<?php
 
-      <!--
-      <input class="form-control" type="text" name="close_date" placeholder="2017-02-26 00:00:00" />
-     Year: <input class="form-control" type="text" size="4" maxlength="4" name="open_year" placeholder="2017" />
-     Month: <input class="form-control" type="text" size="2" maxlength="2" name="open_month" placeholder="02" />
-     Day: <input class="form-control" type="text" size="2" maxlength="2" name="open_day" placeholder="26"/>
-     -->
-    <?php endif; ?>   
-  </div>
-</div>
+$realms = array();
 
-<hr>
-
-<div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Project ID</strong></label>
-  <div class="col-sm-9">
-    <p class="text-muted">Internal project ID (non-editable).</p>
-    <?php if ($survey['name']): ?>
-     <input class="form-control" type="text" name="name" value="<?php echo $survey['name']; ?>" disabled />
-     <input type="hidden" name="name" value="<?php echo $survey['name']; ?>" />
-    <?php else: ?>
-      <input class="form-control" type="text" name="name" value="<?php echo survey_assign_new_name(); ?>" disabled />
-      <input type="hidden" name="name" value="<?php echo survey_assign_new_name(); ?>" />
-    <?php endif; ?>
-  </div>
-</div>
+if(isset($_SESSION['acl']['superuser']) && $_SESSION['acl']['superuser'] == 'Y') {
+  $sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['realm_table'];
+  $rr = execute_sql($sql);
+  while(list($r) = fetch_row($rr)) {
+    $rr->MoveNext();
+    $realms[$r] = $r;
+  }
+  db_close($rr);
+  if ($survey['owner']) {
+    $out1 = '<input type="text" class="form-control" name="username" placeholder="'.$survey['owner'].'" disabled>'; 
+    $out1 .= '<input type="hidden" name="username" value="'.$survey['owner'].'" />';    
+  } else {
+    $out1 = '<input type="text" class="form-control" name="username" placeholder="'.$_SESSION['acl']['username'].'" disabled>'; 
+    $out1 .= '<input type="hidden" name="username" value="'.$_SESSION['acl']['username'].'" />';
+  }
+  //$out = '<input type="text" class="form-control" name="username" placeholder="'.$_SESSION['acl']['username'].'" disabled>'; 
+  //$out .= "&nbsp;/&nbsp;";
+  $out2 .= mkselect('realm',$realms, $survey);
+} else {
+  foreach($_SESSION['acl']['pdesign'] as $r) { $realms[$r] = $r; }
+  if ($survey['owner']) {
+    $out1 = '<input type="text" class="form-control" name="username" placeholder="'.$survey['owner'].'" disabled>'; 
+    $out1 .= '<input type="hidden" name="username" value="'.$survey['owner'].'" />';    
+  } else {
+    $out1 = '<input type="text" class="form-control" name="username" placeholder="'.$_SESSION['acl']['username'].'" disabled>'; 
+    $out1 .= '<input type="hidden" name="username" value="'.$_SESSION['acl']['username'].'" />';
+  }
+  //$out .= "&nbsp;/&nbsp;";
+  $out2 .= '<input type="text" class="form-control" name="realm" placeholder="'.$realms[$r].'" disabled>';
+  $out2 .= '<input type="hidden" name="realm" value="'.$realms[$r].'" />';
+}
+//echo $out;
+?>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Project owner</strong></label>
+  <label class="col-sm-3 control-label"><strong>Project information</strong></label>
   <div class="col-sm-9">
-    <div class="form-inline">
-    <p class="text-muted">User and group that owns this survey.</p>
-    <?php if ($survey['owner']): ?>
-     <input class="form-control" type="text" name="username" value="<?php echo $survey['owner']; ?>" disabled />
-     <input type="hidden" name="username" value="<?php echo $survey['owner']; ?>" />
-     &nbsp;/&nbsp;
-     <input class="form-control" type="text" name="realm" value="<?php echo $survey['realm']; ?>" disabled />
-     <input type="hidden" name="realm" value="<?php echo $survey['realm']; ?>" />     
-    <?php else: ?>
-      <?php
-      $realms = array();
-      if(isset($_SESSION['acl']['superuser']) && $_SESSION['acl']['superuser'] == 'Y') {
-        $sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['realm_table'];
-        $rr = execute_sql($sql);
-        while(list($r) = fetch_row($rr)) {
-          $rr->MoveNext();
-          $realms[$r] = $r;
-        }
-        db_close($rr);
-        $out = '<input type="text" class="form-control" name="username" placeholder="'.$_SESSION['acl']['username'].'" disabled>'; 
-        $out .= "&nbsp;/&nbsp;";
-        $out .= mkselect('realm',$realms, $survey);
-      } else {
-        foreach($_SESSION['acl']['pdesign'] as $r) {
-          $realms[$r] = $r;          
-        }
-        $out = '<input type="text" class="form-control" name="username" placeholder="'.$_SESSION['acl']['username'].'" disabled>'; 
-        $out .= "&nbsp;/&nbsp;";
-        $out .= '<input type="text" class="form-control" name="realm" placeholder="'.$realms[$r].'" disabled>';
-        $out .= '<input type="hidden" name="realm" value="'.$realms[$r].'" />';
-      }
-      //echo(htmlspecialchars($_SESSION['acl']['username']) . "&nbsp;/&nbsp;");
-      //echo(mkselect('realm',$realms, $survey) . "\n");
-      echo $out;
-      ?>
-    <?php endif; ?>
-  </div>
+    <p class="text-muted">For internal use only.</p>
+    <table class="table">
+      <tr>
+        <td>
+          <p>Project ID</p>
+          <?php if ($survey['name']): ?>
+            <input class="form-control" type="text" name="name" value="<?php echo $survey['name']; ?>" disabled />
+            <input type="hidden" name="name" value="<?php echo $survey['name']; ?>" />
+          <?php else: ?>
+            <input class="form-control" type="text" name="name" value="<?php echo survey_assign_new_name(); ?>" disabled />
+            <input type="hidden" name="name" value="<?php echo survey_assign_new_name(); ?>" />
+          <?php endif; ?>
+        </td>
+        <td>
+          <p>Owner</p>
+          <?php echo $out1; ?>
+        </td>
+        <td>
+          <p>Group</p>
+          <?php echo $out2; ?>
+        </td>
+      </tr>
+    </table>
   </div>
 </div>
 
@@ -264,10 +244,14 @@ function validate() {
 <div class="form-group">
   <label class="col-sm-3 control-label">&nbsp;</label>
   <div class="col-sm-9">
+    <input type="hidden" name="public" value="Y" />
     <input type="hidden" name="theme" value="ssq.css" />
     <input type="hidden" name="auto_num" value="Y" />
     <input type="hidden" name="sid" value="<?php echo $sid; ?>" />
-    <input class="btn btn-default btn-sm" type="submit" name="submit" value="Update" />&nbsp;
+    <input type="hidden" name="thank_page" value="" />
+    <input type="hidden" name="thank_head" value="Thank you for taking part of this survey" />
+    <input type="hidden" name="thank_head_th" value="ขอบพระคุณที่สละเวลาร่วมแสดงความคิดเห็น" />
+    <input class="btn btn-default btn-sm btn-success" type="submit" name="submit" value="Update" />&nbsp;
     <input class="btn btn-default btn-sm" type="submit" name="cancel" value="Cancel" />&nbsp;
   </div>
 </div>

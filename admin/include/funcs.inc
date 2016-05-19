@@ -89,53 +89,49 @@ function goto_thankyou($sid,$referer) {
     // render the thank you page
     $cfg =& $GLOBALS['ESPCONFIG'];
 
-    $sql = "SELECT thanks_page,thank_head,thank_body FROM ".$cfg['survey_table']." WHERE id=${sid}";
+    //$sql = "SELECT thanks_page,thank_head,thank_body FROM ".$cfg['survey_table']." WHERE id=${sid}";
+    $sql = "SELECT thank_head,thank_head_th,thank_body,thank_body_th FROM ".$cfg['survey_table']." WHERE id=${sid}";
     $result = execute_sql($sql);
-    list($thank_url,$thank_head,$thank_body) = fetch_row($result);
+    //list($thank_url,$thank_head,$thank_body) = fetch_row($result);
+    list($thank_head,$thank_head_th,$thank_body,$thank_body_th) = fetch_row($result);
     db_close($result);
-    $thank_url = str_replace("\r", '', $thank_url);
-    $thank_url = str_replace("%0d", '', $thank_url);
-    $thank_url = str_replace("\n", '', $thank_url);
-    $thank_url = str_replace("%0a", '', $thank_url);
-    $thank_url = str_replace("\t", '', $thank_url);
-    $thank_url = str_replace("\0", '', $thank_url);
-    if(!empty($thank_url)) {
-        if(!headers_sent()) {
-            header("Location: $thank_url");
-            exit;
-        }
-    ?>
-<script type="text/javascript">
-<!--
-window.location="<?php echo($thank_url); ?>"
-    //-->
-</script>
-<noscript>
-<h2>Thank You for completing this survey.</h2>
-<p>Please click<a href="<?php echo($thank_url); ?>">here</a> to continue.</p>
-</noscript>
-<?php
-       exit;
-    }
 
-    if(empty($thank_body) && empty($thank_head)) {
-        $thank_body = $GLOBALS['ESPCONFIG']['thank_body'];
-        $thank_head = $GLOBALS['ESPCONFIG']['thank_head'];
-    }
+    //$thank_url = str_replace("\r", '', $thank_url);
+    //$thank_url = str_replace("%0d", '', $thank_url);
+    //$thank_url = str_replace("\n", '', $thank_url);
+    //$thank_url = str_replace("%0a", '', $thank_url);
+    //$thank_url = str_replace("\t", '', $thank_url);
+    //$thank_url = str_replace("\0", '', $thank_url);
+    //if(!empty($thank_url)) {
+    //    if(!headers_sent()) {
+    //        header("Location: $thank_url");
+    //        exit;
+    //    }
+    //    exit;
+    //}
 
-    $redir = $GLOBALS['ESPCONFIG']['base_url'] . '/public';
-    echo "<h2> $thank_head </h2>";
-    echo "<p> $thank_body </p>";
-    echo "<a href=\"$redir\" class=\"btn btn-default\" role=\"button\">Back to Dashboard</a>\n\n";
+    //if(empty($thank_body) && empty($thank_head)) {
+    //    $thank_body = $GLOBALS['ESPCONFIG']['thank_body'];
+    //    $thank_head = $GLOBALS['ESPCONFIG']['thank_head'];
+    //}
+
+    //$redir = $GLOBALS['ESPCONFIG']['base_url'] . '/public';
+    echo "<h2>Congratulations! You have just completed this survey.</h2>\n\n";
+    echo "<p><i class=\"fa fa-check-square-o fa-4x\"></i></p>\n\n";
+    echo "<table class=\"table\">\n";
+    echo "<tr><td>\n";
+    echo "<h4>$thank_head</h4>\n";
+    echo "<p>$thank_body</p>\n";
+    echo "</td><td>\n";
+    echo "<h4>$thank_head_th</h4>\n";
+    echo "<p>$thank_body_th</p>\n";
+    echo "</td></tr>\n";
+    echo "</table>\n";
 
     if (isset($_GET['where']) && $_GET['where'] == 'test') {
-       if ($GLOBALS['ESPCONFIG']['limit_double_postings'] == 0) {
-          $ref = "<a href=\"". $referer."\">Return</a><br />";
-   } else {
-      $ref = "";
-   }
-    }
-    else {
+       if ($GLOBALS['ESPCONFIG']['limit_double_postings'] == 0) { $ref = "<a href=\"". $referer."\">Return</a><br />"; } 
+       else { $ref = ""; }
+    } else {
        $ref = check_referer($referer);
     }
     echo $ref;

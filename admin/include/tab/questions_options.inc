@@ -18,7 +18,7 @@ else
 	$num_choices = $c;
 ?>
 
-<p class="text-center"><input class="btn btn-success btn-sm" type="submit" value="Make changes" /></p><br />
+<p class="text-center"><input class="btn btn-success btn-sm" type="submit" value="Update" /></p><br />
 
 <p>Enter the possible answers (if applicable).</p> 
 

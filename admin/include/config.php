@@ -80,7 +80,7 @@ $ESPCONFIG['default_num_choices'] = 5; // Default number of option lines for new
 
 //-------------------------------------------------------------------------------------------------
 
-$ESPCONFIG['name'] = 'SiamSquare';
+$ESPCONFIG['name'] = 'pebinary';
 $ESPCONFIG['version'] = '2.2.0';
 $ESPCONFIG['title'] = $ESPCONFIG['name'] .', v('. $ESPCONFIG['version'].')';
 $ESPCONFIG['unsupported'] = array('cgi', 'sapi'); // Unsuported web server configuration check values 

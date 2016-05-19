@@ -38,7 +38,7 @@ if (!empty($_name)) {
 if (empty($_name) && isset($sid) && $sid) {
     $_sql = "SELECT title,theme FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id = '$sid'";
     if ($_result = execute_sql($_sql)) {
-        if (record_count($_result) > 0){
+        if (record_count($_result) > 0) {
             list($_title, $_css) = fetch_row($_result);
         }
         db_close($_result);
@@ -62,6 +62,10 @@ include $_SERVER['DOCUMENT_ROOT'] . '/public/include/handler.php';
 //if ($_SESSION['acl']['superuser'] == 'Y') { include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; }
 echo "</div>\n";
 displayFooter();
+
+echo "<pre>";
+print_r($_POST);
+echo "</pre>";
 
 // --------------------------------------------------------------------------------
 

@@ -1,6 +1,6 @@
 <?php
 
-$home = "http://www.siamsquare.org";
+$home = $GLOBALS['ESPCONFIG']['base_url'];
 $public = $home."/public";
 $self = $_SERVER['PHP_SELF'];
 $base = $_SERVER['BASE_PAGE'];
@@ -20,7 +20,7 @@ function displayHeader($title, $scrollspy = NULL) {
   echo "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
   echo "  <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n";
   echo "  <title>Respondent Dashboard: $title</title>\n";
-  $cssfiles = array("css/bootstrap.css", "css/font-awesome.css", "css/typicons.css", "css/animate.css", "css/jquery-ui.css", "css/jquery-ui.structure.css", "css/pe.css");
+  $cssfiles = array("css/bootstrap.css", "css/font-awesome.css", "css/typicons.css", "css/animate.css", "css/pe.css");
   foreach ($cssfiles as $filename) {
     echo "  <link href=\"$filename\" rel=\"stylesheet\" type=\"text/css\" />\n";
   }
@@ -52,8 +52,8 @@ function displayHeader($title, $scrollspy = NULL) {
   //else { 
   //  echo "<body>\n"; 
   //}
-  echo "<body>\n"; 
-  facebookLogin();
+  echo "<body>\n\n"; 
+  //facebookLogin();
 }
 
 function displayNav() {
@@ -82,9 +82,9 @@ function displayNav() {
   echo "               <li><a href=\"/public/contact.php\">Contact us</a></li>\n";
   echo "               <li><a href=\"/public/help.php\">Help</a></li>\n";
   echo "               <li class=\"divider\"></li>\n";
-  echo "               <li><a href=\"http://www.jquery2dotnet.com\">Membership</a></li>\n";
+  echo "               <li><a href=\"\">Membership</a></li>\n";
   echo "               <li class=\"divider\"></li>\n";
-  echo "               <li><a href=\"http://www.jquery2dotnet.com\">Reward programme</a></li>\n";
+  echo "               <li><a href=\"\">Reward programme</a></li>\n";
   echo "            </ul>\n";
   echo "         </li>\n";
   echo "         <li class=\"active\"><a href=\"$home\"><i class=\"fa fa-hand-o-left\"></i> Back</a></li>\n";
@@ -102,7 +102,7 @@ function displayNav() {
   //echo "         <li><a href=\"#\" class=\"btn btn-default navbar-btn\">Sign in</a></li>\n";
   //echo "         <li><a href=\"/public/signup.php\"><i class=\"fa fa-user-plus\"></i>&nbsp; Sign Up</a></li>\n";
   echo "         <li class=\"dropdown\">\n";
-  echo "            <a href=\"http://www.jquery2dotnet.com\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Member log-in <span class=\"caret\"></span></a>\n";
+  echo "            <a href=\"\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Member log-in <span class=\"caret\"></span></a>\n";
   echo "            <ul class=\"dropdown-menu\" style=\"padding: 15px;min-width: 250px;\">\n";
   echo "               <li>\n";
   echo "                  <div class=\"row\">\n";
@@ -144,7 +144,7 @@ function displayNav() {
   echo "      </ul>\n";
   echo "   </div>\n";
   echo "  </div>\n";
-  echo "</nav>\n";  
+  echo "</nav>\n\n";  
 }
 
 function displayFooter() {
@@ -163,8 +163,9 @@ function displayFooter() {
   //echo "    <a href=\"mailto:phumin@sawasdee.org\"><i class=\"fa fa-envelope-o\"></i></a>|";
   //echo "    <a href=\"sms:66-81-806-8899\"><i class=\"fa fa-mobile\"></i></a>]</div>\n";
   //echo "    <div class=\"text-muted pull-right\">".$signed."</div>\n";
-  echo "    <div class=\"text-muted pull-left\">&copy; Copyright $copy\n";
+  echo "    <div class=\"text-muted pull-left\">&copy; Copyright $copy ";
   echo auto_copyright();
+  echo " </div>\n";
   echo "  </div>\n";
   echo "</footer>\n\n";
   $jsfiles = array("js/jquery.js", "js/bootstrap.js", "js/jquery-ui.js", "js/pe.js");
@@ -307,7 +308,7 @@ function paint_public_survey_list() {
       printf('<a href="%s" class="btn btn-info btn-lg" role="button"><i class="fa fa-flag"></i> %s</a> &nbsp;', survey_fetch_url_by_survey_name($survey['name']), $survey['title']);
     }
     //echo "</ul>\n";
-    echo "<br />\n";
+    echo "<br /><br />\n";
   }
 }
 
@@ -795,6 +796,7 @@ function facebookLogin() {
   function testAPI() {
     console.log('Welcome!  Fetching your information.... ');
     FB.api('/me', function(response) {
+      console.log(response.authResponse.accessToken);
       console.log('Successful login for: ' + response.name);
       document.getElementById('status').innerHTML =
         'Thanks for logging in, ' + response.name + '!';
@@ -805,5 +807,80 @@ function facebookLogin() {
 <?php
 
 }
+
+function facebookLoginShort() {
+
+?>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '499076173618599',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<?php
+
+}
+
+function facebookLoginNew() {
+
+?>
+<!-- Load the Facebook JavaScript SDK -->
+<div id="fb-root"></div>
+<script src="//connect.facebook.net/en_US/all.js"></script>
+    
+<script type="text/javascript">
+      
+  // Initialize the Facebook JavaScript SDK
+  FB.init({
+    appId: '499076173618599',
+    xfbml: true,
+    status: true,
+    cookie: true,
+    version: '2.6',
+  });
+  
+  // Check if the current user is logged in and has authorized the app
+  FB.getLoginStatus(checkLoginStatus);
+  
+  // Login in the current user via Facebook and ask for email permission
+  function authUser() {
+    FB.login(checkLoginStatus, {scope:'email,user_likes'});
+  }
+  
+  // Check the result of the user status and display login button if necessary
+  function checkLoginStatus(response) {
+    if(response && response.status == 'connected') {
+      alert('User is authorized');
+      
+      // Hide the login button
+      document.getElementById('loginButton').style.display = 'none';
+      
+      // Now Personalize the User Experience
+      console.log('Access Token: ' + response.authResponse.accessToken);
+    } else {
+      alert('User is not authorized');
+      
+      // Display the login button
+      document.getElementById('loginButton').style.display = 'block';
+    }
+  }
+</script>
+
+<?php
+
+}
+
 
 ?>

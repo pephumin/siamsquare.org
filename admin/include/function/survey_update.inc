@@ -68,7 +68,7 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 			}
 
 			//$fields = array('name','realm','title','subtitle','email','theme','thanks_page','thank_head','thank_body','info','auto_num','open_date','close_date');
-			$fields = array('name','realm','public','status','open_date','close_date','title','email','subtitle','subtitle_th','info','info_th','theme','thanks_page','thank_head','thank_body','auto_num');
+			$fields = array('name','realm','public','open_date','close_date','title','email','subtitle','subtitle_th','info','info_th','theme','thanks_page','thank_head','thank_head_th','thank_body','thank_body_th','auto_num');
 			$sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id=${survey_id}";
 			$name = get_one($sql);
 
@@ -89,6 +89,7 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 				array_push($f_arr,$f ."=" . _addslashes($_POST[$f]));
 			}
 			$sql = "UPDATE ".$GLOBALS['ESPCONFIG']['survey_table']." SET " . join(', ',$f_arr) . " WHERE id=${survey_id}";
+			//echo $sql;
 			$result = execute_sql($sql);
 			if(!$result) {
 				$tab = "general";
@@ -209,12 +210,13 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 				//   $_POST['required']='N';
 				//}
 	
-				$fields = array('name','type_id','length','precise','required','content','content_th','ans_uniq');
+				$fields = array('name','type_id','length','precise','required','content','content_th','ans_uniq','extra','extra_th');
 				foreach($fields as $f) {
 					if(isset($_POST[$f]))
 						array_push($f_arr,$f."="._addslashes($_POST[$f]));
 				}
 				$sql = "UPDATE ".$GLOBALS['ESPCONFIG']['question_table']." SET " . join(', ',$f_arr) . " WHERE id=${qid}";
+				//echo $sql;
 	
 				// INSERT row in the DB for new question
 			} else {

@@ -1,6 +1,6 @@
 <?php
 
-$home = "http://www.siamsquare.org";
+$home = $GLOBALS['ESPCONFIG']['base_url'];
 $admin = $home."/admin";
 $self = $_SERVER['PHP_SELF'];
 $base = $_SERVER['BASE_PAGE'];
@@ -50,7 +50,7 @@ function displayNav() {
 	echo "    </button>\n";
 	echo "    <a class=\"navbar-brand\" href=\"$home\">";
 	logo();
-	echo "</a>\n";	
+	echo " <small>[client]</small></a>\n";	
 	if ($_SERVER['REQUEST_URI'] == "/admin/index.php") { $a = '<li class="active">'; } else { $a = '<li>'; }
 	if ($_SERVER['REQUEST_URI'] == "/admin/contact.php") { $b = '<li class="active">'; } else { $b = '<li>'; }
 	if ($_SERVER['REQUEST_URI'] == "/admin/help.php") { $c = '<li class="active">'; } else { $c = '<li>'; }
