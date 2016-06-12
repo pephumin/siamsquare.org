@@ -35,7 +35,7 @@ function displayHeader($title, $scrollspy = NULL) {
   //  echo "  <script type=\"text/javascript\" src=\"$filename\"></script>\n";
   //}
   echo "</head>\n";
-  //if ($scrollspy) { 
+  //if ($scrollspy) {
   //  echo "  <style type=\"text/css\">\n";
   //  echo "  body { position: relative; padding-top: 20px; }\n";
   //  echo "  </style>\n\n";
@@ -47,12 +47,12 @@ function displayHeader($title, $scrollspy = NULL) {
   //  echo "    }) \n";
   //  echo "  });\n";
   //  echo "  </script>\n\n";
-  //  echo "<body data-spy=\"scroll\" data-target=\"#ssqscrollspy\" data-offset=\"20\">\n"; 
+  //  echo "<body data-spy=\"scroll\" data-target=\"#ssqscrollspy\" data-offset=\"20\">\n";
   //}
-  //else { 
-  //  echo "<body>\n"; 
+  //else {
+  //  echo "<body>\n";
   //}
-  echo "<body>\n\n"; 
+  echo "<body>\n\n";
   //facebookLogin();
 }
 
@@ -144,12 +144,12 @@ function displayNav() {
   echo "      </ul>\n";
   echo "   </div>\n";
   echo "  </div>\n";
-  echo "</nav>\n\n";  
+  echo "</nav>\n\n";
 }
 
 function displayFooter() {
   global $respondent;
-  if(!empty($respondent['username'])) { $signed = "Signed in as <i class=\"fa fa-user\"></i> <kbd>".$respondent['username']."</kbd>"; } 
+  if(!empty($respondent['username'])) { $signed = "Signed in as <i class=\"fa fa-user\"></i> <kbd>".$respondent['username']."</kbd>"; }
   else { $signed = ""; }
   echo "</div> <!-- /container -->\n";
   //echo "</form>\n";
@@ -208,8 +208,8 @@ function handleLogin() {
 
     // if the login is recognized but not-unique, we can't figure out what to do... panic
     // NOTE: if email were mandatory, then we could use that as a key...
-    } 
-    elseif ($isAuthenticated && 2 <= $realmsCnt) { $GLOBALS['errmsg'] = mkerror('Please contact an administrator: multi-realm'); } 
+    }
+    elseif ($isAuthenticated && 2 <= $realmsCnt) { $GLOBALS['errmsg'] = mkerror('Please contact an administrator: multi-realm'); }
     else { $GLOBALS['errmsg'] = mkerror('Incorrect User ID or Password, or your account has been disabled/expired.'); }
   }
 }
@@ -233,7 +233,7 @@ function handleChangeProfile() {
     if ($ok) {
       $showChangeProfile = false;
       $GLOBALS['errmsg'] = mkerror('Your profile has been updated successfully');
-    } 
+    }
     else { $GLOBALS['errmsg'] = mkerror('Unable to change your password; contact an administrator'); }
   }
 
@@ -270,7 +270,7 @@ function handleChangePassword() {
         $GLOBALS['errmsg'] = mkerror('Your password has been changed successfully');
       } else { $GLOBALS['errmsg'] = mkerror('Unable to change your password; contact an administrator'); }
     // if the old password authenticates but the confirmation doesn't match
-    } elseif ($isAuthenticated && ! $isMatch) { $GLOBALS['errmsg'] = mkerror('Passwords do not match; check your typing'); } 
+    } elseif ($isAuthenticated && ! $isMatch) { $GLOBALS['errmsg'] = mkerror('Passwords do not match; check your typing'); }
     else { $GLOBALS['errmsg'] = mkerror('Old password incorrect; check your typing'); }
   }
 
@@ -342,7 +342,7 @@ function paint_respondent_tools() {
   echo "          <li><u>Name:</u> ".$respondent['fname']." ".$respondent['lname']."</li>\n";
   echo "          <li><u>Email:</u> ".$respondent['email']."</li>\n";
   echo "          <li><u>Group:</u> ".$respondent['realm']."</li>\n";
-  if (($respondent['expiration']) == "0000-00-00 00:00:00") { echo "          <li><u>Account expiration:</u> No expiration</li>\n"; } 
+  if (($respondent['expiration']) == "0000-00-00 00:00:00") { echo "          <li><u>Account expiration:</u> No expiration</li>\n"; }
   else { echo "          <li><u>Account expiration:</u> ".$respondent['expiration']."</li>\n"; }
   echo "        </ul>\n";
   echo "      </div>\n";
@@ -374,7 +374,7 @@ function paint_respondent_surveys($current) {
       printf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>', $name, $status, $date, $avail);
     }
     echo "</table>\n";
-  } 
+  }
   else { echo "You do not have any surveys at this time."; }
   echo "<br />\n\n";
 }
@@ -464,7 +464,7 @@ function fetch_status($sid, $responses) {
   if (isset($responses[$sid])) {
     // there are responses
     if (isset($responses[$sid]['complete'])) { // only one response
-      $status = ('Y' == $responses[$sid]['complete'] ? STATUS_FINISHED : STATUS_ALL_PARTIAL); 
+      $status = ('Y' == $responses[$sid]['complete'] ? STATUS_FINISHED : STATUS_ALL_PARTIAL);
     } else { // more than one response
       $status = STATUS_FINISHED;
       foreach ($responses[$sid] as $response) { if ('N' == $response['complete']) { $status = STATUS_SOME_PARTIAL; } }
@@ -494,7 +494,7 @@ function fetch_latest_submission_date($sid, $responses) {
     // don't need the date down to the second, so just go down to the minute
     $datets = strtotime($date);
     if (-1 !== $datets) { $date = strftime(FORMAT_OUTPUT_DATE, $datets); }
-  } 
+  }
   else { $date = ''; }
   return $date;
 }
@@ -528,13 +528,13 @@ function render_login_form($action = null, $usernameVar = 'username', $passwordV
   echo "    <div class=\"form-group\">\n";
   echo "      <label for=\"$usernameVar\" class=\"col-sm-3 control-label\">Email (login):</label>\n";
   echo "        <div class=\"col-sm-9\">\n";
-  echo "        <input type=\"text\" name=\"$usernameVar\" class=\"form-control\" placeholder=\"email@company.com\">\n";
+  echo "        <input type=\"text\" name=\"$usernameVar\" class=\"form-control\" placeholder=\"email@company.com\" required autofocus>\n";
   echo "        </div>\n";
   echo "     </div>\n";
   echo "     <div class=\"form-group\">\n";
   echo "       <label for=\"$passwordVar\" class=\"col-sm-3 control-label\">Password:</label>\n";
   echo "         <div class=\"col-sm-9\">\n";
-  echo "         <input type=\"password\" name=\"$passwordVar\" class=\"form-control\" placeholder=\"Password\">\n";
+  echo "         <input type=\"password\" name=\"$passwordVar\" class=\"form-control\" placeholder=\"Password\" required>\n";
   echo "       </div>\n";
   echo "     </div>\n";
   echo "     <div class=\"form-group\">\n";
@@ -758,13 +758,13 @@ function facebookLogin() {
   window.fbAsyncInit = function() {
   FB.init({
     appId      : '499076173618599',
-    cookie     : true,  // enable cookies to allow the server to access 
+    cookie     : true,  // enable cookies to allow the server to access
                         // the session
     xfbml      : true,  // parse social plugins on this page
     version    : 'v2.6' // use graph api version 2.5
   });
 
-  // Now that we've initialized the JavaScript SDK, we call 
+  // Now that we've initialized the JavaScript SDK, we call
   // FB.getLoginStatus().  This function gets the state of the
   // person visiting this page and can return one of three states to
   // the callback you provide.  They can be:
@@ -839,9 +839,9 @@ function facebookLoginNew() {
 <!-- Load the Facebook JavaScript SDK -->
 <div id="fb-root"></div>
 <script src="//connect.facebook.net/en_US/all.js"></script>
-    
+
 <script type="text/javascript">
-      
+
   // Initialize the Facebook JavaScript SDK
   FB.init({
     appId: '499076173618599',
@@ -850,28 +850,28 @@ function facebookLoginNew() {
     cookie: true,
     version: '2.6',
   });
-  
+
   // Check if the current user is logged in and has authorized the app
   FB.getLoginStatus(checkLoginStatus);
-  
+
   // Login in the current user via Facebook and ask for email permission
   function authUser() {
     FB.login(checkLoginStatus, {scope:'email,user_likes'});
   }
-  
+
   // Check the result of the user status and display login button if necessary
   function checkLoginStatus(response) {
     if(response && response.status == 'connected') {
       alert('User is authorized');
-      
+
       // Hide the login button
       document.getElementById('loginButton').style.display = 'none';
-      
+
       // Now Personalize the User Experience
       console.log('Access Token: ' + response.authResponse.accessToken);
     } else {
       alert('User is not authorized');
-      
+
       // Display the login button
       document.getElementById('loginButton').style.display = 'block';
     }
