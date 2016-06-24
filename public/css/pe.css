@@ -14,6 +14,23 @@
   font-style: oblique;
 }
 
+@font-face {
+  font-family: 'pe';
+  src: url('../fonts/pe/pe.ttf') format('truetype');
+  /*src: url('../fonts/pe/pe.ttf') format('truetype'), url('../fonts/pe/pe.eot') format('embedded-opentype'), url('../fonts/pe/pe.svg') format('svg');*/
+  /*font-weight: 400;*/
+  /*font-style: oblique;*/
+}
+
+.pe {
+  display: inline-block;
+  font: normal normal normal 14px/1 pe;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
   /*padding-top: 70px;*/
   font-family: 'boon';
@@ -28,18 +45,28 @@ body {
   src: url('../fonts/aqua.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'neon';
+  src: url('../fonts/neon.ttf') format('truetype');
+}
+
 .logo1 {
-  font-family: 'aqua';
+  /*font-family: 'aqua';*/
+  font-family: 'neon';
   font-size: 175%;
   color: #a4a4a4;
-  letter-spacing: -2px;
+  /*letter-spacing: -2px;*/
+  /*letter-spacing: 2px;*/
 }
 
 .logo2 {
-  font-family: 'aqua';
+  /*font-family: 'aqua';*/
+  font-family: 'neon';
   font-size: 175%;
-  color: #1c6f22;
-  letter-spacing: -2px;
+  /*color: #1c6f22;*/
+  color: #800080;
+  /*letter-spacing: -2px;*/
+  /*letter-spacing: 2px;*/
 }
 
 .aqua {
@@ -79,7 +106,7 @@ footer {
   text-align: center;
 }
 
-#login-nav input { 
+#login-nav input {
   /*margin-bottom: 15px; */
   font-family: 'ubuntu';
 }
@@ -122,4 +149,3 @@ footer {
   background: #1c6f22;
   opacity: .8;
 }
-
