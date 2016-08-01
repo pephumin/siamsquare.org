@@ -15,7 +15,7 @@
 *   - response ID/confirmation number to finished surveys
 *   - opening/closing date (FUTURE ENHANCEMENT NEEDED TO WHOLE APP)
 */
-	
+
 $_SERVER['BASE_PAGE'] = 'index.php';
 $title = "Respondent Section: Dashboard";
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
@@ -50,7 +50,7 @@ handleLogout();
 handleChangeProfile();
 handleChangePassword();
 //handleHelp();
-if (is_session_authenticated()) { paint_authenticated(); } 
+if (is_session_authenticated()) { paint_authenticated(); }
 else { paint_non_authenticated(); }
 
 echo "<p><button class=\"btn btn-lg btn-default\">";
@@ -61,28 +61,32 @@ echo "<p><button class=\"btn btn-lg btn-default\">";
 echo "<span class=\"logo1\">pe</span><span class=\"logo2\">b</span>";
 echo "</button></p>\n\n";
 
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/fbinit.php';
 
-?>
+//if (!isset($_SESSION['facebook'])) {
+//
+//	$login = $facebook->getLoginUrl();
+//	echo "<p><a href=\"$login\">Sign in with Facebook</a></p>\n";
+//
+//}
 
-<!--
-  Below we include the Login Button social plugin. This button uses
-  the JavaScript SDK to present a graphical Login button that triggers
-  the FB.login() function when clicked.
+$helper = $fb->getRedirectLoginHelper();
+$permissions = ['email', 'user_likes']; // optional
+$loginUrl = $helper->getLoginUrl('http://www.siamsquare.org/public/index.php', $permissions);
 
-<input id="loginButton" type="button" value="Login!" onclick="authUser();" />
+echo '<a href="' . $loginUrl . '">Log in with Facebook!</a>';
 
--->
+echo "<br /><br />\n\n";
+
+echo "<p><button class=\"btn btn-lg btn-default\">";
+echo "<ruby><span class=\"logo1\">pe</span><rt>พีอี</rt></ruby>";
+echo "<ruby><span class=\"logo2\">binary</span><rt>ไบนารี่</rt></ruby>\n";
+echo "</button></p>\n\n";
 
 
-<fb:login-button scope="public_profile,email" onlogin="checkLoginState();"></fb:login-button>
-
-<div id="status"></div>
-
-<?php
 
 displayFooter();
 
 // --------------------------------------------------------------------------------
 
 ?>
-

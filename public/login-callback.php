@@ -5,24 +5,16 @@ $title = "Login with Facebook";
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/fb/autoload.php';
-
-
-// --------------------------------------------------------------------------------
 
 displayHeader($title);
 displayNav();
 echo "<div class=\"container\">\n";
 
-$fb = new Facebook\Facebook([
-  'app_id' => ’499076173618599’,
-  'app_secret' => ’693980cb2d4627bc4b873ea42501198e’,
-  'default_graph_version' => 'v2.6',
-]);
+// --------------------------------------------------------------------------------
 
-$home = $GLOBALS['ESPCONFIG']['base_url'];
-$public = $home."/public";
-$callback = $public."/login-callback.php";
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/fbinit.php';
+
 
 $helper = $fb->getRedirectLoginHelper();
 
@@ -65,7 +57,7 @@ echo '<h3>Metadata</h3>';
 var_dump($tokenMetadata);
 
 // Validation (these will throw FacebookSDKException's when they fail)
-$tokenMetadata->validateAppId(’499076173618599’); // Replace {app-id} with your app id
+$tokenMetadata->validateAppId('499076173618599'); // Replace {app-id} with your app id
 // If you know the user ID this access token belongs to, you can validate it here
 //$tokenMetadata->validateUserId('123');
 $tokenMetadata->validateExpiration();
@@ -90,11 +82,10 @@ $_SESSION['fb_access_token'] = (string) $accessToken;
 //header('Location: https://example.com/members.php');
 
 
+// --------------------------------------------------------------------------------
+
 echo "</div>\n";
 displayFooter();
-
-
-// --------------------------------------------------------------------------------
 
 ?>
 
