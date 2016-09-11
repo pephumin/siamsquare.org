@@ -44,6 +44,7 @@
   </div>
 
   <div class="row">
+    <div class="col-xs-3 alert alert-geopattern1 alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><i class="pe-cog pe-spin pe-2x"></i><p>Pattern type 1</p></div>
     <div class="col-xs-3 alert alert-geopattern2 alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><i class="pe-cog pe-spin pe-2x"></i><p>Pattern type 2</p></div>
     <div class="col-xs-3 alert alert-geopattern3 alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><i class="pe-cog pe-spin pe-2x"></i><p>Pattern type 3</p></div>
     <div class="col-xs-3 alert alert-geopattern4 alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><i class="pe-cog pe-spin pe-2x"></i><p>Pattern type 4</p></div>
@@ -51,7 +52,6 @@
     <div class="col-xs-3 alert alert-geopattern6 alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><i class="pe-cog pe-spin pe-2x"></i><p>Pattern type 6</p></div>
     <div class="col-xs-3 alert alert-geopattern7 alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><i class="pe-cog pe-spin pe-2x"></i><p>Pattern type 7</p></div>
     <div class="col-xs-3 alert alert-geopattern8 alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><i class="pe-cog pe-spin pe-2x"></i><p>Pattern type 8</p></div>
-    <div class="col-xs-3 alert alert-geopattern9 alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><i class="pe-cog pe-spin pe-2x"></i><p>Pattern type 9</p></div>
   </div>
 
 </div>

@@ -85,12 +85,19 @@ if (empty($title)) {
     $title = 'Management interface';
 }
 
-displayHeader($title);
-displayNav();
-displayPageHeader($title);
+// displayHeader($title);
+// displayNav();
+// displayPageHeader($title);
+// include(esp_where($where));
+// displayPageFooter();
+// displayFooter();
+
+
+// ---------- new code ----------- //
+
+require_once "assets/include/template.php";
+pageHeader($title);
 include(esp_where($where));
-displayPageFooter();
-displayFooter();
+pageFooter;
 
 ?>
-

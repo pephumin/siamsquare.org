@@ -14,7 +14,7 @@ Notification = function () {
     var incPosition = 0;
 
     var template = function (title, text, image, position) {
-        incPosition = number * 120;
+        incPosition = number * 110;
         number = number + 1;
         var textHtml = '<div class="ntext">' + text + '</div>';
         var titleHtml = (!title ? '' : '<div class="ntitle">' + title + '</div>');
