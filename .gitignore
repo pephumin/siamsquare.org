@@ -1,8 +1,5 @@
 .DS_Store
 README.md
 Icon?
-.firebaserc
-firebase.json
-firebase-debug.log
-database.rules.json
 .sass-cache
+make
