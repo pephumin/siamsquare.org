@@ -60,4 +60,4 @@ function debugWindow () {
 }
 // End -->
 </script>
-<form name="debug"><input class="btn btn-xs btn-block btn-danger" type="button" value="debug" onClick="debugWindow()"></form>
+<form id="debug" name="debug"><input class="btn btn-xs btn-danger" type="button" value="debug" onClick="debugWindow()"></form>
