@@ -4,37 +4,8 @@ function logo() {
   echo "<span class=\"logo1\"><i class=\"pe-logo\"></i></span> <span class=\"logo2\">pe</span><span class=\"logo3\">binary</span>";
 }
 
-function notify($title, $text, $image) {
-  // Add these to assets/js/function.js
-?>
-    function notifyBox(<?php echo $title . "," . $text . "," . $image; ?>) {
-      Notification({
-          title: title,
-          text: text,
-          image: image,
-          inAnimation: "bounce",
-          outAnimation: "zoomOut",
-          position: 2
-      });
-    }
-    $(document).ready(function() {
-    // show the first notification
-    notifyBox("Title 1", "Image size is 50px x 50px", "assets/img/notification.svg");
-    // show the second one with 1 second delay
-    $(this).delay(1000).queue(function() {
-       notifyBox("Title 2", "jQuery events and functions like in the example above.", "assets/img/notification.svg");
-       $(this).dequeue();
-    });
-    // show the third one with another 1 second delay
-    $(this).delay(1000).queue(function() {
-       notifyBox("Title 3", "Can it be another one?", "");
-       $(this).dequeue();
-    });
-  });
-<?php
-}
-
 function pageHeader($title) {
+  $admin = "http://www.siamsquare.org/admin";
   header("Content-language: en");
   header("Content-type: text/html; charset=utf-8");
 ?>
@@ -74,7 +45,7 @@ function pageHeader($title) {
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-1">
       <div class="container">
-        <form name="debug"><input class="btn btn-xs btn-danger" type="button" value="debug" onClick="debugWindow()"></form>
+        <button class="btn btn-info btn-xs">hello</button>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-2">
@@ -94,13 +65,25 @@ function pageHeader($title) {
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/admin/" title="PE BINARY CO., LTD.">Client access</a>
+            <a class="navbar-brand" href="<?php echo $admin; ?>" title="PE BINARY CO., LTD.">Client Zone</a>
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-              <li><a href="http://www.siamsquare.org/admin"><i class="pe-power-off pe-lg"></i>&nbsp; Log-in</a></li>
-              <li><a href="/admin/contact.php"><i class="pe-envelope-o pe-lg"></i>&nbsp; Contact</a></li>
-              <li><a href="/admin/help.php"><i class="pe-question pe-lg"></i>&nbsp; Help</a></li>
+<?php
+  if ($_SERVER['REQUEST_URI'] == "/admin") { $a = '<li class="active">'; } else { $a = '<li>'; }
+  if ($_SERVER['REQUEST_URI'] == "/admin/contact.php") { $b = '<li class="active">'; } else { $b = '<li>'; }
+  if ($_SERVER['REQUEST_URI'] == "/admin/help.php") { $c = '<li class="active">'; } else { $c = '<li>'; }
+  if(!empty($_SESSION['acl']['username'])) {
+    echo "              $a<a href=\"$admin\"><i class=\"pe-home pe-fw\"></i> Home</a></li>\n";
+    echo "              $b<a href=\"$admin/contact.php\"><i class=\"pe-envelope-o pe-fw\"></i> Contact</a></li>\n";
+    echo "              $c<a href=\"$admin/help.php\"><i class=\"pe-question pe-fw\"></i> Help</a></li>\n";
+    echo "              <li><a href=\"$admin/index.php?where=logout\"><i class=\"pe-sign-out pe-fw\"></i> Sign out</a></li>\n";
+  } else {
+    echo "              $a<a href=\"$admin\"><i class=\"pe-power-off pe-fw\"></i> Sign in</a></li>\n";
+    echo "              $b<a href=\"$admin/contact.php\"><i class=\"pe-envelope-o pe-fw\"></i> Contact</a></li>\n";
+    echo "              $c<a href=\"$admin/help.php\"><i class=\"pe-question pe-fw\"></i> Help</a></li>\n";
+  }
+?>
             </ul>
           </div>
         </div>
@@ -108,13 +91,12 @@ function pageHeader($title) {
     </div>
   </div>
 </header>
-<main>
+<main class="container">
 <?php
 }
 
-function pageFooter() {
+function pageFooter($notes = null) {
 
-  //global $self, $home, $admin, $base;
   $user = $_SESSION['acl']['username'];
   $group = $_SESSION['acl']['pgroup'];
   $g = $group[0];
@@ -129,7 +111,7 @@ function pageFooter() {
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-1">
       <div class="container">
-        <p class="text-muted pull-right"><?php echo $signed; ?></p>
+        <p class="text-muted"><?php echo $signed; ?></p>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-2">
@@ -144,6 +126,12 @@ function pageFooter() {
             <li><a href="http://www.pebinary.com/" title="Back to the main website" itemprop="url"><i class="pe-arrow-circle-left"></i> <span class="hidden-md hidden-lg" itemprop="name">The main website</span><span class="hidden-xs hidden-sm" itemprop="name">Back to the main website</span></a>&nbsp;</li>
           </ul>
         </nav>
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3">
+      <div class="container">
+        <a class="btn btn-info btn-xs" href="http://www.bootlint.com/?url=http://www.siamsquare.org<?php echo $_SERVER['PHP_SELF']; ?>" target="_blank" role="button">bootlint</a>
+<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/debug.inc'; ?>
       </div>
     </div>
   </div>
@@ -168,21 +156,112 @@ function pageFooter() {
   var cancelConfirmMsg="Warning! This survey has not been saved. Canceling now will remove any changes."
   var mergeMsg="<h2>You must select at least two surveys before you can merge</h2>"
 </script>
-<script language="JavaScript">
-  function windowOpener(title,msg) {
-    msgWindow=window.open("","displayWindow","menubar=no,alwaysRaised=yes,dependent=yes,width=600,height=500,scrollbars=yes,resizable=yes");
-    msgWindow.document.write("<html><head><title>"+title+"</title></head>");
-    msgWindow.document.write("<body>"+msg+"</body></html>");
-  }
-  function debugWindow () {
-   title="Debug Window";
-   msg="<table>\n<tr><td bgcolor=\"#808080\">SID</td><td bgcolor=\"#cccccc\">skge0e2drngug25vv1lo90svc5</td></tr>\n<tr><td bgcolor=\"#808080\">SESSION</td><td bgcolor=\"#cccccc\">FBRLH_state|s:32:&quot;4c24ac330370a7176f93f4064a5c08d1&quot;;acl|a:0:{}</td></tr>\n<tr><th align=\"left\" colspan=\"2\" bgcolor=\"#808080\">ACL</th></tr>\n</table>\n";
-   windowOpener(title, msg);
-  }
-</script>
+<?php
+if ($notes) {
+  notify($notes);
+}
+// $notes = array
+// (
+//   array("title" => "Title 1", "text" => "jQuery1 events and functions like in the example above.", "image" => "assets/img/notification.svg"),
+//   array("title" => "Title 2", "text" => "jQuery2 events and functions like in the example above.", "image" => "assets/img/notification.svg"),
+//   array("title" => "Title 3", "text" => "jQuery3 events and functions like in the example above.", "image" => "assets/img/notification.svg"),
+//   array("title" => "Title 4", "text" => "jQuery4 events and functions like in the example above.", "image" => "assets/img/notification.svg")
+// );
+// notify($notes);
+?>
 </body>
 </html>
 <?php
+}
+
+function notify($messages) {
+?>
+<script type="text/javascript">
+  function notifyBox(title, text, image) {
+    Notification({
+        title: title,
+        text: text,
+        image: image,
+        inAnimation: "bounce",
+        outAnimation: "zoomOut",
+        position: 2
+    });
+  }
+  function delayNext(title, text, image) {
+    $(this).delay(2000).queue(function() {
+      notifyBox(title, text, image);
+      $(this).dequeue();
+    });
+  }
+  $(document).ready(function() {
+    var obj = JSON.parse ('<?php echo json_encode($messages) ?>');
+     for(var i=0; i<obj.length; i++) {
+       if (i == 0) {
+         // show the first notification
+         notifyBox(obj[i].title, obj[i].text, obj[i].image);
+       } else {
+         // show the second one with 2 seconds delay
+         delayNext(obj[i].title, obj[i].text, obj[i].image);
+       }
+     }
+    });
+</script>
+<?php
+}
+
+function displayTabNav_tabs() {
+  global $tab;
+  echo "<ul class=\"nav nav-tabs\">\n";
+  echo "<input type=\"hidden\" name=\"where\" value=\"tab\" />";
+  if ($tab == "general") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_general\" value=\"General\" /></li>\n"; }
+  else { echo "<li><input type=\"submit\" name=\"tab_general\" value=\"General\" /></li>\n"; }
+  echo "&nbsp;\n";
+  if ($tab == "questions") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_questions\" value=\"Questions\" /></li>\n"; }
+  else { echo "<li><input type=\"submit\" name=\"tab_questions\" value=\"Questions\" /></li>\n"; }
+  echo "&nbsp;\n";
+  if ($tab == "order") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_order\" value=\"Order\" /></li>\n"; }
+  else { echo "<li><input type=\"submit\" name=\"tab_order\" value=\"Order\" /></li>\n"; }
+  echo "&nbsp;\n";
+  if ($tab == "conditions") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_conditions\" value=\"Conditions\" /></li>\n"; }
+  else { echo "<li><input type=\"submit\" name=\"tab_conditions\" value=\"Conditions\" /></li>\n"; }
+  echo "&nbsp;\n";
+  if ($tab == "preview") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_preview\" value=\"Preview\" /></li>\n"; }
+  else { echo "<li><input type=\"submit\" name=\"tab_preview\" value=\"Preview\" /></li>\n"; }
+  echo "&nbsp;\n";
+  if ($tab == "finish") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_finish\" value=\"Finish\" /></li>\n"; }
+  else { echo "<li><input type=\"submit\" name=\"tab_finish\" value=\"Finish\" /></li>\n"; }
+  echo "</ul>\n";
+  echo "<br /><br />\n";
+}
+
+function displayTabNav() {
+  global $tab;
+  echo "<p>";
+  echo '<input type="hidden" name="where" value="tab" />';
+  echo "&nbsp;\n";
+  if ($tab == 'general') { echo '<input type="submit" name="tab_general" value="General" class="btn btn-warning active btn-sm" />'; }
+  else { echo '<input type="submit" name="tab_general" value="General" class="btn btn-warning btn-sm" />'; }
+  echo "&nbsp;\n";
+  if ($tab == 'questions') { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-warning active btn-sm" />'; }
+  else { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-warning btn-sm" />'; }
+  echo "&nbsp;\n";
+  if ($tab == 'order') { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-warning active btn-sm" />'; }
+  else { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-warning btn-sm" />'; }
+  echo "&nbsp;\n";
+  if ($tab == 'conditions') { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-warning active btn-sm" />'; }
+  else { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-warning btn-sm" />'; }
+  echo "&nbsp;\n";
+  if ($tab == 'preview') { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-warning active btn-sm" />'; }
+  else { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-warning btn-sm" />'; }
+  echo "&nbsp;\n";
+  if ($tab == 'finish') { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-warning active btn-sm" />'; }
+  else { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-warning btn-sm" />'; }
+  echo "&nbsp;\n";
+  echo "</p>";
+}
+
+function displayAdminBack() {
+  //echo "<a class=\"btn btn-default btn-sm pull-right\" role=\"button\" href=\"/admin/index.php?where=manage\"><i class=\"pe-hand-o-left pe-fw\"></i> Back to Main Interface</a>";
 }
 
 ?>

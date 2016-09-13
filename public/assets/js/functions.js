@@ -35,32 +35,26 @@ $(document).ready(function(){
 
 // notification box
 
-function notifyBox(title, text, image) {
-  Notification({
-      title: title,
-      text: text,
-      image: image,
-      inAnimation: "bounce",
-      outAnimation: "zoomOut",
-      position: 1
-  });
-}
-
-$(document).ready(function() {
-
-  // show the first notification
-  notifyBox("Title 1", "Image size is 70px x 70px", "john.jpg");
-
-  // show the second one with 1 second delay
-  $(this).delay(1000).queue(function() {
-     notifyBox("Title 2", "jQuery events and functions like in the example above.", "john.jpg");
-     $(this).dequeue();
-  });
-
-  // show the third one with another 1 second delay
-  $(this).delay(1000).queue(function() {
-     notifyBox("Title 3", "Can it be another one?", "");
-     $(this).dequeue();
-  });
-
-});
+// function notifyBox(title, text, image) {
+//   Notification({
+//       title: title,
+//       text: text,
+//       image: image,
+//       inAnimation: "bounce",
+//       outAnimation: "zoomOut",
+//       position: 2
+//   });
+// }
+//
+// $(document).ready(function() {
+//
+//   // show the first notification
+//   notifyBox("Title 1", "Image size is 50px x 50px", "assets/img/notification.svg");
+//
+//   // show the second one with 2 seconds delay
+//   $(this).delay(2000).queue(function() {
+//      notifyBox("Title 2", "jQuery events and functions like in the example above.", "assets/img/notification.svg");
+//      $(this).dequeue();
+//   });
+//
+// });

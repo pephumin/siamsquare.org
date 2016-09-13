@@ -1,5 +1,9 @@
-<?php require_once "assets/include/template.php"; ?>
-<?php pageHeader("Log in"); ?>
+<?php
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/template.php';
+pageHeader("Log in to the system");
+
+?>
 
 <div class="container">
 
@@ -33,7 +37,8 @@
     </div>
   </form>
 
-  <div class="alert alert-warning alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><i class="fa fa-bullhorn"></i>&nbsp; <p><strong>UNAUTHORIZED ACCESS TO THIS COMPUTER SYSTEM IS PROHIBITED BY LAW</strong></p>
+  <div class="alert alert-warning alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <p><i class="pe-bullhorn"></i> <strong>UNAUTHORIZED ACCESS TO THIS COMPUTER SYSTEM IS PROHIBITED BY LAW</strong></p>
     <p>You are accessing a private computer network which includes: (1) this computer, (2) this computer network, (3) all computers connected to this network, and (4) all devices and storage media attached to this network or to a computer on this network. This information system is provided for registered clients authorized use only. Unauthorized or improper use of this system may result in disciplinary action, as well as civil and criminal penalties.</p>
     <p>If you do not have an access, please contact sales for setting up a master login/password for your company.</p>
     <p>By using this information system, you understand and consent to the following:</p>
@@ -56,4 +61,8 @@
 
 </div>
 
-<?php pageFooter(); ?>
+<?php
+
+pageFooter();
+
+?>

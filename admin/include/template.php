@@ -9,7 +9,7 @@ function displayHeader($title, $scrollspy = NULL) {
 	global $self, $home, $admin, $base;
 	header("Content-language: en");
 	header("Content-type: text/html; charset=utf-8");
-	echo "<!doctype html>\n";
+	echo "<!DOCTYPE html>\n";
 	echo "<html>\n";
 	echo "<head>\n";
 	echo "	<meta charset=\"utf-8\">\n";
@@ -50,7 +50,7 @@ function displayNav() {
 	echo "    </button>\n";
 	echo "    <a class=\"navbar-brand\" href=\"$home\">";
 	logo();
-	echo " <small>[client]</small></a>\n";
+	echo " <small>[client]</small></a>\n";	
 	if ($_SERVER['REQUEST_URI'] == "/admin/index.php") { $a = '<li class="active">'; } else { $a = '<li>'; }
 	if ($_SERVER['REQUEST_URI'] == "/admin/contact.php") { $b = '<li class="active">'; } else { $b = '<li>'; }
 	if ($_SERVER['REQUEST_URI'] == "/admin/help.php") { $c = '<li class="active">'; } else { $c = '<li>'; }
@@ -78,7 +78,7 @@ function displayNav() {
 		echo "    </ul>\n";
 		echo "  </div> <!--/navbar-collapse -->\n";
 		echo "</div>\n";
-		echo "</nav>\n";
+		echo "</nav>\n";		
 	}
 }
 
@@ -150,17 +150,17 @@ function displayPageHeader() {
 function displayPageFooter() {
 
 	global $self, $home, $admin, $base;
-
+	
 	$user = $_SESSION['acl']['username'];
 	$group = $_SESSION['acl']['pgroup'];
 	$g = $group[0];
-
-	if ($g) { $show = "<kbd>$user</kbd> (<kbd>$g</kbd>)"; }
+	
+	if ($g) { $show = "<kbd>$user</kbd> (<kbd>$g</kbd>)"; } 
 	else { $show = "<kbd>$user</kbd>"; }
-
-	if(!empty($_SESSION['acl']['username'])) { $signed = "Signed in as <i class=\"fa fa-user\"></i> $show"; }
+	
+	if(!empty($_SESSION['acl']['username'])) { $signed = "Signed in as <i class=\"fa fa-user\"></i> $show"; } 
 	else { $signed = ""; }
-
+	
 	echo "</div> <!-- /container -->\n";
 	echo "</form>\n";
 	echo "<br /><br />\n\n";
@@ -193,7 +193,7 @@ function displayFooter() {
 	echo "</body>\n";
 	echo "</html>\n\n";
 	//if ($_SESSION['acl']['superuser'] == 'Y') { include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; }
-	include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php';
+	include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; 
 }
 
 function logo() {

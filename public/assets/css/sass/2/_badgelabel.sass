@@ -1,0 +1,40 @@
+.badge
+  display: inline
+  min-width: 10px
+  padding: 3px 7px
+  font-family: "ubuntu"
+  font-size: 12px
+  font-weight: bold
+  color: $white
+  line-height: 1
+  vertical-align: middle
+  white-space: nowrap
+  text-align: center
+  background-color: $navy
+  border-radius: 10px
+  &:empty
+    display: none
+
+.label
+  font-family: "ubuntu"
+  padding: 3px 4px
+  font-size: 65%
+  font-weight: bold
+  letter-spacing: 0
+  text-transform: uppercase
+  color: $white
+  vertical-align: text-top
+  border-radius: 4px
+  box-shadow: inset -2px -2px 0 transparentize($black, 0.5)
+
+.label-red
+  @extend .label
+  background-color: $red
+
+.label-green
+  @extend .label
+  background-color: $green
+
+.label-blue
+  @extend .label
+  background-color: $blue

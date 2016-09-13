@@ -14,11 +14,11 @@ Notification = function () {
     var incPosition = 0;
 
     var template = function (title, text, image, position) {
-        incPosition = number * 120;
+        incPosition = number * 110;
         number = number + 1;
-        var textHtml = '<div class="text">' + text + '</div>';
-        var titleHtml = (!title ? '' : '<div class="title">' + title + '</div>');
-        var imageHtml = (!image ? '' : '<div class="illustration"><img src="' + image + '" width="70" height="70" /></div>');
+        var textHtml = '<div class="ntext">' + text + '</div>';
+        var titleHtml = (!title ? '' : '<div class="ntitle">' + title + '</div>');
+        var imageHtml = (!image ? '' : '<div class="nimg"><img src="' + image + '" width="50" height="50" /></div>');
         var style;
         switch (parseInt(position, 10)) {
             case 1:
@@ -50,7 +50,7 @@ Notification = function () {
         number -= 1;
         setTimeout(function () {
             notification.remove();
-        }, 1500);
+        }, 3000);
     };
 
     var create = function (config) {
