@@ -6,17 +6,17 @@
 function survey_generate_results($format, $sid) {
     $output = array();
     $id_to_csv_map = array(
-        '0',	// 0: unused
-        '1',	// 1: bool -> boolean
-        '1',	// 2: text -> string
-        '1',	// 3: essay -> string
-        '1',	// 4: radio -> string
-        '1',	// 5: check -> string
-        '1',	// 6: dropdn -> string
-        '0',	// 7: rating -> number
-        '0',	// 8: rate -> number
-        '1',	// 9: date -> string
-        '0' 	// 10: numeric -> number
+        '0',  // 0: unused
+        '1',  // 1: bool -> boolean
+        '1',  // 2: text -> string
+        '1',  // 3: essay -> string
+        '1',  // 4: radio -> string
+        '1',  // 5: check -> string
+        '1',  // 6: dropdn -> string
+        '0',  // 7: rating -> number
+        '0',  // 8: rate -> number
+        '1',  // 9: date -> string
+        '0'   // 10: numeric -> number
     );
     $types = array(
         0,
@@ -174,9 +174,9 @@ function survey_generate_results($format, $sid) {
         case 'csv_short_header':
             //pass through
         case 'tab':
-            $columns2=$columns;  	//columns2 is used to relate columns to data returned from response_select() 
-            $numcols = 3;		//total columns
-            $qcount=0;		//total questions (rating questions count as 1)
+            $columns2=$columns;    //columns2 is used to relate columns to data returned from response_select()
+            $numcols = 3;    //total columns
+            $qcount=0;    //total questions (rating questions count as 1)
             $sql = "SELECT q.id, q.type_id
             FROM ".$GLOBALS['ESPCONFIG']['question_table']." q
             WHERE q.survey_id = $sid AND
@@ -295,7 +295,7 @@ function survey_generate_results($format, $sid) {
             db_close($result);
             break;
 
-        default:	
+        default:
             //csv_full_header
             $numcols = 3;
 
