@@ -1,0 +1,220 @@
+\:root
+  font-size: 14px
+  line-height: 1.428571429
+  //letter-spacing: -0.02rem
+
+h1
+  font-size: 1.6rem
+  letter-spacing: -0.1rem
+  color: $white
+
+h2
+  color: $black
+  font-family: $eng2 !important
+  font-size: 1.9rem !important
+  letter-spacing: -0.1rem
+
+h2.th
+  @extend h2
+  font-family: $th1
+  font-size: 2.1rem
+  letter-spacing: -0.03rem
+
+h3
+  color: $black
+  font-family: $eng1 !important
+  font-size: 1.5rem !important
+  letter-spacing: -0.08rem
+  text-transform: uppercase
+  border-bottom: 1px dotted $darkgrey
+
+h3.th
+  @extend h3
+  font-family: $th1
+  font-size: 1.45rem
+  letter-spacing: -0.03rem
+
+h4
+  color: $darkgrey
+  font-family: $eng2 !important
+  font-size: 1.2rem !important
+  letter-spacing: -0.03rem
+
+h4.th
+  @extend h4
+  font-family: $th1
+  font-size: 1.4rem
+  letter-spacing: -0.01rem
+
+h5
+  text-transform: uppercase
+  color: $grey
+  font-family: $eng1 !important
+  font-size: 1.05rem !important
+  letter-spacing: -0.03rem
+
+h5.th
+  @extend h5
+  font-family: $th1
+  font-size: 1.3rem
+  letter-spacing: -0.01rem
+
+h6
+  font-weight: bold
+  text-transform: uppercase
+  padding: 0px 15px
+  color: $darkgreen
+  font-family: $eng1 !important
+  font-size: 1.0rem !important
+  letter-spacing: -0.03rem
+
+h6.th
+  @extend h6
+  font-family: $th1
+  font-size: 1.1rem
+  letter-spacing: -0.01rem
+
+p
+  padding: auto 10px
+  font-family: $eng1 !important
+  font-size: 1rem !important
+  letter-spacing: -0.03rem
+
+p.th
+  @extend p
+  font-family: $th1
+  font-size: 1.2rem
+  letter-spacing: -0.03rem
+
+p.lead
+  color: $grey
+  font-family: $eng3 !important
+  font-size: 1.3rem !important
+  letter-spacing: -0.01rem
+
+p.lead-th
+  @extend p.lead
+  font-family: $th2
+  font-size: 1.5rem
+  letter-spacing: -0.03rem
+
+blockquote
+  margin: 0px 5px 20px 5px
+  color: $darkgrey
+  font-family: $eng3 !important
+  font-size: 1.25rem !important
+
+blockquote.th
+  @extend blockquote
+  font-family: $th2
+  font-size: 1.45rem
+
+h1, h2, h3, h4, h5, h6, p, blockquote
+  line-height: 1.428571429
+  // margin-top: 1.0rem
+  margin-bottom: 1.7rem !important
+
+
+@media (max-width: 768px)
+
+  h1
+    font-size: 1.55rem
+
+  h2
+    font-size: 1.7rem
+
+  h2.th
+    font-size: 1.9rem
+
+  h3
+    font-size: 1.1rem
+
+  h3.th
+    font-size: 1.25rem
+
+  h4
+    font-size: 1.0rem
+
+  h4.th
+    font-size: 1.2rem
+
+  h5
+    font-size: 0.9rem
+
+  h5.th
+    font-size: 1.15rem
+
+  h6
+    font-size: 0.85rem
+
+  h6.th
+    font-size: 0.95rem
+
+  p
+    font-size: 0.8rem
+
+  p.th
+    font-size: 1.0rem
+
+  p.lead
+    font-size: 1.1rem
+
+  p.lead-th
+    font-size: 1.3rem
+
+  blockquote
+    font-size: 1.05rem
+
+  blockquote.th
+    font-size: 1.25rem
+
+// -------- the rest of the key ones -------- //
+
+body
+  background-color: $white
+  color: $grey
+  -webkit-font-smoothing: antialiased
+  -webkit-text-size-adjust: 100%
+
+a
+  color: $indigo
+  text-decoration: none
+  &:hover
+    text-decoration: underline
+    color: $orange
+
+section
+  padding: 30px 0
+  margin: 0 auto
+
+em
+  font-style: italic
+
+strong
+  font-weight: bold
+
+hr
+  height: 0
+  overflow: hidden
+  background: transparent
+  border: 0
+  border-bottom: 1px solid $silver
+
+hr:before
+  display: table
+  content: ""
+
+hr:after
+  display: table
+  clear: both
+  content: ""
+
+del
+  color: $lightgrey
+  text-decoration: line-through
+
+pre
+  color: $white-shadow
+
+i.pe-quote-left, i.pe-quote-right
+  font-size: 70%

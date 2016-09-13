@@ -1,8 +1,8 @@
 <?php
 
 $_SERVER['BASE_PAGE'] = 'index.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/template.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/config.php';
+// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/template.php';
 
 /* now let's check if we have the extension needed to connect to the db */
 if(!extension_loaded($ESPCONFIG['adodb_database_type'])) {
@@ -85,12 +85,16 @@ if (empty($title)) {
     $title = 'Management interface';
 }
 
-displayHeader($title);
-displayNav();
-displayPageHeader($title);
+// displayHeader($title);
+// displayNav();
+// displayPageHeader($title);
+// include(esp_where($where));
+// displayPageFooter();
+// displayFooter();
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/template.php';
+pageHeader($title);
 include(esp_where($where));
-displayPageFooter();
-displayFooter();
+pageFooter();
 
 ?>
-
