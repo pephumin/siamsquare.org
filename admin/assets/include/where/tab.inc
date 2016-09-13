@@ -78,10 +78,8 @@ if(stristr($tab,'continue')) {
   }
 }
 
-if (!preg_match('/^[A-Za-z0-9_]+$/',$tab))  // Valid chars are [A-Za-z0-9_]
-  $tab = 'general';
+if (!preg_match('/^[A-Za-z0-9_]+$/',$tab)) { $tab = 'general'; }
 
-//if(!file_exists($ESPCONFIG['include_path'].'/tab/'.$tab.$ESPCONFIG['extension']))
 if (!file_exists( $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/tab/'.$tab.'.inc' )) {
   $tab = 'general';
   echo "<b>Unable to open include file. Check INI settings. Aborting.</b>";
@@ -107,29 +105,28 @@ echo "<br>\n";
 
 displayTabNav();
 
-include($ESPCONFIG['include_path'].'/tab/'.$tab.$ESPCONFIG['extension']);
+include $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/tab/'.$tab.'.inc';
+//include($ESPCONFIG['include_path'].'/tab/'.$tab.$ESPCONFIG['extension']);
 $_SESSION['last_tab'] = $tab;
 
 if ($tab == 'finish') { echo('&nbsp;'); }
 
 if ($_SESSION['new_survey']) {
-    echo "    <input class=\"btn btn-default\" type=\"submit\" name=\"where\" value=\"Cancel\" onclick='return cancelConfirm()' /> &nbsp;\n";
-    if ($tab == 'preview') { echo "    <input class=\"btn btn-success\" type=\"submit\" name=\"tab_finish\" value=\"Finish\" /> &nbsp;\n"; }
-    else { echo "    <input class=\"btn btn-success\" type=\"submit\" name=\"tab_continue\" value=\"Continue &gt;&gt;\" /> &nbsp;\n"; }
-    echo "    <p class=\"text-muted\">Click cancel to cancel this survey, or click continue to proceed to the next tab.</p>";
+  echo "    <input class=\"btn btn-default\" type=\"submit\" name=\"where\" value=\"Cancel\" onclick='return cancelConfirm()' /> &nbsp;\n";
+  if ($tab == 'preview') { echo "    <input class=\"btn btn-success\" type=\"submit\" name=\"tab_finish\" value=\"Finish\" /> &nbsp;\n"; }
+  else { echo "    <input class=\"btn btn-success\" type=\"submit\" name=\"tab_continue\" value=\"Continue &gt;&gt;\" /> &nbsp;\n"; }
+  echo "    <p class=\"text-muted\">Click cancel to cancel this survey, or click continue to proceed to the next tab.</p>";
 }
 
-echo "<hr />\n";
-
-echo "<p>Designing a survey requires to complete these 6 tabs as follows</p>\n";
-
-echo "<ul class=\"pe-ul\">\n";
-echo "  <li><i class=\"pe-li pe-check-square\"></i>The survey title and other general fields are on the <strong>General</strong> tab.\n";
-echo "  <li><i class=\"pe-li pe-check-square\"></i>Individual survey questions are added and modified on the <strong>Questions</strong> tab.\n";
-echo "  <li><i class=\"pe-li pe-check-square\"></i>Questions may be re-ordered or deleted from the <strong>Order</strong> tab.\n";
-echo "  <li><i class=\"pe-li pe-check-square\"></i>Setting questionf flow on the <strong>Conditions</strong> tab.\n";
-echo "  <li><i class=\"pe-li pe-check-square\"></i>You may see a preview of your survey at any time, by going to the <strong>Preview</strong> tab.\n";
-echo "  <li><i class=\"pe-li pe-check-square\"></i>Click <strong>Finish</strong> when it is done and go back to the Management Interface.\n";
-echo "</ul>\n\n";
+// echo "<hr>\n";
+// echo "<p>Designing a survey requires to complete these 6 tabs as follows</p>\n";
+// echo "<ul class=\"pe-ul\">\n";
+// echo "  <li><i class=\"pe-li pe-check-square\"></i>The survey title and other general fields are on the <strong>General</strong> tab.\n";
+// echo "  <li><i class=\"pe-li pe-check-square\"></i>Individual survey questions are added and modified on the <strong>Questions</strong> tab.\n";
+// echo "  <li><i class=\"pe-li pe-check-square\"></i>Questions may be re-ordered or deleted from the <strong>Order</strong> tab.\n";
+// echo "  <li><i class=\"pe-li pe-check-square\"></i>Setting questionf flow on the <strong>Conditions</strong> tab.\n";
+// echo "  <li><i class=\"pe-li pe-check-square\"></i>You may see a preview of your survey at any time, by going to the <strong>Preview</strong> tab.\n";
+// echo "  <li><i class=\"pe-li pe-check-square\"></i>Click <strong>Finish</strong> when it is done and go back to the Management Interface.\n";
+// echo "</ul>\n\n";
 
 ?>

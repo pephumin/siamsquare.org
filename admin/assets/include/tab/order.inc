@@ -7,9 +7,12 @@ $max = record_count($result);
 
 ?>
 
-<p>Change the order that questions are presented by selecting a question from the list, then use the up/down buttons to change its position.</p>
+<h4>Order your questions in a logical flow</h4>
 
-<hr>
+<p>All questions can be re-arranged/ re-ordered. You can simply change the order that questions are presented by selecting a question from the list. Then use the up/down buttons to change its position.</p>
+
+<br><br>
+
 <script type="text/javascript">
 <!-- // comment
 function move(f,bDir,sName) {
@@ -93,4 +96,4 @@ db_close($result);
 <input class="btn btn-sm" type="submit" name="addbreak" value="Add Section Break">&nbsp;
 <a class="btn btn-danger btn-sm" role="button" href="javascript:removeItem()"><i class="pe-trash"></i> Remove</a>
 
-<br /><br />
+<br><br>

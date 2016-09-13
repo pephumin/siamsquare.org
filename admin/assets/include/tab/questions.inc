@@ -49,6 +49,12 @@ if($updated && $curr_q) {
 }
 ?>
 
+<h4>Add questions and answers to your survey</h4>
+
+<p>In ths section, you will be able to add new questions and answers as well as editing them. Translation should be inserted in this section as well. Remember you do not have to finish them in one-go. You can save and come back to update them anytime.</p>
+
+<br><br>
+
 <input type="hidden" name="id" value="<?php echo($curr_q); ?>" />
 
 <p>Edit this question, or click the number of the question you would like to edit:</p>
