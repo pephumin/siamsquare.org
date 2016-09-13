@@ -95,6 +95,9 @@ if (empty($title)) {
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/template.php';
 pageHeader($title);
 include(esp_where($where));
+
+echo "<div class=\"slabel\"><ul class=\"superlabel\"><li><a href=\"#\">hello</a></li><li><a href=\"#\">hello</a></li><li><a href=\"#\">hello</a></li></ul></div>";
+
 pageFooter();
 
 ?>
