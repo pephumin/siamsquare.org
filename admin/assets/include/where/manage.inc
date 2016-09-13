@@ -5,7 +5,7 @@ $kt = htmlentities($base."?where=status");
 $show = 5;
 
 echo "<h2>Management Interface</h2>\n";
-//echo "<br />\n";
+//echo "<br>\n";
 echo "<h4>Last $show projects <small>(newer projects are on top of the list)</small></h4>\n";
 
 survey_status(0,$show,'');

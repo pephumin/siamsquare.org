@@ -17,7 +17,8 @@ if (isset($_SERVER)) { $server =& $_SERVER; } else { $server =& $HTTP_SERVER_VAR
 $ESPCONFIG['DEBUG'] = true;
 $ESPCONFIG['proto'] = 'http://';
 $ESPCONFIG['base_url'] = $ESPCONFIG['proto'] . $server['HTTP_HOST'];
-$ESPCONFIG['db_host'] = 'magenta.thaiweb.net';
+//$ESPCONFIG['db_host'] = 'magenta.thaiweb.net';
+$ESPCONFIG['db_host'] = 'localhost';
 $ESPCONFIG['db_user'] = 'sinbad';
 $ESPCONFIG['db_pass'] = '2bbadd';
 $ESPCONFIG['db_name'] = 'siamsquare';
@@ -83,13 +84,13 @@ $ESPCONFIG['default_num_choices'] = 5; // Default number of option lines for new
 $ESPCONFIG['name'] = 'pebinary';
 $ESPCONFIG['version'] = '2.2.0';
 $ESPCONFIG['title'] = $ESPCONFIG['name'] .', v('. $ESPCONFIG['version'].')';
-$ESPCONFIG['unsupported'] = array('cgi', 'sapi'); // Unsuported web server configuration check values 
+$ESPCONFIG['unsupported'] = array('cgi', 'sapi'); // Unsuported web server configuration check values
 $ESPCONFIG['gettext'] = extension_loaded('gettext');
 $ESPCONFIG['extension'] = '.inc';
 
 $ESPCONFIG['handler'] = ESP_BASE . '/public/include/handler.php';
 $ESPCONFIG['handler_prefix'] = ESP_BASE . '/public/include/handler-prefix.php';
-$ESPCONFIG['include_path'] = ESP_BASE . '/admin/include'; 
+$ESPCONFIG['include_path'] = ESP_BASE . '/admin/include';
 $ESPCONFIG['css_path'] = ESP_BASE . '/admin/css'; // css path
 $ESPCONFIG['locale_path'] = ESP_BASE . '/locale'; // locale path
 
@@ -102,8 +103,8 @@ $ESPCONFIG['style_sheet'] = $ESPCONFIG['base_url'] . '/css/admin.css'; // CSS st
 
 $ESPCONFIG['ME'] = $server['PHP_SELF'];
 $ESPCONFIG['tabs'] = array('general', 'questions', 'order', 'conditions', 'preview', 'finish');
-$ESPCONFIG['thank_head'] = _('Thank you for completing this survey.');
-$ESPCONFIG['thank_body'] = _('Please do not use the back button on your browser to go back.');
+$ESPCONFIG['thank_head'] = "Thank you for completing this survey.";
+$ESPCONFIG['thank_body'] = "Please do not use the back button on your browser to go back.";
 
 // Database Table Names:
 $ESPCONFIG['access_table']              = $DB_PREFIX."access";
@@ -132,7 +133,7 @@ $ESPCONFIG['version_table']             = $DB_PREFIX."version";
 //require_once($ESPCONFIG['include_path'] . '/lib/espi18n' . $ESPCONFIG['extension']);
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/lib/espi18n.inc';
 
-if (isset($_REQUEST['lang'])) { 
+if (isset($_REQUEST['lang'])) {
    esp_setlocale_ex($_REQUEST['lang']);
    $_SESSION['language']=$_REQUEST['lang'];
 } elseif (isset($lang)) {

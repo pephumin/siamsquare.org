@@ -136,13 +136,13 @@ if ($result) { db_close($result); }
 <hr>
 
 <p class="text-muted">Some guidelines on using question conditioning:</p>
-<ul class="fa-ul">
-  <li class="text-muted"><i class="fa-li fa fa-check-square"></i>All conditions are "OR" conditions, so if one conditions is fullfilled, the question is shown.</li>
-  <li class="text-muted"><i class="fa-li fa fa-check-square"></i>A question that has a condition must be an optional question.</li>
-  <li class="text-muted"><i class="fa-li fa fa-check-square"></i>So, if you define a condition on a question, the "Required" parameter is set to "No".</li>
-  <li class="text-muted"><i class="fa-li fa fa-check-square"></i>A question that has a condition must be on the next page than the question/value that is used to compare it with.</li>
-  <li class="text-muted"><i class="fa-li fa fa-check-square"></i>Use the "Order tab" to insert a section break where wanted (this is <b>NOT</b> done automatically).</li>
-  <li class="text-muted"><i class="fa-li fa fa-check-square"></i>A Yes/No question can only be compared using the values "Yes or "No".</li>
+<ul class="pe-ul">
+  <li class="text-muted"><i class="pe-li pe-check-square"></i>All conditions are "OR" conditions, so if one conditions is fullfilled, the question is shown.</li>
+  <li class="text-muted"><i class="pe-li pe-check-square"></i>A question that has a condition must be an optional question.</li>
+  <li class="text-muted"><i class="pe-li pe-check-square"></i>So, if you define a condition on a question, the "Required" parameter is set to "No".</li>
+  <li class="text-muted"><i class="pe-li pe-check-square"></i>A question that has a condition must be on the next page than the question/value that is used to compare it with.</li>
+  <li class="text-muted"><i class="pe-li pe-check-square"></i>Use the "Order tab" to insert a section break where wanted (this is <b>NOT</b> done automatically).</li>
+  <li class="text-muted"><i class="pe-li pe-check-square"></i>A Yes/No question can only be compared using the values "Yes or "No".</li>
 </ul>
 
 <br />

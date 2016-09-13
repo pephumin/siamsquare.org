@@ -85,7 +85,7 @@ $result = execute_sql($sql);
 
 <h2>Managing Respondents</h2>
 
-<br />
+<br>
 
 <p><Click on a username to edit, or click on add new user below.</p>
 
@@ -94,7 +94,7 @@ $result = execute_sql($sql);
   <a class="btn btn-warning" href="<?php echo($base .htmlentities("?where=upload&account_type=respondents")); ?>"><i class="pe-upload pe-fw"></i> Bulk upload respondents</a>
 </p>
 
-<br />
+<br>
 
 <table class="table table-hover">
   <tr class="active">
@@ -115,10 +115,6 @@ $result = execute_sql($sql);
     if (empty($fname)) $fname = '&nbsp;';
     if (empty($lname)) $lname = '&nbsp;';
 
-    //if ($bg == $ESPCONFIG['bgalt_color1'])
-    //  $bg =& $ESPCONFIG['bgalt_color2'];
-    //else
-    //  $bg =& $ESPCONFIG['bgalt_color1'];
 ?>
   <tr>
     <td>
@@ -134,5 +130,4 @@ $result = execute_sql($sql);
 ?>
 
 </table>
-<br /><br />
-<?php displayAdminBack(); ?>
+<br><br>

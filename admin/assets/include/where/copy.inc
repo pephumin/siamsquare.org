@@ -44,7 +44,7 @@ if($_SESSION['acl']['superuser'] == 'Y') {
 $result = execute_sql($sql);
 
 echo "<h2>Copy survey</h2>\n";
-echo "<br />\n";
+echo "<br>\n";
 echo "<p>Choose a survey of which to make a copy. The copy will have the same status of a newly created survey. You will be able to edit the survey, and will have to activate it before use.</p>\n";
 echo "<table class=\"table table-hover\">\n";
 echo "  <tr class=\"active\">\n";
@@ -72,8 +72,7 @@ while(list($sid,$name,$title,$status,$owner,$realm) = fetch_row($result)) {
 db_close($result);
 
 echo "</table>\n";
-echo "<br /><br />\n\n";
+echo "<br><br>\n\n";
 
-displayAdminBack();
 
 ?>

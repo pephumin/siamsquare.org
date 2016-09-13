@@ -103,7 +103,7 @@ echo "<h2>Designing a survey</h2>\n";
 
 if (!empty($errstr)) { echo(mkerror($errstr)); }
 
-echo "<br />\n";
+echo "<br>\n";
 
 displayTabNav();
 
@@ -131,7 +131,5 @@ echo "  <li><i class=\"pe-li pe-check-square\"></i>Setting questionf flow on the
 echo "  <li><i class=\"pe-li pe-check-square\"></i>You may see a preview of your survey at any time, by going to the <strong>Preview</strong> tab.\n";
 echo "  <li><i class=\"pe-li pe-check-square\"></i>Click <strong>Finish</strong> when it is done and go back to the Management Interface.\n";
 echo "</ul>\n\n";
-
-displayAdminBack();
 
 ?>

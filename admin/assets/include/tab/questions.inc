@@ -82,12 +82,12 @@ db_close($result);
 
 ?>
 </select>
-<br />
+<br>
 
 <input class="btn btn-default btn-sm" type="submit" name="edit_question" value="Edit Question" />
 <input class="btn btn-default btn-sm" type="submit" name="new_question" value="New Question" />
 
-<br /><br />
+<br><br>
 
 <?php
 if(!$curr_q) { echo "<p><mark>Add a new question</mark></p>\n"; }
@@ -154,7 +154,7 @@ else { echo "<p><mark>Edit a question</mark></p>\n"; }
   </tr>
 </table>
 
-<br />
+<br>
 
 <?php
 if ($_POST['type_id'] == 7 || $_POST['type_id'] == 8 || $_POST['type_id'] == 9) {

@@ -35,7 +35,7 @@ $stats = stat_fetch_with_summary();
 // show them
 echo "<h2>View survey statistics</h2>\n";
 echo "<p>Various access statistics for your active and done surveys.</p>\n";
-echo "<br />\n";
+echo "<br>\n";
 echo "<input type=\"hidden\" name=\"where\" value=\"statistics\" />\n";
 if (0 < count($stats)) {
     echo "<table class=\"table table-hover\">\n";
@@ -77,6 +77,5 @@ if (0 < count($stats)) {
     echo "You have no active or done surveys. Check back later.";
 }
 //echo '</div>';
-echo '<br /><br />';
-displayAdminBack();
+echo '<br><br>';
 ?>

@@ -25,33 +25,33 @@ function validate() {
 }
 </script>
 
-<br />
+<br>
 
 <h4>Completion the survey design</h4>
 
 <p>You have completed this survey design.</p>
 
-<p><i class="fa fa-check-square-o fa-4x"></i></p>
+<p><i class="pe-check-square-o pe-4x"></i></p>
 
-<br />
+<br>
 
 <p>To insert this survey into your web page, copy the text below, and paste it into the HTML of your page.</p>
 
 <p><code>&lt;?php $sid=<?php echo($_SESSION['survey_id']); ?>; include("<?php echo($ESPCONFIG['handler']); ?>");?&gt;</code></p>
 
-<br />
+<br>
 
 <p>Before activation, you can access the test link by following the below process.</p>
 
 <ul>
-<li>Change survey status from Editing to Testing by using this link: <code><?php echo($admin."?where=status&op=t&sid=".$_SESSION['survey_id']); ?></code> <a href="<?php echo($admin."?where=status&op=t&sid=".$_SESSION['survey_id']); ?>" target="_blank"><i class="fa fa-external-link fa-fw"></i></a></li>
-<li>Test link with this URL: <code><?php echo($page."?&test=1&name=".$survey_name); ?></code> <a href="<?php echo($page."?&test=1&name=".$survey_name); ?>" target="_blank"><i class="fa fa-external-link fa-fw"></i></a></li>
+<li>Change survey status from Editing to Testing by using this link: <code><?php echo($admin."?where=status&op=t&sid=".$_SESSION['survey_id']); ?></code> <a href="<?php echo($admin."?where=status&op=t&sid=".$_SESSION['survey_id']); ?>" target="_blank"><i class="pe-external-link pe-fw"></i></a></li>
+<li>Test link with this URL: <code><?php echo($page."?&test=1&name=".$survey_name); ?></code> <a href="<?php echo($page."?&test=1&name=".$survey_name); ?>" target="_blank"><i class="pe-external-link pe-fw"></i></a></li>
 </ul>
 
-<br />
+<br>
 
 <p>Once activated you can also access the survey directly from the following URL.</p>
 
-<p><code><?php echo($page."?name=".$survey_name); ?></code> <a href="<?php echo($page."?name=".$survey_name); ?>" target="_blank"><i class="fa fa-external-link fa-fw"></i></a></p>
+<p><code><?php echo($page."?name=".$survey_name); ?></code> <a href="<?php echo($page."?name=".$survey_name); ?>" target="_blank"><i class="pe-external-link pe-fw"></i></a></p>
 
 <p>You must activate this survey before you can collect results. Once a survey is active, you may no longer make any changes to it. You may activate this survey by choosing <b>Change the Status of an Existing Survey</b> from the Management Interface.</p>

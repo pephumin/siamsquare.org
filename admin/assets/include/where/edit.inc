@@ -15,9 +15,9 @@ if($_SESSION['acl']['superuser'] == 'Y') {
 $result = execute_sql($sql);
 
 echo "<h2>Edit a Survey</h2>\n";
-echo "<br />\n";
+echo "<br>\n";
 echo "<p>Pick Survey to Edit</p>\n";
-echo "<br />\n\n";
+echo "<br>\n\n";
 echo "<table class=\"table table-hover\">\n";
 echo "  <tr class=\"active\">\n";
 echo "    <th>Title</th>\n";
@@ -39,7 +39,5 @@ while(list($sid,$name,$title,$owner,$realm) = fetch_row($result)) {
 }
 db_close($result);
 echo "</table>\n";
-echo "<br />\n";
-displayAdminBack();
-
+echo "<br><br>\n\n";
 ?>

@@ -37,13 +37,13 @@ function validate() {
 <input type="hidden" name="where" value="tab" />
 <input type="hidden" name="old_tab" value="preview" />
 
-<hr />
+<hr>
 
-<?php 
+<?php
 
 $preview = 1;
 
-survey_render($sid,$_POST['section']); 
+survey_render($sid,$_POST['section']);
 
 if($num_sections > 1) {
 
@@ -52,11 +52,11 @@ if($num_sections > 1) {
   for($a=0; $a < $num_sections; $a++) {
     $b = $a + 1;
     if ($b == $_POST['section']) {
-     echo "    <li class=\"disabled\"><input class=\"btn btn-sm btn-warning\" type=\"submit\" name=\"section\" value=\"$b\" /></li>\n"; 
+     echo "    <li class=\"disabled\"><input class=\"btn btn-sm btn-warning\" type=\"submit\" name=\"section\" value=\"$b\" /></li>\n";
    } else {
      echo "    <li><input class=\"btn btn-sm btn-default\" type=\"submit\" name=\"section\" value=\"$b\" /></li>\n";
    }
-    
+
   }
   echo "  </ul>\n";
   echo "</nav>\n\n";

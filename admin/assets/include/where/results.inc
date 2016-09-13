@@ -25,8 +25,7 @@ if (!empty($sid)) {
 
 ?>
 
-
-<br /><br />
+<br><br>
 
 <table class="table table-hover">
     <tr class="active"><td>
@@ -68,14 +67,12 @@ if (!empty($sid)) {
     <tr><td align="center">
 <input class="btn btn-default" type="reset" value="Reset" />
 <?php echo mksubmit('cross', 'Cross Tabulate'); ?>
-<br />
+<br>
 
 <?php } ?>
 
 </td></tr></table>
-<br /><br />
-
-<?php displayAdminBack(); ?>
+<br><br>
 
 <?php
     return;
@@ -110,7 +107,7 @@ if (empty($_GET['type'])) {
     }
     ?>
 
-<br /><br />
+<br><br>
 
 <table class="table table-hover">
     <tr class="active">
@@ -195,6 +192,4 @@ if (empty($_GET['type'])) {
     ?>
 
 </table>
-<br /><br />
-
-<?php displayAdminBack(); ?>
+<br><br>

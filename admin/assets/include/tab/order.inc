@@ -91,6 +91,6 @@ db_close($result);
 <input class="btn btn-sm" type="button" value="Up" onclick="javascript:move(this.form,true,'questions')" />&nbsp;
 <input class="btn btn-sm" type="button" value="Down" onclick="javascript:move(this.form, false, 'questions')">&nbsp;
 <input class="btn btn-sm" type="submit" name="addbreak" value="Add Section Break">&nbsp;
-<a class="btn btn-danger btn-sm" role="button" href="javascript:removeItem()"><i class="fa fa-trash"></i> Remove</a>
+<a class="btn btn-danger btn-sm" role="button" href="javascript:removeItem()"><i class="pe-trash"></i> Remove</a>
 
 <br /><br />

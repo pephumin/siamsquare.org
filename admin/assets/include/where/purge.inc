@@ -25,7 +25,7 @@ echo "<h2>Purge Surveys</h2>\n";
 
 echo "<p>This page is not directly on the main menu because it is dangerous. This <b>completely</b> removes everything about a survey from the database <b>forever</b>. All question info, general info, results, etc. are purged from the database. Do not do anything here that you are not completely certain about. There is no confirmation, there is no turning back.</p>\n";
 
-echo "<br />\n";
+echo "<br>\n";
 
 echo "<table class=\"table table-hover\">\n";
 echo "  <tr class=\"active\">\n";
@@ -67,8 +67,6 @@ $confirmText = "You are about to PERMANENTLY and IRREVOCABLY remove ALL informat
 
 echo "<input class=\"btn btn-danger\" type=\"submit\" name=\"submit\" onclick='return confirm(\"You are about to PERMANENTLY and IRREVOCABLY remove ALL information about the selected surveys. Click Ok if you are absolutely sure this is what you want to do.\")' onkeypress='return confirm (\"You are about to PERMANENTLY and IRREVOCABLY remove ALL information about the selected surveys. Click Ok if you are absolutely sure this is what you want to do.\");' value=\"Delete data\" />\n";
 
-echo "<br /><br />\n";
-
-displayAdminBack();
+echo "<br><br>\n\n";
 
 ?>
