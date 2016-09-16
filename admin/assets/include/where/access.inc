@@ -119,7 +119,7 @@ if ($sid) {
 </ul>
 
 <p><b>Note:</b> You must use <code>handler-prefix.php</code> & <code>handler.php</code> when using private surveys.</p>
-<br />
+<br>
 
 <?php if ($sid) { ?>
 
@@ -152,7 +152,7 @@ if ($sid) {
     </tr>
   </table>
 
-  <br />
+  <br>
 
   <h4>Managing access</h4>
 
@@ -189,9 +189,7 @@ if ($sid) {
       <td class="text-center"><input type="submit" value="Add" class="btn btn-success btn-sm"></td>
     </tr>
   </table>
-  <br /><br />
-
-<?php displayAdminBack(); ?>
+  <br><br>
 
 <?php
   return;
@@ -244,6 +242,4 @@ while(list($sid,$name,$title,$owner,$realm,$public) = fetch_row($result)) {
 ?>
 
 </table>
-<br /><br />
-
-<?php displayAdminBack(); ?>
+<br><br>

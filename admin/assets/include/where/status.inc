@@ -84,16 +84,15 @@ if(!empty($_GET['op'])) {
 }
 
 echo "<h2>Survey status</h2>\n";
-echo "<br />\n";
+echo "<br>\n";
 echo "<ul class=\"pe-ul\">\n";
 echo "  <li><i class=\"pe-li pe-check-square\"></i><strong>Test</strong> transitions a survey into testing mode. At which point you may perform a live test by taking the survey, and viewing the results. The survey may be switched back into <strong>Edit</strong> mode if additional edits are needed.</li>\n";
 echo "  <li><i class=\"pe-li pe-check-square\"></i><strong>Activate</strong> transitions a survey into active mode. In this mode the survey is open for production use, and may be put online. This will clear any results from testing mode (if any). No further editing of survey is allowed.</li>\n";
 echo "  <li><i class=\"pe-li pe-check-square\"></i><strong>End</strong> transitions a survey into ended mode. In this mode, <u>no edits are possible</u>, no users may take the survey (it is inactive), but results are still viewable from the results menu.</li>\n";
 echo "  <li><i class=\"pe-li pe-check-square\"></i><strong>Archive</strong> removes this survey. It is still stored in the database, but no further interaction is allowed. You may <b>not</b> view the results of an archived survey.</li>\n";
 echo "</ul>\n";
-echo "<br />\n";
+echo "<br>\n";
 
 survey_status(0,10,$p);
-displayAdminBack();
 
 ?>

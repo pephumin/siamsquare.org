@@ -40,17 +40,6 @@ $ESPCONFIG['auth_mode'] = 'form'; // { 'basic', 'form' }
 $ESPCONFIG['auth_design'] = true;
 $ESPCONFIG['auth_response'] = true;
 $ESPCONFIG['auth_type'] = 'default'; // { 'default', 'ldap_both', 'ldap_resp', 'ldap_des' }
-// $ESPCONFIG['ldap_server'] = 'ldap://ldap.example.com';
-// $ESPCONFIG['ldap_port'] = '389';
-// $ESPCONFIG['ldap_bind_dn'] = '';
-// $ESPCONFIG['ldap_bind_password'] = '';
-// $ESPCONFIG['ldap_dn']     = 'dc=example, dc=com';
-// $ESPCONFIG['ldap_filter'] = 'uid=';
-// $ESPCONFIG['ldap_realm_attr'] = 'objectClass';
-// $ESPCONFIG['ldap_designer_filter'] = 'UserCategory=engineer';
-// $ESPCONFIG['ldap_superuser_attr'] = 'uid';
-// $ESPCONFIG['ldap_superuser_value'] = 'test';
-// $ESPCONFIG['ldap_force_proto_3'] = true;
 
 $ESPCONFIG['signup_realm'] = 'auto'; // set to NULL to disable the sign-up page (when use LDAP)
 
@@ -90,13 +79,12 @@ $ESPCONFIG['include_path'] = ESP_BASE . '/admin/assets/include';
 $ESPCONFIG['css_path'] = ESP_BASE . '/admin/assets/css'; // css path
 $ESPCONFIG['locale_path'] = ESP_BASE . '/locale'; // locale path
 
-$ESPCONFIG['image_url'] = $ESPCONFIG['base_url'] . '/images/'; // URL of the images directory (for <img src='...'> tags)
-$ESPCONFIG['favicon'] = $ESPCONFIG['base_url'] . '/images/favicon.ico'; // URL for favorite icon (optional)
+$ESPCONFIG['image_url'] = $ESPCONFIG['base_url'] . '/admin/images/'; // URL of the images directory (for <img src='...'> tags)
+$ESPCONFIG['favicon'] = $ESPCONFIG['base_url'] . '/admin/assets/icons/favicon.ico'; // URL for favorite icon (optional)
 $ESPCONFIG['autopub_url'] = $ESPCONFIG['base_url'] . '/public/survey.php'; // URL of the automatic survey publisher
 $ESPCONFIG['css_url'] = $ESPCONFIG['base_url'] . '/admin/assets/css'; // URL of the CSS directory (for themes)
 $ESPCONFIG['js_url'] = $ESPCONFIG['base_url'] . '/admin/assets/js'; //URL for management javascript
-// $ESPCONFIG['style_sheet'] = $ESPCONFIG['base_url'] . '/css/admin.css'; // CSS stylesheet to use for designer interface
-$ESPCONFIG['style_sheet'] = ESP_BASE . '/admin/assets/css/admin.css';
+$ESPCONFIG['style_sheet'] = $ESPCONFIG['base_url'] . '/admin/assets/css/admin.css'; // CSS stylesheet to use for designer interface
 
 $ESPCONFIG['ME'] = $server['PHP_SELF'];
 $ESPCONFIG['tabs'] = array('general', 'questions', 'order', 'conditions', 'preview', 'finish');

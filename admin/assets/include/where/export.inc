@@ -13,7 +13,7 @@ $page = $home."/public/survey.php?name=";
 
 <h2>Export survey data</h2>
 
-<br />
+<br>
 
 <table class="table table-hover">
 
@@ -88,7 +88,7 @@ if(!$sid) {
 ?>
 
 </table>
-<br />
+<br>
 
 <?php displayAdminBack(); ?>
 
@@ -164,7 +164,6 @@ if(!$sid) {
     echo(mkwarn('Error exporting survey as:' . " <tt>$file</tt>"));
   }
   echo("</td></tr></table>\n");
-  echo("<br />\n");
-  displayAdminBack();
+  echo("<br><br>\n\n");
 
 ?>

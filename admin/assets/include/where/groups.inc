@@ -51,7 +51,7 @@ $i = 0;
 <?php if(!empty($success)) echo(mksuccess($success)); ?>
 
 <input type="hidden" name="where" value="groups" />
-<br />
+<br>
 <table class="table table-hover">
   <tr>
     <th>Group</th>
@@ -94,5 +94,4 @@ $i = 0;
     <td class="text-center"><input class="btn btn-success btn-sm" type="submit" name="add" value="Add"/></td>
   </tr>
 </table>
-<br />
-<?php displayAdminBack(); ?>
+<br><br>

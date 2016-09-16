@@ -49,6 +49,12 @@ if($updated && $curr_q) {
 }
 ?>
 
+<h4>Add questions and answers to your survey</h4>
+
+<p>In ths section, you will be able to add new questions and answers as well as editing them. Translation should be inserted in this section as well. Remember you do not have to finish them in one-go. You can save and come back to update them anytime.</p>
+
+<br><br>
+
 <input type="hidden" name="id" value="<?php echo($curr_q); ?>" />
 
 <p>Edit this question, or click the number of the question you would like to edit:</p>
@@ -82,12 +88,12 @@ db_close($result);
 
 ?>
 </select>
-<br />
+<br>
 
 <input class="btn btn-default btn-sm" type="submit" name="edit_question" value="Edit Question" />
 <input class="btn btn-default btn-sm" type="submit" name="new_question" value="New Question" />
 
-<br /><br />
+<br><br>
 
 <?php
 if(!$curr_q) { echo "<p><mark>Add a new question</mark></p>\n"; }
@@ -154,7 +160,7 @@ else { echo "<p><mark>Edit a question</mark></p>\n"; }
   </tr>
 </table>
 
-<br />
+<br>
 
 <?php
 if ($_POST['type_id'] == 7 || $_POST['type_id'] == 8 || $_POST['type_id'] == 9) {

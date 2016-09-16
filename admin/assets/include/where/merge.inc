@@ -39,7 +39,7 @@ if(!empty($_REQUEST['sids'])) {
         echo("<span class=\"error\">$ret</span>\n");
 ?>
 </td></tr></table>
-<br /><br />
+<br><br>
 <?php displayAdminBack(); ?>
 <?php
     }
@@ -69,7 +69,7 @@ if(!empty($_REQUEST['sids'])) {
 <h2>Merge Survey Results</h2>
 
 <p>Pick Surveys to Merge</p>
-<br />
+<br>
 <form id="merge" action="<?php echo($GLOBALS['ESPCONFIG']['ME']) ?>?where=merge" method="post">
 
 <table class="table table-hover">
@@ -89,8 +89,8 @@ if(!empty($_REQUEST['sids'])) {
     </select>
     </td>
     <td>
-      <input class="btn btn-default" type="button" value="   &gt;&gt;   " onclick="move(this.form.list1,this.form.list2)" name="B1" /><br />
-      <input class="btn btn-default" type="button" value="   &lt;&lt;   " onclick="move(this.form.list2,this.form.list1)" name="B2" /><br />
+      <input class="btn btn-default" type="button" value="   &gt;&gt;   " onclick="move(this.form.list1,this.form.list2)" name="B1" /><br>
+      <input class="btn btn-default" type="button" value="   &lt;&lt;   " onclick="move(this.form.list2,this.form.list1)" name="B2" /><br>
       <input class="btn btn-default" type="button" value="Merge" onclick="merge(this.form.list2)" name="B3" />
         <input type="hidden" id="sids" name="sids" value="">
     </td>
@@ -100,5 +100,4 @@ if(!empty($_REQUEST['sids'])) {
     </td>
   </tr>
 </table>
-<br /><br />
-<?php displayAdminBack(); ?>
+<br><br>

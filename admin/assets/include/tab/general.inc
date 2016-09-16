@@ -15,7 +15,6 @@ if(!empty($sid) && $updated) {
 	$survey = fetch_row($result);
 	db_close($result);
 } else {
-	//$fields = array('name','realm','title','subtitle','email','theme','thanks_page','thank_head','thank_body','info','public','auto_num','open_date','close_date');
   $fields = array('name','owner','realm','public','status','open_date','close_date','title','email','subtitle','subtitle_th','info','info_th','theme','thanks_page','thank_head','thank_head_th','thank_body','thank_body_th','changed','auto_num');
    	foreach ($fields as $f) {
         if(!empty($_POST[$f])) { $survey[$f] = _stripslashes($_POST[$f]); }
@@ -39,7 +38,11 @@ function validate() {
 -->
 </script>
 
-<br /><br />
+<h4>Insert the important information about your survey</h4>
+
+<p>Please make sure you fill in all the required information in this page properly as they will be shown to respondents when they are invited to participate in your survey.</p>
+
+<br><br>
 
 <div class="form-group">
   <label class="col-sm-3 control-label"><strong>Project title</strong> <span class="label label-danger">required</span></label>
@@ -256,4 +259,4 @@ if(isset($_SESSION['acl']['superuser']) && $_SESSION['acl']['superuser'] == 'Y')
   </div>
 </div>
 
-<br />
+<br>

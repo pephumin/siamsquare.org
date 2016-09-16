@@ -81,7 +81,7 @@ $result = execute_sql($sql);
 
 <h2>Managing Designer Accounts</h2>
 
-<br />
+<br>
 
 <p><Click on a username to edit, or click on add new user below.</p>
 
@@ -90,7 +90,7 @@ $result = execute_sql($sql);
   <a class="btn btn-warning" href="<?php echo($base .htmlentities("?where=upload&account_type=designers")); ?>"><i class="pe-upload pe-fw"></i> Bulk upload designers</a>
 </p>
 
-<br />
+<br>
 
 <table class="table table-hover">
   <tr class="active">
@@ -128,5 +128,4 @@ $result = execute_sql($sql);
 ?>
 
 </table>
-<br />
-<?php displayAdminBack(); ?>
+<br><br>

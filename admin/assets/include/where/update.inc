@@ -16,24 +16,24 @@ $db_type=$ESPCONFIG['adodb_database_type'];
 if (version_compare($db_version,$new_version,"eq")) {
    echo(_('Update not needed'));
 } else {
-   echo (_('Updating')."<br />");
+   echo (_('Updating')."<br>");
    $result=set_dbschema();
    if (!$result) {
-      echo(mkerror(_('Update FAILED'))."<br />\n");
+      echo(mkerror(_('Update FAILED'))."<br>\n");
    } else {
-      echo (_('Update done')."<br />");
+      echo (_('Update done')."<br>");
    }
 
    // the schema is now ok, so we now update the version
    $sql="DELETE FROM ".$GLOBALS['ESPCONFIG']['version_table'];
    $result = execute_sql($sql);
    if (!$result) {
-      echo(mkerror(_('Version delete FAILED'))."<br />\n");
+      echo(mkerror(_('Version delete FAILED'))."<br>\n");
    }
    $sql="INSERT INTO ".$GLOBALS['ESPCONFIG']['version_table']." (versionid) VALUES ('$new_version')";
    $result = execute_sql($sql);
    if (!$result) {
-      echo(mkerror(_('Version update FAILED'))."<br />\n");
+      echo(mkerror(_('Version update FAILED'))."<br>\n");
    }
 } # end if (version_compare...
 } else {
@@ -46,18 +46,18 @@ if (version_compare($db_version,$new_version,"eq")) {
       echo (_('Update available'));
 ?>
 
-<br />
+<br>
 <form enctype="multipart/form-data" method="post" action="<?php echo ($GLOBALS['ESPCONFIG']['ME']); ?>?where=update">
 <input type="hidden" name="where" value="update" />
 <input type="hidden" name="action" value="showsql" />
-<br />
+<br>
 <input type="submit" value="<?php echo _('Show generated SQL'); ?>" name="submit" />
 </form>
 
 <form enctype="multipart/form-data" method="post" action="<?php echo ($GLOBALS['ESPCONFIG']['ME']); ?>?where=update">
 <input type="hidden" name="where" value="update" />
 <input type="hidden" name="action" value="update" />
-<br />
+<br>
 <input type="submit" value="<?php echo _('Update the DB'); ?>" name="submit" />
 </form>
 
@@ -65,7 +65,6 @@ if (version_compare($db_version,$new_version,"eq")) {
    }
 }
 
-echo("<br /><br />\n");
-displayAdminBack();
+echo("<br><br>\n\n");
 
 ?>

@@ -46,7 +46,7 @@ if(!empty($sid)) {
 
   $tt1 = htmlentities($base."?where=results&sid=".$sid)."&test=1";
   echo "<a href=\"&tt1\">View results</a>\n";
-  echo "<br /><br />\n";
+  echo "<br><br>\n";
   displayAdminBack();
   echo "<form>\n";
   db_close($result);
@@ -72,9 +72,9 @@ if($_SESSION['acl']['superuser'] == 'Y') {
 $result = execute_sql($sql);
 
 echo "<h2>Testing a survey</h2>\n";
-echo "<br />\n";
+echo "<br>\n";
 echo "<p>Pick a survey from the list below to test</p>\n";
-//echo "<br />\n\n";
+//echo "<br>\n\n";
 echo "<table class=\"table table-hover\">\n";
 echo "  <tr class=\"active\">\n";
 echo "    <th>Name</th>\n";
@@ -126,7 +126,6 @@ while(list($sid,$name,$title,$owner,$realm) = fetch_row($result)) {
 }
 
 echo "</table>\n\n";
-echo "<br /><br />\n";
-displayAdminBack();
+echo "<br><br>\n\n";
 
 ?>

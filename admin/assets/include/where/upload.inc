@@ -8,8 +8,6 @@ if(($_SESSION['acl']['superuser'] != 'Y' &&
     return;
 }
 
-//$bg1 =& $ESPCONFIG['bgalt_color1'];
-//$bg2 =& $ESPCONFIG['bgalt_color2'];
 if(isset($_GET['account_type'])) {
         $account_type = htmlspecialchars($_GET['account_type']);
 }
@@ -102,11 +100,10 @@ if(isset($_POST['submit'])) {
   }
 }
 ?>
-<div class="container">
 
 <h2>Upload Account Information</h2>
 
-<br />
+<br>
 
 <p>All fields are required</p>
 
@@ -133,7 +130,4 @@ if(isset($_POST['submit'])) {
 
 <?php if(!empty($exception_table)) echo("<p>$exception_table</p>\n"); ?>
 
-
-<br />
-<?php displayAdminBack(); ?>
-</div>
+<br>

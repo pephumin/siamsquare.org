@@ -38,3 +38,190 @@
 .label-blue
   @extend .label
   background-color: $blue
+
+.slabel
+  position: relative
+  // width: auto
+  // height: auto
+  // border: 1px solid $black
+
+  ul.superlabel
+    margin: 0
+    padding: 0
+    position: absolute
+    right: 24px
+    //bottom: -12px
+    list-style: none
+    li
+      float: left
+      height: 24px
+      line-height: 24px
+      position: relative
+      font-family: $eng3
+      font-size: 0.9rem
+      font-weight: bold
+    a
+      float: left
+      height: 24px
+      line-height: 24px
+      position: relative
+      font-family: $eng3
+      font-size: 0.9rem
+      font-weight: bold
+      margin-left: 20px
+      padding: 0 10px 0 12px
+      color: $white
+      text-decoration: none
+      -moz-border-radius-bottomright: 4px
+      -webkit-border-bottom-right-radius: 4px
+      border-bottom-right-radius: 4px
+      -moz-border-radius-topright: 4px
+      -webkit-border-top-right-radius: 4px
+      border-top-right-radius: 4px
+      &:before
+        content: ""
+        float: left
+        position: absolute
+        top: 0
+        left: -12px
+        width: 0
+        height: 0
+        border-style: solid
+        border-width: 12px 12px 12px 0
+      &:after
+        content: ""
+        position: absolute
+        top: 10px
+        left: 0
+        float: left
+        width: 4px
+        height: 4px
+        -moz-border-radius: 2px
+        -webkit-border-radius: 2px
+        border-radius: 2px
+        background: $white
+
+  ul.superlabel-blue
+    @extend ul.superlabel
+    a
+      background: $blue
+      &:before
+        border-color: transparent $blue transparent transparent
+      &:after
+        -webkit-box-shadow: -1px -1px 2px $lightgrey
+        -moz-box-shadow: -1px -1px 2px $lightgrey
+        -ms-box-shadow: -1px -1px 2px $lightgrey
+        -o-box-shadow: -1px -1px 2px $lightgrey
+        box-shadow: -1px -1px 2px $lightgrey
+      &:hover
+        background: $navy
+        &:before
+          border-color: transparent $navy transparent transparent
+
+  ul.superlabel-green
+    @extend ul.superlabel
+    a
+      background: $green
+      &:before
+        border-color: transparent $green transparent transparent
+      &:after
+        -webkit-box-shadow: -1px -1px 2px $lightgrey
+        -moz-box-shadow: -1px -1px 2px $lightgrey
+        -ms-box-shadow: -1px -1px 2px $lightgrey
+        -o-box-shadow: -1px -1px 2px $lightgrey
+        box-shadow: -1px -1px 2px $lightgrey
+      &:hover
+        background: $deepgreen
+        &:before
+          border-color: transparent $deepgreen transparent transparent
+
+  ul.superlabel-red
+    @extend ul.superlabel
+    a
+      background: $red
+      &:before
+        border-color: transparent $red transparent transparent
+      &:after
+        -webkit-box-shadow: -1px -1px 2px $lightgrey
+        -moz-box-shadow: -1px -1px 2px $lightgrey
+        -ms-box-shadow: -1px -1px 2px $lightgrey
+        -o-box-shadow: -1px -1px 2px $lightgrey
+        box-shadow: -1px -1px 2px $lightgrey
+      &:hover
+        background: $maroon
+        &:before
+          border-color: transparent $maroon transparent transparent
+
+// .radio
+//
+//   label
+//     padding-left: 0px
+//     cursor: pointer
+//     color: $grey
+//
+//     input[type="radio"]
+//       display: none
+//
+//       + .label-text:before
+//         font-family: "pe"
+//         content: "\f10c"
+//         speak: none
+//         line-height: 1
+//         -webkit-font-smoothing: antialiased
+//         width: 1em
+//         display: inline-block
+//         margin-right: 5px
+//
+//       &:checked + .label-text:before
+//         content: "\f192"
+//         color: $blue
+//         animation: checkboxing 180ms ease-in
+//
+//       &:disabled + .label-text
+//         color: $silver
+//
+//         &:before
+//           content: "\f111"
+//           color: $lightgrey
+
+.checkbox
+
+  label
+    padding-left: 0px
+    cursor: pointer
+    color: $grey
+
+    input[type="checkbox"]
+      display: none
+
+      + .label-text:before
+        font-family: "pe"
+        content: "\f096"
+        speak: none
+        line-height: 1
+        -webkit-font-smoothing: antialiased
+        width: 1em
+        display: inline-block
+        margin-right: 5px
+
+      &:checked + .label-text:before
+        content: "\f046"
+        color: $blue
+        animation: checkboxing 180ms ease-in
+
+      &:disabled + .label-text
+        color: $silver
+
+        &:before
+          content: "\f0c8"
+          color: $lightgrey
+
+@keyframes checkboxing
+  0%
+    transform: scale(0)
+
+  90%
+    transform: scale(1.4)
+
+  100%
+    transform: scale(1)

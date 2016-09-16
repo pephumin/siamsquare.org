@@ -255,7 +255,7 @@ if(!empty($u) && !empty($r)) {
 
 <?php if(!empty($errstr)) echo(mkerror($errstr)); ?>
 
-<br />
+<br>
 
 <form class="form-horizontal" method="post" id="phpesp" action="<?php echo($base); ?>">
   <div class="form-group">
@@ -416,5 +416,4 @@ if(!empty($u) && !empty($r)) {
   </div>
 </form>
 
-<br /><br />
-<?php displayAdminBack(); ?>
+<br><br>

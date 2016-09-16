@@ -18,7 +18,7 @@ else
   $num_choices = $c;
 ?>
 
-<p class="text-center"><input class="btn btn-success btn-sm" type="submit" value="Update" /></p><br />
+<p class="text-center"><input class="btn btn-success btn-sm" type="submit" value="Update" /></p><br>
 
 <p>Enter the possible answers (if applicable).</p>
 
@@ -28,7 +28,7 @@ else
 
 <p>The most common usage is <code>!other Other (please specify):</code> which can be applied for variety of question types.</p>
 
-<br />
+<br>
 
 <input type="hidden" id="num_choices" name="num_choices" value="<?php echo($num_choices); ?>" />
 
@@ -85,4 +85,4 @@ else
   <input class="btn btn-default btn-sm" type="submit" name="extra_choices" onclick="addAnswerLine()" value="Add another answer line" />
   <input class="btn btn-danger btn-sm" type="submit" name="clear" value="Clear all answers" onclick="clearTextInputs()" />
 </p>
-<br />
+<br>

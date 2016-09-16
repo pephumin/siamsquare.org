@@ -82,5 +82,4 @@ $result = execute_sql($sql);
   }
 ?>
 </table>
-<br /><br />
-<?php displayAdminBack(); ?>
+<br><br>

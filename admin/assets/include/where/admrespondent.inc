@@ -9,8 +9,6 @@ if($_SESSION['acl']['superuser'] != 'Y' &&
     return;
 }
 
-//$bg1 =& $ESPCONFIG['bgalt_color1'];
-//$bg2 =& $ESPCONFIG['bgalt_color2'];
 
 $errstr = '';
 $u = '';
@@ -215,7 +213,7 @@ if(!empty($u) && !empty($r)) {
 
 <?php if(!empty($errstr)) echo(mkerror($errstr)); ?>
 
-<br />
+<br>
 
 <div class="container">
 <form class="form-horizontal" method="post" id="phpesp" action="<?php echo($base); ?>">
@@ -335,5 +333,4 @@ if(!empty($u) && !empty($r)) {
 </form>
 </div>
 
-<br /><br />
-<?php displayAdminBack(); ?>
+<br><br>

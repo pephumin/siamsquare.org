@@ -11,6 +11,12 @@ if(empty($_POST['section'])) { $_POST['section'] = 1; }
 
 ?>
 
+<h4>Preview your survey</h4>
+
+<p>This is a preview of how this survey will look (from a view of respondents). Please make sure you use this preview as much as possible to ensure you have the best design after all.</p>
+
+<br><br>
+
 <script type="text/javascript">
 <!-- // Begin <?php // This should really go into <head> tag ?>
 
@@ -32,18 +38,15 @@ function validate() {
 // End -->
 </script>
 
-<p>This is a preview of how this survey will look (from a view of respondents). If you have no further changes, just click <b>Finish</b> to save this survey.</p>
 
 <input type="hidden" name="where" value="tab" />
 <input type="hidden" name="old_tab" value="preview" />
 
-<hr />
-
-<?php 
+<?php
 
 $preview = 1;
 
-survey_render($sid,$_POST['section']); 
+survey_render($sid,$_POST['section']);
 
 if($num_sections > 1) {
 
@@ -52,11 +55,11 @@ if($num_sections > 1) {
   for($a=0; $a < $num_sections; $a++) {
     $b = $a + 1;
     if ($b == $_POST['section']) {
-     echo "    <li class=\"disabled\"><input class=\"btn btn-sm btn-warning\" type=\"submit\" name=\"section\" value=\"$b\" /></li>\n"; 
+     echo "    <li class=\"disabled\"><input class=\"btn btn-sm btn-warning\" type=\"submit\" name=\"section\" value=\"$b\" /></li>\n";
    } else {
      echo "    <li><input class=\"btn btn-sm btn-default\" type=\"submit\" name=\"section\" value=\"$b\" /></li>\n";
    }
-    
+
   }
   echo "  </ul>\n";
   echo "</nav>\n\n";

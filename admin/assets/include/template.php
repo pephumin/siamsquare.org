@@ -65,7 +65,7 @@ function pageHeader($title) {
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="<?php echo $admin; ?>" title="PE BINARY CO., LTD.">Client Zone</a>
+            <a class="navbar-brand" href="<?php echo $admin; ?>" title="PE BINARY CO., LTD.">Restrict Area</a>
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
@@ -238,26 +238,33 @@ function displayTabNav() {
   global $tab;
   echo "<p>";
   echo '<input type="hidden" name="where" value="tab" />';
-  echo "&nbsp;\n";
-  if ($tab == 'general') { echo '<input type="submit" name="tab_general" value="General" class="btn btn-warning active btn-sm" />'; }
-  else { echo '<input type="submit" name="tab_general" value="General" class="btn btn-warning btn-sm" />'; }
-  echo "&nbsp;\n";
-  if ($tab == 'questions') { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-warning active btn-sm" />'; }
-  else { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-warning btn-sm" />'; }
-  echo "&nbsp;\n";
-  if ($tab == 'order') { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-warning active btn-sm" />'; }
-  else { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-warning btn-sm" />'; }
-  echo "&nbsp;\n";
-  if ($tab == 'conditions') { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-warning active btn-sm" />'; }
-  else { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-warning btn-sm" />'; }
-  echo "&nbsp;\n";
-  if ($tab == 'preview') { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-warning active btn-sm" />'; }
-  else { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-warning btn-sm" />'; }
-  echo "&nbsp;\n";
-  if ($tab == 'finish') { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-warning active btn-sm" />'; }
-  else { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-warning btn-sm" />'; }
-  echo "&nbsp;\n";
+  if ($tab == 'general') { echo '<input type="submit" name="tab_general" value="General" class="btn btn-default active btn-sm" />'; }
+  else { echo '<input type="submit" name="tab_general" value="General" class="btn btn-default btn-sm" />'; }
+  echo " <i class=\"pe-angle-double-right pe-fw\"></i>\n";
+  if ($tab == 'questions') { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-default active btn-sm" />'; }
+  else { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-default btn-sm" />'; }
+  echo " <i class=\"pe-angle-double-right pe-fw\"></i>\n";
+  if ($tab == 'order') { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-default active btn-sm" />'; }
+  else { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-default btn-sm" />'; }
+  echo " <i class=\"pe-angle-double-right pe-fw\"></i>\n";
+  if ($tab == 'conditions') { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-default active btn-sm" />'; }
+  else { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-default btn-sm" />'; }
+  echo " <i class=\"pe-angle-double-right pe-fw\"></i>\n";
+  if ($tab == 'preview') { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-default active btn-sm" />'; }
+  else { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-default btn-sm" />'; }
+  echo " <i class=\"pe-angle-double-right pe-fw\"></i>\n";
+  if ($tab == 'finish') { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-default active btn-sm" />'; }
+  else { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-default btn-sm" />'; }
   echo "</p>";
+  echo "<p class=\"text-muted\">";
+  if ($tab == 'general') { echo '<strong>General</strong> tab is all about survey information including title and other important descriptions'; }
+  elseif ($tab == 'questions') { echo '<strong>Questions</strong> tab is where individual survey questions and their answers are added and modified.'; }
+  elseif ($tab == 'order') { echo '<strong>Order</strong> tab is where the inserted questions can be rearranged/ reordered or even deleted'; }
+  elseif ($tab == 'conditions') { echo '<strong>Conditions</strong> tab is for setting a specific questionnaire flow or skipping routes based on an answer.'; }
+  elseif ($tab == 'preview') { echo '<strong>Preview</strong> tab shows how the questionnaire will look like. It is highly recommended to preview it as much as possible.'; }
+  elseif ($tab == 'finish') { echo '<strong>Finish</strong> tab is the final tab where everything is done and your survey is ready to move to the next step, Live.'; }
+  echo "</p><hr>";
+
 }
 
 function displayAdminBack() {

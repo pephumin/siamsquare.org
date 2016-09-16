@@ -14,7 +14,6 @@ if (file_exists(dirname(__FILE__) . '/../text/todo.txt')) {
     //var_dump(dirname(__FILE__));
 }
 
-echo "<br />\n";
-displayAdminBack();
+echo "<br><br>\n\n";
 
 ?>

@@ -1,17 +1,13 @@
 <?php
 
 $base =& $GLOBALS['ESPCONFIG']['ME'];
-$kt = htmlentities($base."?where=status");
+//$kt = htmlentities($base."?where=status");
 $show = 5;
 
-echo "<h2>Management Interface</h2>\n";
-//echo "<br />\n";
-echo "<h4>Last $show projects <small>(newer projects are on top of the list)</small></h4>\n";
+echo "<h2>Administrator overview</h2>\n";
+echo "<h4>Showing the recent $show projects</h4>\n";
 
 survey_status(0,$show,'');
-
-//echo "<div class=\"pull-right\">[<a href=\"$kt\">View the full list</a>]</div>\n";
-//echo "<br class=\"clearfix\"/>\n";
 
 $sql = 'SELECT id FROM '.$GLOBALS['ESPCONFIG']['survey_table'].' ORDER BY id DESC';
 $result = execute_sql($sql);
@@ -46,7 +42,6 @@ db_close($result);
     </div>
   </div>
 </div>
-
 <div class="row">
   <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
     <div class="panel panel-primary">
@@ -72,7 +67,7 @@ db_close($result);
       </div>
     </div>
   </div>
-  <?php if ($_SESSION['acl']['superuser'] == 'Y') { ?>
+<?php if ($_SESSION['acl']['superuser'] == 'Y') { ?>
   <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
     <div class="panel panel-primary">
       <h4 class="panel-heading">Section 4</h4>
@@ -84,6 +79,27 @@ db_close($result);
       </div>
     </div>
   </div>
-  <?php } ?>
+<?php } ?>
+</div>
 
+<div class="slabel">
+  <ul class="superlabel-blue">
+    <li><a href="#">oh yeah!</a></li>
+    <li><a href="#">testing with icon <i class="pe-paper-plane pe-fw"></i></a></li>
+  </ul>
+</div>
+<br><br>
+<div class="slabel">
+  <ul class="superlabel-green">
+    <li><a href="#">hello</a></li>
+    <li><a href="#">testing the longest sentence</a></li>
+    <li><a href="#">testing with icon <i class="pe-paper-plane pe-fw"></i></a></li>
+  </ul>
+</div>
+<br><br>
+<div class="slabel">
+  <ul class="superlabel-red">
+    <li><a href="#">CAPS</a></li>
+    <li><a href="#">oh yeah! <i class="pe-university pe-fw"></i></a></li>
+  </ul>
 </div>

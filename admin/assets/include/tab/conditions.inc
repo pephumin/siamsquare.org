@@ -1,6 +1,5 @@
 
 <input type="hidden" name="conditions" value="" />
-<br />
 
 <?php
 
@@ -15,42 +14,42 @@ $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['condition_table']." WHERE survey_
 $result = execute_sql($sql);
 
 if (record_count($result)) {
-   echo "<h4>Current conditions</h4>\n";
-   echo "<p>Below are the current conditions you have defined for this survey. You can add and delete as many conditions as needed.</p>\n";
-   echo "<table class=\"table table-hover\">\n";
-   $print_or = 0;
-   while( list($id, $tmp_sid, $qid1, $qid2, $cond, $cond_val) = fetch_row($result)) {
-     if ($print_or == 1) { echo "<tr><td>OR</td></tr>"; }
-     else { $print_or = 1; }
-     echo "<tr><td>\n";
-     echo "<p><strong>Only show:</strong> ";
-     $sql2 = "SELECT content FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE id=$qid1";
-     $result2=execute_sql($sql2);
-     list($content)=fetch_row($result2);
-         //$content=strip_tags($content);
-         //$dots = "";
-         //if (strlen($content) > 30) $dots = "...";
-         //print "'".substr($content,0, 30).$dots."' ";
-         echo $content;
-     echo "<br />\n";
-     echo "<strong>When an answer to question:</strong> ";
-     $sql2 = "SELECT content FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE id=$qid2";
-     $result2=execute_sql($sql2);
-     list($content)=fetch_row($result2);
-         //$content=strip_tags($content);
-         //$dots = "";
-         //if (strlen($content) > 30) $dots = "...";
-         //print "'".substr($content,0, 30).$dots."' ";
-         echo $content;
-     echo "</p><p><mark>\n";
-     echo $conditions[$cond]." '".$cond_val."'";
-     echo "</mark></p>\n";
-     $result->MoveNext();
-     print "</td><td class=\"text-center\">\n";
-     print "<input class=\"btn btn-danger btn-sm\" type=\"submit\" name=\"deletecondition[$id]\" value=\"Delete\" />\n";
-     print "</td></tr>\n";
-   }
-   print "</table><hr>\n\n";
+  echo "<h4>Current conditions</h4>\n";
+  echo "<p>Below are the current conditions you have defined for this survey. You can add and delete as many conditions as needed.</p>\n";
+  echo "<table class=\"table table-hover\">\n";
+  $print_or = 0;
+  while( list($id, $tmp_sid, $qid1, $qid2, $cond, $cond_val) = fetch_row($result)) {
+    if ($print_or == 1) { echo "<tr><td>OR</td></tr>"; }
+    else { $print_or = 1; }
+    echo "<tr><td>\n";
+    echo "<p><strong>Only show:</strong> ";
+    $sql2 = "SELECT content FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE id=$qid1";
+    $result2=execute_sql($sql2);
+    list($content)=fetch_row($result2);
+      //$content=strip_tags($content);
+      //$dots = "";
+      //if (strlen($content) > 30) $dots = "...";
+      //print "'".substr($content,0, 30).$dots."' ";
+      echo $content;
+    echo "<br>\n";
+    echo "<strong>When an answer to question:</strong> ";
+    $sql2 = "SELECT content FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE id=$qid2";
+    $result2=execute_sql($sql2);
+    list($content)=fetch_row($result2);
+      //$content=strip_tags($content);
+      //$dots = "";
+      //if (strlen($content) > 30) $dots = "...";
+      //print "'".substr($content,0, 30).$dots."' ";
+      echo $content;
+    echo "</p><p><mark>\n";
+    echo $conditions[$cond]." '".$cond_val."'";
+    echo "</mark></p>\n";
+    $result->MoveNext();
+    print "</td><td class=\"text-center\">\n";
+    print "<input class=\"btn btn-danger btn-sm\" type=\"submit\" name=\"deletecondition[$id]\" value=\"Delete\" />\n";
+    print "</td></tr>\n";
+  }
+  print "</table><hr>\n\n";
 }
 
 $sql = "SELECT id,type_id,position,content FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id=$sid AND deleted='N' ORDER BY position";
@@ -58,14 +57,16 @@ $result = execute_sql($sql);
 $max = record_count($result);
 ?>
 
+<h4>Adding specific conditions to your survey</h4>
 
-<h4>Adding conditions</h4>
+<p>You may want to add specific conditions to some questions e.g. skip if answer "no". In order to do that, you just simply select a certain question which will be displayed only when a cerain value has been answered from another question. These logic settings can be defined by using these two tables below.</p>
 
-<p>To add more conditions to this survey, you simply select a certain question which will be displayed only when a cerain value has been answered from another question. These logic settings can be defined by using these two tables below.</p>
+<br><br>
+
 
 <?php if ($max > 20) { $max = 20; } ?>
 
-<br />
+<br>
 
 <p><strong>Only show:</strong></p>
 <select name="q1_id" id="q1_id" size="<?php echo($max)?>" class="form-control">
@@ -91,7 +92,7 @@ while( list($qid, $tid, $pos, $content) = fetch_row($result)) {
 ?>
 </select>
 
-<br />
+<br>
 
 <p><strong>If an answer to question:</strong></p>
 <select name="q2_id" id="q2_id" size="<?php echo($max)?>" class="form-control">
@@ -120,7 +121,7 @@ if ($result) { db_close($result); }
 
 ?>
 </select>
-<br />
+<br>
 
 <div class="form-inline">
 <select name="cond" id="cond" class="form-control">
@@ -136,13 +137,13 @@ if ($result) { db_close($result); }
 <hr>
 
 <p class="text-muted">Some guidelines on using question conditioning:</p>
-<ul class="fa-ul">
-  <li class="text-muted"><i class="fa-li fa fa-check-square"></i>All conditions are "OR" conditions, so if one conditions is fullfilled, the question is shown.</li>
-  <li class="text-muted"><i class="fa-li fa fa-check-square"></i>A question that has a condition must be an optional question.</li>
-  <li class="text-muted"><i class="fa-li fa fa-check-square"></i>So, if you define a condition on a question, the "Required" parameter is set to "No".</li>
-  <li class="text-muted"><i class="fa-li fa fa-check-square"></i>A question that has a condition must be on the next page than the question/value that is used to compare it with.</li>
-  <li class="text-muted"><i class="fa-li fa fa-check-square"></i>Use the "Order tab" to insert a section break where wanted (this is <b>NOT</b> done automatically).</li>
-  <li class="text-muted"><i class="fa-li fa fa-check-square"></i>A Yes/No question can only be compared using the values "Yes or "No".</li>
+<ul class="pe-ul">
+  <li class="text-muted"><i class="pe-li pe-check-square"></i>All conditions are "OR" conditions, so if one conditions is fullfilled, the question is shown.</li>
+  <li class="text-muted"><i class="pe-li pe-check-square"></i>A question that has a condition must be an optional question.</li>
+  <li class="text-muted"><i class="pe-li pe-check-square"></i>So, if you define a condition on a question, the "Required" parameter is set to "No".</li>
+  <li class="text-muted"><i class="pe-li pe-check-square"></i>A question that has a condition must be on the next page than the question/value that is used to compare it with.</li>
+  <li class="text-muted"><i class="pe-li pe-check-square"></i>Use the "Order tab" to insert a section break where wanted (this is <b>NOT</b> done automatically).</li>
+  <li class="text-muted"><i class="pe-li pe-check-square"></i>A Yes/No question can only be compared using the values "Yes or "No".</li>
 </ul>
 
-<br />
+<br>
