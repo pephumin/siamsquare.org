@@ -18,7 +18,7 @@ Notification = function () {
         number = number + 1;
         var textHtml = '<div class="ntext">' + text + '</div>';
         var titleHtml = (!title ? '' : '<div class="ntitle">' + title + '</div>');
-        var imageHtml = (!image ? '' : '<div class="nimg"><img src="' + image + '" width="50" height="50" /></div>');
+        var imageHtml = (!image ? '' : '<div class="nimg"><img src="' + image + '" width="40" height="40" /></div>');
         var style;
         switch (parseInt(position, 10)) {
             case 1:
@@ -50,7 +50,7 @@ Notification = function () {
         number -= 1;
         setTimeout(function () {
             notification.remove();
-        }, 1000);
+        }, 2000);
     };
 
     var create = function (config) {
