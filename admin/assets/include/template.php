@@ -119,10 +119,9 @@ function pageHeader($title) {
 <?php } ?>
               <li><a href="<?php echo $admin; ?>/?where=logout"><i class="pe-sign-out pe-fw"></i> Log out</a></li>
 <?php } else { ?>
-              <li><a href="<?php echo $home; ?>"><i class="pe-home pe-fw"></i> Home</a></li>
               <li><a href="<?php echo $admin; ?>"><i class="pe-power-off pe-fw"></i> Log in</a></li>
-              <li><a href="<?php echo $admin; ?>?where=contact"><i class="pe-envelope-o pe-fw"></i> Contact</a></li>
-              <li><a href="<?php echo $admin; ?>?where=help"><i class="pe-question pe-fw"></i> Help</a></li>
+              <li><a href="<?php echo $admin; ?>?where=request"><i class="pe-bullhorn pe-fw"></i> Request for an access</a></li>
+              <li><a href="<?php echo $home; ?>"><i class="pe-undo pe-fw"></i> Back</a></li>
 <?php } ?>
             </ul>
           </div>
@@ -135,17 +134,17 @@ function pageHeader($title) {
 <?php
 }
 
-function dFoot() {
+function dFoot($message) {
 ?>
 <script>
   function windowOpener(title,msg) {
-    msgWindow=window.open("","displayWindow","menubar=no,alwaysRaised=yes,dependent=yes,width=600,height=500,scrollbars=yes,resizable=yes");
+    msgWindow = window.open("","displayWindow","menubar=no,alwaysRaised=yes,dependent=yes,width=600,height=500,scrollbars=yes,resizable=yes");
     msgWindow.document.write("<html><head><title>"+title+"</title></head>");
     msgWindow.document.write("<body>"+msg+"</body></html>");
   }
   function debugWindow () {
     title="Debug Window";
-    msg="<?php echo(addcslashes($str, "\0..\31\\\"")); ?>";
+    msg="<?php echo(addcslashes($message, "\0..\31\\\"")); ?>";
     windowOpener(title, msg);
   }
 </script>
@@ -171,7 +170,7 @@ function pageFooter($notes = null) {
             <li><a href="http://www.pebinary.com/about/privacy.html" title="Privacy policy" itemprop="url"><i class="pe-lock"></i> <span class="hidden-md hidden-lg" itemprop="name">Privacy</span><span class="hidden-xs hidden-sm" itemprop="name">Privacy policy</span></a>&nbsp;</li>
             <li><a href="http://www.pebinary.com/about/tos.html" title="Terms of services" itemprop="url"><i class="pe-gavel"></i> <span class="hidden-md hidden-lg" itemprop="name">TOS</span><span class="hidden-xs hidden-sm" itemprop="name">Terms of services</span></a>&nbsp;</li>
             <li><a href="http://www.pebinary.com/about/terms.html" title="Terms &amp; conditions" itemprop="url"><i class="pe-balance-scale"></i> <span class="hidden-md hidden-lg" itemprop="name">Terms</span><span class="hidden-xs hidden-sm" itemprop="name">Terms &amp; conditions</span></a>&nbsp;</li>
-            <li><a href="http://www.pebinary.com/" title="Back to the main website" itemprop="url"><i class="pe-arrow-circle-left"></i> <span class="hidden-md hidden-lg" itemprop="name">The main website</span><span class="hidden-xs hidden-sm" itemprop="name">Back to the main website</span></a>&nbsp;</li>
+            <li><a href="http://www.pebinary.com/" title="Visit our company website" itemprop="url"><i class="pe-arrow-circle-left"></i> <span class="hidden-md hidden-lg" itemprop="name">Our company</span><span class="hidden-xs hidden-sm" itemprop="name">Visit our company website</span></a>&nbsp;</li>
           </ul>
         </nav>
       </div>
@@ -200,11 +199,11 @@ function pageFooter($notes = null) {
 <script type="text/javascript" src="assets/js/tops.js"></script>
 <script type="text/javascript" src="assets/js/functions.js"></script>
 <script type="text/javascript">
-  var activateConfirmMsg="Warning! Once activated, this survey can no longer be edited. Any further changes must be done on a copy."
-  var cancelConfirmMsg="Warning! This survey has not been saved. Canceling now will remove any changes."
-  var mergeMsg="<h2>You must select at least two surveys before you can merge</h2>"
+  var activateConfirmMsg = "Warning! Once activated, this survey can no longer be edited. Any further changes must be done on a copy."
+  var cancelConfirmMsg = "Warning! This survey has not been saved. Canceling now will remove any changes."
+  var mergeMsg = "<h2>You must select at least two surveys before you can merge</h2>"
 </script>
-<?php dFoot(); ?>
+<?php dFoot($str); ?>
 <?php if ($notes) { notify($notes); } ?>
 </body>
 </html>

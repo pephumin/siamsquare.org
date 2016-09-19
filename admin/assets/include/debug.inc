@@ -30,12 +30,12 @@ foreach (array(
   }
 }
 
-$str = "<table>\n";
+$str = "<table class=\"table table-hover\">\n";
 foreach ($arr as $key) {
   if (is_array($key)) {
     $str .= '<tr><td bgcolor="#808080">' .
     htmlspecialchars($key[0]) . '</td>';
-    $str .= '<td bgcolor="#cccccc">' .
+    $str .= '<td bgcolor="#dddddd">' .
     @htmlspecialchars($key[1]) . "</td></tr>\n";
   } else {
       $str .= '<tr><th align="left" colspan="2" bgcolor="#808080">' .
@@ -45,5 +45,4 @@ foreach ($arr as $key) {
 $str .= "</table>\n";
 
 ?>
-
-<form id="debug" name="debug"><input class="btn btn-xs btn-danger" type="button" value="debug" onClick="debugWindow()"></form>
+        <form id="debug" name="debug"><input class="btn btn-xs btn-danger" type="button" value="debug" onClick="debugWindow()"></form>
