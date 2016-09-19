@@ -53,6 +53,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/template.php';
 pageHeader($title);
 include(esp_where($where));
 
+//echo "Last executed query was ". $db->getLastQuery();
+
 if ($notes) { pageFooter($notes); }
 else { pageFooter(); }
 
