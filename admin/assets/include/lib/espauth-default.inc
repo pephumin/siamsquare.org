@@ -150,7 +150,11 @@ function manage_auth($username, $password, $raw_password="") {
     $title = 'Authorisation';
     pageHeader($title);
     echo show_login(null, $error_message, null, 'Client Login');
-    pageFooter();
+    $notes = array (
+      array("title" => "Welcome, please login", "text" => "You need to login before you can proceed further with our system.", "image" => "assets/img/notification.svg")
+    );
+    //notify($notes);
+    pageFooter($notes);
     exit;
     return(false);
   }
