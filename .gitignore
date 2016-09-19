@@ -1,7 +1,8 @@
 .DS_Store
 README.md
-Icon?
+Icon'$'\r
 .sass-cache
 make
 min
 admin/_old
+admin/_db
