@@ -5,12 +5,13 @@ function logo() {
 }
 
 function pageHeader($title) {
-  $admin = "http://www.siamsquare.org/admin";
+  $home = "http://www.siamsquare.org/";
+  $admin = "http://www.siamsquare.org/admin/";
     $user = $_SESSION['acl']['username'];
     $group = $_SESSION['acl']['pgroup'];
     $g = $group[0];
     if ($g) { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd> <i class=\"pe-building pe-fw\"></i> <kbd>$g</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
-    if(!empty($_SESSION['acl']['username'])) { $signed = "Welcome  $show"; } else { $signed = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised login only"; }
+    if(!empty($_SESSION['acl']['username'])) { $signed = "Logged in as $show"; } else { $signed = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised login only"; }
   header("Content-language: en");
   header("Content-type: text/html; charset=utf-8");
 ?>
@@ -55,7 +56,7 @@ function pageHeader($title) {
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-2">
       <div class="container">
-        <h1><a href="/admin/" title="PE BINARY CO., LTD."><?php logo(); ?></a> <span class="sub-brand">Client</span></h1>
+        <h1><a href="<?php echo $admin; ?>" title="PE BINARY CO., LTD."><?php logo(); ?></a> <span class="sub-brand">Client</span></h1>
         <p class="description">A market research company specialised in mobile survey</p>
         <p class="thai-name"><i>บริษัท พีอี ไบนารี่ จำกัด</i></p>
       </div>
@@ -70,13 +71,13 @@ function pageHeader($title) {
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <span class="navbar-brand" title="PE BINARY CO., LTD."><?php echo $signed; ?></span>
+            <a href="<?php echo $admin; ?>" class="navbar-brand" title="PE BINARY CO., LTD."><?php echo $signed; ?></a>
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
 <?php if(!empty($_SESSION['acl']['username'])) { ?>
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-wpforms pe-fw"></i> My surveys <span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-wpforms pe-fw"></i> My surveys <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">Current surveys</li>
                   <li><a href="#"><i class="pe-paper-plane pe-fw"></i> Active</a></li>
@@ -89,38 +90,39 @@ function pageHeader($title) {
                   <li><a href="<?php echo $admin; ?>/?where=new"><i class="pe-file-o pe-fw"></i> New survey</a></li>
                 </ul>
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-graduation-cap pe-fw"></i> My team <span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-graduation-cap pe-fw"></i> My team <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">Team overview</li>
                   <li><a href="#"><i class="pe-user pe-fw"></i> My team</a></li>
                   <li role="separator" class="divider"></li>
                   <li class="dropdown-header">Manage your team</li>
-                  <li><a href="<?php echo $admin; ?>/?where=designers"><i class="pe-user-plus pe-fw"></i> Add a new user</a></li>
+                  <li><a href="<?php echo $admin; ?>?where=designers"><i class="pe-user-plus pe-fw"></i> Add a new user</a></li>
                   <li><a href="#"><i class="pe-cogs pe-fw"></i> Member permission</a></li>
                 </ul>
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-venus-mars pe-fw"></i> My profile <span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-venus-mars pe-fw"></i> My profile <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">Manage your profile</li>
-                  <li><a href="<?php echo $admin; ?>/?where=admdesigner"><i class="pe-cog pe-fw"></i> Change your info</a></li>
-                  <li><a href="<?php echo $admin; ?>/?where=passwd"><i class="pe-key pe-fw"></i> Change your password</a></li>
+                  <li><a href="<?php echo $admin; ?>?where=admdesigner"><i class="pe-cog pe-fw"></i> Change your info</a></li>
+                  <li><a href="<?php echo $admin; ?>?where=passwd"><i class="pe-key pe-fw"></i> Change your password</a></li>
                 </ul>
 <?php if ($_SESSION['acl']['superuser'] == 'Y') { ?>
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-unlock-alt pe-fw"></i> Superuser <span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-unlock-alt pe-fw"></i> Superuser <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">Special menu</li>
-                  <li><a href="<?php echo $admin; ?>/?where=purge"><i class="pe-trash-o pe-fw"></i> Delete a survey</a></li>
-                  <li><a href="<?php echo $admin; ?>/?where=response_purge"><i class="pe-recycle pe-fw"></i> Delete a response</a></li>
-                  <li><a href="<?php echo $admin; ?>/?where=groups"><i class="pe-database pe-fw"></i> Manage groups</a></li>
-                  <li><a href="<?php echo $admin; ?>/?where=guide"><i class="pe-list-alt pe-fw"></i> Admin guide</a></li>
+                  <li><a href="<?php echo $admin; ?>?where=purge"><i class="pe-trash-o pe-fw"></i> Delete a survey</a></li>
+                  <li><a href="<?php echo $admin; ?>?where=response_purge"><i class="pe-recycle pe-fw"></i> Delete a response</a></li>
+                  <li><a href="<?php echo $admin; ?>?where=groups"><i class="pe-database pe-fw"></i> Manage groups</a></li>
+                  <li><a href="<?php echo $admin; ?>?where=guide"><i class="pe-list-alt pe-fw"></i> Admin guide</a></li>
                 </ul>
 <?php } ?>
               <li><a href="<?php echo $admin; ?>/?where=logout"><i class="pe-sign-out pe-fw"></i> Log out</a></li>
 <?php } else { ?>
-              <li><a href="<?php echo $admin; ?>/?where=login"><i class="pe-power-off pe-fw"></i> Log in</a></li>
-              <li><a href="#"><i class="pe-envelope-o pe-fw"></i> Contact</a></li>
-              <li><a href="#"><i class="pe-question pe-fw"></i> Help</a></li>
+              <li><a href="<?php echo $home; ?>"><i class="pe-home pe-fw"></i> Home</a></li>
+              <li><a href="<?php echo $admin; ?>"><i class="pe-power-off pe-fw"></i> Log in</a></li>
+              <li><a href="<?php echo $admin; ?>?where=contact"><i class="pe-envelope-o pe-fw"></i> Contact</a></li>
+              <li><a href="<?php echo $admin; ?>?where=help"><i class="pe-question pe-fw"></i> Help</a></li>
 <?php } ?>
             </ul>
           </div>
@@ -130,6 +132,23 @@ function pageHeader($title) {
   </div>
 </header>
 <main class="container">
+<?php
+}
+
+function dFoot() {
+?>
+<script>
+  function windowOpener(title,msg) {
+    msgWindow=window.open("","displayWindow","menubar=no,alwaysRaised=yes,dependent=yes,width=600,height=500,scrollbars=yes,resizable=yes");
+    msgWindow.document.write("<html><head><title>"+title+"</title></head>");
+    msgWindow.document.write("<body>"+msg+"</body></html>");
+  }
+  function debugWindow () {
+    title="Debug Window";
+    msg="<?php echo(addcslashes($str, "\0..\31\\\"")); ?>";
+    windowOpener(title, msg);
+  }
+</script>
 <?php
 }
 
@@ -185,19 +204,8 @@ function pageFooter($notes = null) {
   var cancelConfirmMsg="Warning! This survey has not been saved. Canceling now will remove any changes."
   var mergeMsg="<h2>You must select at least two surveys before you can merge</h2>"
 </script>
-<?php
-if ($notes) {
-  notify($notes);
-}
-// $notes = array
-// (
-//   array("title" => "Title 1", "text" => "jQuery1 events and functions like in the example above.", "image" => "assets/img/notification.svg"),
-//   array("title" => "Title 2", "text" => "jQuery2 events and functions like in the example above.", "image" => "assets/img/notification.svg"),
-//   array("title" => "Title 3", "text" => "jQuery3 events and functions like in the example above.", "image" => "assets/img/notification.svg"),
-//   array("title" => "Title 4", "text" => "jQuery4 events and functions like in the example above.", "image" => "assets/img/notification.svg")
-// );
-// notify($notes);
-?>
+<?php dFoot(); ?>
+<?php if ($notes) { notify($notes); } ?>
 </body>
 </html>
 <?php
