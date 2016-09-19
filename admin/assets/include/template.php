@@ -6,6 +6,11 @@ function logo() {
 
 function pageHeader($title) {
   $admin = "http://www.siamsquare.org/admin";
+    $user = $_SESSION['acl']['username'];
+    $group = $_SESSION['acl']['pgroup'];
+    $g = $group[0];
+    if ($g) { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd> <i class=\"pe-building pe-fw\"></i> <kbd>$g</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
+    if(!empty($_SESSION['acl']['username'])) { $signed = "Welcome  $show"; } else { $signed = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised login only"; }
   header("Content-language: en");
   header("Content-type: text/html; charset=utf-8");
 ?>
@@ -45,7 +50,7 @@ function pageHeader($title) {
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-1">
       <div class="container">
-        <button class="btn btn-info btn-xs">hello</button>
+        <a href="https://www.pebinary.net" class="btn btn-info btn-xs"><i class="pe-book pe-fw"></i> NEED HELP?</a>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-2">
@@ -65,25 +70,58 @@ function pageHeader($title) {
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="<?php echo $admin; ?>" title="PE BINARY CO., LTD.">Restrict Area</a>
+            <span class="navbar-brand" title="PE BINARY CO., LTD."><?php echo $signed; ?></span>
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-<?php
-  if ($_SERVER['REQUEST_URI'] == "/admin") { $a = '<li class="active">'; } else { $a = '<li>'; }
-  if ($_SERVER['REQUEST_URI'] == "/admin/contact.php") { $b = '<li class="active">'; } else { $b = '<li>'; }
-  if ($_SERVER['REQUEST_URI'] == "/admin/help.php") { $c = '<li class="active">'; } else { $c = '<li>'; }
-  if(!empty($_SESSION['acl']['username'])) {
-    echo "              $a<a href=\"$admin\"><i class=\"pe-home pe-fw\"></i> Home</a></li>\n";
-    echo "              $b<a href=\"$admin/contact.php\"><i class=\"pe-envelope-o pe-fw\"></i> Contact</a></li>\n";
-    echo "              $c<a href=\"$admin/help.php\"><i class=\"pe-question pe-fw\"></i> Help</a></li>\n";
-    echo "              <li><a href=\"$admin/index.php?where=logout\"><i class=\"pe-sign-out pe-fw\"></i> Sign out</a></li>\n";
-  } else {
-    echo "              $a<a href=\"$admin\"><i class=\"pe-power-off pe-fw\"></i> Sign in</a></li>\n";
-    echo "              $b<a href=\"$admin/contact.php\"><i class=\"pe-envelope-o pe-fw\"></i> Contact</a></li>\n";
-    echo "              $c<a href=\"$admin/help.php\"><i class=\"pe-question pe-fw\"></i> Help</a></li>\n";
-  }
-?>
+<?php if(!empty($_SESSION['acl']['username'])) { ?>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-wpforms pe-fw"></i> My surveys <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li class="dropdown-header">Current surveys</li>
+                  <li><a href="#"><i class="pe-paper-plane pe-fw"></i> Active</a></li>
+                  <li><a href="#"><i class="pe-puzzle-piece pe-fw"></i> Non-active</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li class="dropdown-header">Past surveys</li>
+                  <li><a href="#"><i class="pe-archive pe-fw"></i> Archived</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li class="dropdown-header">Create a survey</li>
+                  <li><a href="<?php echo $admin; ?>/?where=new"><i class="pe-file-o pe-fw"></i> New survey</a></li>
+                </ul>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-graduation-cap pe-fw"></i> My team <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li class="dropdown-header">Team overview</li>
+                  <li><a href="#"><i class="pe-user pe-fw"></i> My team</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li class="dropdown-header">Manage your team</li>
+                  <li><a href="<?php echo $admin; ?>/?where=designers"><i class="pe-user-plus pe-fw"></i> Add a new user</a></li>
+                  <li><a href="#"><i class="pe-cogs pe-fw"></i> Member permission</a></li>
+                </ul>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-venus-mars pe-fw"></i> My profile <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li class="dropdown-header">Manage your profile</li>
+                  <li><a href="<?php echo $admin; ?>/?where=admdesigner"><i class="pe-cog pe-fw"></i> Change your info</a></li>
+                  <li><a href="<?php echo $admin; ?>/?where=passwd"><i class="pe-key pe-fw"></i> Change your password</a></li>
+                </ul>
+<?php if ($_SESSION['acl']['superuser'] == 'Y') { ?>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-unlock-alt pe-fw"></i> Superuser <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li class="dropdown-header">Special menu</li>
+                  <li><a href="<?php echo $admin; ?>/?where=purge"><i class="pe-trash-o pe-fw"></i> Delete a survey</a></li>
+                  <li><a href="<?php echo $admin; ?>/?where=response_purge"><i class="pe-recycle pe-fw"></i> Delete a response</a></li>
+                  <li><a href="<?php echo $admin; ?>/?where=groups"><i class="pe-database pe-fw"></i> Manage groups</a></li>
+                  <li><a href="<?php echo $admin; ?>/?where=guide"><i class="pe-list-alt pe-fw"></i> Admin guide</a></li>
+                </ul>
+<?php } ?>
+              <li><a href="<?php echo $admin; ?>/?where=logout"><i class="pe-sign-out pe-fw"></i> Log out</a></li>
+<?php } else { ?>
+              <li><a href="<?php echo $admin; ?>/?where=login"><i class="pe-power-off pe-fw"></i> Log in</a></li>
+              <li><a href="#"><i class="pe-envelope-o pe-fw"></i> Contact</a></li>
+              <li><a href="#"><i class="pe-question pe-fw"></i> Help</a></li>
+<?php } ?>
             </ul>
           </div>
         </div>
@@ -96,22 +134,13 @@ function pageHeader($title) {
 }
 
 function pageFooter($notes = null) {
-
-  $user = $_SESSION['acl']['username'];
-  $group = $_SESSION['acl']['pgroup'];
-  $g = $group[0];
-
-  if ($g) { $show = "<kbd>$user</kbd> (<kbd>$g</kbd>)"; } else { $show = "<kbd>$user</kbd>"; }
-
-  if(!empty($_SESSION['acl']['username'])) { $signed = "Signed in as <i class=\"pe-user pe-fw\"></i> $show"; } else { $signed = ""; }
-
 ?>
 </main>
 <footer>
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-1">
       <div class="container">
-        <p class="text-muted"><?php echo $signed; ?></p>
+        <p class="text-muted"></p>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-2">
