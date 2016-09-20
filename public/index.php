@@ -17,11 +17,17 @@
 */
 
 $_SERVER['BASE_PAGE'] = 'index.php';
-$title = "Respondent Section: Dashboard";
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
-//require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/fb/autoload.php';
+$title = "Respondent dashboard";
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/template.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/first.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/esphtml.forms.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espauth-default.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espauth.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espdatalib.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espsql.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espsurvey.inc';
+get_current_respondent($respondent);
 
 // survey status
 define('STATUS_NOT_STARTED', 'Not Started');
@@ -30,62 +36,17 @@ define('STATUS_SOME_PARTIAL', 'Some Finished, some incomplete');
 define('STATUS_FINISHED', 'Finished');
 define('FORMAT_OUTPUT_DATE', isset($ESPCONFIG['date_format'])?$ESPCONFIG['date_format']:'%Y-%m-%d');
 
-// ensure we are configured to want this page
-//if (! $GLOBALS['ESPCONFIG']['dashboard_enable']) {
-//    displayHeader($title);
-//    echo mkerror('Feature disabled; set dashboard_enable = true in your configuration to engage.');
-//    displayPageFooter();
-//    displayFooter();
-//    exit;
-//}
 
 // --------------------------------------------------------------------------------
 
-displayHeader($title);
-displayNav();
-//displayPageHeader();
-echo "<div class=\"container\">\n";
+pageHeader($title);
 handleLogin();
 handleLogout();
 handleChangeProfile();
 handleChangePassword();
-//handleHelp();
 if (is_session_authenticated()) { paint_authenticated(); }
 else { paint_non_authenticated(); }
-
-echo "<p><button class=\"btn btn-lg btn-default\">";
-logo();
-echo "</button></p>\n\n";
-
-echo "<p><button class=\"btn btn-lg btn-default\">";
-echo "<span class=\"logo1\">pe</span><span class=\"logo2\">b</span>";
-echo "</button></p>\n\n";
-
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/fbinit.php';
-
-//if (!isset($_SESSION['facebook'])) {
-//
-//	$login = $facebook->getLoginUrl();
-//	echo "<p><a href=\"$login\">Sign in with Facebook</a></p>\n";
-//
-//}
-
-$helper = $fb->getRedirectLoginHelper();
-$permissions = ['email', 'user_likes']; // optional
-$loginUrl = $helper->getLoginUrl('http://www.siamsquare.org/public/index.php', $permissions);
-
-echo '<a href="' . $loginUrl . '">Log in with Facebook!</a>';
-
-echo "<br /><br />\n\n";
-
-echo "<p><button class=\"btn btn-lg btn-default\">";
-echo "<ruby><span class=\"logo1\">pe</span><rt>พีอี</rt></ruby>";
-echo "<ruby><span class=\"logo2\">binary</span><rt>ไบนารี่</rt></ruby>\n";
-echo "</button></p>\n\n";
-
-
-
-displayFooter();
+if ($notes) { pageFooter($notes); } else { pageFooter(); }
 
 // --------------------------------------------------------------------------------
 

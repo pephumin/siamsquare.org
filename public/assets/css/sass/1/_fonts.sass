@@ -10,12 +10,9 @@ h1
 
 h2
   color: $black
-
-h2.en
-  @extend h2
-  font-family: $eng1
-  font-size: 1.9rem
-  letter-spacing: -0.1rem
+  font-family: $eng2 !important
+  font-size: 1.9rem !important
+  letter-spacing: -0.03rem
 
 h2.th
   @extend h2
@@ -24,17 +21,12 @@ h2.th
   letter-spacing: -0.03rem
 
 h3
-  color: $white
-  height: 40px
-  background-size: 100%
-  padding: 7px 0 10px 10px
-  background-image: linear-gradient(to right, $darkgreen, $white)
-
-h3.en
-  @extend h3
-  font-family: $eng1
-  font-size: 1.3rem
-  letter-spacing: -0.08rem
+  color: $black
+  font-family: $eng1 !important
+  font-size: 1.5rem !important
+  letter-spacing: -0.01rem
+  text-transform: uppercase
+  border-bottom: 1px dotted $darkgrey
 
 h3.th
   @extend h3
@@ -43,13 +35,9 @@ h3.th
   letter-spacing: -0.03rem
 
 h4
-  //text-transform: uppercase
   color: $darkgrey
-
-h4.en
-  @extend h4
-  font-family: $eng1
-  font-size: 1.2rem
+  font-family: $eng2 !important
+  font-size: 1.2rem !important
   letter-spacing: -0.03rem
 
 h4.th
@@ -61,11 +49,8 @@ h4.th
 h5
   text-transform: uppercase
   color: $grey
-
-h5.en
-  @extend h5
-  font-family: $eng1
-  font-size: 1.05rem
+  font-family: $eng1 !important
+  font-size: 1.05rem !important
   letter-spacing: -0.03rem
 
 h5.th
@@ -79,11 +64,8 @@ h6
   text-transform: uppercase
   padding: 0px 15px
   color: $darkgreen
-
-h6.en
-  @extend h6
-  font-family: $eng1
-  font-size: 1.0rem
+  font-family: $eng1 !important
+  font-size: 1.0rem !important
   letter-spacing: -0.03rem
 
 h6.th
@@ -94,11 +76,8 @@ h6.th
 
 p
   padding: auto 10px
-
-p.en
-  @extend p
-  font-family: $eng1
-  font-size: 1rem
+  font-family: $eng1 !important
+  font-size: 1rem !important
   letter-spacing: -0.03rem
 
 p.th
@@ -109,11 +88,8 @@ p.th
 
 p.lead
   color: $grey
-
-p.lead-en
-  @extend p.lead
-  font-family: $eng2
-  font-size: 1.3rem
+  font-family: $eng4 !important
+  font-size: 1.3rem !important
   letter-spacing: -0.01rem
 
 p.lead-th
@@ -125,11 +101,8 @@ p.lead-th
 blockquote
   margin: 0px 5px 20px 5px
   color: $darkgrey
-
-blockquote.en
-  @extend blockquote
-  font-family: $eng2
-  font-size: 1.25rem
+  font-family: $eng4 !important
+  font-size: 1.25rem !important
 
 blockquote.th
   @extend blockquote
@@ -139,7 +112,7 @@ blockquote.th
 h1, h2, h3, h4, h5, h6, p, blockquote
   line-height: 1.428571429
   // margin-top: 1.0rem
-  // margin-bottom: 1.5rem
+  margin-bottom: 1.7rem !important
 
 
 @media (max-width: 768px)
@@ -147,55 +120,49 @@ h1, h2, h3, h4, h5, h6, p, blockquote
   h1
     font-size: 1.55rem
 
-  h2.en
+  h2
     font-size: 1.7rem
 
   h2.th
     font-size: 1.9rem
 
-  h3.en
+  h3
     font-size: 1.1rem
 
   h3.th
     font-size: 1.25rem
 
-  h4.en
+  h4
     font-size: 1.0rem
 
   h4.th
     font-size: 1.2rem
 
-  h5.en
+  h5
     font-size: 0.9rem
 
   h5.th
     font-size: 1.15rem
 
-  h5.h5index-en
-    font-size: 1.05rem
-
-  h5.h5index-th
-    font-size: 1.3rem
-
-  h6.en
+  h6
     font-size: 0.85rem
 
   h6.th
     font-size: 0.95rem
 
-  p.en
+  p
     font-size: 0.8rem
 
   p.th
     font-size: 1.0rem
 
-  p.lead-en
+  p.lead
     font-size: 1.1rem
 
   p.lead-th
     font-size: 1.3rem
 
-  blockquote.en
+  blockquote
     font-size: 1.05rem
 
   blockquote.th

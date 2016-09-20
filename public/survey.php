@@ -1,11 +1,36 @@
 <?php
 
-//$results = 1; Making all results public 
+//$results = 1; Making all results public
 $_SERVER['BASE_PAGE'] = 'survey.php';
-$title = "Conduct a survey  ";
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
+$title = "Conduct a survey";
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/template.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/first.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espcross.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espauth-default.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espauth.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/esphtml.forms.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/esphtml.results.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espmerge.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espresponse.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espsql.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espdatalib.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espsurvey.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_copy.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_merge.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_purge.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_render.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_report.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_results.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_update.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_export_csv.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/account_upload.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/response_purge.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/question_render.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/question_conditioncheck.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/db_update.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/ssq.inc';
+
 
 $_name = '';
 $_title = '';
@@ -13,55 +38,52 @@ $_css = '';
 $sid = '';
 
 if (isset($_GET['name'])) {
-	$_name = _addslashes($_GET['name']);
-	unset($_GET['name']);
-	$_SERVER['QUERY_STRING'] = preg_replace('/(^|&)name=[^&]*&?/', '', $_SERVER['QUERY_STRING']);
+  $_name = _addslashes($_GET['name']);
+  unset($_GET['name']);
+  $_SERVER['QUERY_STRING'] = preg_replace('/(^|&)name=[^&]*&?/', '', $_SERVER['QUERY_STRING']);
 }
 
 if (isset($_POST['name'])) {
-    $_name = _addslashes($_POST['name']);
-    unset($_POST['name']);
+  $_name = _addslashes($_POST['name']);
+  unset($_POST['name']);
 }
 
 if (!empty($_name)) {
-    $_sql = "SELECT id,title,theme FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE name = $_name";
-    if ($_result = execute_sql($_sql)) {
-        if (record_count($_result) > 0) {
-            list($sid, $_title, $_css) = fetch_row($_result);
-        }
-        db_close($_result);
+  $_sql = "SELECT id,title,theme FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE name = $_name";
+  if ($_result = execute_sql($_sql)) {
+    if (record_count($_result) > 0) {
+      list($sid, $_title, $_css) = fetch_row($_result);
     }
-    unset($_sql);
-    unset($_result);
+    db_close($_result);
+  }
+  unset($_sql);
+  unset($_result);
 }
 
 if (empty($_name) && isset($sid) && $sid) {
-    $_sql = "SELECT title,theme FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id = '$sid'";
-    if ($_result = execute_sql($_sql)) {
-        if (record_count($_result) > 0) {
-            list($_title, $_css) = fetch_row($_result);
-        }
-        db_close($_result);
+  $_sql = "SELECT title,theme FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id = '$sid'";
+  if ($_result = execute_sql($_sql)) {
+    if (record_count($_result) > 0) {
+        list($_title, $_css) = fetch_row($_result);
     }
-    unset($_sql);
-    unset($_result);
+    db_close($_result);
+  }
+  unset($_sql);
+  unset($_result);
 }
 
 // call the handler-prefix once $sid is set to handle authentication / authorization
-//include $_SERVER['DOCUMENT_ROOT'] . '/public/include/handler-prefix.php';
+//include $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/handler-prefix.php';
 
 // --------------------------------------------------------------------------------
 
-displayHeader($title);
-displayNav();
-//displayPageHeader();
+pageHeader($title);
 echo "<div class=\"container\">\n";
 unset($_name);
 unset($_title);
-include $_SERVER['DOCUMENT_ROOT'] . '/public/include/handler.php';
-//if ($_SESSION['acl']['superuser'] == 'Y') { include $_SERVER['DOCUMENT_ROOT'] . '/admin/include/debug.php'; }
+include $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/handler.php';
 echo "</div>\n";
-displayFooter();
+if ($notes) { pageFooter($notes); } else { pageFooter(); }
 
 echo "<pre>";
 print_r($_POST);

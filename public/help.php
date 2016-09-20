@@ -2,57 +2,44 @@
 
 $_SERVER['BASE_PAGE'] = 'help.php';
 $title = "Help page";
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/template.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/first.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/esphtml.forms.inc';
 
-displayHeader($title, $scrollspy = 1);
-displayNav();
+pageHeader($title);
 
 ?>
 
 <div class="container">
 
 <h2 id="top">Survey Help System</h2>
-<br />
+<br>
 
 <div class="row">
   <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-    <nav id="ssqscrollspy" class="navbar" role="navigation">
     <p><a href="#overview">Overview</a></p>
-    <ul class="fa-ul">
-      <li><small><i class="fa-li fa fa-check-square"></i> <a href="#login">Logging in</a></small></li>
-      <li><small><i class="fa-li fa fa-check-square"></i> <a href="#signup">Signing up</a></small></li>
-      <li><small><i class="fa-li fa fa-check-square"></i> <a href="#loginhelp">Getting help</a></small></li>
-      <li><small><i class="fa-li fa fa-check-square"></i> <a href="#public">Public surveys</a></small></li>      
+    <ul class="pe-ul">
+      <li><small><i class="pe-li pe-check-square"></i> <a href="#login">Logging in</a></small></li>
+      <li><small><i class="pe-li pe-check-square"></i> <a href="#signup">Signing up</a></small></li>
+      <li><small><i class="pe-li pe-check-square"></i> <a href="#loginhelp">Getting help</a></small></li>
+      <li><small><i class="pe-li pe-check-square"></i> <a href="#public">Public surveys</a></small></li>
     </ul>
     <p><a href="#dashboard">Your dashboard</a></p>
-    <ul class="fa-ul">
-      <li><small><i class="fa-li fa fa-check-square"></i> <a href="#mysurveys">My surveys</a></small></li>
-      <li><small><i class="fa-li fa fa-check-square"></i> <a href="#myhistory">My history</a></small></li>
-      <li><small><i class="fa-li fa fa-check-square"></i> <a href="#mytools">My tools</a></small></li>
+    <ul class="pe-ul">
+      <li><small><i class="pe-li pe-check-square"></i> <a href="#mysurveys">My surveys</a></small></li>
+      <li><small><i class="pe-li pe-check-square"></i> <a href="#myhistory">My history</a></small></li>
+      <li><small><i class="pe-li pe-check-square"></i> <a href="#mytools">My tools</a></small></li>
     </ul>
     <p><a href="#complete">Completing surveys</a></p>
-    <ul class="fa-ul">
-      <li><small><i class="fa-li fa fa-check-square"></i> <a href="#save">Saving for later</a></small></li>
-      <li><small><i class="fa-li fa fa-check-square"></i> <a href="#submit">Submitting</a></small></li>
+    <ul class="pe-ul">
+      <li><small><i class="pe-li pe-check-square"></i> <a href="#save">Saving for later</a></small></li>
+      <li><small><i class="pe-li pe-check-square"></i> <a href="#submit">Submitting</a></small></li>
     </ul>
-    <!--
-    <p><a href="#topic10">Topic 10</a></p>
-    <ul class="fa-ul">
-      <li><small><i class="fa-li fa fa-check-square"></i> <a href="#topic1010">Topic 10.10</a></small></li>
-      <li><small><i class="fa-li fa fa-check-square"></i> <a href="#topic1020">Topic 10.20</a></small></li>
-      <li><small><i class="fa-li fa fa-check-square"></i> <a href="#topic1030">Topic 10.30</a></small></li>
-      <li><small><i class="fa-li fa fa-check-square"></i> <a href="#topic1040">Topic 10.40</a></small></li>
-      <li><small><i class="fa-li fa fa-check-square"></i> <a href="#topic1050">Topic 10.50</a></small></li>
-      <li><small><i class="fa-li fa fa-check-square"></i> <a href="#topic1060">Topic 10.60</a></small></li>
-    </ul>
-    -->
-  </nav>
   </div>
 
   <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
-    <h3 id="overview">Overview <small>(<a href="#top"><i class="fa fa-arrow-circle-up fa-lg"></i>&nbsp; Back to top</a>)</small></h3>
+    <h3 id="overview">Overview <small>(<a href="#top"><i class="pe-arrow-circle-up pe-lg"></i>&nbsp; Back to top</a>)</small></h3>
     <p>Welcome to our online survey system!</p>
     <p><?php echo $yourAdminIs; ?></p>
     <p>Let's get started.</p>
@@ -78,7 +65,7 @@ displayNav();
       <p>If your survey administrator has created public surveys (which do not require you to log in to take) and wants them to be shown, then they are available in the box labeled "Public Surveys."  Simply click on any of the links to take that survey.</p>
       <p>If you have an account, we recommend you log in before taking any public surveys. Once you log in, you will have the opportunity to take the public surveys.  By logging in first, your responses to the public survey will be identified as yours, which will then appear in your survey history (more on your survey history, below).</p>
 
-    <h3 id="dashboard">Your dashboard <small>(<a href="#top"><i class="fa fa-arrow-circle-up fa-lg"></i>&nbsp; Back to top</a>)</small></h3>
+    <h3 id="dashboard">Your dashboard <small>(<a href="#top"><i class="pe-arrow-circle-up pe-lg"></i>&nbsp; Back to top</a>)</small></h3>
     <p>After you log in, you'll see your dashboard:</p>
     <p><img src='/public/images/dashboard.png' alt='dashboard' title='The dashboard, your view into the online survey system' /></p>
 
@@ -106,7 +93,7 @@ displayNav();
         <li><u>E-mail support</u>: This tool opens up an email composition window directly to the survey administrator.</li>
       </ul>
 
-    <h3 id="complete">Completing surveys <small>(<a href="#top"><i class="fa fa-arrow-circle-up fa-lg"></i>&nbsp; Back to top</a>)</small></h3>
+    <h3 id="complete">Completing surveys <small>(<a href="#top"><i class="pe-arrow-circle-up pe-lg"></i>&nbsp; Back to top</a>)</small></h3>
     <p>Completing a survey is very easy: read the questions, top to bottom, and answer each.  Let's start with the basics:</p>
     <p><img src='/public/images/samplesurvey1.png' alt='sample survey, first page' title='The first page of a sample survey' /></p>
     <p>Every survey has a title.  In the image above, the title is "Sample Survey."  A survey may also have a sub-title and instructions, both of which are found below the title.</p>
@@ -130,15 +117,7 @@ displayNav();
       <p><strong>Please do not use your back button to return to the survey.</strong></p>
       <p>From the thank you page, you may return to your dashboard.</p>
 
-    <!--
-    <h3 id="topic10">Topic 10</h3>
-    <div>
-      <h3 id="topic1010">Topic 10.10</h3>
-      <p><a href="#top">Back to Top</a></p>
-    </div>
-    <p><a href="#top">Back to Top</a></p>
-    -->
   </div>
 </div>
 
-<?php displayFooter(); ?>
+<?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
