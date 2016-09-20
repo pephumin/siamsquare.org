@@ -14,11 +14,11 @@ Notification = function () {
     var incPosition = 0;
 
     var template = function (title, text, image, position) {
-        incPosition = number * 110;
+        incPosition = number * 90;
         number = number + 1;
         var textHtml = '<div class="ntext">' + text + '</div>';
         var titleHtml = (!title ? '' : '<div class="ntitle">' + title + '</div>');
-        var imageHtml = (!image ? '' : '<div class="nimg"><img src="' + image + '" width="50" height="50" /></div>');
+        var imageHtml = (!image ? '' : '<div class="nimg"><img src="' + image + '" width="40" height="40" /></div>');
         var style;
         switch (parseInt(position, 10)) {
             case 1:
@@ -46,11 +46,11 @@ Notification = function () {
     var hide = function (id, outAnimation) {
         var notification = $(document).find('.notification-' + id);
         notification.addClass(outAnimation);
-        $(document).find('.notification').css('top', '-=110px');
+        $(document).find('.notification').css('top', '-=90px');
         number -= 1;
         setTimeout(function () {
             notification.remove();
-        }, 3000);
+        }, 2000);
     };
 
     var create = function (config) {
@@ -58,7 +58,7 @@ Notification = function () {
         $(notification.content).addClass('animated ' + config.inAnimation).appendTo('body');
         setTimeout(function () {
             hide(notification.id, config.outAnimation);
-        }, config.delay * 1000 || 5000);
+        }, config.delay * 500 || 7000);
     };
 
     return create;
