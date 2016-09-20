@@ -176,10 +176,10 @@ foreach ($tables as $name => $fields) {
 }
 
 if (!$db->ping()) {
-  $message .= "db is not up";
+  $message .= "db is not up<br>";
   exit;
 } else {
-  $message .= "db is up";
+  $message .= "db is up<br>";
 }
 
 foreach ($data as $name => $datas) {
@@ -194,24 +194,15 @@ foreach ($data as $name => $datas) {
   }
 }
 
-$message .= "\ndata inserted\n";
+$message .= "data inserted<br>";
 
 
-
-$cols = Array ("id", "name", "value", "enable");
-$outputs = $db->get ("config", null, $cols);
-if ($db->count > 0)
-    foreach ($outputs as $o) {
-        print_r ($o);
-    }
-
-
-$db->where ("id", 1);
-$outputs = $db->getOne ("config");
-echo $outputs['id'];
+// $db->where ("id", 1);
+// $outputs = $db->getOne ("config");
+// $message .= $outputs['id'];
 
 $stats = $db->getOne ("config", "sum(id), count(*) as cnt");
-echo "total ".$stats['cnt']. "options in config found";
+$message .= "A total of ".$stats['cnt']." options in config found<br>";
 
 
 // $insert = Array(
@@ -242,7 +233,15 @@ $message .= "\n\n".$db->getLastQuery() ."\n". $db->getLastError();
 
 pageHeader("Testing DB");
 echo '<p>' . $message . '</p>';
-echo '<pre>PE';
+
+$cols = Array ("id", "name", "value", "enable");
+$outputs = $db->get ("config", null, $cols);
+if ($db->count > 0)
+  foreach ($outputs as $o) {
+    pretty_print($o);
+  }
+
+echo '<pre>';
 pretty_print($db->trace);
 echo '</pre>';
 echo "All done\n";
