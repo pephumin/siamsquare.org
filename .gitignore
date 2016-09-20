@@ -5,4 +5,4 @@ Icon'$'\r
 make
 min
 admin/_old
-admin/_db
+public/_old
