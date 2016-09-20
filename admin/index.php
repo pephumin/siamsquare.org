@@ -3,12 +3,15 @@
 $_SERVER['BASE_PAGE'] = 'index.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/config.php';
 
+if($_GET['p']) { $p = $_GET['p']; }
+if ($p == '') { $p = "1"; }
+
 if(!extension_loaded($ESPCONFIG['adodb_database_type'])) { echo('<b>FATAL: Mysql extension not loaded. Aborting.</b>'); exit; }
 esp_init_adodb();
 
 if(get_cfg_var('register_globals')) { $_SESSION['acl'] = &$acl; }
 
-$db_version = get_dbversion();
+// $db_version = get_dbversion();
 $where = '';
 
 if (version_compare($db_version,"0.0.0","eq")) { $where="install"; }
@@ -43,15 +46,16 @@ elseif($ESPCONFIG['auth_design']) {
 }
 
 if(empty($where) && isset($_REQUEST['where'])) { $where = $_REQUEST['where']; }
-if ($where == 'download') { include(esp_where($where)); exit; }
+// if ($where == 'download') { include(esp_where($where)); exit; }
 
 global $title;
-
-if (empty($title)) { $title = 'Administrator overview'; }
+if (empty($title)) { $title = 'Survey administration'; }
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/template.php';
 pageHeader($title);
 include(esp_where($where));
+
+//echo "Last executed query was ". $db->getLastQuery();
 
 if ($notes) { pageFooter($notes); }
 else { pageFooter(); }

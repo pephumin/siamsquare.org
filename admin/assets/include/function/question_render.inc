@@ -2,19 +2,19 @@
 
 //  proto bool question_render($question, int question_number)
 
-//    ID     Question type       Has choice?   Table
-//    1     'Single answer (SA)'  'Y'        'response_single'
-//    2     'Multiple answer (MA)'  'Y'        'response_multiple'
-//    3     'Open-end (short)'    'N'        'response_text'
-//    4    'Open-end (long)'    'N'        'response_text'
-//    5    'Rating scale'      'Y'        'response_rank'
-//    6     'Attribute rating'    'Y'        'response_rank'
-//    7     'Drop down'        'Y'        'response_single'
-//    8     'Date'          'N'        'response_date'
-//    9     'Numeric'        'N'        'response_text'
-//    10     'Others'        'N'        'response_text'
-//    99     'Page Break'      'N'        ''
-//    100   'Section Text'      'N'        ''
+//    ID     Question type       Has choice?    Table
+//    1     'Single answer (SA)'     'Y'        'response_single'
+//    2     'Multiple answer (MA)'   'Y'        'response_multiple'
+//    3     'Open-end (short)'       'N'        'response_text'
+//    4     'Open-end (long)'        'N'        'response_text'
+//    5     'Rating scale'           'Y'        'response_rank'
+//    6     'Attribute rating'       'Y'        'response_rank'
+//    7     'Drop down'              'Y'        'response_single'
+//    8     'Date'                   'N'        'response_date'
+//    9     'Numeric'                'N'        'response_text'
+//    10    'Others'                 'N'        'response_text'
+//    99    'Page Break'             'N'        ''
+//    100   'Section Text'           'N'        ''
 
 
 function question_render($question,$question_number,$auto_num,$on_one_line=0) {
@@ -53,7 +53,7 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
     else { echo "      <h4>".nl2br($question['content'])."</h4>\n"; }
     echo "    </div>\n";
     echo "  </div>\n\n";
-    echo "<br />\n";
+    echo "<br>\n";
     return;
   }
 
@@ -65,12 +65,12 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
     $msg = "คำตอบเดียว / Single answer";
     echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
     echo "    <div class=\"panel panel-default\">\n";
-    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname<br /><small>$msg</small></h4></div>\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
     echo "      <div class=\"panel-body clearfix\">\n";
     while($choice = fetch_row($choices_result)) {
       $choices_result->MoveNext();
-      if ($choice['content_th']) { echo "      <div class=\"radio\"><label>" . mkradio($qid,$choice['id']) . "<span class=\"label-text\">" . $choice['content_th'] . "</span></label></div>\n"; }
-      else { echo "      <div class=\"radio\"><label>" . mkradio($qid,$choice['id']) . "<span class=\"label-text\">" . $choice['content'] . "</span></label></div>\n"; }
+      if ($choice['content_th']) { echo "      <div class=\"radio\"><label>" . mkradio($qid,$choice['id']) . "<span class=\"cr\"><i class=\"cr-icon pe-check\"></i></span>" . $choice['content_th'] . "</label></div>\n"; }
+      else { echo "      <div class=\"radio\"><label>" . mkradio($qid,$choice['id']) . "<span class=\"cr\"><i class=\"cr-icon pe-check\"></i></span>" . $choice['content'] . "</label></div>\n"; }
     }
     $j=0;
     while($other = fetch_row($others_result)) {
@@ -83,10 +83,10 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
       else { $other_text = preg_replace(array("/^!others=/","/^!others/"), array('',''), $other['content']); }
       echo "      <div class=\"radio\"><label>" . mkradio($qid,"other_$cid");
       $cid = "${qid}_${cid}";
-          echo("<span class=\"label-text\">$other_text <input type=\"text\" name=\"$cid\" onKeyPress=\"other_check(this.name)\"");
+          echo("<span class=\"cr\"><i class=\"cr-icon pe-check\"></i></span>$other_text <input type=\"text\" name=\"$cid\" onKeyPress=\"other_check(this.name)\"");
           if (isset($_POST[$cid])) { echo(' value="'. _stripslashes(htmlspecialchars($_POST[$cid])) .'"'); echo(" />"); }
             $j++;
-            echo "</span></label></div>\n";
+            echo "</label></div>\n";
     }
     echo "      </div>\n";
     echo "    </div>\n";
@@ -98,12 +98,12 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
     $msg = "หลายคำตอบ / Multiple answer";
     echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
     echo "    <div class=\"panel panel-default\">\n";
-    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname<br /><small>$msg</small></h4></div>\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
     echo "      <div class=\"panel-body clearfix\">\n";
     while($choice = fetch_row($choices_result)) {
       $choices_result->MoveNext();
-      if ($choice['content_th']) { echo "      <div class=\"checkbox\"><label>" . mkcheckbox($qid,$choice['id']) . "<span class=\"label-text\">" . $choice['content_th'] . "</span></label></div>\n"; }
-      else { echo "      <div class=\"checkbox\"><label>" . mkcheckbox($qid,$choice['id']) . "<span class=\"label-text\">" . $choice['content'] . "</span></label></div>\n"; }
+      if ($choice['content_th']) { echo "      <div class=\"checkbox\"><label>" . mkcheckbox($qid,$choice['id']) . "<span class=\"cr\"><i class=\"cr-icon pe-check\"></i></span>" . $choice['content_th'] . "</label></div>\n"; }
+      else { echo "      <div class=\"checkbox\"><label>" . mkcheckbox($qid,$choice['id']) . "<span class=\"cr\"><i class=\"cr-icon pe-check\"></i></span>" . $choice['content'] . "</label></div>\n"; }
     }
     $j=0;
     while($other = fetch_row($others_result)) {
@@ -116,10 +116,10 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
       else { $other_text = preg_replace(array("/^!others=/","/^!others/"), array('',''), $other['content']); }
       echo "      <div class=\"checkbox\"><label>" . mkcheckbox($qid,"other_$cid");
           $cid = "${qid}_${cid}";
-          echo "<span class=\"label-text\">$other_text <input type=\"text\" name=\"$cid\" onKeyPress=\"other_check(this.name)\"";
+          echo "<span class=\"cr\"><i class=\"cr-icon pe-check\"></i></span>$other_text <input type=\"text\" name=\"$cid\" onKeyPress=\"other_check(this.name)\"";
           if (isset($_POST[$cid])) { echo(' value="'. _stripslashes(htmlspecialchars($_POST[$cid])) .'"'); echo(" />"); }
       $j++;
-      echo "</span></label></div>\n";
+      echo "</label></div>\n";
     }
     echo "      </div>\n";
     echo "    </div>\n";
@@ -131,7 +131,7 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
     $msg = "บันทึกคำตอบ / Fill in your answer";
     echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
     echo "    <div class=\"panel panel-default\">\n";
-    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname<br /><small>$msg</small></h4></div>\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
     echo "      <div class=\"panel-body clearfix\">\n";
     echo(mktext($qid, $size, $prec));
     echo "      </div>\n";
@@ -144,7 +144,7 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
     $msg = "บันทึกคำตอบ / Fill in your answer";
     echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
     echo "    <div class=\"panel panel-default\">\n";
-    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname<br /><small>$msg</small></h4></div>\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
     echo "      <div class=\"panel-body clearfix\">\n";
     echo(mktextarea($qid, $prec, $size, 'virtual'));
     echo "      </div>\n";
@@ -157,12 +157,12 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
     $msg = "คำตอบเดียว / Single answer";
     echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
     echo "    <div class=\"panel panel-default\">\n";
-    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname<br /><small>$msg</small></h4></div>\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
     echo "      <div class=\"panel-body clearfix\">\n";
     while($choice = fetch_row($choices_result)) {
       $choices_result->MoveNext();
-      if ($choice['content_th']) { echo "      <div class=\"radio\"><label>" . mkradio($qid,$choice['id']) . "<span class=\"label-text\">" .$choice['content_th']."</span></label></div>\n"; }
-      else { echo "      <div class=\"radio\"><label>" . mkradio($qid,$choice['id']) . "<span class=\"label-text\">" .$choice['content']."</span></label></div>\n"; }
+      if ($choice['content_th']) { echo "      <div class=\"radio\"><label>" . mkradio($qid,$choice['id']) . "<span class=\"cr\"><i class=\"cr-icon pe-check\"></i></span>" .$choice['content_th']."</label></div>\n"; }
+      else { echo "      <div class=\"radio\"><label>" . mkradio($qid,$choice['id']) . "<span class=\"cr\"><i class=\"cr-icon pe-check\"></i></span>" .$choice['content']."</label></div>\n"; }
     }
     echo "      </div>\n";
     echo "    </div>\n";
@@ -174,7 +174,7 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
     $msg = "คำตอบเดียว / Single answer";
     echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\" id=\"".$qid."\">\n";
     echo "    <div class=\"panel panel-default\">\n";
-    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname<br /><small>$msg</small></h4></div>\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
     echo "      <div class=\"panel-body clearfix\">\n";
     if ($size == '0') { $size = '5'; }
     echo "      <table class=\"table table-hover table-condensed\">\n";
@@ -182,10 +182,10 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
     echo "          <td>Attributes</td>\n";
     for ($j = 0; $j < $size; $j++) {
       $k = $j+1;
-      echo "          <td>".$k."</td>\n";
+      echo "          <td align=\"center\"><div class=\"radio\">".$k."</div></td>\n";
     }
     if ($prec) {
-      echo "          <td>N/A</td>\n";
+      echo "          <td align=\"center\"><div class=\"radio\">N/A</div></td>\n";
     }
     echo "        </tr>\n";
 
@@ -198,10 +198,10 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
       else { echo "          <td>".$choice['content']."</td>\n"; }
       for ($j = 0; $j < $size; $j++) {
         $k = $j+1;
-        echo "          <td>".mkradio($str,$k)."</td>\n";
+        echo "          <td align=\"center\"><div class=\"radio\"><label>".mkradio($str,$k)."<span class=\"cr\"><i class=\"cr-icon pe-check\"></i></span></label></div></td>\n";
       }
       if ($prec) {
-        echo "          <td>".mkradio($str,'-1')."</td>\n";
+        echo "          <td align=\"center\"><div class=\"radio\"><label>".mkradio($str,'-1')."<span class=\"cr\"><i class=\"cr-icon pe-check\"></i></span></label></div></td>\n";
       }
       echo "        </tr>\n";
     }
@@ -218,7 +218,7 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
     $msg = "คำตอบเดียว / Single answer";
     echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
     echo "    <div class=\"panel panel-default\">\n";
-    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname<br /><small>$msg</small></h4></div>\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
     echo "      <div class=\"panel-body clearfix\">\n";
     while($choice = fetch_row($choices_result)) {
       $choices_result->MoveNext();
@@ -243,7 +243,7 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
     $msg = "บันทึกคำตอบ / Fill in your answer";
     echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
     echo "    <div class=\"panel panel-default\">\n";
-    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname<br /><small>$msg</small></h4></div>\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
     echo "      <div class=\"panel-body clearfix\">\n";
     echo mktext($qid, 10, 10);
     echo "<em>(This format only: ". strftime ($GLOBALS['ESPCONFIG']['date_format'],strtotime("now")) .")</em>\n";
@@ -259,7 +259,7 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
     $msg = "บันทึกคำตอบ / Fill in your answer";
     echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
     echo "    <div class=\"panel panel-default\">\n";
-    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname<br /><small>$msg</small></h4></div>\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
     echo "      <div class=\"panel-body clearfix\">\n";
     $size++; // for sign
     if($prec) { $size += 1 + $prec; }
@@ -281,7 +281,7 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
     $msg = "บันทึกคำตอบ / Fill in your answer";
     echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
     echo "    <div class=\"panel panel-default\">\n";
-    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname<br /><small>$msg</small></h4></div>\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
     echo "      <div class=\"panel-body clearfix\">\n";
     echo(mktext($qid, $size, $prec));
     echo "      </div>\n";

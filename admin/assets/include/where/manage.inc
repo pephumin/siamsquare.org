@@ -2,12 +2,10 @@
 
 $base =& $GLOBALS['ESPCONFIG']['ME'];
 //$kt = htmlentities($base."?where=status");
-$show = 5;
 
-echo "<h2>Administrator overview</h2>\n";
-echo "<h4>Showing the recent $show projects</h4>\n";
-
-survey_status(0,$show,'');
+$show = 10;
+//survey_status(0,$show,'');
+survey_listing(0, $show, $p);
 
 $sql = 'SELECT id FROM '.$GLOBALS['ESPCONFIG']['survey_table'].' ORDER BY id DESC';
 $result = execute_sql($sql);
@@ -80,26 +78,4 @@ db_close($result);
     </div>
   </div>
 <?php } ?>
-</div>
-
-<div class="slabel">
-  <ul class="superlabel-blue">
-    <li><a href="#">oh yeah!</a></li>
-    <li><a href="#">testing with icon <i class="pe-paper-plane pe-fw"></i></a></li>
-  </ul>
-</div>
-<br><br>
-<div class="slabel">
-  <ul class="superlabel-green">
-    <li><a href="#">hello</a></li>
-    <li><a href="#">testing the longest sentence</a></li>
-    <li><a href="#">testing with icon <i class="pe-paper-plane pe-fw"></i></a></li>
-  </ul>
-</div>
-<br><br>
-<div class="slabel">
-  <ul class="superlabel-red">
-    <li><a href="#">CAPS</a></li>
-    <li><a href="#">oh yeah! <i class="pe-university pe-fw"></i></a></li>
-  </ul>
 </div>

@@ -5,7 +5,13 @@ function logo() {
 }
 
 function pageHeader($title) {
-  $admin = "http://www.siamsquare.org/admin";
+  $home = "http://www.siamsquare.org/";
+  $admin = "http://www.siamsquare.org/admin/";
+    $user = $_SESSION['acl']['username'];
+    $group = $_SESSION['acl']['pgroup'];
+    $g = $group[0];
+    if ($g) { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd> <i class=\"pe-building pe-fw\"></i> <kbd>$g</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
+    if(!empty($_SESSION['acl']['username'])) { $signed = "Logged in as $show"; } else { $signed = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised login only"; }
   header("Content-language: en");
   header("Content-type: text/html; charset=utf-8");
 ?>
@@ -45,12 +51,12 @@ function pageHeader($title) {
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-1">
       <div class="container">
-        <button class="btn btn-info btn-xs">hello</button>
+        <a href="https://www.pebinary.net" class="btn btn-info btn-xs"><i class="pe-book pe-fw"></i> NEED HELP?</a>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-2">
       <div class="container">
-        <h1><a href="/admin/" title="PE BINARY CO., LTD."><?php logo(); ?></a> <span class="sub-brand">Client</span></h1>
+        <h1><a href="<?php echo $admin; ?>" title="PE BINARY CO., LTD."><?php logo(); ?></a> <span class="sub-brand">Client</span></h1>
         <p class="description">A market research company specialised in mobile survey</p>
         <p class="thai-name"><i>บริษัท พีอี ไบนารี่ จำกัด</i></p>
       </div>
@@ -65,25 +71,58 @@ function pageHeader($title) {
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="<?php echo $admin; ?>" title="PE BINARY CO., LTD.">Restrict Area</a>
+            <a href="<?php echo $admin; ?>" class="navbar-brand" title="PE BINARY CO., LTD."><?php echo $signed; ?></a>
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-<?php
-  if ($_SERVER['REQUEST_URI'] == "/admin") { $a = '<li class="active">'; } else { $a = '<li>'; }
-  if ($_SERVER['REQUEST_URI'] == "/admin/contact.php") { $b = '<li class="active">'; } else { $b = '<li>'; }
-  if ($_SERVER['REQUEST_URI'] == "/admin/help.php") { $c = '<li class="active">'; } else { $c = '<li>'; }
-  if(!empty($_SESSION['acl']['username'])) {
-    echo "              $a<a href=\"$admin\"><i class=\"pe-home pe-fw\"></i> Home</a></li>\n";
-    echo "              $b<a href=\"$admin/contact.php\"><i class=\"pe-envelope-o pe-fw\"></i> Contact</a></li>\n";
-    echo "              $c<a href=\"$admin/help.php\"><i class=\"pe-question pe-fw\"></i> Help</a></li>\n";
-    echo "              <li><a href=\"$admin/index.php?where=logout\"><i class=\"pe-sign-out pe-fw\"></i> Sign out</a></li>\n";
-  } else {
-    echo "              $a<a href=\"$admin\"><i class=\"pe-power-off pe-fw\"></i> Sign in</a></li>\n";
-    echo "              $b<a href=\"$admin/contact.php\"><i class=\"pe-envelope-o pe-fw\"></i> Contact</a></li>\n";
-    echo "              $c<a href=\"$admin/help.php\"><i class=\"pe-question pe-fw\"></i> Help</a></li>\n";
-  }
-?>
+<?php if(!empty($_SESSION['acl']['username'])) { ?>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-wpforms pe-fw"></i> My surveys <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li class="dropdown-header">Current surveys</li>
+                  <li><a href="#"><i class="pe-paper-plane pe-fw"></i> Active</a></li>
+                  <li><a href="#"><i class="pe-puzzle-piece pe-fw"></i> Non-active</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li class="dropdown-header">Past surveys</li>
+                  <li><a href="#"><i class="pe-archive pe-fw"></i> Archived</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li class="dropdown-header">Create a survey</li>
+                  <li><a href="<?php echo $admin; ?>/?where=new"><i class="pe-file-o pe-fw"></i> New survey</a></li>
+                </ul>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-graduation-cap pe-fw"></i> My team <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li class="dropdown-header">Team overview</li>
+                  <li><a href="#"><i class="pe-user pe-fw"></i> My team</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li class="dropdown-header">Manage your team</li>
+                  <li><a href="<?php echo $admin; ?>?where=designers"><i class="pe-user-plus pe-fw"></i> Add a new user</a></li>
+                  <li><a href="#"><i class="pe-cogs pe-fw"></i> Member permission</a></li>
+                </ul>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-venus-mars pe-fw"></i> My profile <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li class="dropdown-header">Manage your profile</li>
+                  <li><a href="<?php echo $admin; ?>?where=admdesigner"><i class="pe-cog pe-fw"></i> Change your info</a></li>
+                  <li><a href="<?php echo $admin; ?>?where=passwd"><i class="pe-key pe-fw"></i> Change your password</a></li>
+                </ul>
+<?php if ($_SESSION['acl']['superuser'] == 'Y') { ?>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-unlock-alt pe-fw"></i> Superuser <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li class="dropdown-header">Special menu</li>
+                  <li><a href="<?php echo $admin; ?>?where=purge"><i class="pe-trash-o pe-fw"></i> Delete a survey</a></li>
+                  <li><a href="<?php echo $admin; ?>?where=response_purge"><i class="pe-recycle pe-fw"></i> Delete a response</a></li>
+                  <li><a href="<?php echo $admin; ?>?where=groups"><i class="pe-database pe-fw"></i> Manage groups</a></li>
+                  <li><a href="<?php echo $admin; ?>?where=guide"><i class="pe-list-alt pe-fw"></i> Admin guide</a></li>
+                </ul>
+<?php } ?>
+              <li><a href="<?php echo $admin; ?>/?where=logout"><i class="pe-sign-out pe-fw"></i> Log out</a></li>
+<?php } else { ?>
+              <li><a href="<?php echo $admin; ?>"><i class="pe-power-off pe-fw"></i> Log in</a></li>
+              <li><a href="<?php echo $admin; ?>?where=request"><i class="pe-bullhorn pe-fw"></i> Request for an access</a></li>
+              <li><a href="<?php echo $home; ?>"><i class="pe-undo pe-fw"></i> Back</a></li>
+<?php } ?>
             </ul>
           </div>
         </div>
@@ -95,23 +134,31 @@ function pageHeader($title) {
 <?php
 }
 
+function dFoot($message) {
+?>
+<script>
+  function windowOpener(title,msg) {
+    msgWindow = window.open("","displayWindow","menubar=no,alwaysRaised=yes,dependent=yes,width=600,height=500,scrollbars=yes,resizable=yes");
+    msgWindow.document.write("<html><head><title>"+title+"</title></head>");
+    msgWindow.document.write("<body>"+msg+"</body></html>");
+  }
+  function debugWindow () {
+    title="Debug Window";
+    msg="<?php echo(addcslashes($message, "\0..\31\\\"")); ?>";
+    windowOpener(title, msg);
+  }
+</script>
+<?php
+}
+
 function pageFooter($notes = null) {
-
-  $user = $_SESSION['acl']['username'];
-  $group = $_SESSION['acl']['pgroup'];
-  $g = $group[0];
-
-  if ($g) { $show = "<kbd>$user</kbd> (<kbd>$g</kbd>)"; } else { $show = "<kbd>$user</kbd>"; }
-
-  if(!empty($_SESSION['acl']['username'])) { $signed = "Signed in as <i class=\"pe-user pe-fw\"></i> $show"; } else { $signed = ""; }
-
 ?>
 </main>
 <footer>
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-1">
       <div class="container">
-        <p class="text-muted"><?php echo $signed; ?></p>
+        <p class="text-muted"></p>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-2">
@@ -123,7 +170,7 @@ function pageFooter($notes = null) {
             <li><a href="http://www.pebinary.com/about/privacy.html" title="Privacy policy" itemprop="url"><i class="pe-lock"></i> <span class="hidden-md hidden-lg" itemprop="name">Privacy</span><span class="hidden-xs hidden-sm" itemprop="name">Privacy policy</span></a>&nbsp;</li>
             <li><a href="http://www.pebinary.com/about/tos.html" title="Terms of services" itemprop="url"><i class="pe-gavel"></i> <span class="hidden-md hidden-lg" itemprop="name">TOS</span><span class="hidden-xs hidden-sm" itemprop="name">Terms of services</span></a>&nbsp;</li>
             <li><a href="http://www.pebinary.com/about/terms.html" title="Terms &amp; conditions" itemprop="url"><i class="pe-balance-scale"></i> <span class="hidden-md hidden-lg" itemprop="name">Terms</span><span class="hidden-xs hidden-sm" itemprop="name">Terms &amp; conditions</span></a>&nbsp;</li>
-            <li><a href="http://www.pebinary.com/" title="Back to the main website" itemprop="url"><i class="pe-arrow-circle-left"></i> <span class="hidden-md hidden-lg" itemprop="name">The main website</span><span class="hidden-xs hidden-sm" itemprop="name">Back to the main website</span></a>&nbsp;</li>
+            <li><a href="http://www.pebinary.com/" title="Visit our company website" itemprop="url"><i class="pe-arrow-circle-left"></i> <span class="hidden-md hidden-lg" itemprop="name">Our company</span><span class="hidden-xs hidden-sm" itemprop="name">Visit our company website</span></a>&nbsp;</li>
           </ul>
         </nav>
       </div>
@@ -152,23 +199,12 @@ function pageFooter($notes = null) {
 <script type="text/javascript" src="assets/js/tops.js"></script>
 <script type="text/javascript" src="assets/js/functions.js"></script>
 <script type="text/javascript">
-  var activateConfirmMsg="Warning! Once activated, this survey can no longer be edited. Any further changes must be done on a copy."
-  var cancelConfirmMsg="Warning! This survey has not been saved. Canceling now will remove any changes."
-  var mergeMsg="<h2>You must select at least two surveys before you can merge</h2>"
+  var activateConfirmMsg = "Warning! Once activated, this survey can no longer be edited. Any further changes must be done on a copy."
+  var cancelConfirmMsg = "Warning! This survey has not been saved. Canceling now will remove any changes."
+  var mergeMsg = "<h2>You must select at least two surveys before you can merge</h2>"
 </script>
-<?php
-if ($notes) {
-  notify($notes);
-}
-// $notes = array
-// (
-//   array("title" => "Title 1", "text" => "jQuery1 events and functions like in the example above.", "image" => "assets/img/notification.svg"),
-//   array("title" => "Title 2", "text" => "jQuery2 events and functions like in the example above.", "image" => "assets/img/notification.svg"),
-//   array("title" => "Title 3", "text" => "jQuery3 events and functions like in the example above.", "image" => "assets/img/notification.svg"),
-//   array("title" => "Title 4", "text" => "jQuery4 events and functions like in the example above.", "image" => "assets/img/notification.svg")
-// );
-// notify($notes);
-?>
+<?php dFoot($str); ?>
+<?php if ($notes) { notify($notes); } ?>
 </body>
 </html>
 <?php

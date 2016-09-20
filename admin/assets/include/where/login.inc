@@ -2,22 +2,28 @@
   <h2>Client login</h2>
   <p>This section is reserved only for our clients whom we have granted with a high level of secured access. Within this section you will be able to access to a highly confidential data such as questionnaire design, data collected from respondents, reports, etc. We carefully design our system to ensure such high important data is kept separately for different users or user groups.</p>
   <p>Should you need any support for accessing this section, please do not hesitate to contact our staff right away.</p>
-  <div class="form-group has-feedback">
+  <div class="form-group">
     <label for="username" class="col-sm-3 control-label">Username:</label>
-    <div class="col-sm-9">
-    <input type="text" name="username" id="username" class="form-control" placeholder="Username" />
+    <div class="col-sm-7">
+      <div class="input-group">
+        <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
+        <input type="text" name="username" id="username" class="form-control" placeholder="Login">
+      </div>
     </div>
   </div>
-  <div class="form-group has-feedback">
+  <div class="form-group">
     <label for="password" class="col-sm-3 control-label">Password:</label>
-    <div class="col-sm-9">
-    <input type="password" name="password" id="password" class="form-control" placeholder="Password">
+    <div class="col-sm-7">
+      <div class="input-group">
+        <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
+        <input type="password" name="password" id="password" class="form-control" placeholder="Password">
+      </div>
     </div>
   </div>
   <div class="form-group">
     <div class="col-sm-offset-3 col-sm-9">
       <div class="checkbox">
-      <label><input type="checkbox" checked> Remember me</label>
+      <label><input type="checkbox" checked><span class="cr"><i class="cr-icon pe-check"></i></span> Remember me</label>
       </div>
     </div>
   </div>

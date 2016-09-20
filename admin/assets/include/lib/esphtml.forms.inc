@@ -102,7 +102,7 @@ function make_element_attrs_from_array($attrs) {
 function show_login($_surveyname = null, $_message = null, $_css = null, $_title = "Client login") {
   $str = "";
   if ($_message) { $str .= mkerror($_message); }
-  $str .= file_get_contents( $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/login.inc');
+  $str .= file_get_contents( $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/where/login.inc');
   if ($_surveyname != "") { $str .= '<input type="hidden" name="surveyname" value="'."$_surveyname".'">'; }
   if ($_css != "") { $str .= '<input type="hidden" name="css" value="'."$_css".'">'; }
   $str .= "\n";

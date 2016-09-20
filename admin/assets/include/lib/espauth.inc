@@ -67,12 +67,12 @@ function change_profile($username, $realm, $firstName, $lastName, $emailAddress)
           SET fname = $_firstName, lname = $_lastName, email = $_emailAddress, changed = $changed
           WHERE username = $_username AND realm = $_realm";
   $res = execute_sql($sql);
-  if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); return true; }
+  $notes = array (array("title" => "Profile updated", "text" => "You have successfully updated your detailed profile.", "image" => "assets/img/notification.svg"));
+  if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); notify($notes); return true; }
   else { return false; }
 }
 
 function change_password($username, $realm, $password) {
-  // build the change SQL
   $_username = _addslashes($username);
   $_realm    = _addslashes($realm);
   $_password = db_crypt(_addslashes($password));
@@ -81,7 +81,8 @@ function change_password($username, $realm, $password) {
           SET password = $_password, changed =$changed
           WHERE username = $_username AND realm = $_realm";
   $res = execute_sql($sql);
-  if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); return true; }
+  $notes = array (array("title" => "Password changed", "text" => "You have successfully changed your password. Please keep it safe and secure.", "image" => "assets/img/notification.svg"));
+  if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); notify($notes); return true; }
   else { return false; }
 }
 

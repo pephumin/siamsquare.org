@@ -26,7 +26,7 @@ define('STATUS_OPEN',             0);
 define('STATUS_CLOSED_TOO_EARLY', 1);
 define('STATUS_CLOSED_TOO_LATE',  2);
 
-// survey inquisition 
+// survey inquisition
 // ... when you know the survey ID only, use these
 
 // ... when you already have information from the survey, use these
@@ -34,42 +34,42 @@ define('STATUS_CLOSED_TOO_LATE',  2);
 // Is the survey being edited?
 
 function survey_status_is_edit($status) {
-    return (is_numeric($status) && (0 === (int)$status) ? true : false);
+  return (is_numeric($status) && (0 === (int)$status) ? true : false);
 }
 
 // survey_status_is_active()
 // Is the survey in active status?
 
 function survey_status_is_active($status) {
-    return survey_status_is($status, STATUS_ACTIVE);
+  return survey_status_is($status, STATUS_ACTIVE);
 }
 
 // survey_status_is_done()
 // Is the survey in done status?
 
 function survey_status_is_done($status) {
-    return survey_status_is($status, STATUS_DONE);
+  return survey_status_is($status, STATUS_DONE);
 }
 
 //  survey_status_is_deleted()
 //  Is the survey in deleted status?
 
 function survey_status_is_deleted($status) {
-    return survey_status_is($status, STATUS_DELETED);
+  return survey_status_is($status, STATUS_DELETED);
 }
 
 //  survey_status_is_test()
 //  Is the survey in test status?
 
 function survey_status_is_test($status) {
-    return survey_status_is($status, STATUS_TEST);
+  return survey_status_is($status, STATUS_TEST);
 }
 
 //  survey_status_is()
 //  Does the survey status match the given bit?
 
 function survey_status_is($status, $bit) {
-    return (is_numeric($status) && ($bit === ((int)$status & $bit)) ? true : false);
+  return (is_numeric($status) && ($bit === ((int)$status & $bit)) ? true : false);
 }
 
 //  survey_open()
@@ -83,12 +83,12 @@ function survey_open($open_date, $close_date, $now = null) {
   // convert to time stamps, and if failure, assume the date is empty
   $badts = (is_callable('version_compare') && version_compare('5.1.0', PHP_VERSION, '<=') ? false : -1);
   if ($has_open_date) {
-      $open_date_ts = (is_int($open_date) ? $open_date : strtotime($open_date));
-      if ($badts === $open_date_ts) { $has_open_date = false; }
+    $open_date_ts = (is_int($open_date) ? $open_date : strtotime($open_date));
+    if ($badts === $open_date_ts) { $has_open_date = false; }
   }
   if ($has_close_date) {
-      $close_date_ts = (is_int($close_date) ? $close_date : strtotime($close_date));
-      if ($badts === $close_date_ts) { $has_close_date = false; }
+    $close_date_ts = (is_int($close_date) ? $close_date : strtotime($close_date));
+    if ($badts === $close_date_ts) { $has_close_date = false; }
   }
 
   $nowts = (is_int($now) ? $now : (is_null($now) ? time() : strtotime($now)));
@@ -192,7 +192,7 @@ function survey_get_public(&$surveys) {
 
 function survey_get_privilege(&$privileges, $sids, $realm = null) {
   // construct the limit clauses
-  if (is_scalar($sids)) { $sids = array ($sids); } 
+  if (is_scalar($sids)) { $sids = array ($sids); }
   elseif (! is_array($sids)) { return false; }
   $limit  = sprintf('(tblAccess.survey_id %s)', array_to_insql($sids));
   $limit .= (isset($realm) ? sprintf(' AND (tblAccess.realm=%s)', _addslashes($realm)) : '');
@@ -207,7 +207,7 @@ function survey_get_privilege(&$privileges, $sids, $realm = null) {
 //  Get the response information for one or more surveys, optionally constrained by username
 
 function survey_get_responses(&$responses, $sids, $username = null) {
-  if (is_scalar($sids)) { $sids = array ($sids); } 
+  if (is_scalar($sids)) { $sids = array ($sids); }
   elseif (! is_array($sids)) { return false; }
   $limit  = sprintf('(survey_id %s)', array_to_insql($sids));
   $limit .= (isset($username) ? sprintf(' AND (tblResponse.username=%s)', _addslashes($username)) : '');
@@ -256,14 +256,14 @@ function survey_get_accessibility(&$accessibility, $sids, $username = null, $rea
       $username = _addslashes($username);
       $mayRespond = "CASE WHEN ( 0 = COALESCE(maxlogin,0) OR (SELECT COUNT(*) FROM {$GLOBALS['ESPCONFIG']['response_table']} as tblResponse WHERE tblResponse.survey_id=tblAccess.survey_id AND tblResponse.username=$username AND tblResponse.complete=$yes) < maxlogin) THEN 1 ELSE 0 END";
 
-  } 
+  }
   else { $mayRespond = '1'; }
 
   // ... visible
-  if (is_scalar($sids)) { $sids = array ($sids); } 
+  if (is_scalar($sids)) { $sids = array ($sids); }
   elseif (! is_array($sids)) { return false; }
 
-  if (isset($realm)) { $realm = _addslashes($realm); $limit = sprintf('(tblSurvey.id %s) AND (tblSurvey.public=%s OR tblAccess.realm=%s)', array_to_insql($sids), $yes, $realm); } 
+  if (isset($realm)) { $realm = _addslashes($realm); $limit = sprintf('(tblSurvey.id %s) AND (tblSurvey.public=%s OR tblAccess.realm=%s)', array_to_insql($sids), $yes, $realm); }
   else { $limit = sprintf('(tblSurvey.id %s) AND (tblSurvey.public=%s)', array_to_insql($sids), $yes); }
 
   // compute
@@ -287,14 +287,14 @@ function survey_get_from_sql($sql, &$surveys, $surveyIDCol = 'id') {
   while ($row = fetch_row($res)) {
       $res->MoveNext();
       // make sure we have an ID column
-      if (isset($row[$surveyIDCol])) { $id = $row[$surveyIDCol]; } 
+      if (isset($row[$surveyIDCol])) { $id = $row[$surveyIDCol]; }
       else { continue; }
 
       // add in the survey information to the previous survey information
       if (isset($surveys[$id])) {
           if ($needsConversion) { $surveys[$id] = array ($surveys[$id]); $needsConversion = false; }
           $surveys[$id][] = $row;
-      } 
+      }
       else { $surveys[$id] = $row; }
   }
   db_close($res);
@@ -320,7 +320,7 @@ function survey_merge_sets(&$merged, $a /* ... */) {
   return true;
 }
 
-//  survey_fetch_url_by_survey_name() 
+//  survey_fetch_url_by_survey_name()
 //  Return the URL to a survey with a given name
 
 function survey_fetch_url_by_survey_name($name) {
