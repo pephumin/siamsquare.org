@@ -11,13 +11,13 @@ if (!isset($_SERVER['HTTP_REFERER']) || !strrchr($_SERVER['HTTP_REFERER'],$_SERV
 $alfabet="abcdefghjkmnpqrstuvwxyz";
 $random1 = substr($alfabet,rand(1,23)-1,1);
 $random2 = rand(2,9);
-$rand=rand(1,23)-1;
+$rand = rand(1,23)-1;
 $random3 = substr($alfabet,rand(1,23)-1,1);
 $random4 = rand(2,9);
-$rand=rand(1,23)-1;
+$rand = rand(1,23)-1;
 $random5 = substr($alfabet,rand(1,23)-1,1);
 
-$randomtext=$random1.$random2.$random3.$random4.$random5;
+$randomtext = $random1.$random2.$random3.$random4.$random5;
 $_SESSION['captcha'] = md5($randomtext);
 
 $im = imagecreatetruecolor(120, 38);
@@ -63,4 +63,4 @@ header("Pragma: no-cache");
 header ("Content-type: image/gif");
 imagegif($im);
 imagedestroy($im);
-?> 
+?>
