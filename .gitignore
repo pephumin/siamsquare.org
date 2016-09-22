@@ -1,7 +1,6 @@
 .DS_Store
 README.md
 Icon?
-.sass-cache
-make
-min
-admin/_old
+#.sass-cache
+#make
+#min
