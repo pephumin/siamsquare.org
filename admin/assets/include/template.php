@@ -112,7 +112,7 @@ function pageHeader($title) {
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-user pe-fw"></i> My profile <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">Manage your profile</li>
-                  <li><a href="<?php echo $admin; ?>?where=admdesigner"><i class="pe-cog pe-fw"></i> Change your info</a></li>
+                  <li><a href="<?php echo $admin; ?>?where=admdesigner&amp;u=<?php echo $user; ?>&amp;r=<?php echo $g; ?>"><i class="pe-cog pe-fw"></i> Change your info</a></li>
                   <li><a href="<?php echo $admin; ?>?where=passwd"><i class="pe-key pe-fw"></i> Change your password</a></li>
                 </ul>
   <?php if ($_SESSION['acl']['superuser'] == 'Y') { ?>
