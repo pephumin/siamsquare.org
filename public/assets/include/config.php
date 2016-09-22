@@ -1,10 +1,24 @@
 <?php
 
+############################################################################
+#                                                                          #
+#     ▄██ █▄   ▄█████  ▀██████▄  ▄█  ███▄▄▄▄    ▄█████    ▄█████ ▄█   ▄    #
+#    ██   ██  ██   ██   ██   ██  ██  ██▀▀▀█▄   ██   ██   ██   ██ ██   █▄   #
+#    ██   ██  ██   █▀   ██   ██  ██▌ ██   ██   ██   ██   ██   ██ ██▄▄▄██   #
+#    ██   ██ ▄██▄▄▄    ▄██▄▄▄█▀  ██▌ ██   ██   ██   ██  ▄██▄▄▄█▀ ▀▀▀▀▀██   #
+#  ▀██████▀ ▀▀██▀▀▀   ▀▀██▀▀▀█▄  ██▌ ██   ██ ▀████████ ▀▀██▀▀▀▀  ▄█   ██   #
+#    ██       ██   █▄   ██   █▄  ██  ██   ██   ██   ██ ▀████████ ██   ██   #
+#    ██       ██   ██   ██   ██  ██  ██   ██   ██   ██   ██   ██ ██   ██   #
+#   ▄███▀     ███████ ▄███████▀  █▀  ▀█   █▀   ██   █▀   ██   ██  ▀████▀   #
+#                                                             ██    ██     #
+#                                                                          #
+############################################################################
+
 ini_set("zlib.output_compression", 1);
 error_reporting( E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
 
 if (!isset($_SESSION)) session_start();
-if (!isset($_SESSION)) { echo "This script can't work without setting the php session variable first!!!"; exit; }
+// if (!isset($_SESSION)) { echo "This script can't work without setting the php session variable first!!!"; exit; }
 
 if (!defined('ESP_BASE')) define('ESP_BASE', $_SERVER['DOCUMENT_ROOT']);
 if (isset($_SERVER)) { $server =& $_SERVER; } else { $server =& $HTTP_SERVER_VARS; }
@@ -102,10 +116,6 @@ $ESPCONFIG['survey_statistics_table']   = $DB_PREFIX."survey_statistics";
 $ESPCONFIG['version_table']             = $DB_PREFIX."version";
 
 //-------------------------------------------------------------------------------------------------
-
-
-
-
 
 if (isset($GLOBALS)) { $GLOBALS['ESPCONFIG'] = $ESPCONFIG; } else { global $ESPCONFIG; }
 
@@ -292,5 +302,28 @@ function remove_magic_quotes($input) {
   if(get_magic_quotes_gpc()) $input= stripslashes($input);
   return $input;
 }
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espcross.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espauth.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/esphtml.forms.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/esphtml.results.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espmerge.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espresponse.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espsql.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espdatalib.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_copy.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_merge.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_purge.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_render.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_report.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_results.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_update.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_export_csv.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/account_upload.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/response_purge.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/question_render.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/question_conditioncheck.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/db_update.inc';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/ssq.inc';
 
 ?>
