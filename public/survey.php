@@ -51,9 +51,7 @@ if (isset($_POST['name'])) {
 if (!empty($_name)) {
   $_sql = "SELECT id,title,theme FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE name = $_name";
   if ($_result = execute_sql($_sql)) {
-    if (record_count($_result) > 0) {
-      list($sid, $_title, $_css) = fetch_row($_result);
-    }
+    if (record_count($_result) > 0) { list($sid, $_title, $_css) = fetch_row($_result); }
     db_close($_result);
   }
   unset($_sql);
@@ -63,9 +61,7 @@ if (!empty($_name)) {
 if (empty($_name) && isset($sid) && $sid) {
   $_sql = "SELECT title,theme FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id = '$sid'";
   if ($_result = execute_sql($_sql)) {
-    if (record_count($_result) > 0) {
-        list($_title, $_css) = fetch_row($_result);
-    }
+    if (record_count($_result) > 0) { list($_title, $_css) = fetch_row($_result); }
     db_close($_result);
   }
   unset($_sql);
@@ -73,21 +69,40 @@ if (empty($_name) && isset($sid) && $sid) {
 }
 
 // call the handler-prefix once $sid is set to handle authentication / authorization
-//include $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/handler-prefix.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/handler-prefix.php';
 
 // --------------------------------------------------------------------------------
 
 pageHeader($title);
-echo "<div class=\"container\">\n";
+
+// switch A
 unset($_name);
 unset($_title);
 include $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/handler.php';
-echo "</div>\n";
+
+// // switch B
+// if (is_session_authenticated()) {
+//   unset($_name);
+//   unset($_title);
+//   include $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/handler.php';
+// } else {
+//   echo "<h2>Access denied</h2>\n";
+//   echo "<p>Only registered members can access this area</p>\n";
+// }
+
+
 if ($notes) { pageFooter($notes); } else { pageFooter(); }
 
+echo "<div class=\"container\"<div class=\"row\"><div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">";
 echo "<pre>";
 print_r($_POST);
 echo "</pre>";
+echo "</div>";
+echo "<div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">";
+echo "<pre>";
+print_r($_SESSION);
+echo "</pre>";
+echo "</div></div></div>";
 
 // --------------------------------------------------------------------------------
 
