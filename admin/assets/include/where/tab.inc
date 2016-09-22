@@ -98,7 +98,6 @@ echo "<form method=\"post\" id=\"tabs\" onsubmit=\"validate();\" action=\"$base\
 echo "<div class=\"container\">\n\n";
 echo "<h2>Designing a survey</h2>\n";
 
-
 if (!empty($errstr)) { echo(mkerror($errstr)); }
 
 echo "<br>\n";
@@ -112,10 +111,10 @@ $_SESSION['last_tab'] = $tab;
 if ($tab == 'finish') { echo('&nbsp;'); }
 
 if ($_SESSION['new_survey']) {
-  echo "    <input class=\"btn btn-default\" type=\"submit\" name=\"where\" value=\"Cancel\" onclick='return cancelConfirm()' /> &nbsp;\n";
-  if ($tab == 'preview') { echo "    <input class=\"btn btn-success\" type=\"submit\" name=\"tab_finish\" value=\"Finish\" /> &nbsp;\n"; }
-  else { echo "    <input class=\"btn btn-success\" type=\"submit\" name=\"tab_continue\" value=\"Continue &gt;&gt;\" /> &nbsp;\n"; }
-  echo "    <p class=\"text-muted\">Click cancel to cancel this survey, or click continue to proceed to the next tab.</p>";
+  echo "<input class=\"btn btn-default\" type=\"submit\" name=\"where\" value=\"Cancel\" onclick='return cancelConfirm()'> \n";
+  if ($tab == 'preview') { echo "<input class=\"btn btn-success\" type=\"submit\" name=\"tab_finish\" value=\"Finish\"> \n"; }
+  else { echo "<input class=\"btn btn-success\" type=\"submit\" name=\"tab_continue\" value=\"Continue &gt;&gt;\"> \n"; }
+  echo "<p class=\"text-muted\">Click continue to proceed to the next tab, otherwise just click cancel.</p>";
 }
 
 // echo "<hr>\n";

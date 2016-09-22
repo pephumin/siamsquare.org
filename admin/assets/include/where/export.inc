@@ -13,8 +13,6 @@ $page = $home."/public/survey.php?name=";
 
 <h2>Export survey data</h2>
 
-<br>
-
 <table class="table table-hover">
 
 <?php
@@ -33,21 +31,15 @@ if(!$sid) {
 
   $statusok = (STATUS_ACTIVE | STATUS_DONE | STATUS_DELETED);
   if($_SESSION['acl']['superuser'] == 'Y') {
-    $sql = "SELECT id,name,title,status,owner,realm FROM ".$GLOBALS['ESPCONFIG']['survey_table']."
-    WHERE (status & $statusok) ORDER BY id DESC";
+    $sql = "SELECT id,name,title,status,owner,realm FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE (status & $statusok) ORDER BY id DESC";
   } else {
-    $realms = array_to_insql(
-      array_intersect(
-        $_SESSION['acl']['pall'],
-        $_SESSION['acl']['pdata']));
-    $sql = "SELECT id,name,title,status,owner,realm
-      FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE (status & $statusok) AND (owner = ".
-      _addslashes($_SESSION['acl']['username']) ." || realm $realms) ORDER BY id DESC";
+    $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'], $_SESSION['acl']['pdata']));
+    $sql = "SELECT id,name,title,status,owner,realm FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE (status & $statusok) AND (owner = ". _addslashes($_SESSION['acl']['username']) ." || realm $realms) ORDER BY id DESC";
   }
   $result = execute_sql($sql);
 
   while(list($sid,$name,$title,$status,$owner,$realm) = fetch_row($result)) {
-        $result->MoveNext();
+    $result->MoveNext();
     $stat = _('Editing');
 
     if($status & STATUS_DELETED) { $stat = 'Archived'; }
@@ -64,7 +56,7 @@ if(!$sid) {
     <td><?php echo($stat); ?></td>
     <td style="font-size: xx-small; vertical-align: top;">
     <form id="export<?php echo($sid) ?>" action="<?php echo($GLOBALS['ESPCONFIG']['ME']) ?>">
-  <div>
+      <div>
         <select name="type">
             <option value="csv_full_header" selected="selected">CSV Full Headers</option>
             <option value="csv_short_header">CSV Short Headers</option>
@@ -90,79 +82,55 @@ if(!$sid) {
 </table>
 <br>
 
-<?php displayAdminBack(); ?>
-
 <?php
   return;
   }
 
   $sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id = $sid";
   $name = get_one($sql);
-
   $srealm = auth_get_survey_realm($sid);
   if(isset($_GET['test'])) {
-
-    if($_SESSION['acl']['superuser'] != 'Y' &&
-        !auth_is_owner($sid, $_SESSION['acl']['username']) &&
-        !in_array($srealm, array_intersect(
-            $_SESSION['acl']['pdesign'],
-            $_SESSION['acl']['pall'])) &&
-        !auth_no_access(_('to access this survey'))) {
-      return;
-    }
+    if($_SESSION['acl']['superuser'] != 'Y' && !auth_is_owner($sid, $_SESSION['acl']['username']) &&
+    !in_array($srealm, array_intersect($_SESSION['acl']['pdesign'], $_SESSION['acl']['pall'])) &&
+    !auth_no_access(_('to access this survey'))) { return; }
     echo("<p><b>Testing survey...</b> (". _('SID') ." = $sid)</p>\n");
   } else {
-
-    if($_SESSION['acl']['superuser'] != 'Y' &&
-        !auth_is_owner($sid, $_SESSION['acl']['username']) &&
-        !in_array($srealm, array_intersect(
-            $_SESSION['acl']['pdata'],
-            $_SESSION['acl']['pall'])) &&
-        !auth_no_access(_('to access this survey'))) {
-      return;
-    }
+    if($_SESSION['acl']['superuser'] != 'Y' && !auth_is_owner($sid, $_SESSION['acl']['username']) &&
+    !in_array($srealm, array_intersect($_SESSION['acl']['pdata'], $_SESSION['acl']['pall'])) &&
+    !auth_no_access(_('to access this survey'))) { return; }
   }
 
   $type = isset($_GET['type']) ? $_GET['type'] : 'csv_full_header';
 
   // prepare file name, default to csv_full_headers
-    switch ($type) {
-        case 'tab':
-            $file = $_SESSION['acl']['home'] . "/$name.txt";
-            break;
+  switch ($type) {
+    case 'tab':
+      $file = $_SESSION['acl']['home'] . "/$name.txt";
+      break;
 
-        case 'xml':
-            //Not implemented yet
-            break;
+    case 'xml':
+      //Not implemented yet
+      break;
 
-        case 'spss_csv':
-            $file = $_SESSION['acl']['home'] . "/$name.csv";
-            break;
+    case 'spss_csv':
+      $file = $_SESSION['acl']['home'] . "/$name.csv";
+      break;
 
-        case 'dbf':
-            $file = $_SESSION['acl']['home'] . "/$name.dbf";
-            if(extension_loaded('dbase')) {
-                $ret = survey_export_dbf($sid, $file);
-            } else {
-                $ret = 0;
-                echo("<tr><td>" . mkerror('The PHP dBase Extension is not installed.') . "</td></tr>");
-            }
-            break;
+    case 'dbf':
+      $file = $_SESSION['acl']['home'] . "/$name.dbf";
+      if(extension_loaded('dbase')) { $ret = survey_export_dbf($sid, $file); }
+      else { $ret = 0; echo("<tr><td>" . mkerror('The PHP dBase Extension is not installed.') . "</td></tr>"); }
+      break;
 
-        default: //csv_full_header,csv_short_header
-            $file = $_SESSION['acl']['home'] . "/$name.csv";
+    default: //csv_full_header,csv_short_header
+      $file = $_SESSION['acl']['home'] . "/$name.csv";
   }
   $ret = survey_export_results($type, $sid, $file);
 
   echo("<tr><td>");
-  if(isset($_GET['test'])) {
-    echo("<p><b>Testing survey...</b> (". _('SID') ." = $sid)</p>\n");
-  }
-  if($ret) {
-    echo('Survey exported as:' . " <tt>$file</tt>");
-  } else {
-    echo(mkwarn('Error exporting survey as:' . " <tt>$file</tt>"));
-  }
+  if(isset($_GET['test'])) { echo("<p><b>Testing survey...</b> (". _('SID') ." = $sid)</p>\n"); }
+  if($ret) { echo('Survey exported as:' . " <tt>$file</tt>"); }
+  else { echo(mkwarn('Error exporting survey as:' . " <tt>$file</tt>")); }
   echo("</td></tr></table>\n");
   echo("<br><br>\n\n");
 

@@ -1,6 +1,5 @@
 <?php
 
-
 if (!empty($_POST['sid'])) $sid = intval($_POST['sid']);
 elseif (!empty($_GET['sid'])) $sid = intval($_GET['sid']);
 else $sid = '';
@@ -12,16 +11,10 @@ if ($sid) {
     $sql = "SELECT s.name, s.title, s.owner, s.realm, s.public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s WHERE s.id = $sid";
     $sql1 = "SELECT a.realm, a.maxlogin, a.resume, a.navigate FROM ".$GLOBALS['ESPCONFIG']['access_table']." a WHERE a.survey_id = $sid ORDER BY a.realm";
   } else {
-    $realms = array_to_insql(
-      array_intersect(
-        $_SESSION['acl']['pall'],
-        array_merge(
-          $_SESSION['acl']['pall'],
-          $_SESSION['acl']['pdesign'])));
-            $sql = "SELECT s.name, s.title, s.owner, s.realm, s.public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s WHERE s.id = $sid AND NOT (status & " .STATUS_DELETED. ") AND (s.owner = "._addslashes($_SESSION['acl']['username']) ." || s.realm $realms)";
-
-        $sql1 = "SELECT a.realm, a.maxlogin, a.resume, a.navigate FROM ".$GLOBALS['ESPCONFIG']['access_table']." a, ".$GLOBALS['ESPCONFIG']['survey_table']." s WHERE a.survey_id = $sid AND s.id=a.survey_id AND (s.owner = ".
-      _addslashes($_SESSION['acl']['username']) ." || s.realm $realms) ORDER BY a.realm";
+    $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'], array_merge($_SESSION['acl']['pall'],$_SESSION['acl']['pdesign'])));
+    $sql = "SELECT s.name, s.title, s.owner, s.realm, s.public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s WHERE s.id = $sid AND NOT (status & " .STATUS_DELETED. ") AND (s.owner = "._addslashes($_SESSION['acl']['username']) ." || s.realm $realms)";
+    $sql1 = "SELECT a.realm, a.maxlogin, a.resume, a.navigate FROM ".$GLOBALS['ESPCONFIG']['access_table']." a, ".$GLOBALS['ESPCONFIG']['survey_table']." s WHERE a.survey_id = $sid AND s.id=a.survey_id AND (s.owner = ".
+    _addslashes($_SESSION['acl']['username']) ." || s.realm $realms) ORDER BY a.realm";
   }
   $result = execute_sql($sql);
   if (record_count($result) < 1) { $sid = 0; }
@@ -49,11 +42,9 @@ if ($sid) {
   else $max = 0;
 
   if ($op == 'a') {
-    if (empty($_POST['realm'])) {
-      $errstr = mkerror('Please select a group.');
-    } else {
-      $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['access_table']." (survey_id, realm, maxlogin, resume, navigate)
-          VALUES ($sid, $arealm, $max, $resume, $navigate)";
+    if (empty($_POST['realm'])) { $errstr = mkerror('Please select a group.'); }
+    else {
+      $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['access_table']." (survey_id, realm, maxlogin, resume, navigate) VALUES ($sid, $arealm, $max, $resume, $navigate)";
       execute_sql($sql);
     }
   } elseif ($op == 'r') {
@@ -70,10 +61,8 @@ if ($sid) {
   }
 }
 if ($sid) {
-  if ($public == 'N')
-    $public = "Private";
-  else
-    $public = "Public";
+  if ($public == 'N') { $public = "Private"; }
+  else { $public = "Public"; }
 
   $r = '<select name="realm"><option></option>';
   $groups = array();
@@ -86,19 +75,16 @@ if ($sid) {
     }
     db_close($result);
   if($_SESSION['acl']['superuser'] == 'Y') {
-
     $sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['realm_table'];
     $result = execute_sql($sql);
     while( list($g) = fetch_row($result) ) {
-            if (!in_array($g, $selected_groups)) { array_push($groups, $g); }
-            $result->MoveNext();
+      if (!in_array($g, $selected_groups)) { array_push($groups, $g); }
+      $result->MoveNext();
     }
     db_close($result);
     } else {
-        $g =& $_SESSION['acl']['pdesign'];
-        foreach ($g as $t) {
-            if (!in_array($t, $selected_groups)) { array_push($groups, $t); }
-        }
+      $g =& $_SESSION['acl']['pdesign'];
+      foreach ($g as $t) { if (!in_array($t, $selected_groups)) { array_push($groups, $t); } }
     }
   foreach($groups as $g) {
     $r .= "<option value=\"$g\">$g</option>";
@@ -167,8 +153,8 @@ if ($sid) {
 
   <?php
     $result = execute_sql($sql1);
-    while ( list($arealm, $amax, $aresume, $anavigate) = fetch_row($result) ) {
-            $result->MoveNext();
+    while (list($arealm, $amax, $aresume, $anavigate) = fetch_row($result) ) {
+      $result->MoveNext();
     ?>
 
     <tr>
@@ -207,21 +193,15 @@ if ($sid) {
 
 // load names and titles of all surveys available to _this_ user
 if($_SESSION['acl']['superuser'] == 'Y') {
-  $sql = "SELECT id,name,title,owner,realm,public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE NOT ".db_bin("status",STATUS_DELETED)." ORDER BY id DESC";
+  $sql = "SELECT id, name, title, owner, realm, public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE NOT ".db_bin("status",STATUS_DELETED)." ORDER BY id DESC";
 } else {
-  $realms = array_to_insql(
-    array_intersect(
-      $_SESSION['acl']['pall'],
-      array_merge(
-        $_SESSION['acl']['pall'],
-        $_SESSION['acl']['pdesign'])));
-  $sql = "SELECT id,name,title,owner,realm,public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE NOT ".db_bin("status",STATUS_DELETED)." AND (owner = "._addslashes($_SESSION['acl']['username']) ." || realm $realms) ORDER BY id DESC";
+  $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'], array_merge($_SESSION['acl']['pall'], $_SESSION['acl']['pdesign'])));
+  $sql = "SELECT id, name, title, owner, realm, public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE NOT ".db_bin("status",STATUS_DELETED)." AND (owner = "._addslashes($_SESSION['acl']['username']) ." || realm $realms) ORDER BY id DESC";
 }
 
 $result = execute_sql($sql);
 while(list($sid,$name,$title,$owner,$realm,$public) = fetch_row($result)) {
-     $result->MoveNext();
-
+  $result->MoveNext();
   if ($public == 'N') {
     $public = "<span class=\"label label-danger\"><i class=\"pe-paper-plane pe-fw\"></i> Private</span> ";
     $op = '<small>[<a href="'. $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=access&sid=$sid&op=p").'">change to Public</a>]</small>';
@@ -238,7 +218,7 @@ while(list($sid,$name,$title,$owner,$realm,$public) = fetch_row($result)) {
   </tr>
 
 <?php
-  }
+}
 ?>
 
 </table>

@@ -10,31 +10,20 @@ $errstr = '';
 $success = '';
 
 if(!empty($_POST['r']) && !empty($_POST['t'])) {
-    $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['realm_table']." (name, title, changed)
-    VALUES (". _addslashes($_POST['r']) .", ".
-    _addslashes($_POST['t']).", ". sys_time_stamp().")";
-  if(!execute_sql($sql)) {
-    $errstr = _('Error adding a new group.') . ' (' . ErrorMsg() .')';
-  } else {
-    $success = _('A new group has been added successfully.');
-  }
-
+  $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['realm_table']." (name, title, changed) VALUES (". _addslashes($_POST['r']) .", ". _addslashes($_POST['t']).", ". sys_time_stamp().")";
+  if(!execute_sql($sql)) { $errstr = _('Error adding a new group.') . ' (' . ErrorMsg() .')'; }
+  else { $success = _('A new group has been added successfully.'); }
 }
 if(!empty($_GET['del'])) {
-  if($_GET['del'] == 'superuser') {
-    $errstr = _('Error deleting group.');
-  } else {
+  if($_GET['del'] == 'superuser') { $errstr = _('Error deleting group.'); }
+  else {
     $sql = "SELECT count(d.username) FROM ".$GLOBALS['ESPCONFIG']['designer_table']." d WHERE d.realm=". _addslashes($_GET['del']);
     $count = get_one($sql);
-    if ($count > 0) {
-      $errstr = _('Group is not empty.');
-    } else {
+    if ($count > 0) { $errstr = _('Group is not empty.'); }
+    else {
       $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['realm_table']." WHERE name=". _addslashes($_GET['del']);
-      if(!execute_sql($sql)) {
-        $errstr = _('Error deleting a group.');
-      } else {
-        $success = _('A group has been deleted successfully.');
-      }
+      if(!execute_sql($sql)) { $errstr = _('Error deleting a group.'); }
+      else { $success = _('A group has been deleted successfully.'); }
     }
   }
 }
@@ -45,13 +34,14 @@ $result2 = execute_sql($sql2);
 
 $i = 0;
 ?>
+
 <h2>Managing groups</h2>
 
 <?php if(!empty($errstr)) echo(mkerror($errstr)); ?>
 <?php if(!empty($success)) echo(mksuccess($success)); ?>
 
-<input type="hidden" name="where" value="groups" />
-<br>
+<input type="hidden" name="where" value="groups">
+
 <table class="table table-hover">
   <tr>
     <th>Group</th>
@@ -61,14 +51,9 @@ $i = 0;
   </tr>
 <?php
   while(list($realm, $title, $count) = fetch_row($result)) {
-        $result->MoveNext();
-        $result2->Move($i++);
+    $result->MoveNext();
+    $result2->Move($i++);
     $count += $result2->fields[0];
-
-    //if ($bg == $ESPCONFIG['bgalt_color1'])
-    //  $bg =& $ESPCONFIG['bgalt_color2'];
-    //else
-    //  $bg =& $ESPCONFIG['bgalt_color1'];
 ?>
   <tr>
     <td><?php echo ($realm); ?></td>
@@ -81,11 +66,6 @@ $i = 0;
   }
   db_close($result);
   db_close($result2);
-
-  //if ($bg == $ESPCONFIG['bgalt_color1'])
-  //  $bg =& $ESPCONFIG['bgalt_color2'];
-  //else
-  //  $bg =& $ESPCONFIG['bgalt_color1'];
 ?>
   <tr>
     <td><input type="text" class="form-control" name="r" placeholder="Group name" /></td>

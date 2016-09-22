@@ -1,10 +1,10 @@
-<hr />
+<hr>
 
 <h3>Getting started guide</h3>
 
 <p>This document is divided into two main sections. The first section is for general users. It explains how to use this tool to create a survey, test it, and incorporate it into a web page. The second section is for administrators. It explains how to manage a group of related users, and to use the access control system.</p>
 
-<hr />
+<hr>
 
 <h3>User guide</h3>
 
@@ -14,9 +14,9 @@
 
 <p>This is a straight forward procedure. Begin with</p>
 
-<ul class="fa-ul">
-<li><i class="fa-li fa fa-check-square"></i>Create a New Survey and follow the forms and prompts through the procedure. When you have made a survey you can use</li>
-<li><i class="fa-li fa fa-check-square"></i>Change the Status of a Survey to put the survey in 'Test' mode, or go right on to deploying it</li>
+<ul class="pe-ul">
+<li><i class="pe-li pe-check-square"></i>Create a New Survey and follow the forms and prompts through the procedure. When you have made a survey you can use</li>
+<li><i class="pe-li pe-check-square"></i>Change the Status of a Survey to put the survey in 'Test' mode, or go right on to deploying it</li>
 </ul>
 
 <h4>Deploying surveys</h4>
@@ -33,32 +33,32 @@
 
 <h4>Other actions</h4>
 
-<ul class="fa-ul">
-<li><i class="fa-li fa fa-check-square"></i>User can also make copies of surveys, which is very handy if you want to change a survey that has already left the Edit/Test phase. Copying copies the survey questions, none of the collected data is copied. A copy of a survey is placed in 'Editing' mode.</li>
-<li><i class="fa-li fa fa-check-square"></i>User can test a survey, which just lets you collect data and make sure it works as desired.</li>
-<li><i class="fa-li fa fa-check-square"></i>User can view tabulated results in a 'pretty' format.</li>
-<li><i class="fa-li fa fa-check-square"></i>User can also view a survey report, which may be useful to help interpreting the data collected.</li>
+<ul class="pe-ul">
+<li><i class="pe-li pe-check-square"></i>User can also make copies of surveys, which is very handy if you want to change a survey that has already left the Edit/Test phase. Copying copies the survey questions, none of the collected data is copied. A copy of a survey is placed in 'Editing' mode.</li>
+<li><i class="pe-li pe-check-square"></i>User can test a survey, which just lets you collect data and make sure it works as desired.</li>
+<li><i class="pe-li pe-check-square"></i>User can view tabulated results in a 'pretty' format.</li>
+<li><i class="pe-li pe-check-square"></i>User can also view a survey report, which may be useful to help interpreting the data collected.</li>
 </ul>
 
-<hr />
+<hr>
 
 <h3>Administrator guide</h3>
 
 <p>Before beginning administration you must understand the user/group relationship. There are three classes of users.
 
-<ul class="fa-ul">
-<li><i class="fa-li fa fa-check-square"></i>'Superusers' (that is you, the Administrator) have complete control in the Administration Mode.</li>
-<li><i class="fa-li fa fa-check-square"></i>'Designers' are the users who will be creating, deploying, and analyzing surveys.</li>
-<li><i class="fa-li fa fa-check-square"></i>The third class is the 'Respondents', these accounts are for private surveys (surveys which require a user to login before entering data).</li>
+<ul class="pe-ul">
+<li><i class="pe-li pe-check-square"></i>'Superusers' (that is you, the Administrator) have complete control in the Administration Mode.</li>
+<li><i class="pe-li pe-check-square"></i>'Designers' are the users who will be creating, deploying, and analyzing surveys.</li>
+<li><i class="pe-li pe-check-square"></i>The third class is the 'Respondents', these accounts are for private surveys (surveys which require a user to login before entering data).</li>
 </ul>
 
 <p>Each of the Designers and the Respondents is associated with a group. It is expected that a group will contain members of a similar area. For example there may be a group for a department, or a club, or just for some arbitrary group of people who are working on a similar subject. There may exists an unlimited number of groups.</p>
 
 <p>There are two main levels of administration.</p>
 
-<ul class="fa-ul">
-<li><i class="fa-li fa fa-check-square"></i>'Superuser' which is the highest level. It lets you control all users, and all surveys.</li>
-<li><i class="fa-li fa fa-check-square"></i>'Group Manager' is the second level of administration. It has similar control to the superuser, but limited to the subset of users (and their surveys) in their group.</li>
+<ul class="pe-ul">
+<li><i class="pe-li pe-check-square"></i>'Superuser' which is the highest level. It lets you control all users, and all surveys.</li>
+<li><i class="pe-li pe-check-square"></i>'Group Manager' is the second level of administration. It has similar control to the superuser, but limited to the subset of users (and their surveys) in their group.</li>
 </ul>
 
 <h4>Superusers</h4>
@@ -69,10 +69,10 @@
 
 <p>The superuser(s) will see the following administration options on the main menu:</p>
 
-<ul class="fa-ul">
-<li><i class="fa-li fa fa-check-square"></i>Manage Designer Accounts</li>
-<li><i class="fa-li fa fa-check-square"></i>Manage Respondent Accounts</li>
-<li><i class="fa-li fa fa-check-square"></i>Manage Groups</li>
+<ul class="pe-ul">
+<li><i class="pe-li pe-check-square"></i>Manage Designer Accounts</li>
+<li><i class="pe-li pe-check-square"></i>Manage Respondent Accounts</li>
+<li><i class="pe-li pe-check-square"></i>Manage Groups</li>
 </ul>
 
 <p>Manage Groups is very simple. This option simply lists the existing groups and has a form to add a new group. Group names should be short, and should not have spaces. Good examples of group names are: ITS, ProjectX, WebTeam, etc. The description of the group is free form; you may enter any text you wish but please make it understandable.</p>
@@ -87,16 +87,16 @@
 
 <p>There are four basic user permission options, and two administration permission options. The user options are:</p>
 
-<ul class="fa-ul">
-<li><i class="fa-li fa fa-check-square"></i>Design Surveys: Allow the user to create, edit and test surveys. This option is on by default, and is probably desired for most situations.</li>
-<li><i class="fa-li fa fa-check-square"></i>Change Survey Status: This lets a user change the status of a survey. Essentially this gives them the ability to release, end, and archive surveys.</li>
-<li><i class="fa-li fa fa-check-square"></i>Export Survey Data: Users with this flag, have the option to download the data collected from a survey.</li>
-<li><i class="fa-li fa fa-check-square"></i>Group Editor: By default, users can only perform any of the three actions above on their own surveys. If the Group Editor flag is on, the above permissions are widened to include all surveys created by members of the group.</li>
+<ul class="pe-ul">
+<li><i class="pe-li pe-check-square"></i>Design Surveys: Allow the user to create, edit and test surveys. This option is on by default, and is probably desired for most situations.</li>
+<li><i class="pe-li pe-check-square"></i>Change Survey Status: This lets a user change the status of a survey. Essentially this gives them the ability to release, end, and archive surveys.</li>
+<li><i class="pe-li pe-check-square"></i>Export Survey Data: Users with this flag, have the option to download the data collected from a survey.</li>
+<li><i class="pe-li pe-check-square"></i>Group Editor: By default, users can only perform any of the three actions above on their own surveys. If the Group Editor flag is on, the above permissions are widened to include all surveys created by members of the group.</li>
 </ul>
 
 <p>The other two options set administration flags:</p>
 
-<ul class="fa-ul">
-<li><i class="fa-li fa fa-check-square"></i>Administer Designers: This grants the user permission to change flags on users in their group, and to add new users to the group.</li>
-<li><i class="fa-li fa fa-check-square"></i>Administer Respondents: Allows a user to add users to the list of allowed respondents, within their group.</li>
+<ul class="pe-ul">
+<li><i class="pe-li pe-check-square"></i>Administer Designers: This grants the user permission to change flags on users in their group, and to add new users to the group.</li>
+<li><i class="pe-li pe-check-square"></i>Administer Respondents: Allows a user to add users to the list of allowed respondents, within their group.</li>
 </ul>

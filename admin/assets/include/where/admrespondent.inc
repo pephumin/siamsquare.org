@@ -3,12 +3,7 @@
 $base =& $GLOBALS['ESPCONFIG']['ME'];
 
 /* SuperUser or Designers with "Administer Respondents(puser)" permissions only*/
-if($_SESSION['acl']['superuser'] != 'Y' &&
-    count($_SESSION['acl']['puser']) == 0 &&
-    !auth_no_access(_('to access this form'))) {
-    return;
-}
-
+if($_SESSION['acl']['superuser'] != 'Y' && count($_SESSION['acl']['puser']) == 0 && !auth_no_access(_('to access this form'))) { return; }
 
 $errstr = '';
 $u = '';
@@ -34,9 +29,7 @@ if(isset($_POST['delete'])) {
   //$r = $_POST['r'];
   //$r2 = _stripslashes($_POST['r']);
   /* check acl */
-  if($_SESSION['acl']['superuser'] == 'Y' ||
-    in_array($r2, $_SESSION['acl']['puser']) ||
-    auth_no_access('to access this group')) {
+  if($_SESSION['acl']['superuser'] == 'Y' || in_array($r2, $_SESSION['acl']['puser']) || auth_no_access('to access this group')) {
     $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['respondent_table']." WHERE username=$u AND realm=$r";
     echo $sql;
     if(!execute_sql($sql) || affected_rows() < 1) {
@@ -57,28 +50,14 @@ if(isset($_POST['delete'])) {
 if(isset($_POST['submit'])) {
   // for the following 4, we check for emptyness further down,
   // so we only do the addslashes if they are not empty
-  if (!empty($_POST['u'])) {
-    $u = _addslashes($_POST['u']);
-  } else {
-    $u = '';
-  }
-  if (!empty($_POST['r'])) {
-    $r = _addslashes($_POST['r']);
-    $r2 = _stripslashes($_POST['r']);
-  } else {
-    $r = '';
-    $r2 = '';
-  }
-  if (!empty($_POST['password'])) {
-    $u_password = _addslashes($_POST['password']);
-  } else {
-    $u_password = '';
-  }
-  if (!empty($_POST['disabled'])) {
-    $u_disabled = _addslashes($_POST['disabled']);
-  } else {
-    $u_disabled = _addslashes("N");
-  }
+  if (!empty($_POST['u'])) { $u = _addslashes($_POST['u']); }
+  else { $u = ''; }
+  if (!empty($_POST['r'])) { $r = _addslashes($_POST['r']); $r2 = _stripslashes($_POST['r']); }
+  else { $r = ''; $r2 = ''; }
+  if (!empty($_POST['password'])) { $u_password = _addslashes($_POST['password']); }
+  else { $u_password = ''; }
+  if (!empty($_POST['disabled'])) { $u_disabled = _addslashes($_POST['disabled']); }
+  else { $u_disabled = _addslashes("N"); }
 
   // these 3 are not checked for emptyness, so we do the
   // addslashes immediately, otherwise the sql is broken
@@ -86,30 +65,15 @@ if(isset($_POST['submit'])) {
   $u_lname     = _addslashes($_POST['lname']);
   $u_email     = _addslashes($_POST['email']);
 
-  if(!empty($_POST['ex_year']) ||
-      !empty($_POST['ex_month']) ||
-      !empty($_POST['ex_day'])) {
-    if(empty($_POST['ex_day'])) {
-      $u_ex_day = 1;
-    } else {
-      $u_ex_day = intval($_POST['ex_day']);
-    }
-    if(empty($_POST['ex_month'])) {
-      $u_ex_month = 1;
-    } else {
-      $u_ex_month = intval($_POST['ex_month']);
-    }
-    if(empty($_POST['ex_year'])) {
-      $now = getdate(time());
-      $u_ex_year = $now['year'];
-    } else {
-      $u_ex_year = intval($_POST['ex_year']);
-      if($u_ex_year < 2000)
-        $u_ex_year += 2000;
-    }
+  if(!empty($_POST['ex_year']) || !empty($_POST['ex_month']) || !empty($_POST['ex_day'])) {
+    if(empty($_POST['ex_day'])) { $u_ex_day = 1; }
+    else { $u_ex_day = intval($_POST['ex_day']); }
+    if(empty($_POST['ex_month'])) { $u_ex_month = 1; }
+    else { $u_ex_month = intval($_POST['ex_month']); }
+    if(empty($_POST['ex_year'])) { $now = getdate(time()); $u_ex_year = $now['year']; }
+    else { $u_ex_year = intval($_POST['ex_year']); if($u_ex_year < 2000) { $u_ex_year += 2000; } }
 
-    $u_expiration = sprintf("%04d%02d%02d%06d",
-      $u_ex_year,$u_ex_month,$u_ex_day,0);
+    $u_expiration = sprintf("%04d%02d%02d%06d", $u_ex_year,$u_ex_month,$u_ex_day,0);
   } else {
     $u_expiration = "00000000000000"; #YYYYMMDDHHmmss
     $u_ex_year    = '';
@@ -117,65 +81,50 @@ if(isset($_POST['submit'])) {
     $u_ex_day     = '';
   }
 
-  /* new user */
-    /* check acl */
-    if($_SESSION['acl']['superuser'] == 'Y' ||
-        in_array($r2, $_SESSION['acl']['puser']) ||
-        auth_no_access(_('to access this group'))) {
-        $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['respondent_table']." WHERE username=$u AND realm=$r";
-        $result = execute_sql($sql);
-        if(record_count($result) < 1) {
-          if(empty($u) || empty($r) || empty($u_password)) {
-            $errstr .= 'Username, Password, and Group are required.';
-          } else {
-            $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['respondent_table']."
-              (username,realm,password,changed)
-              VALUES ($u,$r,".db_crypt($u_password).", ".sys_time_stamp().")";
-            if(!execute_sql($sql)) {
-              $u = '';
-              $r = '';
-              $errstr .= 'Error adding account.' .' ('. ErrorMsg() .')';
-            } else {
-              $success .= 'New account has been added successfully.';
-            }
-          }
-        }
-        db_close($result);
+  /* new user - check acl */
+  if($_SESSION['acl']['superuser'] == 'Y' || in_array($r2, $_SESSION['acl']['puser']) || auth_no_access(_('to access this group'))) {
+    $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['respondent_table']." WHERE username=$u AND realm=$r";
+    $result = execute_sql($sql);
+    if(record_count($result) < 1) {
+      if(empty($u) || empty($r) || empty($u_password)) { $errstr .= 'Username, Password, and Group are required.'; }
+      else {
+        $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['respondent_table']." (username,realm,password,changed) VALUES ($u,$r,".db_crypt($u_password).", ".sys_time_stamp().")";
+        if(!execute_sql($sql)) { $u = ''; $r = ''; $errstr .= 'Error adding account.' .' ('. ErrorMsg() .')'; }
+        else { $success .= 'New account has been added successfully.'; }
+      }
+    }
+    db_close($result);
 
-        /* change user data */
-        if(!empty($u) && !empty($r)) {
-          if (!empty($u_password))
-            $u_password = "password=".db_crypt($u_password).",";
-          $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['respondent_table']." SET
-            $u_password
-            fname=$u_fname,
-            lname=$u_lname,
-            email=$u_email,
-            disabled=$u_disabled,
-            changed=".sys_time_stamp().",
-            expiration=$u_expiration WHERE username=$u AND realm=$r";
-          if(!execute_sql($sql)) {
-            /* unsucessfull -- abort */
-            $errstr .= 'Cannot change account data.' .' ('. ErrorMsg() .')';
-          } else {
-            $success .= 'Account has been updated successfully.';
-          }
-        }
+    /* change user data */
+    if(!empty($u) && !empty($r)) {
+      if (!empty($u_password)) { $u_password = "password=".db_crypt($u_password).","; }
+      $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['respondent_table']." SET $u_password
+        fname=$u_fname,
+        lname=$u_lname,
+        email=$u_email,
+        disabled=$u_disabled,
+        changed=".sys_time_stamp().",
+        expiration=$u_expiration WHERE username=$u AND realm=$r";
+      if(!execute_sql($sql)) { $errstr .= 'Cannot change account data.' .' ('. ErrorMsg() .')'; }
+      else { $success .= 'Account has been updated successfully.'; }
     }
-    if(empty($errstr)) {
-        echo mksuccess('Account has been added/updated successfully.');
-        include(esp_where('respondents'));
-        return;
-    }
-} else if(isset($_GET['u']) && isset($_GET['r'])) {
-  $u = _addslashes($_GET['u']);
-  $r = _addslashes($_GET['r']);
-} else {
-  $u = '';
-  $r = '';
-  $u_expiration = '';
-  $u_disabled = 'N';
-}
+  }
+
+  if(empty($errstr)) {
+    echo mksuccess('Account has been added/updated successfully.');
+    include(esp_where('respondents'));
+    return;
+  }
+
+  } else if(isset($_GET['u']) && isset($_GET['r'])) {
+    $u = _addslashes($_GET['u']);
+    $r = _addslashes($_GET['r']);
+  } else {
+    $u = '';
+    $r = '';
+    $u_expiration = '';
+    $u_disabled = 'N';
+  }
 
 /* load ACL */
 if(!empty($u) && !empty($r)) {
@@ -200,10 +149,9 @@ if(!empty($u) && !empty($r)) {
       $arr['ex_month'] = '';
       $arr['ex_day']   = '';
     }
-  } else {
-    $errstr .= 'Account not found.' .' ('. ErrorMsg() .')';
   }
-    db_close($result);
+  else { $errstr .= 'Account not found.' .' ('. ErrorMsg() .')'; }
+  db_close($result);
 }
 
 ?>
