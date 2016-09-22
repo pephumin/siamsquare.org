@@ -1,7 +1,7 @@
 <?php
 
 function logo() {
-  echo "<span class=\"logo3\">ssq</span>";
+  echo "<span class=\"logo3\">siamsq</span> &#9634;";
 }
 
 function peblogo() {
@@ -66,6 +66,7 @@ function pageHeader($title) {
       <div class="container">
         <h1><a href="<?php echo $public; ?>" title="PE BINARY CO., LTD."><?php logo(); ?></a> <span class="sub-brand">Respondent</span></h1>
         <p class="description">A market research company specialised in mobile survey</p>
+        <h2 class="white">&#9836; &#9819; &#9962; &#9969; &#9748; &#10000; &#10175; &#9820; &#9822; &#9731; &#9973; &#8485; &#8488; &#8523; &#8492; &#9961;</h2>
         <p class="thai-name"><i>บริษัท พีอี ไบนารี่ จำกัด</i></p>
       </div>
     </div>
@@ -214,6 +215,7 @@ function pageFooter($notes = null) {
 </script>
 <script type="text/javascript" src="assets/js/anchor.js"></script>
 <script type="text/javascript" src="assets/js/notification.js"></script>
+<script type="text/javascript" src="assets/js/thprovinces.js"></script>
 <script type="text/javascript" src="assets/js/tops.js"></script>
 <script type="text/javascript" src="assets/js/functions.js"></script>
 <script type="text/javascript">
@@ -592,16 +594,16 @@ function render_login_form($action = null, $usernameVar = 'username', $passwordV
   <p>Should you need any support for accessing this section, please do not hesitate to contact our staff right away.</p>
   <section id="signinform">
     <div class="form-group">
-      <label for="<?php echo $usernameVar; ?>" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Email:</label>
+      <label for="<?php echo $usernameVar; ?>" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Email:</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
-          <span class="input-group-addon"><i class="pe-envelope-o pe-fw"></i></span>
+          <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
           <input type="text" name="<?php echo $usernameVar; ?>" class="form-control" placeholder="email@domain.com">
         </div>
       </div>
     </div>
     <div class="form-group">
-      <label for="<?php echo $passwordVar; ?>" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Password:</label>
+      <label for="<?php echo $passwordVar; ?>" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Password:</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
           <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
@@ -610,14 +612,14 @@ function render_login_form($action = null, $usernameVar = 'username', $passwordV
       </div>
     </div>
     <div class="form-group">
-      <div class="col-xs-offset-0 col-sm-offset-4 col-md-offset-4 col-lg-offset-4 col-xs-12 col-sm-7 col-md-7 col-lg-7">
+      <div class="col-xs-offset-0 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="checkbox">
         <label><input type="checkbox" checked><span class="cr"><i class="cr-icon pe-check"></i></span> Remember me</label>
         </div>
       </div>
     </div>
     <div class="form-group">
-      <div class="col-xs-offset-0 col-sm-offset-4 col-md-offset-4 col-lg-offset-4 col-xs-12 col-sm-7 col-md-7 col-lg-7">
+      <div class="col-xs-offset-0 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <button class="btn btn-info" name="<?php echo $loginButtonVar; ?>" type="submit">Log in <i class="pe-check-circle-o"></i></button>
       </div>
     </div>
