@@ -1,8 +1,5 @@
 <?php
 
-$auth_type = $GLOBALS['ESPCONFIG']['auth_type'];
-if (empty($auth_type)) { $auth_type = 'default'; }
-if (!file_exists($_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espauth-default.inc')) { echo "FATAL: Unable to set up authentication for type $auth_type. Aborting."; exit; }
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espauth-default.inc';
 
 function authenticate_in_realm($username, $password, $realm) {
@@ -63,7 +60,7 @@ function change_profile($username, $realm, $firstName, $lastName, $emailAddress)
   $_lastName     = _addslashes($lastName);
   $_emailAddress = _addslashes($emailAddress);
   $changed  = sys_time_stamp();
-  $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['response_table']."
+  $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['respondent_table']."
           SET fname = $_firstName, lname = $_lastName, email = $_emailAddress, changed = $changed
           WHERE username = $_username AND realm = $_realm";
   $res = execute_sql($sql);
@@ -77,7 +74,7 @@ function change_password($username, $realm, $password) {
   $_realm    = _addslashes($realm);
   $_password = db_crypt(_addslashes($password));
   $changed  = sys_time_stamp();
-  $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['response_table']."
+  $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['respondent_table']."
           SET password = $_password, changed =$changed
           WHERE username = $_username AND realm = $_realm";
   $res = execute_sql($sql);

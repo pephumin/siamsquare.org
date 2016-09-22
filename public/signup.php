@@ -5,7 +5,6 @@ $title = "Member registration";
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/template.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/first.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/esphtml.forms.inc';
 
 esp_init_adodb();
 
@@ -46,9 +45,9 @@ do if (isset($post['email'])) {
 
   foreach ($fields as $f) {
     if (isset($post[$f]) && !empty($post[$f])) {
-        array_push($sqlf, $f);
-        if ($f == 'password') { array_push($sqlv, db_crypt(_addslashes($post[$f]))); }
-        else { array_push($sqlv,  _addslashes($post[$f]) ); }
+      array_push($sqlf, $f);
+      if ($f == 'password') { array_push($sqlv, db_crypt(_addslashes($post[$f]))); }
+      else { array_push($sqlv,  _addslashes($post[$f]) ); }
     }
   }
 
@@ -74,10 +73,8 @@ do if (isset($post['email'])) {
 // --------------------------------------------------------------------------------
 
 pageHeader($title);
-echo "<div class=\"container\">\n";
 if (isset($msg) && !empty($msg)) { echo "<p>$msg</p>\n"; }
 respondent_signup();
-echo "</div>\n";
 if ($notes) { pageFooter($notes); } else { pageFooter(); }
 
 // --------------------------------------------------------------------------------

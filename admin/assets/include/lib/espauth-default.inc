@@ -73,7 +73,7 @@ function survey_auth($sid, $username, $password, $raw_password, $css, $title) {
     $title = 'Login Page';
     pageHeader($title);
     echo show_login($survey_name, $error_message, $css, $title);
-    pageFooter();
+    if ($notes) { pageFooter($notes); } else { pageFooter(); }
     exit;
     return(false);
   }
@@ -94,7 +94,7 @@ function survey_auth($sid, $username, $password, $raw_password, $css, $title) {
     $title = 'Login Page';
     pageHeader($title);
     echo show_login($survey_name, $error_message, $css, $title);
-    pageFooter();
+    if ($notes) { pageFooter($notes); } else { pageFooter(); }
     exit;
     return(false);
   }
@@ -150,11 +150,10 @@ function manage_auth($username, $password, $raw_password="") {
     $title = 'Authorisation';
     pageHeader($title);
     echo show_login(null, $error_message, null, 'Client Login');
-    $notes = array (
-      array("title" => "Welcome, please login", "text" => "You need to login before you can proceed further with our system.", "image" => "assets/img/notification.svg")
-    );
-    //notify($notes);
-    pageFooter($notes);
+    // $notes = array (
+    //   array("title" => "Welcome, please login", "text" => "You need to login before you can proceed further with our system.", "image" => "assets/img/notification.svg")
+    // );
+    if ($notes) { pageFooter($notes); } else { pageFooter(); }
     exit;
     return(false);
   }
