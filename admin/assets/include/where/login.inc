@@ -30,7 +30,7 @@
     </div>
     <div class="form-group">
       <div class="col-sm-offset-3 col-sm-9">
-        <button class="btn btn-default" name="Login" type="submit">Log in <i class="pe-check-circle-o"></i></button>
+        <button class="btn btn-warning" name="Login" type="submit">Log in <i class="pe-check-circle-o"></i></button>
       </div>
     </div>
   </section>
