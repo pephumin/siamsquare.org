@@ -362,7 +362,7 @@ if(!empty($u) && !empty($r)) {
   </div>
   <div class="col-sm-offset-3 col-sm-9">
     <input type="hidden" name="where" value="admdesigner" />
-    <input class="btn btn-success" type="submit" name="submit" value="Create / Update" />&nbsp;
+    <input class="btn btn-warning" type="submit" name="submit" value="Create / Update" />&nbsp;
     <input class="btn btn-default" type="submit" name="cancel" value="Cancel" />&nbsp;
     <?php if (!(isset($_SESSION['username']) && $_SESSION['username']===$u)) { ?>
     <input class="btn btn-danger" type="submit" name="delete" value="Delete" />&nbsp;
