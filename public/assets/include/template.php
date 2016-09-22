@@ -1,17 +1,18 @@
 <?php
 
 function logo() {
+  echo "<span class=\"logo3\">ssq</span>";
+}
+
+function peblogo() {
   echo "<span class=\"logo1\"><i class=\"pe-logo\"></i></span> <span class=\"logo2\">pe</span><span class=\"logo3\">binary</span>";
 }
 
 function pageHeader($title) {
   $home = "http://www.siamsquare.org/";
   $public = "http://www.siamsquare.org/public/";
-    // $user = $_SESSION['acl']['username'];
-    // $group = $_SESSION['acl']['pgroup'];
-    // $g = $group[0];
-    // if ($g) { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd> <i class=\"pe-building pe-fw\"></i> <kbd>$g</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
-    // if(!empty($_SESSION['acl']['username'])) { $signed = "Logged in as $show"; } else { $signed = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised login only"; }
+    $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>" . $_SESSION['espuser'] . "</kbd>";
+    if (is_session_authenticated()) { $signed = "Logged in as $show"; } else { $signed = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised member only"; }
   header("Content-language: en");
   header("Content-type: text/html; charset=utf-8");
 ?>
@@ -45,13 +46,20 @@ function pageHeader($title) {
   <meta name="msapplication-TileColor" content="#FFFFFF">
   <meta name="msapplication-TileImage" content="assets/icons/ms-icon-144x144.png">
   <meta name="theme-color" content="#FFFFFF">
+  <script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
+  <script type="text/javascript" src="assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="assets/js/jquery.steps.js"></script>
+  <script type="text/javascript" src="assets/js/fv/formValidation.min.js"></script>
+  <script type="text/javascript" src="assets/js/fv/bootstrap.min.js"></script>
 </head>
 <body>
 <header>
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-1">
       <div class="container">
-        <a href="https://www.pebinary.net" class="btn btn-info btn-xs"><i class="pe-book pe-fw"></i> NEED HELP?</a>
+        <i class="pe-language pe-fw"></i> &middot;
+        <a class="newlang" title="Switch to English language">English</a> &middot;
+        <a class="newlang" title="เปลี่ยนเป็นภาษาไทย">ไทย</a>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-2">
@@ -62,7 +70,83 @@ function pageHeader($title) {
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-3">
-    <?php pageNav(); ?>
+      <nav class="navbar navbar-default navbar-static-top">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a href="<?php echo $public; ?>" class="navbar-brand" title="PE BINARY CO., LTD."><?php echo $signed; ?></a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+<?php if (is_session_authenticated()) { ?>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-user pe-fw"></i> My profile <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li class="dropdown-header">Manage your profile</li>
+                  <li><a href="<?php echo $public; ?>?doChangeProfile=1"><i class="pe-cog pe-fw"></i> Change your info</a></li>
+                  <li><a href="<?php echo $public; ?>?doChangePassword=1"><i class="pe-key pe-fw"></i> Change your password</a></li>
+                </ul>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-commenting pe-fw"></i> My participation <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li class="dropdown-header">Participation</li>
+                  <li><a href=""><i class="pe-wpforms pe-fw"></i> Current surveys</a></li>
+                  <li><a href=""><i class="pe-history pe-fw"></i> History</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li class="dropdown-header">Points &amp; rewards</li>
+                  <li><a href=""><i class="pe-trophy pe-fw"></i> Current points</a></li>
+                  <li><a href=""><i class="pe-diamond pe-fw"></i> Rewards</a></li>
+                </ul>
+              <li><a href="<?php echo $public; ?>?doLogout=1"><i class="pe-sign-out pe-fw"></i> Log out</a></li>
+<?php } else { ?>
+              <li><a href="<?php echo $public; ?>"><i class="pe-power-off pe-fw"></i> Log in</a></li>
+              <li><a href="<?php echo $public; ?>signup.php"><i class="pe-bullhorn pe-fw"></i> Become a member</a></li>
+              <!-- <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown"><i class="pe-power-off pe-fw"></i> Log in <span class="caret"></span></a>
+                <ul class="dropdown-menu topnav-dropdown">
+                  <li>
+                    <form class="form" role="form" method="post" action="">
+                      <div class="input-group margin-bottom-sm">
+                        <span class="input-group-addon"><i class="pe-envelope-o pe-fw"></i></span>
+                        <input type="text" name="username" class="form-control" placeholder="email@company.com">
+                      </div>
+                      <div class="input-group">
+                        <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
+                        <input type="password" name="password" class="form-control" placeholder="Password">
+                      </div>
+                      <div class="checkbox">
+                        <label><input type="checkbox" checked><span class="cr"><i class="cr-icon pe-check"></i></span> Remember me</label>
+                      </div>
+                      <button type="submit" class="btn btn-info btn-block">Log in <i class="pe-check-circle-o"></i></button>
+                    </form>
+                  </li>
+                </ul>
+              </li> -->
+              <!-- <li class="dropdown topnav-dropdown-color">
+                <a class="dropdown-toggle" data-toggle="dropdown"><i class="pe-bullhorn pe-fw"></i> Become a member <span class="caret"></span></a>
+                <ul class="dropdown-menu topnav-dropdown">
+                  <li>
+                    <a href="" class="btn btn-info btn-block topnav-btn" type="button" title="Sign up with Email"><span class="white">Sign up with <i class="pe-envelope-o pe-fw"></i> Email</span></a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href="" class="btn btn-default btn-block topnav-btn" type="button" title="Sign up with Facebook">Sign up with <i class="pe-facebook pe-fw"></i> Facebook</a>
+                    <a href="" class="btn btn-default btn-block topnav-btn" type="button" title="Sign up with Twitter">Sign up with <i class="pe-twitter pe-fw"></i> Twitter</a>
+                    <a href="" class="btn btn-default btn-block topnav-btn" type="button" title="Sign up with Google">Sign up with <i class="pe-google pe-fw"></i> Google</a>
+                  </li>
+                </ul>
+              </li> -->
+              <li><a href="http://www.siamsquare.org/"><i class="pe-undo pe-fw"></i> Back</a></li>
+<?php } ?>
+            </ul>
+          </div>
+        </div>
+      </nav>
     </div>
   </div>
 </header>
@@ -128,8 +212,6 @@ function pageFooter($notes = null) {
   ga('create', 'UA-82554411-3', 'auto');
   ga('send', 'pageview');
 </script>
-<script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
-<script type="text/javascript" src="assets/js/bootstrap.js"></script>
 <script type="text/javascript" src="assets/js/anchor.js"></script>
 <script type="text/javascript" src="assets/js/notification.js"></script>
 <script type="text/javascript" src="assets/js/tops.js"></script>
@@ -181,77 +263,6 @@ function notify($messages) {
 <?php
 }
 
-function pageNav() {
-  $home = "http://www.siamsquare.org/";
-  $public = "http://www.siamsquare.org/public/";
-  echo "<nav class=\"navbar navbar-default\" role=\"navigation\">\n";
-  echo "  <div class=\"container\">\n";
-  echo "    <div class=\"navbar-header\">\n";
-  echo "      <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\"#ssq-navbar\">\n";
-  echo "      <span class=\"sr-only\">Toggle navigation</span>\n";
-  echo "      <span class=\"icon-bar\"></span>\n";
-  echo "      <span class=\"icon-bar\"></span>\n";
-  echo "      <span class=\"icon-bar\"></span>\n";
-  echo "      </button>\n";
-  echo "      <a class=\"navbar-brand\" href=\"$public\">";
-  logo();
-  echo "</a>\n";
-  echo "   </div>\n";
-  echo "   <div class=\"collapse navbar-collapse\" id=\"ssq-navbar\">\n";
-  echo "      <ul class=\"nav navbar-nav\">\n";
-  echo "         <li class=\"dropdown\">\n";
-  echo "            <a href=\"/\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Pages <b class=\"caret\"></b></a>\n";
-  echo "            <ul class=\"dropdown-menu\">\n";
-  echo "               <li><a href=\"/public/contact.php\">Contact us</a></li>\n";
-  echo "               <li><a href=\"/public/help.php\">Help</a></li>\n";
-  echo "               <li class=\"divider\"></li>\n";
-  echo "               <li><a href=\"\">Membership</a></li>\n";
-  echo "               <li class=\"divider\"></li>\n";
-  echo "               <li><a href=\"\">Reward programme</a></li>\n";
-  echo "            </ul>\n";
-  echo "         </li>\n";
-  echo "         <li class=\"active\"><a href=\"$home\"><i class=\"pe-hand-o-left pe-fw\"></i> Back</a></li>\n";
-  echo "      </ul>\n";
-  echo "      <ul class=\"nav navbar-nav navbar-right\">\n";
-  echo "         <li><button type=\"button\" class=\"btn btn-success navbar-btn\">Join now!</button></li>\n";
-  echo "         <li class=\"dropdown\">\n";
-  echo "            <a href=\"\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Member log-in <span class=\"caret\"></span></a>\n";
-  echo "            <ul class=\"dropdown-menu\" style=\"padding: 15px;min-width: 250px;\">\n";
-  echo "               <li>\n";
-  echo "                  <div class=\"row\">\n";
-  echo "                     <div class=\"col-md-12\">\n";
-  echo "                        <form class=\"form\" role=\"form\" method=\"post\" action=\"login\" accept-charset=\"utf-8\" id=\"login-nav\">\n";
-  echo "                        <div class=\"input-group margin-bottom-sm\">\n";
-  echo "                          <span class=\"input-group-addon\"><i class=\"pe-envelope-o pe-fw\"></i></span>\n";
-  echo "                          <input type=\"text\" name=\"username\" class=\"form-control\" placeholder=\"email@company.com\">\n";
-  echo "                        </div>\n";
-  echo "                        <div class=\"input-group\">\n";
-  echo "                          <span class=\"input-group-addon\"><i class=\"pe-key pe-fw\"></i></span>\n";
-  echo "                          <input type=\"password\" name=\"password\" class=\"form-control\" placeholder=\"Password\">\n";
-  echo "                        </div>\n";
-  echo "                           <div class=\"checkbox\">\n";
-  echo "                              <label><input type=\"checkbox\"> Remember me</label>\n";
-  echo "                           </div>\n";
-  echo "                           <div class=\"form-group\">\n";
-  echo "                              <button type=\"submit\" class=\"btn btn-success btn-block\">Sign in</button>\n";
-  echo "                           </div>\n";
-  echo "                        </form>\n";
-  echo "                     </div>\n";
-  echo "                  </div>\n";
-  echo "               </li>\n";
-  echo "               <li class=\"divider\"></li>\n";
-  echo "               <li>\n";
-  echo "                  <input class=\"btn btn-default btn-block\" type=\"button\" id=\"sign-in-google\" value=\"Sign In with Google\" disabled>\n";
-  echo "                  <input class=\"btn btn-default btn-block\" type=\"button\" id=\"sign-in-twitter\" value=\"Sign In with Twitter\" disabled>\n";
-  echo "               </li>\n";
-  echo "            </ul>\n";
-  echo "         </li>\n";
-  echo "      </ul>\n";
-  echo "   </div>\n";
-  echo "  </div>\n";
-  echo "</nav>\n\n";
-}
-
 function handleLogin() {
   $handleLogin = (! is_session_authenticated() && isset($_REQUEST['doLogin']) && ! empty($_REQUEST['username']) && ! empty($_REQUEST['password']) ? true : false);
   if ($handleLogin) {
@@ -276,8 +287,21 @@ function handleLogin() {
 }
 
 function handleLogout() {
+  $public = "http://www.siamsquare.org/public/";
   $handleLogout = (isset($_REQUEST['doLogout']) && is_session_authenticated() ? true : false);
-  if ($handleLogout) { set_session_authentication(false); }
+  if ($handleLogout) {
+    set_session_authentication(false);
+    echo "<h2>You have been logged out</h2>";
+    echo mksuccess("You have been successfully logged out. We will redirect you to the front page in a moment.");
+    echo "<p><a href=".$public.">You can click here if you choose not to wait in order to log back in to our system.</a></p>";
+    echo "<br><br>";
+    $notes = array (
+      array("title" => "Logged out", "text" => "You have been successfully logged out from our system.", "image" => "assets/img/notification.svg"),
+      array("title" => "Log in when you need", "text" => "You can always log in back to our system at 24/7.", "image" => "assets/img/notification.svg")
+    );
+    notify($notes);
+    header("Refresh: 10; URL=$public");
+  }
 }
 
 function handleChangeProfile($note = null) {
@@ -340,8 +364,8 @@ function handleChangePassword($notes = null) {
 }
 
 function paint_non_authenticated() {
-  paint_public_survey_list();
   render_login_form();
+  //paint_public_survey_list();
 }
 
 function paint_public_survey_list() {
@@ -372,6 +396,7 @@ function paint_authenticated() {
   paint_respondent_tools();
   paint_respondent_surveys($current);
   paint_respondent_history($historical);
+  paint_public_survey_list();
 }
 
 function paint_respondent_tools() {
@@ -383,8 +408,7 @@ function paint_respondent_tools() {
   //$tools  = array ("$public?doChangeProfile=1" => "Edit my profile", "$public?doChangePassword=1" => "Change my password", "$public?doLogout=1" => "Logout", "$public/help.php" => "Help", "$public/contact.php" => "Contact support",);
   //$time = printf(_('Right now, my watch shows %s.'), strftime(FORMAT_OUTPUT_DATE));
   echo "<h2>Dashboard <small>(User management interface)</small></h2>\n";
-  echo "<br>\n\n";
-  echo "<h3>Account management</h3>\n";
+  echo "<h4>Account management</h4>\n";
   echo "<div class=\"row\">\n";
   echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
   echo "    <div class=\"panel panel-primary\">\n";
@@ -401,8 +425,8 @@ function paint_respondent_tools() {
   echo "      </div>\n";
   //echo "      </div>\n";
   echo "      <div id=\"userAdmin\" class=\"list-group\">\n";
-  echo "         <a class=\"list-group-item\" href=\"$public?doChangeProfile=1\"><i class=\"pe-cog pe-fw\"></i>&nbsp; Change your info</a>\n";
-  echo "         <a class=\"list-group-item\" href=\"$public?doChangePassword=1\"><i class=\"pe-key pe-fw\"></i>&nbsp; Change your password</a>\n";
+  echo "        <a class=\"list-group-item\" href=\"$public?doChangeProfile=1\"><i class=\"pe-cog pe-fw\"></i>&nbsp; Change your info</a>\n";
+  echo "        <a class=\"list-group-item\" href=\"$public?doChangePassword=1\"><i class=\"pe-key pe-fw\"></i>&nbsp; Change your password</a>\n";
   echo "      </div>\n";
   echo "    </div>\n";
   echo "  </div>\n";
@@ -521,23 +545,21 @@ function fetch_status($sid, $responses) {
   return $status;
 }
 
-
 function fetch_latest_submission_date($sid, $responses) {
   if (isset($responses[$sid])) {
     // there are responses
     if (isset($responses[$sid]['submitted'])) {
-        // there is only one response
-        $date = $responses[$sid]['submitted'];
+      // there is only one response
+      $date = $responses[$sid]['submitted'];
     } else {
-        // more than one response
-        $date = '0000-00-00 00:00:00';
-        foreach ($responses[$sid] as $response) {
-            if ($date < $response['submitted']) {
-                $date = $response['submitted'];
-            }
+      // more than one response
+      $date = '0000-00-00 00:00:00';
+      foreach ($responses[$sid] as $response) {
+        if ($date < $response['submitted']) {
+          $date = $response['submitted'];
         }
+      }
     }
-
     // don't need the date down to the second, so just go down to the minute
     $datets = strtotime($date);
     if (-1 !== $datets) { $date = strftime(FORMAT_OUTPUT_DATE, $datets); }
@@ -545,7 +567,6 @@ function fetch_latest_submission_date($sid, $responses) {
   else { $date = ''; }
   return $date;
 }
-
 
 function fetch_availability($survey, &$rc) {
   $rc = survey_open($survey['open_date'], $survey['close_date']);
@@ -557,7 +578,6 @@ function fetch_availability($survey, &$rc) {
   }
 }
 
-
 function render_login_form($action = null, $usernameVar = 'username', $passwordVar = 'password', $loginButtonVar = 'doLogin', $_message = null) {
   $home = "http://www.siamsquare.org/";
   $public = "http://www.siamsquare.org/public/";
@@ -565,40 +585,70 @@ function render_login_form($action = null, $usernameVar = 'username', $passwordV
   $username = (isset($_REQUEST['username']) ? $_REQUEST['username'] : '');
   $str = "";
   if ($_message) { echo mkerror($_message); }
-  echo "\n";
-  echo "<form name=\"login\" id=\"login\" method=\"post\" class=\"form-horizontal\" action=\"$public\">\n";
-  echo "  <h2 class=\"form-signin-heading\">Respondent login</h2>\n";
-  echo "  <br>\n";
-  echo "  <p>This section is reserved only for our registered members who are willing to spend some of their spare time with our surveys (both public or specific to some target groups). Within this section you will be able to access to a highly confidential data such as questionnaire design, data collected from respondents, reports, etc. We carefully design our system to ensure such high important data is kept separately for different users or user groups.</p>\n";
-  echo "  <p>Despite the registration processs can be done by yourself, please feel free to contact us should you need any support for accessing this section.</p>\n";
-  echo "  <br>\n";
-  echo "    <div class=\"form-group\">\n";
-  echo "      <label for=\"$usernameVar\" class=\"col-sm-3 control-label\">Email (login):</label>\n";
-  echo "        <div class=\"col-sm-9\">\n";
-  echo "        <input type=\"text\" name=\"$usernameVar\" class=\"form-control\" placeholder=\"email@company.com\" required autofocus>\n";
-  echo "        </div>\n";
-  echo "     </div>\n";
-  echo "     <div class=\"form-group\">\n";
-  echo "       <label for=\"$passwordVar\" class=\"col-sm-3 control-label\">Password:</label>\n";
-  echo "         <div class=\"col-sm-9\">\n";
-  echo "         <input type=\"password\" name=\"$passwordVar\" class=\"form-control\" placeholder=\"Password\" required>\n";
-  echo "       </div>\n";
-  echo "     </div>\n";
-  echo "     <div class=\"form-group\">\n";
-  echo "       <div class=\"col-sm-offset-3 col-sm-9\">\n";
-  echo "         <div class=\"checkbox\">\n";
-  echo "           <label><input type=\"checkbox\" checked> Remember me</label>\n";
-  echo "          </div>\n";
-  echo "       </div>\n";
-  echo "     </div>\n";
-  echo "     <div class=\"form-group\">\n";
-  echo "       <div class=\"col-sm-offset-3 col-sm-9\">\n";
-  echo "         <button class=\"btn btn-success\" name=\"$loginButtonVar\" type=\"submit\">Sign in</button>\n";
-  echo "       </div>\n";
-  echo "     </div>\n";
-  echo "</form>\n";
-  echo "<br>\n";
-  //echo login_warning();
+?>
+<form method="post" class="form-horizontal" action="<?php echo $public; ?>">
+  <h2>Respondent login</h2>
+  <p>This section is reserved only for our registered members who are willing to spend some of their spare time with our surveys. Within this section respondents will find some interesting surveys where they can share their opinions by completing them. We value your opinions therefore incentives are provided to those who participate with our surveys.</p>
+  <p>Should you need any support for accessing this section, please do not hesitate to contact our staff right away.</p>
+  <section id="signinform">
+    <div class="form-group">
+      <label for="<?php echo $usernameVar; ?>" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Email:</label>
+      <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+        <div class="input-group">
+          <span class="input-group-addon"><i class="pe-envelope-o pe-fw"></i></span>
+          <input type="text" name="<?php echo $usernameVar; ?>" class="form-control" placeholder="email@domain.com">
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="<?php echo $passwordVar; ?>" class="col-xs-12 col-sm-4 col-md-4 col-lg-4 control-label">Password:</label>
+      <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+        <div class="input-group">
+          <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
+          <input type="password" name="<?php echo $passwordVar; ?>" class="form-control" placeholder="Password">
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-xs-offset-0 col-sm-offset-4 col-md-offset-4 col-lg-offset-4 col-xs-12 col-sm-7 col-md-7 col-lg-7">
+        <div class="checkbox">
+        <label><input type="checkbox" checked><span class="cr"><i class="cr-icon pe-check"></i></span> Remember me</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-xs-offset-0 col-sm-offset-4 col-md-offset-4 col-lg-offset-4 col-xs-12 col-sm-7 col-md-7 col-lg-7">
+        <button class="btn btn-info" name="<?php echo $loginButtonVar; ?>" type="submit">Log in <i class="pe-check-circle-o"></i></button>
+      </div>
+    </div>
+  </section>
+</form>
+<script>
+  $(document).ready(function() {
+    $('#signinform').formValidation({
+      framework: 'bootstrap',
+      icon: { valid: 'pe-check', invalid: 'pe-times', validating: 'pe-refresh' },
+      excluded: ':disabled',
+      fields: {
+        username: {
+          validators: { notEmpty: { message: 'The username is required' }, emailAddress: { message: 'The input is not a valid email address' } } },
+        password: {
+          validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 4, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' } } }
+      }
+    });
+  });
+</script>
+<div class="alert alert-warning alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+  <p><i class="pe-bullhorn pe-fw"></i> <strong>UNAUTHORIZED ACCESS TO THIS COMPUTER SYSTEM IS PROHIBITED BY LAW</strong></p>
+  <p>You are accessing a private computer network which includes: (1) this computer, (2) this computer network, (3) all computers connected to this network, and (4) all devices and storage media attached to this network or to a computer on this network. This information system is provided for registered clients authorized use only. Unauthorized or improper use of this system may result in disciplinary action, as well as civil and criminal penalties.</p>
+  <p>If you do not have an access, please contact sales for setting up a master login/password for your company.</p>
+  <p>By using this information system, you understand and consent to the following:</p>
+  <ul class="list">
+    <li class="list-item">You have no reasonable expectation of privacy regarding any communication or data transiting or stored on this information system. At any time, and for any lawful purpose, we may monitor, intercept, and search and seize any communication or data transiting or stored on this information system.</li>
+    <li class="list-item">Any communication or data transiting or stored on this information system may be disclosed or used for any lawful purpose.</li>
+  </ul>
+</div>
+<?php
 }
 
 function render_login_form_short($action = null, $usernameVar = 'username', $passwordVar = 'password', $loginButtonVar = 'doLogin', $_message = null) {
@@ -608,27 +658,47 @@ function render_login_form_short($action = null, $usernameVar = 'username', $pas
   $username = (isset($_REQUEST['username']) ? $_REQUEST['username'] : '');
   $str = "";
   if ($_message) { echo mkerror($_message); }
-  echo "\n";
-  echo "<form name=\"login\" id=\"login\" method=\"post\" class=\"form-horizontal\" action=\"$public\">\n";
-  echo "  <h2 class=\"form-signin-heading\">Respondent login</h2>\n";
-  echo "  <br>\n";
-  echo "  <p>This section is reserved only for our registered members who are willing to spend some of their spare time with our surveys (both public or specific to some target groups). Within this section you will be able to access to a highly confidential data such as questionnaire design, data collected from respondents, reports, etc. We carefully design our system to ensure such high important data is kept separately for different users or user groups.</p>\n";
-  echo "  <p>Despite the registration processs can be done by yourself, please feel free to contact us should you need any support for accessing this section.</p>\n";
-  echo "  <br>\n";
-  echo "    <div class=\"input-group\">\n";
-  echo "      <span class=\"input-group-addon\"><i class=\"pe-envelope pe-fw\"></i></span>\n";
-  echo "      <input class=\"form-control\" type=\"text\" placeholder=\"Email address\">\n";
-  echo "    </div>\n";
-  echo "    <br>\n";
-  echo "    <div class=\"input-group\">\n";
-  echo "      <span class=\"input-group-addon\"><i class=\"pe-key pe-fw\"></i></span>\n";
-  echo "      <input class=\"form-control\" type=\"password\" placeholder=\"Password\">\n";
-  echo "    </div>\n";
-  echo "</form>\n";
-  echo "<br>\n";
-  //echo login_warning();
+?>
+<form method="post" class="form-horizontal" action="<?php echo $public; ?>">
+  <h2>Respondent login</h2>
+  <p>This section is reserved only for our registered members who are willing to spend some of their spare time with our surveys. Within this section respondents will find some interesting surveys where they can share their opinions by completing them. We value your opinions therefore incentives are provided to those who participate with our surveys.</p>
+  <p>Should you need any support for accessing this section, please do not hesitate to contact our staff right away.</p>
+  <fieldset>
+    <div class="form-group">
+      <div class="col-sm-7">
+        <div class="input-group">
+          <span class="input-group-addon"><i class="pe-envelope-o pe-fw"></i></span>
+          <input type="text" name="<?php echo $usernameVar; ?>" class="form-control" placeholder="email@domain.com">
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-7">
+        <div class="input-group">
+          <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
+          <input type="password" name="<?php echo $passwordVar; ?>" class="form-control" placeholder="Password">
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-9">
+        <button class="btn btn-info" name="<?php echo $loginButtonVar; ?>" type="submit">Log in <i class="pe-check-circle-o"></i></button>
+      </div>
+    </div>
+  </fieldset>
+</form>
+<div class="alert alert-warning alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+  <p><i class="pe-bullhorn pe-fw"></i> <strong>UNAUTHORIZED ACCESS TO THIS COMPUTER SYSTEM IS PROHIBITED BY LAW</strong></p>
+  <p>You are accessing a private computer network which includes: (1) this computer, (2) this computer network, (3) all computers connected to this network, and (4) all devices and storage media attached to this network or to a computer on this network. This information system is provided for registered clients authorized use only. Unauthorized or improper use of this system may result in disciplinary action, as well as civil and criminal penalties.</p>
+  <p>If you do not have an access, please contact sales for setting up a master login/password for your company.</p>
+  <p>By using this information system, you understand and consent to the following:</p>
+  <ul class="list">
+    <li class="list-item">You have no reasonable expectation of privacy regarding any communication or data transiting or stored on this information system. At any time, and for any lawful purpose, we may monitor, intercept, and search and seize any communication or data transiting or stored on this information system.</li>
+    <li class="list-item">Any communication or data transiting or stored on this information system may be disclosed or used for any lawful purpose.</li>
+  </ul>
+</div>
+<?php
 }
-
 
 function render_profile_change_form ($action = null, $firstNameVar = 'firstName', $lastNameVar = 'lastName', $emailVar = 'emailAddress', $changeButtonVar = 'doChangeProfile', $cancelButtonVar = 'doChangeProfileCancel' ) {
   global $respondent;
@@ -661,12 +731,11 @@ function render_profile_change_form ($action = null, $firstNameVar = 'firstName'
   echo "    </div>\n";
   echo "  </div>\n";
   echo "  <div class=\"col-sm-offset-3 col-sm-9\">\n";
-  echo "    <button type=\"submit\" class=\"btn btn-success\" name=\"$changeButtonVar\">Update</button> &nbsp;\n";
+  echo "    <button type=\"submit\" class=\"btn btn-info\" name=\"$changeButtonVar\">Update <i class=\"pe-check-circle-o\"></i></button> &nbsp;\n";
   echo "    <button type=\"submit\" class=\"btn btn-default\" name=\"$cancelButtonVar\">Cancel</button>\n";
   echo "  </div>\n";
   echo "</form>\n";
 }
-
 
 function render_passwd_change_form ($action = null, $oldPasswordVar = 'oldPassword', $newPasswordVar = 'newPassword', $newPasswordConfirmVar = 'newPasswordConfirm', $changeButtonVar = 'doChangePassword', $cancelButtonVar = 'doChangePasswordCancel') {
   global $respondent;
@@ -703,7 +772,7 @@ function render_passwd_change_form ($action = null, $oldPasswordVar = 'oldPasswo
   echo "    </div>\n";
   echo "  </div>\n";
   echo "  <div class=\"col-sm-offset-3 col-sm-9\">\n";
-  echo "    <button type=\"submit\" class=\"btn btn-success\" name=\"$changeButtonVar\">Change password</button> &nbsp;\n";
+  echo "    <button type=\"submit\" class=\"btn btn-info\" name=\"$changeButtonVar\">Change password <i class=\"pe-check-circle-o\"></i></button> &nbsp;\n";
   echo "    <button type=\"submit\" class=\"btn btn-default\" name=\"$cancelButtonVar\">Cancel</button>\n";
   echo "  </div>\n";
   echo "</form>\n";
@@ -716,54 +785,7 @@ function respondent_signup() {
   $page = $home.$self;
   $str = "";
   if ($_message) { echo mkerror($_message); }
-
-  echo "<form class=\"form-horizontal\" method=\"post\" id=\"phpesp\" action=\"$page\">\n";
-  echo "  <div class=\"dashboardPanel\" id=\"login\">\n";
-  echo "  <h2 class=\"form-signin-heading\">New account sign up</h2>\n";
-  echo "  <br>\n";
-  echo "  <p>Sign up for free. What you have to do is to spend 2 minutes completing this page and that's it!</p>\n";
-  echo "  <p>All registered members will be automatically enrolled to our reward system (click for more info).</p>\n";
-  echo "  <br><br>\n";
-  echo "    <div class=\"form-group\">\n";
-  echo "      <label for=\"email\" class=\"col-sm-3 control-label\">Email (login): <span class=\"label label-danger\">required</span></label>\n";
-  echo "        <div class=\"col-sm-9\">\n";
-  echo "        <input type=\"text\" name=\"email\" class=\"form-control\" placeholder=\"email@company.com\">\n";
-  echo "        </div>\n";
-  echo "     </div>\n";
-  echo "     <div class=\"form-group\">\n";
-  echo "       <label for=\"password\" class=\"col-sm-3 control-label\">Password: <span class=\"label label-danger\">required</span></label>\n";
-  echo "         <div class=\"col-sm-9\">\n";
-  echo "         <input type=\"password\" name=\"password\" class=\"form-control\" placeholder=\"Password\">\n";
-  echo "       </div>\n";
-  echo "     </div>\n";
-  echo "     <div class=\"form-group\">\n";
-  echo "       <label for=\"password\" class=\"col-sm-3 control-label\">Confirm password: <span class=\"label label-danger\">required</span></label>\n";
-  echo "         <div class=\"col-sm-9\">\n";
-  echo "         <input type=\"password\" name=\"password2\" class=\"form-control\" placeholder=\"Password again\">\n";
-  echo "       </div>\n";
-  echo "     </div>\n";
-  echo "    <div class=\"form-group\">\n";
-  echo "      <label for=\"fname\" class=\"col-sm-3 control-label\">First name: <span class=\"label label-danger\">required</span></label>\n";
-  echo "        <div class=\"col-sm-9\">\n";
-  echo "        <input type=\"text\" name=\"fname\" class=\"form-control\" placeholder=\"John\">\n";
-  echo "        </div>\n";
-  echo "     </div>\n";
-  echo "    <div class=\"form-group\">\n";
-  echo "      <label for=\"lname\" class=\"col-sm-3 control-label\">Last name: <span class=\"label label-danger\">required</span></label>\n";
-  echo "        <div class=\"col-sm-9\">\n";
-  echo "        <input type=\"text\" name=\"lname\" class=\"form-control\" placeholder=\"Doe\">\n";
-  echo "        </div>\n";
-  echo "     </div>\n";
-  echo "     <div class=\"form-group\">\n";
-  echo "       <div class=\"col-sm-offset-3 col-sm-9\">\n";
-  echo "         <input type=\"submit\" value=\"Sign up\" class=\"btn btn-success\"></input>\n";
-  echo "       </div>\n";
-  echo "     </div>\n";
-  echo "  </div>\n";
-  echo "</form>\n";
-  echo "<br>\n";
-  //echo login_warning();
-
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/signup.inc';
 }
 
 

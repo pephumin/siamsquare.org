@@ -23,7 +23,7 @@ anchors.options = {
   placement: 'right',
   visible: 'hover'
 };
-anchors.add('h2, h3, h4');
+anchors.add('h2, h3');
 
 
 // tooltip
@@ -31,30 +31,3 @@ anchors.add('h2, h3, h4');
 $(document).ready(function(){
   $('[data-toggle="tooltip"]').tooltip();
 });
-
-
-// notification box
-
-// function notifyBox(title, text, image) {
-//   Notification({
-//       title: title,
-//       text: text,
-//       image: image,
-//       inAnimation: "bounce",
-//       outAnimation: "zoomOut",
-//       position: 2
-//   });
-// }
-//
-// $(document).ready(function() {
-//
-//   // show the first notification
-//   notifyBox("Title 1", "Image size is 50px x 50px", "assets/img/notification.svg");
-//
-//   // show the second one with 2 seconds delay
-//   $(this).delay(2000).queue(function() {
-//      notifyBox("Title 2", "jQuery events and functions like in the example above.", "assets/img/notification.svg");
-//      $(this).dequeue();
-//   });
-//
-// });
