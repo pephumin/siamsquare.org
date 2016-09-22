@@ -8,7 +8,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/first.php';
 
 if (!defined('ESP-FIRST-INCLUDED')) { echo "In order to conduct surveys, please include first.php"; exit; }
 
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/funcs.inc';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/handler-prefix.php';
 
 if(!defined('ESP-AUTH-OK')) { if (!empty($GLOBALS['errmsg'])) echo($GLOBALS['errmsg']); return; }
@@ -16,8 +15,9 @@ if(!defined('ESP-AUTH-OK')) { if (!empty($GLOBALS['errmsg'])) echo($GLOBALS['err
 // get the survey
 $sql = "SELECT status, name, public, open_date, close_date FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id=${sid}";
 $result = execute_sql($sql);
-    if ($result && record_count($result) > 0) { list ($status, $name, $survey_public, $open_date, $close_date) = fetch_row($result); }
-    else { $status = 0; }
+
+if ($result && record_count($result) > 0) { list ($status, $name, $survey_public, $open_date, $close_date) = fetch_row($result); }
+else { $status = 0; }
 
 // Added for cookie auth, to eliminate double submits - only for public surveys
 $cookiename="survey_".$sid;
@@ -41,8 +41,7 @@ if (!isset($_SESSION['rid'])) { $_SESSION['rid'] = 0; }
 
 $_SESSION['rid'] = intval($_SESSION['rid']);
 
-// show results instead of show survey
-// but do not allow getting results from URL or FORM
+// show results instead of show survey, but do not allow getting results from URL or FORM
 
 if(isset($results) && $results) {
   if (!isset($precision)) { $precision = ''; }
@@ -54,7 +53,7 @@ if(isset($results) && $results) {
   $qid = intval($qid);
   $cids = intval($cids);
   // small security issue here, anyone could pick a QID to crossanalyze
-  survey_results($sid,$precision,$totals,$qid,$cids);
+  survey_results($sid, $precision, $totals, $qid,$cids);
   return;
 }
 
@@ -165,7 +164,6 @@ else { echo "<input class=\"btn btn-default\" type=\"submit\" name=\"next\" valu
 echo "</p>\n";
 echo "</form>\n";
 
-
 function paint_submission_form_open($additional = array ()) {
   global $formaction, $action, $sid, $name, $request_referer, $request_direct;
   echo "<form method=\"post\" id=\"phpesp_response\" action=\"$formaction\">\n";
@@ -175,9 +173,7 @@ function paint_submission_form_open($additional = array ()) {
   echo "<input type=\"hidden\" name=\"rid\" value=\"{$_SESSION['rid']}\" />\n";
   echo "<input type=\"hidden\" name=\"sec\" value=\"{$_SESSION['sec']}\" />\n";
   echo "<input type=\"hidden\" name=\"name\" value=\"{$name}\" />\n";
-  foreach ($additional as $field => $value) {
-    echo "<input type='hidden' name='$field' value='$value' />";
-  }
+  foreach ($additional as $field => $value) { echo "<input type='hidden' name='$field' value='$value' />"; }
   if ($_REQUEST['test']) { echo "<input type=\"hidden\" name=\"test\" value=\"{$_REQUEST['test']}\" />\n"; }
 }
 
@@ -206,7 +202,6 @@ function paint_feedback_end_of_survey($sid, $rid, $sec) {
 function paint_feedback_end_of_section($sid, $rid, $sec) {
   // increment the section
   $_SESSION['sec']++;
-
   // paint my feedback
   paint_feedback($sid, $rid, $sec);
 }
@@ -285,34 +280,23 @@ function get_feedback(&$responses, &$totalCredit, $sid, $rid, $sec) {
     if ($hasMulti) {
       foreach ($feedback as $response) {
         $responses[$qnum][] = array ($response[1], $response[3], $response[4]);
-        if (! empty($response[3])) {
-          $hasFeedback = true;
-        }
-        if (! empty($response[4])) {
-          $hasFeedback = true;
-          if (is_numeric($response[4])) {
-            $totalCredit += $response[4];
-          }
+        if (! empty($response[3])) { $hasFeedback = true; }
+        if (! empty($response[4])) { $hasFeedback = true;
+          if (is_numeric($response[4])) { $totalCredit += $response[4]; }
         }
       }
     // otherwise, add this one in
     } else {
       $responses[$qnum][] = array ($feedback[1], $feedback[3], $feedback[4]);
-      if (! empty($feedback[3])) {
-        $hasFeedback = true;
-      }
+      if (! empty($feedback[3])) { $hasFeedback = true; }
       if (! empty($feedback[4])) {
         $hasFeedback = true;
-        if (is_numeric($feedback[4])) {
-          $totalCredit += $feedback[4];
-        }
+        if (is_numeric($feedback[4])) { $totalCredit += $feedback[4]; }
       }
     }
-
     // increment the question number
     $qnum++;
   }
-
   return $hasFeedback;
 }
 

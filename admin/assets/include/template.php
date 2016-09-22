@@ -1,6 +1,10 @@
 <?php
 
 function logo() {
+  echo "<span class=\"logo3\">ssq&#9744;</span>";
+}
+
+function peblogo() {
   echo "<span class=\"logo1\"><i class=\"pe-logo\"></i></span> <span class=\"logo2\">pe</span><span class=\"logo3\">binary</span>";
 }
 
@@ -11,7 +15,7 @@ function pageHeader($title) {
     $group = $_SESSION['acl']['pgroup'];
     $g = $group[0];
     if ($g) { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd> <i class=\"pe-building pe-fw\"></i> <kbd>$g</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
-    if(!empty($_SESSION['acl']['username'])) { $signed = "Logged in as $show"; } else { $signed = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised login only"; }
+    if(!empty($_SESSION['acl']['username'])) { $signed = "Logged in as $show"; } else { $signed = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised clients only"; }
   header("Content-language: en");
   header("Content-type: text/html; charset=utf-8");
 ?>
@@ -45,6 +49,11 @@ function pageHeader($title) {
   <meta name="msapplication-TileColor" content="#FFFFFF">
   <meta name="msapplication-TileImage" content="assets/icons/ms-icon-144x144.png">
   <meta name="theme-color" content="#FFFFFF">
+  <script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
+  <script type="text/javascript" src="assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="assets/js/jquery.steps.js"></script>
+  <script type="text/javascript" src="assets/js/fv/formValidation.min.js"></script>
+  <script type="text/javascript" src="assets/js/fv/bootstrap.min.js"></script>
 </head>
 <body>
 <header>
@@ -100,13 +109,13 @@ function pageHeader($title) {
                   <li><a href="#"><i class="pe-cogs pe-fw"></i> Member permission</a></li>
                 </ul>
               <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-venus-mars pe-fw"></i> My profile <span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-user pe-fw"></i> My profile <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">Manage your profile</li>
                   <li><a href="<?php echo $admin; ?>?where=admdesigner"><i class="pe-cog pe-fw"></i> Change your info</a></li>
                   <li><a href="<?php echo $admin; ?>?where=passwd"><i class="pe-key pe-fw"></i> Change your password</a></li>
                 </ul>
-<?php if ($_SESSION['acl']['superuser'] == 'Y') { ?>
+  <?php if ($_SESSION['acl']['superuser'] == 'Y') { ?>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-unlock-alt pe-fw"></i> Superuser <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -116,7 +125,7 @@ function pageHeader($title) {
                   <li><a href="<?php echo $admin; ?>?where=groups"><i class="pe-database pe-fw"></i> Manage groups</a></li>
                   <li><a href="<?php echo $admin; ?>?where=guide"><i class="pe-list-alt pe-fw"></i> Admin guide</a></li>
                 </ul>
-<?php } ?>
+  <?php } ?>
               <li><a href="<?php echo $admin; ?>/?where=logout"><i class="pe-sign-out pe-fw"></i> Log out</a></li>
 <?php } else { ?>
               <li><a href="<?php echo $admin; ?>"><i class="pe-power-off pe-fw"></i> Log in</a></li>
@@ -192,8 +201,6 @@ function pageFooter($notes = null) {
   ga('create', 'UA-82554411-3', 'auto');
   ga('send', 'pageview');
 </script>
-<script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
-<script type="text/javascript" src="assets/js/bootstrap.js"></script>
 <script type="text/javascript" src="assets/js/anchor.js"></script>
 <script type="text/javascript" src="assets/js/notification.js"></script>
 <script type="text/javascript" src="assets/js/tops.js"></script>

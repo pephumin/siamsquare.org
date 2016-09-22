@@ -1,10 +1,24 @@
 <?php
 
+############################################################################
+#                                                                          #
+#     ▄██ █▄   ▄█████  ▀██████▄  ▄█  ███▄▄▄▄    ▄█████    ▄█████ ▄█   ▄    #
+#    ██   ██  ██   ██   ██   ██  ██  ██▀▀▀█▄   ██   ██   ██   ██ ██   █▄   #
+#    ██   ██  ██   █▀   ██   ██  ██▌ ██   ██   ██   ██   ██   ██ ██▄▄▄██   #
+#    ██   ██ ▄██▄▄▄    ▄██▄▄▄█▀  ██▌ ██   ██   ██   ██  ▄██▄▄▄█▀ ▀▀▀▀▀██   #
+#  ▀██████▀ ▀▀██▀▀▀   ▀▀██▀▀▀█▄  ██▌ ██   ██ ▀████████ ▀▀██▀▀▀▀  ▄█   ██   #
+#    ██       ██   █▄   ██   █▄  ██  ██   ██   ██   ██ ▀████████ ██   ██   #
+#    ██       ██   ██   ██   ██  ██  ██   ██   ██   ██   ██   ██ ██   ██   #
+#   ▄███▀     ███████ ▄███████▀  █▀  ▀█   █▀   ██   █▀   ██   ██  ▀████▀   #
+#                                                             ██    ██     #
+#                                                                          #
+############################################################################
+
 ini_set("zlib.output_compression", 1);
 error_reporting( E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
 
 if (!isset($_SESSION)) session_start();
-if (!isset($_SESSION)) { echo "This script can't work without setting the php session variable first!!!"; exit; }
+// if (!isset($_SESSION)) { echo "This script can't work without setting the php session variable first!!!"; exit; }
 
 if (!defined('ESP_BASE')) define('ESP_BASE', $_SERVER['DOCUMENT_ROOT']);
 if (isset($_SERVER)) { $server =& $_SERVER; } else { $server =& $HTTP_SERVER_VARS; }

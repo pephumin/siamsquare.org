@@ -5,19 +5,15 @@ $title = "Help page";
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/template.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/first.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/esphtml.forms.inc';
 
 pageHeader($title);
 
 ?>
 
-<div class="container">
-
 <h2 id="top">Survey Help System</h2>
-<br>
 
 <div class="row">
-  <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+  <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
     <p><a href="#overview">Overview</a></p>
     <ul class="pe-ul">
       <li><small><i class="pe-li pe-check-square"></i> <a href="#login">Logging in</a></small></li>
@@ -38,13 +34,13 @@ pageHeader($title);
     </ul>
   </div>
 
-  <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+  <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
     <h3 id="overview">Overview <small>(<a href="#top"><i class="pe-arrow-circle-up pe-lg"></i>&nbsp; Back to top</a>)</small></h3>
     <p>Welcome to our online survey system!</p>
     <p><?php echo $yourAdminIs; ?></p>
     <p>Let's get started.</p>
     <p>When you first access the survey system, you'll be asked to log in:</p>
-    <p><img src='/public/images/login.png' alt='first page' title='The first page of the survey system: log in, sign up, take public surveys, or get help' /></p>
+    <p><img src='/public/images/0/login.png' alt='first page' title='The first page of the survey system: log in, sign up, take public surveys, or get help' /></p>
 
       <h4 id="login">Logging in</h4>
       <p>If your survey administrator has given you an account, enter your User ID and Password in the corresponding fields within the box labeled "Login".  When done, click the Login button.</p>
@@ -67,7 +63,7 @@ pageHeader($title);
 
     <h3 id="dashboard">Your dashboard <small>(<a href="#top"><i class="pe-arrow-circle-up pe-lg"></i>&nbsp; Back to top</a>)</small></h3>
     <p>After you log in, you'll see your dashboard:</p>
-    <p><img src='/public/images/dashboard.png' alt='dashboard' title='The dashboard, your view into the online survey system' /></p>
+    <p><img src='/public/images/0/dashboard.png' alt='dashboard' title='The dashboard, your view into the online survey system' /></p>
 
       <h4 id="mysurveys">My surveys</h4>
       <p>These are the surveys that you can take.  These surveys can be private to you, or a group you're in, or they can be public surveys.</p>
@@ -95,13 +91,13 @@ pageHeader($title);
 
     <h3 id="complete">Completing surveys <small>(<a href="#top"><i class="pe-arrow-circle-up pe-lg"></i>&nbsp; Back to top</a>)</small></h3>
     <p>Completing a survey is very easy: read the questions, top to bottom, and answer each.  Let's start with the basics:</p>
-    <p><img src='/public/images/samplesurvey1.png' alt='sample survey, first page' title='The first page of a sample survey' /></p>
+    <p><img src='/public/images/0/samplesurvey1.png' alt='sample survey, first page' title='The first page of a sample survey' /></p>
     <p>Every survey has a title.  In the image above, the title is "Sample Survey."  A survey may also have a sub-title and instructions, both of which are found below the title.</p>
     <p>A survey may be on a single page, or may span multiple pages.  If a survey spans multiple pages, your current page and the total number of pages will be shown.  You may always move forward to the next page, and the survey administrator may also allow you to move backward.
     <p>Some questions require an answer, while others do not.  If an answer is mandatory, the question will be marked with a red asterisk.  You must answer the question before moving to the next page or submitting your final answers.</p>
     <p>The most basic question types are radio buttons, text fields, and essay boxes, as seen in the image above.  Radio buttons allow you to choose one, out of many, options.  A text field allows you to type one line of text.  An essay box allows you to type many lines of text.  The survey administrator may limit the number of characters you can type into a text field or essay box.</p>
     <p>Let's look at more question types:</p>
-    <p><img src='/public/images/samplesurvey2.png' alt='sample survey, second page' title='The second (and last) page of a sample survey' /></p>
+    <p><img src='/public/images/0/samplesurvey2.png' alt='sample survey, second page' title='The second (and last) page of a sample survey' /></p>
     <p>Checkboxes allow you to choose multiple options from a list.  Click in the square beside the item and a "check" will appear, indicating your selection.  Click in the square again to remove the check.</p>
     <p>Drop-downs allow you to choose one item from a list of items; in this way, they are very much like radio buttons.  Click the down arrow on the right of the drop-down, then select one of the items from the list that appears.  Your selection will appear to the left of the down arrow.</p>
     <p>A rating scale (technically called a "Likert scale") is a special kind of radio button answer, where you indicate your degree of agreement with the presented statement.  You may choose one out of the five possible options.</p>

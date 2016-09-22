@@ -32,7 +32,7 @@ get_current_respondent($respondent);
 // survey status
 define('STATUS_NOT_STARTED', 'Not Started');
 define('STATUS_ALL_PARTIAL', 'Started, but incomplete');
-define('STATUS_SOME_PARTIAL', 'Some Finished, some incomplete');
+define('STATUS_SOME_PARTIAL', 'Some finished, some incomplete');
 define('STATUS_FINISHED', 'Finished');
 define('FORMAT_OUTPUT_DATE', isset($ESPCONFIG['date_format'])?$ESPCONFIG['date_format']:'%Y-%m-%d');
 
