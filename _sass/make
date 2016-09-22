@@ -1,4 +1,0 @@
-#!/bin/sh
-
-/usr/local/bin/sass admin.sass ../admin/assets/css/main.css --style compressed
-/usr/local/bin/sass public.sass ../public/assets/css/main.css --style compressed
