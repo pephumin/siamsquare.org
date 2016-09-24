@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<regions>
+  <region>
+    <titleenglish>Greater Bangkok</titleenglish>
+    <titlethai>กรุงเทพมหานครและปริมณฑล</titlethai>
+    <provinces>
+      <provinceenglish>>Bangkok</provinceenglish>
+      <provincethai>กรุงเทพมหานคร</provincethai>
+      <provinceenglish>>Samut Prakan</provinceenglish>
+      <provincethai>สมุทรปราการ</provincethai>
+      <provinceenglish>>Nonthaburi</provinceenglish>
+      <provincethai>นนทบุรี</provincethai>
+      <provinceenglish>>Pathum Thani</provinceenglish>
+      <provincethai>ปทุมธานี</provincethai>
+    </provinces>
+  </region>
+  <region>
+    <titleenglish>Central</titleenglish>
+    <titlethai>ภาคกลาง</titlethai>
+    <provinces>
+      <provinceenglish>>Ang Thong</provinceenglish>
+      <provincethai>อ่างทอง</provincethai>
+      <provinceenglish>>Ayutthaya</provinceenglish>
+      <provincethai>พระนครศรีอยุธยา</provincethai>
+      <provinceenglish>>Chainat</provinceenglish>
+      <provincethai>ชัยนาท</provincethai>
+      <provinceenglish>>Kamphaeng Phet</provinceenglish>
+      <provincethai>กำแพงเพชร</provincethai>
+      <provinceenglish>>Lopburi</provinceenglish>
+      <provincethai>ลพบุรี</provincethai>
+      <provinceenglish>>Nakhon Nayok</provinceenglish>
+      <provincethai>นครนายก</provincethai>
+      <provinceenglish>>Nakhon Pathom</provinceenglish>
+      <provincethai>นครปฐม</provincethai>
+      <provinceenglish>>Nakhon Sawan</provinceenglish>
+      <provincethai>นครสวรรค์</provincethai>
+      <provinceenglish>>Phetchabun</provinceenglish>
+      <provincethai>เพชรบูรณ์</provincethai>
+      <provinceenglish>>Phichit</provinceenglish>
+      <provincethai>พิจิตร</provincethai>
+      <provinceenglish>>Phitsanulok</provinceenglish>
+      <provincethai>พิษณุโลก</provincethai>
+      <provinceenglish>>Samut Sakhon</provinceenglish>
+      <provincethai>สมุทรสาคร</provincethai>
+      <provinceenglish>>Samut Songkhram</provinceenglish>
+      <provincethai>สมุทรสงคราม</provincethai>
+      <provinceenglish>>Saraburi</provinceenglish>
+      <provincethai>สระบุรี</provincethai>
+      <provinceenglish>>Sing Buri</provinceenglish>
+      <provincethai>สิงห์บุรี</provincethai>
+      <provinceenglish>>Sukhothai</provinceenglish>
+      <provincethai>สุโขทัย</provincethai>
+      <provinceenglish>>Suphan Buri</provinceenglish>
+      <provincethai>สุพรรณบุรี</provincethai>
+      <provinceenglish>>Uthai Thani</provinceenglish>
+      <provincethai>อุทัยธานี</provincethai>
+    </provinces>
+  </region>
+  <region>
+    <titleenglish>East</titleenglish>
+    <titlethai>ภาคตะวันออก</titlethai>
+    <provinces>
+      <provinceenglish>>Chachoengsao</provinceenglish>
+      <provincethai>ฉะเชิงเทรา</provincethai>
+      <provinceenglish>>Chanthaburi</provinceenglish>
+      <provincethai>จันทบุรี</provincethai>
+      <provinceenglish>>Chonburi</provinceenglish>
+      <provincethai>ชลบุรี</provincethai>
+      <provinceenglish>>Prachin Buri</provinceenglish>
+      <provincethai>ปราจีนบุรี</provincethai>
+      <provinceenglish>>Rayong</provinceenglish>
+      <provincethai>ระยอง</provincethai>
+      <provinceenglish>>Sa Kaeo</provinceenglish>
+      <provincethai>สระแก้ว</provincethai>
+      <provinceenglish>>Trat</provinceenglish>
+      <provincethai>ตราด</provincethai>
+    </provinces>
+  </region>
+  <region>
+    <titleenglish>North</titleenglish>
+    <titlethai>ภาคเหนือ</titlethai>
+    <provinces>
+      <provinceenglish>>Chiang Mai</provinceenglish>
+      <provincethai>เชียงใหม่</provincethai>
+      <provinceenglish>>Chiang Rai</provinceenglish>
+      <provincethai>เชียงราย</provincethai>
+      <provinceenglish>>Lampang</provinceenglish>
+      <provincethai>ลำปาง</provincethai>
+      <provinceenglish>>Lamphun</provinceenglish>
+      <provincethai>ลำพูน</provincethai>
+      <provinceenglish>>Mae Hong Son</provinceenglish>
+      <provincethai>แม่ฮ่องสอน</provincethai>
+      <provinceenglish>>Nan</provinceenglish>
+      <provincethai>น่าน</provincethai>
+      <provinceenglish>>Phayao</provinceenglish>
+      <provincethai>พะเยา</provincethai>
+      <provinceenglish>>Phrae</provinceenglish>
+      <provincethai>แพร่</provincethai>
+      <provinceenglish>>Uttaradit</provinceenglish>
+      <provincethai>อุตรดิตถ์</provincethai>
+    </provinces>
+  </region>
+  <region>
+    <titleenglish>Northeast</titleenglish>
+    <titlethai>ภาคอีสาน</titlethai>
+    <provinces>
+      <provinceenglish>>Amnat Charoen</provinceenglish>
+      <provincethai>อำนาจเจริญ</provincethai>
+      <provinceenglish>>Bueng Kan</provinceenglish>
+      <provincethai>บึงกาฬ</provincethai>
+      <provinceenglish>>Buriram</provinceenglish>
+      <provincethai>บุรีรัมย์</provincethai>
+      <provinceenglish>>Chaiyaphum</provinceenglish>
+      <provincethai>ชัยภูมิ</provincethai>
+      <provinceenglish>>Kalasin</provinceenglish>
+      <provincethai>กาฬสินธุ์</provincethai>
+      <provinceenglish>>Khon Kaen</provinceenglish>
+      <provincethai>ขอนแก่น</provincethai>
+      <provinceenglish>>Loei</provinceenglish>
+      <provincethai>เลย</provincethai>
+      <provinceenglish>>Maha Sarakham</provinceenglish>
+      <provincethai>มหาสารคาม</provincethai>
+      <provinceenglish>>Mukdahan</provinceenglish>
+      <provincethai>มุกดาหาร</provincethai>
+      <provinceenglish>>Mukdahan</provinceenglish>
+      <provincethai>มุกดาหาร</provincethai>
+      <provinceenglish>>Nakhon Phanom</provinceenglish>
+      <provincethai>นครพนม</provincethai>
+      <provinceenglish>>Nakhon Ratchasima</provinceenglish>
+      <provincethai>นครราชสีมา</provincethai>
+      <provinceenglish>>Nong Bua Lamphu</provinceenglish>
+      <provincethai>หนองบัวลำภู</provincethai>
+      <provinceenglish>>Nong Khai</provinceenglish>
+      <provincethai>หนองคาย</provincethai>
+      <provinceenglish>>Roi Et</provinceenglish>
+      <provincethai>ร้อยเอ็ด</provincethai>
+      <provinceenglish>>Sakon Nakhon</provinceenglish>
+      <provincethai>สกลนคร</provincethai>
+      <provinceenglish>>Sisaket</provinceenglish>
+      <provincethai>ศรีสะเกษ</provincethai>
+      <provinceenglish>>Surin</provinceenglish>
+      <provincethai>สุรินทร์</provincethai>
+      <provinceenglish>>Ubon Ratchathani</provinceenglish>
+      <provincethai>อุบลราชธานี</provincethai>
+      <provinceenglish>>Udon Thani</provinceenglish>
+      <provincethai>อุดรธานี</provincethai>
+      <provinceenglish>>Yasothon</provinceenglish>
+      <provincethai>ยโสธร</provincethai>
+    </provinces>
+  </region>
+  <region>
+    <titleenglish>South</titleenglish>
+    <titlethai>ภาคใต้</titlethai>
+    <provinces>
+      <provinceenglish>>Chumphon</provinceenglish>
+      <provincethai>ชุมพร</provincethai>
+      <provinceenglish>>Krabi</provinceenglish>
+      <provincethai>กระบี่</provincethai>
+      <provinceenglish>>Nakhon Si Thammarat</provinceenglish>
+      <provincethai>นครศรีธรรมราช</provincethai>
+      <provinceenglish>>Narathiwat</provinceenglish>
+      <provincethai>นราธิวาส</provincethai>
+      <provinceenglish>>Pattani</provinceenglish>
+      <provincethai>ปัตตานี</provincethai>
+      <provinceenglish>>Phang Nga</provinceenglish>
+      <provincethai>พังงา</provincethai>
+      <provinceenglish>>Phatthalung</provinceenglish>
+      <provincethai>พัทลุง</provincethai>
+      <provinceenglish>>Phuket</provinceenglish>
+      <provincethai>ภูเก็ต</provincethai>
+      <provinceenglish>>Ranong</provinceenglish>
+      <provincethai>ระนอง</provincethai>
+      <provinceenglish>>Satun</provinceenglish>
+      <provincethai>สตูล</provincethai>
+      <provinceenglish>>Songkhla</provinceenglish>
+      <provincethai>สงขลา</provincethai>
+      <provinceenglish>>Surat Thani</provinceenglish>
+      <provincethai>สุราษฎร์ธานี</provincethai>
+      <provinceenglish>>Trang</provinceenglish>
+      <provincethai>ตรัง</provincethai>
+      <provinceenglish>>Yala</provinceenglish>
+      <provincethai>ยะลา</provincethai>
+    </provinces>
+  </region>
+  <region>
+    <titleenglish>West</titleenglish>
+    <titlethai>ภาคตะวันตก</titlethai>
+    <provinces>
+      <provinceenglish>>Kanchanaburi</provinceenglish>
+      <provincethai>กาญจนบุรี</provincethai>
+      <provinceenglish>>Phetchaburi</provinceenglish>
+      <provincethai>เพชรบุรี</provincethai>
+      <provinceenglish>>Prachuap Khiri Khan</provinceenglish>
+      <provincethai>ประจวบคีรีขันธ์</provincethai>
+      <provinceenglish>>Ratchaburi</provinceenglish>
+      <provincethai>ราชบุรี</provincethai>
+      <provinceenglish>>Tak</provinceenglish>
+      <provincethai>ตาก</provincethai>
+    </provinces>
+  </region>
+</regions>
