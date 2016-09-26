@@ -1,6 +1,6 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/config.php';
 
 if (defined('ESP-FIRST-INCLUDED')) { return; }
 define ('ESP-FIRST-INCLUDED',true);

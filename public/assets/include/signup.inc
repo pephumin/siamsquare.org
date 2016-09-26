@@ -3,7 +3,7 @@
 <p>Please note that we only open for free member registration for a limited time. And after this free period, we will not accept this registration anymore, any new accounts have to be by invitation only.</p>
 <p>Should you need any support for accessing this section, please do not hesitate to contact our staff right away.</p>
 
-<form id="signupform" method="post" class="form-horizontal" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+<form id="signupform" method="post" class="form-horizontal" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
 
   <div id="wizard">
     <h4>Account information</h4>
@@ -187,19 +187,25 @@
           </select>
         </div>
       </div>
-    </section>
-
-    <h4>Contact information</h4>
-    <section data-step="2">
-      <legend>And lastly, please provide your <strong>true</strong> contact infromation</legend>
       <div class="form-group">
         <label for="mobile" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Mobile:</label>
         <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
           <div class="input-group">
-            <span class="input-group-addon"><i class="pe-mobile pe-fw"></i></span>
-            <input type="text" name="mobile" class="form-control" placeholder="Mobile number">
+            <input type="text" name="mobile1" class="form-control" placeholder="081">
+            <span class="input-group-addon"><i class="pe-minus pe-fw"></i></span>
+            <input type="text" name="mobile2" class="form-control" placeholder="555">
+            <span class="input-group-addon"><i class="pe-minus pe-fw"></i></span>
+            <input type="text" name="mobile3" class="form-control" placeholder="5555">
           </div>
         </div>
+      </div>
+    </section>
+
+    <h4>Terms and conditions</h4>
+    <section data-step="2">
+      <legend>And lastly, please read and agree to our terms and conditions</legend>
+      <div class="form-group">
+        <iframe src="http://www.pebinary.com/about/print-tos.html" width="100%" height="400px" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 control-label"></iframe>
       </div>
       <div class="form-group">
         <div class="col-xs-offset-0 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-xs-12 col-sm-7 col-md-7 col-lg-7">
@@ -208,11 +214,11 @@
           </div>
         </div>
       </div>
-      <div class="form-group">
+      <!-- <div class="form-group">
         <div class="col-xs-offset-0 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-xs-12 col-sm-7 col-md-7 col-lg-7">
           <button class="btn btn-info" name="submit" type="submit">Register <i class="pe-check-circle-o"></i></button> <button class="btn btn-default" name="cancel" type="reset">Cancel</button>
         </div>
-      </div>
+      </div> -->
     </section>
   </div>
 </form>
@@ -222,22 +228,27 @@
     $('#wizard').steps({
       headerTag: 'h4',
       bodyTag: 'section',
-      onStepChanging: function(e, currentIndex, newIndex) {
-        var fv = $('#wizard').data('formValidation'),
-        $container = $('#wizard').find('section[data-step="' + currentIndex +'"]');
-        fv.validateContainer($container);
-        var isValidStep = fv.isValidContainer($container);
-        if (isValidStep === false || isValidStep === null) { return false; }
-        return true;
-      },
-      onFinishing: function(e, currentIndex) {
-        var fv = $('#wizard').data('formValidation'),
-        $container = $('#wizard').find('section[data-step="' + currentIndex +'"]');
-        fv.validateContainer($container);
-        var isValidStep = fv.isValidContainer($container);
-        if (isValidStep === false || isValidStep === null) { return false; }
-        return true;
-      },
+      transitionEffect: "none",
+      enableFinishButton: true,
+      enablePagination: true,
+      enableAllSteps: true,
+      stepsOrientation: "vertical",
+      // onStepChanging: function(e, currentIndex, newIndex) {
+      //   var fv = $('#wizard').data('formValidation'),
+      //   $container = $('#wizard').find('section[data-step="' + currentIndex +'"]');
+      //   fv.validateContainer($container);
+      //   var isValidStep = fv.isValidContainer($container);
+      //   if (isValidStep === false || isValidStep === null) { return false; }
+      //   return true;
+      // },
+      // onFinishing: function(e, currentIndex) {
+      //   var fv = $('#wizard').data('formValidation'),
+      //   $container = $('#wizard').find('section[data-step="' + currentIndex +'"]');
+      //   fv.validateContainer($container);
+      //   var isValidStep = fv.isValidContainer($container);
+      //   if (isValidStep === false || isValidStep === null) { return false; }
+      //   return true;
+      // },
       onFinished: function(e, currentIndex) {
         $('#wizard').formValidation('defaultSubmit');
         // $('#welcomeModal').modal();

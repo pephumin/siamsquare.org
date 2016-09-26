@@ -18,15 +18,11 @@
 
 $_SERVER['BASE_PAGE'] = 'index.php';
 $title = "Respondent dashboard";
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/template.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/first.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/esphtml.forms.inc';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espauth-default.inc';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espauth.inc';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espdatalib.inc';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espsql.inc';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espsurvey.inc';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
+require_once DOCROOT.'/admin/assets/include/lib.inc';
+require_once DOCROOT.'/public/assets/include/template.php';
+require_once DOCROOT.'/public/assets/include/first.php';
+
 get_current_respondent($respondent);
 
 // survey status
@@ -35,7 +31,6 @@ define('STATUS_ALL_PARTIAL', 'Started, but incomplete');
 define('STATUS_SOME_PARTIAL', 'Some finished, some incomplete');
 define('STATUS_FINISHED', 'Finished');
 define('FORMAT_OUTPUT_DATE', isset($ESPCONFIG['date_format'])?$ESPCONFIG['date_format']:'%Y-%m-%d');
-
 
 // --------------------------------------------------------------------------------
 
@@ -47,6 +42,18 @@ handleChangePassword();
 if (is_session_authenticated()) { paint_authenticated(); }
 else { paint_non_authenticated(); }
 if ($notes) { pageFooter($notes); } else { pageFooter(); }
+
+echo "<div class=\"row\"><div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
+echo "<pre>\n";
+print_r($_POST);
+echo "</pre>\n";
+echo "</div>\n";
+echo "<div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
+echo "<pre>\n";
+print_r($_SESSION);
+echo "</pre>\n";
+echo "</div>\n";
+echo "</div></div>\n";
 
 // --------------------------------------------------------------------------------
 

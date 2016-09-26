@@ -2,14 +2,14 @@
 
 $_SERVER['BASE_PAGE'] = 'signup.php';
 $title = "Member registration";
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/template.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/first.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
+require_once DOCROOT.'/admin/assets/include/lib.inc';
+require_once DOCROOT.'/public/assets/include/template.php';
+require_once DOCROOT.'/public/assets/include/first.php';
 
 esp_init_adodb();
 
 $fields = array('username','password','email','fname','lname');
-
 $rqd_fields = array('password','password2','email','fname','lname');
 
 // set value to override config.php
@@ -29,13 +29,10 @@ do if (isset($post['email'])) {
   foreach ($rqd_fields as $f) { if (!isset($post[$f]) || empty($post[$f])) { $msg = mkerror("Please complete all required fields."); break; } }
 
   if (isset($msg)) { break; }
-
   if ($post['password'] != $post['password2']) { $msg = mkerror("Passwords do not match."); break; }
-
   if (empty($post['username'])) { $post['username'] = $post['email']; }
 
   $checksql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['respondent_table']." WHERE username = "._addslashes($post['email']);
-  //echo $checksql;
   $checkresult = execute_sql($checksql);
   if (record_count($checkresult) > 0) { $msg = mkerror("Your email is already registered in our system. You either need to recover password or register with a different email."); break; }
   db_close($checkresult);
@@ -57,9 +54,6 @@ do if (isset($post['email'])) {
   $sqlf = implode(',', $sqlf);
   $sqlv = implode(',', $sqlv);
 
-  //print_r($sqlf);
-  //print_r($sqlv);
-
   $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['respondent_table']." ($sqlf) VALUES ($sqlv)";
 
   $res = execute_sql($sql);
@@ -70,14 +64,29 @@ do if (isset($post['email'])) {
 
 } while(0);
 
-// --------------------------------------------------------------------------------
-
 pageHeader($title);
 if (isset($msg) && !empty($msg)) { echo "<p>$msg</p>\n"; }
 respondent_signup();
-if ($notes) { pageFooter($notes); } else { pageFooter(); }
 
 // --------------------------------------------------------------------------------
+
+// $p = simplexml_load_string("assets/include/provinces.xml");
+$p = new SimpleXMLElement(file_get_contents("assets/xml/provinces_eng.xml"));
+// var_dump($p);
+// var_dump($provinces);
+
+foreach ($p->children() as $ps) {
+  echo $ps->title;
+  echo "<br>\n";
+  foreach ($ps->title->provinces as $ss) {
+    echo $ss->province;
+    echo "<br>\n";
+  }
+}
+
+// --------------------------------------------------------------------------------
+
+if ($notes) { pageFooter($notes); } else { pageFooter(); }
 
 
 ?>

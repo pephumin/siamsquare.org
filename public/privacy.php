@@ -1,29 +1,26 @@
 <?php
-	
+
 $_SERVER['BASE_PAGE'] = 'privacy.php';
 $title = "Privacy Policy";
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/include/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/template.php';
-//require_once $_SERVER['DOCUMENT_ROOT'] . '/public/include/first.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
+require_once DOCROOT.'/admin/assets/include/lib.inc';
+require_once DOCROOT.'/public/assets/include/template.php';
+require_once DOCROOT.'/public/assets/include/first.php';
 
 // --------------------------------------------------------------------------------
 
-displayHeader($title);
-displayNav();
-echo "<div class=\"container\">\n";
+pageHeader($title);
 contentPrivacy();
-echo "</div>\n";
-displayFooter();
+if ($notes) { pageFooter($notes); } else { pageFooter(); }
 
 // --------------------------------------------------------------------------------
 
 function contentPrivacy() {
 ?>
 
-<h1>Privacy Policy</h1>
+<h2>Privacy Policy</h2>
 
 <p class="text-right"><em>Last Edited on 2016-05-12</em></p>
-<br />
 
 <p>This privacy policy has been compiled to better serve those who are concerned with how their 'Personally identifiable information' (PII) is being used online. PII, as used in US privacy law and information security, is information that can be used on its own or with other information to identify, contact, or locate a single person, or to identify an individual in context. Please read our privacy policy carefully to get a clear understanding of how we collect, use, protect or otherwise handle your Personally Identifiable Information in accordance with our website.</p>
 
@@ -49,8 +46,8 @@ function contentPrivacy() {
 
 <h3>How do we protect visitor information?</h3>
 
-<p>We do not use vulnerability scanning and/or scanning to PCI standards.<br />
-We do collect credit card information, but did not know PCI compliant scans are now required.<br />
+<p>We do not use vulnerability scanning and/or scanning to PCI standards.<br>
+We do collect credit card information, but did not know PCI compliant scans are now required.<br>
 We use regular Malware Scanning.</p>
 
 <p>Your personal information is contained behind secured networks and is only accessible by a limited number of persons who have special access rights to such systems, and are required to keep the information confidential. In addition, all sensitive/credit information you supply is encrypted via Secure Socket Layer (SSL) technology.</p>
@@ -88,7 +85,7 @@ We use regular Malware Scanning.</p>
 <p>Occasionally, at our discretion, we may include or offer third-party products or services on our website. These third-party sites have separate and independent privacy policies. We therefore have no responsibility or liability for the content and activities of these linked sites. Nonetheless, we seek to protect the integrity of our site and welcome any feedback about these sites.</p>
 
 
-<!-- 
+<!--
 
 <h3>Google</h3>
 
@@ -102,7 +99,7 @@ We use regular Malware Scanning.</p>
 
 <li>Demographics and Interests Reporting</li>
 
-<br />
+<br>
 
 <p>We along with third-party vendors, such as Google use first-party cookies (such as the Google Analytics cookies) and third-party cookies (such as the DoubleClick cookie) or other third-party identifiers together to compile data regarding user interactions with ad impressions and other ad service functions as they relate to our website.</p>
 
@@ -110,18 +107,18 @@ We use regular Malware Scanning.</p>
 
 <p>Users can set preferences for how Google advertises to you using the Google Ad Settings page. Alternatively, you can opt out by visiting the Network Advertising initiative opt out page or permanently using the Google Analytics Opt Out Browser add on.</p>
 
-<br />
+<br>
 
 -->
 
-<h3>Contacting us</h3>
+<h2>Contacting us</h2>
 
 <p>If there are any questions regarding this privacy policy you may contact us using the information below.</p>
 
-<address><strong>pebinary.com</strong><br />
-129 Rama 9 Road.<br />
-Bangkok, Bangkok 10250<br />
-THAILAND<br />
+<address><strong>pebinary.com</strong><br>
+129 Rama 9 Road.<br>
+Bangkok, Bangkok 10250<br>
+THAILAND<br>
 <code>info@pebinary.com</code></address>
 
 <?php
