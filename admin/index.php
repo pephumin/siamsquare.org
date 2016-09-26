@@ -1,7 +1,9 @@
 <?php
 
 $_SERVER['BASE_PAGE'] = 'index.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
+require_once DOCROOT.'/admin/assets/include/lib.inc';
+require_once DOCROOT.'/admin/assets/include/template.php';
 
 if($_GET['p']) { $p = $_GET['p']; }
 if ($p == '') { $p = "1"; }
@@ -46,18 +48,24 @@ elseif($ESPCONFIG['auth_design']) {
 }
 
 if(empty($where) && isset($_REQUEST['where'])) { $where = $_REQUEST['where']; }
-// if ($where == 'download') { include(esp_where($where)); exit; }
 
 global $title;
 if (empty($title)) { $title = 'Survey administration'; }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/template.php';
 pageHeader($title);
 include(esp_where($where));
+if ($notes) { pageFooter($notes); } else { pageFooter(); }
 
-//echo "Last executed query was ". $db->getLastQuery();
-
-if ($notes) { pageFooter($notes); }
-else { pageFooter(); }
+echo "<div class=\"row\"><div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
+echo "<pre>\n";
+print_r($_POST);
+echo "</pre>\n";
+echo "</div>\n";
+echo "<div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
+echo "<pre>\n";
+print_r($_SESSION);
+echo "</pre>\n";
+echo "</div>\n";
+echo "</div></div>\n";
 
 ?>

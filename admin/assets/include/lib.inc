@@ -78,17 +78,14 @@ function remove_magic_quotes($input) {
 }
 
 function goto_thankyou($sid,$referer) {
-
-  require_once DOCROOT . '/admin/assets/include/lib/espsurveystat.inc';
+  //require_once DOCROOT . '/admin/assets/include/lib/espsurveystat.inc';
   survey_stat_decrement(SURVEY_STAT_ABANDONED, $sid);
   survey_stat_increment(SURVEY_STAT_COMPLETED, $sid);
-
   $cfg =& $GLOBALS['ESPCONFIG'];
-  $sql = "SELECT thank_head,thank_head_th,thank_body,thank_body_th FROM ".$cfg['survey_table']." WHERE id=${sid}";
+  $sql = "SELECT thank_head, thank_head_th, thank_body, thank_body_th FROM ".$cfg['survey_table']." WHERE id=${sid}";
   $result = execute_sql($sql);
-  list($thank_head,$thank_head_th,$thank_body,$thank_body_th) = fetch_row($result);
+  list($thank_head, $thank_head_th, $thank_body, $thank_body_th) = fetch_row($result);
   db_close($result);
-
   echo "<h2>Congratulations! You have just completed this survey.</h2>\n\n";
   echo "<p><i class=\"fa fa-check-square-o fa-4x\"></i></p>\n\n";
   echo "<table class=\"table\">\n";
@@ -148,17 +145,13 @@ EOHTML;
 
 function goto_saved($sid, $url) {
   if ($_REQUEST['test']) { $url = $url."&test=1"; }
-  require_once DOCROOT . '/admin/assets/include/lib/espsurveystat.inc';
   survey_stat_decrement(SURVEY_STAT_ABANDONED, $sid);
   survey_stat_increment(SURVEY_STAT_SUSPENDED, $sid);
-?>
-<h2>Your survey has been saved</h2>
-<p>Your progress has been saved. You may return at any time to complete this survey.</p>
-<p>To do so, simply bookmark the link below.</p>
-<p>You may be prompted for your username and password to complete the survey.</p>
-<br>
-<a href="<?php echo $url; ?>" class="btn btn-success" role="button">Continue survey</a>&nbsp;
-<?php
+  echo "<h2>Your survey has been saved</h2>\n";
+  echo "<p>Your progress has been saved. You may return at any time to complete this survey.</p>\n";
+  echo "<p>To do so, simply bookmark the link below.</p>\n";
+  echo "<p>You may be prompted for your username and password to complete the survey.</p>\n";
+  echo "<a href=\"$url\" class=\"btn btn-success\" role=\"button\">Continue survey</a>\n";
   return;
 }
 
@@ -504,12 +497,15 @@ function survey_auth($sid, $username, $password, $raw_password, $css = null, $ti
   $GLOBALS['auth_options'] = array();
 
   esp_init_adodb();
-  $sql = "SELECT realm FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id = $sid AND public = 'N' ";
+  // $sql = "SELECT realm FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id = $sid AND public = 'N' ";
+  $sql = "SELECT realm FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id = $sid ";
+  // echo $sql;
+  // echo "<br>\n";
   $accres = execute_sql($sql);
   if (!$accres) { $GLOBALS['errmsg'] = mkerror('Unable to execute query for access.'); return(false); }
   // no matching rows ... no authorization required
   if (record_count($accres) < 1) { return(true); }
-  $realm = $accres->fields[0];
+  $realms = $accres->fields[0];
   db_close($accres);
 
   // A matching row was found - the survey requires authentication.
@@ -538,7 +534,7 @@ function survey_auth($sid, $username, $password, $raw_password, $css = null, $ti
   if (!$auth) {
     // record the fact that authentication failed
     if ($loginAttempt) {
-      require_once DOCROOT . '/admin/assets/include/lib/espsurveystat.inc';
+      //require_once DOCROOT . '/admin/assets/include/lib/espsurveystat.inc';
       survey_stat_increment(SURVEY_STAT_LOGINFAIL, $sid);
     }
 
@@ -2129,7 +2125,7 @@ define('SURVEY_STAT_COMPLETED', 'completed');
 function stat_fetch_with_summary($limitToCurrentUser = true) {
   $cfg =& $GLOBALS['ESPCONFIG'];
   if ($limitToCurrentUser) {
-    require_once DOCROOT . '/admin/assets/include/lib/espsurvey.inc';
+    //require_once DOCROOT . '/admin/assets/include/lib/espsurvey.inc';
     $where = survey_fetch_limiting_where("{$cfg['survey_table']}.status", "{$cfg['survey_table']}.owner", "{$cfg['survey_table']}.realm");
     $sql = sprintf('SELECT * FROM %1$s JOIN %2$s ON %2$s.id=%1$s.survey_id WHERE %3$s', $cfg['survey_statistics_table'], $cfg['survey_table'], $where);
   } else {

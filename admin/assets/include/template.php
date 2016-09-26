@@ -1,5 +1,8 @@
 <?php
 
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/db.inc';
+
 function logo() {
   echo "<span class=\"logo3\">ssq&#9744;</span>";
 }
@@ -9,13 +12,11 @@ function peblogo() {
 }
 
 function pageHeader($title) {
-  $home = "http://www.siamsquare.org/";
-  $admin = "http://www.siamsquare.org/admin/";
-    $user = $_SESSION['acl']['username'];
-    $group = $_SESSION['acl']['pgroup'];
-    $g = $group[0];
-    if ($g) { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd> <i class=\"pe-building pe-fw\"></i> <kbd>$g</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
-    if(!empty($_SESSION['acl']['username'])) { $signed = "Logged in as $show"; } else { $signed = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised clients only"; }
+  $user = $_SESSION['acl']['username'];
+  $group = $_SESSION['acl']['pgroup'];
+  $g = $group[0];
+  if ($g) { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd> <i class=\"pe-building pe-fw\"></i> <kbd>$g</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
+  if(!empty($_SESSION['acl']['username'])) { $signed = "Logged in as $show"; } else { $signed = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised clients only"; }
   header("Content-language: en");
   header("Content-type: text/html; charset=utf-8");
 ?>
@@ -51,6 +52,7 @@ function pageHeader($title) {
   <meta name="theme-color" content="#FFFFFF">
   <script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
   <script type="text/javascript" src="assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="assets/js/jquery-ui.min.js"></script>
   <script type="text/javascript" src="assets/js/jquery.steps.js"></script>
   <script type="text/javascript" src="assets/js/fv/formValidation.min.js"></script>
   <script type="text/javascript" src="assets/js/fv/bootstrap.min.js"></script>
@@ -65,7 +67,7 @@ function pageHeader($title) {
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-2">
       <div class="container">
-        <h1><a href="<?php echo $admin; ?>" title="PE BINARY CO., LTD."><?php logo(); ?></a> <span class="sub-brand">Client</span></h1>
+        <h1><a href="<?php echo MYADMIN; ?>" title="PE BINARY CO., LTD."><?php logo(); ?></a> <span class="sub-brand">Client</span></h1>
         <p class="description">A market research company specialised in mobile survey</p>
         <p class="thai-name"><i>บริษัท พีอี ไบนารี่ จำกัด</i></p>
       </div>
@@ -80,7 +82,7 @@ function pageHeader($title) {
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a href="<?php echo $admin; ?>" class="navbar-brand" title="PE BINARY CO., LTD."><?php echo $signed; ?></a>
+            <a href="<?php echo MYADMIN; ?>" class="navbar-brand" title="PE BINARY CO., LTD."><?php echo $signed; ?></a>
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
@@ -96,7 +98,7 @@ function pageHeader($title) {
                   <li><a href="#"><i class="pe-archive pe-fw"></i> Archived</a></li>
                   <li role="separator" class="divider"></li>
                   <li class="dropdown-header">Create a survey</li>
-                  <li><a href="<?php echo $admin; ?>/?where=new"><i class="pe-file-o pe-fw"></i> New survey</a></li>
+                  <li><a href="<?php echo MYADMIN; ?>/?where=new"><i class="pe-file-o pe-fw"></i> New survey</a></li>
                 </ul>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-graduation-cap pe-fw"></i> My team <span class="caret"></span></a>
@@ -105,32 +107,32 @@ function pageHeader($title) {
                   <li><a href="#"><i class="pe-user pe-fw"></i> My team</a></li>
                   <li role="separator" class="divider"></li>
                   <li class="dropdown-header">Manage your team</li>
-                  <li><a href="<?php echo $admin; ?>?where=designers"><i class="pe-user-plus pe-fw"></i> Add a new user</a></li>
+                  <li><a href="<?php echo MYADMIN; ?>?where=designers"><i class="pe-user-plus pe-fw"></i> Add a new user</a></li>
                   <li><a href="#"><i class="pe-cogs pe-fw"></i> Member permission</a></li>
                 </ul>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-user pe-fw"></i> My profile <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">Manage your profile</li>
-                  <li><a href="<?php echo $admin; ?>?where=admdesigner&amp;u=<?php echo $user; ?>&amp;r=<?php echo $g; ?>"><i class="pe-cog pe-fw"></i> Change your info</a></li>
-                  <li><a href="<?php echo $admin; ?>?where=passwd"><i class="pe-key pe-fw"></i> Change your password</a></li>
+                  <li><a href="<?php echo MYADMIN; ?>?where=admdesigner&amp;u=<?php echo $user; ?>&amp;r=<?php echo $g; ?>"><i class="pe-cog pe-fw"></i> Change your info</a></li>
+                  <li><a href="<?php echo MYADMIN; ?>?where=passwd"><i class="pe-key pe-fw"></i> Change your password</a></li>
                 </ul>
   <?php if ($_SESSION['acl']['superuser'] == 'Y') { ?>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-unlock-alt pe-fw"></i> Superuser <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">Special menu</li>
-                  <li><a href="<?php echo $admin; ?>?where=purge"><i class="pe-trash-o pe-fw"></i> Delete a survey</a></li>
-                  <li><a href="<?php echo $admin; ?>?where=response_purge"><i class="pe-recycle pe-fw"></i> Delete a response</a></li>
-                  <li><a href="<?php echo $admin; ?>?where=groups"><i class="pe-database pe-fw"></i> Manage groups</a></li>
-                  <li><a href="<?php echo $admin; ?>?where=guide"><i class="pe-list-alt pe-fw"></i> Admin guide</a></li>
+                  <li><a href="<?php echo MYADMIN; ?>?where=purge"><i class="pe-trash-o pe-fw"></i> Delete a survey</a></li>
+                  <li><a href="<?php echo MYADMIN; ?>?where=response_purge"><i class="pe-recycle pe-fw"></i> Delete a response</a></li>
+                  <li><a href="<?php echo MYADMIN; ?>?where=groups"><i class="pe-database pe-fw"></i> Manage groups</a></li>
+                  <li><a href="<?php echo MYADMIN; ?>?where=guide"><i class="pe-list-alt pe-fw"></i> Admin guide</a></li>
                 </ul>
   <?php } ?>
-              <li><a href="<?php echo $admin; ?>/?where=logout"><i class="pe-sign-out pe-fw"></i> Log out</a></li>
+              <li><a href="<?php echo MYADMIN; ?>?where=logout"><i class="pe-sign-out pe-fw"></i> Log out</a></li>
 <?php } else { ?>
-              <li><a href="<?php echo $admin; ?>"><i class="pe-power-off pe-fw"></i> Log in</a></li>
-              <li><a href="<?php echo $admin; ?>?where=request"><i class="pe-bullhorn pe-fw"></i> Request for an access</a></li>
-              <li><a href="<?php echo $home; ?>"><i class="pe-undo pe-fw"></i> Back</a></li>
+              <li><a href="<?php echo MYADMIN; ?>"><i class="pe-power-off pe-fw"></i> Log in</a></li>
+              <li><a href="<?php echo MYADMIN; ?>request.php"><i class="pe-bullhorn pe-fw"></i> Request for an access</a></li>
+              <li><a href="<?php echo MYHOME; ?>"><i class="pe-undo pe-fw"></i> Back</a></li>
 <?php } ?>
             </ul>
           </div>
@@ -152,8 +154,8 @@ function dFoot($message) {
     msgWindow.document.write("<body>"+msg+"</body></html>");
   }
   function debugWindow () {
-    title="Debug Window";
-    msg="<?php echo(addcslashes($message, "\0..\31\\\"")); ?>";
+    title = "Debug Window";
+    msg = "<?php echo(addcslashes($message, "\0..\31\\\"")); ?>";
     windowOpener(title, msg);
   }
 </script>
@@ -186,7 +188,7 @@ function pageFooter($notes = null) {
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3">
       <div class="container">
-        <a class="btn btn-info btn-xs" href="http://www.bootlint.com/?url=http://www.siamsquare.org<?php echo $_SERVER['PHP_SELF']; ?>" target="_blank" role="button">bootlint</a>
+        <a class="btn btn-info btn-xs" href="http://www.bootlint.com/?url=http://www.siamsquare.org<?php echo ME; ?>" target="_blank" role="button">bootlint</a>
 <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/debug.inc'; ?>
       </div>
     </div>
@@ -279,35 +281,37 @@ function displayTabNav_tabs() {
 
 function displayTabNav() {
   global $tab;
-  echo "<p>";
-  echo '<input type="hidden" name="where" value="tab" />';
-  if ($tab == 'general') { echo '<input type="submit" name="tab_general" value="General" class="btn btn-default active btn-sm" />'; }
-  else { echo '<input type="submit" name="tab_general" value="General" class="btn btn-default btn-sm" />'; }
-  echo " <i class=\"pe-angle-double-right pe-fw\"></i>\n";
-  if ($tab == 'questions') { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-default active btn-sm" />'; }
-  else { echo '<input type="submit" name="tab_questions" value="Questions" class="btn btn-default btn-sm" />'; }
-  echo " <i class=\"pe-angle-double-right pe-fw\"></i>\n";
-  if ($tab == 'order') { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-default active btn-sm" />'; }
-  else { echo '<input type="submit" name="tab_order" value="Order" class="btn btn-default btn-sm" />'; }
-  echo " <i class=\"pe-angle-double-right pe-fw\"></i>\n";
-  if ($tab == 'conditions') { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-default active btn-sm" />'; }
-  else { echo '<input type="submit" name="tab_conditions" value="Conditions" class="btn btn-default btn-sm" />'; }
-  echo " <i class=\"pe-angle-double-right pe-fw\"></i>\n";
-  if ($tab == 'preview') { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-default active btn-sm" />'; }
-  else { echo '<input type="submit" name="tab_preview" value="Preview" class="btn btn-default btn-sm" />'; }
-  echo " <i class=\"pe-angle-double-right pe-fw\"></i>\n";
-  if ($tab == 'finish') { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-default active btn-sm" />'; }
-  else { echo '<input type="submit" name="tab_finish" value="Finish" class="btn btn-default btn-sm" />'; }
-  echo "</p>";
-  echo "<p class=\"text-muted\">";
-  if ($tab == 'general') { echo '<strong>General</strong> tab is all about survey information including title and other important descriptions'; }
-  elseif ($tab == 'questions') { echo '<strong>Questions</strong> tab is where individual survey questions and their answers are added and modified.'; }
-  elseif ($tab == 'order') { echo '<strong>Order</strong> tab is where the inserted questions can be rearranged/ reordered or even deleted'; }
-  elseif ($tab == 'conditions') { echo '<strong>Conditions</strong> tab is for setting a specific questionnaire flow or skipping routes based on an answer.'; }
-  elseif ($tab == 'preview') { echo '<strong>Preview</strong> tab shows how the questionnaire will look like. It is highly recommended to preview it as much as possible.'; }
-  elseif ($tab == 'finish') { echo '<strong>Finish</strong> tab is the final tab where everything is done and your survey is ready to move to the next step, Live.'; }
-  echo "</p><hr>";
-
+  echo "\n";
+  echo "<hr>\n";
+  echo "<p>\n";
+  echo "  <input type=\"hidden\" name=\"where\" value=\"tab\">\n";
+  if ($tab == "general") { echo "  <input type=\"submit\" name=\"tab_general\" value=\"General\" class=\"btn btn-default active btn-sm\">\n"; }
+  else { echo "  <input type=\"submit\" name=\"tab_general\" value=\"General\" class=\"btn btn-default btn-sm\">\n"; }
+  echo "  <i class=\"pe-angle-double-right pe-fw\"></i>\n";
+  if ($tab == "questions") { echo "  <input type=\"submit\" name=\"tab_questions\" value=\"Questions\" class=\"btn btn-default active btn-sm\">\n"; }
+  else { echo "  <input type=\"submit\" name=\"tab_questions\" value=\"Questions\" class=\"btn btn-default btn-sm\">\n"; }
+  echo "  <i class=\"pe-angle-double-right pe-fw\"></i>\n";
+  if ($tab == "order") { echo "  <input type=\"submit\" name=\"tab_order\" value=\"Order\" class=\"btn btn-default active btn-sm\">\n"; }
+  else { echo "  <input type=\"submit\" name=\"tab_order\" value=\"Order\" class=\"btn btn-default btn-sm\">\n"; }
+  echo "  <i class=\"pe-angle-double-right pe-fw\"></i>\n";
+  if ($tab == "conditions") { echo "  <input type=\"submit\" name=\"tab_conditions\" value=\"Conditions\" class=\"btn btn-default active btn-sm\">\n"; }
+  else { echo "  <input type=\"submit\" name=\"tab_conditions\" value=\"Conditions\" class=\"btn btn-default btn-sm\">\n"; }
+  echo "  <i class=\"pe-angle-double-right pe-fw\"></i>\n";
+  if ($tab == "preview") { echo "  <input type=\"submit\" name=\"tab_preview\" value=\"Preview\" class=\"btn btn-default active btn-sm\">\n"; }
+  else { echo "  <input type=\"submit\" name=\"tab_preview\" value=\"Preview\" class=\"btn btn-default btn-sm\">\n"; }
+  echo "  <i class=\"pe-angle-double-right pe-fw\"></i>\n";
+  if ($tab == "finish") { echo "  <input type=\"submit\" name=\"tab_finish\" value=\"Finish\" class=\"btn btn-default active btn-sm\">\n"; }
+  else { echo "  <input type=\"submit\" name=\"tab_finish\" value=\"Finish\" class=\"btn btn-default btn-sm\">\n"; }
+  echo "</p>\n";
+  echo "<p class=\"text-muted\">\n";
+  if ($tab == "general") { echo "  <strong>General</strong> tab is all about survey information including title and other important descriptions\n"; }
+  elseif ($tab == "questions") { echo "  <strong>Questions</strong> tab is where individual survey questions and their answers are added and modified.\n"; }
+  elseif ($tab == "order") { echo "  <strong>Order</strong> tab is where the inserted questions can be rearranged/ reordered or even deleted\n"; }
+  elseif ($tab == "conditions") { echo "  <strong>Conditions</strong> tab is for setting a specific questionnaire flow or skipping routes based on an answer.\n"; }
+  elseif ($tab == "preview") { echo "  <strong>Preview</strong> tab shows how the questionnaire will look like. It is highly recommended to preview it as much as possible.\n"; }
+  elseif ($tab == "finish") { echo "  <strong>Finish</strong> tab is the final tab where everything is done and your survey is ready to move to the next step, Live.\n"; }
+  echo "</p>\n";
+  echo "<hr>\n\n";
 }
 
 function displayAdminBack() {
