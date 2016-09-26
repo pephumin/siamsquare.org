@@ -33,7 +33,7 @@ if ('0000-00-00 00:00:00' == $survey['close_date']) { $survey['close_date'] = ''
 <script type="text/javascript">
 <!--
 function validate() {
-    return true;
+  return true;
 }
 -->
 </script>
@@ -50,9 +50,9 @@ function validate() {
     <?php // if ($sid): echo mktext('title', 60, 60, $survey); ?>
     <p class="text-muted">Survey title (project name).</p>
     <?php if ($survey['title']): ?>
-      <input class="form-control" type="text" name="title" value="<?php echo $survey['title']; ?>" />
+      <input class="form-control" type="text" name="title" value="<?php echo $survey['title']; ?>">
     <?php else: ?>
-     <input class="form-control" type="text" name="title" placeholder="English only." />
+     <input class="form-control" type="text" name="title" placeholder="English only.">
     <?php endif; ?>
   </div>
 </div>
@@ -65,9 +65,9 @@ function validate() {
     <?php // if ($sid): echo mktext('subtitle', 60, 128, $survey['subtitle']); ?>
     <p class="text-muted">Short summary on the type of study e.g. Customer satisfaction, Event evaluation, etc.</p>
     <?php if ($survey['subtitle']): ?>
-      <input class="form-control" type="text" name="subtitle" value="<?php echo $survey['subtitle']; ?>" />
+      <input class="form-control" type="text" name="subtitle" value="<?php echo $survey['subtitle']; ?>">
     <?php else: ?>
-      <input class="form-control" type="text" name="subtitle" placeholder="English only." />
+      <input class="form-control" type="text" name="subtitle" placeholder="English only.">
     <?php endif; ?>
   </div>
 </div>
@@ -137,9 +137,9 @@ function validate() {
   <div class="col-sm-9">
     <p class="text-muted">Sends a copy of each submission to this email. Leave blank if you do not need an email backup.</p>
     <?php if ($survey['email']): ?>
-     <input class="form-control" type="text" name="email" value="<?php echo $survey['email']; ?>" />
+     <input class="form-control" type="text" name="email" value="<?php echo $survey['email']; ?>">
     <?php else: ?>
-      <input class="form-control" type="text" name="email" placeholder="email@company.com" />
+      <input class="form-control" type="text" name="email" placeholder="email@company.com">
     <?php endif; ?>
   </div>
 </div>
@@ -155,17 +155,17 @@ function validate() {
         <td>
           <p>Starting date</p>
           <?php if ($survey['open_date']): ?>
-            <input class="form-control" type="text" name="open_date" value="<?php echo $survey['open_date']; ?>" />
+            <input class="form-control" type="text" name="open_date" value="<?php echo $survey['open_date']; ?>">
           <?php else: ?>
-            <input class="form-control" type="text" name="open_date" placeholder="2017-02-26 00:00:00" />
+            <input class="form-control" type="text" name="open_date" placeholder="2017-02-26 00:00:00">
           <?php endif; ?>
         </td>
         <td>
           <p>Closing date</p>
           <?php if ($survey['close_date']): ?>
-            <input class="form-control" type="text" name="close_date" value="<?php echo $survey['close_date']; ?>" />
+            <input class="form-control" type="text" name="close_date" value="<?php echo $survey['close_date']; ?>">
           <?php else: ?>
-            <input class="form-control" type="text" name="close_date" placeholder="2017-02-26 00:00:00" />
+            <input class="form-control" type="text" name="close_date" placeholder="2017-02-26 00:00:00">
           <?php endif; ?>
         </td>
       </tr>
@@ -189,10 +189,10 @@ if(isset($_SESSION['acl']['superuser']) && $_SESSION['acl']['superuser'] == 'Y')
   db_close($rr);
   if ($survey['owner']) {
     $out1 = '<input type="text" class="form-control" name="username" placeholder="'.$survey['owner'].'" disabled>';
-    $out1 .= '<input type="hidden" name="username" value="'.$survey['owner'].'" />';
+    $out1 .= '<input type="hidden" name="username" value="'.$survey['owner'].'">';
   } else {
     $out1 = '<input type="text" class="form-control" name="username" placeholder="'.$_SESSION['acl']['username'].'" disabled>';
-    $out1 .= '<input type="hidden" name="username" value="'.$_SESSION['acl']['username'].'" />';
+    $out1 .= '<input type="hidden" name="username" value="'.$_SESSION['acl']['username'].'">';
   }
   //$out = '<input type="text" class="form-control" name="username" placeholder="'.$_SESSION['acl']['username'].'" disabled>';
   //$out .= "&nbsp;/&nbsp;";
@@ -201,14 +201,14 @@ if(isset($_SESSION['acl']['superuser']) && $_SESSION['acl']['superuser'] == 'Y')
   foreach($_SESSION['acl']['pdesign'] as $r) { $realms[$r] = $r; }
   if ($survey['owner']) {
     $out1 = '<input type="text" class="form-control" name="username" placeholder="'.$survey['owner'].'" disabled>';
-    $out1 .= '<input type="hidden" name="username" value="'.$survey['owner'].'" />';
+    $out1 .= '<input type="hidden" name="username" value="'.$survey['owner'].'">';
   } else {
     $out1 = '<input type="text" class="form-control" name="username" placeholder="'.$_SESSION['acl']['username'].'" disabled>';
-    $out1 .= '<input type="hidden" name="username" value="'.$_SESSION['acl']['username'].'" />';
+    $out1 .= '<input type="hidden" name="username" value="'.$_SESSION['acl']['username'].'">';
   }
   //$out .= "&nbsp;/&nbsp;";
   $out2 .= '<input type="text" class="form-control" name="realm" placeholder="'.$realms[$r].'" disabled>';
-  $out2 .= '<input type="hidden" name="realm" value="'.$realms[$r].'" />';
+  $out2 .= '<input type="hidden" name="realm" value="'.$realms[$r].'">';
 }
 //echo $out;
 ?>
@@ -223,10 +223,10 @@ if(isset($_SESSION['acl']['superuser']) && $_SESSION['acl']['superuser'] == 'Y')
           <p>Project ID</p>
           <?php if ($survey['name']): ?>
             <input class="form-control" type="text" name="name" value="<?php echo $survey['name']; ?>" disabled />
-            <input type="hidden" name="name" value="<?php echo $survey['name']; ?>" />
+            <input type="hidden" name="name" value="<?php echo $survey['name']; ?>">
           <?php else: ?>
             <input class="form-control" type="text" name="name" value="<?php echo survey_assign_new_name(); ?>" disabled />
-            <input type="hidden" name="name" value="<?php echo survey_assign_new_name(); ?>" />
+            <input type="hidden" name="name" value="<?php echo survey_assign_new_name(); ?>">
           <?php endif; ?>
         </td>
         <td>
@@ -247,15 +247,15 @@ if(isset($_SESSION['acl']['superuser']) && $_SESSION['acl']['superuser'] == 'Y')
 <div class="form-group">
   <label class="col-sm-3 control-label">&nbsp;</label>
   <div class="col-sm-9">
-    <input type="hidden" name="public" value="Y" />
-    <input type="hidden" name="theme" value="ssq.css" />
-    <input type="hidden" name="auto_num" value="Y" />
-    <input type="hidden" name="sid" value="<?php echo $sid; ?>" />
-    <input type="hidden" name="thank_page" value="" />
-    <input type="hidden" name="thank_head" value="Thank you for taking part of this survey" />
-    <input type="hidden" name="thank_head_th" value="ขอบพระคุณที่สละเวลาร่วมแสดงความคิดเห็น" />
-    <input class="btn btn-default btn-sm btn-success" type="submit" name="submit" value="Update" />&nbsp;
-    <input class="btn btn-default btn-sm" type="submit" name="cancel" value="Cancel" />&nbsp;
+    <input type="hidden" name="public" value="Y">
+    <input type="hidden" name="theme" value="ssq.css">
+    <input type="hidden" name="auto_num" value="Y">
+    <input type="hidden" name="sid" value="<?php echo $sid; ?>">
+    <input type="hidden" name="thank_page" value="">
+    <input type="hidden" name="thank_head" value="Thank you for taking part of this survey">
+    <input type="hidden" name="thank_head_th" value="ขอบพระคุณที่สละเวลาร่วมแสดงความคิดเห็น">
+    <input class="btn btn-default btn-sm btn-success" type="submit" name="submit" value="Update">&nbsp;
+    <input class="btn btn-default btn-sm" type="submit" name="cancel" value="Cancel">&nbsp;
   </div>
 </div>
 

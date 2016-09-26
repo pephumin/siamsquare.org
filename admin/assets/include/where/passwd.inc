@@ -86,11 +86,9 @@ else if(isset($_POST['newpass1'])) { echo(mkerror('New passwords do not match or
     });
   });
 </script>
-<br><br><hr>
-
-
+<br><br>
 <div class="alert alert-info alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-  <h4><i class="pe-lightbulb-o pe-fw pe-2x"></i> Tips for choosing a strong password</h4>
+  <h4><i class="pe-lightbulb-o pe-fw pe-lg"></i> Tips for choosing a strong password</h4>
   <p>Below are some nice tips for anyone who cares about setting up a good strong password</p>
   <ul class="pe-ul">
     <li><i class="pe-li pe-check-square"></i> <strong>Create passwords that are easy to remember but hard for others to guess.</strong> When possible, use a phrase such as “I started 7th grade at Lincoln Middle School in 2004” and use the initial of each word like this: “Is7gaLMSi#2004.” And make them at least a little different (by adding a couple of unique letters) for each site. On some sites you might even be able to type in the entire phrase.</li>

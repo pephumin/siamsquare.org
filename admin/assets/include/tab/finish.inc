@@ -8,8 +8,7 @@ $_SESSION['new_survey'] = false;
 $survey_name = "";
 $sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id = ". $_SESSION['survey_id'];
 if ($result = execute_sql($sql)) {
-    if (record_count($result) > 0)
-      $survey_name = $result->fields[0];
+  if (record_count($result) > 0) { $survey_name = $result->fields[0]; }
   db_close($result);
 }
 
@@ -21,7 +20,7 @@ survey_stat_init($_SESSION['survey_id']);
 
 <script type="text/javascript">
 function validate() {
-    return true;
+  return true;
 }
 </script>
 

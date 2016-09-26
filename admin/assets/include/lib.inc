@@ -713,10 +713,7 @@ function authenticate($username, $password, &$realms) {
 
   $res = execute_sql($sql);
   if ($res) {
-    // was there a single match?
-    // NOTE: <username, realm> is the unique key in the respondent table.  Thus, two or more users with the same
-    // NOTE: username and password, but different realms, will pass this check.  You must then have some external
-    // NOTE: method to disambiguate which realm is appropriate (like checking the surveys).
+    // Two or more users with the same username and password, but different realms, will pass this check.
     $isAuthenticated = (1 <= record_count($res) ? true : false);
     if ($isAuthenticated) {
       $realms = array ();
@@ -1748,17 +1745,13 @@ function response_select_name($sid, $rid, $qids = null) {
             list($qid, $sub) = explode('_', $qid);
             if ($arr[0] != 8)
             continue; // other
-
             // rank
             $str1 = $arr[2];
             do {
                 $str2 = $str1;
-                $str1 = eregi_replace(
-                    "(^| )(what|which|why|how|who|where|how|is|are|were|the|a|it|of|do|you|your|please|enter)[ ?]",
-                    " ", $str2);
+                $str1 = eregi_replace("(^| )(what|which|why|how|who|where|how|is|are|were|the|a|it|of|do|you|your|please|enter)[ ?]", " ", $str2);
             } while ($str1 != $str2);
-            $str1 = trim(strtoupper(eregi_replace(
-                "[^A-Z0-9]+", " ", $str1)));
+            $str1 = trim(strtoupper(eregi_replace("[^A-Z0-9]+", " ", $str1)));
                 $str1 = ereg_replace(' +','_',$str1);
                 $arr[1] = strtoupper($arr[1]);
                 $arr[1] .= "_$str1";
@@ -1856,14 +1849,10 @@ function response_send_email($sid, $rid) {
   reset($answers);
   while($arr = array_shift($answers)) {
     unset($x);
-    if (count($arr) > 2) { list($k, $v, $x) = $arr; }
-    else { list($k, $v) = $arr; }
+    if (count($arr) > 2) { list($k, $v, $x) = $arr; } else { list($k, $v) = $arr; }
     if (is_array($v))
     $v = implode($isep, $v);
-    if (isset($x)) {
-      if (is_array($x)) { $v .= ' (' . implode($isep, $x) . ')'; }
-      else { $v .= ' = ' . $x; }
-    }
+    if (isset($x)) { if (is_array($x)) { $v .= ' (' . implode($isep, $x) . ')'; } else { $v .= ' = ' . $x; } }
     $body .= $k . $qsep . $v . $end;
   }
 
@@ -2005,20 +1994,16 @@ function survey_get_in_realm($realm, &$surveys) {
   $where = survey_fetch_limiting_where('status','owner',array ('tblSurvey.realm', 'tblAccess.realm'));
   $realm = _addslashes($realm);
   $sql = "SELECT DISTINCT tblSurvey.id, tblSurvey.name, tblSurvey.title, tblSurvey.owner, tblSurvey.open_date, tblSurvey.close_date FROM {$GLOBALS['ESPCONFIG']['survey_table']} AS tblSurvey JOIN {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess ON tblAccess.survey_id=tblSurvey.id WHERE (tblSurvey.realm = $realm OR tblAccess.realm = $realm) AND ($where) ORDER BY id DESC";
-  //echo $sql;
   return survey_get_from_sql($sql, $surveys);
 }
 
 function survey_get_public(&$surveys) {
-  // get the survey data based on those limitations
   $where = survey_fetch_limiting_where();
   $sql = "SELECT id, name, title, owner, open_date, close_date FROM {$GLOBALS['ESPCONFIG']['survey_table']} WHERE (public = 'Y') AND ($where) ORDER BY id DESC";
-  //echo $sql;
   return survey_get_from_sql($sql, $surveys);
 }
 
 function survey_get_privilege(&$privileges, $sids, $realm = null) {
-  // construct the limit clauses
   if (is_scalar($sids)) { $sids = array ($sids); }
   elseif (!is_array($sids)) { return false; }
   $limit  = sprintf('(tblAccess.survey_id %s)', array_to_insql($sids));
@@ -2058,46 +2043,34 @@ NOTE2: Each row will have 5 columns: id, active, open, available, visible.  Poss
 
 function survey_get_accessibility(&$accessibility, $sids, $username = null, $realm = null) {
   $yes = _addslashes('Y');
-
-  // construct the accessibilty clauses
   // ... active
   $statusActive = db_bin('tblSurvey.status', STATUS_ACTIVE);
   $statusActive = "CASE WHEN ($statusActive) THEN 1 ELSE 0 END";
-
   // ... open
   $now = sys_time_stamp();
   $STATUS_CLOSED_TOO_EARLY = STATUS_CLOSED_TOO_EARLY;
   $STATUS_CLOSED_TOO_LATE  = STATUS_CLOSED_TOO_LATE;
   $STATUS_OPEN             = STATUS_OPEN;
   $openForBiz = "CASE WHEN NOT (tblSurvey.open_date IS NULL OR '0000-00-00 00:00:00' = tblSurvey.open_date) AND $now < tblSurvey.open_date THEN $STATUS_CLOSED_TOO_EARLY WHEN NOT (tblSurvey.close_date IS NULL OR '0000-00-00 00:00:00' = tblSurvey.close_date) AND tblSurvey.close_date < $now THEN $STATUS_CLOSED_TOO_LATE ELSE $STATUS_OPEN END";
-
   // ... available
   if (isset($username)) {
       $username = _addslashes($username);
       $mayRespond = "CASE WHEN ( 0 = COALESCE(maxlogin,0) OR (SELECT COUNT(*) FROM {$GLOBALS['ESPCONFIG']['response_table']} as tblResponse WHERE tblResponse.survey_id=tblAccess.survey_id AND tblResponse.username=$username AND tblResponse.complete=$yes) < maxlogin) THEN 1 ELSE 0 END";
-
   }
   else { $mayRespond = '1'; }
-
   // ... visible
   if (is_scalar($sids)) { $sids = array ($sids); }
   elseif (! is_array($sids)) { return false; }
-
   if (isset($realm)) { $realm = _addslashes($realm); $limit = sprintf('(tblSurvey.id %s) AND (tblSurvey.public=%s OR tblAccess.realm=%s)', array_to_insql($sids), $yes, $realm); }
   else { $limit = sprintf('(tblSurvey.id %s) AND (tblSurvey.public=%s)', array_to_insql($sids), $yes); }
-
   // compute
   $sql = "SELECT tblSurvey.id, ($statusActive) AS active, ($openForBiz) AS open, ($mayRespond) AS available, 1 AS visible FROM {$GLOBALS['ESPCONFIG']['survey_table']} AS tblSurvey LEFT JOIN {$GLOBALS['ESPCONFIG']['access_table']} AS tblAccess ON tblAccess.survey_id=tblSurvey.id WHERE $limit";
-
   return survey_get_from_sql($sql, $accessibility);
 }
 
 function survey_get_from_sql($sql, &$surveys, $surveyIDCol = 'id') {
-  // execute the SQL
   $res = execute_sql($sql, null, ADODB_FETCH_ASSOC);
-
-  if (! $res) { $GLOBALS['errmsg'] = mkerror('Unable to get list of surveys for current user'); return false; }
-
+  if (!$res) { $GLOBALS['errmsg'] = mkerror('Unable to get list of surveys for current user'); return false; }
   // put dataset into a nice array - multiple rows with the same survey ID will be combined
   $needsConversion = true;
   $surveys = array ();
@@ -2106,11 +2079,10 @@ function survey_get_from_sql($sql, &$surveys, $surveyIDCol = 'id') {
       // make sure we have an ID column
       if (isset($row[$surveyIDCol])) { $id = $row[$surveyIDCol]; }
       else { continue; }
-
       // add in the survey information to the previous survey information
       if (isset($surveys[$id])) {
-          if ($needsConversion) { $surveys[$id] = array ($surveys[$id]); $needsConversion = false; }
-          $surveys[$id][] = $row;
+        if ($needsConversion) { $surveys[$id] = array ($surveys[$id]); $needsConversion = false; }
+        $surveys[$id][] = $row;
       }
       else { $surveys[$id] = $row; }
   }
@@ -2120,15 +2092,12 @@ function survey_get_from_sql($sql, &$surveys, $surveyIDCol = 'id') {
 
 function survey_merge_sets(&$merged, $a /* ... */) {
   // make sure we have an initial array
-  if (! is_array($merged)) { $merged = array (); }
-
+  if (!is_array($merged)) { $merged = array (); }
   // add in surveys from the second argument on, skipping duplicates
   for ($i = 1; $i < func_num_args(); $i++) {
-      $set = func_get_arg($i);
-      if (! is_array($set)) { continue; }
-      foreach ($set as $sid => $survey) {
-          if (! array_key_exists($sid, $merged)) { $merged[$sid] = $survey; }
-      }
+    $set = func_get_arg($i);
+    if (!is_array($set)) { continue; }
+    foreach ($set as $sid => $survey) { if (!array_key_exists($sid, $merged)) { $merged[$sid] = $survey; } }
   }
   return true;
 }
@@ -2159,7 +2128,6 @@ define('SURVEY_STAT_COMPLETED', 'completed');
 
 function stat_fetch_with_summary($limitToCurrentUser = true) {
   $cfg =& $GLOBALS['ESPCONFIG'];
-  // get the surveys
   if ($limitToCurrentUser) {
     require_once DOCROOT . '/admin/assets/include/lib/espsurvey.inc';
     $where = survey_fetch_limiting_where("{$cfg['survey_table']}.status", "{$cfg['survey_table']}.owner", "{$cfg['survey_table']}.realm");
@@ -2168,177 +2136,94 @@ function stat_fetch_with_summary($limitToCurrentUser = true) {
     $sql = sprintf('SELECT * FROM %1$s', $cfg['survey_statistics_table']);
   }
   $res = execute_sql($sql, null, ADODB_FETCH_ASSOC);
-
-  // turn the record set into a nice array, with a summary line
   if ($res && 0 <= record_count($res)) {
     $results = array ();
     $summary = array ();
     while ($row = fetch_row($res)) {
       $res->MoveNext();
-      // get the survey ID and waste it, so that only statistics remain
       $sid = $row['survey_id'];
       unset($row['survey_id']);
-      // store the results
       $results[$sid] = $row;
-      // accumulate totals
-      foreach ($row as $key => $val) {
-        if (isset($summary[$key])) { $summary[$key] += $val; }
-        else { $summary[$key] = $val; }
-      }
+      foreach ($row as $key => $val) { if (isset($summary[$key])) { $summary[$key] += $val; } else { $summary[$key] = $val; } }
     }
-    if (! empty($summary)) {
-        $results[null] = $summary;
-    }
+    if (!empty($summary)) { $results[null] = $summary; }
     return $results;
-  } else {
-    $GLOBALS['errmsg'] = mkerror('Unable to fetch statistics from table');
-    return false;
   }
+  else { $GLOBALS['errmsg'] = mkerror('Unable to fetch statistics from table'); return false; }
 }
 
-//  survey_stat_fetch_all()
 //  Return all metrics for a particular survey
-
 function survey_stat_fetch_all($sid) {
-    $cfg =& $GLOBALS['ESPCONFIG'];
-
-    // try and get all the columns for this survey
-    $sql = sprintf('SELECT * FROM %1$s WHERE survey_id=%2$s', $cfg['survey_statistics_table'], $sid);
-
-    $res = execute_sql($sql, null, ADODB_FETCH_ASSOC);
-    if ($res) {
-        // now get them from the set, remove the bookkeeping values, and return them
-        $values = fetch_row($res);
-        unset($values['survey_id']);
-        return $values;
-    } else {
-        // oh well, can't do anything but move along
-        $GLOBALS['errmsg'] = mkerror('Unable to fetch statistics for survey');
-        return false;
-    }
+  $cfg =& $GLOBALS['ESPCONFIG'];
+  $sql = sprintf('SELECT * FROM %1$s WHERE survey_id=%2$s', $cfg['survey_statistics_table'], $sid);
+  $res = execute_sql($sql, null, ADODB_FETCH_ASSOC);
+  if ($res) { $values = fetch_row($res); unset($values['survey_id']); return $values; }
+  else { $GLOBALS['errmsg'] = mkerror('Unable to fetch statistics for survey'); return false; }
 }
 
-//  survey_stat_fetch()
 //  Return a metric for a particular survey
-
 function survey_stat_fetch($metric, $sid) {
-    $cfg =& $GLOBALS['ESPCONFIG'];
-
-    // get the particular metric
-    $sql = sprintf('SELECT %1$s FROM %2$s WHERE survey_id=%3$s', $metric, $cfg['survey_statistics_table'], $sid);
-
-    $res = execute_sql($sql);
-    if ($res) {
-        // pull it out and return it
-        list ($value) = fetch_row($res);
-        return $value;
-    } else {
-        // oh well, give up and move along
-        $GLOBALS['errmsg'] = mkerror('Unable to fetch statistic for survey');
-        return false;
-    }
+  $cfg =& $GLOBALS['ESPCONFIG'];
+  $sql = sprintf('SELECT %1$s FROM %2$s WHERE survey_id=%3$s', $metric, $cfg['survey_statistics_table'], $sid);
+  $res = execute_sql($sql);
+  if ($res) { list ($value) = fetch_row($res); return $value; }
+  else { $GLOBALS['errmsg'] = mkerror('Unable to fetch statistic for survey'); return false; }
 }
 
 function survey_stat_increment($metric, $sid) {
-    $cfg =& $GLOBALS['ESPCONFIG'];
-
-    // try and update
-    $sql = sprintf('UPDATE %1$s SET %2$s=%2$s+1 WHERE survey_id=%3$s', $cfg['survey_statistics_table'], $metric, $sid);
-
+  $cfg =& $GLOBALS['ESPCONFIG'];
+  $sql = sprintf('UPDATE %1$s SET %2$s=%2$s+1 WHERE survey_id=%3$s', $cfg['survey_statistics_table'], $metric, $sid);
+  $res = execute_sql($sql);
+  if (0 == affected_rows()) {
+    $sql = sprintf('INSERT INTO %1$s (survey_id,%2$s) VALUES (%3$s,1)', $cfg['survey_statistics_table'], $metric, $sid);
     $res = execute_sql($sql);
-    if (0 == affected_rows()) {
-        // well, no update, try an insert
-        $sql = sprintf('INSERT INTO %1$s (survey_id,%2$s) VALUES (%3$s,1)', $cfg['survey_statistics_table'], $metric, $sid);
-        $res = execute_sql($sql);
-        if (0 == affected_rows()) {
-            // alright, give up as neither the update nor the insert worked
-            $GLOBALS['errmsg'] = mkwarn('Unable to increment statistic for survey');
-            return false;
-        }
-    }
-
-    // either the update or the insert worked... hooray, move along.
-    return true;
+    if (0 == affected_rows()) { $GLOBALS['errmsg'] = mkwarn('Unable to increment statistic for survey'); return false; }
+  }
+  return true;
 }
 
 function survey_stat_decrement($metric, $sid) {
-    $cfg =& $GLOBALS['ESPCONFIG'];
-
-    // try and update the value
-    // NOTE: only decrement when current value is more than 0
-    // NOTE: if you need to set negative statistics, use survey_stat_set();
-    $sql = sprintf('UPDATE %1$s SET %2$s=%2$s-1 WHERE survey_id=%3$s AND 0 < %2$s', $cfg['survey_statistics_table'], $metric, $sid);
-    $res = execute_sql($sql);
-    if (0 < affected_rows()) {
-        // yay, it worked... move along
-        return true;
-    } else {
-        // either the table structure is wrong (for example, someone gave a metric that isn't a column) or the
-        // row does not yet exist.  Either way, it's a code problem, because you shouldn't be trying to update
-        // columns that don't exist, and you shouldn't be decrementing statistics that haven't been incremented.
-        $GLOBALS['errmsg'] = mkwarn('Unable to decrement statistic for survey');
-        return false;
-    }
+  $cfg =& $GLOBALS['ESPCONFIG'];
+  // Only decrement when current value is more than 0. If you need to set negative statistics, use survey_stat_set();
+  $sql = sprintf('UPDATE %1$s SET %2$s=%2$s-1 WHERE survey_id=%3$s AND 0 < %2$s', $cfg['survey_statistics_table'], $metric, $sid);
+  $res = execute_sql($sql);
+  if (0 < affected_rows()) { return true; }
+  else { $GLOBALS['errmsg'] = mkwarn('Unable to decrement statistic for survey'); return false; }
 }
 
 function survey_stat_set($metric, $sid, $value) {
-    $cfg =& $GLOBALS['ESPCONFIG'];
-
-    // try and update with the given value
-    $sql = sprintf('UPDATE %1$s SET %2$s=%4$s WHERE survey_id=%3$s', $cfg['survey_statistics_table'], $metric, $sid, $value);
+  $cfg =& $GLOBALS['ESPCONFIG'];
+  $sql = sprintf('UPDATE %1$s SET %2$s=%4$s WHERE survey_id=%3$s', $cfg['survey_statistics_table'], $metric, $sid, $value);
+  $res = execute_sql($sql);
+  if (0 == affected_rows()) {
+    $sql = sprintf('INSERT INTO %1$s (survey_id,%2$s) VALUES (%3$s,%4$s)', $cfg['survey_statistics_table'], $metric, $sid, $value);
     $res = execute_sql($sql);
-    if (0 == affected_rows()) {
-        // well, that failed, try to insert with the given value
-        $sql = sprintf('INSERT INTO %1$s (survey_id,%2$s) VALUES (%3$s,%4$s)', $cfg['survey_statistics_table'], $metric, $sid, $value);
-        $res = execute_sql($sql);
-        if (0 == affected_rows()) {
-            // alright, we're out of options... warn and move along
-            $GLOBALS['errmsg'] = mkwarn('Unable to set statistic for survey');
-            return false;
-        }
-    }
-
-    // either an update or an insert succeeded... yay.
-    return true;
+    if (0 == affected_rows()) { $GLOBALS['errmsg'] = mkwarn('Unable to set statistic for survey'); return false; }
+  }
+  return true;
 }
 
 function survey_stat_reset($sid) {
-    $ok = true;
-    $ok = $ok && survey_stat_purge($sid);
-    $ok = $ok && survey_stat_init($sid);
-    return $ok;
+  $ok = true;
+  $ok = $ok && survey_stat_purge($sid);
+  $ok = $ok && survey_stat_init($sid);
+  return $ok;
 }
 
 function survey_stat_init($sid) {
-    $cfg =& $GLOBALS['ESPCONFIG'];
-
-    // insert the survey ID, which will rely on the default value settings defined in the schema
-    $sql = sprintf('INSERT INTO %1$s (survey_id) VALUES (%2$s)', $cfg['survey_statistics_table'], $sid);
-    $res = execute_sql($sql);
-    if (0 == affected_rows()) {
-        // well, that failed... not too bad, though: warn and move along
-        $GLOBALS['errmsg'] = mkerror('Unable to initialize statistics for survey');
-        return false;
-    }
-
-    // insert succeeded, sweet
-    return true;
+  $cfg =& $GLOBALS['ESPCONFIG'];
+  $sql = sprintf('INSERT INTO %1$s (survey_id) VALUES (%2$s)', $cfg['survey_statistics_table'], $sid);
+  $res = execute_sql($sql);
+  if (0 == affected_rows()) { $GLOBALS['errmsg'] = mkerror('Unable to initialize statistics for survey'); return false; }
+  return true;
 }
 
 function survey_stat_purge($sid) {
-    $cfg =& $GLOBALS['ESPCONFIG'];
-
-    // try and update with the given value
-    $sql = sprintf('DELETE FROM %1$s WHERE survey_id=%2$s', $cfg['survey_statistics_table'], $sid);
-    $res = execute_sql($sql);
-    if (0 == affected_rows()) {
-        // alright, that failed and we're out of options... error and move along
-        $GLOBALS['errmsg'] = mkerror('Unable to purge statistics for survey');
-        return false;
-    }
-
-    // delete succeeded, sweet
-    return true;
+  $cfg =& $GLOBALS['ESPCONFIG'];
+  $sql = sprintf('DELETE FROM %1$s WHERE survey_id=%2$s', $cfg['survey_statistics_table'], $sid);
+  $res = execute_sql($sql);
+  if (0 == affected_rows()) { $GLOBALS['errmsg'] = mkerror('Unable to purge statistics for survey'); return false; }
+  return true;
 }
 
 
