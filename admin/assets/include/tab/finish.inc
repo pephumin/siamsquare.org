@@ -1,8 +1,8 @@
 <?php
 
-$home = "http://www.siamsquare.org";
-$admin = $home."/admin/index.php";
-$page = $home."/public/survey.php";
+// $home = "http://www.siamsquare.org";
+// $admin = $home."/admin/index.php";
+// $page = $home."/public/survey.php";
 
 $_SESSION['new_survey'] = false;
 $survey_name = "";
@@ -13,16 +13,9 @@ if ($result = execute_sql($sql)) {
 }
 
 // initialize the survey's statistics
-//esp_require_once('/lib/espsurveystat');
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espsurveystat.inc';
+// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espsurveystat.inc';
 survey_stat_init($_SESSION['survey_id']);
 ?>
-
-<script type="text/javascript">
-function validate() {
-  return true;
-}
-</script>
 
 <h4>Complete your survey design</h4>
 

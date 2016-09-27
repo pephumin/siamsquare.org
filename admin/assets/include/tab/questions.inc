@@ -53,9 +53,9 @@ if($updated && $curr_q) {
 
 <p>In ths section, you will be able to add new questions and answers as well as editing them. Translation should be inserted in this section as well. Remember you do not have to finish them in one-go. You can save and come back to update them anytime.</p>
 
-<br><br>
+<br>
 
-<input type="hidden" name="id" value="<?php echo($curr_q); ?>" />
+<input type="hidden" name="id" value="<?php echo($curr_q); ?>">
 
 <p>Edit this question, or click the number of the question you would like to edit:</p>
 
@@ -63,26 +63,23 @@ if($updated && $curr_q) {
 
 <?php
 $i = 1;
-// build array of question IDs
-$sql = "SELECT id,type_id,position,content,content_th FROM ".$GLOBALS['ESPCONFIG']['question_table']."
-  WHERE survey_id=$sid AND deleted='N' AND type_id != 99
-  ORDER BY position";
+$sql = "SELECT id,type_id,position,content,content_th FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id=$sid AND deleted='N' AND type_id != 99 ORDER BY position";
 
 $result = execute_sql($sql);
 while( list($qid, $tid, $pos, $content, $content_th) = fetch_row($result)) {
-       $result->MoveNext();
-       //$dots = "";
-       //$content = strip_tags($content);
-       //$content_th = strip_tags($content_th);
-       //if (strlen($content) > 30) { $dots = "..."; }
-       //if (strlen($content_th) > 30) { $dots = "..."; }
-       if ($qid==$curr_q) {
-          //echo('<option selected value="'.$qid.'">'.$i++.'. '.substr($content,0, 30).$dots.'</option>');
-           echo('<option selected value="'.$qid.'">'.$i++.'. '.$content.'</option>');
-      } else {
-          //echo('<option value="'.$qid.'">'.$i++.'. '.substr($content,0, 30).$dots.'</option>');
-          echo('<option value="'.$qid.'">'.$i++.'. '.$content.'</option>');
-   }
+  $result->MoveNext();
+  //$dots = "";
+  //$content = strip_tags($content);
+  //$content_th = strip_tags($content_th);
+  //if (strlen($content) > 30) { $dots = "..."; }
+  //if (strlen($content_th) > 30) { $dots = "..."; }
+  if ($qid == $curr_q) {
+    //echo('<option selected value="'.$qid.'">'.$i++.'. '.substr($content,0, 30).$dots.'</option>');
+     echo('<option selected value="'.$qid.'">'.$i++.'. '.$content.'</option>');
+  } else {
+    //echo('<option value="'.$qid.'">'.$i++.'. '.substr($content,0, 30).$dots.'</option>');
+    echo('<option value="'.$qid.'">'.$i++.'. '.$content.'</option>');
+  }
 }
 db_close($result);
 
@@ -90,8 +87,8 @@ db_close($result);
 </select>
 <br>
 
-<input class="btn btn-default btn-sm" type="submit" name="edit_question" value="Edit Question" />
-<input class="btn btn-default btn-sm" type="submit" name="new_question" value="New Question" />
+<input class="btn btn-warning btn-sm" type="submit" name="edit_question" value="Edit Question" />
+<input class="btn btn-warning btn-sm" type="submit" name="new_question" value="New Question" />
 
 <br><br>
 
@@ -118,7 +115,7 @@ else { echo "<p><mark>Edit a question</mark></p>\n"; }
       $result = execute_sql($sql);
       $arr = array();
       while(list($key, $val) = fetch_row($result)) {
-                      $result->MoveNext();
+        $result->MoveNext();
         $arr["$key"] = _($val);
       }
       echo(mkselect('type_id',$arr));

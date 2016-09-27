@@ -1,5 +1,5 @@
 
-<input type="hidden" name="conditions" value="" />
+<input type="hidden" name="conditions" value="">
 
 <?php
 
@@ -60,9 +60,6 @@ $max = record_count($result);
 <h4>Adding specific conditions to your survey</h4>
 
 <p>You may want to add specific conditions to some questions e.g. skip if answer "no". In order to do that, you just simply select a certain question which will be displayed only when a cerain value has been answered from another question. These logic settings can be defined by using these two tables below.</p>
-
-<br><br>
-
 
 <?php if ($max > 20) { $max = 20; } ?>
 
@@ -130,20 +127,22 @@ if ($result) { db_close($result); }
 <option value="2"><?php echo $conditions[2]; ?></option>
 <option value="3"><?php echo $conditions[3]; ?></option>
 </select>
-<input class="form-control" type="text" id="cond_value" name="cond_value" value="NONE">
-<input class="btn btn-default" type="submit" name="addcondition" value="Go" />
+<input class="form-control" type="text" id="cond_value" name="cond_value" value="None">
+<input class="btn btn-warning" type="submit" name="addcondition" value="Go">
 </div>
+
+<br>
 
 <hr>
 
-<p class="text-muted">Some guidelines on using question conditioning:</p>
+<h4><i class="pe-lightbulb-o pe-fw pe-lg"></i> Guidelines on question conditioning</h4>
 <ul class="pe-ul">
-  <li class="text-muted"><i class="pe-li pe-check-square"></i>All conditions are "OR" conditions, so if one conditions is fullfilled, the question is shown.</li>
-  <li class="text-muted"><i class="pe-li pe-check-square"></i>A question that has a condition must be an optional question.</li>
-  <li class="text-muted"><i class="pe-li pe-check-square"></i>So, if you define a condition on a question, the "Required" parameter is set to "No".</li>
-  <li class="text-muted"><i class="pe-li pe-check-square"></i>A question that has a condition must be on the next page than the question/value that is used to compare it with.</li>
-  <li class="text-muted"><i class="pe-li pe-check-square"></i>Use the "Order tab" to insert a section break where wanted (this is <b>NOT</b> done automatically).</li>
-  <li class="text-muted"><i class="pe-li pe-check-square"></i>A Yes/No question can only be compared using the values "Yes or "No".</li>
+  <li><i class="pe-li pe-check-square"></i> All conditions are <strong>"OR"</strong> conditions, so if one conditions is fullfilled, the question is shown.</li>
+  <li><i class="pe-li pe-check-square"></i> A question that has a condition must be an optional question.</li>
+  <li><i class="pe-li pe-check-square"></i> So, if you define a condition on a question, the <strong>"Required"</strong> parameter is set to <strong>"No"</strong>.</li>
+  <li><i class="pe-li pe-check-square"></i> A question that has a condition must be on the next page than the question/value that is used to compare it with.</li>
+  <li><i class="pe-li pe-check-square"></i> Use the "Order tab" to insert a section break where wanted as this is <strong>NOT</strong> done automatically.</li>
+  <li><i class="pe-li pe-check-square"></i> A <strong>Yes/No</strong> question can only be compared using the values <strong>"Yes"</strong> or <strong>"No"</strong>.</li>
 </ul>
 
 <br>

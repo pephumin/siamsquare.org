@@ -1,18 +1,17 @@
 <?php
 
 global $errstr, $title;
-$base =& $GLOBALS['ESPCONFIG']['ME'];
 
 $tab = "";
 
-if(@$_GET['where'] == 'new') {
+if (@$_GET['where'] == 'new') {
   $_SESSION['survey_id']  = '';
   $_SESSION['new_survey'] = '';
   $_SESSION['last_tab']   = '';
   $_SESSION['curr_q']     = '';
 }
 
-if(!empty($_GET['newid'])) {
+if (!empty($_GET['newid'])) {
   $_SESSION['survey_id']  = intval($_GET['newid']);
   $tab = "general";
   $_SESSION['last_tab']   = '';
@@ -28,7 +27,7 @@ if(!empty($_SESSION['survey_id'])) {
   if($_SESSION['acl']['superuser'] != 'Y' && !auth_is_owner($_SESSION['survey_id'], $_SESSION['acl']['username']) && !in_array($srealm, array_intersect($_SESSION['acl']['pdesign'], $_SESSION['acl']['pall'])) && !auth_no_access(_('to access this survey'))) { return; }
 }
 
-if ($_SESSION['acl']['superuser'] != 'Y' && count($_SESSION['acl']['pdesign']) < 1 && !auth_no_access(_('to access this form'))) { return; }
+if ($_SESSION['acl']['superuser'] != 'Y' && count($_SESSION['acl']['pdesign']) < 1 && !auth_no_access('to access this form')) { return; }
 
 if (isset($_POST['tab'])) { $tab = $_POST['tab']; }
 if (isset($_POST['tab_general'])) { $tab = 'general'; }
@@ -39,24 +38,20 @@ if (isset($_POST['tab_preview'])) { $tab = 'preview'; }
 if (isset($_POST['tab_finish'])) { $tab = 'finish'; }
 if (isset($_POST['tab_continue'])) { $tab = 'continue'; }
 
-if ($tab=="") { $tab = $_SESSION['last_tab']; }
+if ($tab == "") { $tab = $_SESSION['last_tab']; }
 
 $tab = strtolower(preg_replace('/ +/','_',$tab));
 
 if(stristr($tab,'continue')) {
   switch($_SESSION['last_tab']) {
     case 'general':
-      $tab = 'questions';
-      break;
+      $tab = 'questions'; break;
     case 'questions':
-      $tab = 'order';
-      break;
+      $tab = 'order'; break;
     case 'order':
-      $tab = 'conditions';
-      break;
+      $tab = 'conditions'; break;
     case 'conditions':
-      $tab = 'preview';
-      break;
+      $tab = 'preview'; break;
     default:
       $tab = 'general';
   }
@@ -64,24 +59,23 @@ if(stristr($tab,'continue')) {
 
 if (!preg_match('/^[A-Za-z0-9_]+$/',$tab)) { $tab = 'general'; }
 
-if (!file_exists( $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/tab/'.$tab.'.inc' )) {
+if (!file_exists(DOCROOT.'/admin/assets/include/tab/'.$tab.'.inc' )) {
   $tab = 'general';
   echo "Unable to open include file. Check INI settings. Aborting.";
   exit;
 }
 
 $errstr = '';
-$updated = survey_update($_SESSION['survey_id'],$tab,$_SESSION['last_tab']);
+$updated = survey_update($_SESSION['survey_id'], $tab, $_SESSION['last_tab']);
 
-echo "</div>\n";
-echo "</form>\n\n";
-//echo "<form method=\"post\" id=\"tabs\" onsubmit=\"validate();\" action=\"$base\" class=\"form-horizontal\" id=\"phpesp\">\n\n";
-echo "<form method=\"post\" id=\"tabs\" onsubmit=\"validate();\" action=\"$base\" class=\"form-horizontal\">\n\n";
-
-echo "<div class=\"container\">\n\n";
+echo "\n\n";
 echo "<h2>Designing a survey</h2>\n";
 
 if (!empty($errstr)) { echo(mkerror($errstr)); }
+
+$base = htmlspecialchars($_SERVER['PHP_SELF']);
+echo "<form method=\"post\" id=\"tabs\" onsubmit=\"validate();\" action=\"$base\">\n\n";
+// echo "<form method=\"post\" class=\"form-horizontal\" action=\"$base\">\n";
 
 displayTabNav();
 
@@ -89,7 +83,7 @@ include $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/tab/'.$tab.'.inc';
 //include($ESPCONFIG['include_path'].'/tab/'.$tab.$ESPCONFIG['extension']);
 $_SESSION['last_tab'] = $tab;
 
-if ($tab == 'finish') { echo('&nbsp;'); }
+if ($tab == "finish") { echo "&nbsp;"; }
 
 if ($_SESSION['new_survey']) {
   echo "<input class=\"btn btn-default\" type=\"submit\" name=\"where\" value=\"Cancel\" onclick='return cancelConfirm()'> \n";
@@ -98,4 +92,5 @@ if ($_SESSION['new_survey']) {
   echo "<p class=\"text-muted\">Click continue to proceed to the next tab, otherwise just click cancel.</p>";
 }
 
+echo "</form>\n";
 ?>

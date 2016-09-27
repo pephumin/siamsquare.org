@@ -2,7 +2,7 @@
 
 $title = "Designing a survey";
 $base =& $GLOBALS['ESPCONFIG']['ME'];
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espsurvey.inc';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espsurvey.inc';
 
 unset($sid);
 $sid = $_SESSION['survey_id'];
@@ -28,17 +28,8 @@ if ('0000-00-00 00:00:00' == $survey['close_date']) { $survey['close_date'] = ''
 
 ?>
 
-</form>
 
-<script type="text/javascript">
-<!--
-function validate() {
-  return true;
-}
--->
-</script>
-
-<h4>Insert the important information about your survey</h4>
+<h4>Important information about your survey</h4>
 
 <p>Please make sure you fill in all the required information in this page properly as they will be shown to respondents when they are invited to participate in your survey.</p>
 
