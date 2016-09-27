@@ -3,7 +3,6 @@
 $_SERVER['BASE_PAGE'] = 'help.php';
 $title = "Help documents";
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once DOCROOT.'/admin/assets/include/lib.inc';
 require_once DOCROOT.'/admin/assets/include/template.php';
 
 pageHeader($title, $scrollspy = NULL);

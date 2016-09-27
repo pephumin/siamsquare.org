@@ -4,10 +4,8 @@
 $_SERVER['BASE_PAGE'] = 'survey.php';
 $title = "Conduct a survey";
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once DOCROOT.'/admin/assets/include/lib.inc';
 require_once DOCROOT.'/public/assets/include/template.php';
 require_once DOCROOT.'/public/assets/include/first.php';
-include_once DOCROOT.'/public/assets/include/handler-prefix.php';
 
 $_name = '';
 $_title = '';
@@ -37,6 +35,7 @@ if (empty($_name) && isset($sid) && $sid) {
   unset($_result);
 }
 
+include_once DOCROOT.'/public/assets/include/handler-prefix.php';
 pageHeader($title);
 
 if (is_session_authenticated()) {

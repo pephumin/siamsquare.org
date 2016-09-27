@@ -3,7 +3,6 @@
 $_SERVER['BASE_PAGE'] = 'help.php';
 $title = "Help page";
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once DOCROOT.'/admin/assets/include/lib.inc';
 require_once DOCROOT.'/public/assets/include/template.php';
 require_once DOCROOT.'/public/assets/include/first.php';
 

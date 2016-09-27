@@ -3,7 +3,6 @@
 $_SERVER['BASE_PAGE'] = 'faqs.php';
 $title = "FAQs";
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once DOCROOT.'/admin/assets/include/lib.inc';
 require_once DOCROOT.'/admin/assets/include/template.php';
 
 pageHeader($title, $scrollspy = NULL);

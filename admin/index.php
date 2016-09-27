@@ -2,7 +2,6 @@
 
 $_SERVER['BASE_PAGE'] = 'index.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once DOCROOT.'/admin/assets/include/lib.inc';
 require_once DOCROOT.'/admin/assets/include/template.php';
 
 if($_GET['p']) { $p = $_GET['p']; }

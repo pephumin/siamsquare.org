@@ -3,7 +3,6 @@
 $_SERVER['BASE_PAGE'] = 'contact.php';
 $title = "Contact us";
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once DOCROOT.'/admin/assets/include/lib.inc';
 require_once DOCROOT.'/admin/assets/include/template.php';
 
 if (isset($_POST["submit"])) {

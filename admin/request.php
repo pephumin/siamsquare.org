@@ -3,7 +3,6 @@
 $_SERVER['BASE_PAGE'] = 'request.php';
 $title = 'Request for an access to our system';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once DOCROOT.'/admin/assets/include/lib.inc';
 require_once DOCROOT.'/admin/assets/include/template.php';
 
 //$base =& $GLOBALS['ESPCONFIG']['ME'];
