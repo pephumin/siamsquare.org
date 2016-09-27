@@ -161,10 +161,8 @@ if(!empty($u) && !empty($r)) {
 
 <?php if(!empty($errstr)) echo(mkerror($errstr)); ?>
 
-<br>
+<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
 
-<div class="container">
-<form class="form-horizontal" method="post" id="phpesp" action="<?php echo($base); ?>">
   <div class="form-group">
     <label class="col-sm-3 control-label">Username <span class="label label-danger">required</span></label>
     <div class="col-sm-9">
@@ -174,8 +172,8 @@ if(!empty($u) && !empty($r)) {
       //echo "\n";
       $u_u = mktext('u', 16, 16, $arr);
     } else {
-        $u_u = "<input class=\"form-control\" type=\"text\" name=\"u\" value=\"".$u."\" disabled/>\n";
-        $u_u .= "<input type=\"hidden\" name=\"u\" value=\"".$u."\" />\n";
+        $u_u = "<input class=\"form-control\" type=\"text\" name=\"u\" value=\"".$u."\" disabled>\n";
+        $u_u .= "<input type=\"hidden\" name=\"u\" value=\"".$u."\">\n";
       //$u_u = mkhidden('u', $arr);
         //echo "\n";
     }
@@ -218,8 +216,8 @@ if(!empty($u) && !empty($r)) {
       } else {
         $groups =& $_SESSION['acl']['puser'];
         //print_r($_SESSION['acl']['puser']);
-        $u_r = '<input class="form-control" type="text" name="r" value="'.$groups[0].'" disabled/>';
-        $u_r .= '<input type="hidden" name="r" value="'.$groups[0].'" />';
+        $u_r = '<input class="form-control" type="text" name="r" value="'.$groups[0].'" disabled>';
+        $u_r .= '<input type="hidden" name="r" value="'.$groups[0].'">';
         //$u_r .= mkhidden('r', $arr);
       }
     //}
@@ -255,9 +253,9 @@ if(!empty($u) && !empty($r)) {
     //echo mktext('ex_day',2,2, $arr);
     //echo "\n";
     ?>
-    Year: <input class="form-control" type="text" size="4" maxlength="4" name="ex_year" placeholder="2017" />
-    Month: <input class="form-control" type="text" size="2" maxlength="2" name="ex_month" placeholder="02" />
-    Day: <input class="form-control" type="text" size="2" maxlength="2" name="ex_day" placeholder="26"/>
+    Year: <input class="form-control" type="text" size="4" maxlength="4" name="ex_year" placeholder="2017">
+    Month: <input class="form-control" type="text" size="2" maxlength="2" name="ex_month" placeholder="02">
+    Day: <input class="form-control" type="text" size="2" maxlength="2" name="ex_day" placeholder="26>
     <p class="text-muted">Assign expiration date (if any).</p>
     </div>
   </div>
@@ -273,12 +271,10 @@ if(!empty($u) && !empty($r)) {
     </div>
   </div>
   <div class="col-sm-offset-3 col-sm-9">
-    <input type="hidden" name="where" value="admrespondent" />
-    <input class="btn btn-success" type="submit" name="submit" value="Create / Update" />&nbsp;
-    <input class="btn btn-default" type="submit" name="cancel" value="Cancel" />&nbsp;
-    <input class="btn btn-danger" type="submit" name="delete" value="Delete" />&nbsp;
+    <input type="hidden" name="where" value="admrespondent">
+    <input class="btn btn-success" type="submit" name="submit" value="Create / Update">
+    <input class="btn btn-default" type="submit" name="cancel" value="Cancel">
+    <input class="btn btn-danger" type="submit" name="delete" value="Delete">
   </div>
 </form>
-</div>
-
 <br><br>

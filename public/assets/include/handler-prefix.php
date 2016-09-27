@@ -20,7 +20,7 @@ if (!isset($sid) || empty($sid)) { blur('/public'); assert('false; // NOTREACHED
 if (empty($_REQUEST['rid'])) { $request_rid = 0; }
 else { $request_rid = intval($_REQUEST['rid']) ? intval($_REQUEST['rid']) : 0; }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib.inc';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib.inc';
 if (isset($_REQUEST['username']) && ($_REQUEST['username'] != "")) { $_SESSION['espuser'] = $_REQUEST['username']; }
 if (isset($_SESSION['espuser'])) { $espuser = $_SESSION['espuser']; } else { $espuser = ""; }
 if (isset($_REQUEST['password']) && ($_REQUEST['password'] != "")) { $_SESSION['esppass'] = $_REQUEST['password']; }

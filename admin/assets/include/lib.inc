@@ -144,13 +144,13 @@ EOHTML;
 }
 
 function goto_saved($sid, $url) {
-  if ($_REQUEST['test']) { $url = $url."&test=1"; }
+  // if ($_REQUEST['test']) { $url = $url."?where=test&test=1&sid=".$sid; }
   survey_stat_decrement(SURVEY_STAT_ABANDONED, $sid);
   survey_stat_increment(SURVEY_STAT_SUSPENDED, $sid);
   echo "<h2>Your survey has been saved</h2>\n";
   echo "<p>Your progress has been saved. You may return at any time to complete this survey.</p>\n";
-  echo "<p>To do so, simply bookmark the link below.</p>\n";
-  echo "<p>You may be prompted for your username and password to complete the survey.</p>\n";
+  echo "<p>To continue with this particular survey, you can just simply follow the link below.</p>\n";
+  echo "<p>And of course, you can save or bookmark this link so you can come back and complete it when you are convenient.</p>\n";
   echo "<a href=\"$url\" class=\"btn btn-success\" role=\"button\">Continue survey</a>\n";
   return;
 }
@@ -400,7 +400,7 @@ function mkerror ($msg) {
 
 function mkradio ($_name, $value, $varr = null) {
   if ($varr == null) { $varr =& $_POST; }
-  $str = '<input type="radio" name="' . htmlspecialchars($_name) .'" value="' . htmlspecialchars($value) .'"';
+  $str = '<input type="radio" id="' . htmlspecialchars($value) .'" name="' . htmlspecialchars($_name) .'" value="' . htmlspecialchars($value) .'"';
   if ( isset($varr[$_name]) && $varr[$_name] == $value ) { $str .= " checked=\"checked\""; }
   $str .= '>';
   return($str);
@@ -408,7 +408,7 @@ function mkradio ($_name, $value, $varr = null) {
 
 function mkcheckbox ($_name, $value, $varr = null) {
   if ($varr == null) { $varr =& $_POST; }
-  $str = '<input type="checkbox" name="' . htmlspecialchars($_name) .'[]" value="' . htmlspecialchars($value) .'"';
+  $str = '<input type="checkbox" id="' . htmlspecialchars($value) .'" name="' . htmlspecialchars($_name) .'[]" value="' . htmlspecialchars($value) .'"';
   //$str = '<input type="checkbox" name="' . htmlspecialchars($_name) .'" value="' . htmlspecialchars($value) .'"';
   if (isset($varr[$_name]) && is_array($varr[$_name]) && in_array($value, $varr[$_name])) { $str .= " checked=\"checked\""; }
   $str .= '>';

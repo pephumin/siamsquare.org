@@ -45,13 +45,13 @@ if(isset($_POST['delete'])) {
     if(!execute_sql($sql) || affected_rows() < 1) {
       /* unsucessfull -- abort */
       //$errstr .= mkerror(_('Cannot delete account.') .' ('. ErrorMsg() .')');
-      $errstr .= _('Cannot delete account.') .' ('. ErrorMsg() .')';
+      $errstr .= 'Cannot delete account.' .' ('. ErrorMsg() .')';
     } else {
-      $success .= _('Account has been deleted successfully.');
+      $success .= 'Account has been deleted successfully.';
     }
   }
   if(empty($errstr)) {
-    echo mksuccess(_('Account has been deleted successfully.'));
+    echo mksuccess('Account has been deleted successfully.');
     include(esp_where('designers'));
     return;
   }
@@ -107,51 +107,33 @@ if(isset($_POST['submit'])) {
   }
 
   /* check acl */
-  if($_SESSION['acl']['superuser'] == 'Y' || in_array($r2, $_SESSION['acl']['pgroup']) ||
-      //in_array(trim($r, "'"), $_SESSION['acl']['pgroup']) ||
-    auth_no_access(_('to access this group'))) {
-      #$sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['designer_table']." WHERE username=".db_qstr($u)." AND realm=".db_qstr($r);
-      $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['designer_table']." WHERE username=$u";
-      $result = execute_sql($sql);
-      if(!$result || record_count($result) < 1) {
-  /* new user */
-        if(empty($u) || empty($r) || empty($u_password)) {
-          $errstr .= _('Username, Password, and Group are required.');
-        } else {
-          $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['designer_table']." (username,realm,password,changed) VALUES ($u,$r, ".db_crypt($u_password).", ".sys_time_stamp().")";
-          if(!execute_sql($sql)) { $u = ''; $r = ''; $errstr .= 'Error adding account.' .' ('. ErrorMsg() .')'; }
-          else { $success .= 'New account has been added successfully.'; }
-        }
+  if ($_SESSION['acl']['superuser'] == 'Y' || in_array($r2, $_SESSION['acl']['pgroup']) || auth_no_access(_('to access this group'))) {
+    #$sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['designer_table']." WHERE username=".db_qstr($u)." AND realm=".db_qstr($r);
+    $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['designer_table']." WHERE username=$u";
+    $result = execute_sql($sql);
+    if(!$result || record_count($result) < 1) {
+      if(empty($u) || empty($r) || empty($u_password)) {
+        $errstr .= 'Username, Password, and Group are required.';
+      } else {
+        $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['designer_table']." (username,realm,password,changed) VALUES ($u,$r, ".db_crypt($u_password).", ".sys_time_stamp().")";
+        if (!execute_sql($sql)) { $u = ''; $r = ''; $errstr .= 'Error adding account.' .' ('. ErrorMsg() .')'; }
+        else { $success .= 'New account has been added successfully.'; }
       }
-      db_close($result);
+    }
+    db_close($result);
 
-      /* change user data */
-      if(!empty($u) && !empty($r)) {
-        if (!empty($u_password)) { $u_password = "password=".db_crypt($u_password).","; }
-        $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['designer_table']." SET $u_password
-          realm=$r,
-          fname=$u_fname,
-          lname=$u_lname,
-          email=$u_email,
-          pdesign=$u_pdesign,
-          pstatus=$u_pstatus,
-          pdata=$u_pdata,
-          pall=$u_pall,
-          pgroup=$u_pgroup,
-          puser=$u_puser,
-          disabled=$u_disabled,
-          changed=".sys_time_stamp().",
-          expiration=$u_expiration WHERE username=$u";
-        #WHERE username=$u AND realm=$r;
-        if(!execute_sql($sql)) { $errstr .= 'Cannot change account data.' .' ('. ErrorMsg() .')'; }
-        else { $success .= 'Account has been updated successfully.'; }
-      }
+    if (!empty($u) && !empty($r)) {
+      if (!empty($u_password)) { $u_password = "password=".db_crypt($u_password).","; }
+      $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['designer_table']." SET $u_password realm=$r, fname=$u_fname, lname=$u_lname, email=$u_email, pdesign=$u_pdesign, pstatus=$u_pstatus, pdata=$u_pdata, pall=$u_pall, pgroup=$u_pgroup, puser=$u_puser, disabled=$u_disabled, changed=".sys_time_stamp().", expiration=$u_expiration WHERE username=$u";
+      if (!execute_sql($sql)) { $errstr .= 'Cannot change account data.' .' ('. ErrorMsg() .')'; }
+      else { $success .= 'Account has been updated successfully.'; }
     }
-    if(empty($errstr)) {
-      echo mksuccess('Account has been added/updated successfully.');
-      include(esp_where('designers'));
-      return;
-    }
+  }
+  if(empty($errstr)) {
+    echo mksuccess('Account has been added/updated successfully.');
+    include(esp_where('designers'));
+    return;
+  }
 } else if(isset($_GET['u']) && isset($_GET['r'])) {
   $u = _addslashes($_GET['u']);
   $r = _addslashes($_GET['r']);
@@ -169,24 +151,12 @@ if(isset($_POST['submit'])) {
   $u_puser    = 'N';
 }
 
-/* load ACL */
 if(!empty($u) && !empty($r)) {
   $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['designer_table']." WHERE username=$u AND realm=$r";
   $result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
   if($arr = fetch_row($result)) {
-    #foreach(array(
-    #  'username', 'realm', 'fname', 'lname', 'email',
-    #  'pdesign', 'pstatus', 'pdata', 'pall', 'pgroup', 'puser',
-    #  'disabled', 'expiration') as $col)
-    #  { $$col = $arr[$col]; }
-    #$u =& $username;
-    #$r =& $realm;
-    #if(intval($expiration) > 0) {
-    $u =$arr['username'];
-    $r =$arr['realm'];
-    //$fname = $arr['fname'];
-    //$lname = $arr['lname'];
-    //$email = $arr['email'];
+    $u = $arr['username'];
+    $r = $arr['realm'];
     if(intval($arr['expiration']) > 0) {
       $arr['ex_year']  = substr($arr['expiration'],0,4);
       $arr['ex_month'] = substr($arr['expiration'],5,2);
@@ -202,31 +172,22 @@ if(!empty($u) && !empty($r)) {
 }
 
 ?>
-</form>
-
 
 <h2>Managing designer accounts</h2>
 
 <?php if(!empty($errstr)) echo(mkerror($errstr)); ?>
 
-<br>
-
-<form class="form-horizontal" method="post" id="phpesp" action="<?php echo($base); ?>">
+<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+  
   <div class="form-group">
     <label class="col-sm-3 control-label">Username <span class="label label-danger">required</span></label>
     <div class="col-sm-9">
     <?php
     if(empty($u)) {
-      //echo '<input class="form-control" type="text" name="u" placeholder="Username" />';
-      //echo "\n";
-      //echo '<input class="form-control" type="text" name="u" placeholder="Account name / login" />';
-      //$u_u = mktext('u', 16, 16, $GLOBALS);
       $u_u = mktext('u', 16, 16, $GLOBALS);
     } else {
-        $u_u = '<input class="form-control" type="text" name="u" value="'.$u.'" disabled/>';
-        $u_u .= '<input type="hidden" name="u" value="'.$u.'" />';
-      //$u_u = mkhidden('u', $GLOBALS) . '<strong>'.$u.'</strong>';
-        //echo "\n";
+      $u_u = '<input class="form-control" type="text" name="u" value="'.$u.'" disabled/>';
+      $u_u .= '<input type="hidden" name="u" value="'.$u.'">';
     }
     echo $u_u;
     ?>
@@ -255,20 +216,15 @@ if(!empty($u) && !empty($r)) {
       }
       db_close($result);
       $u_r = '<select name="r" class="form-control">';
-      //$u_r .= '<option></option>';
       foreach($groups as $g) {
-        if (!empty($r) && $g===$r)
-           $u_r .= "<option value=\"$g\" selected>$g</option>";
-        else
-           $u_r .= "<option value=\"$g\">$g</option>";
+        if (!empty($r) && $g === $r) { $u_r .= "<option value=\"$g\" selected>$g</option>"; }
+        else { $u_r .= "<option value=\"$g\">$g</option>"; }
       }
       $u_r .= "</select>\n";
     } else {
       $groups =& $_SESSION['acl']['pgroup'];
-      //print_r($_SESSION['acl']['pgroup']);
       $u_r = '<input class="form-control" type="text" name="r" value="'.$groups[0].'" disabled/>';
-      $u_r .= '<input type="hidden" name="r" value="'.$groups[0].'" />';
-      //$u_r .= mkhidden('r', $arr);
+      $u_r .= '<input type="hidden" name="r" value="'.$groups[0].'">';
     }
     echo $u_r;
     ?>
@@ -278,8 +234,8 @@ if(!empty($u) && !empty($r)) {
   <div class="form-group form-inline">
     <label class="col-sm-3 control-label">Name <span class="label label-warning">optional</span></label>
     <div class="col-sm-9">
-    First name: <?php echo mktext('fname', 16, 16, $arr); ?>
-    Last name: <?php echo mktext('lname', 24, 24, $arr); ?>
+      First name: <?php echo mktext('fname', 16, 16, $arr); ?>
+      Last name: <?php echo mktext('lname', 24, 24, $arr); ?>
       <p class="text-muted">Enter the full name of this user including first and last name.</p>
     </div>
   </div>
@@ -293,19 +249,10 @@ if(!empty($u) && !empty($r)) {
   <div class="form-group form-inline">
     <label class="col-sm-3 control-label">Expiration <span class="label label-warning">optional</span></label>
     <div class="col-sm-9">
-    <?php
-    //echo "Year: ";
-    //echo mktext('ex_year',4,4, $arr);
-    //echo "Month: ";
-    //echo mktext('ex_month',2,2, $arr);
-    //echo "Day: ";
-    //echo mktext('ex_day',2,2, $arr);
-    //echo "\n";
-    ?>
-    Year: <input class="form-control" type="text" size="4" maxlength="4" name="ex_year" placeholder="2017" />
-    Month: <input class="form-control" type="text" size="2" maxlength="2" name="ex_month" placeholder="02" />
-    Day: <input class="form-control" type="text" size="2" maxlength="2" name="ex_day" placeholder="26"/>
-    <p class="text-muted">Assign expiration date (if any).</p>
+      Year: <input class="form-control" type="text" size="4" maxlength="4" name="ex_year" placeholder="2017">
+      Month: <input class="form-control" type="text" size="2" maxlength="2" name="ex_month" placeholder="02">
+      Day: <input class="form-control" type="text" size="2" maxlength="2" name="ex_day" placeholder="26">
+      <p class="text-muted">Assign expiration date (if any).</p>
     </div>
   </div>
   <div class="form-group">
@@ -313,10 +260,8 @@ if(!empty($u) && !empty($r)) {
     <div class="col-sm-9">
     <?php echo mkselect('disabled',array('Y' => 'Yes', 'N' => 'No'), $arr); ?>
       <p class="text-muted">Disable this user from using the system.</p>
-
     </div>
   </div>
-
   <div class="form-group">
     <label class="col-sm-3 control-label">Design surveys</label>
     <div class="col-sm-9">
@@ -324,7 +269,6 @@ if(!empty($u) && !empty($r)) {
       <p class="text-muted">Allow the user to create, edit and test surveys. This option is on by default, and is probably desired for most situations.</p>
     </div>
   </div>
-
   <div class="form-group">
     <label class="col-sm-3 control-label">Change survey status</label>
     <div class="col-sm-9">
@@ -361,11 +305,11 @@ if(!empty($u) && !empty($r)) {
     </div>
   </div>
   <div class="col-sm-offset-3 col-sm-9">
-    <input type="hidden" name="where" value="admdesigner" />
-    <input class="btn btn-warning" type="submit" name="submit" value="Create / Update" />&nbsp;
-    <input class="btn btn-default" type="submit" name="cancel" value="Cancel" />&nbsp;
+    <input type="hidden" name="where" value="admdesigner">
+    <input class="btn btn-warning" type="submit" name="submit" value="Create / Update">
+    <input class="btn btn-default" type="submit" name="cancel" value="Cancel">
     <?php if (!(isset($_SESSION['username']) && $_SESSION['username']===$u)) { ?>
-    <input class="btn btn-danger" type="submit" name="delete" value="Delete" />&nbsp;
+    <input class="btn btn-danger" type="submit" name="delete" value="Delete">
     <?php } ?>
   </div>
 </form>

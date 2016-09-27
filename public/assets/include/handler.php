@@ -1,6 +1,5 @@
 <?php
 
-require_once DOCROOT.'/admin/assets/include/lib.inc';
 require_once DOCROOT.'/public/assets/include/first.php';
 require_once DOCROOT.'/public/assets/include/handler-prefix.php';
 
@@ -24,10 +23,6 @@ $request_referer = '';
 if (!empty($_REQUEST['referer'])) { $request_referer = htmlspecialchars($_REQUEST['referer']); }
 elseif (isset($_SERVER['HTTP_REFERER'])) { $request_referer = htmlspecialchars($_SERVER['HTTP_REFERER']); }
 else { $request_direct = 1; }
-
-// $_REQUEST['direct'] = '0';
-// if ($_SERVER['HTTP_REFERER']) { $_REQUEST['referer'] = htmlspecialchars($_SERVER['HTTP_REFERER']); }
-// if (empty($_REQUEST['referer'])) { $_REQUEST['referer'] = ''; $_REQUEST['direct'] = 1; }
 
 // gets wrong for resumed surveys
 // if ($_SESSION['sec'] == 1) { $_SESSION['rid'] = 0; }
@@ -61,8 +56,8 @@ else { $isActive = true; }
 // ------------------ PE ------------------
 if (!$isActive) { echo(mkerror('Error processing survey: Survey is not active.')); return; }
 
-//if ($request_referer == $ESPCONFIG['autopub_url']) { $request_referer .= "?name=$name"; }
-if ($_REQUEST['referer'] == $ESPCONFIG['autopub_url']) { $request_referer .= "?name=$name"; }
+// if ($request_referer == $ESPCONFIG['autopub_url']) { $request_referer .= "?name=$name"; }
+if ($request_referer == MYSURVEY) { $request_referer .= "?name=$name"; }
 
 // let's build the correct return/submit/resume link
 
@@ -100,8 +95,12 @@ if (!empty($_REQUEST['submit'])) {
 if (!empty($_REQUEST['resume']) && $ESPCONFIG['auth_response'] && auth_get_option('resume')) {
   response_delete($sid, $_SESSION['rid'], $_SESSION['sec']);
   $_SESSION['rid'] = response_insert($sid, $_SESSION['sec'], $_SESSION['rid']);
-  if ($action == $ESPCONFIG['autopub_url']) { goto_saved($sid, "$action?name=$name"); }
-  else { goto_saved($sid, $action); }
+  //if ($action == $ESPCONFIG['autopub_url']) { goto_saved($sid, "$action?name=$name"); }
+  if ($_REQUEST['test']) { $aaa = $_SERVER['REQUEST_URI']."?where=test&test=1&sid=".$sid; }
+  else { $aaa = $_SERVER['REQUEST_URI']."?name=".$name; }
+  goto_saved($sid, $aaa);
+  // if ($action == MYSURVEY) { goto_saved($sid, "$action?name=$name"); }
+  // else { goto_saved($sid, $action); }
   return;
 }
 
@@ -133,21 +132,25 @@ if ($ESPCONFIG['auth_response'] && auth_get_option('resume') && $_SESSION['rid']
   survey_stat_decrement(SURVEY_STAT_SUSPENDED, $sid);
 }
 
-$formaction = $ESPCONFIG['proto'] . $_SERVER['HTTP_HOST'] . htmlspecialchars($_SERVER['PHP_SELF']);
+// $pp = htmlspecialchars(MYSURVEY);
+// if ($_REQUEST['test']) { $formaction = $pp; }
+// else { $formaction = htmlspecialchars($_SERVER['PHP_SELF']); }
+$formaction = htmlspecialchars(ME);
+
 paint_submission_form_open();
 survey_render($sid, $_SESSION['sec'], $_SESSION['rid'], $msg);
 
 echo "<p class=\"text-center\">\n";
-if (auth_get_option('navigate') && $_SESSION['sec'] > 1) { echo "<input class=\"btn btn-default\" type=\"submit\" name=\"prev\" value=\"&lt;&lt; Previous\"> \n"; }
+if (auth_get_option('navigate') && $_SESSION['sec'] > 1) { echo "<input class=\"btn btn-default\" type=\"submit\" name=\"prev\" value=\"&laquo; Previous\"> \n"; }
 if (auth_get_option('resume')) { echo "<input class=\"btn btn-success\" type=\"submit\" name=\"resume\" value=\"Save\"> \n"; }
 if ($_SESSION['sec'] == $num_sections) { echo "<input class=\"btn btn-success\" type=\"submit\" name=\"submit\" value=\"Submit my opinions\"> \n"; }
-else { echo "<input class=\"btn btn-default\" type=\"submit\" name=\"next\" value=\"Next &gt;&gt;\"> \n"; }
+else { echo "<input class=\"btn btn-default\" type=\"submit\" name=\"next\" value=\"Next &raquo;\"> \n"; }
 echo "</p>\n";
 echo "</form>\n";
 
 function paint_submission_form_open($additional = array ()) {
   global $formaction, $action, $sid, $name, $request_referer, $request_direct;
-  if (empty($request_direct)) { $request_direct = 1; }
+  // if (empty($request_direct)) { $request_direct = 1; }
   echo "<form method=\"post\" action=\"$formaction\">\n";
   echo "<input type=\"hidden\" name=\"referer\" value=\"{$request_referer}\">\n";
   echo "<input type=\"hidden\" name=\"direct\" value=\"{$request_direct}\">\n";
@@ -156,21 +159,21 @@ function paint_submission_form_open($additional = array ()) {
   echo "<input type=\"hidden\" name=\"sec\" value=\"{$_SESSION['sec']}\">\n";
   echo "<input type=\"hidden\" name=\"name\" value=\"{$name}\">\n";
   foreach ($additional as $field => $value) { echo "<input type='hidden' name='$field' value='$value'>"; }
-  if ($_REQUEST['test']) { echo "<input type=\"hidden\" name=\"test\" value=\"{$_REQUEST['test']}\">\n"; }
+  if ($_REQUEST['test']) {
+    echo "<input type=\"hidden\" name=\"where\" value=\"test\">\n";
+    echo "<input type=\"hidden\" name=\"test\" value=\"{$_REQUEST['test']}\">\n";
+  }
   echo "\n";
 }
 
 function all_done() {
   global $sid;
-
   // commit the response and send an email
   response_commit($_SESSION['rid']);
   response_send_email($sid, $_SESSION['rid']);
-
   // initialize the state variables
   $_SESSION['rid'] = "";
   $_SESSION['sec'] = "";
-
   // go to the thank you
   goto_thankyou($sid, $_REQUEST['referer']);
   exit;

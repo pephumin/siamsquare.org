@@ -39,11 +39,13 @@ $result = execute_sql($sql);
 
 <h2>Managing Designer Accounts</h2>
 
+<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+
 <p><Click on a username to edit, or click on add new user below.</p>
 
 <p>
-  <a class="btn btn-warning" href="<?php echo($base .htmlentities("?where=admdesigner")); ?>"><i class="pe-user pe-fw"></i> Add a new designer</a>&nbsp;
-  <a class="btn btn-warning" href="<?php echo($base .htmlentities("?where=upload&account_type=designers")); ?>"><i class="pe-upload pe-fw"></i> Bulk upload designers</a>
+  <a class="btn btn-warning" href="<?php echo($base .htmlentities("?where=admdesigner")); ?>"><i class="pe-user-plus pe-fw"></i> Add a new designer</a>&nbsp;
+  <a class="btn btn-warning" href="<?php echo($base .htmlentities("?where=upload&account_type=designers")); ?>" disabled><i class="pe-upload pe-fw"></i> Bulk upload designers</a>
 </p>
 
 <br>
@@ -80,4 +82,5 @@ $result = execute_sql($sql);
 ?>
 
 </table>
+</form>
 <br><br>

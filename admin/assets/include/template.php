@@ -56,6 +56,7 @@ function pageHeader($title) {
   <script type="text/javascript" src="assets/js/jquery.steps.js"></script>
   <script type="text/javascript" src="assets/js/fv/formValidation.min.js"></script>
   <script type="text/javascript" src="assets/js/fv/bootstrap.min.js"></script>
+  <script type="text/javascript" src="assets/js/tops.js"></script>
 </head>
 <body>
 <header>
@@ -205,7 +206,6 @@ function pageFooter($notes = null) {
 </script>
 <script type="text/javascript" src="assets/js/anchor.js"></script>
 <script type="text/javascript" src="assets/js/notification.js"></script>
-<script type="text/javascript" src="assets/js/tops.js"></script>
 <script type="text/javascript" src="assets/js/functions.js"></script>
 <script type="text/javascript">
   var activateConfirmMsg = "Warning! Once activated, this survey can no longer be edited. Any further changes must be done on a copy."

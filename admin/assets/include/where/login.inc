@@ -23,8 +23,8 @@
     </div>
     <div class="form-group">
       <div class="col-sm-offset-3 col-sm-9">
-        <div class="checkbox">
-        <label><input type="checkbox" checked><span class="cr"><i class="cr-icon pe-check"></i></span> Remember me</label>
+        <div class="checkbox checkbox-primary">
+          <input id="rememberme" type="checkbox" checked> <label for="rememberme">Remember me</label>
         </div>
       </div>
     </div>

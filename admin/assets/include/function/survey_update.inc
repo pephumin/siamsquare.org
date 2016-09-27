@@ -24,7 +24,7 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
     // need to fill out at least some info on 1st tab before proceeding
     if(empty($_POST['name']) || empty($_POST['title']) || empty($_POST['realm'])) {
       $tab = "general";
-      $errstr = _('Sorry, please fill out the name, group, and title before proceeding.');
+      $errstr = 'Sorry, please fill out the name, group, and title before proceeding.';
       return(0);
     }
 
@@ -39,6 +39,8 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
     }
     array_push($f_arr, 'owner');
     array_push($v_arr, _addslashes($_SESSION['acl']['username']));
+    array_push($f_arr, 'added');
+    array_push($v_arr, sys_time_stamp());
     array_push($f_arr, 'changed');
     array_push($v_arr, sys_time_stamp());
     $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['survey_table']." (" . join(',',$f_arr) . ") VALUES (" . join(',',$v_arr) . ")";
@@ -53,6 +55,8 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
     $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE name=".  _addslashes($_POST['name']);
     $result = execute_sql($sql);
     $survey_id = $result->fields[0];
+    $sqlaccess = "INSERT INTO ".$GLOBALS['ESPCONFIG']['access_table']." (`survey_id`, `realm`, `maxlogin`, `resume`, `navigate`) VALUES (" . $survey_id . ", 'RD-Email', 10, 'Y', 'Y'), (" . $survey_id . ", 'RD-Facebook', 10, 'Y', 'Y'), (" . $survey_id . ", 'RD-Twitter', 10, 'Y', 'Y'), (" . $survey_id . ", 'RD-Google', 10, 'Y', 'Y')";
+    $resultaccess = execute_sql($sqlaccess);
     return(1);
   }
 

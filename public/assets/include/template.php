@@ -178,8 +178,8 @@ function topNav_full() {
                         <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
                         <input type="password" name="password" class="form-control" placeholder="Password">
                       </div>
-                      <div class="checkbox">
-                        <label><input type="checkbox" checked><span class="cr"><i class="cr-icon pe-check"></i></span> Remember me</label>
+                      <div class="checkbox checkbox-primary">
+                        <input id="rememberme" type="checkbox" checked> <label for="rememberme">Remember me</label>
                       </div>
                       <button type="submit" class="btn btn-info btn-block">Log in <i class="pe-check-circle-o"></i></button>
                     </form>
@@ -664,8 +664,8 @@ function render_login_form($action = null, $usernameVar = 'username', $passwordV
     </div>
     <div class="form-group">
       <div class="col-xs-offset-0 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-xs-12 col-sm-7 col-md-7 col-lg-7">
-        <div class="checkbox">
-        <label><input type="checkbox" checked><span class="cr"><i class="cr-icon pe-check"></i></span> Remember me</label>
+        <div class="checkbox checkbox-primary">
+          <input id="rememberme" type="checkbox" checked> <label for="rememberme">Remember me</label>
         </div>
       </div>
     </div>

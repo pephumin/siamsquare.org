@@ -210,7 +210,7 @@
       <div class="form-group">
         <div class="col-xs-offset-0 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-xs-12 col-sm-7 col-md-7 col-lg-7">
           <div class="checkbox">
-            <label><input type="checkbox" id="agree" name="agree"><span class="cr"><i class="cr-icon pe-check"></i></span> I agree to terms and policy</label>
+            <input id="agree" type="checkbox"> <label for="agree">I agree to terms and policy</label>
           </div>
         </div>
       </div>

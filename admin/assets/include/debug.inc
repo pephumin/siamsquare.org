@@ -43,6 +43,8 @@ foreach ($arr as $key) {
   }
 }
 $str .= "</table>\n";
-
+// $str .= "\n\n";
+// $str .= var_dump($arr);
+// $str .= "\n\n";
 ?>
-        <form id="debug" name="debug"><input class="btn btn-xs btn-danger" type="button" value="debug" onClick="debugWindow()"></form>
+<form id="debug" name="debug"><input class="btn btn-xs btn-danger" type="button" value="debug" onClick="debugWindow()"></form>

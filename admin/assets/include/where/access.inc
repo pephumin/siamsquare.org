@@ -13,8 +13,7 @@ if ($sid) {
   } else {
     $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'], array_merge($_SESSION['acl']['pall'],$_SESSION['acl']['pdesign'])));
     $sql = "SELECT s.name, s.title, s.owner, s.realm, s.public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s WHERE s.id = $sid AND NOT (status & " .STATUS_DELETED. ") AND (s.owner = "._addslashes($_SESSION['acl']['username']) ." || s.realm $realms)";
-    $sql1 = "SELECT a.realm, a.maxlogin, a.resume, a.navigate FROM ".$GLOBALS['ESPCONFIG']['access_table']." a, ".$GLOBALS['ESPCONFIG']['survey_table']." s WHERE a.survey_id = $sid AND s.id=a.survey_id AND (s.owner = ".
-    _addslashes($_SESSION['acl']['username']) ." || s.realm $realms) ORDER BY a.realm";
+    $sql1 = "SELECT a.realm, a.maxlogin, a.resume, a.navigate FROM ".$GLOBALS['ESPCONFIG']['access_table']." a, ".$GLOBALS['ESPCONFIG']['survey_table']." s WHERE a.survey_id = $sid AND s.id=a.survey_id AND (s.owner = ". _addslashes($_SESSION['acl']['username']) ." || s.realm $realms) ORDER BY a.realm";
   }
   $result = execute_sql($sql);
   if (record_count($result) < 1) { $sid = 0; }
@@ -24,22 +23,24 @@ if ($sid) {
   list($name,$title,$owner,$realm,$public) = fetch_row($result);
   db_close($result);
 
-  if (!empty($_POST['op'])) $op = $_POST['op'];
-  elseif (!empty($_GET['op'])) $op = $_GET['op'];
-  else $op = '';
+  if (!empty($_POST['op'])) { $op = $_POST['op']; }
+  elseif (!empty($_GET['op'])) { $op = $_GET['op']; }
+  else { $op = ''; }
 
-  if (!empty($_POST['realm'])) $arealm = _addslashes($_POST['realm']);
-  elseif (!empty($_GET['realm'])) $arealm = _addslashes($_GET['realm']);
+  if (!empty($_POST['realm'])) { $arealm = _addslashes($_POST['realm']); }
+  elseif (!empty($_GET['realm'])) { $arealm = _addslashes($_GET['realm']); }
 
-  if (isset($_POST['resume'])) $resume = 'Y';
-  else $resume = 'N'; $resume = _addslashes($resume);
+  if (isset($_POST['resume'])) { $resume = 'Y'; }
+  else { $resume = 'N'; }
+  $resume = _addslashes($resume);
 
-  if (isset($_POST['navigate'])) $navigate = 'Y';
-  else $navigate = 'N'; $navigate = _addslashes($navigate);
+  if (isset($_POST['navigate'])) { $navigate = 'Y'; }
+  else { $navigate = 'N'; }
+  $navigate = _addslashes($navigate);
 
-  if (!empty($_POST['max'])) $max = intval($_POST['max']);
-  elseif (!empty($_GET['max'])) $max = intval($_GET['max']);
-  else $max = 0;
+  if (!empty($_POST['max'])) { $max = intval($_POST['max']); }
+  elseif (!empty($_GET['max'])) { $max = intval($_GET['max']); }
+  else { $max = 0; }
 
   if ($op == 'a') {
     if (empty($_POST['realm'])) { $errstr = mkerror('Please select a group.'); }
@@ -61,59 +62,56 @@ if ($sid) {
   }
 }
 if ($sid) {
-  if ($public == 'N') { $public = "Private"; }
-  else { $public = "Public"; }
-
+  if ($public == 'N') { $public = "Private"; } else { $public = "Public"; }
   $r = '<select name="realm"><option></option>';
   $groups = array();
-    $selected_groups = array();
-    // if realm has already been added then do not include it for reselection.
-    $result = execute_sql($sql1);
-    while (list($sg) = fetch_row($result)) {
-        array_push($selected_groups, $sg);
-        $result->MoveNext();
-    }
-    db_close($result);
-  if($_SESSION['acl']['superuser'] == 'Y') {
+  $selected_groups = array();
+  // if realm has already been added then do not include it for reselection.
+  $result = execute_sql($sql1);
+  while (list($sg) = fetch_row($result)) {
+    array_push($selected_groups, $sg);
+    $result->MoveNext();
+  }
+  db_close($result);
+  if ($_SESSION['acl']['superuser'] == 'Y') {
     $sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['realm_table'];
     $result = execute_sql($sql);
-    while( list($g) = fetch_row($result) ) {
+    while (list($g) = fetch_row($result)) {
       if (!in_array($g, $selected_groups)) { array_push($groups, $g); }
       $result->MoveNext();
     }
-    db_close($result);
-    } else {
-      $g =& $_SESSION['acl']['pdesign'];
-      foreach ($g as $t) { if (!in_array($t, $selected_groups)) { array_push($groups, $t); } }
-    }
-  foreach($groups as $g) {
-    $r .= "<option value=\"$g\">$g</option>";
+  db_close($result);
+  } else {
+    $g =& $_SESSION['acl']['pdesign'];
+    foreach ($g as $t) { if (!in_array($t, $selected_groups)) { array_push($groups, $t); } }
   }
+  foreach($groups as $g) { $r .= "<option value=\"$g\">$g</option>"; }
   $r .= '</select>';
 }
 ?>
 
 <h2>Survey access</h2>
 
-<?php if(!empty($errstr)) echo("<p>$errstr</p>\n"); ?>
+<?php if(!empty($errstr)) echo(mkerror($errstr)); ?>
 
 <p>This lets you control who has access to fill out a form.</p>
 
 <ul class="pe-ul">
-<li><i class="pe-li pe-check-square"></i>Public surveys let anyone submit data.</li>
-<li><i class="pe-li pe-check-square"></i>Private surveys are restricted by Respondent Groups.</li>
+  <li><i class="pe-li pe-check-square"></i>Public surveys let anyone submit data.</li>
+  <li><i class="pe-li pe-check-square"></i>Private surveys are restricted by Respondent Groups.</li>
 </ul>
 
-<p><b>Note:</b> You must use <code>handler-prefix.php</code> & <code>handler.php</code> when using private surveys.</p>
-<br>
+<p><strong>Note:</strong> You must use <code>handler-prefix.php</code> &amp; <code>handler.php</code> when using private surveys.</p>
+
+<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
 
 <?php if ($sid) { ?>
 
   <h4>Current access</h4>
 
-  <input type="hidden" name="where" value="access" />
-  <input type="hidden" name="sid" value="<?php echo($sid); ?>" />
-  <input type="hidden" name="op" value="a" />
+  <input type="hidden" name="where" value="access">
+  <input type="hidden" name="sid" value="<?php echo($sid); ?>">
+  <input type="hidden" name="op" value="a">
 
   <table class="table table-hover">
     <tr class="active">
@@ -155,7 +153,7 @@ if ($sid) {
     $result = execute_sql($sql1);
     while (list($arealm, $amax, $aresume, $anavigate) = fetch_row($result) ) {
       $result->MoveNext();
-    ?>
+  ?>
 
     <tr>
       <td class="text-center"><?php echo($arealm); ?></td>
@@ -172,7 +170,7 @@ if ($sid) {
       <td class="text-center"><input type="text" name="max" size="5"></td>
       <td class="text-center"><input type="checkbox" name="resume" checked /></td>
       <td class="text-center"><input type="checkbox" name="navigate" checked /></td>
-      <td class="text-center"><input type="submit" value="Add" class="btn btn-success btn-sm"></td>
+      <td class="text-center"><input type="submit" value="Add" class="btn btn-success"></td>
     </tr>
   </table>
   <br><br>
@@ -193,10 +191,10 @@ if ($sid) {
 
 // load names and titles of all surveys available to _this_ user
 if($_SESSION['acl']['superuser'] == 'Y') {
-  $sql = "SELECT id, name, title, owner, realm, public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE NOT ".db_bin("status",STATUS_DELETED)." ORDER BY id DESC";
+  $sql = "SELECT id, name, title, owner, realm, public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE NOT ".db_bin("status", STATUS_DELETED)." ORDER BY id DESC";
 } else {
   $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'], array_merge($_SESSION['acl']['pall'], $_SESSION['acl']['pdesign'])));
-  $sql = "SELECT id, name, title, owner, realm, public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE NOT ".db_bin("status",STATUS_DELETED)." AND (owner = "._addslashes($_SESSION['acl']['username']) ." || realm $realms) ORDER BY id DESC";
+  $sql = "SELECT id, name, title, owner, realm, public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE NOT ".db_bin("status", STATUS_DELETED)." AND (owner = "._addslashes($_SESSION['acl']['username']) ." || realm $realms) ORDER BY id DESC";
 }
 
 $result = execute_sql($sql);
@@ -221,5 +219,6 @@ while(list($sid,$name,$title,$owner,$realm,$public) = fetch_row($result)) {
 }
 ?>
 
+</form>
 </table>
 <br><br>
