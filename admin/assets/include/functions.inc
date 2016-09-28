@@ -17,7 +17,7 @@
 //    100   'Section Text'           'N'        ''
 
 
-function question_render($question,$question_number,$auto_num,$on_one_line=0) {
+function question_render($question, $question_number, $auto_num, $on_one_line = 0) {
   // process each question
   $qid  = &$question['id'];
   $tid  = &$question['type_id'];
@@ -29,9 +29,9 @@ function question_render($question,$question_number,$auto_num,$on_one_line=0) {
   $has_choices = esp_type_has_choices();
 
   if ($has_choices[$tid]) {
-    $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=$qid AND content NOT LIKE '!others%' ORDER BY id";
+    $sql = "SELECT * FROM ".X_QUESTION_CHOICE." WHERE question_id=$qid AND content NOT LIKE '!others%' ORDER BY id";
     $choices_result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
-    $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=$qid AND content LIKE '!others%' ORDER BY id";
+    $sql = "SELECT * FROM ".X_QUESTION_CHOICE." WHERE question_id=$qid AND content LIKE '!others%' ORDER BY id";
     $others_result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
     $others = record_count($others_result);
   } else { $choices_result = ''; }
@@ -304,7 +304,7 @@ function survey_render($sid, $section = 1, $rid=0, $message = '') {
   if (empty($section)) { $section = 1; }
 
   // load survey title (and other globals)
-  $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id=${sid}";
+  $sql = "SELECT * FROM ".X_SURVEY." WHERE id=${sid}";
   $result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
   if (record_count($result) != 1) { return(false); }
   $survey = fetch_row($result);
@@ -318,7 +318,7 @@ function survey_render($sid, $section = 1, $rid=0, $message = '') {
 
   // load survey questions
   $sec_sql = array_to_insql($sections[$section]);
-  $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE id $sec_sql ORDER BY position,id";
+  $sql = "SELECT * FROM ".X_QUESTION." WHERE id $sec_sql ORDER BY position,id";
   $questions_result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
   if (record_count($questions_result) < 1) { return(false); }
 
@@ -388,7 +388,7 @@ function question_conditioncheck($sid,$qid,$rid) {
   $conditions[2] = "issmallerthan";
   $conditions[3] = "isbiggerthan";
   $return_result = TRUE;
-  $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['condition_table']." WHERE q1_id='$qid'";
+  $sql = "SELECT * FROM ".X_CONDITION." WHERE q1_id='$qid'";
   $result = execute_sql($sql);
   # If there are no conditions, we need to show the question, so we return true
   if (record_count($result) == 0) { return true; }
@@ -461,12 +461,12 @@ function survey_listing($start = "0", $limit = "5", $page = NULL) {
   $add = " LIMIT $start, $limit";
 
   if ($_SESSION['acl']['superuser'] == 'Y') {
-    $sql1 = "SELECT s.id, s.name, s.title, s.status, s.owner, s.realm, COUNT(q.id) as count FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s LEFT JOIN ".$GLOBALS['ESPCONFIG']['question_table']." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC";
-    $sql2 = "SELECT s.id, s.name, s.title, s.status, s.owner, s.realm, COUNT(q.id) as count FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s LEFT JOIN ".$GLOBALS['ESPCONFIG']['question_table']." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC"  . $add;
+    $sql1 = "SELECT s.id, s.name, s.title, s.status, s.owner, s.realm, COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC";
+    $sql2 = "SELECT s.id, s.name, s.title, s.status, s.owner, s.realm, COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC"  . $add;
   } else {
     $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'], array_merge($_SESSION['acl']['pall'], $_SESSION['acl']['pdesign'])));
-    $sql1 = "SELECT s.id, s.name, s.title, s.status, s.owner, s.realm, COUNT(q.id) as count FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s LEFT JOIN ".$GLOBALS['ESPCONFIG']['question_table']." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC";
-    $sql2 = "SELECT s.id, s.name, s.title, s.status, s.owner, s.realm, COUNT(q.id) as count FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s LEFT JOIN ".$GLOBALS['ESPCONFIG']['question_table']." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC"  . $add;
+    $sql1 = "SELECT s.id, s.name, s.title, s.status, s.owner, s.realm, COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC";
+    $sql2 = "SELECT s.id, s.name, s.title, s.status, s.owner, s.realm, COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC"  . $add;
   }
   $result1 = execute_sql($sql1);
   $result2 = execute_sql($sql2);
@@ -642,13 +642,13 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
   // load names and titles of all surveys available to _this_ user */
   if ($_SESSION['acl']['superuser'] == 'Y') {
 
-    $sql1 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s LEFT JOIN ".$GLOBALS['ESPCONFIG']['question_table']." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC";
-    $sql2 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s LEFT JOIN ".$GLOBALS['ESPCONFIG']['question_table']." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC"  . $add;
+    $sql1 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC";
+    $sql2 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC"  . $add;
 
   } else {
     $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'], array_merge($_SESSION['acl']['pall'], $_SESSION['acl']['pdesign'])));
-    $sql1 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s LEFT JOIN ".$GLOBALS['ESPCONFIG']['question_table']." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC";
-    $sql2 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".$GLOBALS['ESPCONFIG']['survey_table']." s LEFT JOIN ".$GLOBALS['ESPCONFIG']['question_table']." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC"  . $add;
+    $sql1 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC";
+    $sql2 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC"  . $add;
 
   }
   $result1 = execute_sql($sql1);
@@ -967,7 +967,7 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
     array_push($v_arr, sys_time_stamp());
     array_push($f_arr, 'changed');
     array_push($v_arr, sys_time_stamp());
-    $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['survey_table']." (" . join(',',$f_arr) . ") VALUES (" . join(',',$v_arr) . ")";
+    $sql = "INSERT INTO ".X_SURVEY." (" . join(',',$f_arr) . ") VALUES (" . join(',',$v_arr) . ")";
     //echo $sql;
     $result = execute_sql($sql);
     if (!$result) {
@@ -976,10 +976,10 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
       return(0);
     }
 
-    $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE name=".  _addslashes($_POST['name']);
+    $sql = "SELECT id FROM ".X_SURVEY." WHERE name=".  _addslashes($_POST['name']);
     $result = execute_sql($sql);
     $survey_id = $result->fields[0];
-    $sqlaccess = "INSERT INTO ".$GLOBALS['ESPCONFIG']['access_table']." (`survey_id`, `realm`, `maxlogin`, `resume`, `navigate`) VALUES (" . $survey_id . ", 'RD-Email', 10, 'Y', 'Y'), (" . $survey_id . ", 'RD-Facebook', 10, 'Y', 'Y'), (" . $survey_id . ", 'RD-Twitter', 10, 'Y', 'Y'), (" . $survey_id . ", 'RD-Google', 10, 'Y', 'Y')";
+    $sqlaccess = "INSERT INTO ".X_ACCESS." (`survey_id`, `realm`, `maxlogin`, `resume`, `navigate`) VALUES (" . $survey_id . ", 'RD-Email', 10, 'Y', 'Y'), (" . $survey_id . ", 'RD-Facebook', 10, 'Y', 'Y'), (" . $survey_id . ", 'RD-Twitter', 10, 'Y', 'Y'), (" . $survey_id . ", 'RD-Google', 10, 'Y', 'Y')";
     $resultaccess = execute_sql($sqlaccess);
     return(1);
   }
@@ -997,12 +997,12 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 
       //$fields = array('name','realm','title','subtitle','email','theme','thanks_page','thank_head','thank_body','info','auto_num','open_date','close_date');
       $fields = array('name','realm','public','open_date','close_date','title','email','subtitle','subtitle_th','info','info_th','theme','thanks_page','thank_head','thank_head_th','thank_body','thank_body_th','auto_num');
-      $sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id=${survey_id}";
+      $sql = "SELECT name FROM ".X_SURVEY." WHERE id=${survey_id}";
       $name = get_one($sql);
 
       // trying to change survey name
       if ($name != $_POST['name']) {
-        $sql = "SELECT COUNT(*) FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE name=" . _addslashes($_POST['name']);
+        $sql = "SELECT COUNT(*) FROM ".X_SURVEY." WHERE name=" . _addslashes($_POST['name']);
         $count = get_one($sql);
         if ($count != 0) {
           $tab = "general";
@@ -1016,7 +1016,7 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
       foreach ($fields as $f) {
         array_push($f_arr,$f ."=" . _addslashes($_POST[$f]));
       }
-      $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['survey_table']." SET " . join(', ',$f_arr) . " WHERE id=${survey_id}";
+      $sql = "UPDATE ".X_SURVEY." SET " . join(', ',$f_arr) . " WHERE id=${survey_id}";
       //echo $sql;
       $result = execute_sql($sql);
       if (!$result) {
@@ -1067,7 +1067,7 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
       print_r($_SESSION['new_survey']);
 
       if (!empty($qid)) {
-        $sql =  "SELECT Q.type_id FROM ".$GLOBALS['ESPCONFIG']['question_table']." Q WHERE Q.survey_id=${survey_id} AND Q.id=${qid}";
+        $sql =  "SELECT Q.type_id FROM ".X_QUESTION." Q WHERE Q.survey_id=${survey_id} AND Q.id=${qid}";
         $old_type_id = get_one($sql);
         if ($has_choices[$_POST['type_id']] != $has_choices[$old_type_id]) { // trying to change between incompatible question types
           $tab = "questions";
@@ -1132,12 +1132,12 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
           if (isset($_POST[$f]))
             array_push($f_arr,$f."="._addslashes($_POST[$f]));
         }
-        $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['question_table']." SET " . join(', ',$f_arr) . " WHERE id=${qid}";
+        $sql = "UPDATE ".X_QUESTION." SET " . join(', ',$f_arr) . " WHERE id=${qid}";
 
         // INSERT row in the DB for new question
       } else {
         // set the position to the end
-        $sql = "SELECT MAX(position)+1 FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id=${survey_id}";
+        $sql = "SELECT MAX(position)+1 FROM ".X_QUESTION." WHERE survey_id=${survey_id}";
         $_POST['position'] = get_one($sql);
         $_POST['survey_id'] = $survey_id;
         $fields = array('survey_id','name','type_id','length','precise','required','content','content_th','position');
@@ -1147,7 +1147,7 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
             array_push($v_arr, _addslashes($_POST[$f]));
           }
         }
-        $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['question_table']." (" . join(', ',$f_arr) . ") VALUES (" . join(', ',$v_arr) .")";
+        $sql = "INSERT INTO ".X_QUESTION." (" . join(', ',$f_arr) . ") VALUES (" . join(', ',$v_arr) .")";
       }
       $result = execute_sql($sql);
       if ($qid == '')
@@ -1163,7 +1163,7 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
       // UPDATE or INSERT rows for each of the question choices for this question
       if ($has_choices[$_POST['type_id']]) {
         $cids = array();
-        $sql = "SELECT c.id FROM ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c WHERE q.id=c.  question_id AND q.survey_id=${survey_id}";
+        $sql = "SELECT c.id FROM ".X_QUESTION." q, ".X_QUESTION_CHOICE." c WHERE q.id=c.  question_id AND q.survey_id=${survey_id}";
         $result = execute_sql($sql);
         for ($i = 0; $i < record_count($result); ++$i) {
           $result->Move($i);
@@ -1195,15 +1195,15 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 
           if ($choice_id == '' && $choice_content != '') {
           // new data injected to sql
-          $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['question_choice_table']." (question_id, content, content_th, feedback, credit) VALUES (${qid}, ${choice_content}, ${choice_content_th}, ${choice_feedback}, ${choice_credit}) ";
+          $sql = "INSERT INTO ".X_QUESTION_CHOICE." (question_id, content, content_th, feedback, credit) VALUES (${qid}, ${choice_content}, ${choice_content_th}, ${choice_feedback}, ${choice_credit}) ";
           ++$count;
           } elseif ($choice_id != '' && $choice_content == '') {
           // remove data from sql
-          $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE id=${choice_id} ";
+          $sql = "DELETE FROM ".X_QUESTION_CHOICE." WHERE id=${choice_id} ";
           //echo $sql;
           } elseif ($choice_id != '' && ($choice_content != '' || $choice_feedback != '' || $choice_credit != '') && in_array($choice_id, $cids)) {
           // update sql with new data
-          $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['question_choice_table']." SET content=${choice_content}, content_th=${choice_content_th}   WHERE id=${choice_id}";
+          $sql = "UPDATE ".X_QUESTION_CHOICE." SET content=${choice_content}, content_th=${choice_content_th}   WHERE id=${choice_id}";
           //echo $sql;
           ++$count;
           }
@@ -1237,13 +1237,13 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
       $sid = $survey_id;
 
       if (isset($_POST['questions_order'])) {
-        $sql = "SELECT id, position FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id=$sid AND deleted='N' ORDER BY position";
+        $sql = "SELECT id, position FROM ".X_QUESTION." WHERE survey_id=$sid AND deleted='N' ORDER BY position";
         $result = execute_sql($sql);
         $max = record_count($result);
         $order = split('\|', $questions_order);
         for ($i = 0; $i < count($order); $i++) {
           $ord = _addslashes($order[$i]);
-          $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['question_table']." SET position=$i WHERE id=$ord AND survey_id=$sid";
+          $sql = "UPDATE ".X_QUESTION." SET position=$i WHERE id=$ord AND survey_id=$sid";
           execute_sql($sql);
         }
       }
@@ -1251,15 +1251,15 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
         if ($_POST['removeit'] == 1) {
           if (isset($_POST['questions'])) {
             $qid = intval($_POST['questions']);
-            $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['question_table']." SET deleted='Y' WHERE id=$qid AND survey_id=$sid";
+            $sql = "UPDATE ".X_QUESTION." SET deleted='Y' WHERE id=$qid AND survey_id=$sid";
             execute_sql($sql);
           }
         }
       }
       if (isset($_POST['addbreak'])) {
-        $sql = "SELECT MAX(position)+1 FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id=$sid";
+        $sql = "SELECT MAX(position)+1 FROM ".X_QUESTION." WHERE survey_id=$sid";
         $pos = get_one($sql);
-        $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['question_table']." (survey_id,name,type_id,position,content) VALUES ($sid, 'break', 99, $pos, 'break')";
+        $sql = "INSERT INTO ".X_QUESTION." (survey_id,name,type_id,position,content) VALUES ($sid, 'break', 99, $pos, 'break')";
         execute_sql($sql);
       }
       db_close($result);
@@ -1277,13 +1277,13 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
         }
         $cond=$_POST['cond'];
         $cond_val=_addslashes($_POST['cond_value']);
-        $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['condition_table']." (survey_id,q1_id,q2_id,cond,cond_value) VALUES ($sid, $id1, $id2, $cond, $cond_val)";
+        $sql = "INSERT INTO ".X_CONDITION." (survey_id,q1_id,q2_id,cond,cond_value) VALUES ($sid, $id1, $id2, $cond, $cond_val)";
         $result=execute_sql($sql);
         if (!$result)
            $errstr = 'Warning, error encountered.' .' [ '.ErrorNo().': '.ErrorMsg().' ]';
       }
       elseif (isset($_POST['deletecondition'])) {
-        $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['condition_table']." WHERE id=".key($_POST['deletecondition']);
+        $sql = "DELETE FROM ".X_CONDITION." WHERE id=".key($_POST['deletecondition']);
         $result=execute_sql($sql);
         if (!$result)
           $errstr = 'Warning, error encountered.' .' [ '.ErrorNo().': '.ErrorMsg().' ]';
@@ -1294,7 +1294,7 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 }
 
 function survey_results_navbar($sid, $curr_rid) {
-  $sql = "SELECT R.id FROM ".$GLOBALS['ESPCONFIG']['response_table']." R WHERE R.survey_id='${sid}' AND R.complete = 'Y' ORDER BY R.id";
+  $sql = "SELECT R.id FROM ".X_RESPONSE." R WHERE R.survey_id='${sid}' AND R.complete = 'Y' ORDER BY R.id";
   $result = execute_sql($sql);
   $total = record_count($result);
   if ($total < 1) { return; }
@@ -1322,7 +1322,7 @@ function survey_results_navbar($sid, $curr_rid) {
 
   $display_pos = 1;
   if ($prev_rid != null)
-    array_push($linkarr, "<a href=\"$url&rid=$prev_rid\">"._('Previous').'</a>');
+    array_push($linkarr, "<a href=\"$url&rid=$prev_rid\">".'Previous'.'</a>');
   for ($i = 0; $i < $curr_pos; $i++) {
     array_push($linkarr, "<a href=\"$url&rid=".$rids[$i]."\">$display_pos</a>");
     $display_pos++;
@@ -1333,7 +1333,7 @@ function survey_results_navbar($sid, $curr_rid) {
     array_push($linkarr, "<a href=\"$url&rid=".$rids[$i]."\">$display_pos</a>");
   }
   if ($next_rid != null)
-    array_push($linkarr, "<a href=\"$url&rid=$next_rid\">"._('Next').'</a>');
+    array_push($linkarr, "<a href=\"$url&rid=$next_rid\">".'Next'.'</a>');
 
   ?>
     <h2><?php echo 'Navigate Individual Respondent Submissions'; ?></h2>
@@ -1365,7 +1365,7 @@ function survey_results($sid, $precision = 1, $showTotals = 1, $qid = '', $cids 
   // type has answer choices or not and the table the answers are in
   $has_choices = array();
   $response_table = array();
-  $sql = 'SELECT id,has_choices,response_table FROM '.$GLOBALS['ESPCONFIG']['question_type_table'].' ORDER BY id';
+  $sql = 'SELECT id,has_choices,response_table FROM '.X_QUESTION_TYPE.' ORDER BY id';
   if (!($result = execute_sql($sql))) {
         $errmsg = sprintf('%s [ %s: question_type ]', 'Error system table corrupt.', 'Table');
     return($errmsg);
@@ -1378,7 +1378,7 @@ function survey_results($sid, $precision = 1, $showTotals = 1, $qid = '', $cids 
   db_close($result);
 
   // load survey title (and other globals)
-  $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id='${sid}'";
+  $sql = "SELECT * FROM ".X_SURVEY." WHERE id='${sid}'";
   if (!($result = execute_sql($sql,"",ADODB_FETCH_ASSOC))) {
     $errmsg = _('Error opening survey.') ." [ ID:${sid} R:" . record_count($result) ."]";
     return($errmsg);
@@ -1387,7 +1387,7 @@ function survey_results($sid, $precision = 1, $showTotals = 1, $qid = '', $cids 
   db_close($result);
 
   // load survey questions
-  $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id='${sid}' AND deleted='N' ORDER BY position,id";
+  $sql = "SELECT * FROM ".X_QUESTION." WHERE survey_id='${sid}' AND deleted='N' ORDER BY position,id";
   if (!($questions_result = execute_sql($sql,"",ADODB_FETCH_ASSOC))) {
     $errmsg = 'Error opening survey.' .' '. 'No questions found.' ." [ ID:${sid} ]";
     return($errmsg);
@@ -1395,7 +1395,7 @@ function survey_results($sid, $precision = 1, $showTotals = 1, $qid = '', $cids 
 
   // find out more about the question we are cross analyzing on (if any)
   if ($cross) {
-        $sql = "SELECT type_id FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE id=${qid}";
+        $sql = "SELECT type_id FROM ".X_QUESTION." WHERE id=${qid}";
     $result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
         while($content = fetch_row($result)){
             $result->MoveNext();
@@ -1419,14 +1419,14 @@ function survey_results($sid, $precision = 1, $showTotals = 1, $qid = '', $cids 
         $sql = "";
         if ($cross) {
             if (!empty($cidstr)) {
-                $sql = "SELECT A.response_id FROM ".$GLOBALS['ESPCONFIG'][$crossTable.'_table']." A, ".$GLOBALS['ESPCONFIG']['response_table']." R WHERE A.response_id=R.id AND R.complete='Y' AND A.question_id='${qid}' AND A.choice_id ${cidstr} ORDER BY A.response_id";
+                $sql = "SELECT A.response_id FROM ".$GLOBALS['ESPCONFIG'][$crossTable.'_table']." A, ".X_RESPONSE." R WHERE A.response_id=R.id AND R.complete='Y' AND A.question_id='${qid}' AND A.choice_id ${cidstr} ORDER BY A.response_id";
             }
             else {
-                $sql = "SELECT A.response_id FROM ".$GLOBALS['ESPCONFIG'][$crossTable.'_table']." A, ".$GLOBALS['ESPCONFIG']['response_table']." R WHERE A.response_id=R.id AND R.complete='Y' AND A.question_id='${qid}' AND A.choice_id = 0 ORDER BY A.response_id";
+                $sql = "SELECT A.response_id FROM ".$GLOBALS['ESPCONFIG'][$crossTable.'_table']." A, ".X_RESPONSE." R WHERE A.response_id=R.id AND R.complete='Y' AND A.question_id='${qid}' AND A.choice_id = 0 ORDER BY A.response_id";
             }
         }
         else {
-        $sql = "SELECT R.id FROM ".$GLOBALS['ESPCONFIG']['response_table']." R WHERE R.survey_id='${sid}' AND R.complete='Y' ORDER BY R.id";
+        $sql = "SELECT R.id FROM ".X_RESPONSE." R WHERE R.survey_id='${sid}' AND R.complete='Y' ORDER BY R.id";
       }
       if (!($result = execute_sql($sql))) {
         $errmsg = 'Error opening survey.' ." [ ID:${sid} ] [ ".ErrorMsg()."]";
@@ -1560,7 +1560,7 @@ switch ($table) {
     case 'response_multiple':
       $totals = 0;
     case 'response_single':
-      $sql = "SELECT C.content FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." C WHERE C.question_id='${qid}' AND C.content NOT LIKE '!others%' ORDER BY C.id";
+      $sql = "SELECT C.content FROM ".X_QUESTION_CHOICE." C WHERE C.question_id='${qid}' AND C.content NOT LIKE '!others%' ORDER BY C.id";
       if ($result = execute_sql($sql)) {
         for ($j = 0; $j < record_count($result); $j++) {
           $result->Move($j);
@@ -1569,7 +1569,7 @@ switch ($table) {
         db_close($result);
       }
 
-      $sql = "SELECT C.content, COUNT(A.response_id) AS num FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." C, ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE C.question_id='${qid}' AND C.content NOT LIKE '!others%' AND A.question_id=C.question_id AND A.choice_id=C.id AND A.response_id ${ridstr} GROUP BY C.id, C.content";
+      $sql = "SELECT C.content, COUNT(A.response_id) AS num FROM ".X_QUESTION_CHOICE." C, ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE C.question_id='${qid}' AND C.content NOT LIKE '!others%' AND A.question_id=C.question_id AND A.choice_id=C.id AND A.response_id ${ridstr} GROUP BY C.id, C.content";
       echo("<!-- \$sql = '$sql' -->\n");
       if ($result = execute_sql($sql)) {
         while (list($ccontent,$count) = fetch_row($result)) {
@@ -1581,7 +1581,7 @@ switch ($table) {
       }
 
       // handle 'other...'
-      $sql = "SELECT A.response, C.content FROM ".$GLOBALS['ESPCONFIG']['response_other_table']." A, ".$GLOBALS['ESPCONFIG']['question_choice_table']." C WHERE A.question_id='${qid}' AND A.choice_id=C.id AND A.response_id ${ridstr} ORDER BY C.id, A.response";
+      $sql = "SELECT A.response, C.content FROM ".X_RESPONSE_OTHER." A, ".X_QUESTION_CHOICE." C WHERE A.question_id='${qid}' AND A.choice_id=C.id AND A.response_id ${ridstr} ORDER BY C.id, A.response";
       echo("<!-- \$sql = '$sql' -->\n");
       if ($result = execute_sql($sql)) {
         while(list($answer,$ccontent) = fetch_row($result)) {
@@ -1628,7 +1628,7 @@ switch ($table) {
 // -------------------------------- response_rank --------------------------------
     case 'response_rank':
       if ($tid == 8) { //Rank
-                $sql = "SELECT C.content FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." C WHERE C.question_id='${qid}' AND C.content NOT LIKE '!others%' ORDER BY C.id";
+                $sql = "SELECT C.content FROM ".X_QUESTION_CHOICE." C WHERE C.question_id='${qid}' AND C.content NOT LIKE '!others%' ORDER BY C.id";
                 if ($result = execute_sql($sql)) {
                     for ($j = 0; $j < record_count($result); $j++) {
                         $result->Move($j);
@@ -1636,7 +1636,7 @@ switch ($table) {
                     }
                     db_close($result);
                 }
-        $sql = "SELECT C.content, AVG(A.rank+1) AS average FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." C, ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE C.question_id='${qid}' AND A.question_id='${qid}' AND A.choice_id=C.id AND A.rank>=0 AND A.response_id ${ridstr} GROUP BY C.id, C.content";
+        $sql = "SELECT C.content, AVG(A.rank+1) AS average FROM ".X_QUESTION_CHOICE." C, ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE C.question_id='${qid}' AND A.question_id='${qid}' AND A.choice_id=C.id AND A.rank>=0 AND A.response_id ${ridstr} GROUP BY C.id, C.content";
         echo("<!-- \$sql = '$sql' -->\n");
         if ($result = execute_sql($sql)) {
           while(list($ccontent,$avg) = fetch_row($result)) {
@@ -1701,9 +1701,9 @@ function survey_report($sid, $details = 0, $format = '') {
   // type has answer choices or not and the table the answers are in
   $has_choices = array();
   $response_table = array();
-  $sql = 'SELECT id,has_choices,response_table FROM '.$GLOBALS['ESPCONFIG']['question_type_table'].' ORDER BY id';
+  $sql = 'SELECT id,has_choices,response_table FROM '.X_QUESTION_TYPE.' ORDER BY id';
   if (!($result = execute_sql($sql))) {
-    $errmsg = _('Error system table corrupt.') ." [ ". _('Table') .": question_type ]";
+    $errmsg = 'Error system table corrupt.' ." [ ". 'Table' .": question_type ]";
     return($errmsg);
   }
   while($row = fetch_row($result)) {
@@ -1714,22 +1714,22 @@ function survey_report($sid, $details = 0, $format = '') {
   db_close($result);
 
   // load survey title (and other globals)
-  $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id=$sid";
+  $sql = "SELECT * FROM ".X_SURVEY." WHERE id=$sid";
   if (!($result = execute_sql($sql,"",ADODB_FETCH_ASSOC))) {
-    $errmsg = _('Error opening survey.') ." [ ID:${sid} R:" . record_count($result) ."]";
+    $errmsg = 'Error opening survey.' ." [ ID:${sid} R:" . record_count($result) ."]";
     return($errmsg);
   }
   $survey = fetch_row($result);
   db_close($result);
 
   // load survey questions
-  $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id=$sid AND deleted='N' ORDER BY position";
+  $sql = "SELECT * FROM ".X_QUESTION." WHERE survey_id=$sid AND deleted='N' ORDER BY position";
   if (!($questions_result = execute_sql($sql,"",ADODB_FETCH_ASSOC))) {
-    $errmsg = _('Error opening survey.') .' '. _('No questions found.') ." [ ID:${sid} ]";
+    $errmsg = 'Error opening survey.' .' '. 'No questions found.' ." [ ID:${sid} ]";
     return($errmsg);
   }
 ?>
-<h2><?php echo(_('Report for') .': '. $survey["title"] .' ['. _('ID') .': '. $survey['id'] .']'); ?></h2>
+<h2><?php echo('Report for' .': '. $survey["title"] .' ['. _('ID') .': '. $survey['id'] .']'); ?></h2>
 <h3><?php echo($survey["subtitle"]); ?></h3>
 <blockquote><?php echo($survey["info"]); ?></blockquote>
 <table border="0" cellspacing="2" cellpadding="0" width="100%">
@@ -1738,7 +1738,7 @@ function survey_report($sid, $details = 0, $format = '') {
   <th align="left"><?php echo('ID'); ?></th>
   <th align="left"><?php echo("Req'd"); ?></th>
   <th align="left"><?php echo('Public'); ?></th>
-  <th align="center" colspan="2"><?php echo(_('Content')); ?></th>
+  <th align="center" colspan="2"><?php echo('Content'); ?></th>
 </tr>
 <?php
   $i = 0;
@@ -1771,7 +1771,7 @@ function survey_report($sid, $details = 0, $format = '') {
 </tr>
 <?php
     if ($has_choices[$tid]) {
-      $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id = $qid ORDER BY id";
+      $sql = "SELECT * FROM ".X_QUESTION_CHOICE." WHERE question_id = $qid ORDER BY id";
        $choices_result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
       while($choice = fetch_row($choices_result)) {
                 $choices_result->MoveNext();
@@ -1826,14 +1826,13 @@ function survey_generate_results($format, $sid) {
             // SPSS Output
             $numcols = 3;
             $columns2 = $columns;
-            $sql = "SELECT q.id, q.type_id FROM {$GLOBALS['ESPCONFIG']['question_table']} q
-            WHERE q.survey_ID = $sid AND q.deleted = 'N' and q.type_id < 50 ORDER BY position";
+            $sql = "SELECT q.id, q.type_id FROM ".X_QUESTION." q WHERE q.survey_ID = $sid AND q.deleted = 'N' and q.type_id < 50 ORDER BY position";
             $result = execute_sql($sql);
             $qcount = 0; // rating and multiple select (checkbox) count as one
             while ( list ($qid, $type) = fetch_row($result)) {
                 $result->MoveNext();
                 if ($type == '8' || $type == '5') { //rating question or multiple select (checkbox)
-                $sql = "SELECT c.id FROM ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c WHERE q.id = $qid AND q.id = c.question_id ORDER BY c.id ASC";
+                $sql = "SELECT c.id FROM ".X_QUESTION." q, ".X_QUESTION_CHOICE." c WHERE q.id = $qid AND q.id = c.question_id ORDER BY c.id ASC";
                 $result2 = execute_sql($sql);
                 $ratecols=0;
                 $qcount++;
@@ -1857,7 +1856,7 @@ function survey_generate_results($format, $sid) {
             db_close($result);
 
             // Generate Data (This could get tricky)
-            $sql = "SELECT r.id,r.submitted,r.username FROM ".$GLOBALS['ESPCONFIG']['response_table']." r WHERE r.survey_id=$sid AND r.complete='Y' ORDER BY r.submitted";
+            $sql = "SELECT r.id,r.submitted,r.username FROM ".X_RESPONSE." r WHERE r.survey_id=$sid AND r.complete='Y' ORDER BY r.submitted";
             $result = execute_sql($sql);
 
             $columns[0] = array('RESPONSE');
@@ -1963,12 +1962,12 @@ function survey_generate_results($format, $sid) {
             $columns2=$columns;    //columns2 is used to relate columns to data returned from response_select()
             $numcols = 3;    //total columns
             $qcount=0;    //total questions (rating questions count as 1)
-            $sql = "SELECT q.id, q.type_id FROM ".$GLOBALS['ESPCONFIG']['question_table']." q WHERE q.survey_id = $sid AND q.deleted = 'N' AND q.type_id < 50 ORDER BY position";
+            $sql = "SELECT q.id, q.type_id FROM ".X_QUESTION." q WHERE q.survey_id = $sid AND q.deleted = 'N' AND q.type_id < 50 ORDER BY position";
             $result = execute_sql($sql);
             while( list( $qid, $type ) = fetch_row($result) ) {
                 $result->MoveNext();
                 if ($type == '8') { //rating question
-                $sql = "SELECT c.id FROM ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c WHERE q.id = $qid AND q.id = c.question_id ORDER BY position";
+                $sql = "SELECT c.id FROM ".X_QUESTION." q, ".X_QUESTION_CHOICE." c WHERE q.id = $qid AND q.id = c.question_id ORDER BY position";
                 $result2 = execute_sql($sql);
                 $ratecols=0;
                 $qcount++;
@@ -1993,7 +1992,7 @@ function survey_generate_results($format, $sid) {
             db_close($result);
 
             //Generate data:
-            $sql = "SELECT r.id,r.submitted,r.username FROM ".$GLOBALS['ESPCONFIG']['response_table']." r WHERE r.survey_id=$sid AND r.complete='Y' ORDER BY r.submitted";
+            $sql = "SELECT r.id,r.submitted,r.username FROM ".X_RESPONSE." r WHERE r.survey_id=$sid AND r.complete='Y' ORDER BY r.submitted";
             $result = execute_sql($sql);
             while($row = fetch_row($result)) {
                 $result->MoveNext();
@@ -2077,15 +2076,14 @@ function survey_generate_results($format, $sid) {
             //csv_full_header
             $numcols = 3;
 
-            $sql = "SELECT q.id, q.name, q.type_id
-            FROM ".$GLOBALS['ESPCONFIG']['question_table']." q WHERE q.survey_id = $sid AND q.deleted = 'N' AND q.type_id < 50 ORDER BY position";
+            $sql = "SELECT q.id, q.name, q.type_id FROM ".X_QUESTION." q WHERE q.survey_id = $sid AND q.deleted = 'N' AND q.type_id < 50 ORDER BY position";
             $result = execute_sql($sql);
             $numcols += record_count($result);
             while( list( $qid, $col, $type ) = fetch_row($result) ) {
                 $result->MoveNext();
                 if ($type == 8) {
                     /* rate */
-                    $sql = "SELECT ".$GLOBALS['ESPCONFIG']['adodb_conn']->Concat("q.name", "' '", "c.content").", c.id FROM ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c WHERE q.id = $qid AND q.id = c.question_id";
+                    $sql = "SELECT ".$GLOBALS['ESPCONFIG']['adodb_conn']->Concat("q.name", "' '", "c.content").", c.id FROM ".X_QUESTION." q, ".X_QUESTION_CHOICE." c WHERE q.id = $qid AND q.id = c.question_id";
                     $result2 = execute_sql($sql);
                     $numcols += record_count($result2) - 1;
                     while( list($col, $rid) = fetch_row($result2) ) {
@@ -2113,7 +2111,7 @@ function survey_generate_results($format, $sid) {
             db_close($result);
             $num = 0;
 
-            $sql = "SELECT r.id,r.submitted,r.username FROM ".$GLOBALS['ESPCONFIG']['response_table']." r WHERE r.survey_id=$sid AND r.complete='Y' ORDER BY r.submitted";
+            $sql = "SELECT r.id,r.submitted,r.username FROM ".X_RESPONSE." r WHERE r.survey_id=$sid AND r.complete='Y' ORDER BY r.submitted";
             $result = execute_sql($sql);
             $y = 0;
             if (record_count($result) == 0) {
@@ -2255,22 +2253,15 @@ function account_upload(&$exceptions, $upload_type, $account_type, $group_acl, $
 
       foreach ($arr as $row) {
         /* check for data in required fields */
-        if ($row[0]) { $username = $row[0]; }
-        else { $error=1; break; }
-        if ($row[1]) { $password = $row[1]; }
-        else { $error=1; break; }
+        if ($row[0]) { $username = $row[0]; } else { $error=1; break; }
+        if ($row[1]) { $password = $row[1]; } else { $error=1; break; }
         if ($row[2]) {
           $realm = $row[2];
-          if (isset($row[3])) { $fname = $row[3]; }
-          else { $fname = ''; }
-          if (isset($row[4])) { $lname = $row[4]; }
-          else { $lname = ''; }
-          if (isset($row[5])) { $email = $row[5]; }
-          else { $email = ''; }
-          if (isset($row[6])) { $expir = $row[6]; }
-          else { $expir = ''; }
-          if (isset($row[7])) { $disabled = $row[7]; }
-          else { $disabled = ''; }
+          if (isset($row[3])) { $fname = $row[3]; } else { $fname = ''; }
+          if (isset($row[4])) { $lname = $row[4]; } else { $lname = ''; }
+          if (isset($row[5])) { $email = $row[5]; } else { $email = ''; }
+          if (isset($row[6])) { $expir = $row[6]; } else { $expir = ''; }
+          if (isset($row[7])) { $disabled = $row[7]; } else { $disabled = ''; }
           /* validate email address.  */
           if ($email != '') {
             if (!preg_match( "/^[a-z0-9]+([_\\.-][a-z0-9]+)*@/i" . "([a-z0-9]+([\.-][a-z0-9]+)*)+\\.[a-z]{2,}$", $email)) {
@@ -2308,7 +2299,7 @@ function account_upload(&$exceptions, $upload_type, $account_type, $group_acl, $
         $expir = _addslashes($expir);
         $disabled = _addslashes($disabled);
         $changed = sys_time_stamp();
-        $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['respondent_table']." ";
+        $sql = "INSERT INTO ".X_RESPONDENT." ";
         $sql .= "(username, password, realm, fname, lname, ";
         $sql .= "email, expiration, disabled, changed) ";
         $sql .= "VALUES ($username, ".db_crypt($password).", ";
@@ -2326,34 +2317,21 @@ function account_upload(&$exceptions, $upload_type, $account_type, $group_acl, $
       array_push($exceptions, array("Username", "Password", "Group", "First Name", "Last Name", "Email", "PDesign", "PStatus", "PData", "PAll", "PGroup", "PUser", "Expir", "Disabled", "Error"));
       foreach ($arr as $row) {
         /* check for data in required fields */
-        if ($row[0]) { $username = $row[0]; }
-        else { $error = 1; break; }
-        if ($row[1]) { $password = $row[1]; }
-        else { $error = 1; break; }
+        if ($row[0]) { $username = $row[0]; } else { $error = 1; break; }
+        if ($row[1]) { $password = $row[1]; } else { $error = 1; break; }
         if ($row[2]) {
           $realm = $row[2];
-          if (isset($row[3])) { $fname = $row[3]; }
-          else { $fname = ''; }
-          if (isset($row[4])) { $lname = $row[4]; }
-          else { $lname = ''; }
-          if (isset($row[5])) { $email = $row[5]; }
-          else { $email = ''; }
-          if (isset($row[6])) { $pdesign = $row[6]; }
-          else { $pdesign = ''; }
-          if (isset($row[7])) { $pstatus = $row[7]; }
-          else { $pstatus = ''; }
-          if (isset($row[8])) { $pdata = $row[8]; }
-          else { $pdata = ''; }
-          if (isset($row[9])) { $pall = $row[9]; }
-          else { $pall = ''; }
-          if (isset($row[10])) { $pgroup = $row[10]; }
-          else { $pgroup = ''; }
-          if (isset($row[11])) { $puser = $row[11]; }
-          else { $puser = ''; }
-          if (isset($row[12])) { $expir = $row[12]; }
-          else { $expir = ''; }
-          if (isset($row[13])) { $disabled = $row[13]; }
-          else { $disabled = ''; }
+          if (isset($row[3])) { $fname = $row[3]; } else { $fname = ''; }
+          if (isset($row[4])) { $lname = $row[4]; } else { $lname = ''; }
+          if (isset($row[5])) { $email = $row[5]; } else { $email = ''; }
+          if (isset($row[6])) { $pdesign = $row[6]; } else { $pdesign = ''; }
+          if (isset($row[7])) { $pstatus = $row[7]; } else { $pstatus = ''; }
+          if (isset($row[8])) { $pdata = $row[8]; } else { $pdata = ''; }
+          if (isset($row[9])) { $pall = $row[9]; } else { $pall = ''; }
+          if (isset($row[10])) { $pgroup = $row[10]; } else { $pgroup = ''; }
+          if (isset($row[11])) { $puser = $row[11]; } else { $puser = ''; }
+          if (isset($row[12])) { $expir = $row[12]; } else { $expir = ''; }
+          if (isset($row[13])) { $disabled = $row[13]; } else { $disabled = ''; }
           /* validate email address.  */
           if ($email != '') {
             if (!preg_match( "/^[a-z0-9]+([_\\.-][a-z0-9]+)*@/i" . "([a-z0-9]+([\.-][a-z0-9]+)*)+\\.[a-z]{2,}$", $email)) {
@@ -2399,7 +2377,7 @@ function account_upload(&$exceptions, $upload_type, $account_type, $group_acl, $
         $expir = _addslashes($expir);
         $disabled = _addslashes($disabled);
         $changed = sys_time_stamp();
-        $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['designer_table']." ";
+        $sql = "INSERT INTO ".X_DESIGNER." ";
         $sql .= "(username, password, realm, fname, lname, ";
         $sql .= "email, pdesign, pstatus, pdata, pall, pgroup,";
         $sql .= "puser, expiration, disabled, changed) ";
@@ -2413,7 +2391,6 @@ function account_upload(&$exceptions, $upload_type, $account_type, $group_acl, $
         }
       }
       break;
-
   }
   if (count($exceptions) > 1 or $error) { return 0; }
   else { return 1; }
@@ -2428,11 +2405,11 @@ function survey_aggregate($sids) {
   // get the survey data from the first survey
   reset($sids);
   $first_sid = current($sids);
-  $sql = sprintf('SELECT * FROM %s WHERE id=%d', $GLOBALS['ESPCONFIG']['survey_table'], $first_sid);
+  $sql = sprintf('SELECT * FROM %s WHERE id=%d', X_SURVEY, $first_sid);
   $res = execute_sql($sql, '', ADODB_FETCH_ASSOC);
   if (1 == record_count($res)) { $survey = fetch_row($res); }
   db_close($res);
-  if (! isset($survey)) { return false; }
+  if (!isset($survey)) { return false; }
   // update its data so that it's a new survey
   // ... clear the sid
   // ... change the owner
@@ -2457,7 +2434,7 @@ function survey_aggregate($sids) {
   //}
   // create new survey
   $survey['changed'] = sys_time_stamp();
-  $sql = sql_for_insert_into_table($GLOBALS['ESPCONFIG']['survey_table'], $survey);
+  $sql = sql_for_insert_into_table(X_SURVEY, $survey);
   $res = execute_sql($sql);
   if (! $res) { return false; }
   $new_sid = insert_id('survey_id_seq');
@@ -2475,7 +2452,7 @@ function survey_aggregate($sids) {
 function survey_copy_questions_and_conditions($sid, $new_sid, $pos = 0) {
   $has_choices = esp_type_has_choices();
   $question_fields = array('id', 'survey_id', 'name', 'type_id', 'result_id', 'length', 'precise', 'position', 'content', 'content_th', 'required', 'deleted', 'public');
-  $sql = "SELECT ". join(', ',$question_fields)." FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id=${sid} AND deleted='N' ORDER by position, id";
+  $sql = "SELECT ". join(', ',$question_fields)." FROM ".X_QUESTION." WHERE survey_id=${sid} AND deleted='N' ORDER by position, id";
   $result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
   array_shift($question_fields);
   while($question = fetch_row($result)) {
@@ -2494,7 +2471,7 @@ function survey_copy_questions_and_conditions($sid, $new_sid, $pos = 0) {
     $question['required'] = _addslashes($question['required']);
     $question['deleted'] = _addslashes($question['deleted']);
     $question['public'] = _addslashes($question['public']);
-    $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['question_table']." ";
+    $sql = "INSERT INTO ".X_QUESTION." ";
     $sql .= '('. join(',', $question_fields) .') ';
     $sql .= 'VALUES ( '. join(',',array_values($question)) .' )';
     if (!execute_sql($sql)) { return(false); }
@@ -2503,7 +2480,7 @@ function survey_copy_questions_and_conditions($sid, $new_sid, $pos = 0) {
     // make copies of all the question choices (if exist)
     if ($has_choices[$tid]) {
       $question_choice_fields = array('question_id', 'content', 'content_th', 'value', 'feedback', 'credit');
-      $sql = "SELECT ". join(', ',$question_choice_fields)." FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=${qid} ORDER BY id";
+      $sql = "SELECT ". join(', ',$question_choice_fields)." FROM ".X_QUESTION_CHOICE." WHERE question_id=${qid} ORDER BY id";
       $result2 = execute_sql($sql,"",ADODB_FETCH_ASSOC);
       while($choice = fetch_row($result2)) {
         $result2->MoveNext();
@@ -2513,7 +2490,7 @@ function survey_copy_questions_and_conditions($sid, $new_sid, $pos = 0) {
         $choice['value'] = _addslashes($choice['value']);
         $choice['feedback'] = _addslashes($choice['feedback']);
         $choice['credit'] = _addslashes($choice['credit']);
-        $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['question_choice_table']." ";
+        $sql = "INSERT INTO ".X_QUESTION_CHOICE." ";
         $sql .= '('. join(',',$question_choice_fields) .') ';
         $sql .= 'VALUES ( '. join(',',array_values($choice)) .' )';
         if (!execute_sql($sql)) { return(false); }
@@ -2523,9 +2500,7 @@ function survey_copy_questions_and_conditions($sid, $new_sid, $pos = 0) {
   }
   db_close($result);
   // copy conditions
-  $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['condition_table']." (id, survey_id, q1_id, q2_id, cond, cond_value) SELECT NULL, $new_sid, qnew1.id, qnew2.id, cond, cond_value
-  FROM ".$GLOBALS['ESPCONFIG']['question_table']." qold1, ".$GLOBALS['ESPCONFIG']['question_table']." qold2, ".$GLOBALS['ESPCONFIG']['question_table']." qnew1, ".$GLOBALS['ESPCONFIG']['question_table']." qnew2, ".$GLOBALS['ESPCONFIG']['condition_table']." c
-  WHERE qold1.id=c.q1_id AND qold2.id=c.q2_id AND qold1.survey_id=$sid AND qold2.survey_id=$sid AND qnew1.survey_id=$new_sid AND qnew1.position=qold1.position AND qnew1.deleted=qold1.deleted AND qnew2.survey_id=$new_sid AND qnew2.position=qold2.position AND qnew2.deleted=qold2.deleted ";
+  $sql = "INSERT INTO ".X_CONDITION." (id, survey_id, q1_id, q2_id, cond, cond_value) SELECT NULL, $new_sid, qnew1.id, qnew2.id, cond, cond_value FROM ".X_QUESTION." qold1, ".X_QUESTION." qold2, ".X_QUESTION." qnew1, ".X_QUESTION." qnew2, ".X_CONDITION." c WHERE qold1.id=c.q1_id AND qold2.id=c.q2_id AND qold1.survey_id=$sid AND qold2.survey_id=$sid AND qnew1.survey_id=$new_sid AND qnew1.position=qold1.position AND qnew1.deleted=qold1.deleted AND qnew2.survey_id=$new_sid AND qnew2.position=qold2.position AND qnew2.deleted=qold2.deleted ";
   $result = execute_sql($sql);
   if (false === $result) { return false; }
   return $pos;
@@ -2568,7 +2543,7 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
 
   // load survey title (and other globals) from 1st surveyId
   $sid = $sids[0];
-  $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id=${sid}";
+  $sql = "SELECT * FROM ".X_SURVEY." WHERE id=${sid}";
   echo("<!-- \$sql = ${sql} -->\n");
   if (!($result = execute_sql($sql,"", ADODB_FETCH_ASSOC))) {
     $errmsg = 'Error opening survey.' ." [ ID:${sid} R:" . record_count($result) ."] [ ".ErrorMsg()."]";
@@ -2578,7 +2553,7 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
   db_close($result);
 
   // find total number of survey responses
-  $sql = "SELECT R.id FROM ".$GLOBALS['ESPCONFIG']['response_table']." R WHERE R.survey_id ${sidstr} AND R.complete='Y'";
+  $sql = "SELECT R.id FROM ".X_RESPONSE." R WHERE R.survey_id ${sidstr} AND R.complete='Y'";
   echo("<!-- \$sql = ${sql} -->\n");
   if (!($result = execute_sql($sql))) {
     $errmsg = 'Error opening surveys.' ." [ ID: ${sidstr} ] [ ".ErrorMsg()."]";
@@ -2602,7 +2577,7 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
   // load survey questions
   for ($i=0; $i<$num; $i++) {
     $sid = $sids[$i];
-    $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id=${sid} AND deleted='N' ORDER BY position,id";
+    $sql = "SELECT * FROM ".X_QUESTION." WHERE survey_id=${sid} AND deleted='N' ORDER BY position,id";
     echo("<!-- \$sql = ${sql} -->\n");
     $questions[$i] = execute_sql($sql,"",ADODB_FETCH_ASSOC);
     if (!$questions[$i]) {
@@ -2684,7 +2659,7 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
       for ($i=0; $i<$num; $i++) {
         $sid = $sids[$i];
         $qid = $question[$i]['id'];
-        $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=${qid} AND content NOT LIKE '!others%' ORDER BY id";
+        $sql = "SELECT id FROM ".X_QUESTION_CHOICE." WHERE question_id=${qid} AND content NOT LIKE '!others%' ORDER BY id";
         echo("<!-- \$sql = ${sql} -->\n");
         $result = execute_sql($sql);
         $cids[$i] = array();
@@ -2696,7 +2671,7 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
       }
       $content = array();
       foreach ($cids[0] as $cid) {
-        $sql = "SELECT content FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE id=${cid}";
+        $sql = "SELECT content FROM ".X_QUESTION_CHOICE." WHERE id=${cid}";
         echo("<!-- \$sql = ${sql} -->\n");
         $result = get_one($sql);
         array_push($content, $result);
@@ -2715,7 +2690,7 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
       for ($i=0; $i<$num; $i++) {
         $sid = $sids[$i];
         $qid = $question[$i]['id'];
-        $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id ${qidstr} AND content LIKE '!others%' ORDER BY id";
+        $sql = "SELECT id FROM ".X_QUESTION_CHOICE." WHERE question_id ${qidstr} AND content LIKE '!others%' ORDER BY id";
         echo("<!-- \$sql = ${sql} -->\n");
         $result = execute_sql($sql);
         $cids[$i] = array();
@@ -2727,7 +2702,7 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
       }
       $content = array();
       foreach ($cids[0] as $cid) {
-        $sql = "SELECT content FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE id=${cid}";
+        $sql = "SELECT content FROM ".X_QUESTION_CHOICE." WHERE id=${cid}";
         echo("<!-- \$sql = ${sql} -->\n");
         $result=get_one($sql);
         $text = preg_replace("/!others=?/", "", $result);
@@ -2739,7 +2714,7 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
         $mycids = array();
         for ($i=0; $i<$num; $i++) { array_push($mycids, $cids[$i][$j]); }
         $mycidstr = array_to_insql($mycids);
-        $sql = "SELECT A.response, COUNT(A.response_id) FROM ".$GLOBALS['ESPCONFIG']['response_other_table']." A WHERE A.choice_id ${mycidstr} AND A.response_id ${ridstr} GROUP BY A.response";
+        $sql = "SELECT A.response, COUNT(A.response_id) FROM ".X_RESPONSE_OTHER." A WHERE A.choice_id ${mycidstr} AND A.response_id ${ridstr} GROUP BY A.response";
         echo("<!-- \$sql = ${sql} -->\n");
         $result=execute_sql($sql);
         while(list($response,$count) = fetch_row($result)) {
@@ -2772,7 +2747,7 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
         for ($i=0; $i<$num; $i++) {
           $sid = $sids[$i];
           $qid = $question[$i]['id'];
-          $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id ${qidstr} ORDER BY id";
+          $sql = "SELECT id FROM ".X_QUESTION_CHOICE." WHERE question_id ${qidstr} ORDER BY id";
           echo("<!-- \$sql = ${sql} -->\n");
           $result = execute_sql($sql);
           $cids[$i] = array();
@@ -2784,7 +2759,7 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
         }
         $content = array();
         foreach ($cids[0] as $cid) {
-          $sql = "SELECT content FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE id=${cid}";
+          $sql = "SELECT content FROM ".X_QUESTION_CHOICE." WHERE id=${cid}";
           echo("<!-- \$sql = ${sql} -->\n");
           $result=get_one($sql);
           array_push($content, $result);
@@ -2836,7 +2811,7 @@ function survey_purge($sids) {
   if (is_int($sids)) { $sidstr = '='.$sids; }
   else if (is_string($sids)) { $sids = preg_split("/ /",$sids); }
   if (is_array($sids)) { $sidstr = array_to_insql($sids); }
-  $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id ${sidstr}";
+  $sql = "SELECT id FROM ".X_QUESTION." WHERE survey_id ${sidstr}";
   $result = execute_sql($sql);
   $qids = array();
   while(list($qid) = fetch_row($result)) {
@@ -2847,28 +2822,28 @@ function survey_purge($sids) {
   $qidstr = array_to_insql($qids);
   // work from the bottom up...
   // start with the survey results
-  $tables = array('response_bool','response_date','response_multiple','response_other','response_rank','response_single','response_text');
+  $tables = array('response_bool', 'response_date', 'response_multiple', 'response_other', 'response_rank', 'response_rating', 'response_single', 'response_text');
   foreach ($tables as $table) {
     $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." WHERE question_id ${qidstr}";
     $result = execute_sql($sql);
   }
   // then responses
-  $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['response_table']." WHERE survey_id ${sidstr}";
+  $sql = "DELETE FROM ".X_RESPONSE." WHERE survey_id ${sidstr}";
   execute_sql($sql);
   // then question choices
-  $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id ${qidstr}";
+  $sql = "DELETE FROM ".X_QUESTION_CHOICE." WHERE question_id ${qidstr}";
   execute_sql($sql);
   // then questions
-  $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id ${sidstr}";
+  $sql = "DELETE FROM ".X_QUESTION." WHERE survey_id ${sidstr}";
   execute_sql($sql);
   // then conditions
-  $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['condition_table']." WHERE survey_id ${sidstr}";
+  $sql = "DELETE FROM ".X_CONDITION." WHERE survey_id ${sidstr}";
   execute_sql($sql);
   // and finally the survey(s)
-  $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id ${sidstr}";
+  $sql = "DELETE FROM ".X_SURVEY." WHERE id ${sidstr}";
   execute_sql($sql);
   // erase the access credentials
-  $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['access_table']." WHERE survey_id ${sidstr}";
+  $sql = "DELETE FROM ".X_ACCESS." WHERE survey_id ${sidstr}";
   execute_sql($sql);
   // now, erase the accumulated statistics, we are purging *all* traces of the survey
   if (is_int($sids)) { $sids = array ($sids); }
@@ -2887,19 +2862,19 @@ function response_purge($qids) {
   // decrement the completion statistic for all surveys associated with these responses
   //esp_require_once('/lib/espsurveystat');
   //require_once DOCROOT.'/admin/include/lib/espsurveystat.inc';
-  $sql = sprintf('SELECT survey_id FROM %s WHERE id %s', $GLOBALS['ESPCONFIG']['response_table'], $qidstr);
+  $sql = sprintf('SELECT survey_id FROM %s WHERE id %s', X_RESPONSE, $qidstr);
   $res = execute_sql($sql);
   while ($row = fetch_row($res)) {
     $res->MoveNext();
     $sid = $row[0];
     survey_stat_decrement(SURVEY_STAT_COMPLETED, $sid);
   }
-  $tables = array('response_bool','response_date','response_multiple','response_other','response_rank','response_single','response_text');
+  $tables = array('response_bool', 'response_date', 'response_multiple', 'response_other', 'response_rank', 'response_rating', 'response_single', 'response_text');
   foreach ($tables as $table) {
     $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." WHERE response_id ${qidstr}";
     $result = execute_sql($sql);
   }
-  $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['response_table']." WHERE id ${qidstr}";
+  $sql = "DELETE FROM ".X_RESPONSE." WHERE id ${qidstr}";
   $result = execute_sql($sql);
   return;
 }
