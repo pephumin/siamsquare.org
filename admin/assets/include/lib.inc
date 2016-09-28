@@ -813,23 +813,21 @@ function mkcrossformat($counts, $qid, $tid) {
 
 function mkrespercent($counts, $total, $precision, $showTotals) {
   $i = 0;
-  $bg = '';
   echo "<table class=\"table table-hover\">\n";
   while (list($content,$num) = each($counts)) {
     if ($num > 0) { $percent = $num/$total*100.0; }
     else { $percent = 0; }
     if ($percent > 100) { $percent = 100; }
     echo "<tr>\n";
-    echo "<td>$content</td>\n";
-    echo "<td align=\"left\">\n";
+    echo "<td width=\"30%\" align=\"right\">$content</td>\n";
+    echo "<td>\n";
     if ($num) {
-      echo("&nbsp;<img src=\"/images/hbar_l.gif\" height=9 width=4>");
-      printf("<img src=\"/images/hbar.gif\" height=9 width=%d>",$percent*2);
-      echo("<img src=\"/images/hbar_r.gif\" height=9 width=4>");
-      printf("&nbsp;%.${precision}f%%",$percent);
+      echo "<div class=\"progress\"><div class=\"progress-bar progress-bar-info progress-bar-striped active\" role=\"progressbar\" style=\"width: $percent%;\">$percent%</div></div>\n";
+    } else {
+      echo "<div class=\"progress\"><div class=\"progress-bar progress-bar-info progress-bar-striped\" role=\"progressbar\" style=\"min-width: 2em;\">0%</div></div>\n";
     }
     echo "</td>\n";
-    echo "<td align=\"right\">($num)</td>\n";
+    echo "<td>($num)</td>\n";
     echo "</tr>\n";
     $i += $num;
   } // end while
@@ -838,16 +836,11 @@ function mkrespercent($counts, $total, $precision, $showTotals) {
     else { $percent = 0; }
     if ($percent > 100) { $percent = 100; }
     echo "<tr>\n";
-    echo "<td><strong>TOTAL</strong></td>\n";
-    echo "<td width=\"40%\"><strong>\n";
-    echo("<img src=\"/images/hbar_l.gif\" height=9 width=4>");
-    printf("<img src=\"/images/hbar.gif\" height=9 width=%d>",$percent*2);
-    echo("<img src=\"/images/hbar_r.gif\" height=9 width=4>");
-    printf("&nbsp;%.${precision}f%%",$percent);
+    echo "<td width=\"30%\" align=\"right\"><strong>TOTAL</strong></td>\n";
+    echo "<td><strong>\n";
+    echo "<div class=\"progress\"><div class=\"progress-bar\" role=\"progressbar\" style=\"width: $percent%;\">$percent%</div></div>\n";
     echo "</strong></td>\n";
-    echo "<td width=\"10%\" align=\"right\"><strong>\n";
-    print $i ($total);
-    echo "</strong></td>\n";
+    echo "<td width=\"20%\"><strong> (".$i." of ".$total.")</strong></td>\n";
     echo "</tr>\n";
   }
   echo "</table>\n";
@@ -864,13 +857,13 @@ function mkresrank($counts, $total, $precision, $showTotals) {
   echo "</tr>\n";
   arsort($counts);
   $i=0; $pt=0;
-  while (list($content,$num) = each($counts)) {
+  while (list($content, $num) = each($counts)) {
     if ($num) { $p = $num/$total*100.0; }
     else { $p = 0; }
     $pt += $p;
     $bb = ++$i;
     echo "<tr>\n";
-    echo "<td><strong>$bb</strong></td>\n";
+    echo "<td align=\"right\"><strong>$bb</strong></td>\n";
     echo "<td>$content</td>\n";
     if ($p) { $pp = printf("%.${precision}f%%",$p); }
     echo "<td width=\"60%\">$pp</td>\n";
@@ -945,17 +938,21 @@ function mkresavg($counts,$total,$precision,$showTotals,$length) {
   $bg = '';
   while (list($content, $avg) = each($counts)) {
     echo "<tr>\n";
-    echo "<td>$content</td>\n";
+    echo "<td width=\"30%\" align=\"right\">$content</td>\n";
     $kk = $length + 1;
     echo "<td colspan=\"$kk\">\n";
     if ($avg) {
-      echo('<img src="/images/hbar_l.gif" height="9" width="4">');
-      if (($j = $avg * $width - 11) > 0) { printf('<img src="/images/hbar.gif" height="9" width="%d">', $j); }
-      echo('<img src="/images/hbar_r.gif" height="9" width="4">');
+      //echo('<img src="/images/hbar_l.gif" height="9" width="4">');
+      if (($j = $avg * $width - 11) > 0) {
+        //printf('<img src="/images/hbar.gif" height="9" width="%d">', $j);
+        echo "<div class=\"progress\"><div class=\"progress-bar progress-bar-info progress-bar-striped active\" role=\"progressbar\" style=\"width: $avg;\">$avg</div></div>\n";
+      }
+      //echo('<img src="/images/hbar_r.gif" height="9" width="4">');
     }
     echo "</td>\n";
-  $jj = printf("%.${precision}f",$avg);
-  echo "<td width=\"60\">$jj</td>\n";
+  //$jj = printf("%.${precision}f",$avg);
+  //echo "<div class=\"progress\"><div class=\"progress-bar progress-bar-info progress-bar-striped active\" role=\"progressbar\" style=\"width:".printf("%.${precision}f",$avg)." ;\">".printf("%.${precision}f",$avg)."</div></div>\n";
+  echo "<td width=\"30%\">$jj</td>\n";
   echo "</tr>\n";
   } // end while
   echo "</table>\n";

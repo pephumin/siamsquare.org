@@ -108,10 +108,10 @@ function pageHeader($title) {
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-graduation-cap pe-fw"></i> My team <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">Team overview</li>
-                  <li><a href="#"><i class="pe-user pe-fw"></i> My team</a></li>
+                  <li><a href="<?php echo MYADMIN; ?>?where=designers"><i class="pe-user pe-fw"></i> My team</a></li>
                   <li role="separator" class="divider"></li>
                   <li class="dropdown-header">Manage your team</li>
-                  <li><a href="<?php echo MYADMIN; ?>?where=designers"><i class="pe-user-plus pe-fw"></i> Add a new user</a></li>
+                  <li><a href="<?php echo MYADMIN; ?>?where=admdesigners"><i class="pe-user-plus pe-fw"></i> Add a new user</a></li>
                   <li><a href="#"><i class="pe-cogs pe-fw"></i> Member permission</a></li>
                 </ul>
               <li class="dropdown">

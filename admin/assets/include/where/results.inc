@@ -15,14 +15,10 @@ if (!empty($sid)) {
     if ($_SESSION['acl']['superuser'] != 'Y' && !auth_is_owner($sid, $_SESSION['acl']['username']) && !in_array($srealm, array_intersect($_SESSION['acl']['pdata'], $_SESSION['acl']['pall'])) && !auth_no_access('to access this survey')) { return; }
   }
   if (isset($_GET['type'])) { if ($_GET['type'] == "cross") { echo("<h2>Cross tabulation</h2>\n"); } }
-?>
 
-<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+  $yoo = htmlspecialchars($_SERVER['PHP_SELF']);
+  echo "<form class=\"form-horizontal\" method=\"post\" action=\"$yoo\">\n";
 
-<table class="table table-hover">
-    <tr class="active"><td>
-
-<?php
   $precision = '';
   if (!empty($_GET['precision'])) $precision = intval($_GET['precision']);
   $totals = '';
@@ -46,25 +42,15 @@ if (!empty($sid)) {
   else if (!empty($guicross)) { $ret = survey_results($sid, $precision, $totals, '','','', $guicross); }
   else if (!empty($qidc) || !empty($qidr)) { cross_tabulation($sid, $qidc, $qidr, $qid, $cids); }
   else { $ret = survey_results($sid, $precision, $totals, $qid, $cids); }
-
   if (!empty($ret)) echo $ret;
-  if (!empty($_GET['test'])) { echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=test&test=1&sid=". $_GET['sid']) ."\">Test survey</a><br>\n"); }
-  if (!empty($_GET['type'])) {
-
-?>
-    </td></tr>
-    <tr><td align="center">
-      <input class="btn btn-default" type="reset" value="Reset">
-      <input class="btn btn-warning" type="submit" name="cross" value="Cross tabulate">
-
-<?php } ?>
-
-</td></tr>
-</table>
-
-<br><br>
-
-<?php
+  if (!empty($_GET['test'])) { echo("<a href=\"". ME.htmlentities("?where=test&test=1&sid=". $_GET['sid']) ."\">Test survey</a><br>\n"); }
+  if (!empty($_GET['type'])) { echo "</td></tr>\n"; }
+  echo "</td></tr>\n";
+  echo "</table>\n";
+  echo "<p class=\"text-center\">\n";
+  echo "<input class=\"btn btn-warning\" type=\"submit\" name=\"cross\" value=\"Cross tabulate\">\n";
+  echo "<input class=\"btn btn-default\" type=\"reset\" value=\"Reset\">\n";
+  echo "</p>\n";
   return;
 }
 
@@ -82,20 +68,24 @@ $result = execute_sql($sql);
 if (empty($_GET['type'])) {
 ?>
 
+<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+
 <h2>View survey results</h2>
 
 <p>Pick a survey below to view the results. Only show surveys that are currently active.</p>
 
-    <input type="hidden" name="rid" value="">
-    <input type="hidden" name="sid" value="">
-    <input type="hidden" name="where" value="results">
+<input type="hidden" name="rid" value="">
+<input type="hidden" name="sid" value="">
+<input type="hidden" name="where" value="results">
 
-    <?php
-    } else {
-        echo "<h2>Cross Tabulation</h2>\n";
-        echo "<p>Pick a survey below to see a cross tabulation.</p>";
-    }
-    ?>
+<?php
+} else {
+// $yoo = htmlspecialchars($_SERVER['PHP_SELF']);
+// echo "<form class=\"form-horizontal\" method=\"post\" action=\"$yoo\">\n";
+echo "<h2>Cross Tabulation</h2>\n";
+echo "<p>Pick a survey below to see a cross tabulation.</p>";
+}
+?>
 
 <table class="table table-hover">
   <tr class="active">
@@ -119,9 +109,9 @@ if (empty($_GET['type'])) {
     db_close($result2);
 ?>
   <tr>
+
 <?php
   if (empty($_GET['type'])) {
-    // grab all the rid values for the particular survey
     $sql = "SELECT R.id FROM ".X_RESPONSE." R WHERE R.survey_id = ${sid} AND R.complete = 'Y' ORDER BY R.id";
     $rid_result = execute_sql($sql);
     $count++;
@@ -129,9 +119,9 @@ if (empty($_GET['type'])) {
 ?>
   <td>
 <?php if (!empty($_GET['type'])) { ?>
-     <a href="<?php echo("". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=results&sid=${sid}&type=cross")); ?>">
+     <a href="<?php echo(ME.htmlentities("?where=results&sid=${sid}&type=cross")); ?>">
 <?php } else { ?>
-     <a href="<?php echo("". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=results&sid=${sid}")); ?>">
+     <a href="<?php echo(ME.htmlentities("?where=results&sid=${sid}")); ?>">
 <?php } ?>
 <?php echo($title); ?>
      </a>
@@ -139,9 +129,9 @@ if (empty($_GET['type'])) {
   <td><?php echo $owner . " (" . $realm . ")"; ?></td>
   <td class="text-center"><?php echo($resp); ?></td>
   <td class="text-center">
-    [ <a href="<?php echo("". $base .htmlentities("?where=results&sid=${sid}")); ?>">Result <i class="pe-pie-chart pe-fw"></i></a> |
-    <a href="<?php echo("". $base .htmlentities("?where=results&sid=${sid}&type=cross")); ?>">Cross tab <i class="pe-bar-chart pe-fw"></i></a> |
-    <a href="<?php echo("". $base .htmlentities("?where=report&sid=${sid}")); ?>">Report <i class="pe-line-chart pe-fw"></i></a> ]
+    [ <a href="<?php echo(ME.htmlentities("?where=results&sid=${sid}")); ?>">Result <i class="pe-pie-chart pe-fw"></i></a> |
+    <a href="<?php echo(ME.htmlentities("?where=results&sid=${sid}&type=cross")); ?>">Cross tab <i class="pe-bar-chart pe-fw"></i></a> |
+    <a href="<?php echo(ME.htmlentities("?where=report&sid=${sid}")); ?>">Report <i class="pe-line-chart pe-fw"></i></a> ]
   </td>
 
   <td class="text-center">

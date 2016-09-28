@@ -34,7 +34,7 @@ function process($sid, $qidc, $qidr){
   array_push($qids, $qidr);
 
   foreach ($qids as $qid){
-    $sql = "SELECT content FROM ".X_QUESTION." WHERE survey_id=${sid} AND id = ${qid}";
+    $sql = "SELECT content FROM ".X_QUESTION." WHERE survey_id = ${sid} AND id = ${qid}";
     $tid_result = execute_sql($sql);
     $result = fetch_row($tid_result);
     array_push($qn_content, $result[0]);
@@ -45,7 +45,7 @@ function process($sid, $qidc, $qidr){
 
   // let's determine each question's type.
   foreach ($qids as $qid) {
-    $sql = "SELECT type_id FROM ".X_QUESTION." WHERE survey_id=${sid} AND id = ${qid}";
+    $sql = "SELECT type_id FROM ".X_QUESTION." WHERE survey_id = ${sid} AND id = ${qid}";
     $tid_result = execute_sql($sql);
     $result = fetch_row($tid_result);
     array_push($tids, $result[0]);
@@ -63,7 +63,7 @@ function process($sid, $qidc, $qidr){
       }
     }
     else if ($tid_count == 0) {
-      $sql = "SELECT content FROM ".X_QUESTION_CHOICE." WHERE question_id=${qidc} ORDER BY id";
+      $sql = "SELECT content FROM ".X_QUESTION_CHOICE." WHERE question_id = ${qidc} ORDER BY id";
       if ($result = execute_sql($sql)) {
         while (list($row) = fetch_row($result)) { $result->MoveNext(); array_push($qidc_content, $row); }
         db_close($result);
@@ -78,7 +78,7 @@ function process($sid, $qidc, $qidr){
       }
     }
     else {
-      $sql = "SELECT content FROM ".X_QUESTION_CHOICE." WHERE question_id=${qidr} ORDER BY id";
+      $sql = "SELECT content FROM ".X_QUESTION_CHOICE." WHERE question_id = ${qidr} ORDER BY id";
       if ($result = execute_sql($sql)) {
         while (list($row) = fetch_row($result)) { $result->MoveNext(); array_push($qidr_content, $row); }
         db_close($result);
