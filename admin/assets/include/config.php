@@ -117,39 +117,9 @@ $ESPCONFIG['version_table']             = $DB_PREFIX."version";
 
 //-------------------------------------------------------------------------------------------------
 
-// Load I18N support
-//require_once($ESPCONFIG['include_path'] . '/lib/espi18n' . $ESPCONFIG['extension']);
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espi18n.inc';
-//
-// if (isset($_REQUEST['lang'])) { esp_setlocale_ex($_REQUEST['lang']); $_SESSION['language']=$_REQUEST['lang']; }
-// elseif (isset($lang)) { esp_setlocale_ex($lang); $_SESSION['language']=$lang; }
-// elseif (isset($_SESSION['language'])) { esp_setlocale_ex($_SESSION['language']); }
-// else { esp_setlocale_ex(); }
-
-//-------------------------------------------------------------------------------------------------
-
 if (isset($GLOBALS)) { $GLOBALS['ESPCONFIG'] = $ESPCONFIG; } else { global $ESPCONFIG; }
 
 //-------------------------------------------------------------------------------------------------
-
-define('STATUS_EDIT',    0);
-define('STATUS_ACTIVE',  1);
-define('STATUS_DONE',    2);
-define('STATUS_DELETED', 4);
-define('STATUS_TEST',    8);
-
-define('SURVEY_STAT_LOGINFAIL', 'loginfail');
-define('SURVEY_STAT_ATTEMPTED', 'attempted');
-define('SURVEY_STAT_ABANDONED', 'abandoned');
-define('SURVEY_STAT_SUSPENDED', 'suspended');
-define('SURVEY_STAT_COMPLETED', 'completed');
-
-
-
-// Interpretation of the open constants returned by survey_open():
-define('STATUS_OPEN',             0); // The current time is within the open & close dates, or those dates aren't given
-define('STATUS_CLOSED_TOO_EARLY', 1); // The current time is before the open date
-define('STATUS_CLOSED_TOO_LATE',  2); // The current time is after the close date
 
 if(get_magic_quotes_gpc()) {
   function _addslashes($a)    { return(db_qstr(stripslashes($a))); }
