@@ -73,7 +73,7 @@ function check_checksum($file) {
 }
 
 function remove_magic_quotes($input) {
-  if(get_magic_quotes_gpc()) $input= stripslashes($input);
+  if (get_magic_quotes_gpc()) $input= stripslashes($input);
   return $input;
 }
 
@@ -327,12 +327,12 @@ function survey_get_section_questions($sid, $field = 'id') {
 }
 
 function survey_select_section_sql($sid, $section, $table = '') {
-  if(!empty($table)) { $table .= '.'; }
+  if (!empty($table)) { $table .= '.'; }
   $sql = "SELECT position FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id=${sid} AND type_id='99' AND deleted='N' ORDER BY position,id";
   $result = execute_sql($sql);
   $num_sections = record_count($result) + 1;
 
-  if($section > $num_sections) { return(''); } // invalid section
+  if ($section > $num_sections) { return(''); } // invalid section
 
   $ret = array("${table}survey_id='${sid}'", "${table}deleted='N'");
   if ($section > 1 && $num_sections > 1) {
@@ -352,9 +352,9 @@ function esp_type_has_choices() {
   //$sql = 'SELECT id, has_choices FROM '.$GLOBALS['ESPCONFIG']['question_type_table'].' ORDER BY id';
   $sql = 'SELECT typeid, has_choices FROM '.$GLOBALS['ESPCONFIG']['question_type_table'].' ORDER BY id';
   $result = execute_sql($sql);
-  while(list($tid,$answ) = fetch_row($result)) {
+  while (list($tid,$answ) = fetch_row($result)) {
     $result->MoveNext();
-    if($answ == 'Y') { $has_choices[$tid] = 1; }
+    if ($answ == 'Y') { $has_choices[$tid] = 1; }
     else { $has_choices[$tid] = 0; }
   }
   db_close($result);
@@ -366,7 +366,7 @@ function esp_type_response_table() {
   $sql = 'SELECT typeid, response_table FROM '.$GLOBALS['ESPCONFIG']['question_type_table'].' ORDER BY id';
   $result = execute_sql($sql);
   $response_table = array();
-  while(list($tid,$answ) = fetch_row($result)) {
+  while (list($tid,$answ) = fetch_row($result)) {
     $result->MoveNext();
     $response_table[$tid] = $answ;
   }
@@ -537,16 +537,14 @@ function survey_auth($sid, $username, $password, $raw_password, $css = null, $ti
       //require_once DOCROOT . '/admin/assets/include/lib/espsurveystat.inc';
       survey_stat_increment(SURVEY_STAT_LOGINFAIL, $sid);
     }
-
     if (!isset($survey_name)) { $survey_name = ""; }
     if (isset($_GET['name'])) { $survey_name = $GLOBALS['_GET']['name']; }
     elseif (isset($_POST['name'])) { $survey_name = $_POST['name']; }
 
     $error_message = "";
-
     if ($_SERVER['REQUEST_METHOD'] == 'POST') { $error_message = "Incorrect User ID or Password, or your account has been disabled/expired."; }
 
-    require_once DOCROOT . "/admin/assets/include/template.php";
+    //require_once DOCROOT . "/admin/assets/include/template.php";
     $title = 'Login Page';
     pageHeader($title);
     echo show_login($survey_name, $error_message, $css, $title);
@@ -567,7 +565,7 @@ function survey_auth($sid, $username, $password, $raw_password, $css = null, $ti
     elseif (isset($_POST['name'])) { $survey_name = $_POST['name']; }
     $error_message = "";
     if ($_SERVER['REQUEST_METHOD'] == 'POST') { $error_message = "Your account has been disabled or you have already completed this survey."; }
-    require_once DOCROOT . "/admin/assets/include/template.php";
+    //require_once DOCROOT . "/admin/assets/include/template.php";
     $title = 'Login Page';
     pageHeader($title);
     echo show_login($survey_name, $error_message, $css, $title);
@@ -580,7 +578,7 @@ function survey_auth($sid, $username, $password, $raw_password, $css = null, $ti
 
 function manage_auth($username, $password, $raw_password="") {
   // see if session is expired, or has been logged out
-  if(isset($_SESSION['acl']) && isset($_SESSION['acl']['expired'])) { if($_SESSION['acl']['expired']-- > 0) { $username = ''; $password = ''; } }
+  if (isset($_SESSION['acl']) && isset($_SESSION['acl']['expired'])) { if ($_SESSION['acl']['expired']-- > 0) { $username = ''; $password = ''; } }
   // see if ACL is cached
   if (!empty($username) && !empty($password) && isset($_SESSION['acl']) && isset($_SESSION['acl']['username']) && $_SESSION['acl']['username'] == $username) { return(true); }
   $auth = false; // default to unauthorized
@@ -603,7 +601,7 @@ function manage_auth($username, $password, $raw_password="") {
   if (!$auth) {
     $error_message = "";
     if ($_SERVER['REQUEST_METHOD'] == 'POST') { $error_message = 'Incorrect User ID or Password, or your account has been disabled/expired.'; }
-    require_once DOCROOT . "/admin/assets/include/template.php";
+    //require_once DOCROOT . "/admin/assets/include/template.php";
     $title = 'Authorisation';
     pageHeader($title);
     echo show_login(null, $error_message, null, 'Client Login');
@@ -624,7 +622,7 @@ function manage_auth($username, $password, $raw_password="") {
   foreach ($fields as $f) { $$f = array(); }
   while (!$accres->EOF) {
     if ($accres->fields['realm'] == 'superuser') { $acl['superuser'] = 'Y'; }
-    foreach ($fields as $f) { if($accres->fields[$f] == 'Y') { array_push($$f, $accres->fields['realm']); } }
+    foreach ($fields as $f) { if ($accres->fields[$f] == 'Y') { array_push($$f, $accres->fields['realm']); } }
     $accres->MoveNext();
   }
   db_close($accres);
@@ -781,9 +779,7 @@ function change_profile($username, $realm, $firstName, $lastName, $emailAddress)
   $_lastName     = _addslashes($lastName);
   $_emailAddress = _addslashes($emailAddress);
   $changed  = sys_time_stamp();
-  $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['respondent_table']."
-          SET fname = $_firstName, lname = $_lastName, email = $_emailAddress, changed = $changed
-          WHERE username = $_username AND realm = $_realm";
+  $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['respondent_table']." SET fname = $_firstName, lname = $_lastName, email = $_emailAddress, changed = $changed WHERE username = $_username AND realm = $_realm";
   $res = execute_sql($sql);
   $notes = array (array("title" => "Profile updated", "text" => "You have successfully updated your detailed profile.", "image" => "assets/img/notification.svg"));
   if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); notify($notes); return true; }
@@ -795,9 +791,7 @@ function change_password($username, $realm, $password) {
   $_realm    = _addslashes($realm);
   $_password = db_crypt(_addslashes($password));
   $changed  = sys_time_stamp();
-  $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['respondent_table']."
-          SET password = $_password, changed =$changed
-          WHERE username = $_username AND realm = $_realm";
+  $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['respondent_table']." SET password = $_password, changed = $changed WHERE username = $_username AND realm = $_realm";
   $res = execute_sql($sql);
   $notes = array (array("title" => "Password changed", "text" => "You have successfully changed your password. Please keep it safe and secure.", "image" => "assets/img/notification.svg"));
   if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); notify($notes); return true; }
@@ -805,216 +799,184 @@ function change_password($username, $realm, $password) {
 }
 
 function mkcrossformat($counts, $qid, $tid) {
-    $cids = array();
-    $cidCount = 0;
-
-    // let's grab the cid values for each of the questions
-    // that we allow cross analysis on.
-    if ($tid == 1) {
-        $cids = array('Y', 'N');
-    } else {
-        $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']."
-                WHERE question_id = $qid
-                ORDER BY id";
-        $result = execute_sql($sql);
-        while ($cid = fetch_row($result)) {
-            $result->MoveNext();
-            array_push($cids, $cid[0]);
-        }
-        db_close($result);
+  $cids = array();
+  $cidCount = 0;
+  // let's grab the cid values for each of the questions that we allow cross analysis on.
+  if ($tid == 1) { $cids = array('Y', 'N'); }
+  else {
+    $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id = $qid ORDER BY id";
+    $result = execute_sql($sql);
+    while ($cid = fetch_row($result)) {
+      $result->MoveNext();
+      array_push($cids, $cid[0]);
     }
+    db_close($result);
+  }
+  $output .= "<table class=\"table table-hover\">\n";
+  $output .= "<tbody>\n";
 
-    $output .= "<table class=\"table table-hover\">\n";
-    $output .= "<tbody>\n";
-
-    while(list($content,$num) = each($counts)) {
-        if ($cidCount >= count($cids)) $cidCount = count($cids) - 1;
-        $new = $cids[$cidCount++];
-        $output .= "<tr>\n";
-        $output .= "<td width=\"34\" class=\"text-center\">\n";
-        $output .= "  <input type=\"checkbox\" name=\"cids[]\" value=\"$new\" />\n";
-        $output .= "</td>\n";
-        $output .= "<td>$content</td>\n";
-        $output .= "</tr>\n";
-    }
-    $output .= "</tbody></table>\n";
-    return $output;
+  while (list($content, $num) = each($counts)) {
+    if ($cidCount >= count($cids)) { $cidCount = count($cids) - 1; }
+    $new = $cids[$cidCount++];
+    $output .= "<tr>\n";
+    $output .= "<td width=\"34\" class=\"text-center\">\n";
+    $output .= "  <input type=\"checkbox\" name=\"cids[]\" value=\"$new\">\n";
+    $output .= "</td>\n";
+    $output .= "<td>$content</td>\n";
+    $output .= "</tr>\n";
+  }
+  $output .= "</tbody></table>\n";
+  return $output;
 }
 
-function mkrespercent($counts,$total,$precision,$showTotals) {
-  $i=0;
-  $bg='';
-?>
-<table class="table table-hover">
-<?php
-  while(list($content,$num) = each($counts)) {
-    if($num>0) { $percent = $num/$total*100.0; }
+function mkrespercent($counts, $total, $precision, $showTotals) {
+  $i = 0;
+  $bg = '';
+  echo "<table class=\"table table-hover\">\n";
+  while (list($content,$num) = each($counts)) {
+    if ($num > 0) { $percent = $num/$total*100.0; }
     else { $percent = 0; }
-    if($percent > 100) { $percent = 100; }
-
-?>
-  <tr>
-    <td><?php echo($content); ?></td>
-    <td align="left">
-<?php
-    if($num) {
+    if ($percent > 100) { $percent = 100; }
+    echo "<tr>\n";
+    echo "<td>$content</td>\n";
+    echo "<td align=\"left\">\n";
+    if ($num) {
       echo("&nbsp;<img src=\"/images/hbar_l.gif\" height=9 width=4>");
       printf("<img src=\"/images/hbar.gif\" height=9 width=%d>",$percent*2);
       echo("<img src=\"/images/hbar_r.gif\" height=9 width=4>");
       printf("&nbsp;%.${precision}f%%",$percent);
     }
-?></td>
-    <td align="right">(<?php echo($num); ?>)</td>
-  </tr>
-<?php
+    echo "</td>\n";
+    echo "<td align=\"right\">($num)</td>\n";
+    echo "</tr>\n";
     $i += $num;
   } // end while
-  if($showTotals) {
-    if($i>0) { $percent = $i/$total*100.0; }
+  if ($showTotals) {
+    if ($i > 0) { $percent = $i/$total*100.0; }
     else { $percent = 0; }
-    if($percent > 100) { $percent = 100; }
-?>
-  <tr>
-    <td><strong><?php echo(_('TOTAL')); ?></strong></td>
-    <td width="40%"><strong>&nbsp;<?php
-      echo("<img src=\"/images/hbar_l.gif\" height=9 width=4>");
-      printf("<img src=\"/images/hbar.gif\" height=9 width=%d>",$percent*2);
-      echo("<img src=\"/images/hbar_r.gif\" height=9 width=4>");
-      printf("&nbsp;%.${precision}f%%",$percent); ?></strong></td>
-    <td width="10%" align="right"><strong><?php print "$i ($total)"; ?></strong></td>
-  </tr>
-<?php } ?>
-</table>
-<?php
+    if ($percent > 100) { $percent = 100; }
+    echo "<tr>\n";
+    echo "<td><strong>TOTAL</strong></td>\n";
+    echo "<td width=\"40%\"><strong>\n";
+    echo("<img src=\"/images/hbar_l.gif\" height=9 width=4>");
+    printf("<img src=\"/images/hbar.gif\" height=9 width=%d>",$percent*2);
+    echo("<img src=\"/images/hbar_r.gif\" height=9 width=4>");
+    printf("&nbsp;%.${precision}f%%",$percent);
+    echo "</strong></td>\n";
+    echo "<td width=\"10%\" align=\"right\"><strong>\n";
+    print $i ($total);
+    echo "</strong></td>\n";
+    echo "</tr>\n";
+  }
+  echo "</table>\n";
 }
 
-function mkresrank($counts,$total,$precision,$showTotals) {
-  $bg='';
-?>
-<table border="0">
-  <tr>
-    <td><strong>Rank</strong></td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-<?php
+function mkresrank($counts, $total, $precision, $showTotals) {
+  $bg = '';
+  echo "<table class=\"table table-hover\">\n";
+  echo "<tr>\n";
+  echo "<td><strong>Rank</strong></td>\n";
+  echo "<td>&nbsp;</td>\n";
+  echo "<td>&nbsp;</td>\n";
+  echo "<td>&nbsp;</td>\n";
+  echo "</tr>\n";
   arsort($counts);
   $i=0; $pt=0;
-  while(list($content,$num) = each($counts)) {
-    if($num)
-      $p = $num/$total*100.0;
-    else
-      $p = 0;
+  while (list($content,$num) = each($counts)) {
+    if ($num) { $p = $num/$total*100.0; }
+    else { $p = 0; }
     $pt += $p;
-
-?>
-  <tr>
-    <td><strong><?php echo(++$i); ?></strong></td>
-    <td><?php echo($content); ?></td>
-    <td width="60"><?php if($p) printf("%.${precision}f%%",$p); ?></td>
-    <td width="60">(<?php echo($num); ?>)</td>
-  </tr>
-<?php
+    $bb = ++$i;
+    echo "<tr>\n";
+    echo "<td><strong>$bb</strong></td>\n";
+    echo "<td>$content</td>\n";
+    if ($p) { $pp = printf("%.${precision}f%%",$p); }
+    echo "<td width=\"60%\">$pp</td>\n";
+    echo "<td width=\"60%\">$num</td>\n";
+    echo "</tr>\n";
   } // end while
-  if($showTotals) {
-
-?>
-  <tr>
-    <td colspan=2><strong><?php echo(_('TOTAL')); ?></strong></td>
-    <td><strong><?php printf("%.${precision}f%%",$pt); ?></strong></td>
-    <td><strong><?php print "$i ($total)"; ?></strong></td>
-  </tr>
-<?php } ?>
-</table>
-<?php
+  if ($showTotals) {
+    echo "<tr>\n";
+    echo "<td colspan=\"2\"><strong>TOTAL</strong></td>\n";
+    $cc = printf("%.${precision}f%%",$pt);
+    $dd = print "$i ($total)";
+    echo "<td colspan=\"2\"><strong>$cc</strong></td>\n";
+    echo "<td colspan=\"2\"><strong>$dd</strong></td>\n";
+    echo "</tr>\n";
+  }
+echo "</table>\n";
 }
 
 function mkrescount($counts,$total,$precision,$showTotals) {
-  $i=0;
-?>
-<table class="table table-hover">
-<?php
-    $bg = '';
-  while(list($content,$num) = each($counts)) {
-?>
-  <tr>
-    <td><?php echo($content); ?></td>
-    <td width="60"><?php echo($num); ?></td>
-    <td width="60">(<?php if($num) printf("%.${precision}f",$num/$total*100.0); ?>%)</td>
-  </tr>
-<?php
+  $i = 0;
+  echo "<table class=\"table table-hover\">\n";
+  $bg = '';
+  while (list($content,$num) = each($counts)) {
+    echo "<tr>\n";
+    echo "<td>$content</td>\n";
+    echo "<td width=\"60%\">$num</td>\n";
+    if ($num) { $nn = printf("%.${precision}f",$num/$total*100.0); }
+    echo "<td width=\"60%\">$nn</td>\n";
+    echo "</tr>\n";
     $i += $num;
   } // end while
-  if($showTotals) {
-
-?>
-  <tr>
-    <td><strong><?php echo(_('TOTAL')); ?></strong></td>
-    <td><strong><?php print "$i ($total)"; ?></strong></td>
-    <td><strong>(<?php if($i) printf("%.${precision}f",$i/$total*100.0); ?>%)</strong></td>
-  </tr>
-<?php  } ?>
-</table>
-<?php
+  if ($showTotals) {
+    echo "<tr>\n";
+    echo "<td colspan=\"2\"><strong>TOTAL</strong></td>\n";
+    $oo = print "$i ($total)";
+    if ($i) { $qq = printf("%.${precision}f",$i/$total*100.0); }
+    echo "<td colspan=\"2\"><strong>$oo</strong></td>\n";
+    echo "<td colspan=\"2\"><strong>$qq</strong></td>\n";
+    echo "</tr>\n";
+  }
+echo "</table>\n";
 }
 
-function mkreslist($counts,$total,$precision,$showTotals) {
+function mkreslist($counts, $total, $precision, $showTotals) {
   if ($total == 0) { return; }
-?>
-<table class="table table-hover">
-  <tr><th><?php echo(_('#')); ?></th><th>Response</th></tr>
-<?php
-  while(list($text,$num) = each($counts)) {
+  echo "<table class=\"table table-hover\">\n";
+  echo "<tr>\n";
+  echo "<th>#</th>\n";
+  echo "<th>Response</th>\n";
+  while (list($text, $num) = each($counts)) {
     echo("<tr><th>$num</th><td>$text</td></tr>\n");
   }
-?>
-</table>
-<?php
+echo "</table>\n";
 }
 
 function mkresavg($counts,$total,$precision,$showTotals,$length) {
   if (!$length) { $length = 5; }
   $width = 200 / $length;
-?>
-<table class="table table-hover">
-  <tr>
-    <td></td>
-    <td colspan="<?php echo($length+2); ?>">Average Rank</td>
-  </tr>
-  <tr>
-    <td></td>
-    <?php
-      for ($i = 0; $i < $length; )
-        echo( "<td align=\"right\" width=\"$width\">". ++$i ."</td>\n");
-    ?>
-    <td width="20"></td>
-    <td></td>
-  </tr>
-<?php
-    $bg = '';
-  while(list($content,$avg) = each($counts)) {
-
-?>
-  <tr>
-    <td><?php echo($content); ?>&nbsp;</td>
-    <td colspan="<?php echo($length+1); ?>">
-<?php
-    if($avg) {
+  echo "<table class=\"table table-hover\">\n";
+  echo "<tr>\n";
+  echo "<td></td>\n";
+  $ll = $length + 2;
+  echo "<td colspan=\"$ll\">Average Rank</td>\n";
+  echo "</tr>\n";
+  echo "<tr>\n";
+  echo "<td></td>\n";
+  for ($i = 0; $i < $length;)
+    echo( "<td align=\"right\" width=\"$width\">". ++$i ."</td>\n");
+  echo "<td width=\"20%\"></td>\n";
+  echo "<td></td>\n";
+  echo "</tr>\n";
+  $bg = '';
+  while (list($content, $avg) = each($counts)) {
+    echo "<tr>\n";
+    echo "<td>$content</td>\n";
+    $kk = $length + 1;
+    echo "<td colspan=\"$kk\">\n";
+    if ($avg) {
       echo('<img src="/images/hbar_l.gif" height="9" width="4">');
-      if (($j = $avg * $width - 11) > 0)
-        printf('<img src="/images/hbar.gif" height="9" width="%d">', $j);
+      if (($j = $avg * $width - 11) > 0) { printf('<img src="/images/hbar.gif" height="9" width="%d">', $j); }
       echo('<img src="/images/hbar_r.gif" height="9" width="4">');
     }
-?>
-    </td>
-    <td width="60">(<?php printf("%.${precision}f",$avg); ?>)</td>
-  </tr>
-<?php
+    echo "</td>\n";
+  $jj = printf("%.${precision}f",$avg);
+  echo "<td width=\"60\">$jj</td>\n";
+  echo "</tr>\n";
   } // end while
-?>
-</table>
-<?php
+  echo "</table>\n";
 }
 
 function merge_expand_qids($targetq, $surveys) {
@@ -1065,380 +1027,318 @@ function merge_expand_cids($targetc, $questions) {
 //      100     'Section Text'          'N'             ''
 
 function response_check_answers($sid, $rid, $section) {
-    //global $_POST;
+  //global $_POST;
+  $sql = "SELECT id,type_id,content,required,ans_uniq FROM ".$GLOBALS['ESPCONFIG']['question_table']."
+  ". survey_select_section_sql($sid,$section) ." AND deleted='N' AND type_id < 98 ORDER BY position";
+  $result = execute_sql($sql);
+  if (record_count($result) < 1) { db_close($result); return(''); } // no rows returned, so no need to continue
+  $missing = array(); // array of missing answers
+  $not_numeric = array(); // array of numerical answers that are non-numeric
+  $unique_answers = array(); // array of questions that must have a unique answer (only for Textbox or numerical types)
+  // we loop through all the questions and check for missing and non-numerical issues, but only if the question
+  // was shown in the first place (it might have had a condition on it)
+  while (list($qid, $tid, $content, $required, $ans_uniq) = fetch_row($result)) {
+    // if the question has no condition:    $question_was_shown=true
+    // if the question has a condition:     $question_was_shown=true if condition is fulfilled, false otherwise
+    $question_was_shown = question_conditioncheck($sid,$qid,$rid);
+    //var_dump($question_was_shown);
+    if ($question_was_shown) {
 
-    $sql = "SELECT id,type_id,content,required,ans_uniq FROM ".$GLOBALS['ESPCONFIG']['question_table']."
-    ". survey_select_section_sql($sid,$section) ." AND deleted='N' AND type_id < 98 ORDER BY position";
+      // response_text
+      // if ($ans_uniq=='Y' && ($tid==3 || $tid==4 || $tid==9 || $tid==10)) {
+      // if ($ans_uniq=='Y' && ($tid==3 || $tid==4 || $tid==10)) {
+      //    $tmp_response=_addslashes($_POST[$qid]);
+      //    //$sql = "SELECT COUNT(*) FROM ".$GLOBALS['ESPCONFIG']['response_text_table']." WHERE question_id=$qid && response="._addslashes($_POST[//$qid]);
+      //    $sql = "SELECT COUNT(id) FROM ".$GLOBALS['ESPCONFIG']['response_text_table']." WHERE question_id=$qid && response="._addslashes($_POST[$//qid]);
+      //    echo $sql;
+      //    $count_result = get_one($sql);
+      //    if ($count_result) { $unique_answers[$qid] = $content; }
+      // }
 
-    $result = execute_sql($sql);
-    if(record_count($result) < 1) {
-      // no rows returned, so no need to continue
-      db_close($result);
-      return('');
-    }
-
-    $missing = array(); // array of missing answers
-    $not_numeric = array(); // array of numerical answers that are non-numeric
-    $unique_answers = array(); // array of questions that must have a unique answer (only for Textbox or numerical types)
-
-    // we loop through all the questions and check for missing and non-numerical issues, but only if the question
-    // was shown in the first place (it might have had a condition on it)
-
-    while(list($qid,$tid,$content,$required,$ans_uniq) = fetch_row($result)) {
-
-        // if the question has no condition:    $question_was_shown=true
-        // if the question has a condition:     $question_was_shown=true if condition is fulfilled, false otherwise
-        $question_was_shown = question_conditioncheck($sid,$qid,$rid);
-
-        //var_dump($question_was_shown);
-        if ($question_was_shown) {
-
-            // response_text
-            //if ($ans_uniq=='Y' && ($tid==3 || $tid==4 || $tid==9 || $tid==10)) {
-            //if ($ans_uniq=='Y' && ($tid==3 || $tid==4 || $tid==10)) {
-            //    $tmp_response=_addslashes($_POST[$qid]);
-            //    //$sql = "SELECT COUNT(*) FROM ".$GLOBALS['ESPCONFIG']['response_text_table']." WHERE question_id=$qid && response="._addslashes($_POST[//$qid]);
-            //    $sql = "SELECT COUNT(id) FROM ".$GLOBALS['ESPCONFIG']['response_text_table']." WHERE question_id=$qid && response="._addslashes($_POST[$//qid]);
-            //    echo $sql;
-            //    $count_result = get_one($sql);
-            //    if ($count_result) { $unique_answers[$qid] = $content; }
-            //}
-
-            // response_rank
-            if ($required=='Y' && $tid==6) {
-                $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=$qid";
-
-                $cid_result = execute_sql($sql);
-                while(list($cid) = fetch_row($cid_result)) {
-                    if(!isset($_POST["${qid}_${cid}"])) {
-                        $missing[$qid] = $content;
-                        break;
-                    }
-                    $cid_result->MoveNext();
-                }
-                db_close($cid_result);
-            }
-
-            // Numeric
-            if ($required=='Y' && $tid == 9 && $_POST[$qid] === '0') { $result->MoveNext(); continue; }
-            elseif ($tid == 9 && !empty($_POST[$qid]) && !is_numeric($_POST[$qid])) { $not_numeric[$qid] = $content; }
-
-            if (!isset($_POST[$qid])) { $_POST[$qid] = ''; }
-            if ($required=='Y' && $tid!=6 && empty($_POST[$qid]) && $_POST[$qid] != '0') { $missing[$qid] = $content; }
-            //if ($required=='Y' && empty($_POST[$qid]) && $_POST[$qid] != '0') { $missing[$qid] = $content; }
+      // response_rank
+      if ($required == 'Y' && $tid == 6) {
+        $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=$qid";
+        $cid_result = execute_sql($sql);
+        while (list($cid) = fetch_row($cid_result)) {
+          if (!isset($_POST["${qid}_${cid}"])) {
+            $missing[$qid] = $content;
+            break;
+          }
+          $cid_result->MoveNext();
         }
-        $result->MoveNext();
+        db_close($cid_result);
+      }
+
+      // Numeric
+      if ($required=='Y' && $tid == 9 && $_POST[$qid] === '0') { $result->MoveNext(); continue; }
+      elseif ($tid == 9 && !empty($_POST[$qid]) && !is_numeric($_POST[$qid])) { $not_numeric[$qid] = $content; }
+
+      if (!isset($_POST[$qid])) { $_POST[$qid] = ''; }
+      if ($required=='Y' && $tid!=6 && empty($_POST[$qid]) && $_POST[$qid] != '0') { $missing[$qid] = $content; }
+      //if ($required=='Y' && empty($_POST[$qid]) && $_POST[$qid] != '0') { $missing[$qid] = $content; }
     }
-    db_close($result);
+    $result->MoveNext();
+  }
+  db_close($result);
 
-    $message = '';
+  $message = '';
 
-    // missing required variables
-    if(count($missing) > 0) {
-        $message .= "You are missing the following required questions:<br>\n";
-        while(list($qid,$content) = each($missing)) {
-            $message .= "<!-- ${qid} -->";
-            $message .= "==> ${content}<br>\n";
-        }
+  // missing required variables
+  if (count($missing) > 0) {
+    $message .= "You are missing the following required questions:<br>\n";
+    while (list($qid,$content) = each($missing)) {
+      $message .= "<!-- ${qid} -->";
+      $message .= "==> ${content}<br>\n";
     }
+  }
 
-    // missing numeric
-    if(count($not_numeric) > 0) {
-        $message .= "Please only use numbers for the following questions:<br>\n";
-        while(list($qid,$content) = each($not_numeric)) {
-            $message .= "<!-- ${qid} -->";
-            $message .= "==> ${content}<br>\n";
-        }
+  // missing numeric
+  if (count($not_numeric) > 0) {
+    $message .= "Please only use numbers for the following questions:<br>\n";
+    while (list($qid,$content) = each($not_numeric)) {
+      $message .= "<!-- ${qid} -->";
+      $message .= "==> ${content}<br>\n";
     }
+  }
 
-    // double responses on unique
-    if(count($unique_answers) > 0) {
-        $message .= "Please use a different answer for the following questions:<br>\n";
-        while(list($qid,$content)=each($unique_answers)) {
-            $message .= "<!-- ${qid} -->";
-            $message .= "==> ${content}<br>\n";
-        }
+  // double responses on unique
+  if (count($unique_answers) > 0) {
+    $message .= "Please use a different answer for the following questions:<br>\n";
+    while (list($qid,$content)=each($unique_answers)) {
+      $message .= "<!-- ${qid} -->";
+      $message .= "==> ${content}<br>\n";
     }
+  }
 
-    return($message);
+  return($message);
 }
 
 function response_delete($sid, $rid, $sec = null) {
-    if (empty($rid))
-        return;
-
-    if ($sec != null) {
-        if ($sec < 1)
-        return;
-
-    /* get question_id's in this section */
-    $qids = survey_get_sections($sid);
-    if (!isset($qids[$sec - 1]))
-        return;
-        $qids = 'AND question_id '. array_to_insql($qids[$sec - 1]);
-    } else {
-        /* delete all */
-        $qids = '';
-    }
-
-    /* delete values */
-    foreach (array('bool', 'single', 'multiple', 'rank', 'text', 'other', 'date') as $tbl) {
-        $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['response_'.$tbl.'_table']." WHERE response_id = $rid $qids";
-        $res = execute_sql($sql);
-    }
+  if (empty($rid))
+    return;
+  if ($sec != null) {
+    if ($sec < 1)
+    return;
+  /* get question_id's in this section */
+  $qids = survey_get_sections($sid);
+  if (!isset($qids[$sec - 1]))
+    return;
+    $qids = 'AND question_id '. array_to_insql($qids[$sec - 1]);
+  } else {
+    /* delete all */
+    $qids = '';
+  }
+  /* delete values */
+  //foreach (array('bool', 'single', 'multiple', 'rank', 'text', 'other', 'date') as $tbl) {
+  foreach (array('bool', 'date', 'multiple', 'other', 'rank', 'rating', 'single', 'text') as $tbl) {
+    $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['response_'.$tbl.'_table']." WHERE response_id = $rid $qids";
+    $res = execute_sql($sql);
+  }
 }
 
 function response_delete_all($sid) {
-    $sec = survey_get_sections($sid);
-    $qids = array();
-    foreach ($sec as $s)
-    $qids = array_merge($qids, $s);
-    $qids = array_to_insql($qids);
-
-    /* delete values */
-    foreach (array('bool', 'single', 'multiple', 'rank', 'text', 'other', 'date') as $tbl) {
-        $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['response_'.$tbl.'_table']." WHERE question_id $qids";
-        $res = execute_sql($sql);
-    }
-    /* ensure responses from testing status are also deleted */
-    $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['response_table']." WHERE survey_id=${sid}";
-    execute_sql($sql);
+  $sec = survey_get_sections($sid);
+  $qids = array();
+  foreach ($sec as $s)
+  $qids = array_merge($qids, $s);
+  $qids = array_to_insql($qids);
+  /* delete values */
+  //foreach (array('bool', 'single', 'multiple', 'rank', 'text', 'other', 'date') as $tbl) {
+  foreach (array('bool', 'date', 'multiple', 'other', 'rank', 'rating', 'single', 'text') as $tbl) {
+    $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['response_'.$tbl.'_table']." WHERE question_id $qids";
+    $res = execute_sql($sql);
+  }
+  /* ensure responses from testing status are also deleted */
+  $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['response_table']." WHERE survey_id=${sid}";
+  execute_sql($sql);
 }
 
 function response_insert($sid, $section, $rid) {
-    $sql = "SELECT name, email, public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id=${sid}";
+  $sql = "SELECT name, email, public FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id=${sid}";
+  $result = execute_sql($sql);
+  list($name, $email, $survey_public) = fetch_row($result);
+
+  if (isset($_SESSION['espuser'])) { $userid = $_SESSION['espuser']; } else { $userid = "anonymous"; }
+
+  $ip="";
+  if (isset($_SERVER['REMOTE_ADDR'])) $ip = $_SERVER['REMOTE_ADDR'];
+  if (isset($_SERVER['HTTP_CLIENT_IP'])) $ip = "$ip (".$_SERVER['HTTP_CLIENT_IP'].")";
+  elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) $ip = "$ip (".$_SERVER['HTTP_X_FORWARDED_FOR'].")";
+
+  $userid = _addslashes($userid);
+
+  if (empty($rid)) {
+    $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['response_table']." (survey_id,submitted,username,ip) VALUES ( ${sid},".sys_time_stamp().",${userid},'${ip}')";
     $result = execute_sql($sql);
-    list($name, $email, $survey_public) = fetch_row($result);
-
-    if ($survey_public=="N") {
-        if ($GLOBALS['ESPCONFIG']['auth_mode'] == 'basic') {
-            $userid = isset($_SERVER['PHP_AUTH_USER']) ?  $_SERVER['PHP_AUTH_USER'] : '';
-        }
-        elseif ($GLOBALS['ESPCONFIG']['auth_mode'] == 'form') {
-            if (isset($_SESSION['espuser'])) {
-                $userid = $_SESSION['espuser'];
-            }
-        }
-    } else {
-        $userid = "anonymous";
+    if (!$result) {
+      $msg = "Request failed, please contact the administrator.";
+      $msg .= mkerror(ErrorNo() . ': ' . ErrorMsg());
+    print $msg;
+    exit;
     }
-    $ip="";
-    if (isset($_SERVER['REMOTE_ADDR'])) $ip = $_SERVER['REMOTE_ADDR'];
-    if (isset($_SERVER['HTTP_CLIENT_IP'])) $ip = "$ip (".$_SERVER['HTTP_CLIENT_IP'].")";
-    elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) $ip = "$ip (".$_SERVER['HTTP_X_FORWARDED_FOR'].")";
+    $rid = insert_id("response_id_seq");
+  }
 
-    $userid = _addslashes($userid);
+  $sql = "SELECT Q.id, Q.type_id, Q.length, Q.precise, T.response_table FROM ".$GLOBALS['ESPCONFIG']['question_table']." Q, ".$GLOBALS['ESPCONFIG']['question_type_table']." T ". survey_select_section_sql($sid,$section,'Q') ." AND Q.survey_id=${sid} AND Q.deleted='N' AND Q.type_id < 50 AND Q.type_id=T.id";
+  $q_result = execute_sql($sql);
+  while (list($qid, $tid, $length, $prec, $table) = fetch_row($q_result)) {
+    $q_result->MoveNext();
+    if (isset($_POST[$qid])) {
+      if (is_array($_POST[$qid])) { $bareval = array_map('_stripslashes', $_POST[$qid]); }
+      else { $bareval = _stripslashes($_POST[$qid]); }
+    } else { $bareval = ''; }
 
-    if(empty($rid)) {
-      // create a uniqe id for this response
-      $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['response_table']." (survey_id,submitted,username,ip) VALUES ( ${sid},".sys_time_stamp().",${userid},'${ip}')";
-      $result = execute_sql($sql);
-      if (!$result) {
-        $msg = "Request failed, please contact the administrator.";
-        $msg .= mkerror(ErrorNo() . ': ' . ErrorMsg());
-      print $msg;
-      exit;
+    if (is_string($bareval)) { $val = _addslashes($bareval); }
+    else { $val = ''; }
+
+  // don't allow >1 responses for the same response ID and the same question ID
+  $sql  = "SELECT COUNT(*) from ".$GLOBALS['ESPCONFIG'][$table.'_table']." WHERE response_id=${rid} AND question_id=${qid}";
+  $count = get_one($sql);
+  if ($count > 0) { return $rid; }
+
+  switch($table) {
+
+    case 'response_bool':
+       $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." ( response_id,question_id,choice_id ) VALUES ( ${rid},${qid},${val} )";
+       if (!empty($val))
+       $result = execute_sql($sql);
+       break;
+
+    case 'response_text':
+      // only insert if non-empty content
+      if ($tid == 9) { // numeric
+        if (ereg (",",$bareval)) { $bareval = ereg_replace(",",".",$bareval); }
+        if (ereg ("\.",$bareval)) { $bareval = ereg_replace("[^0-9.\-]*(-?[0-9]{1,$length}\.[0-9]{1,$prec}).*", '\1', $bareval); }
+        else { $bareval = ereg_replace("[^0-9.\-]*(-?[0-9]{1,$length}).*", '\1', $bareval); }
       }
-      $rid = insert_id("response_id_seq");
-    }
-
-    $sql = "
-    SELECT Q.id, Q.type_id, Q.length, Q.precise, T.response_table
-    FROM ".$GLOBALS['ESPCONFIG']['question_table']." Q, ".$GLOBALS['ESPCONFIG']['question_type_table']." T
-    ". survey_select_section_sql($sid,$section,'Q') ." AND
-    Q.survey_id=${sid} AND Q.deleted='N' AND Q.type_id < 50 AND Q.type_id=T.id";
-
-    $q_result = execute_sql($sql);
-    while(list($qid, $tid, $length, $prec, $table) = fetch_row($q_result)) {
-        $q_result->MoveNext();
-        if (isset($_POST[$qid])) {
-            if (is_array($_POST[$qid]))
-            $bareval = array_map('_stripslashes', $_POST[$qid]);
-            else
-            $bareval = _stripslashes($_POST[$qid]);
-        }
-        else
-        $bareval = '';
-
-        if (is_string($bareval))
+      if (ereg("[^ \t\n]",$bareval)) {
         $val = _addslashes($bareval);
-        else
-        $val = '';
+        $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." (response_id, question_id, response) VALUES (${rid}, ${qid}, ${val})";
+        $result = execute_sql($sql);
+      }
+      break;
 
-    // don't allow >1 responses for the same response ID and the same question ID
-    $sql  = "SELECT COUNT(*) from ".$GLOBALS['ESPCONFIG'][$table.'_table']." WHERE response_id=${rid} AND question_id=${qid}";
-    //echo "SELECT COUNT(*) from ".$GLOBALS['ESPCONFIG'][$table.'_table']." WHERE response_id=${rid} AND question_id=${qid}";
-    $count = get_one($sql);
-        if ($count > 0) {
-    return $rid;
-    }
-
-
-    switch($table) {
-
-        //case 'response_bool':
-        //    $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." ( response_id,question_id,choice_id ) VALUES ( ${rid},${qid},${val} )";
-        //    if (!empty($val))
-        //    $result = execute_sql($sql);
-        //    break;
-
-        case 'response_text':
-            // only insert if non-empty content
-            if($tid == 9) { // numeric
-                #$bareval = ereg_replace("[^0-9.\-]*(-?[0-9]*\.?[0-9]*).*", '\1', $bareval);
-                # replace "," by "."
-                if (ereg (",",$bareval)) {
-                    $bareval = ereg_replace(",",".",$bareval);
-                }
-                # if float, check length and precision
-                if (ereg ("\.",$bareval)) {
-                    $bareval = ereg_replace("[^0-9.\-]*(-?[0-9]{1,$length}\.[0-9]{1,$prec}).*", '\1', $bareval);
-                } else {
-                    # else check only length
-                    $bareval = ereg_replace("[^0-9.\-]*(-?[0-9]{1,$length}).*", '\1', $bareval);
-                }
-            }
-            if(ereg("[^ \t\n]",$bareval)) {
-                $val = _addslashes($bareval);
-                $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." ( response_id,question_id,response ) VALUES ( ${rid},${qid},${val} )";
-                $result = execute_sql($sql);
-            }
-            break;
-
-        case 'response_date':
-            // only insert if non-empty content
-            //if(($bareval = ereg_replace("[^0-9]*([0-9]+)/([0-9]+)/([0-9]+).*", '\3-\1-\2', $bareval))) {
-            if(function_exists("strptime")) {
-                if ($bareval=strptime($bareval,$GLOBALS['ESPCONFIG']['date_format'])) {
-                   $bareval['tm_year']+=1900;
-                   $bareval['tm_mon']+=1;
-                   $val = $bareval['tm_year']."-".
-                       $bareval['tm_mon']."-".
-                       $bareval['tm_mday'];
-                   $val = _addslashes($val);
-                   $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." ( response_id,question_id,response ) VALUES ( ${rid},${qid},${val} )";
-                   $result = execute_sql($sql);
-                }
-            } elseif ($val = ereg_replace("[^0-9]*([0-9]+)/([0-9]+)/([0-9]+).*", '\3-\2-\1', $bareval)) {
-                $val = _addslashes($val);
-                $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." ( response_id,question_id,response ) VALUES ( ${rid},${qid},${val} )";
-                $result = execute_sql($sql);
-            }
-            break;
-
-        case 'response_single':
-            if(empty($bareval)) {
-                $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=${qid} AND content LIKE '!other%' ORDER BY id";
-                $c_result = execute_sql($sql);
-                while(!$c_result) {
-                    $c_result->MoveNext();
-                    list($cid) = fetch_row($c_result);
-                    if (!isset($_POST["${qid}_${cid}"])) {
-                        continue;
-                    }
-                    $other = _addslashes($_POST["${qid}_${cid}"]);
-                    if(ereg("[^ \t\n]",$other)) {
-                        $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['response_other_table']." ( response_id,question_id,choice_id,response ) VALUES ( ${rid},${qid},${cid},${other} )";
-                        $result = execute_sql($sql);
-                        $val = $cid;
-                        break;
-                    }
-                }
-                db_close($c_result);
-            }
-            if(ereg("other_([0-9]+)", $bareval, $regs)) {
-                $cid=$regs[1];
-                if (!isset($_POST["${qid}_${cid}"]))
-                break; // out of the case
-                $other = _addslashes($_POST["${qid}_${cid}"]);
-                if(ereg("[^ \t\n]",$other)) {
-                    $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['response_other_table']." ( response_id,question_id,choice_id,response ) VALUES ( ${rid},${qid},${cid},${other} )";
-                    $result = execute_sql($sql);
-                    $val=$cid;
-                }
-            }
-            $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." ( response_id,question_id,choice_id ) VALUES ( ${rid},${qid},${val} )";
-            $result = execute_sql($sql);
-            break;
-
-        case 'response_multiple':
-            $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=${qid} AND content LIKE '!other%'";
-            $c_result = execute_sql($sql);
-            while(!$c_result->EOF) {
-                list($cid) = fetch_row($c_result);
-                $c_result->MoveNext();
-                if (!isset($_POST["${qid}_${cid}"]) || empty($_POST["${qid}_${cid}"])) {
-                    continue;
-                }
-                if (!isset($_POST[$qid]))
-                $_POST[$qid] = array($cid);
-                else
-                array_push($_POST[$qid], $cid);
-                $other = _addslashes($_POST["${qid}_${cid}"]);
-                if(ereg("[^ \t\n]",$other)) {
-                    $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['response_other_table']." ( response_id,question_id,choice_id,response ) VALUES ( ${rid},${qid},${cid},${other} )";
-                    $result = execute_sql($sql);
-                }
-            }
-            db_close($c_result);
-            if(!isset($_POST[$qid]) || !is_array($_POST[$qid]))
-            break;
-
-            foreach($_POST[$qid] as $cid) {
-                $cid = _addslashes($cid);
-                if(ereg("other_[0-9]+", $cid))
-                continue;
-                $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." ( response_id,question_id,choice_id ) VALUES ( ${rid},${qid},${cid} )";
-                $result = execute_sql($sql);
-            }
-            break;
-
-        case 'response_rank':
-            //if($tid == 5 || $tid == 6) {
-            if($tid == 6) {
-            $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=${qid}";
-            $cid_result = execute_sql($sql);
-            while(!$cid_result->EOF) {
-                list($cid) = fetch_row($cid_result);
-                $cid_result->MoveNext();
-                if (!isset($_POST["${qid}_${cid}"]))
-                continue;
-                $val = $_POST["${qid}_${cid}"];
-                if(strtolower($val) == "n/a")
-                $rank = -1;
-                else
-                $rank = intval($val);
-                $rank = _addslashes($rank);
-                $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." ( response_id,question_id,choice_id,rank ) ";
-                $sql .= "VALUES ( ${rid},${qid},${cid},${rank} )";
-                $result=execute_sql($sql);
-            }
-            db_close($cid_result);
-            break;
-            }
-            if(strtolower($bareval) == "n/a")
-            $rank = -1;
-            else
-            $rank = intval($bareval);
-            $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." ( response_id,question_id,rank ) VALUES ( ${rid},${qid},${rank} )";
-            $result = execute_sql($sql);
-            break;
+    case 'response_date':
+      // only insert if non-empty content
+      //if (($bareval = ereg_replace("[^0-9]*([0-9]+)/([0-9]+)/([0-9]+).*", '\3-\1-\2', $bareval))) {
+      if (function_exists("strptime")) {
+        if ($bareval=strptime($bareval,$GLOBALS['ESPCONFIG']['date_format'])) {
+          $bareval['tm_year'] += 1900;
+          $bareval['tm_mon'] += 1;
+          $val = $bareval['tm_year']."-". $bareval['tm_mon']."-". $bareval['tm_mday'];
+          $val = _addslashes($val);
+          $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." (response_id, question_id, response) VALUES (${rid}, ${qid}, ${val})";
+          $result = execute_sql($sql);
         }
+      } elseif ($val = ereg_replace("[^0-9]*([0-9]+)/([0-9]+)/([0-9]+).*", '\3-\2-\1', $bareval)) {
+        $val = _addslashes($val);
+        $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." (response_id, question_id, response) VALUES (${rid}, ${qid}, ${val})";
+        $result = execute_sql($sql);
+      }
+      break;
+
+    case 'response_single':
+      if (empty($bareval)) {
+        $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=${qid} AND content LIKE '!others%' ORDER BY id";
+        $c_result = execute_sql($sql);
+        while (!$c_result) {
+          $c_result->MoveNext();
+          list($cid) = fetch_row($c_result);
+          if (!isset($_POST["${qid}_${cid}"])) { continue; }
+          $other = _addslashes($_POST["${qid}_${cid}"]);
+          if (ereg("[^ \t\n]",$other)) {
+            $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['response_other_table']." (response_id, question_id, choice_id, response) VALUES (${rid}, ${qid}, ${cid}, ${other})";
+            $result = execute_sql($sql);
+            $val = $cid;
+            break;
+          }
+        }
+        db_close($c_result);
+      }
+      if (ereg("other_([0-9]+)", $bareval, $regs)) {
+        $cid = $regs[1];
+        if (!isset($_POST["${qid}_${cid}"]))
+        break; // out of the case
+        $other = _addslashes($_POST["${qid}_${cid}"]);
+        if (ereg("[^ \t\n]",$other)) {
+          $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['response_other_table']." (response_id, question_id, choice_id, response) VALUES (${rid}, ${qid}, ${cid}, ${other})";
+          $result = execute_sql($sql);
+          $val = $cid;
+        }
+      }
+      $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." ( response_id,question_id,choice_id ) VALUES (${rid}, ${qid}, ${val})";
+      $result = execute_sql($sql);
+      break;
+
+    case 'response_multiple':
+      $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=${qid} AND content LIKE '!others%'";
+      $c_result = execute_sql($sql);
+      while (!$c_result->EOF) {
+        list($cid) = fetch_row($c_result);
+        $c_result->MoveNext();
+        if (!isset($_POST["${qid}_${cid}"]) || empty($_POST["${qid}_${cid}"])) { continue; }
+        if (!isset($_POST[$qid])) { $_POST[$qid] = array($cid); }
+        else { array_push($_POST[$qid], $cid); }
+        $other = _addslashes($_POST["${qid}_${cid}"]);
+        if (ereg("[^ \t\n]",$other)) {
+          $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['response_other_table']." (response_id, question_id, choice_id, response) VALUES (${rid}, ${qid}, ${cid}, ${other})";
+          $result = execute_sql($sql);
+        }
+      }
+      db_close($c_result);
+      if (!isset($_POST[$qid]) || !is_array($_POST[$qid]))
+      break;
+
+      foreach ($_POST[$qid] as $cid) {
+        $cid = _addslashes($cid);
+        if (ereg("other_[0-9]+", $cid))
+        continue;
+        $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." (response_id, question_id, choice_id) VALUES (${rid}, ${qid}, ${cid})";
+        $result = execute_sql($sql);
+      }
+      break;
+
+    case 'response_rank':
+      //if ($tid == 5 || $tid == 6) {
+      if ($tid == 6) {
+      $sql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=${qid}";
+      $cid_result = execute_sql($sql);
+      while (!$cid_result->EOF) {
+        list($cid) = fetch_row($cid_result);
+        $cid_result->MoveNext();
+        if (!isset($_POST["${qid}_${cid}"]))
+        continue;
+        $val = $_POST["${qid}_${cid}"];
+        if (strtolower($val) == "n/a") { $rank = -1; }
+        else { $rank = intval($val); }
+        $rank = _addslashes($rank);
+        $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." (response_id, question_id, choice_id, rank) ";
+        $sql .= "VALUES ( ${rid},${qid},${cid},${rank} )";
+        $result=execute_sql($sql);
+      }
+      db_close($cid_result);
+      break;
+      }
+      if (strtolower($bareval) == "n/a") { $rank = -1; }
+      else { $rank = intval($bareval); }
+      $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." (response_id, question_id, rank) VALUES (${rid}, ${qid}, ${rank})";
+      $result = execute_sql($sql);
+      break;
     }
-    db_close($q_result);
-    return($rid);
+  }
+  db_close($q_result);
+  return($rid);
 }
 
 function response_commit($rid) {
-    $ip="";
-    if (isset($_SERVER['REMOTE_ADDR'])) $ip=$_SERVER['REMOTE_ADDR'];
-    if (isset($_SERVER['HTTP_CLIENT_IP'])) $ip="$ip (".$_SERVER['HTTP_CLIENT_IP'].")";
-    elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) $ip="$ip (".$_SERVER['HTTP_X_FORWARDED_FOR'].")";
-
-    $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['response_table']." SET complete='Y', submitted =".sys_time_stamp().",ip='$ip' WHERE id=${rid}";
-    if(execute_sql($sql))
-    return(true);
-    return(false);
+  $ip = "";
+  if (isset($_SERVER['REMOTE_ADDR'])) $ip=$_SERVER['REMOTE_ADDR'];
+  if (isset($_SERVER['HTTP_CLIENT_IP'])) $ip="$ip (".$_SERVER['HTTP_CLIENT_IP'].")";
+  elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) $ip="$ip (".$_SERVER['HTTP_X_FORWARDED_FOR'].")";
+  $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['response_table']." SET complete='Y', submitted =".sys_time_stamp().",ip='$ip' WHERE id=${rid}";
+  if (execute_sql($sql))
+  return(true);
+  return(false);
 }
 
 function response_key_cmp($l, $r) {
@@ -1457,334 +1357,282 @@ function response_key_cmp($l, $r) {
 }
 
 function response_select($sid, $rid, $col = null, $qids = null) {
-    $values = array();
-    if ($col == null) { $col = ''; }
-    if (!is_array($col) && !empty($col)) { $col = explode(',', preg_replace("/\s/",'', $col)); }
-    if (is_array($col) && count($col) > 0) { $col = ',' . implode(',', array_map(create_function('$a','return "q.$a";'), $col)); }
-    if ($qids == null) { $qids = ''; }
-    elseif (is_array($qids)) { $qids = 'AND a.question_id ' . array_to_insql($qids); }
-    elseif (intval($qids) > 0) { $qids = 'AND a.question_id = ' . intval($qids); }
-    else { $qids = ''; }
+  $values = array();
+  if ($col == null) { $col = ''; }
+  if (!is_array($col) && !empty($col)) { $col = explode(',', preg_replace("/\s/",'', $col)); }
+  if (is_array($col) && count($col) > 0) { $col = ',' . implode(',', array_map(create_function('$a','return "q.$a";'), $col)); }
+  if ($qids == null) { $qids = ''; }
+  elseif (is_array($qids)) { $qids = 'AND a.question_id ' . array_to_insql($qids); }
+  elseif (intval($qids) > 0) { $qids = 'AND a.question_id = ' . intval($qids); }
+  else { $qids = ''; }
 
-    // --------------------- response_bool ---------------------
+  // --------------------- response_bool ---------------------
 
-    $sql = "SELECT q.id $col,a.choice_id
-    FROM ".$GLOBALS['ESPCONFIG']['response_bool_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q
-    WHERE a.response_id=${rid} AND a.question_id=q.id $qids";
-    $result = execute_sql($sql);
-    while(!$result->EOF) {
-        $row = fetch_row($result);
-        $qid = array_shift($row);
-        $val = array_pop($row);
-        $values[$qid] = $row;
+  $sql = "SELECT q.id $col,a.choice_id FROM ".$GLOBALS['ESPCONFIG']['response_bool_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q WHERE a.response_id=${rid} AND a.question_id=q.id $qids";
+  $result = execute_sql($sql);
+  while (!$result->EOF) {
+    $row = fetch_row($result);
+    $qid = array_shift($row);
+    $val = array_pop($row);
+    $values[$qid] = $row;
 
-        $ivalue = '';
-        if ($val == 'Y') {
-           $ivalue = _('Yes');
-        } elseif ($val == 'N') {
-           $ivalue =  _('No');
-        }
-        array_push($values["$qid"], $ivalue, $val);
-        $result->MoveNext();
+    $ivalue = '';
+    if ($val == 'Y') { $ivalue = 'Yes'; }
+    elseif ($val == 'N') { $ivalue = 'No'; }
+    array_push($values["$qid"], $ivalue, $val);
+    $result->MoveNext();
+  }
+  db_close($result);
+
+  // --------------------- response_single ---------------------
+
+  $sql = "SELECT q.id $col,c.content,c.id,c.feedback,c.credit FROM ".$GLOBALS['ESPCONFIG']['response_single_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids";
+  $result = execute_sql($sql);
+  while (!$result->EOF) {
+    $row = fetch_row($result);
+    $qid = array_shift($row);
+    $c = count($row);
+    $val = $row[$c - 4];
+    if (ereg('^!others', $val)) { $row[$c - 3] = 'other_' . $row[$c - 3]; } //if (preg_match('/^!others/', $val))
+    else { settype($row[$c - 3], 'integer'); }
+    $values[$qid] = $row;
+    $result->MoveNext();
+  }
+  db_close($result);
+
+  // --------------------- response_multiple ---------------------
+
+  $sql = "SELECT q.id $col,c.content,c.id,c.feedback,c.credit FROM ".$GLOBALS['ESPCONFIG']['response_multiple_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids ORDER BY a.question_id,c.id";
+  $result = execute_sql($sql);
+  $arr = array();
+  $tmp = null;
+  while (!$result->EOF) {
+    $row = fetch_row($result);
+    $qid = array_shift($row);
+    $c = count($row);
+    $val = $row[$c - 4];
+    if (ereg('^!others', $val)) { $row[$c - 3] = 'other_' . $row[$c - 3]; }
+    else { settype($row[$c - 3], 'integer'); }
+    if ($tmp == $qid) {
+      $arr[] = $row;
+      $result->MoveNext();
+      continue;
     }
-    db_close($result);
+    if ($tmp != null)
+    $values["$tmp"] = $arr;
+    $tmp = $qid;
+    $arr = array($row);
+    $result->MoveNext();
+  }
+  if ($tmp != null)
+  $values["$tmp"] = $arr;
+  db_close($result);
+  unset($arr);
+  unset($tmp);
+  unset($row);
 
-    // --------------------- response_single ---------------------
+  // --------------------- response_other ---------------------
 
-    $sql = "SELECT q.id $col,c.content,c.id,c.feedback,c.credit
-    FROM ".$GLOBALS['ESPCONFIG']['response_single_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c
-    WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids";
-    $result = execute_sql($sql);
-    while(!$result->EOF) {
-        $row = fetch_row($result);
-        $qid = array_shift($row);
-        $c = count($row);
-        $val = $row[$c - 4];
-        if (ereg('^!other', $val))
-        //if (preg_match('/^!other/', $val))
-           $row[$c - 3] = 'other_' . $row[$c - 3];
-        else
-           settype($row[$c - 3], 'integer');
-        $values[$qid] = $row;
-        $result->MoveNext();
-    }
-    db_close($result);
+  $sql = "SELECT q.id,c.id $col,a.response FROM ".$GLOBALS['ESPCONFIG']['response_other_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids ORDER BY a.question_id,c.id";
+  $result = execute_sql($sql);
+  while (!$result->EOF) {
+    $row = fetch_row($result);
+    $qid = array_shift($row);
+    $cid = array_shift($row);
+    array_push($row, $row[count($row) - 1]);
+    $values["${qid}_${cid}"] = $row;
+    $result->MoveNext();
+  }
+  db_close($result);
 
-    // --------------------- response_multiple ---------------------
+  // --------------------- response_rank ---------------------
 
-    $sql = "SELECT q.id $col,c.content,c.id,c.feedback,c.credit
-    FROM ".$GLOBALS['ESPCONFIG']['response_multiple_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c
-    WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids
-    ORDER BY a.question_id,c.id";
-    $result = execute_sql($sql);
-    $arr = array();
-    $tmp = null;
-    while(!$result->EOF) {
-        $row = fetch_row($result);
+  $sql = "SELECT (". $GLOBALS['ESPCONFIG']['adodb_conn']->Concat("q.id","'_'","c.id") .") AS id $col,c.content,a.rank FROM ".$GLOBALS['ESPCONFIG']['response_rank_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids ORDER BY a.question_id,c.id";
+  $result = execute_sql($sql);
+  while (!$result->EOF) {
+    $row = fetch_row($result);
+    $qid = array_shift($row);
+    settype($row[count($row) - 1], 'integer');
+    if (isset($row[3])) { if ($row[3]>=0) { $row[3]++; } }
+    $values[$qid] = $row;
+    $result->MoveNext();
+  }
+  db_close($result);
 
-        $qid = array_shift($row);
-        $c = count($row);
-        $val = $row[$c - 4];
-        if (ereg('^!other', $val))
-           $row[$c - 3] = 'other_' . $row[$c - 3];
-        else
-           settype($row[$c - 3], 'integer');
-        if($tmp == $qid) {
-            $arr[] = $row;
-            $result->MoveNext();
-            continue;
-        }
-        if($tmp != null)
-        $values["$tmp"]=$arr;
-        $tmp = $qid;
-        $arr = array($row);
-        $result->MoveNext();
-    }
-    if($tmp != null)
-    $values["$tmp"]=$arr;
-    db_close($result);
-    unset($arr);
-    unset($tmp);
-    unset($row);
+  // --------------------- response_text ---------------------
 
-    // --------------------- response_other ---------------------
+  $sql = "SELECT q.id $col,a.response FROM ".$GLOBALS['ESPCONFIG']['response_text_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q WHERE a.response_id=${rid} AND a.question_id=q.id $qids";
+  $result = execute_sql($sql);
+  while (!$result->EOF) {
+    $row = fetch_row($result);
+    $qid = array_shift($row);
+    $values["$qid"] = $row;
+    $val = array_pop($values["$qid"]);
+    array_push($values["$qid"], $val, $val);
+    $result->MoveNext();
+  }
+  db_close($result);
 
-    $sql = "SELECT q.id,c.id $col,a.response
-    FROM ".$GLOBALS['ESPCONFIG']['response_other_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c
-    WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids
-    ORDER BY a.question_id,c.id";
-    $result = execute_sql($sql);
-    while(!$result->EOF) {
-        $row = fetch_row($result);
-        $qid = array_shift($row);
-        $cid = array_shift($row);
-        array_push($row, $row[count($row) - 1]);
-        $values["${qid}_${cid}"] = $row;
-        $result->MoveNext();
-    }
-    db_close($result);
+  // --------------------- response_date ---------------------
 
-    // --------------------- response_rank ---------------------
+  $sql = "SELECT q.id $col,a.response FROM ".$GLOBALS['ESPCONFIG']['response_date_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q WHERE a.response_id=${rid} AND a.question_id=q.id $qids";
+  $result = execute_sql($sql);
+  while (!$result->EOF) {
+    $row = fetch_row($result);
+    $qid = array_shift($row);
+    $values["$qid"] = $row;
+    $val = array_pop($values["$qid"]);
+    array_push($values["$qid"], $val, $val);
+    $result->MoveNext();
+  }
+  db_close($result);
 
-    $sql = "SELECT (". $GLOBALS['ESPCONFIG']['adodb_conn']->Concat("q.id","'_'","c.id") .") AS id $col,c.content,a.rank
-    FROM ".$GLOBALS['ESPCONFIG']['response_rank_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q, ".$GLOBALS['ESPCONFIG']['question_choice_table']." c
-    WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids
-    ORDER BY a.question_id,c.id";
-    $result = execute_sql($sql);
-    while(!$result->EOF) {
-        $row = fetch_row($result);
-        $qid = array_shift($row);
-        settype($row[count($row) - 1], 'integer');
-        if (isset($row[3])) {
-            if($row[3]>=0) {
-                $row[3]++;
-            }
-        }
-        $values[$qid] = $row;
-        $result->MoveNext();
-    }
-    db_close($result);
+  // --------------------- return ---------------------
 
-    // --------------------- response_text ---------------------
-
-    $sql = "SELECT q.id $col,a.response
-    FROM ".$GLOBALS['ESPCONFIG']['response_text_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q
-    WHERE a.response_id=${rid} AND a.question_id=q.id $qids";
-    $result = execute_sql($sql);
-    while(!$result->EOF) {
-        $row = fetch_row($result);
-        $qid = array_shift($row);
-        $values["$qid"]=$row;
-        $val = array_pop($values["$qid"]);
-        array_push($values["$qid"], $val, $val);
-        $result->MoveNext();
-    }
-    db_close($result);
-
-    // --------------------- response_date ---------------------
-
-    $sql = "SELECT q.id $col,a.response
-    FROM ".$GLOBALS['ESPCONFIG']['response_date_table']." a, ".$GLOBALS['ESPCONFIG']['question_table']." q
-    WHERE a.response_id=${rid} AND a.question_id=q.id $qids";
-    $result = execute_sql($sql);
-    while(!$result->EOF) {
-        $row = fetch_row($result);
-        $qid = array_shift($row);
-        $values["$qid"]=$row;
-        $val = array_pop($values["$qid"]);
-        array_push($values["$qid"], $val, $val);
-        $result->MoveNext();
-    }
-    db_close($result);
-
-    // --------------------- return ---------------------
-
-    uksort($values, 'response_key_cmp');
-    return($values);
+  uksort($values, 'response_key_cmp');
+  return($values);
 }
 
 function response_select_human($sid, $rid, $qids = null) {
-    $res = response_select($sid, $rid, 'type_id,content', $qids);
-    $hmn = array();
-    reset($res);
-    $tmpk = null;
-    $tmpv = array();
-    while(list($qid, $arr) = each($res)) {
-        $key = null;
-        $val = null;
-        if (strstr($qid, '_')) {
-            // rank or other
-            list($qid, $sub) = explode('_', $qid);
-            if ($arr[0] != 8)
-            continue; // other
-
-            // rank
-            $key = $arr[1];
-            if ($arr[3] < 0) {
-                $arr[3] = 'n/a';
-            }
-              else {
-                  $arr[3]++;
-              }
-            $val = $arr[2] . ' = ' . $arr[3];
-            if ($tmpk != $key) {
-                if (!empty($tmpk) || count($tmpv))
-                array_push($hmn, array($tmpk, $tmpv));
-                $tmpk = null;
-                $tmpv = array();
-            }
-            $tmpk = $key;
-            array_push($tmpv, $val);
-            continue;
-        }
+  $res = response_select($sid, $rid, 'type_id,content', $qids);
+  $hmn = array();
+  reset($res);
+  $tmpk = null;
+  $tmpv = array();
+  while (list($qid, $arr) = each($res)) {
+    $key = null;
+    $val = null;
+    if (strstr($qid, '_')) {
+      // rank or other
+      list($qid, $sub) = explode('_', $qid);
+      if ($arr[0] != 8) { continue; } // other
+      // rank
+      $key = $arr[1];
+      if ($arr[3] < 0) { $arr[3] = 'n/a'; } else { $arr[3]++; }
+      $val = $arr[2] . ' = ' . $arr[3];
+      if ($tmpk != $key) {
         if (!empty($tmpk) || count($tmpv))
         array_push($hmn, array($tmpk, $tmpv));
-        if (is_array($arr[0])) {
-            // mutiple
-            $key = $arr[0][1];
-            $val = array();
-            foreach ($arr as $subarr) {
-                if (ereg("^!other", $subarr[2])) {
-                    $tmpv = preg_replace(array("/^!other=/","/^!other/"),
-                    array('', 'Other'), $subarr[2]);
-                    $tmp = preg_replace("/^other/", $qid, $subarr[3]);
-                    if (isset($res[$tmp]))
-                    $tmpv .= ': '. $res[$tmp][2];
-                    array_push($val, $tmpv);
-                } else {
-                    array_push($val, $subarr[2]);
-                }
-            }
+        $tmpk = null;
+        $tmpv = array();
+      }
+      $tmpk = $key;
+      array_push($tmpv, $val);
+      continue;
+    }
+    if (!empty($tmpk) || count($tmpv))
+    array_push($hmn, array($tmpk, $tmpv));
+    if (is_array($arr[0])) {
+      // mutiple
+      $key = $arr[0][1];
+      $val = array();
+      foreach ($arr as $subarr) {
+        if (ereg("^!others", $subarr[2])) {
+          $tmpv = preg_replace(array("/^!others=/","/^!others/"), array('', 'Others'), $subarr[2]);
+          $tmp = preg_replace("/^other/", $qid, $subarr[3]);
+          if (isset($res[$tmp]))
+          $tmpv .= ': '. $res[$tmp][2];
+          array_push($val, $tmpv);
         } else {
-            $key = $arr[1];
-            if (ereg("^!other", $arr[2])) {
-                $val = preg_replace(array("/^!other=/","/^!other/"),
-                array('', 'Other'), $arr[2]);
-                $tmp = preg_replace("/^other/", $qid, $arr[3]);
-                if (isset($res[$tmp]))
-                $val .= ': '. $res[$tmp][2];
-            } else {
-                $val = $arr[2];
-            }
+          array_push($val, $subarr[2]);
         }
-        $tmpk = null;
-        $tmpv = array();
-        $hmn[] = array($key, $val);
+      }
+  } else {
+      $key = $arr[1];
+      if (ereg("^!others", $arr[2])) {
+        $val = preg_replace(array("/^!others=/","/^!others/"), array('', 'Others'), $arr[2]);
+        $tmp = preg_replace("/^other/", $qid, $arr[3]);
+        if (isset($res[$tmp]))
+        $val .= ': '. $res[$tmp][2];
+      } else {
+        $val = $arr[2];
+      }
     }
-    if (!empty($tmpk) || count($tmpv)) {
-        array_push($hmn, array($tmpk, $tmpv));
-        $tmpk = null;
-        $tmpv = array();
-    }
-    return $hmn;
+    $tmpk = null;
+    $tmpv = array();
+    $hmn[] = array($key, $val);
+  }
+  if (!empty($tmpk) || count($tmpv)) {
+    array_push($hmn, array($tmpk, $tmpv));
+    $tmpk = null;
+    $tmpv = array();
+  }
+  return $hmn;
 }
 
 function response_select_compact($sid, $rid, $qids = null) {
-    $res = response_select($sid, $rid, 'type_id', $qids);
-    $cpq = array();
-    reset($res);
-    while(list($qid, $arr) = each($res)) {
-        if (strstr($qid, '_')) {
-            // rank or other
-            if ($arr[0] == 8) {
-                // rank
-                $cpq[] = array($qid, $arr[2]+1, array($arr[1]));
-            } else {
-                // other
-                $cpq[] = array($qid, $arr[1]);
-            }
-        } elseif (is_array($arr[0])) {
-            // multiple
-            $cpq[] = array($qid,
-            array_map(create_function('$a', 'return $a[2];'), $arr),
-            array_map(create_function('$b', 'return $b[1];'), $arr));
-        } else {
-            if ($arr[0] == 4 || $arr[0] == 6)
-            $cpq[] = array($qid, $arr[2], array($arr[1]));
-            else
-            $cpq[] = array($qid, $arr[2]);
-        }
+  $res = response_select($sid, $rid, 'type_id', $qids);
+  $cpq = array();
+  reset($res);
+  while (list($qid, $arr) = each($res)) {
+    if (strstr($qid, '_')) { // rank or other
+      if ($arr[0] == 8) { $cpq[] = array($qid, $arr[2]+1, array($arr[1])); }
+      else { $cpq[] = array($qid, $arr[1]); }
+    } elseif (is_array($arr[0])) { // multiple
+      $cpq[] = array($qid,
+      array_map(create_function('$a', 'return $a[2];'), $arr),
+      array_map(create_function('$b', 'return $b[1];'), $arr));
+    } else {
+      if ($arr[0] == 4 || $arr[0] == 6) { $cpq[] = array($qid, $arr[2], array($arr[1])); }
+      else { $cpq[] = array($qid, $arr[2]); }
     }
-    return $cpq;
+  }
+  return $cpq;
 }
 
 function response_select_name($sid, $rid, $qids = null) {
-    $res = response_select($sid, $rid, 'type_id,name', $qids);
-    $nam = array();
-    reset($res);
-    while(list($qid, $arr) = each($res)) {
-        $key = null;
-        $val = null;
-        $index = $qid;
-        if (strstr($qid, '_')) {
-            // rank or other
-            list($qid, $sub) = explode('_', $qid);
-            if ($arr[0] != 8)
-            continue; // other
-            // rank
-            $str1 = $arr[2];
-            do {
-                $str2 = $str1;
-                $str1 = eregi_replace("(^| )(what|which|why|how|who|where|how|is|are|were|the|a|it|of|do|you|your|please|enter)[ ?]", " ", $str2);
-            } while ($str1 != $str2);
-            $str1 = trim(strtoupper(eregi_replace("[^A-Z0-9]+", " ", $str1)));
-                $str1 = ereg_replace(' +','_',$str1);
-                $arr[1] = strtoupper($arr[1]);
-                $arr[1] .= "_$str1";
-                $nam[$index] = array($arr[1]=>$arr[3]);
-                continue;
-        }
-        if (is_array($arr[0])) {
-            // mutiple
-            $key = $arr[0][1];
-            $val = array();
-            foreach ($arr as $subarr) {
-                if (ereg("^!other", $subarr[2])) {
-                    $tmpv = preg_replace(array("/^!other=/","/^!other/"),
-                    array('', 'Other'), $subarr[2]);
-                    $tmp = preg_replace("/^other/", $qid, $subarr[3]);
-                    if (isset($res[$tmp]))
-                       $tmpv .= ': '. $res[$tmp][2];
-                    array_push($val, $tmpv);
-                } else {
-                    array_push($val, $subarr[2]);
-                }
-            }
-        } else {
-            $key = $arr[1];
-            if (ereg("^!other", $arr[2])) {
-                $val = preg_replace(array("/^!other=/","/^!other/"),
-                array('', 'Other'), $arr[2]);
-                $tmp = preg_replace("/^other/", $qid, $arr[3]);
-                if (isset($res[$tmp]))
-                $val .= ': '. $res[$tmp][2];
-            } else {
-                $val = $arr[2];
-            }
-        }
-        $nam[$index] = array($key=>$val);
+  $res = response_select($sid, $rid, 'type_id,name', $qids);
+  $nam = array();
+  reset($res);
+  while (list($qid, $arr) = each($res)) {
+    $key = null;
+    $val = null;
+    $index = $qid;
+    if (strstr($qid, '_')) {
+      // rank or other
+      list($qid, $sub) = explode('_', $qid);
+      if ($arr[0] != 8) { continue; } // other
+      // rank
+      $str1 = $arr[2];
+      do {
+        $str2 = $str1;
+        $str1 = eregi_replace("(^| )(what|which|why|how|who|where|how|is|are|were|the|a|it|of|do|you|your|please|enter)[ ?]", " ", $str2);
+      } while ($str1 != $str2);
+      $str1 = trim(strtoupper(eregi_replace("[^A-Z0-9]+", " ", $str1)));
+      $str1 = ereg_replace(' +','_',$str1);
+      $arr[1] = strtoupper($arr[1]);
+      $arr[1] .= "_$str1";
+      $nam[$index] = array($arr[1]=>$arr[3]);
+      continue;
     }
-    return $nam;
+    if (is_array($arr[0])) {
+      // mutiple
+      $key = $arr[0][1];
+      $val = array();
+      foreach ($arr as $subarr) {
+        if (ereg("^!others", $subarr[2])) {
+          $tmpv = preg_replace(array("/^!others=/","/^!others/"), array('', 'Others'), $subarr[2]);
+          $tmp = preg_replace("/^other/", $qid, $subarr[3]);
+          if (isset($res[$tmp])) { $tmpv .= ': '. $res[$tmp][2]; }
+          array_push($val, $tmpv);
+        } else {
+          array_push($val, $subarr[2]);
+        }
+      }
+    } else {
+      $key = $arr[1];
+      if (ereg("^!others", $arr[2])) {
+        $val = preg_replace(array("/^!others=/","/^!others/"), array('', 'Others'), $arr[2]);
+        $tmp = preg_replace("/^other/", $qid, $arr[3]);
+        if (isset($res[$tmp]))
+        $val .= ': '. $res[$tmp][2];
+      } else {
+        $val = $arr[2];
+      }
+    }
+    $nam[$index] = array($key=>$val);
+  }
+  return $nam;
 }
 
 function response_send_email($sid, $rid) {
@@ -1794,7 +1642,6 @@ function response_send_email($sid, $rid) {
   list($name, $email, $survey_public) = fetch_row($result);
   db_close($result);
   if (empty($email)) { return(false); }
-
   //lets check to see if user wants human readable email
   if ($GLOBALS['ESPCONFIG']['human_email']) {
     $answers = response_select_human($sid, $rid);
@@ -1814,13 +1661,11 @@ function response_send_email($sid, $rid) {
     'survey.response' => $rid,
   );
 
-  if ($survey_public == "N") {
-    $userid = "";
-    if ($GLOBALS['ESPCONFIG']['auth_mode'] == 'basic' && isset($_SERVER['PHP_AUTH_USER'])) { $userid = $_SERVER['PHP_AUTH_USER']; }
-    elseif ($GLOBALS['ESPCONFIG']['auth_mode'] == 'form') { $userid = $_SESSION['espuser']; }
-
+  $userid = "";
+  if ($_SESSION['espuser']) {
+    $userid = $_SESSION['espuser'];
     $user['user.username'] = $userid;
-    $sql = "SELECT fname,lname,email FROM ".$GLOBALS['ESPCONFIG']['respondent_table']." WHERE username = " . _addslashes($userid);
+    $sql = "SELECT fname, lname, email FROM ".$GLOBALS['ESPCONFIG']['respondent_table']." WHERE username = " . _addslashes($userid);
     $result = execute_sql($sql);
     if ($result && record_count($result)) {
         list ($user_fname, $user_lname, $user_email) = fetch_row($result);
@@ -1829,8 +1674,7 @@ function response_send_email($sid, $rid) {
         if (!empty($user_lname)) $user["user.lastname"] = $user_lname;
         if (!empty($user_email)) $user["user.email"] = $user_email;
     }
-  }
-  else { $user['user.username'] = "anonymous"; }
+  } else { $user['user.username'] = "anonymous"; }
 
   $subject = 'Response from survey:' ." $name [$rid]";
   $body = '';
@@ -1843,7 +1687,7 @@ function response_send_email($sid, $rid) {
   $headers .= 'X-Mailer: siamsquare.org' . "\r\n";
 
   reset($answers);
-  while($arr = array_shift($answers)) {
+  while ($arr = array_shift($answers)) {
     unset($x);
     if (count($arr) > 2) { list($k, $v, $x) = $arr; } else { list($k, $v) = $arr; }
     if (is_array($v))
@@ -1894,32 +1738,6 @@ function response_import_sec($sid, $rid, $sec, $varr = null) {
     else { $varr[$id] = array_pop($arr); }
   }
 }
-
-/*
-* @_PATTERNS_@
-* // get the ID, name, title, owner, and realm for all surveys the current user can access
-* $ok = survey_get_for_current_user($surveys);
-* if ($ok) {
-*     // use $surveys === array (1 => array ('id' => 1, 'name' => 'foo', ...), ...);
-* }
-*
-* // get the where clause to limit a SQL query for the current user
-* $where = survey_fetch_limiting_where();
-* $sql = sprintf('SELECT * FROM %s WHERE %s', $GLOBALS['ESPCONFIG']['survey_table'], $where);
-*
-* @_NOTES_@
-* Interpretation of the open constants returned by survey_open():
-* Constant                 Meaning
-* ------------------------ -----------------------------------------------------------------------------------
-* STATUS_OPEN              The current time is within the open & close dates, or those dates aren't given
-* STATUS_CLOSED_TOO_EARLY  The current time is before the open date
-* STATUS_CLOSED_TOO_LATE   The current time is after the close date
-*
-*/
-
-define('STATUS_OPEN',             0);
-define('STATUS_CLOSED_TOO_EARLY', 1);
-define('STATUS_CLOSED_TOO_LATE',  2);
 
 function survey_status_is_edit($status) {
   return (is_numeric($status) && (0 === (int)$status) ? true : false);
@@ -2071,16 +1889,16 @@ function survey_get_from_sql($sql, &$surveys, $surveyIDCol = 'id') {
   $needsConversion = true;
   $surveys = array ();
   while ($row = fetch_row($res)) {
-      $res->MoveNext();
-      // make sure we have an ID column
-      if (isset($row[$surveyIDCol])) { $id = $row[$surveyIDCol]; }
-      else { continue; }
-      // add in the survey information to the previous survey information
-      if (isset($surveys[$id])) {
-        if ($needsConversion) { $surveys[$id] = array ($surveys[$id]); $needsConversion = false; }
-        $surveys[$id][] = $row;
-      }
-      else { $surveys[$id] = $row; }
+    $res->MoveNext();
+    // make sure we have an ID column
+    if (isset($row[$surveyIDCol])) { $id = $row[$surveyIDCol]; }
+    else { continue; }
+    // add in the survey information to the previous survey information
+    if (isset($surveys[$id])) {
+      if ($needsConversion) { $surveys[$id] = array ($surveys[$id]); $needsConversion = false; }
+      $surveys[$id][] = $row;
+    }
+    else { $surveys[$id] = $row; }
   }
   db_close($res);
   return true;
@@ -2106,7 +1924,7 @@ function survey_fetch_url_by_survey_name($name) {
 function survey_assign_new_name() {
   $sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['survey_table']." ORDER BY id DESC";
   $result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
-  if($arr = fetch_row($result)) { $curr = $arr['name']; }
+  if ($arr = fetch_row($result)) { $curr = $arr['name']; }
   db_close($result);
   $currentNo = substr($curr, -4);
   $newNo = $currentNo + "1";
@@ -2115,12 +1933,6 @@ function survey_assign_new_name() {
   //return $newFormattedNo;
   return $newName;
 }
-
-define('SURVEY_STAT_LOGINFAIL', 'loginfail');
-define('SURVEY_STAT_ATTEMPTED', 'attempted');
-define('SURVEY_STAT_ABANDONED', 'abandoned');
-define('SURVEY_STAT_SUSPENDED', 'suspended');
-define('SURVEY_STAT_COMPLETED', 'completed');
 
 function stat_fetch_with_summary($limitToCurrentUser = true) {
   $cfg =& $GLOBALS['ESPCONFIG'];
