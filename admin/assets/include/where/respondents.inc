@@ -3,7 +3,7 @@
 $base =& $GLOBALS['ESPCONFIG']['ME'];
 
 /* SuperUser or Designers with "Administer Respondents(puser)" permissions only*/
-if($GLOBALS['ESPCONFIG']['auth_type'] != 'ldap_both' &&
+if ($GLOBALS['ESPCONFIG']['auth_type'] != 'ldap_both' &&
 $GLOBALS['ESPCONFIG']['auth_type'] != 'ldap_resp' &&
 $_SESSION['acl']['superuser'] != 'Y' &&
     count($_SESSION['acl']['puser']) == 0 &&
@@ -14,23 +14,20 @@ $_SESSION['acl']['superuser'] != 'Y' &&
 $sql = 'SELECT username, fname, lname, realm, disabled, expiration FROM '.$GLOBALS['ESPCONFIG']['respondent_table'];
 
 /* load only accounts available to _this_ user */
-if($_SESSION['acl']['superuser'] != 'Y') {
-  $realms = array_to_insql(
-    array_merge(
-      $_SESSION['acl']['pall'],
-      $_SESSION['acl']['puser']));
+if ($_SESSION['acl']['superuser'] != 'Y') {
+  $realms = array_to_insql(array_merge($_SESSION['acl']['pall'], $_SESSION['acl']['puser']));
   $sql .= " WHERE realm $realms";
 }
 
 $sql .= ' ORDER BY ';
 //$base = $GLOBALS['ESPCONFIG']['ME'] .'?where=respondents';
-if(!isset($_GET['u'])) $_GET['u'] = '';
-if(!isset($_GET['g'])) $_GET['g'] = '';
-if(!isset($_GET['f'])) $_GET['f'] = '';
-if(!isset($_GET['l'])) $_GET['l'] = '';
-if(!isset($_GET['s'])) $_GET['s'] = '';
+if (!isset($_GET['u'])) $_GET['u'] = '';
+if (!isset($_GET['g'])) $_GET['g'] = '';
+if (!isset($_GET['f'])) $_GET['f'] = '';
+if (!isset($_GET['l'])) $_GET['l'] = '';
+if (!isset($_GET['s'])) $_GET['s'] = '';
 
-if($_GET['u'] == 'd') {
+if ($_GET['u'] == 'd') {
   $us = 'username DESC';
   $u = 'a';
 } else {
@@ -38,7 +35,7 @@ if($_GET['u'] == 'd') {
   $us = 'username ASC';
   $u = 'd';
 }
-if($_GET['g'] == 'd') {
+if ($_GET['g'] == 'd') {
   $gs = 'realm DESC';
   $g = 'a';
 } else {
@@ -46,7 +43,7 @@ if($_GET['g'] == 'd') {
   $gs = 'realm ASC';
   $g = 'd';
 }
-if($_GET['f'] == 'd' || $_GET['l'] == 'd') {
+if ($_GET['f'] == 'd' || $_GET['l'] == 'd') {
   $ls = 'lname DESC';
   $l = 'a';
   $fs = 'fname DESC';
@@ -59,13 +56,13 @@ if($_GET['f'] == 'd' || $_GET['l'] == 'd') {
   $fs = 'fname ASC';
   $f = 'd';
 }
-if($_GET['s'] == 'g') {
+if ($_GET['s'] == 'g') {
   $sql .= "$gs, $us";
   $u = "&s=u&g=" . $_GET['g'] ."&u=". $_GET['u'];
   $g = "&s=g&g=$g&u=". $_GET['u'];
   $f = "&s=f";
   $l = "&s=l";
-} elseif($_GET['s'] == 'f' || $_GET['s'] == 'l') {
+} elseif ($_GET['s'] == 'f' || $_GET['s'] == 'l') {
   $sql .= "$fs, $ls";
   $f = "&s=f&f=$f";
   $l = "&s=l&l=$l";
@@ -85,40 +82,34 @@ $result = execute_sql($sql);
 
 <h2>Managing Respondents</h2>
 
-<br>
-
 <p><Click on a username to edit, or click on add new user below.</p>
 
 <p>
-  <a class="btn btn-warning" href="<?php echo($base .htmlentities("?where=admrespondent")); ?>"><i class="pe-user pe-fw"></i> Add a new respodent</a>&nbsp;
-  <a class="btn btn-warning" href="<?php echo($base .htmlentities("?where=upload&account_type=respondents")); ?>"><i class="pe-upload pe-fw"></i> Bulk upload respondents</a>
+  <a class="btn btn-warning" href="<?php echo(ME.htmlentities("?where=admrespondent")); ?>"><i class="pe-user pe-fw"></i> Add a new respodent</a>&nbsp;
+  <a class="btn btn-warning" href="<?php echo(ME.htmlentities("?where=upload&account_type=respondents")); ?>" disabled><i class="pe-upload pe-fw"></i> Bulk upload respondents</a>
 </p>
 
 <br>
 
 <table class="table table-hover">
   <tr class="active">
-    <th><a href="<?php echo(htmlentities($base . $u)); ?>">Username</a></th>
-    <th><a href="<?php echo(htmlentities($base . $f)); ?>">First Name</a></th>
-    <th><a href="<?php echo(htmlentities($base . $l)); ?>">Last Name</a></th>
-    <th><a href="<?php echo(htmlentities($base . $g)); ?>">Group</a></th>
+    <th><a href="<?php echo(htmlentities(ME.$u)); ?>">Username</a></th>
+    <th><a href="<?php echo(htmlentities(ME.$f)); ?>">First Name</a></th>
+    <th><a href="<?php echo(htmlentities(ME.$l)); ?>">Last Name</a></th>
+    <th><a href="<?php echo(htmlentities(ME.$g)); ?>">Group</a></th>
     <th>&nbsp;</th>
   </tr>
 <?php
-  while(list($u, $fname, $lname, $r, $d, $e) = fetch_row($result)) {
-        $result->MoveNext();
-    if($d == 'N')
-      $d = '&nbsp;';
-    else
-      $d = '('. _('disabled') .')';
-
+  while (list($u, $fname, $lname, $r, $d, $e) = fetch_row($result)) {
+    $result->MoveNext();
+    if ($d == 'N') { $d = '&nbsp;'; }
+    else { $d = '('. 'disabled' .')'; }
     if (empty($fname)) $fname = '&nbsp;';
     if (empty($lname)) $lname = '&nbsp;';
-
 ?>
   <tr>
     <td>
-      <a href="<?php echo($base .htmlentities("?where=admrespondent&u=$u&r=$r")); ?>"><?php echo($u); ?></a>
+      <a href="<?php echo(ME.htmlentities("?where=admrespondent&u=$u&r=$r")); ?>"><?php echo($u); ?></a>
     </td>
     <td><?php echo($fname); ?></td>
     <td><?php echo($lname); ?></td>

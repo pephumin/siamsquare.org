@@ -1,22 +1,15 @@
 <?php
 
-/* The Cross Tabulation feature has been kept separate from the rest intentionally.
-It provides an easier means of disabling it by commenting out the require line in results.inc
-and the function call (cross_tabulation()) plus it avoids cluttering survey_results...
-*/
-
-/* {{{ proto void cross_tabulation (integer sid, integer qidc, integer qidr, integer qid, array cids)
-Builds HTML to allow for cross tabulation reporting. */
 function cross_tabulation($sid, $qidc, $qidr, $qid, $cids) {
   // some error handling
   if (empty($qid) && empty($cids)){
     if (!empty($qidc) && !empty($qidr)) {
-      if ($qidc == $qidr){ $errmsg = mkerror(_('Error cross-tabulating.').' '. _('Please ensure that your column and row selections are not of the same question.')); }
+      if ($qidc == $qidr){ $errmsg = mkerror('Error cross-tabulating.'.' '. 'Please ensure that your column and row selections are not of the same question.'); }
       else { process($sid,$qidc,$qidr); }
     }
-    else if (!empty($qidc) || !empty($qidr)) { $errmsg = mkerror(_('Error cross-tabulating.').' '. _('Please ensure you make both a column and row selection.')); }
+    else if (!empty($qidc) || !empty($qidr)) { $errmsg = mkerror('Error cross-tabulating.'.' '. 'Please ensure you make both a column and row selection.'); }
   }
-  else { $errmsg = mkerror(_('Error cross-tabulating.'). ' '. _('You are attempting to cross analyze and tabulate at the same time. This is not possible!')); }
+  else { $errmsg = mkerror('Error cross-tabulating.'. ' '. 'You are attempting to cross analyze and tabulate at the same time. This is not possible!'); }
 
   if (!empty($errmsg)){ echo($errmsg); }
 }
@@ -41,7 +34,7 @@ function process($sid, $qidc, $qidr){
   array_push($qids, $qidr);
 
   foreach ($qids as $qid){
-    $sql = "SELECT content FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id=${sid} AND id = ${qid}";
+    $sql = "SELECT content FROM ".X_QUESTION." WHERE survey_id=${sid} AND id = ${qid}";
     $tid_result = execute_sql($sql);
     $result = fetch_row($tid_result);
     array_push($qn_content, $result[0]);
@@ -52,7 +45,7 @@ function process($sid, $qidc, $qidr){
 
   // let's determine each question's type.
   foreach ($qids as $qid) {
-    $sql = "SELECT type_id FROM ".$GLOBALS['ESPCONFIG']['question_table']." WHERE survey_id=${sid} AND id = ${qid}";
+    $sql = "SELECT type_id FROM ".X_QUESTION." WHERE survey_id=${sid} AND id = ${qid}";
     $tid_result = execute_sql($sql);
     $result = fetch_row($tid_result);
     array_push($tids, $result[0]);
@@ -60,8 +53,7 @@ function process($sid, $qidc, $qidr){
   db_close($tid_result);
   unset($sql);
   unset($result);
-  // Now that we know the question's type
-  // let's grab each question's choice content.
+  // Now that we know the question's type, let's grab each question's choice content.
   foreach ($tids as $tid) {
     if ($tid_count == 0 && $tid == 1) {
       foreach($tid_content as $content) {
@@ -71,7 +63,7 @@ function process($sid, $qidc, $qidr){
       }
     }
     else if ($tid_count == 0) {
-      $sql = "SELECT content FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=${qidc} ORDER BY id";
+      $sql = "SELECT content FROM ".X_QUESTION_CHOICE." WHERE question_id=${qidc} ORDER BY id";
       if ($result = execute_sql($sql)) {
         while (list($row) = fetch_row($result)) { $result->MoveNext(); array_push($qidc_content, $row); }
         db_close($result);
@@ -86,7 +78,7 @@ function process($sid, $qidc, $qidr){
       }
     }
     else {
-      $sql = "SELECT content FROM ".$GLOBALS['ESPCONFIG']['question_choice_table']." WHERE question_id=${qidr} ORDER BY id";
+      $sql = "SELECT content FROM ".X_QUESTION_CHOICE." WHERE question_id=${qidr} ORDER BY id";
       if ($result = execute_sql($sql)) {
         while (list($row) = fetch_row($result)) { $result->MoveNext(); array_push($qidr_content, $row); }
         db_close($result);
@@ -101,22 +93,22 @@ function process($sid, $qidc, $qidr){
   foreach ($qids as $qid) {
     switch ($tids[$tidcounter]) {
       case 1:
-        $from_table = $GLOBALS['ESPCONFIG']['response_bool_table'];
+        $from_table = X_RESPONSE_BOOL;
         $order = 'id';
-        $table = $GLOBALS['ESPCONFIG']['response_bool_table'];
+        $table = X_RESPONSE_BOOL;
         array_push($tbl, $table);
         break;
       case 4:
       case 6:
-        $from_table = $GLOBALS['ESPCONFIG']['question_choice_table'];
+        $from_table = X_QUESTION_CHOICE;
         $order = 'id';
-        $table = $GLOBALS['ESPCONFIG']['response_single_table'];
+        $table = X_RESPONSE_SINGLE;
         array_push($tbl, $table);
         break;
       case 5:
-        $from_table = $GLOBALS['ESPCONFIG']['question_choice_table'];
+        $from_table = X_QUESTION_CHOICE;
         $order = 'id';
-        $table = $GLOBALS['ESPCONFIG']['response_multiple_table'];
+        $table = X_RESPONSE_MULTIPLE;
         array_push($tbl, $table);
         break;
     }
@@ -221,8 +213,9 @@ function process($sid, $qidc, $qidr){
   echo ("</tr>\n");
 ?>
 </table>
-<p>&nbsp;</p>
-<a href="<?php echo($GLOBALS['ESPCONFIG']['ME']); ?>?where=results&sid=<?php echo($sid);?>&type=cross">Go back to Cross Analysis/Tabulation</a>
+<p>
+<a class="btn btn-warning" href="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>?where=results&amp;sid=<?php echo($sid);?>&amp;type=cross">Back to Cross Analysis/Tabulation</a>
+</p>
 
 <?php
 }

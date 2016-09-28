@@ -1,58 +1,33 @@
 <?php
 
 /* SuperUser or Designers with "Administer Group Members(pgroup)" permissions only*/
-if(($_SESSION['acl']['superuser'] != 'Y' &&
-    (count($_SESSION['acl']['pgroup']) == 0 &&
-    count($_SESSION['acl']['puser']) == 0)) &&
-    !auth_no_access(_('to access this form'))) {
-    return;
-}
+if(($_SESSION['acl']['superuser'] != 'Y' && (count($_SESSION['acl']['pgroup']) == 0 && count($_SESSION['acl']['puser']) == 0)) && !auth_no_access(_('to access this form'))) { return; }
 
-if(isset($_GET['account_type'])) {
-        $account_type = htmlspecialchars($_GET['account_type']);
-}
-else {
-    $account_type = "respondents";
-}
+if(isset($_GET['account_type'])) { $account_type = htmlspecialchars($_GET['account_type']); }
+else { $account_type = "respondents"; }
 $errstr = '';
 
 // End the included form so we can do a multipart/form-data form
-?>
-</div>
-</form>
-<?php
 
 if(isset($_POST['submit'])) {
   unset($_POST['submit']);
-  if(isset($_POST['account_type'])) {
-    $account_type = htmlspecialchars($_POST['account_type']);
-    }
-  else {
-    $account_type = "respondents";
-    }
+  if(isset($_POST['account_type'])) { $account_type = htmlspecialchars($_POST['account_type']); }
+  else { $account_type = "respondents"; }
 
     $upload_type = $_POST['upload_type'];
-    if (isset($_FILES['upload_file']['tmp_name'])) {
-        $upload_file = $_FILES['upload_file']['tmp_name'];
-    }
-    else {
-        $upload_file = "";
-    }
+    if (isset($_FILES['upload_file']['tmp_name'])) { $upload_file = $_FILES['upload_file']['tmp_name']; }
+    else { $upload_file = ""; }
+
   $group_acl  = array();
 
   if($_SESSION['acl']['superuser'] == 'Y') {
-    $sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['realm_table'];
+    $sql = "SELECT name FROM ".X_REALM;
     $result = execute_sql($sql);
-    while (list($row) = fetch_row($result)) {
-            $result->MoveNext();
-      array_push($group_acl, $row);
-    }
+    while (list($row) = fetch_row($result)) { $result->MoveNext(); array_push($group_acl, $row); }
     db_close($result);
-  } elseif(count($_SESSION['acl']['pgroup']) > 0) {
-    $group_acl =& $_SESSION['acl']['pgroup'];
-  } else {
-        $group_acl =& $_SESSION['acl']['puser'];
   }
+  elseif(count($_SESSION['acl']['pgroup']) > 0) { $group_acl =& $_SESSION['acl']['pgroup']; }
+  else { $group_acl =& $_SESSION['acl']['puser']; }
 
   if(!empty($upload_type) && !empty($account_type) && is_uploaded_file($upload_file)) {
     $file = file($upload_file);
@@ -80,10 +55,8 @@ if(isset($_POST['submit'])) {
       /* Data rows*/
       next($exceptions);
       while (list(, $row) = each ($exceptions)) {
-        if ($bg == $ESPCONFIG['bgalt_color1'])
-                               $bg =& $ESPCONFIG['bgalt_color2'];
-                  else
-                           $bg =& $ESPCONFIG['bgalt_color1'];
+        if ($bg == $ESPCONFIG['bgalt_color1']) { $bg =& $ESPCONFIG['bgalt_color2']; }
+        else { $bg =& $ESPCONFIG['bgalt_color1']; }
         $exception_table .= "<tr valign=\"top\" bgcolor=\"$bg\">\n";
         foreach($row as $col) {
           $exception_table .= "<td>$col</td>\n";
@@ -92,40 +65,40 @@ if(isset($_POST['submit'])) {
       $exception_table .= "</tr>\n</table>";
     }
     else {
-      $errstr .= mkerror(_('An error occurred during upload.  Please check the format of your text file.'));
+      $errstr .= mkerror('An error occurred during upload. Please check the format of your text file.');
     }
   }
   else {
-      $errstr .= mkerror(_('An error occurred during upload.  Please complete all form fields.'));
+      $errstr .= mkerror('An error occurred during upload. Please complete all form fields.');
   }
 }
 ?>
 
 <h2>Upload Account Information</h2>
 
-<br>
-
 <p>All fields are required</p>
 
 <?php if(!empty($errstr)) echo("<p>$errstr</p>\n"); ?>
 
-<form enctype="multipart/form-data" method="post" action="<?php echo ($GLOBALS['ESPCONFIG']['ME']); ?>?where=upload">
+<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>?where=upload">
 
 <table class="table table-hover">
+
 <?php
-    echo("<tr>\n<td class=\"right\">"._('File Type')."</td>\n");
-    echo("<td class=\"left\">\n".mkselect('upload_type',array('tab' => _('Tab Delimited')))."</td>\n</tr>");
-    echo("<tr>\n<td class=\"right\">"._('File to upload')."</td>\n");
+    echo("<tr>\n<td class=\"right\">".'File Type'."</td>\n");
+    echo("<td class=\"left\">\n".mkselect('upload_type',array('tab' => 'Tab Delimited'))."</td>\n</tr>");
+    echo("<tr>\n<td class=\"right\">".'File to upload'."</td>\n");
     echo("<td class=\"left\">\n".mkfile('upload_file')."\n"."</td>\n</tr>");
 ?>
-<tr>
-<td>
-  <input type="hidden" name="where" value="upload" />
-  <input type="hidden" name="account_type" value="<?php echo($account_type); ?>" />
-  <input class="btn btn-default" type="button" name="submit" value="Upload" />
-</td>
-</tr>
 </table>
+
+<center>
+<input type="hidden" name="where" value="upload">
+<input type="hidden" name="account_type" value="<?php echo($account_type); ?>">
+<input class="btn btn-warning" type="button" name="submit" value="Upload">
+<input class="btn btn-default" type="button" name="reset" value="Cancel">
+</center>
+
 </form>
 
 <?php if(!empty($exception_table)) echo("<p>$exception_table</p>\n"); ?>

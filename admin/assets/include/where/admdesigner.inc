@@ -41,7 +41,7 @@ if(isset($_POST['delete'])) {
     in_array($r2, $_SESSION['acl']['pgroup']) ||
     //in_array(trim($r, "'"), $_SESSION['acl']['pgroup']) ||
     auth_no_access(_('to access this group'))) {
-    $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG']['designer_table']." WHERE username=$u AND realm=$r";
+    $sql = "DELETE FROM ".X_DESIGNER." WHERE username=$u AND realm=$r";
     if(!execute_sql($sql) || affected_rows() < 1) {
       /* unsucessfull -- abort */
       //$errstr .= mkerror(_('Cannot delete account.') .' ('. ErrorMsg() .')');
@@ -70,34 +70,17 @@ if(isset($_POST['submit'])) {
   $u_lname = _addslashes($_POST['lname']);
   $u_email = _addslashes($_POST['email']);
 
-  if (!empty($_POST['pdesign'])) { $u_pdesign = _addslashes($_POST['pdesign']); }
-  else { $u_pdesign = _addslashes("Y"); }
-
-  if (!empty($_POST['pstatus'])) { $u_pstatus = _addslashes($_POST['pstatus']); }
-  else { $u_pstatus = _addslashes("N"); }
-
-  if (!empty($_POST['pdata'])) { $u_pdata = _addslashes($_POST['pdata']); }
-  else { $u_pdata = _addslashes("N"); }
-
-  if (!empty($_POST['pall'])) { $u_pall = _addslashes($_POST['pall']); }
-  else { $u_pall = _addslashes("N"); }
-
-  if (!empty($_POST['pgroup'])) { $u_pgroup = _addslashes($_POST['pgroup']); }
-  else { $u_pgroup = _addslashes("N"); }
-
-  if (!empty($_POST['puser'])) { $u_puser = _addslashes($_POST['puser']); }
-  else { $u_puser = _addslashes("N"); }
-
-  if (!empty($_POST['disabled'])) { $u_disabled = _addslashes($_POST['disabled']); }
-  else { $u_disabled = _addslashes("N"); }
-
+  if (!empty($_POST['pdesign'])) { $u_pdesign = _addslashes($_POST['pdesign']); } else { $u_pdesign = _addslashes("Y"); }
+  if (!empty($_POST['pstatus'])) { $u_pstatus = _addslashes($_POST['pstatus']); } else { $u_pstatus = _addslashes("N"); }
+  if (!empty($_POST['pdata'])) { $u_pdata = _addslashes($_POST['pdata']); } else { $u_pdata = _addslashes("N"); }
+  if (!empty($_POST['pall'])) { $u_pall = _addslashes($_POST['pall']); } else { $u_pall = _addslashes("N"); }
+  if (!empty($_POST['pgroup'])) { $u_pgroup = _addslashes($_POST['pgroup']); } else { $u_pgroup = _addslashes("N"); }
+  if (!empty($_POST['puser'])) { $u_puser = _addslashes($_POST['puser']); } else { $u_puser = _addslashes("N"); }
+  if (!empty($_POST['disabled'])) { $u_disabled = _addslashes($_POST['disabled']); } else { $u_disabled = _addslashes("N"); }
   if(!empty($_POST['ex_year']) || !empty($_POST['ex_month']) || !empty($_POST['ex_day'])) {
-    if(empty($_POST['ex_day'])) { $u_ex_day = 1; }
-    else { $u_ex_day = intval($_POST['ex_day']); }
-    if(empty($_POST['ex_month'])) { $u_ex_month = 1; }
-    else { $u_ex_month = intval($_POST['ex_month']); }
-    if(empty($_POST['ex_year'])) { $now = getdate(time()); $u_ex_year = $now['year']; }
-    else { $u_ex_year = intval($_POST['ex_year']); if($u_ex_year < 2000) { $u_ex_year += 2000; } }
+    if(empty($_POST['ex_day'])) { $u_ex_day = 1; } else { $u_ex_day = intval($_POST['ex_day']); }
+    if(empty($_POST['ex_month'])) { $u_ex_month = 1; } else { $u_ex_month = intval($_POST['ex_month']); }
+    if(empty($_POST['ex_year'])) { $now = getdate(time()); $u_ex_year = $now['year']; } else { $u_ex_year = intval($_POST['ex_year']); if($u_ex_year < 2000) { $u_ex_year += 2000; } }
     $u_expiration = sprintf("%04d%02d%02d%06d", $u_ex_year,$u_ex_month,$u_ex_day,0);
   } else {
     $u_expiration = "00000000000000";
@@ -107,15 +90,14 @@ if(isset($_POST['submit'])) {
   }
 
   /* check acl */
-  if ($_SESSION['acl']['superuser'] == 'Y' || in_array($r2, $_SESSION['acl']['pgroup']) || auth_no_access(_('to access this group'))) {
-    #$sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['designer_table']." WHERE username=".db_qstr($u)." AND realm=".db_qstr($r);
-    $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['designer_table']." WHERE username=$u";
+  if ($_SESSION['acl']['superuser'] == 'Y' || in_array($r2, $_SESSION['acl']['pgroup']) || auth_no_access('to access this group')) {
+    $sql = "SELECT * FROM ".X_DESIGNER." WHERE username = $u";
     $result = execute_sql($sql);
     if(!$result || record_count($result) < 1) {
       if(empty($u) || empty($r) || empty($u_password)) {
         $errstr .= 'Username, Password, and Group are required.';
       } else {
-        $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['designer_table']." (username,realm,password,changed) VALUES ($u,$r, ".db_crypt($u_password).", ".sys_time_stamp().")";
+        $sql = "INSERT INTO ".X_DESIGNER." (username, realm, password, added, changed) VALUES ($u,$r, ".db_crypt($u_password).", ".sys_time_stamp().", ".sys_time_stamp().")";
         if (!execute_sql($sql)) { $u = ''; $r = ''; $errstr .= 'Error adding account.' .' ('. ErrorMsg() .')'; }
         else { $success .= 'New account has been added successfully.'; }
       }
@@ -124,7 +106,7 @@ if(isset($_POST['submit'])) {
 
     if (!empty($u) && !empty($r)) {
       if (!empty($u_password)) { $u_password = "password=".db_crypt($u_password).","; }
-      $sql = "UPDATE ".$GLOBALS['ESPCONFIG']['designer_table']." SET $u_password realm=$r, fname=$u_fname, lname=$u_lname, email=$u_email, pdesign=$u_pdesign, pstatus=$u_pstatus, pdata=$u_pdata, pall=$u_pall, pgroup=$u_pgroup, puser=$u_puser, disabled=$u_disabled, changed=".sys_time_stamp().", expiration=$u_expiration WHERE username=$u";
+      $sql = "UPDATE ".X_DESIGNER." SET $u_password realm = $r, fname = $u_fname, lname = $u_lname, email = $u_email, pdesign = $u_pdesign, pstatus = $u_pstatus, pdata = $u_pdata, pall = $u_pall, pgroup = $u_pgroup, puser = $u_puser, disabled = $u_disabled, changed = ".sys_time_stamp().", expiration = $u_expiration WHERE username = $u";
       if (!execute_sql($sql)) { $errstr .= 'Cannot change account data.' .' ('. ErrorMsg() .')'; }
       else { $success .= 'Account has been updated successfully.'; }
     }
@@ -152,7 +134,7 @@ if(isset($_POST['submit'])) {
 }
 
 if(!empty($u) && !empty($r)) {
-  $sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['designer_table']." WHERE username=$u AND realm=$r";
+  $sql = "SELECT * FROM ".X_DESIGNER." WHERE username=$u AND realm=$r";
   $result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
   if($arr = fetch_row($result)) {
     $u = $arr['username'];
@@ -178,7 +160,7 @@ if(!empty($u) && !empty($r)) {
 <?php if(!empty($errstr)) echo(mkerror($errstr)); ?>
 
 <form class="form-horizontal" method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
-  
+
   <div class="form-group">
     <label class="col-sm-3 control-label">Username <span class="label label-danger">required</span></label>
     <div class="col-sm-9">

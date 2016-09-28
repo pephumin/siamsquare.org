@@ -8,28 +8,19 @@
 * - Support automatic, periodic refresh via javascript
 */
 
-// get the survey data (name, status, etc)
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espsurvey.inc';
 survey_get_for_current_user($surveys);
 
 $doReset = (isset($_REQUEST['doReset']) && isset($_REQUEST['reset']) && 0 < count($_REQUEST['reset']) ? true : false);
 
 if ($doReset) {
-  // require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espsurveystat.inc';
   foreach ($_REQUEST['reset'] as $sid) {
     if (array_key_exists($sid, $surveys)) { survey_stat_reset($sid); }
     else { $GLOBALS['errmsg'] = mkerror("Request to reset survey that is outside allowed access"); }
   }
 }
 
-// $home = "http://www.siamsquare.org";
-// $page = $home."/public/survey.php?name=";
-
-// get the statistics
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espsurveystat.inc';
 $stats = stat_fetch_with_summary();
 
-// show them
 echo "<h2>View survey statistics</h2>\n";
 echo "<p>Various access statistics for your active and done surveys.</p>\n";
 echo "<br>\n";
@@ -53,7 +44,7 @@ if (0 < count($stats)) {
     $mtitle = $surveys[$sid]['title'];
     $mpage = MYSURVEY."?name=".$mname;
     echo "  <tr>\n";
-    if (empty($sid)) { echo "    <td>Stats in total</td>\n"; }
+    if (empty($sid)) { echo "    <td><strong>TOTAL</strong></td>\n"; }
     else { echo "    <td><a href=\"$mpage\">$mtitle</a></td>\n"; }
     //echo "    <td>".(empty($sid) ? 'Statistics Total' : $surveys[$sid]['name'])."</td>\n";
     echo "    <td class=\"text-center\">".$stat['loginfail']."</td>\n";

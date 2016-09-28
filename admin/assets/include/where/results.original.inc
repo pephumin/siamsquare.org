@@ -9,7 +9,7 @@
     // <jflemer@alum.rpi.edu>
 
     $bg = '';
-    require ($ESPCONFIG['include_path']."where/crosstab.inc");
+    require DOCROOT.'/admin/assets/include/where/crosstab.inc';
     // see if a survey has been selected
     $sid = '';
     if (!empty($_POST['sid']))
@@ -73,7 +73,7 @@
         if (!empty($_GET['cids']))
            $cids = _addslashes($_GET['cids']);
         if (!empty($_POST['cids']))
-            $cids = $_POST['cids'];     
+            $cids = $_POST['cids'];
         if (!empty($_POST['qid']))
            $qid = intval($_POST['qid']);
         if (!empty($_POST['qidc']))
@@ -172,7 +172,7 @@
     </tr>
     <?php
         $count = 0;
-        while(list($sid,$name,$title,$owner,$realm) = fetch_row($result)) { 
+        while(list($sid,$name,$title,$owner,$realm) = fetch_row($result)) {
             $result->MoveNext();
             //let's see how many respondents we have for each survey.
             //angek: let's not include incomplete surveys in the count.
@@ -201,7 +201,7 @@
             }
         ?>
         <td>
-        <?php 
+        <?php
             if (empty($_GET['type'])) {
             ?>
         <select name="rid<?php echo $count; ?>" onchange="javascript:this.form.rid.value=this.form.rid<?php echo $count; ?>.options[this.form.rid<?php echo $count; ?>.selectedIndex].value; this.form.sid.value=<?php echo $sid; ?>; this.form.submit(); return false;">
@@ -215,7 +215,7 @@
                 <?php
                 }
             ?>
-            </select> 
+            </select>
             <?php
             }
         ?>
@@ -223,7 +223,7 @@
         <td>
         <?php
             if (!empty($_GET['type'])){
-            ?>  
+            ?>
         <a href="<?php echo("". $GLOBALS['ESPCONFIG']['ME'] .htmlentities("?where=results&sid=${sid}&type=cross")); ?>">
             <?php   }
                 else {
