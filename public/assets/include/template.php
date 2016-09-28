@@ -1,7 +1,14 @@
 <?php
 
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
+require_once DOCROOT.'/admin/assets/include/db.inc';
+
 function logo() {
-  echo "<span class=\"logo3\">siamsq</span> &#9634;";
+  echo file_get_contents(DOCROOT.'/public/assets/img/ssq.svg');
+}
+
+function ssqlogo() {
+  echo "<span class=\"ssqlogo1\">Siam</span><span class=\"ssqlogo2\">Square</span>";
 }
 
 function peblogo() {
@@ -9,15 +16,14 @@ function peblogo() {
 }
 
 function pageHeader($title) {
-  //$home = "http://www.siamsquare.org/";
-  //$public = "http://www.siamsquare.org/public/";
-    $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>" . $_SESSION['espuser'] . "</kbd>";
-    if (is_session_authenticated()) { $signed = "Logged in as $show"; } else { $signed = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised member only"; }
-  header("Content-language: en");
+  $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>" . $_SESSION['espuser'] . "</kbd>";
+  if (is_session_authenticated()) { $signed = "Logged in as $show"; } else { $signed = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised members only"; }
   header("Content-type: text/html; charset=utf-8");
+  if ($lang == "th") { $aa = "<html lang=\"th\">\n"; header("Content-language: th"); }
+  else { $aa = "<html lang=\"en\">\n";  header("Content-language: en"); }
 ?>
 <!doctype html>
-<html lang="en">
+<?php echo $aa; ?>
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -58,17 +64,13 @@ function pageHeader($title) {
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-1">
       <div class="container">
-        <i class="pe-language pe-fw"></i> &middot;
-        <a class="newlang" title="Switch to English language">English</a> &middot;
-        <a class="newlang" title="เปลี่ยนเป็นภาษาไทย">ไทย</a>
+        <?php echo $signed; ?>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-2">
       <div class="container">
-        <h1><a href="<?php echo MYPUBLIC; ?>" title="PE BINARY CO., LTD."><?php logo(); ?></a> <span class="sub-brand">Respondent</span></h1>
-        <p class="description">A market research company specialised in mobile survey</p>
-        <h2 class="white">&#9836; &#9819; &#9962; &#9969; &#9748; &#10000; &#10175; &#9820; &#9822; &#9731; &#9973; &#8485; &#8488; &#8523; &#8492; &#9961;</h2>
-        <p class="thai-name"><i>บริษัท พีอี ไบนารี่ จำกัด</i></p>
+        <h1><a href="<?php echo MYPUBLIC; ?>" title="SiamSquare Survey Engine by PE BINARY CO., LTD."><?php logo(); ?></a></h1>
+        <p class="description">เพราะทุกความคิดเห็นของคุณ คือสิ่งที่เราให้ความสำคัญเป็นที่สุด</p>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-3">
@@ -81,34 +83,37 @@ function pageHeader($title) {
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a href="<?php echo MYPUBLIC; ?>" class="navbar-brand" title="PE BINARY CO., LTD."><?php echo $signed; ?></a>
+            <a href="<?php echo MYPUBLIC; ?>" class="navbar-brand" title="PE BINARY CO., LTD."><i class="pe-home pe-fw"></i> หน้าแรก</a>
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
 <?php if (is_session_authenticated()) { ?>
               <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-user pe-fw"></i> My profile <span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button" title="ข้อมูลส่วนตัว"><i class="pe-user pe-fw"></i> ข้อมูลส่วนตัว <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li class="dropdown-header">Manage your profile</li>
-                  <li><a href="<?php echo MYPUBLIC; ?>?doChangeProfile=1" title="Change your info"><i class="pe-cog pe-fw"></i> Change your info</a></li>
-                  <li><a href="<?php echo MYPUBLIC; ?>?doChangePassword=1" title="Change your password"><i class="pe-key pe-fw"></i> Change your password</a></li>
+                  <li class="dropdown-header">เปลี่ยนแปลงข้อมูลส่วนตัว</li>
+                  <li><a href="<?php echo MYPUBLIC; ?>?doChangeProfile=1" title="แก้ไขเปลี่ยนแปลงข้อมูลเกี่ยวกับตัวคุณ"><i class="pe-cog pe-fw"></i> แก้ไขข้อมูลของคุณ</a></li>
+                  <li><a href="<?php echo MYPUBLIC; ?>?doChangePassword=1" title="แก้ไขเปลี่ยนแปลงรหัสลับ"><i class="pe-key pe-fw"></i> เปลี่ยนรหัสลับ</a></li>
                 </ul>
               <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-commenting pe-fw"></i> My participation <span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-commenting pe-fw"></i> งานวิจัย <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li class="dropdown-header">Participation</li>
-                  <li><a href="" title="Current surveys"><i class="pe-wpforms pe-fw"></i> Current surveys</a></li>
-                  <li><a href="" title="History"><i class="pe-history pe-fw"></i> History</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li class="dropdown-header">Points &amp; rewards</li>
-                  <li><a href="" title="Current points"><i class="pe-trophy pe-fw"></i> Current points</a></li>
-                  <li><a href="" title="Rewards"><i class="pe-diamond pe-fw"></i> Rewards</a></li>
+                  <li class="dropdown-header">การเข้าร่วมของคุณ</li>
+                  <li><a href="" title="Current surveys"><i class="pe-wpforms pe-fw"></i> งานวิจัยในปัจจุบัน</a></li>
+                  <li><a href="" title="History"><i class="pe-history pe-fw"></i> งานวิจัยในอดีต</a></li>
                 </ul>
-              <li><a href="<?php echo MYPUBLIC; ?>?doLogout=1"><i class="pe-sign-out pe-fw"></i> Log out</a></li>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-flag pe-fw"></i> คะแนน <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li class="dropdown-header">คะแนนสะสมและของรางวัล</li>
+                  <li><a href="" title="Current points"><i class="pe-trophy pe-fw"></i> ยอดคะแนนสะสม</a></li>
+                  <li><a href="" title="Rewards"><i class="pe-diamond pe-fw"></i> ของรางวัล</a></li>
+                </ul>
+              <li><a href="<?php echo MYPUBLIC; ?>?doLogout=1"><i class="pe-sign-out pe-fw"></i> ออกจากระบบ</a></li>
 <?php } else { ?>
-              <li><a href="<?php echo MYPUBLIC; ?>" title="Log in"><i class="pe-power-off pe-fw"></i> Log in</a></li>
-              <li><a href="<?php echo MYPUBLIC; ?>signup.php" title="Become a member"><i class="pe-bullhorn pe-fw"></i> Become a member</a></li>
-              <li><a href="<?php echo MYHOME; ?>" title="Back to the main page"><i class="pe-undo pe-fw"></i> Back</a></li>
+              <li><a href="<?php echo MYPUBLIC; ?>" title="Log in"><i class="pe-power-off pe-fw"></i> เข้าสู่ระบบ</a></li>
+              <li><a href="<?php echo MYPUBLIC; ?>signup.php" title="Become a member"><i class="pe-bullhorn pe-fw"></i> สมัครสมาชิก</a></li>
+              <!-- <li><a href="<?php echo MYHOME; ?>" title="Back to the main page"><i class="pe-undo pe-fw"></i> กลับไปหน้าแรก</a></li> -->
 <?php } ?>
             </ul>
           </div>
@@ -122,10 +127,8 @@ function pageHeader($title) {
 }
 
 function topNav_full() {
-  //$home = "http://www.siamsquare.org/";
-  //$public = "http://www.siamsquare.org/public/";
-    $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>" . $_SESSION['espuser'] . "</kbd>";
-    if (is_session_authenticated()) { $signed = "Logged in as $show"; } else { $signed = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised member only"; }
+  $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>" . $_SESSION['espuser'] . "</kbd>";
+  if (is_session_authenticated()) { $signed = "Logged in as $show"; } else { $signed = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised member only"; }
   header("Content-language: en");
   header("Content-type: text/html; charset=utf-8");
 ?>
@@ -233,19 +236,19 @@ function pageFooter($notes = null) {
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-1">
       <div class="container">
-        <p class="text-muted"></p>
+        <h4>&#9836; &#9819; &#9962; &#9969; &#9748; &#10000; &#10175; &#9820; &#9822; &#9731; &#9973; &#8485; &#8488; &#8523; &#8492; &#9961;</h4>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-2">
       <div class="container">
-        <i class="pe-copyright"></i> Copyright 2016&nbsp;
-        <a href="http://www.pebinary.com" class="footerlogo" title="PE BINARY CO., LTD."><?php logo(); ?></a>All rights reserved.<br>
+        <a href="http://www.siamsquare.org" class="footerlogo-ssq" title=title="SiamSquare Survey Engine"><?php ssqlogo(); ?></a> ดำเนินการโดย
+        <a href="http://www.pebinary.com" class="footerlogo" title="PE BINARY CO., LTD."><?php peblogo(); ?></a><br>
+        <i class="pe-copyright"></i> ลิขสิทธิ์ 2016 สงวนลิขสิทธิ์<br>
         <nav class="footer">
           <ul class="list-inline" itemscope itemtype="http://schema.org/SiteNavigationElement">
-            <li><a href="http://www.pebinary.com/about/privacy.html" title="Privacy policy" itemprop="url"><i class="pe-lock"></i> <span class="hidden-md hidden-lg" itemprop="name">Privacy</span><span class="hidden-xs hidden-sm" itemprop="name">Privacy policy</span></a>&nbsp;</li>
-            <li><a href="http://www.pebinary.com/about/tos.html" title="Terms of services" itemprop="url"><i class="pe-gavel"></i> <span class="hidden-md hidden-lg" itemprop="name">TOS</span><span class="hidden-xs hidden-sm" itemprop="name">Terms of services</span></a>&nbsp;</li>
-            <li><a href="http://www.pebinary.com/about/terms.html" title="Terms &amp; conditions" itemprop="url"><i class="pe-balance-scale"></i> <span class="hidden-md hidden-lg" itemprop="name">Terms</span><span class="hidden-xs hidden-sm" itemprop="name">Terms &amp; conditions</span></a>&nbsp;</li>
-            <li><a href="http://www.pebinary.com/" title="Visit our company website" itemprop="url"><i class="pe-arrow-circle-left"></i> <span class="hidden-md hidden-lg" itemprop="name">Our company</span><span class="hidden-xs hidden-sm" itemprop="name">Visit our company website</span></a>&nbsp;</li>
+            <li><a href="http://www.pebinary.com/about/privacy.html" title="นโยบายส่วนบุคคล" itemprop="url"><i class="pe-lock"></i> <span itemprop="name">นโยบายส่วนบุคคล</span></a></li>
+            <li><a href="http://www.pebinary.com/about/tos.html" title="ข้อกำหนดในการให้บริการ" itemprop="url"><i class="pe-gavel"></i> <span itemprop="name">ข้อกำหนดในการให้บริการ</span></a></li>
+            <li><a href="http://www.pebinary.com/about/terms.html" title="ข้อกำหนดและเงื่อนไขต่างๆ" itemprop="url"><i class="pe-balance-scale"></i> <span itemprop="name">ข้อกำหนดและเงื่อนไขต่างๆ</span></a></li>
           </ul>
         </nav>
       </div>
@@ -253,7 +256,7 @@ function pageFooter($notes = null) {
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3">
       <div class="container">
         <a class="btn btn-info btn-xs" href="http://www.bootlint.com/?url=http://www.siamsquare.org<?php echo $_SERVER['PHP_SELF']; ?>" target="_blank" role="button">bootlint</a>
-<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/debug.inc'; ?>
+<?php include_once DOCROOT.'/admin/assets/include/debug.inc'; ?>
       </div>
     </div>
   </div>
@@ -454,13 +457,8 @@ function paint_authenticated() {
 
 function paint_respondent_tools() {
   global $respondent;
-  // $home = "http://www.siamsquare.org/";
-  // $public = "http://www.siamsquare.org/public/";
   $p = MYPUBLIC;
-  $cfg =& $GLOBALS['ESPCONFIG'];
-  // $email = $GLOBALS['ESPCONFIG']['email_from_address'];
-  //$tools  = array ("$public?doChangeProfile=1" => "Edit my profile", "$public?doChangePassword=1" => "Change my password", "$public?doLogout=1" => "Logout", "$public/help.php" => "Help", "$public/contact.php" => "Contact support",);
-  //$time = printf(_('Right now, my watch shows %s.'), strftime(FORMAT_OUTPUT_DATE));
+  // $cfg =& $GLOBALS['ESPCONFIG'];
   echo "<h2>Dashboard <small>(User management interface)</small></h2>\n";
   echo "<h4>Account management</h4>\n";
   echo "<div class=\"row\">\n";
@@ -534,8 +532,7 @@ function get_survey_info(&$surveys, &$responses, &$accessibility) {
   $responses     = array ();
   $accessibility = array ();
 
-  //require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib/espsurvey.inc';
-  require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib.inc';
+  // require_once DOCROOT.'/admin/assets/include/lib.inc';
   survey_get_public($surveys);
   $sids = array_keys($surveys);
 
@@ -624,28 +621,27 @@ function fetch_latest_submission_date($sid, $responses) {
 function fetch_availability($survey, &$rc) {
   $rc = survey_open($survey['open_date'], $survey['close_date']);
   switch ($rc) {
-    case STATUS_OPEN: return "Now taking submissions"; break;
-    case STATUS_CLOSED_TOO_EARLY: return "Not yet taking submissions"; break;
-    case STATUS_CLOSED_TOO_LATE: return "No longer taking submissions"; break;
+    case STATUS_OPEN: return "Survey period is now on"; break;
+    case STATUS_CLOSED_TOO_EARLY: return "Survey is not yet starting"; break;
+    case STATUS_CLOSED_TOO_LATE: return "Survey period has been closed"; break;
     default: assert('false; // unexpected case reached; code bug'); return '';
   }
 }
 
 function render_login_form($action = null, $usernameVar = 'username', $passwordVar = 'password', $loginButtonVar = 'doLogin', $_message = null) {
-  // $home = "http://www.siamsquare.org/";
-  // $public = "http://www.siamsquare.org/public/";
   $cfg =& $GLOBALS['ESPCONFIG'];
   $username = (isset($_REQUEST['username']) ? $_REQUEST['username'] : '');
   $str = "";
   if ($_message) { echo mkerror($_message); }
 ?>
 <form method="post" class="form-horizontal" action="<?php echo htmlspecialchars(MYPUBLIC); ?>">
-  <h2>Respondent login</h2>
-  <p>This section is reserved only for our registered members who are willing to spend some of their spare time with our surveys. Within this section respondents will find some interesting surveys where they can share their opinions by completing them. We value your opinions therefore incentives are provided to those who participate with our surveys.</p>
-  <p>Should you need any support for accessing this section, please do not hesitate to contact our staff right away.</p>
+  <h2>สมาชิกล็อคอินเข้าสู่ระบบ</h2>
+  <p>ระบบของเราถูกสร้างขึ้นมาสำหรับสมาชิกโดยเฉพาะ นั่นหมายถึงว่าผู้ที่ไม่ได้เป็นสมาชิกจะไม่สามารถใช้ระบบของเราได้นั่นเอง ดังนั้นหากคุณมีความประสงค์จะเข้าร่วมกับเรา คุณจะต้องเป็นสมาชิกก่อนเท่านั้น ซึ่งอาจจะทำได้โดยการสมัครด้วยตัวเองหรือต้องได้รับการเชิญจากสมาชิกท่านอื่นเท่านั้น (ขึ้นอยู่กับการจัดการสมาชิกของเราในขณะนั้นๆ)</p>
+  <p>สำหรับผู้ที่เป็นสมาชิกอยู่แล้ว คุณจะต้องทำการล็อคอินเข้าสู่ระบบก่อน และหลังจากล็อคอินเรียบร้อยแล้วคุณจะสามารถทำรายการอื่นๆ โดยเฉพาะการเข้าร่วมงานวิจัยตลาดที่มองหากลุ่มเป้าหมายเป็นคนอย่างคุณ</p>
+  <!-- <p>และเพื่อเป็นการตอบแทนสำหรับความคิดเห็นของคุณ เรามีของรางวัลหลายรายการที่จัดเตรียมไว้ให้คุณ​ โดยของรางวัลจะต่างกันออกไปสำหรับงานวิจัยแต่ละชิ้น ขึ้นอยู่กับปัจจัยหลายประการเช่น ความยาวของชุดคำถาม ความยากง่ายในการตอบ หรือจำนวนของกลุ่มเป้าหมายในตลาด</p> -->
   <section id="signinform">
     <div class="form-group">
-      <label for="<?php echo $usernameVar; ?>" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Email:</label>
+      <label for="<?php echo $usernameVar; ?>" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">อีเมล์</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
           <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
@@ -654,7 +650,7 @@ function render_login_form($action = null, $usernameVar = 'username', $passwordV
       </div>
     </div>
     <div class="form-group">
-      <label for="<?php echo $passwordVar; ?>" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Password:</label>
+      <label for="<?php echo $passwordVar; ?>" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">รหัสลับ</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
           <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
@@ -665,13 +661,13 @@ function render_login_form($action = null, $usernameVar = 'username', $passwordV
     <div class="form-group">
       <div class="col-xs-offset-0 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="checkbox checkbox-primary">
-          <input id="rememberme" type="checkbox" checked> <label for="rememberme">Remember me</label>
+          <input id="rememberme" type="checkbox" checked> <label for="rememberme">ให้ฉันอยู่ในระบบนานขึ้น</label>
         </div>
       </div>
     </div>
     <div class="form-group">
       <div class="col-xs-offset-0 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-xs-12 col-sm-7 col-md-7 col-lg-7">
-        <button class="btn btn-info" name="<?php echo $loginButtonVar; ?>" type="submit">Log in <i class="pe-check-circle-o"></i></button>
+        <button class="btn btn-info" name="<?php echo $loginButtonVar; ?>" type="submit">ล็อคอิน <i class="pe-check-circle-o"></i></button>
       </div>
     </div>
   </section>
@@ -707,8 +703,6 @@ function render_login_form($action = null, $usernameVar = 'username', $passwordV
 
 function render_profile_change_form ($action = null, $firstNameVar = 'firstName', $lastNameVar = 'lastName', $emailVar = 'emailAddress', $changeButtonVar = 'doChangeProfile', $cancelButtonVar = 'doChangeProfileCancel' ) {
   global $respondent;
-  // $home = "http://www.siamsquare.org/";
-  // $public = "http://www.siamsquare.org/public/";
   $cfg =& $GLOBALS['ESPCONFIG'];
   $firstName = (isset($_REQUEST[$firstNameVar]) ? htmlentities($_REQUEST[$firstNameVar]) : '');
   $lastName = (isset($_REQUEST[$lastNameVar]) ? htmlentities($_REQUEST[$lastNameVar]) : '');
@@ -744,8 +738,6 @@ function render_profile_change_form ($action = null, $firstNameVar = 'firstName'
 
 function render_passwd_change_form ($action = null, $oldPasswordVar = 'oldPassword', $newPasswordVar = 'newPassword', $newPasswordConfirmVar = 'newPasswordConfirm', $changeButtonVar = 'doChangePassword', $cancelButtonVar = 'doChangePasswordCancel') {
   global $respondent;
-  // $home = "http://www.siamsquare.org/";
-  // $public = "http://www.siamsquare.org/public/";
   $cfg =& $GLOBALS['ESPCONFIG'];
 ?>
 <form class="form-horizontal" method="post" id="passwd_change" action="<?php echo htmlspecialchars(MYPUBLIC); ?>">
@@ -842,13 +834,8 @@ function render_passwd_change_form ($action = null, $oldPasswordVar = 'oldPasswo
 }
 
 function respondent_signup() {
-  // $home = "http://www.siamsquare.org/";
-  // $public = "http://www.siamsquare.org/public/";
-  $self = $_SERVER['PHP_SELF'];
-  $page = $home.$self;
-  $str = "";
   if ($_message) { echo mkerror($_message); }
-  require_once $_SERVER['DOCUMENT_ROOT'] . '/public/assets/include/signup.inc';
+  require_once DOCROOT.'/public/assets/include/signup.inc';
 }
 
 ?>

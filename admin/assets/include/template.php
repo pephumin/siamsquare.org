@@ -1,10 +1,14 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/db.inc';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
+require_once DOCROOT.'/admin/assets/include/db.inc';
 
 function logo() {
-  echo "<span class=\"logo3\">ssq&#9744;</span>";
+  echo file_get_contents(DOCROOT.'/admin/assets/img/ssq.svg');
+}
+
+function ssqlogo() {
+  echo "<span class=\"ssqlogo1\">Siam</span><span class=\"ssqlogo2\">Square</span>";
 }
 
 function peblogo() {
@@ -63,14 +67,13 @@ function pageHeader($title) {
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-1">
       <div class="container">
-        <a href="https://www.pebinary.net" class="btn btn-info btn-xs"><i class="pe-book pe-fw"></i> NEED HELP?</a>
+        <?php echo $signed; ?>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-2">
       <div class="container">
-        <h1><a href="<?php echo MYADMIN; ?>" title="PE BINARY CO., LTD."><?php logo(); ?></a> <span class="sub-brand">Client</span></h1>
-        <p class="description">A market research company specialised in mobile survey</p>
-        <p class="thai-name"><i>บริษัท พีอี ไบนารี่ จำกัด</i></p>
+        <h1><a href="<?php echo MYADMIN; ?>" title="SiamSquare Survey Engine by PE BINARY CO., LTD."><?php logo(); ?></a></h1>
+        <p class="description">A survey society where your opinions are highly valued</p>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-3">
@@ -83,7 +86,7 @@ function pageHeader($title) {
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a href="<?php echo MYADMIN; ?>" class="navbar-brand" title="PE BINARY CO., LTD."><?php echo $signed; ?></a>
+            <a href="<?php echo MYADMIN; ?>" class="navbar-brand" title="PE BINARY CO., LTD."><i class="pe-home pe-fw"></i> Home</a>
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
@@ -133,7 +136,7 @@ function pageHeader($title) {
 <?php } else { ?>
               <li><a href="<?php echo MYADMIN; ?>"><i class="pe-power-off pe-fw"></i> Log in</a></li>
               <li><a href="<?php echo MYADMIN; ?>request.php"><i class="pe-bullhorn pe-fw"></i> Request for an access</a></li>
-              <li><a href="<?php echo MYHOME; ?>"><i class="pe-undo pe-fw"></i> Back</a></li>
+              <!-- <li><a href="<?php echo MYHOME; ?>"><i class="pe-undo pe-fw"></i> Back</a></li> -->
 <?php } ?>
             </ul>
           </div>
@@ -170,19 +173,19 @@ function pageFooter($notes = null) {
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-1">
       <div class="container">
-        <p class="text-muted"></p>
+        <h4>&#9836; &#9819; &#9962; &#9969; &#9748; &#10000; &#10175; &#9820; &#9822; &#9731; &#9973; &#8485; &#8488; &#8523; &#8492; &#9961;</h4>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-2">
       <div class="container">
-        <i class="pe-copyright"></i> Copyright 2016&nbsp;
-        <a href="http://www.pebinary.com" class="footerlogo" title="PE BINARY CO., LTD."><?php logo(); ?></a>All rights reserved.<br>
+        <a href="http://www.siamsquare.org" class="footerlogo-ssq" title=title="SiamSquare Survey Engine"><?php ssqlogo(); ?></a> by
+        <a href="http://www.pebinary.com" class="footerlogo" title="PE BINARY CO., LTD."><?php peblogo(); ?></a><br>
+        <i class="pe-copyright"></i> Copyright 2016, All rights reserved.<br>
         <nav class="footer">
           <ul class="list-inline" itemscope itemtype="http://schema.org/SiteNavigationElement">
-            <li><a href="http://www.pebinary.com/about/privacy.html" title="Privacy policy" itemprop="url"><i class="pe-lock"></i> <span class="hidden-md hidden-lg" itemprop="name">Privacy</span><span class="hidden-xs hidden-sm" itemprop="name">Privacy policy</span></a>&nbsp;</li>
-            <li><a href="http://www.pebinary.com/about/tos.html" title="Terms of services" itemprop="url"><i class="pe-gavel"></i> <span class="hidden-md hidden-lg" itemprop="name">TOS</span><span class="hidden-xs hidden-sm" itemprop="name">Terms of services</span></a>&nbsp;</li>
-            <li><a href="http://www.pebinary.com/about/terms.html" title="Terms &amp; conditions" itemprop="url"><i class="pe-balance-scale"></i> <span class="hidden-md hidden-lg" itemprop="name">Terms</span><span class="hidden-xs hidden-sm" itemprop="name">Terms &amp; conditions</span></a>&nbsp;</li>
-            <li><a href="http://www.pebinary.com/" title="Visit our company website" itemprop="url"><i class="pe-arrow-circle-left"></i> <span class="hidden-md hidden-lg" itemprop="name">Our company</span><span class="hidden-xs hidden-sm" itemprop="name">Visit our company website</span></a>&nbsp;</li>
+            <li><a href="http://www.pebinary.com/about/privacy.html" title="Privacy policy" itemprop="url"><i class="pe-lock"></i> <span class="hidden-md hidden-lg" itemprop="name">Privacy</span><span class="hidden-xs hidden-sm" itemprop="name">Privacy policy</span></a></li>
+            <li><a href="http://www.pebinary.com/about/tos.html" title="Terms of services" itemprop="url"><i class="pe-gavel"></i> <span class="hidden-md hidden-lg" itemprop="name">TOS</span><span class="hidden-xs hidden-sm" itemprop="name">Terms of services</span></a></li>
+            <li><a href="http://www.pebinary.com/about/terms.html" title="Terms &amp; conditions" itemprop="url"><i class="pe-balance-scale"></i> <span class="hidden-md hidden-lg" itemprop="name">Terms</span><span class="hidden-xs hidden-sm" itemprop="name">Terms &amp; conditions</span></a></li>
           </ul>
         </nav>
       </div>
@@ -190,7 +193,7 @@ function pageFooter($notes = null) {
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3">
       <div class="container">
         <a class="btn btn-info btn-xs" href="http://www.bootlint.com/?url=http://www.siamsquare.org<?php echo ME; ?>" target="_blank" role="button">bootlint</a>
-<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/debug.inc'; ?>
+<?php include_once DOCROOT.'/admin/assets/include/debug.inc'; ?>
       </div>
     </div>
   </div>
