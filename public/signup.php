@@ -35,6 +35,15 @@ do if (isset($post['email'])) {
   $checkresult = execute_sql($checksql);
   if (record_count($checkresult) > 0) { $msg = mkerror("Your email is already registered in our system. You either need to recover password or register with a different email."); break; }
   db_close($checkresult);
+  // if (!$result = $mysqli->query($checksql)) {
+  //   echo "Error: Our query failed to execute and here is why: \n";
+  //   echo "Query: " . $checksql . "\n";
+  //   echo "Errno: " . $mysqli->errno . "\n";
+  //   echo "Error: " . $mysqli->error . "\n";
+  //   exit;
+  // }
+  // if ($result->num_rows > 0) { $msg = mkerror("Your email is already registered in our system. You either need to recover password or register with a different email."); break; }
+  // $result->free();
 
   $sqlf = array();
   $sqlv = array();
@@ -59,6 +68,9 @@ do if (isset($post['email'])) {
   if (!$res) { $msg = mkerror("Request failed, please choose a different username."); break; }
   else { $msg = mksuccess("Your account has been created. Please sign in from the main page."); }
 
+  // if (!$result = $mysqli->query($sql)) { $msg = mkerror("Request failed, please choose a different username."); break; }
+  // else { $msg = mksuccess("Your account has been created. Please sign in from the main page."); }
+
   foreach ($fields as $f) { $post[$f] = null; unset($post[$f]); }
 
 } while(0);
@@ -66,25 +78,6 @@ do if (isset($post['email'])) {
 pageHeader($title);
 if (isset($msg) && !empty($msg)) { echo "<p>$msg</p>\n"; }
 respondent_signup();
-
-// --------------------------------------------------------------------------------
-
-// $p = simplexml_load_string("assets/include/provinces.xml");
-$p = new SimpleXMLElement(file_get_contents("assets/xml/provinces_eng.xml"));
-// var_dump($p);
-// var_dump($provinces);
-
-foreach ($p->children() as $ps) {
-  echo $ps->title;
-  echo "<br>\n";
-  foreach ($ps->title->provinces as $ss) {
-    echo $ss->province;
-    echo "<br>\n";
-  }
-}
-
-// --------------------------------------------------------------------------------
-
 if ($notes) { pageFooter($notes); } else { pageFooter(); }
 
 
