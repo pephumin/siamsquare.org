@@ -10,16 +10,16 @@ $sid = $_SESSION['survey_id'];
 // load current values from DB if $sid exists (in session)
 $survey = array();
 if(!empty($sid) && $updated) {
-	$sql = "SELECT * FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id=${sid}";
-	$result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
-	$survey = fetch_row($result);
-	db_close($result);
+  $sql = "SELECT * FROM ".X_SURVEY." WHERE id=${sid}";
+  $result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
+  $survey = fetch_row($result);
+  db_close($result);
 } else {
   $fields = array('name','owner','realm','public','status','open_date','close_date','title','email','subtitle','subtitle_th','info','info_th','theme','thanks_page','thank_head','thank_head_th','thank_body','thank_body_th','changed','auto_num');
-   	foreach ($fields as $f) {
-        if(!empty($_POST[$f])) { $survey[$f] = _stripslashes($_POST[$f]); }
-        else { $survey[$f] = ''; }
-    }
+  foreach ($fields as $f) {
+    if(!empty($_POST[$f])) { $survey[$f] = _stripslashes($_POST[$f]); }
+    else { $survey[$f] = ''; }
+  }
 }
 
 // fix if the date values are zeroes
@@ -28,46 +28,48 @@ if ('0000-00-00 00:00:00' == $survey['close_date']) { $survey['close_date'] = ''
 
 ?>
 
+<hr>
 
 <h4>Important information about your survey</h4>
 
 <p>Please make sure you fill in all the required information in this page properly as they will be shown to respondents when they are invited to participate in your survey.</p>
 
-<br><br>
+<?php echo displayTabNav(); ?>
+<hr><br>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Project title</strong> <span class="label label-danger">required</span></label>
-  <div class="col-sm-9">
+  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label"><strong>Project title</strong> <span class="label label-danger">required</span></label>
+  <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
     <?php // if ($sid): echo mktext('title', 60, 60, $survey); ?>
-    <p class="text-muted">Survey title (project name).</p>
-    <?php if ($survey['title']): ?>
+    <?php if ($survey['title']) { ?>
       <input class="form-control" type="text" name="title" value="<?php echo $survey['title']; ?>">
-    <?php else: ?>
+    <?php } else { ?>
      <input class="form-control" type="text" name="title" placeholder="English only.">
-    <?php endif; ?>
+    <?php } ?>
+    <p class="text-muted">Survey title (project name).</p>
   </div>
 </div>
 
 <hr>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Type of study <span class="label label-danger">required</span></strong></label>
-  <div class="col-sm-9">
+  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label"><strong>Type of study <span class="label label-danger">required</span></strong></label>
+  <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
     <?php // if ($sid): echo mktext('subtitle', 60, 128, $survey['subtitle']); ?>
-    <p class="text-muted">Short summary on the type of study e.g. Customer satisfaction, Event evaluation, etc.</p>
     <?php if ($survey['subtitle']): ?>
       <input class="form-control" type="text" name="subtitle" value="<?php echo $survey['subtitle']; ?>">
     <?php else: ?>
       <input class="form-control" type="text" name="subtitle" placeholder="English only.">
     <?php endif; ?>
+    <p class="text-muted">Short summary on the type of study e.g. Customer satisfaction, Event evaluation, etc.</p>
   </div>
 </div>
 
-<hr>
+<br><hr>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Project information <span class="label label-danger">required</span></strong></label>
-  <div class="col-sm-9">
+  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label"><strong>Project information <span class="label label-danger">required</span></strong></label>
+  <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
     <p class="text-muted">A few sentenses describing this survey e.g. the target audience, survey period, sample size expected.</p>
     <table class="table">
       <tr>
@@ -95,8 +97,8 @@ if ('0000-00-00 00:00:00' == $survey['close_date']) { $survey['close_date'] = ''
 <hr>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Thank you page <span class="label label-danger">required</span></strong></label>
-  <div class="col-sm-9">
+  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label"><strong>Thank you page <span class="label label-danger">required</span></strong></label>
+  <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
     <p class="text-muted">This page will be displayed at the end of the survey.</p>
     <table class="table">
       <tr>
@@ -124,8 +126,8 @@ if ('0000-00-00 00:00:00' == $survey['close_date']) { $survey['close_date'] = ''
 <hr>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Email copy</strong> <span class="label label-warning">optional</span></label>
-  <div class="col-sm-9">
+  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label"><strong>Email copy</strong> <span class="label label-warning">optional</span></label>
+  <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
     <p class="text-muted">Sends a copy of each submission to this email. Leave blank if you do not need an email backup.</p>
     <?php if ($survey['email']): ?>
      <input class="form-control" type="text" name="email" value="<?php echo $survey['email']; ?>">
@@ -138,8 +140,8 @@ if ('0000-00-00 00:00:00' == $survey['close_date']) { $survey['close_date'] = ''
 <hr>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Date control <span class="label label-warning">optional</span></strong></label>
-  <div class="col-sm-9">
+  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label"><strong>Date control <span class="label label-warning">optional</span></strong></label>
+  <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
     <p class="text-muted">Only enter this when there will be a time-frame limitation, otherwise this can be skipped.</p>
     <table class="table">
       <tr>
@@ -205,18 +207,18 @@ if(isset($_SESSION['acl']['superuser']) && $_SESSION['acl']['superuser'] == 'Y')
 ?>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label"><strong>Project information</strong></label>
-  <div class="col-sm-9">
+  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label"><strong>Project information</strong></label>
+  <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
     <p class="text-muted">For internal use only.</p>
     <table class="table">
       <tr>
         <td>
           <p>Project ID</p>
           <?php if ($survey['name']): ?>
-            <input class="form-control" type="text" name="name" value="<?php echo $survey['name']; ?>" disabled />
+            <input class="form-control" type="text" name="name" value="<?php echo $survey['name']; ?>" disabled>
             <input type="hidden" name="name" value="<?php echo $survey['name']; ?>">
           <?php else: ?>
-            <input class="form-control" type="text" name="name" value="<?php echo survey_assign_new_name(); ?>" disabled />
+            <input class="form-control" type="text" name="name" value="<?php echo survey_assign_new_name(); ?>" disabled>
             <input type="hidden" name="name" value="<?php echo survey_assign_new_name(); ?>">
           <?php endif; ?>
         </td>
@@ -236,8 +238,8 @@ if(isset($_SESSION['acl']['superuser']) && $_SESSION['acl']['superuser'] == 'Y')
 <hr>
 
 <div class="form-group">
-  <label class="col-sm-3 control-label">&nbsp;</label>
-  <div class="col-sm-9">
+  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">&nbsp;</label>
+  <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
     <input type="hidden" name="public" value="Y">
     <input type="hidden" name="theme" value="ssq.css">
     <input type="hidden" name="auto_num" value="Y">
