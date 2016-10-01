@@ -73,16 +73,11 @@ echo "<h2>Designing a survey</h2>\n";
 
 if (!empty($errstr)) { echo(mkerror($errstr)); }
 
-$base = htmlspecialchars($_SERVER['PHP_SELF']);
+$base = htmlspecialchars(ME);
 echo "<form method=\"post\" id=\"tabs\" onsubmit=\"validate();\" action=\"$base\">\n\n";
-// echo "<form method=\"post\" class=\"form-horizontal\" action=\"$base\">\n";
-
 displayTabNav();
-
-include $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/tab/'.$tab.'.inc';
-//include($ESPCONFIG['include_path'].'/tab/'.$tab.$ESPCONFIG['extension']);
+include $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/t/'.$tab.'.inc';
 $_SESSION['last_tab'] = $tab;
-
 if ($tab == "finish") { echo "&nbsp;"; }
 
 if ($_SESSION['new_survey']) {
