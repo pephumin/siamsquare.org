@@ -91,8 +91,8 @@ $ESPCONFIG['style_sheet'] = $ESPCONFIG['base_url'] . '/admin/assets/css/admin.cs
 
 $ESPCONFIG['ME'] = $server['PHP_SELF'];
 $ESPCONFIG['tabs'] = array('general', 'questions', 'order', 'conditions', 'preview', 'finish');
-$ESPCONFIG['thank_head'] = _('Thank you for completing this survey.');
-$ESPCONFIG['thank_body'] = _('Please do not use the back button on your browser to go back.');
+$ESPCONFIG['thank_head'] = 'Thank you for completing this survey.';
+$ESPCONFIG['thank_body'] = 'Please do not use the back button on your browser to go back.';
 
 // Database Table Names:
 $ESPCONFIG['access_table']              = $DB_PREFIX."access";
@@ -130,11 +130,74 @@ if(get_magic_quotes_gpc()) {
 }
 error_reporting(E_ALL);
 
-//-------------------------------------------------------------------------------------------------
+// ---------------------- variables ---------------------- //
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/db.inc';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib.inc';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/functions.inc';
+define('MYHOME',      "http://www.siamsquare.org");
+define('MYADMIN',     MYHOME."/admin/");
+define('MYPUBLIC',    MYHOME."/public/");
+define('MYSURVEY',    MYHOME."/public/survey.php");
+define('ME',          $_SERVER['SCRIPT_NAME']);
+define('DOCROOT',     $_SERVER['DOCUMENT_ROOT']);
+
+define('MYCONFIG',    DOCROOT."/admin/assets/include/config.php");
+define('MYLIB',       DOCROOT."/admin/assets/include/lib.inc");
+define('MYFUNCTION',  DOCROOT."/admin/assets/include/functions.inc");
+define('MYTEXT',      DOCROOT."/admin/assets/include/text");
+define('INCLUDEADM',  DOCROOT."/admin/assets/include");
+define('INCLUDEPUB',  DOCROOT."/public/assets/include");
+define('WADMIN',      DOCROOT."/admin/assets/include/w");
+define('WPUBLIC',     DOCROOT."/public/assets/include/w");
+
+define('DB_HOST',     "magenta.thaiweb.net");
+define('DB_USER',     "sinbad");
+define('DB_PASS',     "2bbadd");
+define('DB_DATABASE', "siamsquare");
+define('DB_PORT',     3306);
+define('DB_CHARSET',  "utf8");
+
+define('X_ACCESS',            'x_access');
+define('X_DESIGNER',          'x_designer');
+define('X_QUESTION',          'x_question');
+define('X_QUESTION_CHOICE',   'x_question_choice');
+define('X_QUESTION_TYPE',     'x_question_type');
+define('X_REALM',             'x_realm');
+define('X_RESPONDENT',        'x_respondent');
+define('X_RESPONSE',          'x_response');
+define('X_RESPONSE_BOOL',     'x_response_bool');
+define('X_RESPONSE_DATE',     'x_response_date');
+define('X_RESPONSE_MULTIPLE', 'x_response_multiple');
+define('X_RESPONSE_OTHER',    'x_response_other');
+define('X_RESPONSE_RANK',     'x_response_rank');
+define('X_RESPONSE_RATING',   'x_response_rating');
+define('X_RESPONSE_SINGLE',   'x_response_single');
+define('X_RESPONSE_TEXT',     'x_response_text');
+define('X_SURVEY',            'x_survey');
+define('X_CONDITION',         'x_conditions');
+define('X_SURVEY_STATISTICS', 'x_survey_statistics');
+define('X_VERSION',           'x_version');
+
+define('STATUS_EDIT',    0);
+define('STATUS_ACTIVE',  1);
+define('STATUS_DONE',    2);
+define('STATUS_DELETED', 4);
+define('STATUS_TEST',    8);
+
+define('SURVEY_STAT_LOGINFAIL',   'loginfail');
+define('SURVEY_STAT_ATTEMPTED',   'attempted');
+define('SURVEY_STAT_ABANDONED',   'abandoned');
+define('SURVEY_STAT_SUSPENDED',   'suspended');
+define('SURVEY_STAT_COMPLETED',   'completed');
+
+define('STATUS_OPEN',             0);
+define('STATUS_CLOSED_TOO_EARLY', 1);
+define('STATUS_CLOSED_TOO_LATE',  2);
+
+define('STATUS_NOT_STARTED',      'Not Started');
+define('STATUS_ALL_PARTIAL',      'Started, but incomplete');
+define('STATUS_SOME_PARTIAL',     'Some finished, some incomplete');
+define('STATUS_FINISHED',         'Finished');
+define('FORMAT_OUTPUT_DATE',      isset($ESPCONFIG['date_format'])?$ESPCONFIG['date_format']:'%Y-%m-%d');
+
 
 // require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_copy.inc';
 // require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_merge.inc';
@@ -148,6 +211,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/functions.inc';
 // require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/response_purge.inc';
 // require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/question_render.inc';
 // require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/question_conditioncheck.inc';
+require_once MYLIB;
+require_once MYFUNCTION;
 require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/db_update.inc';
 // require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/ssq.inc';
 
@@ -159,5 +224,18 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/db_upda
 // // get the where clause to limit a SQL query for the current user
 // $where = survey_fetch_limiting_where();
 // $sql = sprintf('SELECT * FROM %s WHERE %s', $GLOBALS['ESPCONFIG']['survey_table'], $where);
+
+$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
+
+if ($mysqli->connect_errno) {
+  echo "Sorry, MySQLi error\n";
+  echo "Errno: " . $mysqli->connect_errno . "\n";
+  echo "Error: " . $mysqli->connect_error . "\n";
+  exit;
+}
+
+error_reporting(E_ALL);
+
+if (!$db->ping()) { $db->connect(); }
 
 ?>

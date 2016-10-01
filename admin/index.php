@@ -1,22 +1,26 @@
 <?php
 
+// global $title;
 $_SERVER['BASE_PAGE'] = 'index.php';
+if (!isset($title)) { $title = 'SiamSquare survey engine: Administrator'; }
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once DOCROOT.'/admin/assets/include/template.php';
+require_once INCLUDEADM.'/template.php';
 
-if($_GET['p']) { $p = $_GET['p']; }
+if ($_GET['p']) { $p = $_GET['p']; }
 if ($p == '') { $p = "1"; }
 
-if(!extension_loaded($ESPCONFIG['adodb_database_type'])) { echo('<b>FATAL: Mysql extension not loaded. Aborting.</b>'); exit; }
+if (!extension_loaded($ESPCONFIG['adodb_database_type'])) { echo('<b>FATAL: Mysql extension not loaded. Aborting.</b>'); exit; }
 esp_init_adodb();
 
-if(get_cfg_var('register_globals')) { $_SESSION['acl'] = &$acl; }
+if (get_cfg_var('register_globals')) { $_SESSION['acl'] = &$acl; }
 
 // $db_version = get_dbversion();
-$where = '';
+// $where = '';
+$w = '';
 
-if (version_compare($db_version,"0.0.0","eq")) { $where="install"; }
-elseif($ESPCONFIG['auth_design']) {
+// if (version_compare($db_version,"0.0.0","eq")) { $where="install"; }
+// elseif ($ESPCONFIG['auth_design']) {
+if ($ESPCONFIG['auth_design']) {
   // if ($ESPCONFIG['auth_mode'] == 'basic') { $raw_password = @$_SERVER['PHP_AUTH_PW']; $username = @$_SERVER['PHP_AUTH_USER']; }
   // elseif ($ESPCONFIG['auth_mode'] == 'form') {
     if (isset($_POST['Login'])) {
@@ -31,7 +35,7 @@ elseif($ESPCONFIG['auth_design']) {
     else { $raw_password = ""; }
   // }
   $password = _addslashes($raw_password);
-  if(!manage_auth($username, $password, $raw_password)) exit;
+  if (!manage_auth($username, $password, $raw_password)) exit;
 } else {
   $_SESSION['acl'] = array (
     'username'  => 'none',
@@ -46,13 +50,11 @@ elseif($ESPCONFIG['auth_design']) {
   );
 }
 
-if(empty($where) && isset($_REQUEST['where'])) { $where = $_REQUEST['where']; }
-
-global $title;
-if (empty($title)) { $title = 'Survey administration'; }
+// if (empty($where) && isset($_REQUEST['where'])) { $where = $_REQUEST['where']; }
+if (empty($w) && isset($_REQUEST['w'])) { $w = $_REQUEST['w']; }
 
 pageHeader($title);
-include(esp_where($where));
+include(wAdmin($w));
 if ($notes) { pageFooter($notes); } else { pageFooter(); }
 
 echo "<div class=\"row\"><div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";

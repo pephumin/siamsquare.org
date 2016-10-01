@@ -132,7 +132,16 @@ function question_render($question, $question_number, $auto_num, $on_one_line = 
     echo "    <div class=\"panel panel-default\">\n";
     echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
     echo "      <div class=\"panel-body clearfix\">\n";
-    echo(mktext($qid, $size, $prec));
+    if ($extra_th) { $insert = $extra_th; }
+    else if ($extra) { $insert = $extra; }
+    if ($extra || $extra_th) {
+      echo "      <div class=\"input-group\">\n";
+      echo(mktext($qid, $size, $prec));
+      echo "        <span class=\"input-group-addon\">".$insert."</span>\n";
+      echo "      </div>\n";
+    } else {
+      echo(mktext($qid, $size, $prec));
+    }
     echo "      </div>\n";
     echo "    </div>\n";
     echo "  </div>\n\n";
@@ -213,8 +222,6 @@ function question_render($question, $question_number, $auto_num, $on_one_line = 
 
     // Drop down (tid=7)
     case '7':
-    if ($extra_th) { $insert = $extra_th; }
-    else if ($extra) { $insert = $extra; }
     $msg = "คำตอบเดียว / Single answer";
     echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
     echo "    <div class=\"panel panel-default\">\n";
@@ -225,13 +232,15 @@ function question_render($question, $question_number, $auto_num, $on_one_line = 
       if ($choice['content_th']) { $options[$choice['id']] = $choice['content_th']; }
       else { $options[$choice['id']] = $choice['content']; }
     }
+    if ($extra_th) { $insert = $extra_th; }
+    else if ($extra) { $insert = $extra; }
     if ($extra || $extra_th) {
       echo "      <div class=\"input-group\">\n";
-      echo mkselect($qid,$options);
+      echo mkselect($qid, $options);
       echo "        <span class=\"input-group-addon\">".$insert."</span>\n";
       echo "      </div>\n";
     } else {
-      echo mkselect($qid,$options);
+      echo mkselect($qid, $options);
     }
     echo "      </div>\n";
     echo "    </div>\n";
@@ -245,8 +254,18 @@ function question_render($question, $question_number, $auto_num, $on_one_line = 
     echo "    <div class=\"panel panel-default\">\n";
     echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
     echo "      <div class=\"panel-body clearfix\">\n";
-    echo mktext($qid, 10, 10);
-    echo "<em>(This format only: ". strftime ($GLOBALS['ESPCONFIG']['date_format'],strtotime("now")) .")</em>\n";
+    if ($extra_th) { $insert = $extra_th; }
+    else if ($extra) { $insert = $extra; }
+    if ($extra || $extra_th) {
+      echo "      <div class=\"input-group\">\n";
+      echo(mktext($qid, 10, 10));
+      echo "<em>(This format only: ". strftime ($GLOBALS['ESPCONFIG']['date_format'],strtotime("now")) .")</em>\n";
+      echo "        <span class=\"input-group-addon\">".$insert."</span>\n";
+      echo "      </div>\n";
+    } else {
+      echo(mktext($qid, 10, 10));
+      echo "<em>(This format only: ". strftime ($GLOBALS['ESPCONFIG']['date_format'],strtotime("now")) .")</em>\n";
+    }
     echo "      </div>\n";
     echo "    </div>\n";
     echo "  </div>\n\n";
@@ -254,8 +273,6 @@ function question_render($question, $question_number, $auto_num, $on_one_line = 
 
     // Numeric (tid=9)
     case '9':
-    if ($extra_th) { $insert = $extra_th; }
-    else if ($extra) { $insert = $extra; }
     $msg = "บันทึกคำตอบ / Fill in your answer";
     echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
     echo "    <div class=\"panel panel-default\">\n";
@@ -263,6 +280,8 @@ function question_render($question, $question_number, $auto_num, $on_one_line = 
     echo "      <div class=\"panel-body clearfix\">\n";
     $size++; // for sign
     if ($prec) { $size += 1 + $prec; }
+    if ($extra_th) { $insert = $extra_th; }
+    else if ($extra) { $insert = $extra; }
     if ($extra || $extra_th) {
       echo "      <div class=\"input-group\">\n";
       echo mktext($qid, $size, $size);
@@ -366,33 +385,33 @@ function survey_render($sid, $section = 1, $rid=0, $message = '') {
 /*  proto bool question_render(int $question_id, int respnse_number)
     Checks if conditions for qid are met */
 
-function isequal (&$val1,&$val2) {
+function isequal (&$val1, &$val2) {
   return $val1==$val2;
 }
 
-function isnequal (&$val1,&$val2) {
+function isnequal (&$val1, &$val2) {
   return $val1!=$val2;
 }
 
-function issmallerthan (&$val1,&$val2) {
+function issmallerthan (&$val1, &$val2) {
   return $val1<$val2;
 }
 
-function isbiggerthan (&$val1,&$val2) {
+function isbiggerthan (&$val1, &$val2) {
   return $val1>$val2;
 }
 
-function question_conditioncheck($sid,$qid,$rid) {
+function question_conditioncheck($sid, $qid, $rid) {
   $conditions[0] = "isequal";
   $conditions[1] = "isnequal";
   $conditions[2] = "issmallerthan";
   $conditions[3] = "isbiggerthan";
   $return_result = TRUE;
-  $sql = "SELECT * FROM ".X_CONDITION." WHERE q1_id='$qid'";
+  $sql = "SELECT * FROM ".X_CONDITION." WHERE q1_id = '$qid'";
   $result = execute_sql($sql);
   # If there are no conditions, we need to show the question, so we return true
   if (record_count($result) == 0) { return true; }
-  while (list($id,$sid,$q1_id,$q2_id,$cond,$cond_val) = fetch_row($result)) {
+  while (list($id, $sid, $q1_id, $q2_id, $cond, $cond_val) = fetch_row($result)) {
     $result->MoveNext();
     if ($rid>0) {
       $resp=array();
@@ -401,9 +420,9 @@ function question_conditioncheck($sid,$qid,$rid) {
         $resp_val = $resp[$q2_id][0];
         // for dropdown and some other types, this value is an array
         // we take the value (for now) and not the index ...
-        if (is_array($resp_val)) { $resp_val=$resp_val[0]; }
+        if (is_array($resp_val)) { $resp_val = $resp_val[0]; }
         // the condition is fullfilled, so we need to show the question
-        if (call_user_func($conditions[$cond],$resp_val,$cond_val) == TRUE) { return true; }
+        if (call_user_func($conditions[$cond], $resp_val, $cond_val) == TRUE) { return true; }
       }
     }
   }
@@ -444,11 +463,6 @@ function progress($step = NULL) {
 
 function survey_listing($start = "0", $limit = "5", $page = NULL) {
 
-  global $self;
-  $base =& $self;
-  $public =& $GLOBALS['ESPCONFIG']['autopub_url'];
-  $me = "/admin/?";
-
   $sids = array();
   if (!empty($_POST['list'])) { while (list(,$sid) = each($_POST['list'])) { array_push($sids, intval($sid)); } survey_purge($sids); }
 
@@ -476,34 +490,30 @@ function survey_listing($start = "0", $limit = "5", $page = NULL) {
   $from_record = $start + 1;
 
   echo "<h2>Listing your surveys</h2>\n";
-  //echo "<p>You have a total of $rows projects: showing results $from_record to $to_record</p>\n";
   echo "<p>You have a total of $rows $type projects (showing results $from_record to $to_record)</p>\n";
-  //echo "<div class=\"pull-right\">Showing results $from_record to $to_record [<a href=\"".$me."\">total of $rows</a>]</div>";
-  //echo "<p class=\"clearfix\"></p>";
   echo "<div class=\"row\">\n";
-
 
   $realms = array_intersect($_SESSION['acl']['pstatus'], array_merge($_SESSION['acl']['pall'], $_SESSION['acl']['pstatus']));
 
-  while (list($sid,$name,$title,$status,$owner,$realm,$qnum) = fetch_row($result2)) {
+  while (list($sid, $name, $title, $status, $owner, $realm, $qnum) = fetch_row($result2)) {
 
     echo "<div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6 manage-border-space\">\n";
     echo "<div class=\"manage-listing\">\n";
 
     $result2->MoveNext();
 
-    $tt1 = htmlentities($public."?name=$name");
-    $tt2 = htmlentities($public."?name=$name&test=1");
-    $tt3 = htmlentities($base."?where=tab&newid=$sid");
-    $tt4 = htmlentities($base."?where=copy&sid=$sid");
-    $tt5 = htmlentities($base."?where=results&sid=$sid");
-    $tt6 = htmlentities($base."?where=results&sid=$sid&type=cross");
-    $tt7 = htmlentities($base."?where=report&sid=$sid");
+    $tt1 = htmlspecialchars(MYSURVEY."?name=".$name);
+    $tt2 = htmlspecialchars(MYSURVEY."?name=".$name."&test=1");
+    $tt3 = htmlspecialchars(MYADMIN."?w=tab&newid=".$sid);
+    $tt4 = htmlspecialchars(MYADMIN."?w=copy&sid=".$sid);
+    $tt5 = htmlspecialchars(MYADMIN."?w=results&sid=".$sid);
+    $tt6 = htmlspecialchars(MYADMIN."?w=results&sid=".$sid."&type=cross");
+    $tt7 = htmlspecialchars(MYADMIN."?w=dpspec&sid=".$sid);
 
     // results
     $flexx = "<a href=\"$tt5\">Result <i class=\"pe-pie-chart pe-fw\"></i></a> | \n";
     $flexx .= "<a href=\"$tt6\">Cross tab <i class=\"pe-bar-chart pe-fw\"></i></a> | \n";
-    $flexx .= "<a href=\"$tt7\">Report <i class=\"pe-line-chart pe-fw\"></i></a>\n";
+    $flexx .= "<a href=\"$tt7\">DP spec <i class=\"pe-table pe-fw\"></i></a>\n";
 
     if ($status & STATUS_DELETED) {
       $stat = "Archived"; $progress = "3";
@@ -529,18 +539,18 @@ function survey_listing($start = "0", $limit = "5", $page = NULL) {
     } elseif ($status & STATUS_TEST) {
       $stat = "Testing"; $progress = "1";
       $test1 = "<span class=\"label label-warning\"><i class=\"pe-paper-plane pe-fw\"></i> Testing</span>";
-      $test2 = "[ <a href=\"". $base .htmlentities("?where=status&op=m&sid=${sid}")."\">change to Editing</a> ]";
+      $test2 = "[ <a href=\"".htmlspecialchars(MYADMIN."?w=status&op=m&sid=".$sid)."\">change to Editing</a> ]";
       $done = '&nbsp;';
       $act = '&nbsp;';
       $del = '&nbsp;';
     } else {
       $stat = "Editing"; $progress = "1";
       $test1 = "<span class=\"label label-danger\"><i class=\"pe-pencil-square-o pe-fw\"></i> Editing</span>";
-      $test2 = "[ <a href=\"". $base .htmlentities("?where=status&op=t&sid=${sid}")."\">change to Testing</a> ]";
-      if ($_SESSION['acl']['superuser'] == 'Y') { $done = "<a href=\"". $base .htmlentities("?where=status&op=e&sid=$sid")."\"><i class=\"pe-trash-o pe-fw\"></i></a>"; }
+      $test2 = "[ <a href=\"".htmlspecialchars(MYADMIN."?w=status&op=t&sid=".$sid)."\">change to Testing</a> ]";
+      if ($_SESSION['acl']['superuser'] == 'Y') { $done = "<a href=\"".htmlspecialchars(MYADMIN."?w=status&op=e&sid=".$sid)."\"><i class=\"pe-trash-o pe-fw\"></i></a>"; }
       else { $done = '&nbsp;'; }
-      $act  = "<a href=\"". $base .htmlentities("?where=status&op=a&sid=$sid")."\" onclick='return activateConfirm()'><i class=\"pe-toggle-on pe-fw\"></i></a>";
-      $del  = "<a href=\"". $base .htmlentities("?where=status&op=d&sid=$sid")."\"><i class=\"pe-archive pe-fw\"></i></a>";
+      $act  = "<a href=\"".htmlspecialchars(MYADMIN."?w=status&op=a&sid=".$sid)."\" onclick='return activateConfirm()'><i class=\"pe-toggle-on pe-fw\"></i></a>";
+      $del  = "<a href=\"".htmlspecialchars(MYADMIN."?w=status&op=d&sid=".$sid)."\"><i class=\"pe-archive pe-fw\"></i></a>";
     }
 
     // whack things back to permissions set by ACL for everyone _not_ superuser
@@ -575,36 +585,26 @@ function survey_listing($start = "0", $limit = "5", $page = NULL) {
     echo "<p>Tools <small>(edit/copy/activate)</small>: $act</p>\n";
     if ($_SESSION['acl']['superuser'] == 'Y') { echo "Delete?: \n"; }
     echo "<p>$test1</p>\n";
-
     echo "</div>\n";
     echo "</div>\n";
-
   }
-
   echo "  </div>\n";
 
   // pagination
-
-    $total = ceil($rows/$limit);
-    $offset = ($currentpage - 1) * $rowsperpage;
-
-    echo "<nav class=\"pagination-centered\">\n";
-    echo "<ul class=\"pagination\">\n";
-
-    if ($page > 1) { $previous = $page-1; echo "<li><a class=\"btn btn-sm btn-default\" role=\"button\" href=\"".$me."&p=".$previous."\">&laquo;</a></li>\n"; }
-    else { echo "<li class=\"disabled\"><a class=\"btn btn-sm btn-warning\" role=\"button\" href=\"\">&laquo;</a></li>\n"; }
-
-    for ($i=1; $i<=$total; $i++) {
-      if ($i==$page) { echo "<li class=\"active\"><a class=\"btn btn-sm btn-default\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
-      else { echo "<li><a class=\"btn btn-sm btn-default\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
-    }
-
-    if ($page != $total) { $next = $page+1; echo "<li><a class=\"btn btn-sm btn-default\" role=\"button\" href=\"".$me."&p=".$next."\">&raquo;</a></li>\n"; }
-    else { echo "<li class=\"disabled\"><a class=\"btn btn-sm btn-warning\" role=\"button\" href=\"\">&raquo;</a></li>\n"; }
-
-    echo "</ul>\n";
-    echo "</nav>\n\n";
-
+  $total = ceil($rows/$limit);
+  $offset = ($currentpage - 1) * $rowsperpage;
+  echo "<nav class=\"pagination-centered\">\n";
+  echo "<ul class=\"pagination\">\n";
+  if ($page > 1) { $previous = $page-1; echo "<li><a class=\"btn btn-sm btn-default\" role=\"button\" href=\"".MYADMIN."?&p=".$previous."\">&laquo;</a></li>\n"; }
+  else { echo "<li class=\"disabled\"><a class=\"btn btn-sm btn-warning\" role=\"button\" href=\"\">&laquo;</a></li>\n"; }
+  for ($i=1; $i<=$total; $i++) {
+    if ($i == $page) { echo "<li class=\"active\"><a class=\"btn btn-sm btn-default\" role=\"button\" href=\"".MYADMIN."?&p=".$i."\">".$i."</a></li>\n"; }
+    else { echo "<li><a class=\"btn btn-sm btn-default\" role=\"button\" href=\"".MYADMIN."?&p=".$i."\">".$i."</a></li>\n"; }
+  }
+  if ($page != $total) { $next = $page+1; echo "<li><a class=\"btn btn-sm btn-default\" role=\"button\" href=\"".MYADMIN."?&p=".$next."\">&raquo;</a></li>\n"; }
+  else { echo "<li class=\"disabled\"><a class=\"btn btn-sm btn-warning\" role=\"button\" href=\"\">&raquo;</a></li>\n"; }
+  echo "</ul>\n";
+  echo "</nav>\n\n";
   echo "<br>\n\n";
 
   echo "<ul class=\"pe-ul\">\n";
@@ -619,12 +619,6 @@ function survey_listing($start = "0", $limit = "5", $page = NULL) {
 }
 
 function survey_status($start = "0", $limit = "5", $page = NULL) {
-
-  global $self;
-  $base =& $self;
-  $public =& $GLOBALS['ESPCONFIG']['autopub_url'];
-  //$me = $_SERVER['REQUEST_URI'];
-  $me = "/admin/index.php?where=status";
 
   $sids = array();
   if (!empty($_POST['list'])) {
@@ -641,15 +635,12 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
 
   // load names and titles of all surveys available to _this_ user */
   if ($_SESSION['acl']['superuser'] == 'Y') {
-
     $sql1 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC";
     $sql2 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC"  . $add;
-
   } else {
     $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'], array_merge($_SESSION['acl']['pall'], $_SESSION['acl']['pdesign'])));
     $sql1 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC";
     $sql2 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC"  . $add;
-
   }
   $result1 = execute_sql($sql1);
   $result2 = execute_sql($sql2);
@@ -658,7 +649,7 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
   if ($to_record > $rows) { $to_record = $rows; }
   $from_record = $start + 1;
 
-  echo "<p class=\"text-right\">showing results $from_record to $to_record [<a href=\"".$me."\">total of $rows</a>]</p>";
+  echo "<p class=\"text-right\">showing results $from_record to $to_record [<a href=\"".MYADMIN."?w=status"."\">total of $rows</a>]</p>";
   echo "<table class=\"table table-hover\">\n";
   echo "  <tr class=\"active\">\n";
   echo "    <th>Project</th>\n";
@@ -674,18 +665,18 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
   while (list($sid,$name,$title,$status,$owner,$realm,$qnum) = fetch_row($result2)) {
     $result2->MoveNext();
 
-    $tt1 = htmlentities($public."?name=$name");
-    $tt2 = htmlentities($public."?name=$name&test=1");
-    $tt3 = htmlentities($base."?where=tab&newid=$sid");
-    $tt4 = htmlentities($base."?where=copy&sid=$sid");
-    $tt5 = htmlentities($base."?where=results&sid=$sid");
-    $tt6 = htmlentities($base."?where=results&sid=$sid&type=cross");
-    $tt7 = htmlentities($base."?where=report&sid=$sid");
+    $tt1 = htmlspecialchars(MYSURVEY."?name=".$name);
+    $tt2 = htmlspecialchars(MYSURVEY."?name=".$name."&test=1");
+    $tt3 = htmlspecialchars(MYADMIN."?w=tab&newid=".$sid);
+    $tt4 = htmlspecialchars(MYADMIN."?w=copy&sid=".$sid);
+    $tt5 = htmlspecialchars(MYADMIN."?w=results&sid=".$sid);
+    $tt6 = htmlspecialchars(MYADMIN."?w=results&sid=".$sid."&type=cross");
+    $tt7 = htmlspecialchars(MYADMIN."?w=dpspec&sid=".$sid);
 
     // results
-    $results = "      <a href=\"$tt5\">Result <i class=\"pe-pie-chart pe-fw\"></i></a> | \n";
-    $results .= "      <a href=\"$tt6\">Cross tab <i class=\"pe-bar-chart pe-fw\"></i></a> | \n";
-    $results .= "      <a href=\"$tt7\">Report <i class=\"pe-line-chart pe-fw\"></i></a>\n";
+    $results = "<a href=\"$tt5\">Result <i class=\"pe-pie-chart pe-fw\"></i></a> | \n";
+    $results .= "<a href=\"$tt6\">Cross tab <i class=\"pe-bar-chart pe-fw\"></i></a> | \n";
+    $results .= "<a href=\"$tt7\">DP spec <i class=\"pe-table pe-fw\"></i></a>\n";
 
     if ($status & STATUS_DELETED) {
       $stat = "Archived";
@@ -707,26 +698,24 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
       $del = '&nbsp;';
     } elseif ($status & STATUS_TEST) {
       $stat = "Testing";
-      $test = "<span class=\"label label-warning\"><i class=\"pe-paper-plane pe-fw\"></i> Testing</span> <small>[ <a href=\"". $base .htmlentities("?where=status&op=m&sid=${sid}")."\">change to Editing</a> ]</small>";
+      $test = "<span class=\"label label-warning\"><i class=\"pe-paper-plane pe-fw\"></i> Testing</span> <small>[ <a href=\"".htmlspecialchars(MYADMIN."?w=status&op=m&sid=".$sid)."\">change to Editing</a> ]</small>";
       $done = '&nbsp;';
       $act = '&nbsp;';
       $del = '&nbsp;';
     } else {
       $stat = "Editing";
-      $test = "<span class=\"label label-danger\"><i class=\"pe-pencil-square-o pe-fw\"></i> Editing</span> <small>[ <a href=\"". $base .htmlentities("?where=status&op=t&sid=${sid}")."\">change to Testing</a> ]</small>";
-      if ($_SESSION['acl']['superuser'] == 'Y') { $done = "<a href=\"". $base .htmlentities("?where=status&op=e&sid=$sid")."\"><i class=\"pe-trash-o pe-fw\"></i></a>"; }
+      $test = "<span class=\"label label-danger\"><i class=\"pe-pencil-square-o pe-fw\"></i> Editing</span> <small>[ <a href=\"".htmlspecialchars(MYADMIN."?w=status&op=t&sid=".$sid)."\">change to Testing</a> ]</small>";
+      if ($_SESSION['acl']['superuser'] == 'Y') { $done = "<a href=\"".htmlspecialchars(MYADMIN."?w=status&op=e&sid=".$sid)."\"><i class=\"pe-trash-o pe-fw\"></i></a>"; }
       else { $done = '&nbsp;'; }
-      $act  = "<a href=\"". $base .htmlentities("?where=status&op=a&sid=$sid")."\" onclick='return activateConfirm()'><i class=\"pe-toggle-on pe-fw\"></i></a>";
-      $del  = "<a href=\"". $base .htmlentities("?where=status&op=d&sid=$sid")."\"><i class=\"pe-archive pe-fw\"></i></a>";
+      $act  = "<a href=\"".htmlspecialchars(MYADMIN."?w=status&op=a&sid=".$sid)."\" onclick='return activateConfirm()'><i class=\"pe-toggle-on pe-fw\"></i></a>";
+      $del  = "<a href=\"".htmlspecialchars(MYADMIN."?w=status&op=d&sid=".$sid)."\"><i class=\"pe-archive pe-fw\"></i></a>";
     }
-
     // whack things back to permissions set by ACL for everyone _not_ superuser
     if ($_SESSION['acl']['superuser'] != 'Y' && !in_array($realm, $realms)) {
       $act  = '&nbsp;';
       $done = '&nbsp;';
       $del  = '&nbsp;';
     }
-
     echo "  <tr>\n";
     // title
     if ($stat == 'Active') { echo "    <td><a href=\"$tt1\">$title</a></td>\n"; }
@@ -779,30 +768,20 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
   //}
 
   // pagination
-  if (strpos($_SERVER['REQUEST_URI'],'status')) {
-
-    $total = ceil($rows/$limit);
-    $offset = ($currentpage - 1) * $rowsperpage;
-
-    echo "<nav class=\"pagination-centered\">\n";
-    echo "  <ul class=\"pagination\">\n";
-
-    if ($page > 1) { $previous = $page-1; echo "    <li><a class=\"btn btn-sm btn-default\" href=\"".$me."&p=".$previous."\">&laquo;</a></li>\n"; }
-    else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm btn-default\" href=\"\">&laquo;</a></li>\n"; }
-
-    for ($i=1;$i<=$total;$i++) {
-      if ($i==$page) { echo "    <li class=\"active\"><a class=\"btn btn-sm btn-default\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
-      else { echo "    <li><a class=\"btn btn-sm btn-default\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
-    }
-
-    if ($page != $total) { $next = $page+1; echo "    <li><a class=\"btn btn-sm btn-default\" href=\"".$me."&p=".$next."\">&raquo;</a></li>\n"; }
-    else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm btn-default\" href=\"\">&raquo;</a></li>\n"; }
-
-    echo "  </ul>\n";
-    echo "</nav>\n\n";
-
+  $total = ceil($rows/$limit);
+  $offset = ($currentpage - 1) * $rowsperpage;
+  echo "<nav class=\"pagination-centered\">\n";
+  echo "  <ul class=\"pagination\">\n";
+  if ($page > 1) { $previous = $page-1; echo "    <li><a class=\"btn btn-sm btn-default\" href=\"".MYADMIN."?w=status&p=".$previous."\">&laquo;</a></li>\n"; }
+  else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm btn-default\" href=\"\">&laquo;</a></li>\n"; }
+  for ($i=1; $i<=$total; $i++) {
+    if ($i == $page) { echo "    <li class=\"active\"><a class=\"btn btn-sm btn-default\" href=\"".MYADMIN."?w=status&p=".$i."\">".$i."</a></li>\n"; }
+    else { echo "    <li><a class=\"btn btn-sm btn-default\" href=\"".MYADMIN."?w=status&p=".$i."\">".$i."</a></li>\n"; }
   }
-
+  if ($page != $total) { $next = $page+1; echo "    <li><a class=\"btn btn-sm btn-default\" href=\"".MYADMIN."?w=status&p=".$next."\">&raquo;</a></li>\n"; }
+  else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm btn-default\" href=\"\">&raquo;</a></li>\n"; }
+  echo "  </ul>\n";
+  echo "</nav>\n\n";
   echo "<br>\n\n";
 }
 
@@ -1283,7 +1262,7 @@ function survey_results_navbar($sid, $curr_rid) {
   $rows_per_page = 1;
   $pages = ceil($total / $rows_per_page);
 
-  $url = ME."?where=results&sid=$sid";
+  $url = MYADMIN."?w=results&sid=$sid";
 
   $mlink = create_function('$i,$r', 'return "<a href=\"'.$url.'&rid=$r\">$i</a>";');
   $linkarr = array();
@@ -1315,7 +1294,7 @@ function survey_results($sid, $precision = 1, $showTotals = 1, $qid = '', $cids 
 
   $has_choices = array();
   $response_table = array();
-  $sql = 'SELECT id,has_choices,response_table FROM '.X_QUESTION_TYPE.' ORDER BY id';
+  $sql = 'SELECT id, has_choices, response_table FROM '.X_QUESTION_TYPE.' ORDER BY id';
   if (!($result = execute_sql($sql))) { $errmsg = sprintf('%s [ %s: question_type ]', 'Error system table corrupt.', 'Table'); return($errmsg); }
   while ($row = fetch_row($result)) {
     $result->MoveNext();
@@ -1402,7 +1381,7 @@ if (!empty($rid)) { survey_results_navbar($sid, $rid); } // show response naviga
 
     if ($tid < 50) {
       if (!empty($guicross)) {
-        echo '<input type="hidden" name="where" value="results">';
+        echo '<input type="hidden" name="w" value="results">';
         echo '<input type="hidden" name="sid" value="'.$sid.'">';
         echo "\n<table class=\"table table-hover\">\n";
         echo ("<tbody>\n");
@@ -1592,7 +1571,7 @@ function survey_report($sid, $details = 0, $format = '') {
   if (empty($sid)) return;
   $has_choices = array();
   $response_table = array();
-  $sql = 'SELECT id,has_choices,response_table FROM '.X_QUESTION_TYPE.' ORDER BY id';
+  $sql = 'SELECT id, has_choices, response_table FROM '.X_QUESTION_TYPE.' ORDER BY id';
   if (!($result = execute_sql($sql))) {
     $errmsg = 'Error system table corrupt.' ." [ ". 'Table' .": question_type ]";
     return($errmsg);
@@ -1620,15 +1599,15 @@ function survey_report($sid, $details = 0, $format = '') {
     return($errmsg);
   }
 ?>
-<h2><?php echo('Report for' .': '. $survey["title"] .' ['. _('ID') .': '. $survey['id'] .']'); ?></h2>
+<h2><?php echo('DP specification for project: ' . $survey["title"]); ?></h2>
 <h4><?php echo($survey["subtitle"]); ?></h4>
 <p><?php echo($survey["info"]); ?></p>
 
 <table class="table table-hover">
 <tr class="bg-primary">
-  <th>No.</th>
-  <th>ID</th>
-  <th>Public?</th>
+  <th width="10%">No.</th>
+  <th width="10%">ID</th>
+  <th width="10%">Public?</th>
   <th colspan="2">Question</th>
 </tr>
 <?php
@@ -1639,14 +1618,19 @@ function survey_report($sid, $details = 0, $format = '') {
     $tid  = &$question['type_id'];
     $publ = ($question['public'] == 'Y') ? 'Yes' : 'No';
     $table = &$response_table[$tid];
-    if ($tid == 99) { echo "<tr><td colspan=\"6\" class=\"text-center bg-info\"><small>SECTION BREAK</small></td></tr>\n"; continue; }
+    // if ($tid == 99) { echo "<tr><td colspan=\"6\" class=\"text-center active\"><small>SECTION BREAK</small></td></tr>\n"; continue; }
+    if ($tid == 99) {
+      echo "</table><p class=\"text-center\">SECTION BREAK</p><table class=\"table table-hover\">";
+      echo "<tr class=\"bg-primary\"><th width=\"10%\">No.</th><th width=\"10%\">ID</th><th width=\"10%\">Public?</th><th colspan=\"2\">Question</th></tr>";
+      continue;
+    }
 
 ?>
 <tr>
-  <td><strong><?php if ($tid < 50) echo(++$i); ?></strong></td>
-  <td><small>(<?php echo($qid); ?>)</small></td>
-  <td><?php echo($publ); ?></td>
-  <td colspan="2"><strong><?php echo($question["content"]); ?></strong></td>
+  <td class="bg-info"><strong><?php if ($tid < 50) echo(++$i); ?></strong></td>
+  <td class="bg-info"><small>(<?php echo($qid); ?>)</small></td>
+  <td class="bg-info"><?php echo($publ); ?></td>
+  <td class="bg-info" colspan="2"><strong><?php echo($question["content"]); ?></strong></td>
 </tr>
 <?php
     if ($has_choices[$tid]) {
@@ -1656,10 +1640,10 @@ function survey_report($sid, $details = 0, $format = '') {
         $choices_result->MoveNext();
 ?>
 <tr>
-  <td></td>
-  <td>&nbsp;</td>
-  <td>&nbsp;</td>
-  <td><small>(<?php echo($choice['id']); ?>)</small></td>
+  <td width="10%">&nbsp;</td>
+  <td width="10%">&nbsp;</td>
+  <td width="10%">&nbsp;</td>
+  <td width="10%"><small>(<?php echo($choice['id']); ?>)</small></td>
   <td><?php echo($choice['content']); ?></td>
 </tr>
   <?php

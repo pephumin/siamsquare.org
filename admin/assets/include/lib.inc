@@ -1,24 +1,43 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once DOCROOT.'/admin/assets/include/db.inc';
-
 function esp_where($where = null) {
   $cfg =& $GLOBALS['ESPCONFIG'];
   if (empty($where)) { $where = 'index'; }
   $where = strtolower(preg_replace('/ +/','_',$where));
   if (!preg_match('/^[A-Za-z0-9_]+$/',$where)) { $where = 'index'; }
-  $filecheck = DOCROOT.'/admin/assets/include/where/'.$where.'.inc';
+  $filecheck = WADMIN.'/'.$where.'.inc';
   if (!file_exists($filecheck)) { $where = 'index'; }
+  if (!file_exists($filecheck)) { echo('Unable to open include file. Check INI settings. Aborting.'); exit; }
+  return($filecheck);
+}
+
+function wAdmin($w = null) {
+  if (empty($w)) { $w = 'index'; }
+  $where = strtolower(preg_replace('/ +/','_',$w));
+  if (!preg_match('/^[A-Za-z0-9_]+$/',$w)) { $w = 'index'; }
+  $filecheck = WADMIN.'/'.$w.'.inc';
+  if (!file_exists($filecheck)) { $w = 'index'; }
+  if (!file_exists($filecheck)) { echo('Unable to open include file. Check INI settings. Aborting.'); exit; }
+  return($filecheck);
+}
+
+function wPublic($w = null) {
+  if (empty($w)) { $w = 'index'; }
+  $where = strtolower(preg_replace('/ +/','_',$w));
+  if (!preg_match('/^[A-Za-z0-9_]+$/',$w)) { $w = 'index'; }
+  $filecheck = WPUBLIC.'/'.$w.'.inc';
+  if (!file_exists($filecheck)) { $w = 'index'; }
   if (!file_exists($filecheck)) { echo('Unable to open include file. Check INI settings. Aborting.'); exit; }
   return($filecheck);
 }
 
 function esp_init_adodb() {
   $cfg =& $GLOBALS['ESPCONFIG'];
-  $dbcheck = DOCROOT.'/admin/assets/include/lib/adodb/adodb.inc.php';
+  //$dbcheck = DOCROOT.'/admin/assets/include/lib/adodb/adodb.inc.php';
+  $dbcheck = INCLUDEADM.'/lib/adodb/adodb.inc.php';
   if (!file_exists($dbcheck)) { echo('Unable to open ADODB include file. Check INI settings. Aborting.'); exit; }
-  else { include DOCROOT.'/admin/assets/include/lib/adodb/adodb.inc.php'; }
+  //else { include DOCROOT.'/admin/assets/include/lib/adodb/adodb.inc.php'; }
+  else { include INCLUDEADM.'/lib/adodb/adodb.inc.php'; }
   if (isset($cfg['adodb_conn'])) { return; }
   $cfg['adodb_conn'] = &ADONewConnection($cfg['adodb_database_type']);
   error_reporting(0);  // Hide errors
@@ -50,7 +69,8 @@ function esp_init_adodb() {
 
 function esp_require_once($path) {
   $ESPCONFIG = $GLOBALS['ESPCONFIG'];
-  require_once DOCROOT.'/admin/assets/include'.$path.'.inc';
+  //require_once DOCROOT.'/admin/assets/include'.$path.'.inc';
+  require_once INCLUDEADM.$path.'.inc';
   return true;
 }
 
@@ -67,7 +87,8 @@ function esp_file_get_contents($file) {
 function check_checksum($file) {
   $checksum = trim(esp_file_get_contents($file.".checksum"));
   if (md5_file($file) != $checksum) {
-    $file = str_replace(ESP_BASE,"",$file);
+    //$file = str_replace(ESP_BASE,"",$file);
+    $file = str_replace(DOCROOT,"",$file);
     print mkwarn("WARNING: Checksum for file $file doesn't match");
   }
 }
@@ -98,7 +119,7 @@ function goto_thankyou($sid,$referer) {
   echo "</table>\n";
 
   if (isset($_GET['where']) && $_GET['where'] == 'test') {
-    if ($GLOBALS['ESPCONFIG']['limit_double_postings'] == 0) { $ref = "<a href=\"". $referer."\">Return</a><br />"; }
+    if ($GLOBALS['ESPCONFIG']['limit_double_postings'] == 0) { $ref = "<a href=\"". $referer."\">Return</a><br>"; }
     else { $ref = ""; }
   }
   else { $ref = check_referer($referer); }
@@ -143,7 +164,7 @@ EOHTML;
 }
 
 function goto_saved($sid, $url) {
-  // if ($_REQUEST['test']) { $url = $url."?where=test&test=1&sid=".$sid; }
+  if ($_REQUEST['test']) { $url = $url."?w=test&test=1&sid=".$sid; }
   survey_stat_decrement(SURVEY_STAT_ABANDONED, $sid);
   survey_stat_increment(SURVEY_STAT_SUSPENDED, $sid);
   echo "<h2>Your survey has been saved</h2>\n";
@@ -288,7 +309,7 @@ function array_to_insql($array) {
 }
 
 function survey_num_sections($sid) {
-  $sql = "SELECT COUNT(*) + 1 FROM ".X_QUESTION." WHERE survey_id=${sid} AND type_id='99' AND deleted='N'";
+  $sql = "SELECT COUNT(*) + 1 FROM ".X_QUESTION." WHERE survey_id = ${sid} AND type_id='99' AND deleted='N' ";
   $result = execute_sql($sql);
   $count = $result->fields[0];
   db_close($result);
@@ -297,7 +318,7 @@ function survey_num_sections($sid) {
 
 function survey_get_sections($sid, $field = 'id') {
   if (empty($field)) { $field = 'id'; }
-  $sql = "SELECT $field, type_id FROM ".X_QUESTION." WHERE survey_id = $sid AND deleted = 'N' ORDER BY position";
+  $sql = "SELECT $field, type_id FROM ".X_QUESTION." WHERE survey_id = $sid AND deleted = 'N' ORDER BY position ";
   if (!($result = execute_sql($sql))) { return array(); }
   $ret = array();
   $sec = array();
@@ -312,7 +333,7 @@ function survey_get_sections($sid, $field = 'id') {
 
 function survey_get_section_questions($sid, $field = 'id') {
   if (empty($field)) { $field = 'id'; }
-  $sql = "SELECT $field, type_id FROM ".X_QUESTION." WHERE survey_id = $sid AND deleted = 'N' ORDER BY position";
+  $sql = "SELECT $field, type_id FROM ".X_QUESTION." WHERE survey_id = $sid AND deleted = 'N' ORDER BY position ";
   if (!($result = execute_sql($sql))) { return array(); }
   $ret = array();
   $sec = array();
@@ -327,13 +348,13 @@ function survey_get_section_questions($sid, $field = 'id') {
 
 function survey_select_section_sql($sid, $section, $table = '') {
   if (!empty($table)) { $table .= '.'; }
-  $sql = "SELECT position FROM ".X_QUESTION." WHERE survey_id = ${sid} AND type_id = '99' AND deleted = 'N' ORDER BY position, id";
+  $sql = "SELECT position FROM ".X_QUESTION." WHERE survey_id = ${sid} AND type_id = '99' AND deleted = 'N' ORDER BY position, id ";
   $result = execute_sql($sql);
   $num_sections = record_count($result) + 1;
 
   if ($section > $num_sections) { return(''); } // invalid section
 
-  $ret = array("${table}survey_id = '${sid}'", "${table}deleted = 'N'");
+  $ret = array("${table}survey_id = '${sid}'", "${table}deleted = 'N' ");
   if ($section > 1 && $num_sections > 1) {
     $result->Move($section-2);
     array_push($ret, "${table}position>" . $result->fields[0]);
@@ -348,7 +369,7 @@ function survey_select_section_sql($sid, $section, $table = '') {
 
 function esp_type_has_choices() {
   $has_choices = array();
-  $sql = 'SELECT typeid, has_choices FROM '.X_QUESTION_TYPE.' ORDER BY id';
+  $sql = 'SELECT typeid, has_choices FROM '.X_QUESTION_TYPE.' ORDER BY id ';
   $result = execute_sql($sql);
   while (list($tid,$answ) = fetch_row($result)) {
     $result->MoveNext();
@@ -360,7 +381,7 @@ function esp_type_has_choices() {
 }
 
 function esp_type_response_table() {
-  $sql = 'SELECT typeid, response_table FROM '.X_QUESTION_TYPE.' ORDER BY id';
+  $sql = 'SELECT typeid, response_table FROM '.X_QUESTION_TYPE.' ORDER BY id ';
   $result = execute_sql($sql);
   $response_table = array();
   while (list($tid,$answ) = fetch_row($result)) {
@@ -466,7 +487,7 @@ function make_element_attrs_from_array($attrs) {
 function show_login($_surveyname = null, $_message = null, $_css = null, $_title = "Client login") {
   $str = "";
   if ($_message) { $str .= mkerror($_message); }
-  $str .= file_get_contents( DOCROOT.'/admin/assets/include/where/login.inc');
+  $str .= file_get_contents( WADMIN.'/login.inc');
   if ($_surveyname != "") { $str .= '<input type="hidden" name="surveyname" value="'."$_surveyname".'">'; }
   if ($_css != "") { $str .= '<input type="hidden" name="css" value="'."$_css".'">'; }
   $str .= "\n";
@@ -598,7 +619,7 @@ function manage_auth($username, $password, $raw_password="") {
   $acl = array(
     'username'  => $username,
     'superuser' => 'N',
-    'home' => DOCROOT.'/admin/assets/'
+    'home' => DOCROOT.'/admin/assets/home'
   );
   $fields = array('pdesign', 'pstatus', 'pdata', 'pall', 'pgroup', 'puser');
   foreach ($fields as $f) { $$f = array(); }
@@ -626,7 +647,7 @@ function manage_logout() {
 
 function auth_is_owner($sid, $user) {
   $val = false;
-  $sql = "SELECT s.owner = "._addslashes($user)."FROM ".X_SURVEY." s WHERE s.id=$sid";
+  $sql = "SELECT s.owner = "._addslashes($user)."FROM ".X_SURVEY." s WHERE s.id = $sid";
   $result = execute_sql($sql);
   if (!(list($val) = fetch_row($result))) { $val = false; }
   db_close($result);
@@ -635,7 +656,7 @@ function auth_is_owner($sid, $user) {
 
 function auth_get_survey_realm($sid) {
   $val = '';
-  $sql = "SELECT s.realm FROM ".X_SURVEY." s WHERE s.id=$sid";
+  $sql = "SELECT s.realm FROM ".X_SURVEY." s WHERE s.id = $sid";
   $result = execute_sql($sql);
   list($val) = fetch_row($result);
   db_close($result);
@@ -648,7 +669,7 @@ function auth_no_access($description) {
 }
 
 function auth_change_manager_passwd($user,$old,$new) {
-  $sql = "UPDATE ".X_DESIGNER." SET password=".db_crypt($new) ." WHERE username="._addslashes($user)." AND password=".db_crypt($old);
+  $sql = "UPDATE ".X_DESIGNER." SET password=".db_crypt($new) ." WHERE username = "._addslashes($user)." AND password = ".db_crypt($old);
   return(execute_sql($sql) && affected_rows() > 0);
 }
 
@@ -1845,14 +1866,14 @@ function survey_get_accessibility(&$accessibility, $sids, $username = null, $rea
   // ... available
   if (isset($username)) {
       $username = _addslashes($username);
-      $mayRespond = "CASE WHEN ( 0 = COALESCE(maxlogin,0) OR (SELECT COUNT(*) FROM ".X_RESPONSE." as tblResponse WHERE tblResponse.survey_id=tblAccess.survey_id AND tblResponse.username=$username AND tblResponse.complete=$yes) < maxlogin) THEN 1 ELSE 0 END";
+      $mayRespond = "CASE WHEN ( 0 = COALESCE(maxlogin, 0) OR (SELECT COUNT(*) FROM ".X_RESPONSE." as tblResponse WHERE tblResponse.survey_id = tblAccess.survey_id AND tblResponse.username = $username AND tblResponse.complete = $yes) < maxlogin) THEN 1 ELSE 0 END";
   }
   else { $mayRespond = '1'; }
   // ... visible
   if (is_scalar($sids)) { $sids = array ($sids); }
   elseif (!is_array($sids)) { return false; }
-  if (isset($realm)) { $realm = _addslashes($realm); $limit = sprintf('(tblSurvey.id %s) AND (tblSurvey.public=%s OR tblAccess.realm=%s)', array_to_insql($sids), $yes, $realm); }
-  else { $limit = sprintf('(tblSurvey.id %s) AND (tblSurvey.public=%s)', array_to_insql($sids), $yes); }
+  if (isset($realm)) { $realm = _addslashes($realm); $limit = sprintf('(tblSurvey.id %s) AND (tblSurvey.public = %s OR tblAccess.realm = %s)', array_to_insql($sids), $yes, $realm); }
+  else { $limit = sprintf('(tblSurvey.id %s) AND (tblSurvey.public = %s)', array_to_insql($sids), $yes); }
   // compute
   $sql = "SELECT tblSurvey.id, ($statusActive) AS active, ($openForBiz) AS open, ($mayRespond) AS available, 1 AS visible FROM ".X_SURVEY." AS tblSurvey LEFT JOIN ".X_ACCESS." AS tblAccess ON tblAccess.survey_id=tblSurvey.id WHERE $limit";
   return survey_get_from_sql($sql, $accessibility);
@@ -1893,7 +1914,7 @@ function survey_merge_sets(&$merged, $a /* ... */) {
 }
 
 function survey_fetch_url_by_survey_name($name) {
-  $target = MYSURVEY . "?name=" . htmlentities($name);
+  $target = MYSURVEY."?name=".htmlentities($name);
   return rtrim($target);
 }
 
