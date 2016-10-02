@@ -3,8 +3,8 @@
 $_SERVER['BASE_PAGE'] = 'contact.php';
 $title = 'Contact us';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once DOCROOT.'/public/assets/include/template.php';
-require_once DOCROOT.'/public/assets/include/first.php';
+require_once INCLUDEPUB.'/template.php';
+require_once INCLUDEPUB.'/first.php';
 
 //$base =& $GLOBALS['ESPCONFIG']['ME'];
 

@@ -1,10 +1,10 @@
 <?php
 
 $_SERVER['BASE_PAGE'] = 'privacy.php';
-$title = "Privacy Policy";
+$title = "Privacy policy";
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once DOCROOT.'/public/assets/include/template.php';
-require_once DOCROOT.'/public/assets/include/first.php';
+require_once INCLUDEPUB.'/template.php';
+require_once INCLUDEPUB.'/first.php';
 
 // --------------------------------------------------------------------------------
 

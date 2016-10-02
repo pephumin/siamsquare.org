@@ -3,8 +3,8 @@
 $_SERVER['BASE_PAGE'] = 'signup.php';
 $title = "Member registration";
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once DOCROOT.'/public/assets/include/template.php';
-require_once DOCROOT.'/public/assets/include/first.php';
+require_once INCLUDEPUB.'/template.php';
+require_once INCLUDEPUB.'/first.php';
 
 esp_init_adodb();
 
@@ -31,7 +31,7 @@ do if (isset($post['email'])) {
   if ($post['password'] != $post['password2']) { $msg = mkerror("Passwords do not match."); break; }
   if (empty($post['username'])) { $post['username'] = $post['email']; }
 
-  $checksql = "SELECT id FROM ".$GLOBALS['ESPCONFIG']['respondent_table']." WHERE username = "._addslashes($post['email']);
+  $checksql = "SELECT id FROM ".X_RESPONDENT." WHERE username = "._addslashes($post['email']);
   $checkresult = execute_sql($checksql);
   if (record_count($checkresult) > 0) { $msg = mkerror("Your email is already registered in our system. You either need to recover password or register with a different email."); break; }
   db_close($checkresult);
@@ -62,7 +62,7 @@ do if (isset($post['email'])) {
   $sqlf = implode(',', $sqlf);
   $sqlv = implode(',', $sqlv);
 
-  $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG']['respondent_table']." ($sqlf) VALUES ($sqlv)";
+  $sql = "INSERT INTO ".X_RESPONDENT." ($sqlf) VALUES ($sqlv)";
 
   $res = execute_sql($sql);
   if (!$res) { $msg = mkerror("Request failed, please choose a different username."); break; }

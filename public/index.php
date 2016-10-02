@@ -1,45 +1,60 @@
 <?php
 
-/*
-*
-* Constant             Interpretation
-* -------------------- ---------------------------------------------------------------------------------------------------
-* STATUS_NOT_STARTED   The user has never submitted a response.  The user may have looked at the survey.
-* STATUS_ALL_PARTIAL   The user has submitted a single, incomplete response.
-* STATUS_SOME_PARTIAL  The user has submitted at least one complete, but at least one incomplete, response.
-* STATUS_FINISHED      The user has submitted at least one complete, but no incomplete, response.
-*
-* @_TODO_@
-* o On login page, add link to reset a forgotten password
-* o In table of surveys, add:
-*   - response ID/confirmation number to finished surveys
-*   - opening/closing date (FUTURE ENHANCEMENT NEEDED TO WHOLE APP)
-*/
+// Add link to reset a forgotten password
+// Add response ID/confirmation number to finished surveys
 
 $_SERVER['BASE_PAGE'] = 'index.php';
-$title = "Respondent dashboard";
+if (!isset($title)) { $title = 'SiamSquare survey engine: Respondent'; }
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once DOCROOT.'/public/assets/include/template.php';
-require_once DOCROOT.'/public/assets/include/first.php';
+require_once INCLUDEPUB.'/template.php';
+require_once INCLUDEPUB.'/first.php';
 
 get_current_respondent($respondent);
 
-// survey status
-define('STATUS_NOT_STARTED', 'Not Started');
-define('STATUS_ALL_PARTIAL', 'Started, but incomplete');
-define('STATUS_SOME_PARTIAL', 'Some finished, some incomplete');
-define('STATUS_FINISHED', 'Finished');
-define('FORMAT_OUTPUT_DATE', isset($ESPCONFIG['date_format'])?$ESPCONFIG['date_format']:'%Y-%m-%d');
-
 // --------------------------------------------------------------------------------
 
+// if ($ESPCONFIG['auth_design']) {
+//   if (isset($_POST['Login'])) {
+//     if (!isset($_POST['username'])) { $username = ""; }
+//     if ($_POST['username'] != "") { $_SESSION['username'] = $_POST['username']; }
+//     if (!isset($_POST['password'])) { $password = ""; }
+//     if ($_POST['password'] != "") { $_SESSION['raw_password'] = $_POST['password']; }
+//   }
+//
+//   if (isset($_SESSION['username'])) { $username = $_SESSION['username']; }
+//   else { $username = ""; }
+//
+//   if (isset($_SESSION['raw_password'])) { $raw_password = $_SESSION['raw_password']; }
+//   else { $raw_password = ""; }
+//
+//   $password = _addslashes($raw_password);
+//   if (!manage_auth($username, $password, $raw_password)) exit;
+// } else {
+//   $_SESSION['acl'] = array (
+//     'username'  => 'none',
+//     'pdesign'   => array('none'),
+//     'pdata'     => array('none'),
+//     'pstatus'   => array('none'),
+//     'pall'      => array('none'),
+//     'pgroup'    => array('none'),
+//     'puser'     => array('none'),
+//     'superuser' => 'Y',
+//     'disabled'  => 'N'
+//   );
+// }
+
+
 pageHeader($title);
-handleLogin();
-handleLogout();
-handleChangeProfile();
-handleChangePassword();
-if (is_session_authenticated()) { paint_authenticated(); }
-else { paint_non_authenticated(); }
+$w = $_REQUEST['w'];
+if ($w) { include(wPublic($w)); }
+else {
+  handleLogin();
+  handleLogout();
+  handleChangeProfile();
+  handleChangePassword();
+  if (is_session_authenticated()) { paint_authenticated(); }
+  else { paint_non_authenticated(); }
+}
 if ($notes) { pageFooter($notes); } else { pageFooter(); }
 
 echo "<div class=\"row\"><div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";

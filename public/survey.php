@@ -4,8 +4,8 @@
 $_SERVER['BASE_PAGE'] = 'survey.php';
 $title = "Conduct a survey";
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once DOCROOT.'/public/assets/include/template.php';
-require_once DOCROOT.'/public/assets/include/first.php';
+require_once INCLUDEPUB.'/template.php';
+require_once INCLUDEPUB.'/first.php';
 
 $_name = '';
 $_title = '';
