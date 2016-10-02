@@ -1243,7 +1243,7 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 }
 
 function survey_results_navbar($sid, $curr_rid) {
-  $sql = "SELECT R.id FROM ".X_RESPONSE." R WHERE R.survey_id='${sid}' AND R.complete = 'Y' ORDER BY R.id";
+  $sql = "SELECT R.id FROM ".X_RESPONSE." R WHERE R.survey_id = '${sid}' AND R.complete = 'Y' ORDER BY R.id";
   $result = execute_sql($sql);
   $total = record_count($result);
   if ($total < 1) { return; }
@@ -1262,7 +1262,7 @@ function survey_results_navbar($sid, $curr_rid) {
   $rows_per_page = 1;
   $pages = ceil($total / $rows_per_page);
 
-  $url = MYADMIN."?w=results&sid=$sid";
+  $url = MYADMIN."?w=results&sid=".$sid;
 
   $mlink = create_function('$i,$r', 'return "<a href=\"'.$url.'&rid=$r\">$i</a>";');
   $linkarr = array();
