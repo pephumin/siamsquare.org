@@ -192,10 +192,10 @@ define('STATUS_OPEN',             0);
 define('STATUS_CLOSED_TOO_EARLY', 1);
 define('STATUS_CLOSED_TOO_LATE',  2);
 
-define('STATUS_NOT_STARTED',      'Not Started');
-define('STATUS_ALL_PARTIAL',      'Started, but incomplete');
-define('STATUS_SOME_PARTIAL',     'Some finished, some incomplete');
-define('STATUS_FINISHED',         'Finished');
+define('STATUS_NOT_STARTED',      'ยังไม่ได้เริ่ม');
+define('STATUS_ALL_PARTIAL',      'เริ่มแล้ว แต่ยังไม่เสร็จ');
+define('STATUS_SOME_PARTIAL',     'เสร็จไปบางส่วน แต่ยังไ่ม่สมบูรณ์');
+define('STATUS_FINISHED',         'เสร็จเรียบร้อย');
 define('FORMAT_OUTPUT_DATE',      isset($ESPCONFIG['date_format'])?$ESPCONFIG['date_format']:'%Y-%m-%d');
 
 
