@@ -1,9 +1,8 @@
 <?php
 
-// require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-
 function logo() {
-  echo file_get_contents(DOCROOT.'/admin/assets/img/ssq.svg');
+  //echo file_get_contents(DOCROOT.'/admin/assets/img/ssq.svg');
+  echo "<img src=\"assets/img/ssq.svg\" alt=\"SiamSquare Survey Engine by PE BINARY CO., LTD.\">";
 }
 
 function ssqlogo() {
@@ -21,10 +20,10 @@ function pageHeader($title) {
   if ($g) { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd> <i class=\"pe-building pe-fw\"></i> <kbd>$g</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
   $v1 = MYADMIN."?w=login"; $v2 = MYADMIN."?w=logout"; $v3 = "http://www.pebinary.net/en/clients/";
   if (!empty($_SESSION['acl']['username'])) {
-    $signed = "<a href=\"$v2\" class=\"btn btn-warning btn-xs\"><i class=\"pe-sign-out pe-fw\"></i> Log out</a> <a href=\"http://www.pebinary.net/en/clients/\" class=\"btn btn-danger btn-xs\"><i class=\"pe-university pe-fw\"></i> Help</a>";
+    $signed = "<a href=\"$v2\" class=\"btn btn-warning btn-xs\" title=\"Log out\"><i class=\"pe-sign-out pe-fw\"></i> Log out</a> <a href=\"http://www.pebinary.net/en/clients/\" class=\"btn btn-danger btn-xs\"><i class=\"pe-university pe-fw\"></i> Help</a>\n";
     $ww = "Logged in as $show";
   } else {
-    $signed = "<a href=\"$v1\" class=\"btn btn-warning btn-xs\"><i class=\"pe-power-off pe-fw\"></i> Log in</a> <a href=\"http://www.pebinary.net/en/clients/\" class=\"btn btn-danger btn-xs\"><i class=\"pe-university pe-fw\"></i> Help</a>";
+    $signed = "<a href=\"$v1\" class=\"btn btn-warning btn-xs\" title=\"Log in\"><i class=\"pe-power-off pe-fw\"></i> Log in</a> <a href=\"http://www.pebinary.net/en/clients/\" class=\"btn btn-danger btn-xs\"><i class=\"pe-university pe-fw\"></i> Help</a>\n";
     $ww = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised clients only";
   }
   header("Content-language: en");
@@ -78,7 +77,7 @@ function pageHeader($title) {
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-2">
       <div class="container">
-        <h1><a href="<?php echo MYADMIN; ?>" title="SiamSquare Survey Engine by PE BINARY CO., LTD."><?php logo(); ?></a></h1>
+        <h1><a href="<?php echo MYADMIN; ?>" title="<?php echo MYDESC; ?>"><?php logo(); ?></a></h1>
         <p class="description">A survey society where your opinions are highly valued</p>
       </div>
     </div>
@@ -92,13 +91,12 @@ function pageHeader($title) {
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <!-- <a href="<?php echo MYADMIN; ?>" class="navbar-brand" title="PE BINARY CO., LTD."><i class="pe-home pe-fw"></i> Home</a> -->
             <span class="navbar-brand"><?php echo $ww; ?></span>
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
 <?php if (!empty($_SESSION['acl']['username'])) { ?>
-              <li><a href="<?php echo MYADMIN; ?>" title="PE BINARY CO., LTD."><i class="pe-home pe-fw"></i> Home</a></i>
+              <li><a href="<?php echo MYADMIN; ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> Home</a></i>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-wpforms pe-fw"></i> My surveys <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -116,10 +114,10 @@ function pageHeader($title) {
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-graduation-cap pe-fw"></i> My team <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">Team overview</li>
-                  <li><a href="<?php echo(MYADMIN."?w=designers"); ?>"><i class="pe-user pe-fw"></i> My team</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=team"); ?>"><i class="pe-user pe-fw"></i> My team</a></li>
                   <li role="separator" class="divider"></li>
                   <li class="dropdown-header">Manage your team</li>
-                  <li><a href="<?php echo(MYADMIN."?w=admdesigners"); ?>"><i class="pe-user-plus pe-fw"></i> Add a new user</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=admdesigner"); ?>"><i class="pe-user-plus pe-fw"></i> Add a new user</a></li>
                   <li><a href="#"><i class="pe-cogs pe-fw"></i> Member permission</a></li>
                 </ul>
               <li class="dropdown">
@@ -134,8 +132,8 @@ function pageHeader($title) {
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-unlock-alt pe-fw"></i> Superuser <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">Special menu</li>
-                  <li><a href="<?php echo(MYADMIN."?w=purge"); ?>"><i class="pe-trash-o pe-fw"></i> Delete a survey</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=response_purge"); ?>"><i class="pe-recycle pe-fw"></i> Delete a response</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=delete_survey"); ?>"><i class="pe-trash-o pe-fw"></i> Delete a survey</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=delete_response"); ?>"><i class="pe-recycle pe-fw"></i> Delete a response</a></li>
                   <li><a href="<?php echo(MYADMIN."?w=groups"); ?>"><i class="pe-database pe-fw"></i> Manage groups</a></li>
                   <li><a href="<?php echo(MYADMIN."?w=guide"); ?>"><i class="pe-list-alt pe-fw"></i> Admin guide</a></li>
                 </ul>

@@ -132,6 +132,11 @@ error_reporting(E_ALL);
 
 // ---------------------- variables ---------------------- //
 
+
+define('MYTITLE',     "SiamSquare");
+define('MYDESC',      "SiamSquare Survey Engine by PE BINARY CO., LTD.");
+define('SLOGANEN',    "We build a society where your opinion matters");
+define('SLOGANTH',    "เราสร้างสังคมที่ให้ความสำคัญกับความคิดเห็นของคุณ");
 define('MYHOME',      "http://www.siamsquare.org");
 define('MYADMIN',     MYHOME."/admin/");
 define('MYPUBLIC',    MYHOME."/public/");

@@ -1,6 +1,6 @@
 <?php
 
-require_once DOCROOT.'/public/assets/include/first.php';
+// require_once DOCROOT.'/public/assets/include/first.php';
 require_once DOCROOT.'/public/assets/include/handler-prefix.php';
 
 if (!defined('ESP-FIRST-INCLUDED')) { echo "In order to conduct surveys, please include first.php"; exit; }
