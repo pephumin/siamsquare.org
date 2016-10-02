@@ -66,7 +66,7 @@ do if (isset($post['email'])) {
 
   $res = execute_sql($sql);
   if (!$res) { $msg = mkerror("Request failed, please choose a different username."); break; }
-  else { $msg = mksuccess("Your account has been created. Please sign in from the main page."); }
+  else { $msg = mksuccess("ระบบได้ดำเนินการสมัครสมาชิกใหม่ให้กับคุณเป็นที่เรียบร้อยแล้ว กรุณาล็อคอินเพื่อเริ่มต้นใช้งานได้ทันที"); }
 
   // if (!$result = $mysqli->query($sql)) { $msg = mkerror("Request failed, please choose a different username."); break; }
   // else { $msg = mksuccess("Your account has been created. Please sign in from the main page."); }
@@ -77,7 +77,9 @@ do if (isset($post['email'])) {
 
 pageHeader($title);
 if (isset($msg) && !empty($msg)) { echo "<p>$msg</p>\n"; }
-respondent_signup();
+// respondent_signup();
+if ($msg) { echo mkerror($msg); }
+require_once WPUBLIC.'/signup.inc';
 if ($notes) { pageFooter($notes); } else { pageFooter(); }
 
 

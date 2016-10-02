@@ -1,9 +1,18 @@
-<h2>สมัครสมาชิกใหม่โดยใช้อีเมล์</h2>
-<p>ขณะนี้เราได้ทำการเปิดให้สมัครสมาชิกได้ด้วยตัวคุณเอง เพียงแค่คุณกรอกข้อมูลที่กำหนดไว้ตามจริง ขั้นตอนง่ายๆไม่ยุ่งยาก และใช้เวลาไม่เกินสองนาที</p>
-<p>และที่สำคัญคือ สมาชิกที่สมัครในช่วงนี้จะไม่มีค่าใช้จ่ายใดๆเลย ทันทีที่เป็นสมาชิก คุณจะได้รับสิทธิ์การเข้าร่วมวิจัยเพื่อแลกรับของรางวัลเป็นการตอบแทน</p>
-<p>หลังจากช่วงนี้ไป เราจะปิดระบบ สมาชิกใหม่จะต้องได้รับการเชิญจากสมาชิกเดิมเท่านั้นถึงจะสามารถสมัครได้</p>
+<h2>สมัครสมาชิกใหม่ด้วยอีเมล์</h2>
 
-<form id="signupform" method="post" class="form-horizontal" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+<p>เราเปิดรับสมาชิกใหม่อยู่ <strong>รีบสมัครเลยเพราะเรารับจำนวนจำกัดเท่านั้น</strong></p>
+
+<p>สมาชิกจะได้รับสิทธิ์การเข้าร่วมวิจัยตลาด เพื่อแลกรับของรางวัลและคะแนนสะสม สมาชิกจะไม่มีค่าใช้จ่ายใดๆ</p>
+
+<p>การสมัครสมาชิกนั้น สามารถทำได้ง่ายๆด้วยตัวคุณเอง ขั้นตอนง่ายๆไม่ยุ่งยาก <strong>จะใช้เวลาไม่เกินสามนาทีเท่านั้น</strong></p>
+
+<p>เพียงแค่คุณกรอกข้อมูลตามที่กำหนดให้ครบถ้วนถูกต้อง <strong>และที่สำคัญตรงตามความจริง</strong> ตามแบบฟอร์มด้านล่างและกดส่งมาหาเรา</p>
+
+<p>จากนั้นทีมงานจะทำการยืนยันความถูกต้องอีกครั้ง และจะเปิดบัญชีสมาชิกให้คุณใช้งานในทันที</p>
+
+<br>
+
+<form id="signupform" method="post" class="form-horizontal" action="<?php echo htmlspecialchars(ME); ?>">
 
   <div id="wizard">
     <h4>ตั้งค่าล็อคอิน</h4>
@@ -40,7 +49,7 @@
 
     <h4>ข้อมูลพื้นฐาน</h4>
     <section data-step="1">
-      <legend>คุณต้องกรอก <strong>ข้อมูลจริงเท่านั้น</strong> เพราะข้อมูลจะถูกนำไปใช้สำหรับงานวิจัย หากเราพบว่าข้อมูลไม่ตรงตามจริง คุณจะถูกแบนตลอดไป และทุกอย่างจะถือเป็นโมฆะ</legend>
+      <legend>คุณต้องกรอก <strong>ข้อมูลจริงเท่านั้น</strong> เพราะข้อมูลเหล่านี้จะถูกนำไปวิเคราะห์ผลกับงานวิจัย หากพบว่าข้อมูลที่ไม่ตรงตามจริง ทุกอย่างจะถือเป็นโมฆะทันที และหากพบว่าข้อมูลเป็นเท็จ คุณอาจถูกดำเนินคดีตาม พรบ.คอมพิวเตอร์ฯ</legend>
       <div class="form-group">
         <label for="name" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ชื่อ</label>
         <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
@@ -58,10 +67,10 @@
       <div class="form-group">
         <label for="gender" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">เพศ</label>
         <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-          <div class="radio radio-danger radio-inline">
+          <div class="radio radio-primary radio-inline">
             <input type="radio" id="male" name="gender" value="male"><label for="male">ผู้ชาย</label>
           </div>
-          <div class="radio radio-danger radio-inline">
+          <div class="radio radio-primary radio-inline">
             <input type="radio" id="female" name="gender" value="female"><label for="female">ผู้หญิง</label>
           </div>
         </div>
@@ -213,24 +222,24 @@
 
     <h4>ข้อมูลส่วนบุคคล</h4>
     <section data-step="2">
-      <legend>คุณต้องกรอก <strong>ข้อมูลจริงเท่านั้น</strong> เพราะข้อมูลจะถูกนำไปใช้สำหรับงานวิจัย หากเราพบว่าข้อมูลไม่ตรงตามจริง คุณจะถูกแบนตลอดไป และทุกอย่างจะถือเป็นโมฆะ</legend>
+      <legend>คุณต้องกรอก <strong>ข้อมูลจริงเท่านั้น</strong> เพราะข้อมูลเหล่านี้จะถูกนำไปวิเคราะห์ผลกับงานวิจัย หากพบว่าข้อมูลที่ไม่ตรงตามจริง ทุกอย่างจะถือเป็นโมฆะทันที และหากพบว่าข้อมูลเป็นเท็จ คุณอาจถูกดำเนินคดีตาม พรบ.คอมพิวเตอร์ฯ</legend>
       <div class="form-group">
         <label for="personal_income" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">รายได้ส่วนบุคคล</label>
         <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-          <div class="radio radio-danger">
-            <input type="radio" id="L1" name="personal_income" value="L1"><label for="L1">L1</label>
+          <div class="radio radio-primary">
+            <input type="radio" id="L1" name="personal_income" value="L1"><label for="L1">60,000 บาทต่อเดือนหรือมากกว่า</label>
           </div>
-          <div class="radio radio-danger">
-            <input type="radio" id="L2" name="personal_income" value="L2"><label for="L2">L2</label>
+          <div class="radio radio-primary">
+            <input type="radio" id="L2" name="personal_income" value="L2"><label for="L2">50,001-60,000 บาทต่อเดือน</label>
           </div>
-          <div class="radio radio-danger">
-            <input type="radio" id="L3" name="personal_income" value="L3"><label for="L3">L3</label>
+          <div class="radio radio-primary">
+            <input type="radio" id="L3" name="personal_income" value="L3"><label for="L3">34,501-50,000 บาทต่อเดือน</label>
           </div>
-          <div class="radio radio-danger">
-            <input type="radio" id="L4" name="personal_income" value="L4"><label for="L4">L4</label>
+          <div class="radio radio-primary">
+            <input type="radio" id="L4" name="personal_income" value="L4"><label for="L4">20,000-34,500 บาทต่อเดือน</label>
           </div>
-          <div class="radio radio-danger">
-            <input type="radio" id="L5" name="personal_income" value="L5"><label for="L5">L5</label>
+          <div class="radio radio-primary">
+            <input type="radio" id="L5" name="personal_income" value="L5"><label for="L5">ต่ำกว่า 20,000 บาทต่อเดือน</label>
           </div>
         </div>
       </div>
@@ -238,19 +247,19 @@
       <div class="form-group">
         <label for="HH_income" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">รายได้ครัวเรือน</label>
         <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-          <div class="radio radio-danger">
+          <div class="radio radio-primary">
             <input type="radio" id="SES-A" name="HH_income" value="SES-A"><label for="SES-A">60,000 บาทต่อเดือนหรือมากกว่า</label>
           </div>
-          <div class="radio radio-danger">
+          <div class="radio radio-primary">
             <input type="radio" id="SES-B" name="HH_income" value="SES-B"><label for="SES-B">50,001-60,000 บาทต่อเดือน</label>
           </div>
-          <div class="radio radio-danger">
-            <input type="radio" id="SES-C" name="HH_income" value="SES-C"><label for="SES-C">34,502-50,000 บาทต่อเดือน</label>
+          <div class="radio radio-primary">
+            <input type="radio" id="SES-C" name="HH_income" value="SES-C"><label for="SES-C">34,501-50,000 บาทต่อเดือน</label>
           </div>
-          <div class="radio radio-danger">
+          <div class="radio radio-primary">
             <input type="radio" id="SES-D" name="HH_income" value="SES-D"><label for="SES-D">20,000-34,500 บาทต่อเดือน</label>
           </div>
-          <div class="radio radio-danger">
+          <div class="radio radio-primary">
             <input type="radio" id="SES-E" name="HH_income" value="SES-E"><label for="SES-E">ต่ำกว่า 20,000 บาทต่อเดือน</label>
           </div>
         </div>
@@ -259,16 +268,16 @@
       <div class="form-group">
         <label for="marital" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">สถานะภาพสมรส</label>
         <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-          <div class="radio radio-danger">
+          <div class="radio radio-primary">
             <input type="radio" id="A1" name="marital" value="A1"><label for="A1">โสด</label>
           </div>
-          <div class="radio radio-danger">
+          <div class="radio radio-primary">
             <input type="radio" id="A2" name="marital" value="A2"><label for="A2">สมรส ไม่มีบุตร</label>
           </div>
-          <div class="radio radio-danger">
+          <div class="radio radio-primary">
             <input type="radio" id="A3" name="marital" value="A3"><label for="A3">สมรส มีบุตร</label>
           </div>
-          <div class="radio radio-danger">
+          <div class="radio radio-primary">
             <input type="radio" id="A4" name="marital" value="A4"><label for="A4">หย่า ม่าย แยกทาง แยกกันอยู่</label>
           </div>
         </div>
@@ -277,19 +286,19 @@
       <div class="form-group">
         <label for="education" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ระดับการศึกษา</label>
         <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-          <div class="radio radio-danger">
+          <div class="radio radio-primary">
             <input type="radio" id="B1" name="education" value="B1"><label for="B1">ประถมศึกษา</label>
           </div>
-          <div class="radio radio-danger">
+          <div class="radio radio-primary">
             <input type="radio" id="B2" name="education" value="B2"><label for="B2">มัธยมศึกษา</label>
           </div>
-          <div class="radio radio-danger">
+          <div class="radio radio-primary">
             <input type="radio" id="B3" name="education" value="B3"><label for="B3">อาชีวะ อนุปริญญา</label>
           </div>
-          <div class="radio radio-danger">
+          <div class="radio radio-primary">
             <input type="radio" id="B4" name="education" value="B4"><label for="B4">ปริญญาตรี</label>
           </div>
-          <div class="radio radio-danger">
+          <div class="radio radio-primary">
             <input type="radio" id="B5" name="education" value="B5"><label for="B5">ปริญญาโทหรือสูงกว่า</label>
           </div>
         </div>
@@ -304,7 +313,7 @@
       </div>
       <div class="form-group">
         <div class="col-xs-offset-0 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-xs-12 col-sm-7 col-md-7 col-lg-7">
-          <div class="checkbox checkbox-danger">
+          <div class="checkbox checkbox-primary">
             <input id="agree" type="checkbox"> <label for="agree">ฉันยอมรับในเงื่อนไขและข้อตกลงการใช้บริการ</label>
           </div>
         </div>
