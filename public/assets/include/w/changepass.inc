@@ -1,72 +1,63 @@
-<?php
-
-$title = "Changing your password";
-$base =& $GLOBALS['ESPCONFIG']['ME'];
-
-if(isset($_POST['newpass1']) &&
-  $_POST['newpass1'] == $_POST['newpass2'] &&
-  !empty($_POST['newpass1'])) {
-  if(auth_change_manager_passwd($_SESSION['acl']['username'], _addslashes($_POST['oldpass']), _addslashes($_POST['newpass1']))) {
-    echo(mksuccess('Your password has been successfully changed.'));
-    header("Refresh: 10; URL=$base");
-    return;
-  }
-  else { echo(mkerror('Password not set, check your old password.')); }
-}
-else if(isset($_POST['newpass1'])) { echo(mkerror('New passwords do not match or are blank.')); }
-
-?>
-
-</form>
-
-<h2>Changing password</h2>
-
-<form class="form-horizontal" method="post" id="phpesp" action="<?php echo($base); ?>">
+<form class="form-horizontal" method="post" id="passwd_change" action="<?php echo htmlspecialchars(MYPUBLIC); ?>">
+  <h2>เปลี่ยนรหัสลับ</h2>
+  <p>คุณสามารถเปลี่ยนรหัสลับของคุณได้บ่อยตามต้องการที่หน้านี้</p>
+  <p>ไม่ควรบอกรหัสลับของคุณกับผู้อื่นอย่างเด็ดขาด และหากคุณมีข้อสงสัยว่า อาจมีผู้อื่นทราบรหัสลับของคุณ เราขอแนะนำให้คุณเปลี่ยนรหัสลับในทันที</p>
   <section id="changepassword">
     <div class="form-group">
-      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Username</label>
-      <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-        <div class="input-group">
-          <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
-          <input type="text" name="username" class="form-control" placeholder="<?php echo($_SESSION['acl']['username']); ?>" disabled>
-        </div>
-        <?php echo mkhidden('username', $GLOBALS); ?>
-      </div>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">อีเมล์</label>
+        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+          <div class="input-group">
+            <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
+            <input type="text" name="username" class="form-control" placeholder="<?php echo $respondent['username']; ?>" disabled>
+          </div>
+          <input type="hidden" name="username" value="<?php echo $respondent['username']; ?>">
+       </div>
     </div>
     <hr>
     <div class="form-group">
-      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Current password</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">รหัสลับเดิม</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
           <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
-          <input type="password" name="oldpass" class="form-control" placeholder="Current password">
+          <input type="password" name="<?php echo $oldPasswordVar; ?>" id="<?php echo $oldPasswordVar; ?>" class="form-control" placeholder="Current password">
         </div>
       </div>
     </div>
     <div class="form-group">
-      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">New password</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ตั้งรหัสลับใหม่</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
           <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
-          <input type="password" name="newpass1" class="form-control" placeholder="New password">
+          <input type="password" name="<?php echo $newPasswordVar; ?>" id="<?php echo $newPasswordVar; ?>" class="form-control" placeholder="New password">
         </div>
       </div>
     </div>
     <div class="form-group">
-      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Confirm new password</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ยืนยันรหัสลับใหม่</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
           <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
-          <input type="password" name="newpass2" class="form-control" placeholder="New password again">
+          <input type="password" name="<?php echo $newPasswordConfirmVar; ?>" id="<?php echo $newPasswordConfirmVar; ?>" class="form-control" placeholder="New password again">
         </div>
       </div>
     </div>
     <hr>
-    <div class="col-xs-offset-0 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-xs-12 col-sm-7 col-md-7 col-lg-7">
-      <button type="submit" class="btn btn-warning">Change password <i class="pe-check-circle-o"></i></button>
-      <button type="submit" class="btn btn-default">Cancel</button>
-      <input type="hidden" name="where" value="passwd">
-    </div>
+    <!-- <div class="form-group">
+      <div class="col-xs-offset-0 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-xs-12 col-sm-7 col-md-7 col-lg-7">
+      <p>กรุณาพิมพ์ตัวอักษรที่แสดงอยู่ด้านบนนี้เพื่อยืนยัน<br>
+      <img src="assets/include/captcha.php" alt="captcha"><br>
+      <input type="text" name="captcha" value=""></p>
+      <p>
+        <pre>
+          <?php var_dump($_SESSION); ?>
+        </pre>
+      </p>
+    </div> -->
+    <p class="text-center">
+      <button type="submit" class="btn btn-info" name="<?php $changeButtonVar; ?>">เปลี่ยนรหัสลับ <i class="pe-check-circle-o"></i></button>
+      <button type="submit" class="btn btn-default" name="<?php $cancelButtonVar; ?>">ยกเลิก</button>
+      <input type="hidden" name="where" value="passwd">      
+    </p>
   </section>
 </form>
 <script>
@@ -76,18 +67,18 @@ else if(isset($_POST['newpass1'])) { echo(mkerror('New passwords do not match or
       icon: { valid: 'pe-check', invalid: 'pe-times', validating: 'pe-refresh' },
       excluded: ':disabled',
       fields: {
-        oldpass: {
+        <?php echo $oldPasswordVar; ?>: {
           validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 4, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' } } },
-        newpass1: {
+        <?php echo $newPasswordVar; ?>: {
           validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 6, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' } } },
-        newpass2: {
+        <?php echo $newPasswordConfirmVar; ?>: {
           validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 6, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' }, identical: { field: 'newpass1', message: 'The confirm password must be the same as the new one' } } }
       }
     });
   });
 </script>
 <br><br>
-<div class="alert alert-info alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+<div class="alert alert-info alert-dismissible alert-eng" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
   <h4><i class="pe-lightbulb-o pe-fw pe-lg"></i> Tips for choosing a strong password</h4>
   <p>Below are some nice tips for anyone who cares about setting up a good strong password</p>
   <ul class="pe-ul">

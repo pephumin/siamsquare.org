@@ -3,8 +3,8 @@
 require INCLUDEADM.'/w/crosstab.inc';
 
 $sid = '';
-if (!empty($_POST['sid'])) $sid = intval($_POST['sid']);
-elseif (!empty($_GET['sid'])) $sid = intval($_GET['sid']);
+if (!empty($_POST['sid'])) { $sid = intval($_POST['sid']); }
+elseif (!empty($_GET['sid'])) { $sid = intval($_GET['sid']); }
 
 if (!empty($sid)) {
   $srealm = auth_get_survey_realm(_addslashes($sid));
@@ -65,24 +65,22 @@ $result = execute_sql($sql);
 if (empty($_GET['type'])) {
 ?>
 
-<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars(ME); ?>">
-
 <h2>View survey results</h2>
+<p>Pick a survey below to view its results.</p>
+<p>Please note that we only show surveys that are currently active.</p>
 
-<p>Pick a survey below to view the results. Only show surveys that are currently active.</p>
+<?php
+} else {
+echo "<h2>Cross tabulation</h2>\n";
+echo "<p>Pick a survey below to see a cross tabulation.</p>";
+}
+?>
+
+<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars(ME); ?>">
 
 <input type="hidden" name="rid" value="">
 <input type="hidden" name="sid" value="">
 <input type="hidden" name="w" value="results">
-
-<?php
-} else {
-// $yoo = htmlspecialchars($_SERVER['PHP_SELF']);
-// echo "<form class=\"form-horizontal\" method=\"post\" action=\"$yoo\">\n";
-echo "<h2>Cross Tabulation</h2>\n";
-echo "<p>Pick a survey below to see a cross tabulation.</p>";
-}
-?>
 
 <table class="table table-hover">
   <tr class="active">

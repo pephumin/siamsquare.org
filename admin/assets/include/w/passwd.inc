@@ -1,12 +1,12 @@
 <?php
 
 $title = "Changing your password";
-$base = ME;
+// $base = ME;
 
 if(isset($_POST['newpass1']) && $_POST['newpass1'] == $_POST['newpass2'] && !empty($_POST['newpass1'])) {
   if(auth_change_manager_passwd($_SESSION['acl']['username'], _addslashes($_POST['oldpass']), _addslashes($_POST['newpass1']))) {
     echo(mksuccess('Your password has been successfully changed.'));
-    header("Refresh: 10; URL=$base");
+    // header("Refresh: 10; URL=$base");
     return;
   }
   else { echo(mkerror('Password not set, check your old password.')); }

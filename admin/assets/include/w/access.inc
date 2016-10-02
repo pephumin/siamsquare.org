@@ -74,7 +74,7 @@ if ($sid) {
   }
   db_close($result);
   if ($_SESSION['acl']['superuser'] == 'Y') {
-    $sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['realm_table'];
+    $sql = "SELECT name FROM ".X_REALM;
     $result = execute_sql($sql);
     while (list($g) = fetch_row($result)) {
       if (!in_array($g, $selected_groups)) { array_push($groups, $g); }
