@@ -632,7 +632,10 @@ function manage_auth($username, $password, $raw_password="") {
   foreach ($fields as $f) { $acl[$f] =& $$f; }
   $_SESSION['acl'] =& $acl;
   // if one were to want login accounting (logs) this would be the ideal place to do so...
-  return(true);
+  $currenttime  = sys_time_stamp();
+  $sql = "UPDATE ".X_DESIGNER." SET lastlogin = $currenttime WHERE username = "._addslashes($username);
+  return(execute_sql($sql) && affected_rows() > 0);
+  //return(true);
 }
 
 function manage_logout() {
@@ -720,7 +723,9 @@ function authenticate($username, $password, &$realms) {
       }
       assert('1 <= count($realms); // expecting 1 or more realms');
     }
-    return $isAuthenticated;
+    $currenttime  = sys_time_stamp();
+    $sql = "UPDATE ".X_RESPONDENT." SET lastlogin = $now WHERE username = $user";
+    if (execute_sql($sql) && affected_rows() > 0); { return $isAuthenticated; }
   } else {
     $GLOBALS['errmsg'] = mkerror('Unable to execute query respondents.');
     return false;
