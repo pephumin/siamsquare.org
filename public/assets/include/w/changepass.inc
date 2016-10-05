@@ -1,13 +1,13 @@
 <form class="form-horizontal" method="post" id="passwd_change" action="<?php echo htmlspecialchars(MYPUBLIC); ?>">
-  <h2>เปลี่ยนรหัสลับ</h2>
-  <p>คุณสามารถเปลี่ยนรหัสลับของคุณได้บ่อยตามต้องการที่หน้านี้</p>
-  <p>ไม่ควรบอกรหัสลับของคุณกับผู้อื่นอย่างเด็ดขาด และหากคุณมีข้อสงสัยว่า อาจมีผู้อื่นทราบรหัสลับของคุณ เราขอแนะนำให้คุณเปลี่ยนรหัสลับในทันที</p>
+  <h2>เปลี่ยนรหัสผ่าน</h2>
+  <p>คุณสามารถเปลี่ยนรหัสผ่านของคุณได้บ่อยตามต้องการที่หน้านี้</p>
+  <p>ไม่ควรบอกรหัสผ่านของคุณกับผู้อื่นอย่างเด็ดขาด และหากคุณมีข้อสงสัยว่า อาจมีผู้อื่นทราบรหัสผ่านของคุณ เราขอแนะนำให้คุณเปลี่ยนรหัสผ่านในทันที</p>
   <section id="changepassword">
     <div class="form-group">
-      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">อีเมล์</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ล็อคอิน</label>
         <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
           <div class="input-group">
-            <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
+            <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
             <input type="text" name="username" class="form-control" placeholder="<?php echo $respondent['username']; ?>" disabled>
           </div>
           <input type="hidden" name="username" value="<?php echo $respondent['username']; ?>">
@@ -15,49 +15,44 @@
     </div>
     <hr>
     <div class="form-group">
-      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">รหัสลับเดิม</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">รหัสผ่านเดิม</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
           <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
-          <input type="password" name="<?php echo $oldPasswordVar; ?>" id="<?php echo $oldPasswordVar; ?>" class="form-control" placeholder="Current password">
+          <input type="password" name="oldPassword" id="oldPassword" class="form-control" placeholder="Current password">
         </div>
       </div>
     </div>
     <div class="form-group">
-      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ตั้งรหัสลับใหม่</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ตั้งรหัสผ่านใหม่</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
           <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
-          <input type="password" name="<?php echo $newPasswordVar; ?>" id="<?php echo $newPasswordVar; ?>" class="form-control" placeholder="New password">
+          <input type="password" name="newPassword" id="newPassword" class="form-control" placeholder="New password">
         </div>
       </div>
     </div>
     <div class="form-group">
-      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ยืนยันรหัสลับใหม่</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ยืนยันรหัสผ่านใหม่</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
           <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
-          <input type="password" name="<?php echo $newPasswordConfirmVar; ?>" id="<?php echo $newPasswordConfirmVar; ?>" class="form-control" placeholder="New password again">
+          <input type="password" name="newPasswordConfirm" id="newPasswordConfirm" class="form-control" placeholder="New password again">
         </div>
       </div>
     </div>
     <hr>
-    <!-- <div class="form-group">
+    <div class="form-group">
       <div class="col-xs-offset-0 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-xs-12 col-sm-7 col-md-7 col-lg-7">
-      <p>กรุณาพิมพ์ตัวอักษรที่แสดงอยู่ด้านบนนี้เพื่อยืนยัน<br>
-      <img src="assets/include/captcha.php" alt="captcha"><br>
-      <input type="text" name="captcha" value=""></p>
+      <p>กรุณาพิมพ์ตัวอักษรที่แสดงอยู่ด้านบนนี้เพื่อยืนยัน</p>
+      <p><img src="assets/include/captcha.php" alt="captcha"></p>
+      <p><input type="text" name="captcha" value=""></p>
       <p>
-        <pre>
-          <?php var_dump($_SESSION); ?>
-        </pre>
+        <button type="submit" class="btn btn-info" name="doChangePassword">เปลี่ยนรหัสผ่าน <i class="pe-check-circle-o"></i></button>
+        <button type="submit" class="btn btn-default" name="doChangePasswordCancel">ยกเลิก</button>
+        <input type="hidden" name="w" value="passwd">
       </p>
-    </div> -->
-    <p class="text-center">
-      <button type="submit" class="btn btn-info" name="<?php $changeButtonVar; ?>">เปลี่ยนรหัสลับ <i class="pe-check-circle-o"></i></button>
-      <button type="submit" class="btn btn-default" name="<?php $cancelButtonVar; ?>">ยกเลิก</button>
-      <input type="hidden" name="where" value="passwd">      
-    </p>
+    </div>
   </section>
 </form>
 <script>
@@ -67,11 +62,11 @@
       icon: { valid: 'pe-check', invalid: 'pe-times', validating: 'pe-refresh' },
       excluded: ':disabled',
       fields: {
-        <?php echo $oldPasswordVar; ?>: {
+        oldPassword: {
           validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 4, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' } } },
-        <?php echo $newPasswordVar; ?>: {
+        newPassword: {
           validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 6, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' } } },
-        <?php echo $newPasswordConfirmVar; ?>: {
+        newPasswordConfirm: {
           validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 6, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' }, identical: { field: 'newpass1', message: 'The confirm password must be the same as the new one' } } }
       }
     });
