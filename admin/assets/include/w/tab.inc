@@ -27,7 +27,7 @@ if (isset($_POST['tab_continue'])) { $tab = 'continue'; }
 
 if ($tab == "") { $tab = $_SESSION['last_tab']; }
 
-$tab = strtolower(preg_replace('/ +/','_',$tab));
+$tab = strtolower(preg_replace('/ +/', '_', $tab));
 
 if (stristr($tab, 'continue')) {
   switch($_SESSION['last_tab']) {

@@ -5,20 +5,20 @@
   <!-- <p>และเพื่อเป็นการตอบแทนสำหรับความคิดเห็นของคุณ เรามีของรางวัลหลายรายการที่จัดเตรียมไว้ให้คุณ​ โดยของรางวัลจะต่างกันออกไปสำหรับงานวิจัยแต่ละชิ้น ขึ้นอยู่กับปัจจัยหลายประการเช่น ความยาวของชุดคำถาม ความยากง่ายในการตอบ หรือจำนวนของกลุ่มเป้าหมายในตลาด</p> -->
   <section id="signinform">
     <div class="form-group">
-      <label for="<?php echo $usernameVar; ?>" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">อีเมล์</label>
+      <label for="username" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">อีเมล์</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
           <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
-          <input type="text" name="<?php echo $usernameVar; ?>" class="form-control" placeholder="email@domain.com">
+          <input type="text" name="username" class="form-control" placeholder="email@domain.com">
         </div>
       </div>
     </div>
     <div class="form-group">
-      <label for="<?php echo $passwordVar; ?>" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">รหัสลับ</label>
+      <label for="password" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">รหัสผ่าน</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
           <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
-          <input type="password" name="<?php echo $passwordVar; ?>" class="form-control" placeholder="Password">
+          <input type="password" name="password" class="form-control" placeholder="Password">
         </div>
       </div>
     </div>
@@ -31,7 +31,7 @@
     </div>
     <div class="form-group">
       <div class="col-xs-offset-0 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-xs-12 col-sm-7 col-md-7 col-lg-7">
-        <button class="btn btn-info" name="<?php echo $loginButtonVar; ?>" type="submit">ล็อคอิน <i class="pe-check-circle-o"></i></button>
+        <button class="btn btn-info" name="doLogin" type="submit">ล็อคอิน <i class="pe-check-circle-o"></i></button>
       </div>
     </div>
   </section>
@@ -51,7 +51,7 @@
     });
   });
 </script>
-<div class="alert alert-warning alert-dismissible alert-eng" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+<div class="alert alert-warning alert-dismissible alert-eng" role="alert"><a class="close" data-dismiss="alert" aria-label="close">&times;</a>
   <h4><i class="pe-exclamation-triangle pe-fw pe-lg"></i> Unauthorised access to this system is prohibited by law</h4>
   <p>You are accessing a private computer network which includes: (1) this machine, (2) this computer network, (3) all computers/servers connected to this network, and (4) all devices and storage media attached to this network or to a computer on this network. This information system is provided for registered clients authorised use only. Unauthorized or improper use of this system may result in disciplinary action, as well as civil and criminal penalties.</p>
   <p>If you do not have an access, please contact sales for setting up a master login/password for your company.</p>

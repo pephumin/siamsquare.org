@@ -6,7 +6,7 @@ $show = 10;
 //survey_status(0,$show,'');
 survey_listing(0, $show, $p);
 
-$sql = 'SELECT id FROM '.$GLOBALS['ESPCONFIG']['survey_table'].' ORDER BY id DESC';
+$sql = 'SELECT id FROM '.X_SURVEY.' ORDER BY id DESC';
 $result = execute_sql($sql);
 $rows = record_count($result);
 db_close($result);

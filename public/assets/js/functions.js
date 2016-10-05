@@ -26,7 +26,7 @@ anchors.options = {
 anchors.add('h2, h3');
 
 
-// tooltip
+// tooltip & alert
 
 $(document).ready(function(){
   $('[data-toggle="tooltip"]').tooltip();

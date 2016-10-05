@@ -28,7 +28,7 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="password" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ตั้งรหัสลับ</label>
+        <label for="password" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ตั้งรหัสผ่าน</label>
         <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
           <div class="input-group">
             <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
@@ -37,7 +37,7 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="password2" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">รหัสลับอีกครั้ง</label>
+        <label for="password2" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">รหัสผ่านอีกครั้ง</label>
         <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
           <div class="input-group">
             <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
@@ -388,30 +388,30 @@
         password: {
           validators: {
             notEmpty: {
-              message: 'กรุณาระบุรหัสลับ'
+              message: 'กรุณาระบุรหัสผ่าน'
             },
             stringLength: {
               min: 6,
-              message: 'รหัสลับจะต้องมีอย่างต่ำจำนวน 6 ตัวอักษรหรือตัวเลขผสมกัน'
+              message: 'รหัสผ่านจะต้องมีอย่างต่ำจำนวน 6 ตัวอักษรหรือตัวเลขผสมกัน'
             },
             different: {
               field: 'username',
-              message: 'รหัสลับต้องไม่เหมือนกับชื่อล็อคอิน'
+              message: 'รหัสผ่านต้องไม่เหมือนกับชื่อล็อคอิน'
             }
           }
         },
         password2: {
           validators: {
             notEmpty: {
-              message: 'กรุณาระบุรหัสลับอีกครั้ง'
+              message: 'กรุณาระบุรหัสผ่านอีกครั้ง'
             },
             stringLength: {
               min: 6,
-              message: 'รหัสลับจะต้องมีอย่างต่ำจำนวน 6 ตัวอักษรหรือตัวเลขผสมกัน'
+              message: 'รหัสผ่านจะต้องมีอย่างต่ำจำนวน 6 ตัวอักษรหรือตัวเลขผสมกัน'
             },
             identical: {
               field: 'password',
-              message: 'ยืนยันรหัสลับจะต้องตรงกับรหัสลับด้านบน'
+              message: 'ยืนยันรหัสผ่านจะต้องตรงกับรหัสผ่านด้านบน'
             }
           }
         },

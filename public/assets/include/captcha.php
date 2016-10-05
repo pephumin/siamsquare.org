@@ -1,6 +1,6 @@
 <?php
 
-function generateRandom($length = 6, $vals = 'abchefghjkmnpqrstuvwxyz0123456789') {
+function generateRandom($length = 8, $vals = 'abchefghjkmnpqrstuvwxyz0123456789') {
   $s = "";
 
   while(strlen($s) < $length) {
@@ -41,7 +41,7 @@ function stringToSVG($str){
   return $result;
 }
 
-function image($text){
+function captchaimage($text){
   $captcha_width = 200;
   $captcha_height = 40;
   header("Expires: Wed, 1 Jan 1997 00:00:00 GMT");
@@ -49,23 +49,14 @@ function image($text){
   header("Cache-Control: no-store, no-cache, must-revalidate");
   header("Cache-Control: post-check=0, pre-check=0", false);
   header("Pragma: no-cache");
-  // header ("Content-type: image/svg+xml");
-  print '<?xml version="1.0" encoding="utf-8"?>';
-  printf('<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" width="200" height="40">', CAPTCHA_WIDTH, CAPTCHA_HEIGHT);
+  header ("Content-type: image/svg+xml");
+  printf('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" width="200" height="40">', $captcha_width, $captcha_height);
   printf(' <rect x="0" y="0" width="%d" height="%d" style="stroke: none; fill: none;" ></rect> ', $captcha_width, $captcha_height);
   print stringToSVG($text);
   print '</svg>';
 }
 
-$captcha_length = 12;
-$rText = generateRandom($captcha_length);
-//var_dump($rText);
-$_SESSION['cc'] = $rText;
-// if (!isset($_SESSION['captcha'])) { //print_r($_SESSION['captcha']);
-//   $_SESSION['captcha'] = $rText;
-// }
-
-
-// image($rText);
+session_start();
+captchaimage($_SESSION["captcha"]);
 
 ?>
