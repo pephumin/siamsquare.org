@@ -117,34 +117,31 @@ function pageHeader($title) {
                   <li><a href="<?php echo(MYADMIN."?w=team"); ?>"><i class="pe-user pe-fw"></i> My team</a></li>
                   <li role="separator" class="divider"></li>
                   <li class="dropdown-header">Manage your team</li>
-                  <li><a href="<?php echo(MYADMIN."?w=admdesigner"); ?>"><i class="pe-user-plus pe-fw"></i> Add a new user</a></li>
-                  <li><a href="#"><i class="pe-cogs pe-fw"></i> Member permission</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=admdesigner"); ?>" title="Add a new member"><i class="pe-user-plus pe-fw"></i> Add a new member</a></li>
+                  <li><a href="#" title="Member permission"><i class="pe-cogs pe-fw"></i> Member permission</a></li>
                 </ul>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-user pe-fw"></i> My profile <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">Manage your profile</li>
-                  <li><a href="<?php echo(MYADMIN."?w=admdesigner&amp;u=".$user."&amp;r=".$g); ?>"><i class="pe-cog pe-fw"></i> Change your info</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=passwd"); ?>"><i class="pe-key pe-fw"></i> Change your password</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=admdesigner&amp;u=".$user."&amp;r=".$g); ?>" title="Change your info"><i class="pe-cog pe-fw"></i> Change your info</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=passwd"); ?>" title="Change your password"><i class="pe-key pe-fw"></i> Change your password</a></li>
                 </ul>
   <?php if ($_SESSION['acl']['superuser'] == 'Y') { ?>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-unlock-alt pe-fw"></i> Superuser <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">Special menu</li>
-                  <li><a href="<?php echo(MYADMIN."?w=delete_survey"); ?>"><i class="pe-trash-o pe-fw"></i> Delete a survey</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=delete_response"); ?>"><i class="pe-recycle pe-fw"></i> Delete a response</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=groups"); ?>"><i class="pe-database pe-fw"></i> Manage groups</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=guide"); ?>"><i class="pe-list-alt pe-fw"></i> Admin guide</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=delete_survey"); ?>" title="Delete a survey"><i class="pe-trash-o pe-fw"></i> Delete a survey</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=delete_response"); ?>" title="Delete a response"><i class="pe-recycle pe-fw"></i> Delete a response</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=groups"); ?>" title="Manage groups"><i class="pe-database pe-fw"></i> Manage groups</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=help"); ?>" title="Admin guide"><i class="pe-list-alt pe-fw"></i> Admin guide</a></li>
                 </ul>
   <?php } ?>
-              <!-- <li><a href="<?php echo(MYADMIN."?w=logout"); ?>"><i class="pe-sign-out pe-fw"></i> Log out</a></li> -->
-              <!-- <li><a href="http://www.pebinary.net/en/clients/"><i class="pe-university pe-fw"></i> Help</a></li> -->
 <?php } else { ?>
-              <li><a href="<?php echo MYADMIN; ?>" title="PE BINARY CO., LTD."><i class="pe-home pe-fw"></i> Home</a></i>
-              <!-- <li><a href="<?php echo(MYADMIN."?w=login"); ?>"><i class="pe-power-off pe-fw"></i> Log in</a></li> -->
-              <li><a href="<?php echo(MYADMIN."request.php"); ?>"><i class="pe-bullhorn pe-fw"></i> Request for an access</a></li>
-              <!-- <li><a href="http://www.pebinary.net/en/clients/"><i class="pe-university pe-fw"></i> Help</a></li> -->
+              <li><a href="<?php echo MYADMIN; ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> Home</a></i>
+              <li><a href="<?php echo(MYADMIN."request.php"); ?>" title="Request for an access"><i class="pe-bullhorn pe-fw"></i> Request for an access</a></li>
+              <li><a href="<?php echo(MYADMIN."contact.php"); ?>" title="Contact us"><i class="pe-envelope-o pe-fw"></i> Contact us</a></li>
 <?php } ?>
             </ul>
           </div>
@@ -186,7 +183,7 @@ function pageFooter($notes = null) {
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-2">
       <div class="container">
-        <a href="<?php echo MYHOME; ?>" class="footerlogo-ssq" title=title="SiamSquare Survey Engine"><?php ssqlogo(); ?></a> by
+        <a href="<?php echo MYHOME; ?>" class="footerlogo-ssq" title="<?php echo MYDESC; ?>"><?php ssqlogo(); ?></a> by
         <a href="http://www.pebinary.com" class="footerlogo" title="PE BINARY CO., LTD."><?php peblogo(); ?></a><br>
         <i class="pe-copyright"></i> Copyright 2016, All rights reserved.<br>
         <nav class="footer">
@@ -201,7 +198,7 @@ function pageFooter($notes = null) {
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3">
       <div class="container">
         <a class="btn btn-info btn-xs" href="http://www.bootlint.com/?url=<?php echo MYHOME.ME; ?>" target="_blank" role="button">bootlint</a>
-        <?php include_once DOCROOT.'/admin/assets/include/i/debug.inc'; ?>
+        <?php include_once DOCROOT.'/admin/assets/include/debug.inc'; ?>
       </div>
     </div>
   </div>

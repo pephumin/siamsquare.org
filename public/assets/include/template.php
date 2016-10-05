@@ -98,8 +98,8 @@ function pageHeader($title) {
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button" title="ข้อมูลส่วนตัว"><i class="pe-user pe-fw"></i> ข้อมูลส่วนตัว <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">เปลี่ยนแปลงข้อมูลส่วนตัว</li>
-                  <li><a href="<?php echo(MYPUBLIC."?doChangeProfile=1"); ?>" title="แก้ไขเปลี่ยนแปลงข้อมูลเกี่ยวกับตัวคุณ"><i class="pe-cog pe-fw"></i> แก้ไขข้อมูลของคุณ</a></li>
-                  <li><a href="<?php echo(MYPUBLIC."?doChangePassword=1"); ?>" title="แก้ไขเปลี่ยนแปลงรหัสลับ"><i class="pe-key pe-fw"></i> เปลี่ยนรหัสลับ</a></li>
+                  <li><a href="<?php echo(MYPUBLIC."?w=changeprofile"); ?>" title="แก้ไขเปลี่ยนแปลงข้อมูลเกี่ยวกับตัวคุณ"><i class="pe-cog pe-fw"></i> แก้ไขข้อมูลของคุณ</a></li>
+                  <li><a href="<?php echo(MYPUBLIC."?w=changepass"); ?>" title="แก้ไขเปลี่ยนแปลงรหัสผ่าน"><i class="pe-key pe-fw"></i> เปลี่ยนรหัสผ่าน</a></li>
                 </ul>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-commenting pe-fw"></i> งานวิจัย <span class="caret"></span></a>
@@ -109,17 +109,16 @@ function pageHeader($title) {
                   <li><a href="" title="History"><i class="pe-history pe-fw"></i> งานวิจัยในอดีต</a></li>
                 </ul>
               <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-flag pe-fw"></i> คะแนน <span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-trophy pe-fw"></i> คะแนน <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">คะแนนสะสมและของรางวัล</li>
-                  <li><a href="" title="ยอดคะแนนสะสม"><i class="pe-trophy pe-fw"></i> ยอดคะแนนสะสม</a></li>
-                  <li><a href="" title="ของรางวัล"><i class="pe-diamond pe-fw"></i> ของรางวัล</a></li>
+                  <li><a href="" title="ยอดคะแนนสะสม"><i class="pe-diamond pe-fw"></i> ยอดคะแนนสะสม</a></li>
+                  <li><a href="" title="ของรางวัล"><i class="pe-gift pe-fw"></i> ของรางวัล</a></li>
                 </ul>
-              <!-- <li><a href="<?php echo MYPUBLIC; ?>?doLogout=1"><i class="pe-sign-out pe-fw"></i> ออกจากระบบ</a></li> -->
 <?php } else { ?>
-              <li><a href="<?php echo(MYPUBLIC); ?>" title="เข้าสู่ระบบ"><i class="pe-power-off pe-fw"></i> เข้าสู่ระบบ</a></li>
+              <li><a href="<?php echo MYPUBLIC; ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> หน้าแรก</a></i>
               <li><a href="<?php echo(MYPUBLIC."signup.php"); ?>" title="สมัครสมาชิก"><i class="pe-bullhorn pe-fw"></i> สมัครสมาชิก</a></li>
-              <!-- <li><a href="http://www.pebinary.net/th/members/" title="วิธีการใช้งาน"><i class="pe-university pe-fw"></i> วิธีการใช้งาน</a></li> -->
+              <li><a href="<?php echo(MYPUBLIC."contact.php"); ?>" title="ติดต่อเรา"><i class="pe-envelope-o pe-fw"></i> ติดต่อเรา</a></li>
 <?php } ?>
             </ul>
           </div>
@@ -129,92 +128,6 @@ function pageHeader($title) {
   </div>
 </header>
 <main class="container">
-<?php
-}
-
-function topNav_full() {
-  $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>" . $_SESSION['espuser'] . "</kbd>";
-  if (is_session_authenticated()) { $signed = "Logged in as $show"; } else { $signed = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised member only"; }
-  header("Content-language: en");
-  header("Content-type: text/html; charset=utf-8");
-?>
-      <nav class="navbar navbar-default navbar-static-top">
-        <div class="container">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a href="<?php echo MYPUBLIC; ?>" class="navbar-brand" title="<?php echo MYDESC; ?>"><?php echo $signed; ?></a>
-          </div>
-          <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-<?php if (is_session_authenticated()) { ?>
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-user pe-fw"></i> My profile <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li class="dropdown-header">Manage your profile</li>
-                  <li><a href="<?php echo MYPUBLIC; ?>?doChangeProfile=1"><i class="pe-cog pe-fw"></i> Change your info</a></li>
-                  <li><a href="<?php echo MYPUBLIC; ?>?doChangePassword=1"><i class="pe-key pe-fw"></i> Change your password</a></li>
-                </ul>
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-commenting pe-fw"></i> My participation <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li class="dropdown-header">Participation</li>
-                  <li><a href=""><i class="pe-wpforms pe-fw"></i> Current surveys</a></li>
-                  <li><a href=""><i class="pe-history pe-fw"></i> History</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li class="dropdown-header">Points &amp; rewards</li>
-                  <li><a href=""><i class="pe-trophy pe-fw"></i> Current points</a></li>
-                  <li><a href=""><i class="pe-diamond pe-fw"></i> Rewards</a></li>
-                </ul>
-              <li><a href="<?php echo MYPUBLIC; ?>?doLogout=1"><i class="pe-sign-out pe-fw"></i> Log out</a></li>
-<?php } else { ?>
-              <!-- <li><a href="<?php echo MYPUBLIC; ?>"><i class="pe-power-off pe-fw"></i> Log in</a></li>
-              <li><a href="<?php echo MYPUBLIC; ?>signup.php"><i class="pe-bullhorn pe-fw"></i> Become a member</a></li> -->
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown"><i class="pe-power-off pe-fw"></i> Log in <span class="caret"></span></a>
-                <ul class="dropdown-menu topnav-dropdown">
-                  <li>
-                    <form class="form" role="form" method="post" action="">
-                      <div class="input-group margin-bottom-sm">
-                        <span class="input-group-addon"><i class="pe-envelope-o pe-fw"></i></span>
-                        <input type="text" name="username" class="form-control" placeholder="email@company.com">
-                      </div>
-                      <div class="input-group">
-                        <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
-                        <input type="password" name="password" class="form-control" placeholder="Password">
-                      </div>
-                      <div class="checkbox checkbox-primary">
-                        <input id="rememberme" type="checkbox" checked> <label for="rememberme">Remember me</label>
-                      </div>
-                      <button type="submit" class="btn btn-info btn-block">Log in <i class="pe-check-circle-o"></i></button>
-                    </form>
-                  </li>
-                </ul>
-              </li>
-              <li class="dropdown topnav-dropdown-color">
-                <a class="dropdown-toggle" data-toggle="dropdown"><i class="pe-bullhorn pe-fw"></i> Become a member <span class="caret"></span></a>
-                <ul class="dropdown-menu topnav-dropdown">
-                  <li>
-                    <a href="" class="btn btn-info btn-block topnav-btn" type="button" title="Sign up with Email"><span class="white">Sign up with <i class="pe-envelope-o pe-fw"></i> Email</span></a>
-                  </li>
-                  <li class="divider"></li>
-                  <li>
-                    <a href="" class="btn btn-default btn-block topnav-btn" type="button" title="Sign up with Facebook">Sign up with <i class="pe-facebook pe-fw"></i> Facebook</a>
-                    <a href="" class="btn btn-default btn-block topnav-btn" type="button" title="Sign up with Twitter">Sign up with <i class="pe-twitter pe-fw"></i> Twitter</a>
-                    <a href="" class="btn btn-default btn-block topnav-btn" type="button" title="Sign up with Google">Sign up with <i class="pe-google pe-fw"></i> Google</a>
-                  </li>
-                </ul>
-              </li>
-              <li><a href="http://www.siamsquare.org/"><i class="pe-undo pe-fw"></i> Back</a></li>
-<?php } ?>
-            </ul>
-          </div>
-        </div>
-      </nav>
 <?php
 }
 
@@ -247,7 +160,7 @@ function pageFooter($notes = null) {
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-2">
       <div class="container">
-        <a href="http://www.siamsquare.org" class="footerlogo-ssq" title=title="SiamSquare Survey Engine"><?php ssqlogo(); ?></a> ดำเนินการโดย
+        <a href="http://www.siamsquare.org" class="footerlogo-ssq" title="<?php echo MYDESC; ?>"><?php ssqlogo(); ?></a> ดำเนินการโดย
         <a href="http://www.pebinary.com" class="footerlogo" title="PE BINARY CO., LTD."><?php peblogo(); ?></a><br>
         <i class="pe-copyright"></i> ลิขสิทธิ์ 2016 สงวนลิขสิทธิ์<br>
         <nav class="footer">
@@ -262,7 +175,7 @@ function pageFooter($notes = null) {
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3">
       <div class="container">
         <a class="btn btn-info btn-xs" href="http://www.bootlint.com/?url=<?php echo MYHOME.ME; ?>" target="_blank" role="button">bootlint</a>
-<?php include_once DOCROOT.'/admin/assets/include/i/debug.inc'; ?>
+<?php include_once DOCROOT.'/admin/assets/include/debug.inc'; ?>
       </div>
     </div>
   </div>
@@ -367,22 +280,16 @@ function handleLogout() {
 }
 
 function handleChangeProfile($note = null) {
-  // are we in change profile mode?
-  $showChangeProfile   = ($GLOBALS['ESPCONFIG']['dashboard_allow_change_profile'] && empty($_REQUEST['doChangeProfileCancel']) && is_session_authenticated() && isset($_REQUEST['doChangeProfile']) ? true : false);
-  // are we also changing the password?
+  $showChangeProfile = (is_session_authenticated() && isset($_REQUEST['doChangeProfile']) ? true : false);
   $handleChangeProfile = ($showChangeProfile && get_current_respondent($respondent) && isset($_REQUEST['firstName']) && isset($_REQUEST['lastName']) && isset($_REQUEST['emailAddress']) ? true : false);
-
-  // if changing, handle it
   if ($handleChangeProfile) {
-    $ok = change_profile($respondent['username'], $respondent['realm'], $_REQUEST['firstName'], $_REQUEST['lastName'], $_REQUEST['emailAddress']);
-    if ($ok) {
-      $showChangeProfile = false;
-      $GLOBALS['errmsg'] = mkerror('Your profile has been updated successfully');
-    }
-    else { $GLOBALS['errmsg'] = mkerror('Unable to change your password; contact an administrator'); }
+    if ($_REQUEST['captcha'] == $_SESSION["captcha"]) {
+      $ok = change_profile($respondent['username'], $respondent['realm'], $_REQUEST['firstName'], $_REQUEST['lastName'], $_REQUEST['emailAddress']);
+      if ($ok) { $showChangeProfile = false; $GLOBALS['errmsg'] = mkerror('Your profile has been updated successfully'); }
+      else { $GLOBALS['errmsg'] = mkerror('Unable to change your password; contact an administrator'); }
+    } else { $GLOBALS['errmsg'] = mkerror('Wrong captcha'); }
   }
 
-  // if we're showing the change profile form, do so
   if ($showChangeProfile) {
     if (empty($_REQUEST['firstName'])) { $_REQUEST['firstName'] = $respondent['fname']; }
     if (empty($_REQUEST['lastName'])) { $_REQUEST['lastName'] = $respondent['lname']; }
@@ -393,40 +300,48 @@ function handleChangeProfile($note = null) {
   }
 }
 
-function handleChangePassword($notes = null) {
-  // are we in change password mode?
-  $showChangePassword   = ($GLOBALS['ESPCONFIG']['dashboard_allow_change_password'] && empty($_REQUEST['doChangePasswordCancel']) && is_session_authenticated() && isset($_REQUEST['doChangePassword']) ? true : false);
-  // are we also changing the password?
-  $handleChangePassword = ($showChangePassword && get_current_respondent($respondent) && ! empty($_REQUEST['oldPassword']) && ! empty($_REQUEST['newPassword']) && ! empty($_REQUEST['newPasswordConfirm']) ? true : false);
+function change_profile($username, $realm, $firstName, $lastName, $emailAddress) {
+  $_username = _addslashes($username); $_realm = _addslashes($realm);
+  $_firstName = _addslashes($firstName); $_lastName = _addslashes($lastName);
+  $_emailAddress = _addslashes($emailAddress); $changed  = sys_time_stamp();
+  $sql = "UPDATE ".X_RESPONDENT." SET fname = $_firstName, lname = $_lastName, email = $_emailAddress, changed = $changed WHERE username = $_username AND realm = $_realm";
+  $res = execute_sql($sql);
+  $notes = array (array("title" => "Profile updated", "text" => "You have successfully updated your detailed profile.", "image" => "assets/img/notification.svg"));
+  if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); notify($notes); return true; }
+  else { return false; }
+}
 
-  // if changing, handle it
+function handleChangePassword($notes = null) {
+  $showChangePassword = (isset($_REQUEST['doChangePassword']) && is_session_authenticated() ? true : false);
+  $handleChangePassword = ($showChangePassword && get_current_respondent($respondent) ? true : false);
   if ($handleChangePassword) {
     $isAuthenticated = authenticate($respondent['username'], $_REQUEST['oldPassword'], $realms);
     $isAuthenticated = (1 === count($realms) ? $isAuthenticated : false);
     $isMatch = (0 === strcmp($_REQUEST['newPassword'], $_REQUEST['newPasswordConfirm']) ? true : false);
-
-    // if the old password authenticates and the confirmation password matches, go change
     if ($isAuthenticated && $isMatch) {
-      // if password changes successfully, drop out of show change password mode
       $ok = change_password($respondent['username'], $respondent['realm'], $_REQUEST['newPassword']);
-      if ($ok) {
-        $showChangePassword = false;
-        $GLOBALS['errmsg'] = mkerror('Your password has been changed successfully');
-      } else { $GLOBALS['errmsg'] = mkerror('Unable to change your password; contact an administrator'); }
-    // if the old password authenticates but the confirmation doesn't match
-    } elseif ($isAuthenticated && ! $isMatch) { $GLOBALS['errmsg'] = mkerror('Passwords do not match; check your typing'); }
+      if ($ok) { $showChangePassword = false; $GLOBALS['errmsg'] = mkerror('Your password has been changed successfully'); }
+      else { $GLOBALS['errmsg'] = mkerror('Unable to change your password; contact an administrator'); }
+    }
+    elseif ($isAuthenticated && ! $isMatch) { $GLOBALS['errmsg'] = mkerror('Passwords do not match; check your typing'); }
     else { $GLOBALS['errmsg'] = mkerror('Old password incorrect; check your typing'); }
   }
+  if ($showChangePassword) { render_passwd_change_form(); if ($notes) { pageFooter($notes); } else { pageFooter(); } exit; }
+}
 
-  if ($showChangePassword) {
-    render_passwd_change_form();
-    if ($notes) { pageFooter($notes); } else { pageFooter(); }
-    exit;
-  }
+function change_password($username, $realm, $password) {
+  $_username = _addslashes($username); $_realm = _addslashes($realm);
+  $_password = db_crypt(_addslashes($password)); $changed  = sys_time_stamp();
+  $sql = "UPDATE ".X_RESPONDENT." SET password = $_password, changed = $changed WHERE username = $_username AND realm = $_realm";
+  $res = execute_sql($sql);
+  $notes = array (array("title" => "Password changed", "text" => "You have successfully changed your password. Please keep it safe and secure.", "image" => "assets/img/notification.svg"));
+  if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); notify($notes); return true; }
+  else { return false; }
 }
 
 function paint_non_authenticated() {
   render_login_form();
+  // require_once WPUBLIC.'/login.inc';
 }
 
 function paint_public_survey_list() {
@@ -452,6 +367,7 @@ function paint_public_survey_list() {
 }
 
 function paint_authenticated() {
+  // echo "PEPE";
   get_survey_info($surveys, $responses, $accessibility);
   partition_surveys($surveys, $responses, $accessibility, $current, $historical);
   paint_respondent_tools();
@@ -481,8 +397,8 @@ function paint_respondent_tools() {
   echo "      </div>\n";
   //echo "      </div>\n";
   echo "      <div id=\"userAdmin\" class=\"list-group\">\n";
-  echo "        <a class=\"list-group-item\" href=\"$p?doChangeProfile=1\"><i class=\"pe-cog pe-fw\"></i>&nbsp; Change your info</a>\n";
-  echo "        <a class=\"list-group-item\" href=\"$p?doChangePassword=1\"><i class=\"pe-key pe-fw\"></i>&nbsp; Change your password</a>\n";
+  echo "        <a class=\"list-group-item\" href=\"$p?w=changeprofile\"><i class=\"pe-cog pe-fw\"></i>&nbsp; Change your info</a>\n";
+  echo "        <a class=\"list-group-item\" href=\"$p?w=changepass\"><i class=\"pe-key pe-fw\"></i>&nbsp; Change your password</a>\n";
   echo "      </div>\n";
   echo "    </div>\n";
   echo "  </div>\n";
@@ -500,7 +416,6 @@ function paint_respondent_surveys($current) {
     echo "    <th width=\"20%\">คุณเข้าร่วมครั้งล่าสุด</th>\n";
     echo "    <th width=\"40%\">สถานะในปัจจุบัน</th>\n";
     echo "  </tr>\n";
-
     foreach ($current as $sid => $info) {
       list ($name, $status, $date, $avail) = $info;
       printf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>', $name, $status, $date, $avail);
@@ -526,9 +441,9 @@ function paint_respondent_history($historical) {
       printf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>', $name, $status, $date, $avail);
     }
     echo "</table>\n";
-    }
-    else { echo "คุณไม่มีงานวิจัยที่ผ่านไปแล้วในช่วงนี้"; }
-    echo "<br>\n\n";
+  }
+  else { echo "คุณไม่มีงานวิจัยที่ผ่านไปแล้วในช่วงนี้"; }
+  echo "<br>\n\n";
 }
 
 function get_survey_info(&$surveys, &$responses, &$accessibility) {
@@ -546,9 +461,8 @@ function get_survey_info(&$surveys, &$responses, &$accessibility) {
     $sids = array_keys($surveys);
     survey_get_responses($responses, $sids, $respondent['username']);
     survey_get_accessibility($accessibility, $sids, $respondent['username'], $respondent['realm']);
-  } else {
-    survey_get_accessibility($accessibility, $sids);
   }
+  else { survey_get_accessibility($accessibility, $sids); }
   return true;
 }
 
@@ -573,15 +487,9 @@ function partition_surveys($surveys, $responses, $accessibility, &$current, &$hi
 }
 
 function fetch_status($sid, $responses) {
-  // get the status
   if (isset($responses[$sid])) {
-    // there are responses
-    if (isset($responses[$sid]['complete'])) { // only one response
-      $status = ('Y' == $responses[$sid]['complete'] ? STATUS_FINISHED : STATUS_ALL_PARTIAL);
-    } else { // more than one response
-      $status = STATUS_FINISHED;
-      foreach ($responses[$sid] as $response) { if ('N' == $response['complete']) { $status = STATUS_SOME_PARTIAL; } }
-    }
+    if (isset($responses[$sid]['complete'])) { $status = ('Y' == $responses[$sid]['complete'] ? STATUS_FINISHED : STATUS_ALL_PARTIAL); }
+    else { $status = STATUS_FINISHED; foreach ($responses[$sid] as $response) { if ('N' == $response['complete']) { $status = STATUS_SOME_PARTIAL; } } }
   }
   else { $status = STATUS_NOT_STARTED; }
   return $status;
@@ -589,22 +497,10 @@ function fetch_status($sid, $responses) {
 
 function fetch_latest_submission_date($sid, $responses) {
   if (isset($responses[$sid])) {
-    // there are responses
-    if (isset($responses[$sid]['submitted'])) {
-      // there is only one response
-      $date = $responses[$sid]['submitted'];
-    } else {
-      // more than one response
-      $date = '0000-00-00 00:00:00';
-      foreach ($responses[$sid] as $response) {
-        if ($date < $response['submitted']) {
-          $date = $response['submitted'];
-        }
-      }
-    }
-    // don't need the date down to the second, so just go down to the minute
+    if (isset($responses[$sid]['submitted'])) { $date = $responses[$sid]['submitted']; }
+    else { $date = '0000-00-00 00:00:00'; foreach ($responses[$sid] as $response) { if ($date < $response['submitted']) { $date = $response['submitted']; } } }
     $datets = strtotime($date);
-    if (-1 !== $datets) { $date = strftime(FORMAT_OUTPUT_DATE, $datets); }
+    if (-1 !== $datets) { $date = strftime(FORMAT_DATE, $datets); }
   }
   else { $date = ''; }
   return $date;
@@ -620,52 +516,22 @@ function fetch_availability($survey, &$rc) {
   }
 }
 
-function render_login_form($action = null, $usernameVar = 'username', $passwordVar = 'password', $loginButtonVar = 'doLogin', $_message = null) {
+function render_login_form() {
   $username = (isset($_REQUEST['username']) ? $_REQUEST['username'] : '');
   $str = "";
   if ($_message) { echo mkerror($_message); }
   require_once WPUBLIC.'/login.inc';
 }
 
-function render_profile_change_form ($action = null, $firstNameVar = 'firstName', $lastNameVar = 'lastName', $emailVar = 'emailAddress', $changeButtonVar = 'doChangeProfile', $cancelButtonVar = 'doChangeProfileCancel' ) {
-  global $respondent;
-  $cfg =& $GLOBALS['ESPCONFIG'];
+function render_profile_change_form() {
   $firstName = (isset($_REQUEST[$firstNameVar]) ? htmlentities($_REQUEST[$firstNameVar]) : '');
   $lastName = (isset($_REQUEST[$lastNameVar]) ? htmlentities($_REQUEST[$lastNameVar]) : '');
   $emailAddress = (isset($_REQUEST[$emailVar]) ? htmlentities($_REQUEST[$emailVar]) : '');
-  echo "<h2>Changing your profile</h2>\n\n";
-  echo "<br>\n\n";
-  echo "<form class=\"form-horizontal\" method=\"post\" id=\"profile_change\" action=" . htmlspecialchars(MYPUBLIC) .">\n";
-  echo "  <div class=\"form-group\">\n";
-  echo "    <label class=\"col-sm-3 control-label\">Email (login): </label>\n";
-  echo "    <div class=\"col-sm-9\">\n";
-  echo "      <input type=\"text\" class=\"form-control\" name=\"$emailVar\" placeholder=\"$emailAddress\" disabled>\n";
-  echo "      <input type=\"hidden\" name=\"$emailVar\" value=\"$emailAddress\" />\n";
-  echo "    </div>\n";
-  echo "  </div>\n";
-  echo "  <div class=\"form-group\">\n";
-  echo "    <label class=\"col-sm-3 control-label\" for=\"$firstNameVar\">First name:</label>\n";
-  echo "    <div class=\"col-sm-9\">\n";
-  echo "      <input type=\"text\" class=\"form-control\" name=\"$firstNameVar\" value=\"$firstName\">\n";
-  echo "    </div>\n";
-  echo "  </div>\n";
-  echo "  <div class=\"form-group\">\n";
-  echo "    <label class=\"col-sm-3 control-label\" for=\"$lastNameVar\">Last name:</label>\n";
-  echo "    <div class=\"col-sm-9\">\n";
-  echo "      <input type=\"text\" class=\"form-control\" name=\"$lastNameVar\" value=\"$lastName\">\n";
-  echo "    </div>\n";
-  echo "  </div>\n";
-  echo "  <div class=\"col-sm-offset-3 col-sm-9\">\n";
-  echo "    <button type=\"submit\" class=\"btn btn-info\" name=\"$changeButtonVar\">Update <i class=\"pe-check-circle-o\"></i></button> &nbsp;\n";
-  echo "    <button type=\"submit\" class=\"btn btn-default\" name=\"$cancelButtonVar\">Cancel</button>\n";
-  echo "  </div>\n";
-  echo "</form>\n";
+  include WPUBLIC.'/changeprofile.inc';
 }
 
-function render_passwd_change_form ($action = null, $oldPasswordVar = 'oldPassword', $newPasswordVar = 'newPassword', $newPasswordConfirmVar = 'newPasswordConfirm', $changeButtonVar = 'doChangePassword', $cancelButtonVar = 'doChangePasswordCancel') {
-  global $respondent;
-  require_once WPUBLIC.'/changepass.inc';
+function render_passwd_change_form() {
+  include WPUBLIC.'/changepass.inc';
 }
-
 
 ?>
