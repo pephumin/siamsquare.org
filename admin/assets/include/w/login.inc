@@ -50,8 +50,8 @@
     });
   });
 </script>
-<div class="alert alert-warning alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-  <h4><i class="pe-bullhorn pe-fw pe-lg"></i> Unauthorised access to this system is prohibited by law</h4>
+<div class="alert alert-warning alert-dismissible" role="alert"><a class="close" data-dismiss="alert" aria-label="close">&times;</a>
+  <h4><i class="pe-exclamation-triangle pe-fw pe-lg"></i> Unauthorised access to this system is prohibited by law</h4>
   <p>You are accessing a private computer network which includes: (1) this machine, (2) this computer network, (3) all computers/servers connected to this network, and (4) all devices and storage media attached to this network or to a computer on this network. This information system is provided for registered clients authorised use only. Unauthorized or improper use of this system may result in disciplinary action, as well as civil and criminal penalties.</p>
   <p>If you do not have an access, please contact sales for setting up a master login/password for your company.</p>
   <p>By using this information system, you understand and consent to the following:</p>
