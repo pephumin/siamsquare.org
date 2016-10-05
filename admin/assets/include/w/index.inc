@@ -45,22 +45,22 @@ db_close($result);
     <div class="panel panel-primary">
       <h4 class="panel-heading">Section 3</h4>
       <div class="list-group">
-        <?php if ($_b[0]) { ?>
-        <a class="list-group-item" href="<?php echo(htmlspecialchars(MYADMIN."?w=admdesigner&u=$_a&r=$_b[0]")); ?>"><i class="pe-cog pe-fw"></i>&nbsp; Change your info</a>
-        <?php } ?>
-        <?php if ($GLOBALS['ESPCONFIG']['auth_type']) { ?>
-        <a class="list-group-item" href="<?php echo(htmlspecialchars(MYADMIN."?w=passwd")); ?>"><i class="pe-key pe-fw"></i>&nbsp; Change your password</a>
-        <?php } ?>
-        <?php if ($GLOBALS['ESPCONFIG']['auth_response']) { ?>
-        <a class="list-group-item list-group-item-info" href="<?php echo(htmlspecialchars(MYADMIN."?w=access")); ?>"><i class="pe-wrench pe-fw"></i>&nbsp; Change survey access</a>
-        <?php } ?>
-        <?php if ($_SESSION['acl']['superuser'] == 'Y' || count($_SESSION['acl']['puser']) > 0) { ?>
-        <a class="list-group-item list-group-item-warning" href="<?php echo(htmlspecialchars(MYADMIN."?w=respondents")); ?>"><i class="pe-user pe-fw"></i>&nbsp; Manage respondent accounts</a>
-        <?php } ?>
-        <?php if ($_SESSION['acl']['superuser'] == 'Y' || count($_SESSION['acl']['pgroup']) > 0)   { ?>
-        <a class="list-group-item list-group-item-warning" href="<?php echo(htmlspecialchars(MYADMIN."?w=designers")); ?>"><i class="pe-cogs pe-fw"></i>&nbsp; Manage designer accounts</a>
-        <?php } ?>
-      </div>
+    <?php if ($_b[0]) { ?>
+    <a class="list-group-item" href="<?php echo(htmlspecialchars(MYADMIN."?w=admdesigner&u=$_a&r=$_b[0]")); ?>"><i class="pe-cog pe-fw"></i>&nbsp; Change your info</a>
+    <?php } ?>
+    <?php if ($GLOBALS['ESPCONFIG']['auth_type']) { ?>
+<a class="list-group-item" href="<?php echo(htmlspecialchars(MYADMIN."?w=passwd")); ?>"><i class="pe-key pe-fw"></i>&nbsp; Change your password</a>
+    <?php } ?>
+    <?php if ($GLOBALS['ESPCONFIG']['auth_response']) { ?>
+<a class="list-group-item list-group-item-info" href="<?php echo(htmlspecialchars(MYADMIN."?w=access")); ?>"><i class="pe-wrench pe-fw"></i>&nbsp; Change survey access</a>
+    <?php } ?>
+    <?php if ($_SESSION['acl']['superuser'] == 'Y' || count($_SESSION['acl']['puser']) > 0) { ?>
+<a class="list-group-item list-group-item-warning" href="<?php echo(htmlspecialchars(MYADMIN."?w=respondents")); ?>"><i class="pe-user pe-fw"></i>&nbsp; Manage respondent accounts</a>
+    <?php } ?>
+    <?php if ($_SESSION['acl']['superuser'] == 'Y' || count($_SESSION['acl']['pgroup']) > 0)   { ?>
+<a class="list-group-item list-group-item-warning" href="<?php echo(htmlspecialchars(MYADMIN."?w=designers")); ?>"><i class="pe-cogs pe-fw"></i>&nbsp; Manage designer accounts</a>
+    <?php } ?>
+  </div>
     </div>
   </div>
 <?php if ($_SESSION['acl']['superuser'] == 'Y') { ?>

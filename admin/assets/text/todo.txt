@@ -1,7 +1,10 @@
 
-TODO LISTS
-----------
+<h2 id="top">Todo list</h2>
 
-* One 
-* Two
-* Three
+<p>Things I still need to do...</p>
+
+<ol>
+<li>One</li>
+<li>Two</li>
+<li>Three</li>
+</ol>
