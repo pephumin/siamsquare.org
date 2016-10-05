@@ -1,15 +1,15 @@
 <?php
 
-function esp_where($where = null) {
-  $cfg =& $GLOBALS['ESPCONFIG'];
-  if (empty($where)) { $where = 'index'; }
-  $where = strtolower(preg_replace('/ +/','_',$where));
-  if (!preg_match('/^[A-Za-z0-9_]+$/',$where)) { $where = 'index'; }
-  $filecheck = WADMIN.'/'.$where.'.inc';
-  if (!file_exists($filecheck)) { $where = 'index'; }
-  if (!file_exists($filecheck)) { echo('Unable to open include file. Check INI settings. Aborting.'); exit; }
-  return($filecheck);
-}
+// function esp_where($where = null) {
+//   $cfg =& $GLOBALS['ESPCONFIG'];
+//   if (empty($where)) { $where = 'index'; }
+//   $where = strtolower(preg_replace('/ +/','_',$where));
+//   if (!preg_match('/^[A-Za-z0-9_]+$/',$where)) { $where = 'index'; }
+//   $filecheck = WADMIN.'/'.$where.'.inc';
+//   if (!file_exists($filecheck)) { $where = 'index'; }
+//   if (!file_exists($filecheck)) { echo('Unable to open include file. Check INI settings. Aborting.'); exit; }
+//   return($filecheck);
+// }
 
 function wAdmin($w = null) {
   if (empty($w)) { $w = 'index'; }
@@ -33,25 +33,15 @@ function wPublic($w = null) {
 
 function esp_init_adodb() {
   $cfg =& $GLOBALS['ESPCONFIG'];
-  //$dbcheck = DOCROOT.'/admin/assets/include/lib/adodb/adodb.inc.php';
-  $dbcheck = INCLUDEADM.'/lib/adodb/adodb.inc.php';
+  $dbcheck = INCLUDEADM.'/adodb/adodb.inc.php';
   if (!file_exists($dbcheck)) { echo('Unable to open ADODB include file. Check INI settings. Aborting.'); exit; }
-  //else { include DOCROOT.'/admin/assets/include/lib/adodb/adodb.inc.php'; }
-  else { include INCLUDEADM.'/lib/adodb/adodb.inc.php'; }
+  else { include INCLUDEADM.'/adodb/adodb.inc.php'; }
   if (isset($cfg['adodb_conn'])) { return; }
-  $cfg['adodb_conn'] = &ADONewConnection($cfg['adodb_database_type']);
+  $cfg['adodb_conn'] = &ADONewConnection("mysql");
   error_reporting(0);  // Hide errors
 
   //$cfg['adodb_conn']->debug=1;
-  if ($cfg['adodb_database_type'] == "sqlite") { $dbconnected = $cfg['adodb_conn']->Connect($cfg['adodb_pathto_db']); }
-  else {
-    if (!isset($cfg['adodbi_persist']) or (isset($cfg['adodb_persist']) && $cfg['adodb_persist'])) {
-      $dbconnected = $cfg['adodb_conn']->PConnect(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
-    } else {
-      $dbconnected = $cfg['adodb_conn']->Connect(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
-    }
-  }
-
+  $dbconnected = $cfg['adodb_conn']->PConnect(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
   $charset = "SET NAMES utf8";
   mysql_query($charset) or die('Invalid query: ' . mysql_error());
 
@@ -79,7 +69,7 @@ function esp_file_get_contents($file) {
   $f = fopen($file,'r');
   if (!$f) { return ''; }
   $t = '';
-  while ($s = fread($f,100000)) { $t .= $s; }
+  while ($s = fread($f, 100000)) { $t .= $s; }
   fclose($f);
   return $t;
 }
@@ -87,22 +77,33 @@ function esp_file_get_contents($file) {
 function check_checksum($file) {
   $checksum = trim(esp_file_get_contents($file.".checksum"));
   if (md5_file($file) != $checksum) {
-    //$file = str_replace(ESP_BASE,"",$file);
     $file = str_replace(DOCROOT,"",$file);
     print mkwarn("WARNING: Checksum for file $file doesn't match");
   }
 }
 
 function remove_magic_quotes($input) {
-  if (get_magic_quotes_gpc()) $input= stripslashes($input);
+  if (get_magic_quotes_gpc()) { $input = stripslashes($input); }
   return $input;
 }
 
-function goto_thankyou($sid,$referer) {
+function goto_saved($sid, $url) {
+  if ($_REQUEST['test']) { $url = $url."?w=test&test=1&sid=".$sid; }
+  survey_stat_decrement(SURVEY_STAT_ABANDONED, $sid);
+  survey_stat_increment(SURVEY_STAT_SUSPENDED, $sid);
+  echo "<h2>Your survey has been saved</h2>\n";
+  echo "<p>Your progress has been saved. You may return at any time to complete this survey.</p>\n";
+  echo "<p>To continue with this particular survey, you can just simply follow the link below.</p>\n";
+  echo "<p>And of course, you can save or bookmark this link so you can come back and complete it when you are convenient.</p>\n";
+  echo "<a href=\"$url\" class=\"btn btn-success\" role=\"button\">Continue survey</a>\n";
+  return;
+}
+
+function goto_thankyou($sid, $referer) {
   survey_stat_decrement(SURVEY_STAT_ABANDONED, $sid);
   survey_stat_increment(SURVEY_STAT_COMPLETED, $sid);
   $cfg =& $GLOBALS['ESPCONFIG'];
-  $sql = "SELECT thank_head, thank_head_th, thank_body, thank_body_th FROM ".X_SURVEY." WHERE id=${sid}";
+  $sql = "SELECT thank_head, thank_head_th, thank_body, thank_body_th FROM ".X_SURVEY." WHERE id = ${sid}";
   $result = execute_sql($sql);
   list($thank_head, $thank_head_th, $thank_body, $thank_body_th) = fetch_row($result);
   db_close($result);
@@ -118,38 +119,25 @@ function goto_thankyou($sid,$referer) {
   echo "</td></tr>\n";
   echo "</table>\n";
 
-  if (isset($_GET['where']) && $_GET['where'] == 'test') {
-    if ($GLOBALS['ESPCONFIG']['limit_double_postings'] == 0) { $ref = "<a href=\"". $referer."\">Return</a><br>"; }
-    else { $ref = ""; }
-  }
+  if (isset($_GET['w']) && $_GET['w'] == 'test') { $ref = ""; }
   else { $ref = check_referer($referer); }
   echo $ref;
   return;
 }
 
 function check_referer($referer) {
-  //$pos = strpos($referer, $GLOBALS['ESPCONFIG']['autopub_url']);
   $pos = strpos($referer, MYSURVEY);
   if ($pos === false) {
     if (!empty($_REQUEST['direct']) && $_REQUEST['direct'] === '1') { $retstr = ""; }
-    else {
-      if ($GLOBALS['ESPCONFIG']['limit_double_postings'] == 0) { $retstr = "<a href=\"". $referer."\">Return</a>"; }
-      else { $retstr = ""; }
-    }
+    else { $retstr = "<a href=\"". $referer."\">Return</a>"; }
   }
   else { $retstr = ""; }
   return $retstr;
 }
 
-//  Go to a different URL, using the best method possible given the current output state
-
 function blur($url, $forwardingLabel = 'Please click here to continue...') {
-  // close the session, as it's no longer needed and we don't want to delay waiters
   session_write_close();
-  // make sure the URL is absolute, as the Location: header requires it
-  //if (0 !== strpos($url, 'http')) { $url = rtrim($GLOBALS['ESPCONFIG']['base_url'], '/') . '/' . ltrim($url, '/'); }
   if (0 !== strpos($url, 'http')) { $url = rtrim(MYHOME, '/') . '/' . ltrim($url, '/'); }
-  // go elsewhere
   if (headers_sent()) {
     echo <<<EOHTML
 <script type='text/javascript'>
@@ -163,22 +151,10 @@ EOHTML;
   exit(0);
 }
 
-function goto_saved($sid, $url) {
-  if ($_REQUEST['test']) { $url = $url."?w=test&test=1&sid=".$sid; }
-  survey_stat_decrement(SURVEY_STAT_ABANDONED, $sid);
-  survey_stat_increment(SURVEY_STAT_SUSPENDED, $sid);
-  echo "<h2>Your survey has been saved</h2>\n";
-  echo "<p>Your progress has been saved. You may return at any time to complete this survey.</p>\n";
-  echo "<p>To continue with this particular survey, you can just simply follow the link below.</p>\n";
-  echo "<p>And of course, you can save or bookmark this link so you can come back and complete it when you are convenient.</p>\n";
-  echo "<a href=\"$url\" class=\"btn btn-success\" role=\"button\">Continue survey</a>\n";
-  return;
-}
-
-function execute_sql($command, $limit=null, $assoc=ADODB_FETCH_NUM) {
+function execute_sql($command, $limit = null, $assoc = ADODB_FETCH_NUM) {
   $cfg =& $GLOBALS['ESPCONFIG'];
   $cfg['adodb_conn']->SetFetchMode($assoc);
-  if ($limit) { $result = $cfg['adodb_conn']->SelectLimit($command,$limit); } else { $result = $cfg['adodb_conn']->Execute($command); }
+  if ($limit) { $result = $cfg['adodb_conn']->SelectLimit($command, $limit); } else { $result = $cfg['adodb_conn']->Execute($command); }
   if ($result) { return $result; } else { return 0; }
 }
 
@@ -212,14 +188,7 @@ function record_count(&$recordset) {
 
 function insert_id($sequence="") {
   $cfg =& $GLOBALS['ESPCONFIG'];
-  switch ($cfg['adodb_database_type']) {
-    case "postgres":
-    case "oracle":
-      $sql = "select currval('".$sequence."')";
-      return $cfg['adodb_conn']->GetOne($sql);
-    default:
-      return $cfg['adodb_conn']->Insert_ID();
-  }
+  return $cfg['adodb_conn']->Insert_ID();
 }
 
 function db_close(&$recordset) {
@@ -233,15 +202,8 @@ function db_qstr($data) {
 }
 
 function db_bin($status, $code) {
-  $cfg =& $GLOBALS['ESPCONFIG'];
-  switch ($cfg['adodb_database_type']) {
-    case "postgres":
-      return "bin_compare($status, $code)";
-    case "oracle":
-      return "bitand($status, $code)";
-    default:
-      return "($status & $code)";
-  }
+  // $cfg =& $GLOBALS['ESPCONFIG'];
+  return "($status & $code)";
 }
 
 function db_date($data) {
@@ -256,16 +218,9 @@ function sys_time_stamp() {
 }
 
 function db_crypt($password) {
-  $cfg =& $GLOBALS['ESPCONFIG'];
-  switch ($cfg['adodb_database_type']) {
-    case "postgres":
-    case "oracle":
-      return "md5($password)";
-    case "sqlite":
-      return _addslashes(md5($password));
-    default:
-      return "PASSWORD($password)";
-  }
+  // $cfg =& $GLOBALS['ESPCONFIG'];
+  return "PASSWORD($password)";
+  // return _addslashes(md5($password));
 }
 
 function ErrorNo() {
@@ -278,29 +233,34 @@ function ErrorMsg() {
   return $cfg['adodb_conn']->ErrorMsg();
 }
 
-function password_upgrade($username, $password, $table) {
-  $cfg =& $GLOBALS['ESPCONFIG'];
-  if ($cfg['adodb_database_type'] == "mysql") {
-    $info = $cfg['adodb_conn']->ServerInfo();
-    $version = $info['version'];
-    if ($version > 4.0) {
-      $username = _addslashes($username);
-      $sql = "SELECT * FROM ".$table." WHERE username = ".$username." AND password = OLD_PASSWORD($password) AND disabled = 'N' AND (expiration = '0000-00-00 00:00:00' OR expiration > ". sys_time_stamp().")";
-      $accres = execute_sql( $sql, "", ADODB_FETCH_ASSOC );
-      if (!$accres) { echo (ErrorMsg()); }
-      if (record_count($accres) == 1) {
-        // A matching row was found - upgrade his password.
-        $sql = "UPDATE $table SET password = PASSWORD($password) WHERE username = $username";
-        $accres = execute_sql( $sql, "", ADODB_FETCH_ASSOC );
-        if (!$accres) { echo (ErrorMsg()); }
-      }
-    }
-  }
-}
+// function password_upgrade($username, $password, $table) {
+//   $cfg =& $GLOBALS['ESPCONFIG'];
+//   if ($cfg['adodb_database_type'] == "mysql") {
+//     $info = $cfg['adodb_conn']->ServerInfo();
+//     $version = $info['version'];
+//     if ($version > 4.0) {
+//       $username = _addslashes($username);
+//       $sql = "SELECT * FROM ".$table." WHERE username = ".$username." AND password = OLD_PASSWORD($password) AND disabled = 'N' AND (expiration = '0000-00-00 00:00:00' OR expiration > ". sys_time_stamp().")";
+//       $accres = execute_sql( $sql, "", ADODB_FETCH_ASSOC );
+//       if (!$accres) { echo (ErrorMsg()); }
+//       if (record_count($accres) == 1) {
+//         // A matching row was found - upgrade his password.
+//         $sql = "UPDATE $table SET password = PASSWORD($password) WHERE username = $username";
+//         $accres = execute_sql( $sql, "", ADODB_FETCH_ASSOC );
+//         if (!$accres) { echo (ErrorMsg()); }
+//       }
+//     }
+//   }
+// }
 
-function MetaTables() {
- $cfg =& $GLOBALS['ESPCONFIG'];
- return $cfg['adodb_conn']->MetaTables('TABLES');
+// function MetaTables() {
+//  $cfg =& $GLOBALS['ESPCONFIG'];
+//  return $cfg['adodb_conn']->MetaTables('TABLES');
+// }
+
+function cleanstring($string) {
+  $bad = array("content-type","bcc:","to:","cc:","href");
+  return str_replace($bad,"", $string);
 }
 
 function array_to_insql($array) {
@@ -309,7 +269,7 @@ function array_to_insql($array) {
 }
 
 function survey_num_sections($sid) {
-  $sql = "SELECT COUNT(*) + 1 FROM ".X_QUESTION." WHERE survey_id = ${sid} AND type_id='99' AND deleted='N' ";
+  $sql = "SELECT COUNT(*) + 1 FROM ".X_QUESTION." WHERE survey_id = ${sid} AND type_id = '99' AND deleted = 'N' ";
   $result = execute_sql($sql);
   $count = $result->fields[0];
   db_close($result);
@@ -351,18 +311,10 @@ function survey_select_section_sql($sid, $section, $table = '') {
   $sql = "SELECT position FROM ".X_QUESTION." WHERE survey_id = ${sid} AND type_id = '99' AND deleted = 'N' ORDER BY position, id ";
   $result = execute_sql($sql);
   $num_sections = record_count($result) + 1;
-
   if ($section > $num_sections) { return(''); } // invalid section
-
   $ret = array("${table}survey_id = '${sid}'", "${table}deleted = 'N' ");
-  if ($section > 1 && $num_sections > 1) {
-    $result->Move($section-2);
-    array_push($ret, "${table}position>" . $result->fields[0]);
-  }
-  if ($section < $num_sections && $num_sections > 1) {
-    $result->Move($section-1);
-    array_push($ret, "${table}position<" . $result->fields[0]);
-  }
+  if ($section > 1 && $num_sections > 1) { $result->Move($section-2); array_push($ret, "${table}position>" . $result->fields[0]); }
+  if ($section < $num_sections && $num_sections > 1) { $result->Move($section-1); array_push($ret, "${table}position<" . $result->fields[0]); }
   db_close($result);
   return('WHERE ' . join(' AND ',$ret) . ' ');
 }
@@ -384,10 +336,7 @@ function esp_type_response_table() {
   $sql = 'SELECT typeid, response_table FROM '.X_QUESTION_TYPE.' ORDER BY id ';
   $result = execute_sql($sql);
   $response_table = array();
-  while (list($tid,$answ) = fetch_row($result)) {
-    $result->MoveNext();
-    $response_table[$tid] = $answ;
-  }
+  while (list($tid,$answ) = fetch_row($result)) { $result->MoveNext(); $response_table[$tid] = $answ; }
   db_close($result);
   return($response_table);
 }
@@ -426,9 +375,7 @@ function mkcheckbox ($_name, $value, $varr = null) {
 
 function mktext ($_name, $size = 20, $max = 0, $varr = null) {
   if ($varr == null) { $varr =& $_POST; }
-  $size = intval($size);
-  $max = intval($max);
-  $str = "size=\"$size\"";
+  $size = intval($size); $max = intval($max); $str = "size=\"$size\"";
   if ($max) { $str .= " maxlength=\"$max\""; }
   if (isset($varr[$_name])) { return('<input class="form-control" type="text" '. $str .' name="'. htmlspecialchars($_name) .'" value="'. _stripslashes(htmlspecialchars($varr[$_name])) .'">'); }
   return('<input class="form-control" type="text" '. $str .' name="'. htmlspecialchars($_name) .'">');
@@ -458,11 +405,7 @@ function mktextarea ($_name, $rows, $cols, $wrap, $varr = null) {
 function mkselect ($_name, $options, $varr = null) {
   if ($varr == null) { $varr =& $_POST; }
   $str  = "<select class=\"form-control\" name=\"${_name}\">\n";
-  while (list($cid, $content) = each($options)) {
-    $checked = '';
-    if (isset($varr[$_name]) && $varr[$_name] == $cid) { $checked = " selected=\"selected\""; }
-    $str .= "<option value=\"${cid}\"${checked}>${content}</option>\n";
-  }
+  while (list($cid, $content) = each($options)) { $checked = ''; if (isset($varr[$_name]) && $varr[$_name] == $cid) { $checked = " selected=\"selected\""; } $str .= "<option value=\"${cid}\"${checked}>${content}</option>\n"; }
   $str .= "</select>\n";
   return($str);
 }
@@ -495,32 +438,19 @@ function show_login($_surveyname = null, $_message = null, $_css = null, $_title
 }
 
 function survey_auth($sid, $username, $password, $raw_password, $css = null, $title = null) {
-  // Default to _unauthorized_
   $auth = false;
-
-  if (isset($_GET['auth_options']) || isset($_POST['auth_options'])) {
-    $GLOBALS['errmsg'] = mkerror('Error processing survey: Security violation.');
-    return(false);
-  }
-
+  if (isset($_GET['auth_options']) || isset($_POST['auth_options'])) { $GLOBALS['errmsg'] = mkerror('Error processing survey: Security violation.'); return(false); }
   $GLOBALS['auth_options'] = array();
-
   esp_init_adodb();
-  // $sql = "SELECT realm FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE id = $sid AND public = 'N' ";
+  // $sql = "SELECT realm FROM ".X_SURVEY." WHERE id = $sid AND public = 'N' ";
   $sql = "SELECT realm FROM ".X_SURVEY." WHERE id = $sid ";
-  // echo $sql;
-  // echo "<br>\n";
   $accres = execute_sql($sql);
   if (!$accres) { $GLOBALS['errmsg'] = mkerror('Unable to execute query for access.'); return(false); }
-  // no matching rows ... no authorization required
-  if (record_count($accres) < 1) { return(true); }
+  if (record_count($accres) < 1) { return(true); } // no matching rows ... no authorization required
   $realms = $accres->fields[0];
   db_close($accres);
-
-  // A matching row was found - the survey requires authentication.
-  $loginAttempt = false;
+  $loginAttempt = false; // A matching row was found - the survey requires authentication.
   $maxlogin = 0;
-
   if (!empty($username) && !empty($password)) {
     $loginAttempt = true;
     $auth = authenticate($username, $raw_password, $realms);
@@ -538,18 +468,13 @@ function survey_auth($sid, $username, $password, $raw_password, $css = null, $ti
       }
     }
   }
-
-  // no matching authorization ... send a 401
-  if (!$auth) {
-    // record the fact that authentication failed
+  if (!$auth) { // no matching authorization ... send a 401
     if ($loginAttempt) { survey_stat_increment(SURVEY_STAT_LOGINFAIL, $sid); }
     if (!isset($survey_name)) { $survey_name = ""; }
     if (isset($_GET['name'])) { $survey_name = $GLOBALS['_GET']['name']; }
     elseif (isset($_POST['name'])) { $survey_name = $_POST['name']; }
-
     $error_message = "";
     if ($_SERVER['REQUEST_METHOD'] == 'POST') { $error_message = "Incorrect User ID or Password, or your account has been disabled/expired."; }
-
     $title = 'Login Page';
     pageHeader($title);
     echo show_login($survey_name, $error_message, $css, $title);
@@ -557,13 +482,10 @@ function survey_auth($sid, $username, $password, $raw_password, $css = null, $ti
     exit;
     return(false);
   }
-
-  if ($maxlogin > 0) {
-    // see if user is over the MAX # of responses
+  if ($maxlogin > 0) { // see if user is over the MAX # of responses
     $sql = "SELECT COUNT(*) < $maxlogin FROM ".X_RESPONSE." WHERE survey_id = ${sid} AND complete = 'Y' AND username = "._addslashes($username);
     $auth = get_one($sql);
   }
-
   if (!$auth) {
     if (!isset($survey_name)) { $survey_name = ""; }
     if (isset($GLOBALS['_GET']['name'])) { $survey_name = $GLOBALS['_GET']['name']; }
@@ -580,17 +502,15 @@ function survey_auth($sid, $username, $password, $raw_password, $css = null, $ti
   return(true);
 }
 
-function manage_auth($username, $password, $raw_password="") {
+function manage_auth($username, $password, $raw_password = "") {
   // see if session is expired, or has been logged out
   if (isset($_SESSION['acl']) && isset($_SESSION['acl']['expired'])) { if ($_SESSION['acl']['expired']-- > 0) { $username = ''; $password = ''; } }
   // see if ACL is cached
   if (!empty($username) && !empty($password) && isset($_SESSION['acl']) && isset($_SESSION['acl']['username']) && $_SESSION['acl']['username'] == $username) { return(true); }
-  $auth = false; // default to unauthorized
+  $auth = false;
   $_SESSION['acl'] = array();
   if (!empty($username) && !empty($password)) {
-    // Formulate the query check whether user is authorized
     $sql = "SELECT * FROM ".X_DESIGNER." WHERE username = "._addslashes($username)." AND password = ".db_crypt($password) ."AND disabled = 'N' AND (expiration = '0000-00-00 00:00:00' OR expiration > ". sys_time_stamp().")";
-    // Execute the query and put recordset in $accres
     $accres = execute_sql( $sql, "", ADODB_FETCH_ASSOC );
     if (!$accres) {
       header( 'HTTP/1.0 503 '. "Service Unavailable");
@@ -599,8 +519,7 @@ function manage_auth($username, $password, $raw_password="") {
       '</body></html>');
       return(false);
     }
-    // A matching row was found - the user is authorized.
-    if (record_count($accres) > 0) { $auth = true; }
+    if (record_count($accres) > 0) { $auth = true; } // A matching row was found - the user is authorized.
   }
   if (!$auth) {
     $error_message = "";
@@ -608,14 +527,10 @@ function manage_auth($username, $password, $raw_password="") {
     $title = 'Authorisation';
     pageHeader($title);
     echo show_login(null, $error_message, null, 'Client Login');
-    // $notes = array (
-    //   array("title" => "Welcome, please login", "text" => "You need to login before you can proceed further with our system.", "image" => "assets/img/notification.svg")
-    // );
     if ($notes) { pageFooter($notes); } else { pageFooter(); }
     exit;
     return(false);
   }
-  // All tests passed ... create ACL array, and stick it in the session
   $acl = array(
     'username'  => $username,
     'superuser' => 'N',
@@ -631,15 +546,12 @@ function manage_auth($username, $password, $raw_password="") {
   db_close($accres);
   foreach ($fields as $f) { $acl[$f] =& $$f; }
   $_SESSION['acl'] =& $acl;
-  // if one were to want login accounting (logs) this would be the ideal place to do so...
   $currenttime  = sys_time_stamp();
   $sql = "UPDATE ".X_DESIGNER." SET lastlogin = $currenttime WHERE username = "._addslashes($username);
   return(execute_sql($sql) && affected_rows() > 0);
-  //return(true);
 }
 
 function manage_logout() {
-  // clear existing ACL, and set the expired flag
   $_SESSION['acl'];
   $_SESSION['username'] = "";
   $_SESSION['raw_password'] = "";
@@ -650,7 +562,7 @@ function manage_logout() {
 
 function auth_is_owner($sid, $user) {
   $val = false;
-  $sql = "SELECT s.owner = "._addslashes($user)."FROM ".X_SURVEY." s WHERE s.id = $sid";
+  $sql = "SELECT s.owner = "._addslashes($user)."FROM ".X_SURVEY." s WHERE s.id = $sid ";
   $result = execute_sql($sql);
   if (!(list($val) = fetch_row($result))) { $val = false; }
   db_close($result);
@@ -704,23 +616,17 @@ function auth_get_rid($sid, $username, $rid = 0) {
 
 function authenticate($username, $password, &$realms) {
   $cfg =& $GLOBALS['ESPCONFIG'];
-
   // see if we have a realm where that <username, password> tuple is authorized and enabled
   $user = _addslashes($username);
   $pass = db_crypt(_addslashes($password));
   $now  = sys_time_stamp();
   $sql = "SELECT realm FROM ".X_RESPONDENT." WHERE username = $user AND password = $pass AND disabled = 'N' AND (expiration='0000-00-00 00:00:00' OR $now < expiration)";
-
   $res = execute_sql($sql);
-  if ($res) {
-    // Two or more users with the same username and password, but different realms, will pass this check.
+  if ($res) { // Two or more users with the same username and password, but different realms, will pass this check.
     $isAuthenticated = (1 <= record_count($res) ? true : false);
     if ($isAuthenticated) {
       $realms = array ();
-      while ($row = fetch_row($res)) {
-        $res->MoveNext();
-        $realms[] = $row[0];
-      }
+      while ($row = fetch_row($res)) { $res->MoveNext(); $realms[] = $row[0]; }
       assert('1 <= count($realms); // expecting 1 or more realms');
     }
     $currenttime  = sys_time_stamp();
@@ -778,32 +684,6 @@ function set_current_respondent($username, $realm, $password = null) {
 function get_current_respondent(&$respondent) {
   if (isset($_SESSION['respondent'])) { $respondent = $_SESSION['respondent']; return true; }
   else { $respondent = null; return false; }
-}
-
-function change_profile($username, $realm, $firstName, $lastName, $emailAddress) {
-  $_username     = _addslashes($username);
-  $_realm        = _addslashes($realm);
-  $_firstName    = _addslashes($firstName);
-  $_lastName     = _addslashes($lastName);
-  $_emailAddress = _addslashes($emailAddress);
-  $changed  = sys_time_stamp();
-  $sql = "UPDATE ".X_RESPONDENT." SET fname = $_firstName, lname = $_lastName, email = $_emailAddress, changed = $changed WHERE username = $_username AND realm = $_realm";
-  $res = execute_sql($sql);
-  $notes = array (array("title" => "Profile updated", "text" => "You have successfully updated your detailed profile.", "image" => "assets/img/notification.svg"));
-  if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); notify($notes); return true; }
-  else { return false; }
-}
-
-function change_password($username, $realm, $password) {
-  $_username = _addslashes($username);
-  $_realm    = _addslashes($realm);
-  $_password = db_crypt(_addslashes($password));
-  $changed  = sys_time_stamp();
-  $sql = "UPDATE ".X_RESPONDENT." SET password = $_password, changed = $changed WHERE username = $_username AND realm = $_realm";
-  $res = execute_sql($sql);
-  $notes = array (array("title" => "Password changed", "text" => "You have successfully changed your password. Please keep it safe and secure.", "image" => "assets/img/notification.svg"));
-  if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); notify($notes); return true; }
-  else { return false; }
 }
 
 function mkcrossformat($counts, $qid, $tid) {
@@ -945,7 +825,7 @@ function mkreslist($counts, $total, $precision, $showTotals) {
 echo "</table>\n";
 }
 
-function mkresavg($counts,$total,$precision,$showTotals,$length) {
+function mkresavg($counts, $total, $precision, $showTotals, $length) {
   if (!$length) { $length = 5; }
   $width = 200 / $length;
   echo "<table class=\"table table-hover\">\n";
@@ -988,7 +868,7 @@ function merge_expand_qids($targetq, $surveys) {
   $sql = "SELECT survey_id FROM ".X_QUESTION." WHERE id ". array_to_insql($targetq);
   $targets = get_one($sql);
   $sidstr = array_to_insql($surveys);
-  $sql = "SELECT Q.survey_id, Q.id FROM ".X_QUESTION." Q WHERE Q.survey_id ${$sidstr} AND deleted='N' ORDER BY Q.survey_id, Q.position, Q.id";
+  $sql = "SELECT Q.survey_id, Q.id FROM ".X_QUESTION." Q WHERE Q.survey_id ${$sidstr} AND deleted = 'N' ORDER BY Q.survey_id, Q.position, Q.id";
   $result = execute_sql($sql);
   foreach ($surveys as $sid) { $i[$sid] = 0; }
   while (list($sid, $qid) = fetch_row($result)) { $$sid[$i[$sid]++] = $qid; }
@@ -1004,7 +884,7 @@ function merge_expand_cids($targetc, $questions) {
   $result = execute_sql($sql);
   $targetq = $result->fields[0];
   db_close($result);
-  array_push($questions,$targetq);
+  array_push($questions, $targetq);
   $qidstr = array_to_insql($questions);
   $sql = "SELECT C.question_id, C.id FROM ".X_QUESTION_CHOICE." C WHERE C.question_id ${$qidarr} ORDER BY C.question_id, C.id";
   $result = execute_sql($sql);
@@ -1032,9 +912,7 @@ function merge_expand_cids($targetc, $questions) {
 //      100     'Section Text'          'N'             ''
 
 function response_check_answers($sid, $rid, $section) {
-  //global $_POST;
-  $sql = "SELECT id,type_id,content,required,ans_uniq FROM ".X_QUESTION."
-  ". survey_select_section_sql($sid,$section) ." AND deleted='N' AND type_id < 98 ORDER BY position";
+  $sql = "SELECT id, type_id, content, required, ans_uniq FROM ".X_QUESTION." ". survey_select_section_sql($sid, $section) ." AND deleted = 'N' AND type_id < 98 ORDER BY position";
   $result = execute_sql($sql);
   if (record_count($result) < 1) { db_close($result); return(''); } // no rows returned, so no need to continue
   $missing = array(); // array of missing answers
@@ -1045,7 +923,7 @@ function response_check_answers($sid, $rid, $section) {
   while (list($qid, $tid, $content, $required, $ans_uniq) = fetch_row($result)) {
     // if the question has no condition:    $question_was_shown=true
     // if the question has a condition:     $question_was_shown=true if condition is fulfilled, false otherwise
-    $question_was_shown = question_conditioncheck($sid,$qid,$rid);
+    $question_was_shown = question_conditioncheck($sid, $qid, $rid);
     //var_dump($question_was_shown);
     if ($question_was_shown) {
 
@@ -1062,7 +940,7 @@ function response_check_answers($sid, $rid, $section) {
 
       // response_rank
       if ($required == 'Y' && $tid == 6) {
-        $sql = "SELECT id FROM ".X_QUESTION_CHOICE." WHERE question_id=$qid";
+        $sql = "SELECT id FROM ".X_QUESTION_CHOICE." WHERE question_id = $qid";
         $cid_result = execute_sql($sql);
         while (list($cid) = fetch_row($cid_result)) {
           if (!isset($_POST["${qid}_${cid}"])) {
@@ -1079,8 +957,7 @@ function response_check_answers($sid, $rid, $section) {
       elseif ($tid == 9 && !empty($_POST[$qid]) && !is_numeric($_POST[$qid])) { $not_numeric[$qid] = $content; }
 
       if (!isset($_POST[$qid])) { $_POST[$qid] = ''; }
-      if ($required=='Y' && $tid!=6 && empty($_POST[$qid]) && $_POST[$qid] != '0') { $missing[$qid] = $content; }
-      //if ($required=='Y' && empty($_POST[$qid]) && $_POST[$qid] != '0') { $missing[$qid] = $content; }
+      if ($required == 'Y' && $tid != 6 && empty($_POST[$qid]) && $_POST[$qid] != '0') { $missing[$qid] = $content; }
     }
     $result->MoveNext();
   }
@@ -1091,7 +968,7 @@ function response_check_answers($sid, $rid, $section) {
   // missing required variables
   if (count($missing) > 0) {
     $message .= "You are missing the following required questions:<br>\n";
-    while (list($qid,$content) = each($missing)) {
+    while (list($qid, $content) = each($missing)) {
       $message .= "<!-- ${qid} -->";
       $message .= "==> ${content}<br>\n";
     }
@@ -1100,7 +977,7 @@ function response_check_answers($sid, $rid, $section) {
   // missing numeric
   if (count($not_numeric) > 0) {
     $message .= "Please only use numbers for the following questions:<br>\n";
-    while (list($qid,$content) = each($not_numeric)) {
+    while (list($qid, $content) = each($not_numeric)) {
       $message .= "<!-- ${qid} -->";
       $message .= "==> ${content}<br>\n";
     }
@@ -1109,7 +986,7 @@ function response_check_answers($sid, $rid, $section) {
   // double responses on unique
   if (count($unique_answers) > 0) {
     $message .= "Please use a different answer for the following questions:<br>\n";
-    while (list($qid,$content)=each($unique_answers)) {
+    while (list($qid, $content) = each($unique_answers)) {
       $message .= "<!-- ${qid} -->";
       $message .= "==> ${content}<br>\n";
     }
@@ -1182,7 +1059,7 @@ function response_insert($sid, $section, $rid) {
     $rid = insert_id("response_id_seq");
   }
 
-  $sql = "SELECT Q.id, Q.type_id, Q.length, Q.precise, T.response_table FROM ".X_QUESTION." Q, ".X_QUESTION_TYPE." T ". survey_select_section_sql($sid,$section,'Q') ." AND Q.survey_id=${sid} AND Q.deleted='N' AND Q.type_id < 50 AND Q.type_id=T.id";
+  $sql = "SELECT Q.id, Q.type_id, Q.length, Q.precise, T.response_table FROM ".X_QUESTION." Q, ".X_QUESTION_TYPE." T ". survey_select_section_sql($sid,$section,'Q') ." AND Q.survey_id = ${sid} AND Q.deleted = 'N' AND Q.type_id < 50 AND Q.type_id = T.id";
   $q_result = execute_sql($sql);
   while (list($qid, $tid, $length, $prec, $table) = fetch_row($q_result)) {
     $q_result->MoveNext();
@@ -1195,7 +1072,7 @@ function response_insert($sid, $section, $rid) {
     else { $val = ''; }
 
   // don't allow >1 responses for the same response ID and the same question ID
-  $sql  = "SELECT COUNT(*) from ".$GLOBALS['ESPCONFIG'][$table.'_table']." WHERE response_id=${rid} AND question_id=${qid}";
+  $sql  = "SELECT COUNT(*) from ".$GLOBALS['ESPCONFIG'][$table.'_table']." WHERE response_id = ${rid} AND question_id = ${qid}";
   $count = get_one($sql);
   if ($count > 0) { return $rid; }
 
@@ -1210,11 +1087,11 @@ function response_insert($sid, $section, $rid) {
     case 'response_text':
       // only insert if non-empty content
       if ($tid == 9) { // numeric
-        if (ereg (",",$bareval)) { $bareval = ereg_replace(",",".",$bareval); }
-        if (ereg ("\.",$bareval)) { $bareval = ereg_replace("[^0-9.\-]*(-?[0-9]{1,$length}\.[0-9]{1,$prec}).*", '\1', $bareval); }
+        if (ereg (",", $bareval)) { $bareval = ereg_replace(",",".", $bareval); }
+        if (ereg ("\.", $bareval)) { $bareval = ereg_replace("[^0-9.\-]*(-?[0-9]{1,$length}\.[0-9]{1,$prec}).*", '\1', $bareval); }
         else { $bareval = ereg_replace("[^0-9.\-]*(-?[0-9]{1,$length}).*", '\1', $bareval); }
       }
-      if (ereg("[^ \t\n]",$bareval)) {
+      if (ereg("[^ \t\n]", $bareval)) {
         $val = _addslashes($bareval);
         $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." (response_id, question_id, response) VALUES (${rid}, ${qid}, ${val})";
         $result = execute_sql($sql);
@@ -1249,7 +1126,7 @@ function response_insert($sid, $section, $rid) {
           list($cid) = fetch_row($c_result);
           if (!isset($_POST["${qid}_${cid}"])) { continue; }
           $other = _addslashes($_POST["${qid}_${cid}"]);
-          if (ereg("[^ \t\n]",$other)) {
+          if (ereg("[^ \t\n]", $other)) {
             $sql = "INSERT INTO ".X_RESPONSE_OTHER." (response_id, question_id, choice_id, response) VALUES (${rid}, ${qid}, ${cid}, ${other})";
             $result = execute_sql($sql);
             $val = $cid;
@@ -1263,7 +1140,7 @@ function response_insert($sid, $section, $rid) {
         if (!isset($_POST["${qid}_${cid}"]))
         break; // out of the case
         $other = _addslashes($_POST["${qid}_${cid}"]);
-        if (ereg("[^ \t\n]",$other)) {
+        if (ereg("[^ \t\n]", $other)) {
           $sql = "INSERT INTO ".X_RESPONSE_OTHER." (response_id, question_id, choice_id, response) VALUES (${rid}, ${qid}, ${cid}, ${other})";
           $result = execute_sql($sql);
           $val = $cid;
@@ -1274,7 +1151,7 @@ function response_insert($sid, $section, $rid) {
       break;
 
     case 'response_multiple':
-      $sql = "SELECT id FROM ".X_QUESTION_CHOICE." WHERE question_id=${qid} AND content LIKE '!others%'";
+      $sql = "SELECT id FROM ".X_QUESTION_CHOICE." WHERE question_id = ${qid} AND content LIKE '!others%'";
       $c_result = execute_sql($sql);
       while (!$c_result->EOF) {
         list($cid) = fetch_row($c_result);
@@ -1283,7 +1160,7 @@ function response_insert($sid, $section, $rid) {
         if (!isset($_POST[$qid])) { $_POST[$qid] = array($cid); }
         else { array_push($_POST[$qid], $cid); }
         $other = _addslashes($_POST["${qid}_${cid}"]);
-        if (ereg("[^ \t\n]",$other)) {
+        if (ereg("[^ \t\n]", $other)) {
           $sql = "INSERT INTO ".X_RESPONSE_OTHER." (response_id, question_id, choice_id, response) VALUES (${rid}, ${qid}, ${cid}, ${other})";
           $result = execute_sql($sql);
         }
@@ -1531,7 +1408,7 @@ function response_select_human($sid, $rid, $qids = null) {
       $val = array();
       foreach ($arr as $subarr) {
         if (ereg("^!others", $subarr[2])) {
-          $tmpv = preg_replace(array("/^!others=/","/^!others/"), array('', 'Others'), $subarr[2]);
+          $tmpv = preg_replace(array("/^!others=/", "/^!others/"), array('', 'Others'), $subarr[2]);
           $tmp = preg_replace("/^other/", $qid, $subarr[3]);
           if (isset($res[$tmp]))
           $tmpv .= ': '. $res[$tmp][2];
@@ -1543,7 +1420,7 @@ function response_select_human($sid, $rid, $qids = null) {
   } else {
       $key = $arr[1];
       if (ereg("^!others", $arr[2])) {
-        $val = preg_replace(array("/^!others=/","/^!others/"), array('', 'Others'), $arr[2]);
+        $val = preg_replace(array("/^!others=/", "/^!others/"), array('', 'Others'), $arr[2]);
         $tmp = preg_replace("/^other/", $qid, $arr[3]);
         if (isset($res[$tmp]))
         $val .= ': '. $res[$tmp][2];
@@ -1602,7 +1479,7 @@ function response_select_name($sid, $rid, $qids = null) {
         $str1 = eregi_replace("(^| )(what|which|why|how|who|where|how|is|are|were|the|a|it|of|do|you|your|please|enter)[ ?]", " ", $str2);
       } while ($str1 != $str2);
       $str1 = trim(strtoupper(eregi_replace("[^A-Z0-9]+", " ", $str1)));
-      $str1 = ereg_replace(' +','_',$str1);
+      $str1 = ereg_replace(' +', '_', $str1);
       $arr[1] = strtoupper($arr[1]);
       $arr[1] .= "_$str1";
       $nam[$index] = array($arr[1]=>$arr[3]);
@@ -1614,7 +1491,7 @@ function response_select_name($sid, $rid, $qids = null) {
       $val = array();
       foreach ($arr as $subarr) {
         if (ereg("^!others", $subarr[2])) {
-          $tmpv = preg_replace(array("/^!others=/","/^!others/"), array('', 'Others'), $subarr[2]);
+          $tmpv = preg_replace(array("/^!others=/", "/^!others/"), array('', 'Others'), $subarr[2]);
           $tmp = preg_replace("/^other/", $qid, $subarr[3]);
           if (isset($res[$tmp])) { $tmpv .= ': '. $res[$tmp][2]; }
           array_push($val, $tmpv);
@@ -1625,7 +1502,7 @@ function response_select_name($sid, $rid, $qids = null) {
     } else {
       $key = $arr[1];
       if (ereg("^!others", $arr[2])) {
-        $val = preg_replace(array("/^!others=/","/^!others/"), array('', 'Others'), $arr[2]);
+        $val = preg_replace(array("/^!others=/", "/^!others/"), array('', 'Others'), $arr[2]);
         $tmp = preg_replace("/^other/", $qid, $arr[3]);
         if (isset($res[$tmp]))
         $val .= ': '. $res[$tmp][2];
@@ -1684,11 +1561,9 @@ function response_send_email($sid, $rid) {
   reset($user);
   while (list($k, $v) = each($user))
   $body .= $k . $qsep . $v . $end;
-
-  $headers = 'From: survey@siamsquare.org' . "\r\n";
-  $headers .= 'Reply-To: survey@siamsquare.org' . "\r\n";
-  $headers .= 'X-Mailer: siamsquare.org' . "\r\n";
-
+  $headers = 'From: '.SYSTEMEMAIL."\r\n" .
+             'Reply-To: '.SYSTEMEMAIL."\r\n" .
+             'X-Mailer: PHP/' . phpversion();
   reset($answers);
   while ($arr = array_shift($answers)) {
     unset($x);

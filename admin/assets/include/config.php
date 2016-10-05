@@ -39,9 +39,9 @@ $ESPCONFIG['limit_double_postings'] = 3; // no. of days for resubmitting, set to
 $ESPCONFIG['use_captcha'] = 0; // need GD if enable
 $ESPCONFIG['date_format'] = "%d/%m/%Y";
 
-$ESPCONFIG['adodb_path'] = ESP_BASE . '/admin/assets/include/lib/adodb/';
-$ESPCONFIG['adodb_database_type'] = 'mysql';
-$ESPCONFIG['adodb_persist'] = 'true';
+// $ESPCONFIG['adodb_path'] = ESP_BASE . '/admin/assets/include/adodb/';
+// $ESPCONFIG['adodb_database_type'] = 'mysql';
+// $ESPCONFIG['adodb_persist'] = 'true';
 // $ESPCONFIG['adodb_pathto_db'] = ESP_BASE . '/scripts/db/esp.dbm';
 
 $ESPCONFIG['allow_email'] = true;
@@ -138,16 +138,20 @@ define('MYDESC',      "SiamSquare Survey Engine by PE BINARY CO., LTD.");
 define('SLOGANEN',    "We build a society where your opinion matters");
 define('SLOGANTH',    "เราสร้างสังคมที่ให้ความสำคัญกับความคิดเห็นของคุณ");
 define('MYHOME',      "http://www.siamsquare.org");
+define('MYEMAIL',     "phumin@sawasdee.org");
+define('SYSTEMEMAIL', "survey@siamsquare.org");
 define('MYADMIN',     MYHOME."/admin/");
 define('MYPUBLIC',    MYHOME."/public/");
 define('MYSURVEY',    MYHOME."/public/survey.php");
 define('ME',          $_SERVER['SCRIPT_NAME']);
 define('DOCROOT',     $_SERVER['DOCUMENT_ROOT']);
+define('FORMAT_DATE', '%d/%m/%Y');
 
 define('MYCONFIG',    DOCROOT."/admin/assets/include/config.php");
 define('MYLIB',       DOCROOT."/admin/assets/include/lib.inc");
 define('MYFUNCTION',  DOCROOT."/admin/assets/include/functions.inc");
-define('MYTEXT',      DOCROOT."/admin/assets/include/text");
+define('MYSESSION',   DOCROOT."/admin/assets/include/sessions.inc");
+define('MYTEXT',      DOCROOT."/admin/assets/text");
 define('INCLUDEADM',  DOCROOT."/admin/assets/include");
 define('INCLUDEPUB',  DOCROOT."/public/assets/include");
 define('WADMIN',      DOCROOT."/admin/assets/include/w");
@@ -201,39 +205,15 @@ define('STATUS_NOT_STARTED',      'ยังไม่ได้เริ่ม');
 define('STATUS_ALL_PARTIAL',      'เริ่มแล้ว แต่ยังไม่เสร็จ');
 define('STATUS_SOME_PARTIAL',     'เสร็จไปบางส่วน แต่ยังไ่ม่สมบูรณ์');
 define('STATUS_FINISHED',         'เสร็จเรียบร้อย');
-define('FORMAT_OUTPUT_DATE',      isset($ESPCONFIG['date_format'])?$ESPCONFIG['date_format']:'%Y-%m-%d');
 
-
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_copy.inc';
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_merge.inc';
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_purge.inc';
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_render.inc';
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_report.inc';
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_results.inc';
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_update.inc';
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/survey_export_csv.inc';
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/account_upload.inc';
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/response_purge.inc';
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/question_render.inc';
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/question_conditioncheck.inc';
 require_once MYLIB;
 require_once MYFUNCTION;
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/db_update.inc';
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/function/ssq.inc';
-
-// $ok = survey_get_for_current_user($surveys);
-// if ($ok) {
-//   $surveys === array (1 => array ('id' => 1, 'name' => 'foo', ...), ...);
-// }
-//
-// // get the where clause to limit a SQL query for the current user
-// $where = survey_fetch_limiting_where();
-// $sql = sprintf('SELECT * FROM %s WHERE %s', $GLOBALS['ESPCONFIG']['survey_table'], $where);
+// require_once INCLUDEADM.'/function/db_update.inc';
 
 $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
 
 if ($mysqli->connect_errno) {
-  echo "Sorry, MySQLi error\n";
+  echo "Error: Could not connect to database.\n";
   echo "Errno: " . $mysqli->connect_errno . "\n";
   echo "Error: " . $mysqli->connect_error . "\n";
   exit;

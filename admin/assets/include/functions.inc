@@ -29,10 +29,10 @@ function question_render($question, $question_number, $auto_num, $on_one_line = 
   $has_choices = esp_type_has_choices();
 
   if ($has_choices[$tid]) {
-    $sql = "SELECT * FROM ".X_QUESTION_CHOICE." WHERE question_id=$qid AND content NOT LIKE '!others%' ORDER BY id";
-    $choices_result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
-    $sql = "SELECT * FROM ".X_QUESTION_CHOICE." WHERE question_id=$qid AND content LIKE '!others%' ORDER BY id";
-    $others_result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
+    $sql = "SELECT * FROM ".X_QUESTION_CHOICE." WHERE question_id = $qid AND content NOT LIKE '!others%' ORDER BY id";
+    $choices_result = execute_sql($sql,"", ADODB_FETCH_ASSOC);
+    $sql = "SELECT * FROM ".X_QUESTION_CHOICE." WHERE question_id = $qid AND content LIKE '!others%' ORDER BY id";
+    $others_result = execute_sql($sql,"", ADODB_FETCH_ASSOC);
     $others = record_count($others_result);
   } else { $choices_result = ''; }
 
@@ -259,12 +259,12 @@ function question_render($question, $question_number, $auto_num, $on_one_line = 
     if ($extra || $extra_th) {
       echo "      <div class=\"input-group\">\n";
       echo(mktext($qid, 10, 10));
-      echo "<em>(This format only: ". strftime ($GLOBALS['ESPCONFIG']['date_format'],strtotime("now")) .")</em>\n";
+      echo "<em>(This format only: ". strftime (FORMAT_DATE, strtotime("now")) .")</em>\n";
       echo "        <span class=\"input-group-addon\">".$insert."</span>\n";
       echo "      </div>\n";
     } else {
       echo(mktext($qid, 10, 10));
-      echo "<em>(This format only: ". strftime ($GLOBALS['ESPCONFIG']['date_format'],strtotime("now")) .")</em>\n";
+      echo "<em>(This format only: ". strftime (FORMAT_DATE, strtotime("now")) .")</em>\n";
     }
     echo "      </div>\n";
     echo "    </div>\n";
@@ -311,38 +311,27 @@ function question_render($question, $question_number, $auto_num, $on_one_line = 
   return;
 }
 
-//   proto bool survey_render(int survey_id, int section, int resonse_id, string message)
-//   Reads current form variables from $_POST. Builds HTML for the survey (prefixed w/ message).
-
 function survey_render($sid, $section = 1, $rid=0, $message = '') {
-
   global $preview;
-  //global $_POST;
   @reset($_POST);
-
   if (empty($section)) { $section = 1; }
-
-  // load survey title (and other globals)
-  $sql = "SELECT * FROM ".X_SURVEY." WHERE id=${sid}";
-  $result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
+  $sql = "SELECT * FROM ".X_SURVEY." WHERE id = ${sid}";
+  $result = execute_sql($sql,"", ADODB_FETCH_ASSOC);
   if (record_count($result) != 1) { return(false); }
   $survey = fetch_row($result);
   db_close($result);
-
   $sections = survey_get_sections($sid);
   $num_sections = count($sections);
   if ($section-- > $num_sections) { return(false); } // invalid section
-
   $section_questions = survey_get_section_questions($sid);
-
   // load survey questions
   $sec_sql = array_to_insql($sections[$section]);
   $sql = "SELECT * FROM ".X_QUESTION." WHERE id $sec_sql ORDER BY position,id";
-  $questions_result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
+  $questions_result = execute_sql($sql,"", ADODB_FETCH_ASSOC);
   if (record_count($questions_result) < 1) { return(false); }
 
   $i=0;
-  for ($j=0;$j<$section;$j++) { $i += count($section_questions[$j]); }
+  for ($j=0; $j<$section; $j++) { $i += count($section_questions[$j]); }
 
   echo "<h2>Project ".$survey["title"]." ";
   if ($survey["subtitle_th"]) { echo "<small>(".$survey["subtitle_th"].")</small>"; }
@@ -373,8 +362,8 @@ function survey_render($sid, $section = 1, $rid=0, $message = '') {
     $tid = &$question['type_id'];
     if ($tid == 100) { $i--; }
 
-    if (question_conditioncheck($sid,$qid,$rid)) { $questions_shown = 1; question_render($question,$i,$survey['auto_num']); }
-    elseif (isset($_POST['tab']) && ($_POST['tab']=="preview")) { $questions_shown = 1; question_render($question,$i,$survey['auto_num']); }
+    if (question_conditioncheck($sid, $qid, $rid)) { $questions_shown = 1; question_render($question, $i, $survey['auto_num']); }
+    elseif (isset($_POST['tab']) && ($_POST['tab']=="preview")) { $questions_shown = 1; question_render($question, $i, $survey['auto_num']); }
   }
 
   if ($questions_shown == 0) { echo "<p>No questions in this section.</p>\n"; echo "<br><br>\n\n"; }
@@ -382,23 +371,20 @@ function survey_render($sid, $section = 1, $rid=0, $message = '') {
   return;
 }
 
-/*  proto bool question_render(int $question_id, int respnse_number)
-    Checks if conditions for qid are met */
-
 function isequal (&$val1, &$val2) {
-  return $val1==$val2;
+  return $val1 == $val2;
 }
 
 function isnequal (&$val1, &$val2) {
-  return $val1!=$val2;
+  return $val1 != $val2;
 }
 
 function issmallerthan (&$val1, &$val2) {
-  return $val1<$val2;
+  return $val1 < $val2;
 }
 
 function isbiggerthan (&$val1, &$val2) {
-  return $val1>$val2;
+  return $val1 > $val2;
 }
 
 function question_conditioncheck($sid, $qid, $rid) {
@@ -619,21 +605,14 @@ function survey_listing($start = "0", $limit = "5", $page = NULL) {
 }
 
 function survey_status($start = "0", $limit = "5", $page = NULL) {
-
   $sids = array();
   if (!empty($_POST['list'])) {
-    while (list(,$sid) = each($_POST['list'])) {
-      array_push($sids, intval($sid));
-    }
+    while (list(,$sid) = each($_POST['list'])) { array_push($sids, intval($sid)); }
     survey_purge($sids);
   }
-
   if ($page) { $start = ($page-1) * $limit; }
   $to_record = $start + $limit;
-
   $add = " LIMIT $start, $limit";
-
-  // load names and titles of all surveys available to _this_ user */
   if ($_SESSION['acl']['superuser'] == 'Y') {
     $sql1 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC";
     $sql2 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC"  . $add;
@@ -645,10 +624,8 @@ function survey_status($start = "0", $limit = "5", $page = NULL) {
   $result1 = execute_sql($sql1);
   $result2 = execute_sql($sql2);
   $rows = record_count($result1);
-
   if ($to_record > $rows) { $to_record = $rows; }
   $from_record = $start + 1;
-
   echo "<p class=\"text-right\">showing results $from_record to $to_record [<a href=\"".MYADMIN."?w=status"."\">total of $rows</a>]</p>";
   echo "<table class=\"table table-hover\">\n";
   echo "  <tr class=\"active\">\n";
@@ -899,24 +876,16 @@ function br2nl($input) {
 }
 
 function dataURIs($file) {
-  // convert gif to data
-  $datafile = base64_encode(file_get_contents($file));
+  $datafile = base64_encode(file_get_contents($file)); // convert gif to data
   return $datafile;
 }
 
-//  proto bool survey_update(int* survey_id, string* tab, string old_tab)
-//  Reads current form variables from _POST. Returns an true on sucess, else returns false and sets global $errstr with an error message.
-
 function survey_update(&$survey_id, &$tab, $old_tab) {
-
   global $errstr;
-
   // do not need update
   if (empty($old_tab)) { return(1); }
-
   $f_arr = array();
   $v_arr = array();
-
   // clean up survey and question names
   if (isset($_POST['name'])) {
     $_POST['name'] = preg_replace("/[^A-Z0-9]+/i","_", trim($_POST['name']));
@@ -925,21 +894,10 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
   // new survey
   if (empty($survey_id)) {
     // need to fill out at least some info on 1st tab before proceeding
-    if (empty($_POST['name']) || empty($_POST['title']) || empty($_POST['realm'])) {
-      $tab = "general";
-      $errstr = 'Sorry, please fill out the name, group, and title before proceeding.';
-      return(0);
-    }
-
+    if (empty($_POST['name']) || empty($_POST['title']) || empty($_POST['realm'])) { $tab = "general"; $errstr = 'Sorry, please fill out the name, group, and title before proceeding.'; return(0); }
     // create a new survey in the database
-    //$fields = array('name','realm','title','subtitle','email','theme','thanks_page','thank_head','thank_body','info','auto_num','open_date','close_date');
-    $fields = array('name','realm','public','status','open_date','close_date','title','email','subtitle','subtitle_th','info','info_th','theme','thanks_page','thank_head','thank_body','auto_num');
-    foreach ($fields as $f) {
-      if (isset($_POST[$f])) {
-        array_push($f_arr,$f);
-        array_push($v_arr, _addslashes($_POST[$f]));
-      }
-    }
+    $fields = array('name', 'realm', 'public', 'status', 'open_date', 'close_date', 'title', 'email', 'subtitle', 'subtitle_th', 'info', 'info_th', 'theme', 'thanks_page', 'thank_head', 'thank_body', 'auto_num');
+    foreach ($fields as $f) { if (isset($_POST[$f])) { array_push($f_arr,$f); array_push($v_arr, _addslashes($_POST[$f])); } }
     array_push($f_arr, 'owner');
     array_push($v_arr, _addslashes($_SESSION['acl']['username']));
     array_push($f_arr, 'added');
@@ -949,13 +907,9 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
     $sql = "INSERT INTO ".X_SURVEY." (" . join(',',$f_arr) . ") VALUES (" . join(',',$v_arr) . ")";
     //echo $sql;
     $result = execute_sql($sql);
-    if (!$result) {
-      $tab = "general";
-      $errstr = 'Sorry, name already in use. Pick a new name.' .' [ ' .ErrorNo().': '.ErrorMsg().' ]';
-      return(0);
-    }
+    if (!$result) { $tab = "general"; $errstr = 'Sorry, name already in use. Pick a new name.' .' [ ' .ErrorNo().': '.ErrorMsg().' ]'; return(0); }
 
-    $sql = "SELECT id FROM ".X_SURVEY." WHERE name=".  _addslashes($_POST['name']);
+    $sql = "SELECT id FROM ".X_SURVEY." WHERE name = ".  _addslashes($_POST['name']);
     $result = execute_sql($sql);
     $survey_id = $result->fields[0];
     $sqlaccess = "INSERT INTO ".X_ACCESS." (`survey_id`, `realm`, `maxlogin`, `resume`, `navigate`) VALUES (" . $survey_id . ", 'RD-Email', 10, 'Y', 'Y'), (" . $survey_id . ", 'RD-Facebook', 10, 'Y', 'Y'), (" . $survey_id . ", 'RD-Twitter', 10, 'Y', 'Y'), (" . $survey_id . ", 'RD-Google', 10, 'Y', 'Y')";
@@ -968,14 +922,8 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
 
     // coming from the general tab ...
     case "general":
-      if (empty($_POST['name']) || empty($_POST['title']) || empty($_POST['realm'])) {
-        $tab = "general";
-        $errstr = 'Sorry, please fill out the name, group, and title before proceeding.';
-        return(0);
-      }
-
-      //$fields = array('name','realm','title','subtitle','email','theme','thanks_page','thank_head','thank_body','info','auto_num','open_date','close_date');
-      $fields = array('name','realm','public','open_date','close_date','title','email','subtitle','subtitle_th','info','info_th','theme','thanks_page','thank_head','thank_head_th','thank_body','thank_body_th','auto_num');
+      if (empty($_POST['name']) || empty($_POST['title']) || empty($_POST['realm'])) { $tab = "general"; $errstr = 'Sorry, please fill out the name, group, and title before proceeding.'; return(0); }
+      $fields = array('name', 'realm', 'public', 'open_date', 'close_date', 'title', 'email', 'subtitle', 'subtitle_th', 'info', 'info_th', 'theme', 'thanks_page', 'thank_head', 'thank_head_th', 'thank_body', 'thank_body_th', 'auto_num');
       $sql = "SELECT name FROM ".X_SURVEY." WHERE id=${survey_id}";
       $name = get_one($sql);
 
@@ -983,19 +931,13 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
       if ($name != $_POST['name']) {
         $sql = "SELECT COUNT(*) FROM ".X_SURVEY." WHERE name=" . _addslashes($_POST['name']);
         $count = get_one($sql);
-        if ($count != 0) {
-          $tab = "general";
-          $errstr = 'Sorry, that name is already in use.';
-          return(0);
-        }
+        if ($count != 0) { $tab = "general"; $errstr = 'Sorry, that name is already in use.'; return(0); }
       }
 
       // UPDATE the row in the DB with current values
       array_push($f_arr, 'changed='.sys_time_stamp());
-      foreach ($fields as $f) {
-        array_push($f_arr,$f ."=" . _addslashes($_POST[$f]));
-      }
-      $sql = "UPDATE ".X_SURVEY." SET " . join(', ',$f_arr) . " WHERE id=${survey_id}";
+      foreach ($fields as $f) { array_push($f_arr, $f ."=" . _addslashes($_POST[$f])); }
+      $sql = "UPDATE ".X_SURVEY." SET " . join(', ',$f_arr) . " WHERE id = ${survey_id}";
       //echo $sql;
       $result = execute_sql($sql);
       if (!$result) {
@@ -1011,12 +953,7 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
       // if the question box is empty ... ignore everything else
       if (empty($_POST['content']) && empty($_POST['name'])) { return(1); }
 
-      if (empty($_POST['content'])) {
-        $tab = 'questions';
-        $dont_clear = 1;
-        $errstr = 'Please enter text for this question.';
-        return(0);
-      }
+      if (empty($_POST['content'])) { $tab = 'questions'; $dont_clear = 1; $errstr = 'Please enter text for this question.'; return(0); }
 
       if (empty($_POST['name'])) {
         $str1 = $_POST['content'];
@@ -1031,12 +968,7 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
       $_POST['name'] = preg_replace("/(^_|_$)/i","", $_POST['name']);
 
       // constraint: question type required
-      if (empty($_POST['type_id'])) {
-        $tab = 'questions';
-        $dont_clear = 1;
-        $errstr= 'Sorry, you must select a type for this question.';
-        return(0);
-      }
+      if (empty($_POST['type_id'])) { $tab = 'questions'; $dont_clear = 1; $errstr= 'Sorry, you must select a type for this question.'; return(0); }
 
       $_POST['type_id'] = intval($_POST['type_id']);
       if ($_POST['id'] == 'New Field') { $qid = ''; }
@@ -1056,7 +988,6 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
           return(0);
         }
       }
-
       // constraint: length must be int
       $_POST['length'] = intval($_POST['length']) or 0;
       // constraint: precise must be int
@@ -1104,11 +1035,8 @@ function survey_update(&$survey_id, &$tab, $old_tab) {
         //   $_POST['required']='N';
         //}
 
-        $fields = array('name','type_id','length','precise','required','content','content_th','ans_uniq','extra','extra_th');
-        foreach ($fields as $f) {
-          if (isset($_POST[$f]))
-            array_push($f_arr,$f."="._addslashes($_POST[$f]));
-        }
+        $fields = array('name', 'type_id', 'length', 'precise', 'required', 'content', 'content_th', 'ans_uniq', 'extra', 'extra_th');
+        foreach ($fields as $f) { if (isset($_POST[$f])) { array_push($f_arr, $f."="._addslashes($_POST[$f])); } }
         $sql = "UPDATE ".X_QUESTION." SET " . join(', ',$f_arr) . " WHERE id = ${qid}";
 
         // INSERT row in the DB for new question
@@ -1280,7 +1208,6 @@ function survey_results_navbar($sid, $curr_rid) {
   echo "<p class=\"nav-rd-body\">";
   echo implode(' | ', $linkarr);
   echo "</p></div>\n";
-
 }
 
 function survey_results($sid, $precision = 1, $showTotals = 1, $qid = '', $cids = '', $rid = '', $guicross='') {
@@ -1305,18 +1232,18 @@ function survey_results($sid, $precision = 1, $showTotals = 1, $qid = '', $cids 
 
   // load survey title (and other globals)
   $sql = "SELECT * FROM ".X_SURVEY." WHERE id = '${sid}'";
-  if (!($result = execute_sql($sql,"",ADODB_FETCH_ASSOC))) { $errmsg = 'Error opening survey.' ." [ ID:${sid} R:" . record_count($result) ."]"; return($errmsg); }
+  if (!($result = execute_sql($sql,"", ADODB_FETCH_ASSOC))) { $errmsg = 'Error opening survey.' ." [ ID:${sid} R:" . record_count($result) ."]"; return($errmsg); }
   $survey = fetch_row($result);
   db_close($result);
 
   // load survey questions
   $sql = "SELECT * FROM ".X_QUESTION." WHERE survey_id = '${sid}' AND deleted = 'N' ORDER BY position, id";
-  if (!($questions_result = execute_sql($sql,"",ADODB_FETCH_ASSOC))) { $errmsg = 'Error opening survey.' .' '. 'No questions found.' ." [ ID:${sid} ]"; return($errmsg); }
+  if (!($questions_result = execute_sql($sql,"", ADODB_FETCH_ASSOC))) { $errmsg = 'Error opening survey.' .' '. 'No questions found.' ." [ ID:${sid} ]"; return($errmsg); }
 
   // find out more about the question we are cross analyzing on (if any)
   if ($cross) {
     $sql = "SELECT type_id FROM ".X_QUESTION." WHERE id = ${qid}";
-    $result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
+    $result = execute_sql($sql,"", ADODB_FETCH_ASSOC);
     while ($content = fetch_row($result)){
       $result->MoveNext();
       $crossTable = $response_table[$content['type_id']];
@@ -1491,7 +1418,7 @@ if (!empty($rid)) { survey_results_navbar($sid, $rid); } // show response naviga
       break;
 // -------------------------------- response_date --------------------------------
     case 'response_date':
-      $sql = "SELECT DATE_FORMAT(A.response,'".$GLOBALS['ESPCONFIG']['date_format']."'), COUNT(A.response_id) AS num FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE A.question_id='${qid}' AND A.response_id ${ridstr} GROUP BY A.response";
+      $sql = "SELECT DATE_FORMAT(A.response, '".FORMAT_DATE."'), COUNT(A.response_id) AS num FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE A.question_id='${qid}' AND A.response_id ${ridstr} GROUP BY A.response";
       echo("<!-- \$sql = '$sql' -->\n");
       if ($result = execute_sql($sql)) {
         while (list($text, $num) = fetch_row($result)) {
@@ -1585,7 +1512,7 @@ function survey_report($sid, $details = 0, $format = '') {
 
   // load survey title (and other globals)
   $sql = "SELECT * FROM ".X_SURVEY." WHERE id = $sid";
-  if (!($result = execute_sql($sql,"",ADODB_FETCH_ASSOC))) {
+  if (!($result = execute_sql($sql,"", ADODB_FETCH_ASSOC))) {
     $errmsg = 'Error opening survey.' ." [ ID:${sid} R:" . record_count($result) ."]";
     return($errmsg);
   }
@@ -1594,7 +1521,7 @@ function survey_report($sid, $details = 0, $format = '') {
 
   // load survey questions
   $sql = "SELECT * FROM ".X_QUESTION." WHERE survey_id = $sid AND deleted = 'N' ORDER BY position";
-  if (!($questions_result = execute_sql($sql,"",ADODB_FETCH_ASSOC))) {
+  if (!($questions_result = execute_sql($sql,"", ADODB_FETCH_ASSOC))) {
     $errmsg = 'Error opening survey.' .' '. 'No questions found.' ." [ ID:${sid} ]";
     return($errmsg);
   }
@@ -1635,7 +1562,7 @@ function survey_report($sid, $details = 0, $format = '') {
 <?php
     if ($has_choices[$tid]) {
       $sql = "SELECT * FROM ".X_QUESTION_CHOICE." WHERE question_id = $qid ORDER BY id";
-      $choices_result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
+      $choices_result = execute_sql($sql,"", ADODB_FETCH_ASSOC);
       while ($choice = fetch_row($choices_result)) {
         $choices_result->MoveNext();
 ?>
@@ -1899,7 +1826,7 @@ function survey_generate_results($format, $sid) {
         }
         db_close($result);
         $num = 0;
-        $sql = "SELECT r.id,r.submitted,r.username FROM ".X_RESPONSE." r WHERE r.survey_id=$sid AND r.complete = 'Y' ORDER BY r.submitted";
+        $sql = "SELECT r.id,r.submitted,r.username FROM ".X_RESPONSE." r WHERE r.survey_id = $sid AND r.complete = 'Y' ORDER BY r.submitted";
         $result = execute_sql($sql);
         $y = 0;
         if (record_count($result) == 0) {
@@ -2150,7 +2077,7 @@ function survey_aggregate($sids) {
   // get the survey data from the first survey
   reset($sids);
   $first_sid = current($sids);
-  $sql = sprintf('SELECT * FROM %s WHERE id=%d', X_SURVEY, $first_sid);
+  $sql = sprintf('SELECT * FROM %s WHERE id = %d', X_SURVEY, $first_sid);
   $res = execute_sql($sql, '', ADODB_FETCH_ASSOC);
   if (1 == record_count($res)) { $survey = fetch_row($res); }
   db_close($res);
@@ -2197,8 +2124,8 @@ function survey_aggregate($sids) {
 function survey_copy_questions_and_conditions($sid, $new_sid, $pos = 0) {
   $has_choices = esp_type_has_choices();
   $question_fields = array('id', 'survey_id', 'name', 'type_id', 'result_id', 'length', 'precise', 'position', 'content', 'content_th', 'required', 'deleted', 'public');
-  $sql = "SELECT ". join(', ',$question_fields)." FROM ".X_QUESTION." WHERE survey_id=${sid} AND deleted='N' ORDER by position, id";
-  $result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
+  $sql = "SELECT ". join(', ',$question_fields)." FROM ".X_QUESTION." WHERE survey_id = ${sid} AND deleted = 'N' ORDER by position, id";
+  $result = execute_sql($sql,"", ADODB_FETCH_ASSOC);
   array_shift($question_fields);
   while ($question = fetch_row($result)) {
     $result->MoveNext();
@@ -2225,8 +2152,8 @@ function survey_copy_questions_and_conditions($sid, $new_sid, $pos = 0) {
     // make copies of all the question choices (if exist)
     if ($has_choices[$tid]) {
       $question_choice_fields = array('question_id', 'content', 'content_th', 'value', 'feedback', 'credit');
-      $sql = "SELECT ". join(', ',$question_choice_fields)." FROM ".X_QUESTION_CHOICE." WHERE question_id=${qid} ORDER BY id";
-      $result2 = execute_sql($sql,"",ADODB_FETCH_ASSOC);
+      $sql = "SELECT ". join(', ',$question_choice_fields)." FROM ".X_QUESTION_CHOICE." WHERE question_id = ${qid} ORDER BY id";
+      $result2 = execute_sql($sql,"", ADODB_FETCH_ASSOC);
       while ($choice = fetch_row($result2)) {
         $result2->MoveNext();
         $choice['question_id'] = $new_qid;
@@ -2288,7 +2215,7 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
 
   // load survey title (and other globals) from 1st surveyId
   $sid = $sids[0];
-  $sql = "SELECT * FROM ".X_SURVEY." WHERE id=${sid}";
+  $sql = "SELECT * FROM ".X_SURVEY." WHERE id = ${sid}";
   echo("<!-- \$sql = ${sql} -->\n");
   if (!($result = execute_sql($sql,"", ADODB_FETCH_ASSOC))) {
     $errmsg = 'Error opening survey.' ." [ ID:${sid} R:" . record_count($result) ."] [ ".ErrorMsg()."]";
@@ -2322,9 +2249,9 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
   // load survey questions
   for ($i=0; $i<$num; $i++) {
     $sid = $sids[$i];
-    $sql = "SELECT * FROM ".X_QUESTION." WHERE survey_id=${sid} AND deleted='N' ORDER BY position,id";
+    $sql = "SELECT * FROM ".X_QUESTION." WHERE survey_id = ${sid} AND deleted = 'N' ORDER BY position,id";
     echo("<!-- \$sql = ${sql} -->\n");
-    $questions[$i] = execute_sql($sql,"",ADODB_FETCH_ASSOC);
+    $questions[$i] = execute_sql($sql,"", ADODB_FETCH_ASSOC);
     if (!$questions[$i]) {
       $errmsg = 'Error opening surveys.' .' '. 'No questions found.' . " [ ID:${sid} ] [ ".ErrorMsg()."]";
       return($errmsg);
