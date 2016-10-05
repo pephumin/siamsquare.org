@@ -1,9 +1,7 @@
 
 <h2 id="top">FAQs</h2>
 
-<br>
-
-<h3>Installation</h3>
+<h4>Installation</h4>
 <ul>
   <li><a href="#ipermissions"><b>What are the correct permission settings for phpESP files?</b></a></li>
   <li><a href="#iunsupported"><b>I'm getting an error that says PHP is running in a unsupported mode.</a></b></li>
@@ -15,7 +13,7 @@
   <li><a href="#ilanguage"><b>I'm having trouble changing the default language, what should I do?</b></a></li>
 </ul>
 
-<h3>Survey Management</h3>
+<h4>Survey Management</h4>
 <ul>
   <li><a href="#mdelete"><b>Can I delete old surveys?</b></a></li>
   <li><a href="#monequestion"><b>How can I display only 1 question per page?</b></a></li>
@@ -25,20 +23,20 @@
   <li><a href="#mpart"><b>Can a respondent complete part of a survey, log out, then log back in later to finish?</b></a></li>
 </ul>
 
-<h3>Survey Deployment</h3>
+<h4>Survey Deployment</h4>
 <ul>
   <li><a href="#dhandler"><b>What are handler.php and phpESP.first.php, and how do I use them?</b></a></li>
   <li><a href="#dresults"><b>How do I publish survey results?</b></a></li>
 </ul>
 
-<h3>General Questions</h3>
+<h4>General Questions</h4>
 <ul>
   <li><a href="#glarge"><b>Can phpESP support large numbers of respondents?</b></a></li>
 </ul>
 
-<br><br>
+<br><hr><br>
 
-<h3>Installation</h3>
+<h4>Installation</h4>
 
 <p><a name="ipermissions"><b>What are the correct permission settings for phpESP files?</b></a></p>
 <p>In a Unix environment, phpESP files should be set as 644 to be readable by Apache. For tighter security, <code>phpESP.ini.php</code> should be set 640, owner root and it's group set to the Apache process's group.</p>
@@ -76,9 +74,9 @@
 <p><a name="ilanguage"><b>I'm having trouble changing the default language, what should I do?</b></a></p>
 <p>Check the results of the phpESP system test page, then see the TRANSLATIONS file.</p>
 
-<br><br>
+<br><hr><br>
 
-<h3>Survey Management</h3>
+<h4>Survey Management</h4>
 <p><a name="mdelete"><b>Can I delete old surveys?</b></a></p>
 <p>Yes, there is an unlisted function <code>admin/manage.php?where=purge</code>. Be <em>very</em> careful when using it, you cannot recover from it.</p>
 
@@ -97,9 +95,9 @@
 <p><a name="mpart"><b>Can a respondent complete part of a survey, log out, then log back in later to finish?</b></a></p>
 <p>Yes, see the <em>Save/Restore</em> option on the <em>Survey Access</em> page.</p>
 
-<br><br>
+<br><hr><br>
 
-<h3>Survey Deployment</h3>
+<h4>Survey Deployment</h4>
 
 <p><a name="dhandler"><b>What are <code>handler.php</code> and <code>phpESP.first.php</code>, and how do I use them?</b></a></p>
 <p>They are used to embed a survey in another block of html/php code. You should always include phpESP.first.php at the top of your html code, before any output begins. Look at the examples in the example dir for usage.</p>
@@ -109,9 +107,9 @@
 <p><code>$results = 1;</code></p>
 <p>then use your copied/edited page just like the survey.php page. It should then display results instead of the survey. The same applies to custom survey templates, setting $results to one before calling handler.php will switch to results mode.</p>
 
-<br><br>
+<br><hr><br>
 
-<h3>General Questions</h3>
+<h4>General Questions</h4>
 
 <p><a name="glarge"><b>Can phpESP support large numbers of respondents?</b></a></p>
 <p>Yes, large surveys (100 questions) and large respondent groups (4,000+) can be handled without a problem.  Throughput issues are generally a function of the speed of the web server, the speed of the MySQL server, and available network bandwidth.</p>

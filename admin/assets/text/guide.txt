@@ -1,12 +1,10 @@
-<hr>
-
-<h3>Getting started guide</h3>
+<h2>Getting started guide</h2>
 
 <p>This document is divided into two main sections. The first section is for general users. It explains how to use this tool to create a survey, test it, and incorporate it into a web page. The second section is for administrators. It explains how to manage a group of related users, and to use the access control system.</p>
 
 <hr>
 
-<h3>User guide</h3>
+<h2>User guide</h2>
 
 <p>There are three basic things that users do: make surveys, deploy surveys, and retrieve or export the data.</p>
 
@@ -42,7 +40,7 @@
 
 <hr>
 
-<h3>Administrator guide</h3>
+<h2>Administrator guide</h2>
 
 <p>Before beginning administration you must understand the user/group relationship. There are three classes of users.
 
