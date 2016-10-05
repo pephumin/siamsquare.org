@@ -1,87 +1,115 @@
 <?php
 
-$_SERVER['BASE_PAGE'] = 'contact.php';
 $title = "Contact us";
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once INCLUDEADM.'/template.php';
 
-if (isset($_POST["submit"])) {
-  $name = $_POST['name'];
-  $email = $_POST['email'];
-  $message = $_POST['message'];
-  $human = intval($_POST['human']);
-  $from = 'Online query via siamsqure.org';
-  $to = 'phumin@sawasdee.org';
-  $subject = 'Message from siamsquare.org';
+$sent = false;
 
-  $body ="From: $name\n E-Mail: $email\n Message:\n $message";
+if (isset($_REQUEST["name"])) {
 
-  // Check if name has been entered
-  if (!$_POST['name']) { $errName = 'Please enter your name'; }
+  $name = cleanstring($_REQUEST['name']);
+  $email = cleanstring($_REQUEST['email']);
+  $message = cleanstring($_REQUEST['message']);
+  $human = intval($_REQUEST['human']);
+  $from = "From: ".$email;
+  $subject = '[siamsquare.org] contact query from '.$email;
+  $body ="From: $name ($email)\nChannel: [siamsquare.org] client/contact\n\nMessage:\n$message\n\n";
+  $headers = 'From: '.$email."\r\n" .
+             'Reply-To: '.$email."\r\n" .
+             'X-Mailer: PHP/' . phpversion();
 
-  // Check if email has been entered and is valid
-  if (!$_POST['email'] || !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) { $errEmail = 'Please enter a valid email address'; }
+  if ($human == 5) { if (@mail(MYEMAIL, $subject, $body, $headers)) { $msg = mksuccess("Your message has been sent successfully. We will get back to you shortly."); $sent = true; } }
+  else { $msg = mkerror("Your answer to our question is incorrect"); }
 
-  //Check if message has been entered
-  if (!$_POST['message']) { $errMessage = 'Please enter your message'; }
-  //Check if simple anti-bot test is correct
-  if ($human !== 5) { $errHuman = 'Your answer is incorrect'; }
-
-  // If there are no errors, send the email
-  if (!$errName && !$errEmail && !$errMessage && !$errHuman) {
-    if (mail ($to, $subject, $body, $from)) {
-      $result='<div class="alert alert-success">Thank you! I will be in touch</div>';
-    } else {
-      $result='<div class="alert alert-danger">Sorry there was an error sending your message. Please try again later.</div>';
-    }
-  }
 }
 
 pageHeader($title);
+echo "<h2>Contact us</h2>\n";
+echo "<p>You can use this contact form to write us a message at anytime.</p>\n";
+echo "<p>We <i class=\"pe-heart\"></i> to hear from you</p>\n";
+echo "<br>\n";
+if ($msg) { echo $msg; }
+echo "<br>\n";
 
 ?>
 
-<h2>Contact us</h2>
-
-<form class="form-horizontal" role="form" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-  <div class="form-group">
-    <label for="name" class="col-sm-2 control-label">Name</label>
-    <div class="col-sm-10">
-      <input type="text" class="form-control" id="name" name="name" placeholder="First &amp; Last Name" value="<?php echo htmlspecialchars($_POST['name']); ?>">
-      <?php echo "<p class='text-danger'>$errName</p>";?>
+<form class="form-horizontal" role="form" method="post" action="<?php echo htmlspecialchars(ME); ?>">
+  <div id="contactus">
+    <div class="form-group">
+      <label for="name" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Name</label>
+      <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+        <div class="input-group">
+          <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
+          <?php if ($sent) { ?>
+          <input type="text" class="form-control" name="name" placeholder="First &amp; Last Name" value="<?php echo htmlspecialchars($_REQUEST['name']); ?>" disabled>
+          <?php } else { ?>
+          <input type="text" class="form-control" name="name" placeholder="First &amp; Last Name" value="<?php echo htmlspecialchars($_REQUEST['name']); ?>">
+          <?php } ?>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="form-group">
-    <label for="email" class="col-sm-2 control-label">Email</label>
-    <div class="col-sm-10">
-      <input type="email" class="form-control" id="email" name="email" placeholder="example@domain.com" value="<?php echo htmlspecialchars($_POST['email']); ?>">
-      <?php echo "<p class='text-danger'>$errEmail</p>";?>
+    <div class="form-group">
+      <label for="name" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Email</label>
+      <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+        <div class="input-group">
+          <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
+          <?php if ($sent) { ?>
+          <input type="email" class="form-control" name="email" placeholder="email@company.com" value="<?php echo htmlspecialchars($_REQUEST['email']); ?>" disabled>
+          <?php } else { ?>
+          <input type="email" class="form-control" name="email" placeholder="email@company.com" value="<?php echo htmlspecialchars($_REQUEST['email']); ?>">
+          <?php } ?>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="form-group">
-    <label for="message" class="col-sm-2 control-label">Message</label>
-    <div class="col-sm-10">
-      <textarea class="form-control" rows="4" name="message"><?php echo htmlspecialchars($_POST['message']);?></textarea>
-      <?php echo "<p class='text-danger'>$errMessage</p>";?>
+    <div class="form-group">
+      <label for="name" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Message</label>
+      <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+        <div class="input-group">
+          <span class="input-group-addon input-group-addon-top"><i class="pe-commenting pe-fw"></i></span>
+          <textarea class="form-control" rows="7" name="message" placeholder="Your message can be as long as you need"><?php echo htmlspecialchars($_REQUEST['message']);?></textarea>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="form-group">
-    <label for="human" class="col-sm-2 control-label">2 + 3 = ?</label>
-    <div class="col-sm-10">
-      <input type="text" class="form-control" id="human" name="human" placeholder="Your Answer">
-      <?php echo "<p class='text-danger'>$errHuman</p>";?>
+    <div class="form-group">
+      <label for="name" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">2 + 3 = ?</label>
+      <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+        <div class="input-group">
+          <span class="input-group-addon"><i class="pe-question pe-fw"></i></span>
+          <?php if ($sent) { ?>
+          <input type="text" class="form-control" name="human" placeholder="The answer for 2 + 3 is..." value="<?php echo htmlspecialchars($_REQUEST['human']); ?>" disabled>
+          <?php } else { ?>
+          <input type="text" class="form-control" name="human" placeholder="The answer for 2 + 3 is..." value="<?php echo htmlspecialchars($_REQUEST['human']); ?>">
+          <?php } ?>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-10 col-sm-offset-2">
-      <input id="submit" name="submit" type="submit" value="Send" class="btn btn-primary">
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-10 col-sm-offset-2">
-      <?php echo $result; ?>
+    <div class="form-group">
+      <div class="col-xs-offset-0 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-xs-12 col-sm-7 col-md-7 col-lg-7">
+        <?php if ($sent) { ?>
+        <button type="submit" class="btn btn-warning" disabled>Send <i class="pe-paper-plane"></i></button>
+        <?php } else { ?>
+        <button type="submit" class="btn btn-warning">Send <i class="pe-paper-plane"></i></button>
+        <?php } ?>
+      </div>
     </div>
   </div>
 </form>
+<script>
+  $(document).ready(function() {
+    $('#contactus').formValidation({
+      framework: 'bootstrap',
+      icon: { valid: 'pe-check', invalid: 'pe-times', validating: 'pe-refresh' },
+      button: { selector: '[type="submit"]', disabled: '' },
+      excluded: ':disabled',
+      fields: {
+        name: { validators: { notEmpty: { message: 'Please enter your first and last name' }, } },
+        email: { validators: { notEmpty: { message: 'Please enter your email' }, emailAddress: { message: 'Your email is invalid' } } },
+        message: { validators: { notEmpty: { message: 'Please type your message' } } },
+        human: { validators: { notEmpty: { message: 'Please enter the answer of this question' }, stringLength: { max: 1, message: 'The answer has to be in one digit' }, regexp: { regexp: /^[0-9]+$/, message: 'The answer has to be in number only' } } }
+      }
+    });
+  });
+</script>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
