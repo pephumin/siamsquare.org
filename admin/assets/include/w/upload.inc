@@ -1,22 +1,19 @@
 <?php
 
-/* SuperUser or Designers with "Administer Group Members(pgroup)" permissions only*/
-if (($_SESSION['acl']['superuser'] != 'Y' && (count($_SESSION['acl']['pgroup']) == 0 && count($_SESSION['acl']['puser']) == 0)) && !auth_no_access(_('to access this form'))) { return; }
+if (($_SESSION['acl']['superuser'] != 'Y' && (count($_SESSION['acl']['pgroup']) == 0 && count($_SESSION['acl']['puser']) == 0)) && !auth_no_access('to access this form')) { return; }
 
 if (isset($_GET['account_type'])) { $account_type = htmlspecialchars($_GET['account_type']); }
 else { $account_type = "respondents"; }
 $errstr = '';
-
-// End the included form so we can do a multipart/form-data form
 
 if (isset($_POST['submit'])) {
   unset($_POST['submit']);
   if (isset($_POST['account_type'])) { $account_type = htmlspecialchars($_POST['account_type']); }
   else { $account_type = "respondents"; }
 
-    $upload_type = $_POST['upload_type'];
-    if (isset($_FILES['upload_file']['tmp_name'])) { $upload_file = $_FILES['upload_file']['tmp_name']; }
-    else { $upload_file = ""; }
+  $upload_type = $_POST['upload_type'];
+  if (isset($_FILES['upload_file']['tmp_name'])) { $upload_file = $_FILES['upload_file']['tmp_name']; }
+  else { $upload_file = ""; }
 
   $group_acl  = array();
 
@@ -36,23 +33,20 @@ if (isset($_POST['submit'])) {
     if ($success) {
       unset($_POST['account_type']);
       unset($_POST['submit']);
-      include(esp_where("$account_type"));
+      include(wAdmin("$account_type"));
       return;
     }
     elseif (count($exceptions) > 1) {
-      $errstr .= mkerror('An error occurred during upload.  Rows that failed are listed below.');
+      $errstr .= mkerror('An error occurred during upload. Rows that failed are listed below.');
       $exception_table = ("<table width=\"95%\" border=\"0\" cellspacing=\"0\" cellpadding=\"4\" align=\"center\" \">\n");
-      $bg = $ESPCONFIG['bgalt_color2'];
-      $exception_table .= "<tr bgcolor=\"$bg\">\n";
+      $exception_table .= "<tr>\n";
 
       while (list(, $col) = each ($exceptions[0])) { $exception_table .= "<th align=\"left\">$col</th>\n"; }
       $exception_table .= "</tr>\n";
 
       next ($exceptions);
       while (list(, $row) = each ($exceptions)) {
-        if ($bg == $ESPCONFIG['bgalt_color1']) { $bg =& $ESPCONFIG['bgalt_color2']; }
-        else { $bg =& $ESPCONFIG['bgalt_color1']; }
-        $exception_table .= "<tr valign=\"top\" bgcolor=\"$bg\">\n";
+        $exception_table .= "<tr valign=\"top\">\n";
         foreach($row as $col) { $exception_table .= "<td>$col</td>\n"; }
       }
       $exception_table .= "</tr>\n</table>";
@@ -69,7 +63,7 @@ if (isset($_POST['submit'])) {
 
 <?php if (!empty($errstr)) echo("<p>$errstr</p>\n"); ?>
 
-<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars(ME); ?>">
+<form class="form-horizontal" method="post" action="<?php echo(htmlspecialchars(MYADMIN));  ?>">
 
 <table class="table table-hover">
 
@@ -90,6 +84,6 @@ if (isset($_POST['submit'])) {
 
 </form>
 
-<?php if (!empty($exception_table)) echo("<p>$exception_table</p>\n"); ?>
+<?php if (!empty($exception_table)) { echo("<p>$exception_table</p>\n"); } ?>
 
 <br>
