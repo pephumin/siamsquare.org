@@ -5,12 +5,10 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 $name = cleanstring($_REQUEST['name']);
 $email = cleanstring($_REQUEST['email']);
 // $message = cleanstring($_REQUEST['message']);
-// $human = intval($_REQUEST['human']);
 
 if (!$name) { echo "Error: No name provided.\n"; exit; }
 if (!$email) { echo "Error: No email provided.\n"; exit; }
 // if (!$message) { echo "Error: No message provided.\n"; exit; }
-// if ($human !== 5) { $error .= "Error: Incorrect answer was submitted"; exit; }
 
 $from = "From: ".$email;
 $subject = '[pebinary.com] online query from '.$email;
