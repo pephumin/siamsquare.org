@@ -12,9 +12,15 @@ if (isset($_REQUEST["name"])) {
   $email = cleanstring($_REQUEST['email']);
   $message = cleanstring($_REQUEST['message']);
   $human = intval($_REQUEST['human']);
+
+  if (!$name) { echo "Error: No name provided.\n"; exit; }
+  if (!$email) { echo "Error: No email provided.\n"; exit; }
+  if (!$message) { echo "Error: No message provided.\n"; exit; }
+  if (!$human) { echo "Error: No answer to our question.\n"; exit; }
+
   $from = "From: ".$email;
   $subject = '[siamsquare.org] contact query from '.$email;
-  $body ="From: $name ($email)\nChannel: [siamsquare.org] client/contact\n\nMessage:\n$message\n\n";
+  $body ="From: $name ($email)\n\nChannel: [siamsquare.org]\n\nSource: admin/contact\n\nMessage:\n\n$message\n\n";
   $headers = 'From: '.$email."\r\n" .
              'Reply-To: '.$email."\r\n" .
              'X-Mailer: PHP/' . phpversion();

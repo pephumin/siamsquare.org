@@ -12,14 +12,20 @@ if (isset($_REQUEST["name"])) {
   $email = cleanstring($_REQUEST['email']);
   $message = cleanstring($_REQUEST['message']);
   $human = intval($_REQUEST['human']);
+
+  if (!$name) { echo "Error: No name provided.\n"; exit; }
+  if (!$email) { echo "Error: No email provided.\n"; exit; }
+  if (!$message) { echo "Error: No message provided.\n"; exit; }
+  if (!$human) { echo "Error: No answer to our question.\n"; exit; }
+
   $from = "From: ".$email;
-  $subject = '[siamsquare.org] client request from '.$email;
-  $body ="From: $name ($email)\nChannel: [siamsquare.org] client/request\n\nMessage:\n$message\n\n";
+  $subject = '[siamsquare.org] contact query from '.$email;
+  $body ="From: $name ($email)\n\nChannel: [siamsquare.org]\n\nSource: admin/request\n\nMessage:\n\n$message\n\n";
   $headers = 'From: '.$email."\r\n" .
              'Reply-To: '.$email."\r\n" .
              'X-Mailer: PHP/' . phpversion();
 
-  if ($human == 3) { if (@mail(MYEMAIL, $subject, $body, $headers)) { $msg = mksuccess("Your message has been sent successfully. We will get back to you shortly."); $sent = true; } }
+  if ($human == 5) { if (@mail(MYEMAIL, $subject, $body, $headers)) { $msg = mksuccess("Your message has been sent successfully. We will get back to you shortly."); $sent = true; } }
   else { $msg = mkerror("Your answer to our question is incorrect"); }
 
 }
@@ -46,8 +52,6 @@ echo "<br>\n";
           <?php } else { ?>
           <input type="text" class="form-control" name="name" placeholder="First &amp; Last Name" value="<?php echo htmlspecialchars($_REQUEST['name']); ?>">
           <?php } ?>
-
-
         </div>
       </div>
     </div>
