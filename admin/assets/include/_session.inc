@@ -22,17 +22,14 @@ class session {
     $httponly = true;
     $session_hash = 'sha512';
     if (in_array($session_hash, hash_algos())) { ini_set('session.hash_function', $session_hash); }
-    // How many bits per character of the hash.
-    // The possible values are '4' (0-9, a-f), '5' (0-9, a-v), and '6' (0-9, a-z, A-Z, "-", ",").
-    ini_set('session.hash_bits_per_character', 5);
+    ini_set('session.hash_bits_per_character', 5); // The possible values are '4' (0-9, a-f), '5' (0-9, a-v), and '6' (0-9, a-z, A-Z, "-", ",").
     ini_set('session.use_only_cookies', 1); // Force the session to only use cookies, not URL variables.
     $cookieParams = session_get_cookie_params(); // Get session cookie parameters
     // Set the parameters
     session_set_cookie_params($cookieParams["lifetime"], $cookieParams["path"], $cookieParams["domain"], $secure, $httponly);
     session_name($session_name); // Change the session name
     session_start(); // Now we cat start the session
-    // This line regenerates the session and delete the old one, it also generates a new encryption key in the database.
-    session_regenerate_id(true);
+    session_regenerate_id(true); // Regenerate the session and delete the old one, it also generates a new encryption key in the database.
   }
   function open() {
     $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
@@ -44,7 +41,7 @@ class session {
     return true;
   }
   function read($id) {
-    if (!isset($this->read_stmt)) { $this->read_stmt = $this->db->prepare("SELECT data FROM sessions WHERE id = ? LIMIT 1"); }
+    if (!isset($this->read_stmt)) { $this->read_stmt = $this->db->prepare("SELECT data FROM ".X_SESSIONS." WHERE id = ? LIMIT 1"); }
     $this->read_stmt->bind_param('s', $id);
     $this->read_stmt->execute();
     $this->read_stmt->store_result();
@@ -58,26 +55,26 @@ class session {
     $key = $this->getkey($id); // Get unique key
     $data = $this->encrypt($data, $key); // Encrypt the data
     $time = time();
-    if (!isset($this->w_stmt)) { $this->w_stmt = $this->db->prepare("REPLACE INTO sessions (id, set_time, data, session_key) VALUES (?, ?, ?, ?)"); }
+    if (!isset($this->w_stmt)) { $this->w_stmt = $this->db->prepare("REPLACE INTO ".X_SESSIONS." (id, set_time, data, session_key) VALUES (?, ?, ?, ?)"); }
     $this->w_stmt->bind_param('siss', $id, $time, $data, $key);
     $this->w_stmt->execute();
     return true;
   }
   function destroy($id) {
-    if (!isset($this->delete_stmt)) { $this->delete_stmt = $this->db->prepare("DELETE FROM sessions WHERE id = ?"); }
+    if (!isset($this->delete_stmt)) { $this->delete_stmt = $this->db->prepare("DELETE FROM ".X_SESSIONS." WHERE id = ?"); }
     $this->delete_stmt->bind_param('s', $id);
     $this->delete_stmt->execute();
     return true;
   }
   function gc($max) {
-    if (!isset($this->gc_stmt)) { $this->gc_stmt = $this->db->prepare("DELETE FROM sessions WHERE set_time < ?"); }
+    if (!isset($this->gc_stmt)) { $this->gc_stmt = $this->db->prepare("DELETE FROM ".X_SESSIONS." WHERE set_time < ?"); }
     $old = time() - $max;
     $this->gc_stmt->bind_param('s', $old);
     $this->gc_stmt->execute();
     return true;
   }
   private function getkey($id) {
-    if (!isset($this->key_stmt)) { $this->key_stmt = $this->db->prepare("SELECT session_key FROM sessions WHERE id = ? LIMIT 1"); }
+    if (!isset($this->key_stmt)) { $this->key_stmt = $this->db->prepare("SELECT session_key FROM ".X_SESSIONS." WHERE id = ? LIMIT 1"); }
     $this->key_stmt->bind_param('s', $id);
     $this->key_stmt->execute();
     $this->key_stmt->store_result();

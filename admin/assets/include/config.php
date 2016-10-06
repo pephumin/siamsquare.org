@@ -180,6 +180,7 @@ define('X_RESPONSE_RANK',     'x_response_rank');
 define('X_RESPONSE_RATING',   'x_response_rating');
 define('X_RESPONSE_SINGLE',   'x_response_single');
 define('X_RESPONSE_TEXT',     'x_response_text');
+define('X_SESSIONS',          'x_sessions');
 define('X_SURVEY',            'x_survey');
 define('X_CONDITION',         'x_conditions');
 define('X_SURVEY_STATISTICS', 'x_survey_statistics');
