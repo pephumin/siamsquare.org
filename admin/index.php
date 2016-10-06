@@ -1,7 +1,5 @@
 <?php
 
-// global $title;
-$_SERVER['BASE_PAGE'] = 'index.php';
 if (!isset($title)) { $title = 'SiamSquare survey engine: Administrator'; }
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once INCLUDEADM.'/template.php';
@@ -13,6 +11,8 @@ esp_init_adodb();
 
 if (get_cfg_var('register_globals')) { $_SESSION['acl'] = &$acl; }
 
+print_r(get_cfg_var('register_globals'));
+
 $w = '';
 
 if ($ESPCONFIG['auth_design']) {
@@ -22,10 +22,8 @@ if ($ESPCONFIG['auth_design']) {
     if (!isset($_POST['password'])) { $password = ""; }
     if ($_POST['password'] != "") { $_SESSION['raw_password'] = $_POST['password']; }
   }
-  if (isset($_SESSION['username'])) { $username = $_SESSION['username']; }
-  else { $username = ""; }
-  if (isset($_SESSION['raw_password'])) { $raw_password = $_SESSION['raw_password']; }
-  else { $raw_password = ""; }
+  if (isset($_SESSION['username'])) { $username = $_SESSION['username']; } else { $username = ""; }
+  if (isset($_SESSION['raw_password'])) { $raw_password = $_SESSION['raw_password']; } else { $raw_password = ""; }
   $password = _addslashes($raw_password);
   if (!manage_auth($username, $password, $raw_password)) exit;
 } else {
@@ -47,17 +45,5 @@ if (empty($w) && isset($_REQUEST['w'])) { $w = $_REQUEST['w']; }
 pageHeader($title);
 include(wAdmin($w));
 if ($notes) { pageFooter($notes); } else { pageFooter(); }
-
-echo "<div class=\"row\"><div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
-echo "<pre>\n";
-print_r($_POST);
-echo "</pre>\n";
-echo "</div>\n";
-echo "<div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
-echo "<pre>\n";
-print_r($_SESSION);
-echo "</pre>\n";
-echo "</div>\n";
-echo "</div></div>\n";
 
 ?>

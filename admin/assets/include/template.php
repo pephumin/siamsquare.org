@@ -1,7 +1,6 @@
 <?php
 
 function logo() {
-  //echo file_get_contents(DOCROOT.'/admin/assets/img/ssq.svg');
   echo "<img src=\"assets/img/ssq.svg\" alt=\"SiamSquare Survey Engine by PE BINARY CO., LTD.\">";
 }
 
@@ -154,23 +153,6 @@ function pageHeader($title) {
 <?php
 }
 
-function dFoot($message) {
-?>
-<script>
-  function windowOpener(title,msg) {
-    msgWindow = window.open("","displayWindow","menubar=no,alwaysRaised=yes,dependent=yes,width=600,height=500,scrollbars=yes,resizable=yes");
-    msgWindow.document.write("<html><head><title>"+title+"</title></head>");
-    msgWindow.document.write("<body>"+msg+"</body></html>");
-  }
-  function debugWindow () {
-    title = "Debug Window";
-    msg = "<?php echo(addcslashes($message, "\0..\31\\\"")); ?>";
-    windowOpener(title, msg);
-  }
-</script>
-<?php
-}
-
 function pageFooter($notes = null) {
 ?>
 </main>
@@ -197,8 +179,6 @@ function pageFooter($notes = null) {
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3">
       <div class="container">
-        <a class="btn btn-info btn-xs" href="http://www.bootlint.com/?url=<?php echo MYHOME.ME; ?>" target="_blank" role="button">bootlint</a>
-        <?php include_once DOCROOT.'/admin/assets/include/debug.inc'; ?>
       </div>
     </div>
   </div>
@@ -220,8 +200,10 @@ function pageFooter($notes = null) {
   var cancelConfirmMsg = "Warning! This survey has not been saved. Canceling now will remove any changes."
   var mergeMsg = "<h2>You must select at least two surveys before you can merge</h2>"
 </script>
-<?php dFoot($str); ?>
-<?php if ($notes) { notify($notes); } ?>
+<?php
+if ($notes) { notify($notes); }
+debugOutput();
+?>
 </body>
 </html>
 <?php
@@ -260,6 +242,22 @@ function notify($messages) {
     });
 </script>
 <?php
+}
+
+function debugOutput() {
+  echo "<section class=\"container\"><div class=\"row\"><div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
+  echo "<pre class=\"small\">\n";
+  echo "POST\n";
+  print_r($_POST);
+  echo "</pre>\n";
+  echo "</div>\n";
+  echo "<div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
+  echo "<pre class=\"small\">\n";
+  echo "SID = ".session_id()."\n";
+  print_r($_SESSION);
+  echo "</pre>\n";
+  echo "</div>\n";
+  echo "</div></div></section>\n";
 }
 
 // function displayTabNav_tabs() {
