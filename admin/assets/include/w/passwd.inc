@@ -1,69 +1,84 @@
 <?php
 
 $title = "Changing your password";
-// $base = ME;
 
-if(isset($_POST['newpass1']) && $_POST['newpass1'] == $_POST['newpass2'] && !empty($_POST['newpass1'])) {
-  if(auth_change_manager_passwd($_SESSION['acl']['username'], _addslashes($_POST['oldpass']), _addslashes($_POST['newpass1']))) {
-    echo(mksuccess('Your password has been successfully changed.'));
-    // header("Refresh: 10; URL=$base");
-    return;
-  }
-  else { echo(mkerror('Password not set, check your old password.')); }
+if (empty($_SESSION["captcha"])) {
+  require INCLUDEADM.'/captcha.inc';
+  $captcha_length = 8;
+  $rText = generateRandom($captcha_length);
+  $_SESSION["captcha"] = $rText;
 }
-else if(isset($_POST['newpass1'])) { echo(mkerror('New passwords do not match or are blank.')); }
+
+if (isset($_REQUEST['captcha'])) {
+  if ($_REQUEST['captcha'] != $_SESSION['captcha']) {
+    if (auth_change_manager_passwd($_SESSION['acl']['username'], _addslashes($_POST['oldpass']), _addslashes($_POST['newpass1']))) {
+      echo(mksuccess('Your password has been changed successfully'));
+      return;
+    } else { echo(mkerror('Error changing your password.')); }
+  } else { echo(mkerror('Wrong captcha.')); }
+}
 
 ?>
 
 <h2>Changing password</h2>
 
-<form class="form-horizontal" method="post" action="<?php echo(htmlspecialchars(ME)); ?>">
-  <section id="changepassword">
-    <div class="form-group">
-      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Username</label>
-      <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-        <div class="input-group">
-          <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
-          <input type="text" name="username" class="form-control" placeholder="<?php echo($_SESSION['acl']['username']); ?>" disabled>
-        </div>
-        <?php echo mkhidden('username', $GLOBALS); ?>
+<form id="changepassword" class="form-horizontal" method="post" action="<?php echo(htmlspecialchars(MYADMIN)); ?>">
+  <div class="form-group">
+    <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Username</label>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+      <div class="input-group">
+        <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
+        <input type="text" name="username" class="form-control" placeholder="<?php echo($_SESSION['acl']['username']); ?>" disabled>
+      </div>
+      <?php echo mkhidden('username', $GLOBALS); ?>
+    </div>
+  </div>
+  <hr>
+  <div class="form-group">
+    <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Current password</label>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+      <div class="input-group">
+        <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
+        <input type="password" name="oldpass" class="form-control" placeholder="Current password">
       </div>
     </div>
-    <hr>
-    <div class="form-group">
-      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Current password</label>
-      <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-        <div class="input-group">
-          <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
-          <input type="password" name="oldpass" class="form-control" placeholder="Current password">
-        </div>
+  </div>
+  <div class="form-group">
+    <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">New password</label>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+      <div class="input-group">
+        <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
+        <input type="password" name="newpass1" class="form-control" placeholder="New password">
       </div>
     </div>
-    <div class="form-group">
-      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">New password</label>
-      <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-        <div class="input-group">
-          <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
-          <input type="password" name="newpass1" class="form-control" placeholder="New password">
-        </div>
+  </div>
+  <div class="form-group">
+    <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Confirm new password</label>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+      <div class="input-group">
+        <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
+        <input type="password" name="newpass2" class="form-control" placeholder="New password again">
       </div>
     </div>
-    <div class="form-group">
-      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Confirm new password</label>
-      <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-        <div class="input-group">
-          <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
-          <input type="password" name="newpass2" class="form-control" placeholder="New password again">
-        </div>
+  </div>
+  <hr>
+  <div class="form-group">
+    <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Confirmation</label>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+      <p>Please type in the words as shown in this picture<br>
+      <img src="assets/include/captcha.php" alt="captcha"></p>
+      <div class="input-group">
+        <span class="input-group-addon"><i class="pe-cog pe-fw"></i></span>
+        <input type="text" name="captcha" class="form-control" placeholder="Please type in the words as shown in the picture">
       </div>
     </div>
-    <hr>
-    <div class="col-xs-offset-0 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-xs-12 col-sm-7 col-md-7 col-lg-7">
-      <button type="submit" class="btn btn-warning">Change password <i class="pe-check-circle-o"></i></button>
-      <button type="submit" class="btn btn-default">Cancel</button>
-      <input type="hidden" name="w" value="passwd">
-    </div>
-  </section>
+  </div>
+  <hr>
+  <p class="text-center">
+    <input type="hidden" name="w" value="passwd">
+    <button type="submit" class="btn btn-warning">Change <i class="pe-check-circle-o"></i></button>
+    <button type="submit" class="btn btn-default">Cancel</button>
+  </p>
 </form>
 <script>
   $(document).ready(function() {
@@ -72,12 +87,10 @@ else if(isset($_POST['newpass1'])) { echo(mkerror('New passwords do not match or
       icon: { valid: 'pe-check', invalid: 'pe-times', validating: 'pe-refresh' },
       excluded: ':disabled',
       fields: {
-        oldpass: {
-          validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 4, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' } } },
-        newpass1: {
-          validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 6, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' } } },
-        newpass2: {
-          validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 6, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' }, identical: { field: 'newpass1', message: 'The confirm password must be the same as the new one' } } }
+        oldpass: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 4, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' } } },
+        newpass1: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 6, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' } } },
+        newpass2: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 6, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' }, identical: { field: 'newpass1', message: 'The confirm password must be the same as the new one' } } },
+        captcha: { validators: { notEmpty: { message: 'Captcha is required' }, stringLength: { min: 8, message: 'Captcha must be 8 characters long' } } }
       }
     });
   });

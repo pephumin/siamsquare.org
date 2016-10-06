@@ -73,8 +73,8 @@ if (isset($_REQUEST['captcha'])) {
   </div>
   <hr>
   <p class="text-center">
-    <input type="hidden" name="w" value="changeprofile">
-    <button type="submit" class="btn btn-warning">Change <i class="pe-check-circle-o"></i></button>
+    <input type="hidden" name="w" value="changepass">
+    <button type="submit" class="btn btn-info">Change <i class="pe-check-circle-o"></i></button>
     <button type="submit" class="btn btn-default">Cancel</button>
   </p>
 </form>
@@ -88,7 +88,8 @@ if (isset($_REQUEST['captcha'])) {
       fields: {
         oldPassword: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 4, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' } } },
         newPassword: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 6, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' } } },
-        newPasswordConfirm: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 6, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' }, identical: { field: 'newpass1', message: 'The confirm password must be the same as the new one' } } }
+        newPasswordConfirm: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 6, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' }, identical: { field: 'newpass1', message: 'The confirm password must be the same as the new one' } } },
+        captcha: { validators: { notEmpty: { message: 'กรุณาใส่ตัวอักษรตามรูปภาพ' }, stringLength: { min: 8, message: 'ตัวอักษรนี้จะต้องมีจำนวนทั้งสิ้น 8 ตัวอักษร' } } }
       }
     });
   });

@@ -268,7 +268,7 @@ if (isset($_REQUEST['captcha'])) {
   <hr>
   <p class="text-center">
     <input type="hidden" name="w" value="changeprofile">
-    <button type="submit" class="btn btn-warning">Change <i class="pe-check-circle-o"></i></button>
+    <button type="submit" class="btn btn-info">Change <i class="pe-check-circle-o"></i></button>
     <button type="submit" class="btn btn-default">Cancel</button>
   </p>
 </form>
