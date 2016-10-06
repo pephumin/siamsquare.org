@@ -646,16 +646,15 @@ function authenticate_in_realm($username, $password, $realm) {
 }
 
 function set_session_authentication($isAuthenticated) {
+  require INCLUDEADM.'/session.inc';
   @header('P3P: CP="NOI ADM DEV PSAi COM NAV OUR OTRo STP IND DEM"');
   // start sessions if needed
   if ('' == session_name()) { session_start(); }
   if ($isAuthenticated) { $_SESSION['authenticated'] = true; }
   else {
-    // wipe out the session...
-    $_SESSION = array ();
-    session_destroy();
-    // and regenerate it for next requests
-    session_start();
+    $_SESSION = array (); // wipe out the session...
+    session_destroy(); // wipe out the session...
+    session_start(); // and regenerate it for next requests
     session_regenerate_id();
     setcookie(session_name(), session_id());
   }
