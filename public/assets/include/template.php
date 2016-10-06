@@ -1,7 +1,6 @@
 <?php
 
 function logo() {
-  // echo file_get_contents(DOCROOT.'/public/assets/img/ssq.svg');
   echo "<img src=\"assets/img/ssq.svg\" alt=\"SiamSquare Survey Engine by PE BINARY CO., LTD.\">";
 }
 
@@ -131,23 +130,6 @@ function pageHeader($title) {
 <?php
 }
 
-function dFoot($message) {
-?>
-<script>
-  function windowOpener(title,msg) {
-    msgWindow = window.open("","displayWindow","menubar=no,alwaysRaised=yes,dependent=yes,width=600,height=500,scrollbars=yes,resizable=yes");
-    msgWindow.document.write("<html><head><title>"+title+"</title></head>");
-    msgWindow.document.write("<body>"+msg+"</body></html>");
-  }
-  function debugWindow () {
-    title = "Debug Window";
-    msg = "<?php echo(addcslashes($message, "\0..\31\\\"")); ?>";
-    windowOpener(title, msg);
-  }
-</script>
-<?php
-}
-
 function pageFooter($notes = null) {
 ?>
 </main>
@@ -174,8 +156,6 @@ function pageFooter($notes = null) {
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3">
       <div class="container">
-        <a class="btn btn-info btn-xs" href="http://www.bootlint.com/?url=<?php echo MYHOME.ME; ?>" target="_blank" role="button">bootlint</a>
-<?php include_once DOCROOT.'/admin/assets/include/debug.inc'; ?>
       </div>
     </div>
   </div>
@@ -199,11 +179,27 @@ function pageFooter($notes = null) {
   var cancelConfirmMsg = "Warning! This survey has not been saved. Canceling now will remove any changes."
   var mergeMsg = "<h2>You must select at least two surveys before you can merge</h2>"
 </script>
-<?php dFoot($str); ?>
 <?php if ($notes) { notify($notes); } ?>
+<?php debugOutput(); ?>
 </body>
 </html>
 <?php
+}
+
+function debugOutput() {
+  echo "<section class=\"container\"><div class=\"row\"><div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
+  echo "<pre class=\"small\">\n";
+  echo "POST\n";
+  print_r($_POST);
+  echo "</pre>\n";
+  echo "</div>\n";
+  echo "<div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
+  echo "<pre class=\"small\">\n";
+  echo "SID = ".session_id()."\n";
+  print_r($_SESSION);
+  echo "</pre>\n";
+  echo "</div>\n";
+  echo "</div></div></section>\n";
 }
 
 function notify($messages) {
@@ -242,12 +238,10 @@ function notify($messages) {
 }
 
 function handleLogin() {
-  $handleLogin = (! is_session_authenticated() && isset($_REQUEST['doLogin']) && ! empty($_REQUEST['username']) && ! empty($_REQUEST['password']) ? true : false);
+  $handleLogin = (!is_session_authenticated() && isset($_REQUEST['doLogin']) && ! empty($_REQUEST['username']) && ! empty($_REQUEST['password']) ? true : false);
   if ($handleLogin) {
     $isAuthenticated = authenticate($_REQUEST['username'], $_REQUEST['password'], $realms);
     $realmsCnt = count($realms);
-
-    // if the login information uniquely identifies a user, mark as authenticated session and move on
     if ($isAuthenticated && 1 === $realmsCnt) {
       $ok = set_current_respondent($_REQUEST['username'], current($realms), $_REQUEST['password']);
       if ($ok) {
@@ -255,9 +249,6 @@ function handleLogin() {
         blur('/public/');
         assert('false; // NOTREACHED');
       }
-
-    // if the login is recognized but not-unique, we can't figure out what to do... panic
-    // NOTE: if email were mandatory, then we could use that as a key...
     }
     elseif ($isAuthenticated && 2 <= $realmsCnt) { $GLOBALS['errmsg'] = mkerror('Please contact an administrator: multi-realm'); }
     else { $GLOBALS['errmsg'] = mkerror('Incorrect User ID or Password, or your account has been disabled/expired.'); }
@@ -341,7 +332,79 @@ function change_password($username, $realm, $password) {
 
 function paint_non_authenticated() {
   render_login_form();
-  // require_once WPUBLIC.'/login.inc';
+}
+
+function paint_authenticated() {
+  // echo "<h2>หน้าแรกสมาชิก</h2>\n";
+  get_survey_info($surveys, $responses, $accessibility);
+  partition_surveys($surveys, $responses, $accessibility, $current, $historical);
+  echo "<h2>ข้อมูลโดยสรุป</h2>\n";
+  paint_respondent_tools();
+  echo "<h2>งานวิจัย</h2>\n";
+  paint_public_survey_list();
+  paint_respondent_surveys($current);
+  paint_respondent_history($historical);
+}
+
+function paint_respondent_tools() {
+  global $respondent;
+  $p = MYPUBLIC;
+  if (($respondent['expiration']) == "0000-00-00 00:00:00") { $expired = "ไม่มีหมดอายุ"; } else { $expired = strftime(FORMAT_DATE, $respondent['expiration']); }
+  echo "<section>\n";
+  echo "<h4><i class=\"pe-user pe-fw\"></i> ข้อมูลส่วนตัว</h4>\n";
+  echo "<div class=\"row\">\n";
+  echo "  <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n";
+  echo "    <h5>ข้อมูลบัญชีของคุณ</h5>\n";
+  echo "    <table class=\"table table-hover\">\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">ชื่อนามสกุล</td>\n";
+  echo "        <td>".$respondent['fname']." ".$respondent['lname']."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">วันหมดอายุ (หากมี)</td>\n";
+  echo "        <td>".$expired."</td>\n";
+  echo "      </tr>\n";
+  echo "    </table>\n";
+  echo "  </div>\n";
+  echo "  <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n";
+  echo "    <h5>ข้อมูลประชากรศาสตร์</h5>\n";
+  echo "    <table class=\"table table-hover\">\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">เพศ</td>\n";
+  echo "        <td>".$respondent['gender']."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">วันเกิด</td>\n";
+  echo "        <td>".$respondent['birthday_date']."/".$respondent['birthday_month']."/".$respondent['birthday_year']."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">ปัจจุบันอาศัยอยู่</td>\n";
+  echo "        <td>".$respondent['province']."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">หมายเลขโทรศัพท์มือถือ</td>\n";
+  echo "        <td>".$respondent['mobile1']."-".$respondent['mobile2'].$respondent['mobile3']."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">รายได้ส่วนบุคคล</td>\n";
+  echo "        <td>".$respondent['personal_income']."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">รายได้ครัวเรือน</td>\n";
+  echo "        <td>".$respondent['HH_income']."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">สถานะภาพสมรส</td>\n";
+  echo "        <td>".$respondent['marital']."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">ระดับการศึกษา</td>\n";
+  echo "        <td>".$respondent['education']."</td>\n";
+  echo "      </tr>\n";
+  echo "    </table>\n";
+  echo "  </div>\n";
+  echo "</div>\n";
+  echo "</section>\n";
 }
 
 function paint_public_survey_list() {
@@ -350,63 +413,21 @@ function paint_public_survey_list() {
     if (isset($accessibility[$sid]['available']) && true === (bool)$accessibility[$sid]['available']) { continue; }
     unset($surveys[$sid]);
   }
-
-  // spit them out
   if (0 < count($surveys)) {
-    echo "<h2>Public surveys</h2>\n";
-    echo "<br>\n";
-    echo "<p>Below is a list of the current available surveys. Please complete these surveys.</p>\n";
-    echo "<p>If you are a registered member, make sure you sign in before taking these public surveys in order to get the full benefits.</p>\n";
-    echo "<br>\n";
+    echo "<section>\n";
+    echo "<h4><i class=\"pe-book pe-fw\"></i> งานวิจัยที่เปิดรับความคิดเห็นในช่วงนี้</h4>\n";
+    echo "<p>ต่อไปนี้คืองานวิจัยโครงการต่างๆที่กำลังเปิดรับความคิดเห็นอยู่ในขณะนี้ โดยที่ทางระบบได้ทำแสดงผลเฉพาะงานวิจัยที่มีกลุ่มเป้าหมายตรงกับข้อมูลประชากรศาสตร์ของคุณ ตัวอย่างเช่น งานวิจัยในเรื่องเครื่องสำอางค์ จะถูกแสดงผลอยู่บนหน้าจอของสมาชิกที่เป็นผู้หญิงเท่านั้น</p>\n";
+    echo "<p>คุณสามารถกดเพื่อเข้าร่วมงานวิจัยเหล่านี้ได้ทันที</p>\n";
     foreach ($surveys as $survey) {
-      printf('<a href="%s" class="btn btn-info btn-lg" role="button"><i class="pe-flag pe-fw"></i> %s</a> &nbsp;', survey_fetch_url_by_survey_name($survey['name']), $survey['title']);
+      printf('<a href="%s" class="btn btn-info btn-lg survey-name" role="button"><i class="pe-flag pe-fw"></i> %s</a> &nbsp;', survey_fetch_url_by_survey_name($survey['name']), $survey['title']);
       print "\n";
     }
-    echo "<br><br>\n";
+    echo "</section>\n";
   }
 }
 
-function paint_authenticated() {
-  // echo "PEPE";
-  get_survey_info($surveys, $responses, $accessibility);
-  partition_surveys($surveys, $responses, $accessibility, $current, $historical);
-  paint_respondent_tools();
-  paint_respondent_surveys($current);
-  paint_respondent_history($historical);
-  paint_public_survey_list();
-}
-
-function paint_respondent_tools() {
-  global $respondent;
-  $p = MYPUBLIC;
-  // $cfg =& $GLOBALS['ESPCONFIG'];
-  echo "<h2>Dashboard <small>(User management interface)</small></h2>\n";
-  echo "<h4>Account management</h4>\n";
-  echo "<div class=\"row\">\n";
-  echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
-  echo "    <div class=\"panel panel-primary\">\n";
-  echo "      <div class=\"panel-body list-group-item-info\">\n";
-  echo "        <p><i class=\"pe-user pe-fw\"></i>&nbsp; Your login information:</p>\n";
-  echo "        <ul>\n";
-  echo "          <li><u>Name:</u> ".$respondent['fname']." ".$respondent['lname']."</li>\n";
-  echo "          <li><u>Email:</u> ".$respondent['email']."</li>\n";
-  echo "          <li><u>Group:</u> ".$respondent['realm']."</li>\n";
-  if (($respondent['expiration']) == "0000-00-00 00:00:00") { echo "          <li><u>Account expiration:</u> No expiration</li>\n"; }
-  else { echo "          <li><u>Account expiration:</u> ".$respondent['expiration']."</li>\n"; }
-  echo "        </ul>\n";
-  echo "      </div>\n";
-  //echo "      </div>\n";
-  echo "      <div id=\"userAdmin\" class=\"list-group\">\n";
-  echo "        <a class=\"list-group-item\" href=\"$p?w=changeprofile\"><i class=\"pe-cog pe-fw\"></i>&nbsp; Change your info</a>\n";
-  echo "        <a class=\"list-group-item\" href=\"$p?w=changepass\"><i class=\"pe-key pe-fw\"></i>&nbsp; Change your password</a>\n";
-  echo "      </div>\n";
-  echo "    </div>\n";
-  echo "  </div>\n";
-  echo "</div>\n";
-  echo "<br>\n\n";
-}
-
 function paint_respondent_surveys($current) {
+  echo "<section>\n";
   echo "<h4><i class=\"pe-wpforms pe-fw\"></i> งานวิจัยในปัจจุบัน</h4>\n";
   if (0 < count($current)) {
     echo "<table class=\"table table-hover\">\n";
@@ -414,7 +435,7 @@ function paint_respondent_surveys($current) {
     echo "    <th width=\"20%\">งานวิจัย</th>\n";
     echo "    <th width=\"20%\">การเข้าร่วมของคุณ</th>\n";
     echo "    <th width=\"20%\">คุณเข้าร่วมครั้งล่าสุด</th>\n";
-    echo "    <th width=\"40%\">สถานะในปัจจุบัน</th>\n";
+    echo "    <th width=\"40%\">สถานะปัจจุบัน</th>\n";
     echo "  </tr>\n";
     foreach ($current as $sid => $info) {
       list ($name, $status, $date, $avail) = $info;
@@ -422,11 +443,12 @@ function paint_respondent_surveys($current) {
     }
     echo "</table>\n";
   }
-  else { echo "You do not have any surveys at this time."; }
-  echo "<br>\n\n";
+  else { echo "ไม่มีงานวิจัยในปัจจุบัน"; }
+  echo "</section>\n";
 }
 
 function paint_respondent_history($historical) {
+  echo "<section>\n";
   echo "<h4><i class=\"pe-history pe-fw\"></i> งานวิจัยในอดีต</h4>\n";
   if (0 < count($historical)) {
     echo "<table class=\"table table-hover\">\n";
@@ -434,7 +456,7 @@ function paint_respondent_history($historical) {
     echo "    <th width=\"20%\">งานวิจัย</th>\n";
     echo "    <th width=\"20%\">การเข้าร่วมของคุณ</th>\n";
     echo "    <th width=\"20%\">คุณเข้าร่วมครั้งล่าสุด</th>\n";
-    echo "    <th width=\"40%\">สถานะในปัจจุบัน</th>\n";
+    echo "    <th width=\"40%\">สถานะปัจจุบัน</th>\n";
     echo "  </tr>\n";
     foreach ($historical as $sid => $info) {
       list ($name, $status, $date, $avail) = $info;
@@ -442,8 +464,8 @@ function paint_respondent_history($historical) {
     }
     echo "</table>\n";
   }
-  else { echo "คุณไม่มีงานวิจัยที่ผ่านไปแล้วในช่วงนี้"; }
-  echo "<br>\n\n";
+  else { echo "ไม่มีงานวิจัยในอดีต"; }
+  echo "</section>\n";
 }
 
 function get_survey_info(&$surveys, &$responses, &$accessibility) {
@@ -475,12 +497,11 @@ function partition_surveys($surveys, $responses, $accessibility, &$current, &$hi
       $avail = fetch_availability($survey, $availability);
       if (STATUS_OPEN !== $availability) { $name = $survey['title']; }
       $current[] = array($name, $status, $date, $avail);
-
     } else {
-      $name   = $survey['title'];
+      $name = $survey['title'];
       $status = fetch_status($sid, $responses);
-      $date   = fetch_latest_submission_date($sid, $responses);
-      $avail  = "ปิดรับความคิดเห็นไปแล้ว";
+      $date = fetch_latest_submission_date($sid, $responses);
+      $avail = "ปิดรับความคิดเห็นไปแล้ว";
       $historical[] = array($name, $status, $date, $avail);
     }
   }
@@ -518,7 +539,6 @@ function fetch_availability($survey, &$rc) {
 
 function render_login_form() {
   $username = (isset($_REQUEST['username']) ? $_REQUEST['username'] : '');
-  $str = "";
   if ($_message) { echo mkerror($_message); }
   require_once WPUBLIC.'/login.inc';
 }
