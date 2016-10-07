@@ -96,17 +96,25 @@ function pageHeader($title) {
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button" title="ข้อมูลส่วนตัว"><i class="pe-user pe-fw"></i> ข้อมูลส่วนตัว <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li class="dropdown-header">เปลี่ยนแปลงข้อมูลส่วนตัว</li>
+                  <li class="dropdown-header">ข้อมูลส่วนตัว</li>
+                  <li><a href="<?php echo(MYPUBLIC."?w=profile"); ?>" title="ข้อมูลส่วนตัวโดยสรุป"><i class="pe-user pe-fw"></i> ข้อมูลส่วนตัวโดยสรุป</a></li>
+                  <li class="divider" role="separator"></li>
+                  <li class="dropdown-header">เปลี่ยนแปลงข้อมูล</li>
                   <li><a href="<?php echo(MYPUBLIC."?w=changeprofile"); ?>" title="แก้ไขเปลี่ยนแปลงข้อมูลเกี่ยวกับตัวคุณ"><i class="pe-cog pe-fw"></i> แก้ไขข้อมูลของคุณ</a></li>
                   <li><a href="<?php echo(MYPUBLIC."?w=changepass"); ?>" title="แก้ไขเปลี่ยนแปลงรหัสผ่าน"><i class="pe-key pe-fw"></i> เปลี่ยนรหัสผ่าน</a></li>
                 </ul>
+              </li>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-commenting pe-fw"></i> งานวิจัย <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li class="dropdown-header">การเข้าร่วมของคุณ</li>
-                  <li><a href="" title="Current surveys"><i class="pe-wpforms pe-fw"></i> งานวิจัยในปัจจุบัน</a></li>
-                  <li><a href="" title="History"><i class="pe-history pe-fw"></i> งานวิจัยในอดีต</a></li>
+                  <li class="dropdown-header">ภาพรวมงานวิจัย</li>
+                  <li><a href="<?php echo(MYPUBLIC."?w=survey"); ?>" title="งานวิจัยทั้งหมด"><i class="pe-user pe-fw"></i> งานวิจัยทั้งหมด</a></li>
+                  <li class="divider" role="separator"></li>
+                  <li class="dropdown-header">การเข้าร่วม</li>
+                  <li><a href="<?php echo(MYPUBLIC."?w=surveycurrent"); ?>" title="Current surveys"><i class="pe-wpforms pe-fw"></i> งานวิจัยในปัจจุบัน</a></li>
+                  <li><a href="<?php echo(MYPUBLIC."?w=surveyhistory"); ?>" title="History"><i class="pe-history pe-fw"></i> งานวิจัยในอดีต</a></li>
                 </ul>
+              </li>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-trophy pe-fw"></i> คะแนน <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -114,9 +122,10 @@ function pageHeader($title) {
                   <li><a href="" title="ยอดคะแนนสะสม"><i class="pe-diamond pe-fw"></i> ยอดคะแนนสะสม</a></li>
                   <li><a href="" title="ของรางวัล"><i class="pe-gift pe-fw"></i> ของรางวัล</a></li>
                 </ul>
+              </li>
 <?php } else { ?>
               <li><a href="<?php echo MYPUBLIC; ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> หน้าแรก</a></i>
-              <li><a href="<?php echo(MYPUBLIC."signup.php"); ?>" title="สมัครสมาชิก"><i class="pe-bullhorn pe-fw"></i> สมัครสมาชิก</a></li>
+              <li><a href="<?php echo(MYPUBLIC."signup.php"); ?>" title="สมัครสมาชิก"><i class="pe-user-plus pe-fw"></i> สมัครสมาชิก</a></li>
               <li><a href="<?php echo(MYPUBLIC."contact.php"); ?>" title="ติดต่อเรา"><i class="pe-envelope-o pe-fw"></i> ติดต่อเรา</a></li>
 <?php } ?>
             </ul>
@@ -137,7 +146,6 @@ function pageFooter($notes = null) {
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-1">
       <div class="container">
-        <h4>&#9836; &#9819; &#9962; &#9969; &#9748; &#10000; &#10175; &#9820; &#9822; &#9731; &#9973; &#8485; &#8488; &#8523; &#8492; &#9961;</h4>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-2">
@@ -156,6 +164,7 @@ function pageFooter($notes = null) {
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3">
       <div class="container">
+        <h4 class="avatar">&#9836; &#9819; &#9962; &#9969; &#9748; &#10000; &#10175; &#9820; &#9822; &#9731; &#9973; &#8485; &#8488; &#8523; &#8492; &#9961;</h4>
       </div>
     </div>
   </div>
@@ -188,14 +197,26 @@ function pageFooter($notes = null) {
 
 function debugOutput() {
   echo "<section class=\"container\"><div class=\"row\"><div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
-  echo "<pre class=\"small\">\n";
-  echo "POST\n";
+  echo "<pre>\n";
+  echo "<strong>POST</strong>\n";
   print_r($_POST);
+  echo "</pre>\n";
+  echo "<pre>\n";
+  echo "<strong>GET</strong>\n";
+  print_r($_GET);
+  echo "</pre>\n";
+  echo "<pre>\n";
+  echo "<strong>REQUEST</strong>\n";
+  print_r($_REQUEST);
+  echo "</pre>\n";
+  echo "<pre>\n";
+  echo "<strong>COOKIE</strong>\n";
+  print_r($_COOKIE);
   echo "</pre>\n";
   echo "</div>\n";
   echo "<div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
-  echo "<pre class=\"small\">\n";
-  echo "SID = ".session_id()."\n";
+  echo "<pre>\n";
+  echo "<strong>SID = ".session_id()."</strong>\n";
   print_r($_SESSION);
   echo "</pre>\n";
   echo "</div>\n";
@@ -235,323 +256,6 @@ function notify($messages) {
     });
 </script>
 <?php
-}
-
-function handleLogin() {
-  $handleLogin = (!is_session_authenticated() && isset($_REQUEST['doLogin']) && ! empty($_REQUEST['username']) && ! empty($_REQUEST['password']) ? true : false);
-  if ($handleLogin) {
-    $isAuthenticated = authenticate($_REQUEST['username'], $_REQUEST['password'], $realms);
-    $realmsCnt = count($realms);
-    if ($isAuthenticated && 1 === $realmsCnt) {
-      $ok = set_current_respondent($_REQUEST['username'], current($realms), $_REQUEST['password']);
-      if ($ok) {
-        set_session_authentication($isAuthenticated);
-        blur('/public/');
-        assert('false; // NOTREACHED');
-      }
-    }
-    elseif ($isAuthenticated && 2 <= $realmsCnt) { $GLOBALS['errmsg'] = mkerror('Please contact an administrator: multi-realm'); }
-    else { $GLOBALS['errmsg'] = mkerror('Incorrect User ID or Password, or your account has been disabled/expired.'); }
-  }
-}
-
-function handleLogout() {
-  $r = MYPUBLIC;
-  $handleLogout = (isset($_REQUEST['doLogout']) && is_session_authenticated() ? true : false);
-  if ($handleLogout) {
-    set_session_authentication(false);
-    echo "<h2>You have been logged out</h2>";
-    echo mksuccess("You have been successfully logged out. We will redirect you to the front page in a moment.");
-    echo "<p><a href=".MYPUBLIC.">You can click here if you choose not to wait in order to log back in to our system.</a></p>";
-    echo "<br><br>";
-    $notes = array(array("title" => "Logged out", "text" => "You have been successfully logged out from our system.", "image" => "assets/img/notification.svg"));
-    notify($notes);
-    header("Refresh: 10; URL=$r");
-  }
-}
-
-function handleChangeProfile($note = null) {
-  $showChangeProfile = (is_session_authenticated() && isset($_REQUEST['doChangeProfile']) ? true : false);
-  $handleChangeProfile = ($showChangeProfile && get_current_respondent($respondent) && isset($_REQUEST['firstName']) && isset($_REQUEST['lastName']) && isset($_REQUEST['emailAddress']) ? true : false);
-  if ($handleChangeProfile) {
-    if ($_REQUEST['captcha'] == $_SESSION["captcha"]) {
-      $ok = change_profile($respondent['username'], $respondent['realm'], $_REQUEST['firstName'], $_REQUEST['lastName'], $_REQUEST['emailAddress']);
-      if ($ok) { $showChangeProfile = false; $GLOBALS['errmsg'] = mkerror('Your profile has been updated successfully'); }
-      else { $GLOBALS['errmsg'] = mkerror('Unable to change your password; contact an administrator'); }
-    } else { $GLOBALS['errmsg'] = mkerror('Wrong captcha'); }
-  }
-
-  if ($showChangeProfile) {
-    if (empty($_REQUEST['firstName'])) { $_REQUEST['firstName'] = $respondent['fname']; }
-    if (empty($_REQUEST['lastName'])) { $_REQUEST['lastName'] = $respondent['lname']; }
-    if (empty($_REQUEST['emailAddress'])) { $_REQUEST['emailAddress'] = $respondent['email']; }
-    render_profile_change_form();
-    if ($notes) { pageFooter($notes); } else { pageFooter(); }
-    exit;
-  }
-}
-
-function change_profile($username, $realm, $firstName, $lastName, $emailAddress) {
-  $_username = _addslashes($username); $_realm = _addslashes($realm);
-  $_firstName = _addslashes($firstName); $_lastName = _addslashes($lastName);
-  $_emailAddress = _addslashes($emailAddress); $changed  = sys_time_stamp();
-  $sql = "UPDATE ".X_RESPONDENT." SET fname = $_firstName, lname = $_lastName, email = $_emailAddress, changed = $changed WHERE username = $_username AND realm = $_realm";
-  $res = execute_sql($sql);
-  $notes = array (array("title" => "Profile updated", "text" => "You have successfully updated your detailed profile.", "image" => "assets/img/notification.svg"));
-  if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); notify($notes); return true; }
-  else { return false; }
-}
-
-function handleChangePassword($notes = null) {
-  $showChangePassword = (isset($_REQUEST['doChangePassword']) && is_session_authenticated() ? true : false);
-  $handleChangePassword = ($showChangePassword && get_current_respondent($respondent) ? true : false);
-  if ($handleChangePassword) {
-    $isAuthenticated = authenticate($respondent['username'], $_REQUEST['oldPassword'], $realms);
-    $isAuthenticated = (1 === count($realms) ? $isAuthenticated : false);
-    $isMatch = (0 === strcmp($_REQUEST['newPassword'], $_REQUEST['newPasswordConfirm']) ? true : false);
-    if ($isAuthenticated && $isMatch) {
-      $ok = change_password($respondent['username'], $respondent['realm'], $_REQUEST['newPassword']);
-      if ($ok) { $showChangePassword = false; $GLOBALS['errmsg'] = mkerror('Your password has been changed successfully'); }
-      else { $GLOBALS['errmsg'] = mkerror('Unable to change your password; contact an administrator'); }
-    }
-    elseif ($isAuthenticated && ! $isMatch) { $GLOBALS['errmsg'] = mkerror('Passwords do not match; check your typing'); }
-    else { $GLOBALS['errmsg'] = mkerror('Old password incorrect; check your typing'); }
-  }
-  if ($showChangePassword) { render_passwd_change_form(); if ($notes) { pageFooter($notes); } else { pageFooter(); } exit; }
-}
-
-function change_password($username, $realm, $password) {
-  $_username = _addslashes($username); $_realm = _addslashes($realm);
-  $_password = db_crypt(_addslashes($password)); $changed  = sys_time_stamp();
-  $sql = "UPDATE ".X_RESPONDENT." SET password = $_password, changed = $changed WHERE username = $_username AND realm = $_realm";
-  $res = execute_sql($sql);
-  $notes = array (array("title" => "Password changed", "text" => "You have successfully changed your password. Please keep it safe and secure.", "image" => "assets/img/notification.svg"));
-  if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); notify($notes); return true; }
-  else { return false; }
-}
-
-function paint_non_authenticated() {
-  render_login_form();
-}
-
-function paint_authenticated() {
-  // echo "<h2>หน้าแรกสมาชิก</h2>\n";
-  get_survey_info($surveys, $responses, $accessibility);
-  partition_surveys($surveys, $responses, $accessibility, $current, $historical);
-  echo "<h2>ข้อมูลโดยสรุป</h2>\n";
-  paint_respondent_tools();
-  echo "<h2>งานวิจัย</h2>\n";
-  paint_public_survey_list();
-  paint_respondent_surveys($current);
-  paint_respondent_history($historical);
-}
-
-function paint_respondent_tools() {
-  global $respondent;
-  $p = MYPUBLIC;
-  if (($respondent['expiration']) == "0000-00-00 00:00:00") { $expired = "ไม่มีหมดอายุ"; } else { $expired = strftime(FORMAT_DATE, $respondent['expiration']); }
-  echo "<section>\n";
-  echo "<h4><i class=\"pe-user pe-fw\"></i> ข้อมูลส่วนตัว</h4>\n";
-  echo "<div class=\"row\">\n";
-  echo "  <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n";
-  echo "    <h5>ข้อมูลบัญชีของคุณ</h5>\n";
-  echo "    <table class=\"table table-hover\">\n";
-  echo "      <tr>\n";
-  echo "        <td width=\"40%\">ชื่อนามสกุล</td>\n";
-  echo "        <td>".$respondent['fname']." ".$respondent['lname']."</td>\n";
-  echo "      </tr>\n";
-  echo "      <tr>\n";
-  echo "        <td width=\"40%\">วันหมดอายุ (หากมี)</td>\n";
-  echo "        <td>".$expired."</td>\n";
-  echo "      </tr>\n";
-  echo "    </table>\n";
-  echo "  </div>\n";
-  echo "  <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n";
-  echo "    <h5>ข้อมูลประชากรศาสตร์</h5>\n";
-  echo "    <table class=\"table table-hover\">\n";
-  echo "      <tr>\n";
-  echo "        <td width=\"40%\">เพศ</td>\n";
-  echo "        <td>".$respondent['gender']."</td>\n";
-  echo "      </tr>\n";
-  echo "      <tr>\n";
-  echo "        <td width=\"40%\">วันเกิด</td>\n";
-  echo "        <td>".$respondent['birthday_date']."/".$respondent['birthday_month']."/".$respondent['birthday_year']."</td>\n";
-  echo "      </tr>\n";
-  echo "      <tr>\n";
-  echo "        <td width=\"40%\">ปัจจุบันอาศัยอยู่</td>\n";
-  echo "        <td>".$respondent['province']."</td>\n";
-  echo "      </tr>\n";
-  echo "      <tr>\n";
-  echo "        <td width=\"40%\">หมายเลขโทรศัพท์มือถือ</td>\n";
-  echo "        <td>".$respondent['mobile1']."-".$respondent['mobile2'].$respondent['mobile3']."</td>\n";
-  echo "      </tr>\n";
-  echo "      <tr>\n";
-  echo "        <td width=\"40%\">รายได้ส่วนบุคคล</td>\n";
-  echo "        <td>".$respondent['personal_income']."</td>\n";
-  echo "      </tr>\n";
-  echo "      <tr>\n";
-  echo "        <td width=\"40%\">รายได้ครัวเรือน</td>\n";
-  echo "        <td>".$respondent['HH_income']."</td>\n";
-  echo "      </tr>\n";
-  echo "      <tr>\n";
-  echo "        <td width=\"40%\">สถานะภาพสมรส</td>\n";
-  echo "        <td>".$respondent['marital']."</td>\n";
-  echo "      </tr>\n";
-  echo "      <tr>\n";
-  echo "        <td width=\"40%\">ระดับการศึกษา</td>\n";
-  echo "        <td>".$respondent['education']."</td>\n";
-  echo "      </tr>\n";
-  echo "    </table>\n";
-  echo "  </div>\n";
-  echo "</div>\n";
-  echo "</section>\n";
-}
-
-function paint_public_survey_list() {
-  get_survey_info($surveys, $_, $accessibility);
-  foreach ($surveys as $sid => $survey) {
-    if (isset($accessibility[$sid]['available']) && true === (bool)$accessibility[$sid]['available']) { continue; }
-    unset($surveys[$sid]);
-  }
-  if (0 < count($surveys)) {
-    echo "<section>\n";
-    echo "<h4><i class=\"pe-book pe-fw\"></i> งานวิจัยที่เปิดรับความคิดเห็นในช่วงนี้</h4>\n";
-    echo "<p>ต่อไปนี้คืองานวิจัยโครงการต่างๆที่กำลังเปิดรับความคิดเห็นอยู่ในขณะนี้ โดยที่ทางระบบได้ทำแสดงผลเฉพาะงานวิจัยที่มีกลุ่มเป้าหมายตรงกับข้อมูลประชากรศาสตร์ของคุณ ตัวอย่างเช่น งานวิจัยในเรื่องเครื่องสำอางค์ จะถูกแสดงผลอยู่บนหน้าจอของสมาชิกที่เป็นผู้หญิงเท่านั้น</p>\n";
-    echo "<p>คุณสามารถกดเพื่อเข้าร่วมงานวิจัยเหล่านี้ได้ทันที</p>\n";
-    foreach ($surveys as $survey) {
-      printf('<a href="%s" class="btn btn-info btn-lg survey-name" role="button"><i class="pe-flag pe-fw"></i> %s</a> &nbsp;', survey_fetch_url_by_survey_name($survey['name']), $survey['title']);
-      print "\n";
-    }
-    echo "</section>\n";
-  }
-}
-
-function paint_respondent_surveys($current) {
-  echo "<section>\n";
-  echo "<h4><i class=\"pe-wpforms pe-fw\"></i> งานวิจัยในปัจจุบัน</h4>\n";
-  if (0 < count($current)) {
-    echo "<table class=\"table table-hover\">\n";
-    echo "  <tr class=\"active\">\n";
-    echo "    <th width=\"20%\">งานวิจัย</th>\n";
-    echo "    <th width=\"20%\">การเข้าร่วมของคุณ</th>\n";
-    echo "    <th width=\"20%\">คุณเข้าร่วมครั้งล่าสุด</th>\n";
-    echo "    <th width=\"40%\">สถานะปัจจุบัน</th>\n";
-    echo "  </tr>\n";
-    foreach ($current as $sid => $info) {
-      list ($name, $status, $date, $avail) = $info;
-      printf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>', $name, $status, $date, $avail);
-    }
-    echo "</table>\n";
-  }
-  else { echo "ไม่มีงานวิจัยในปัจจุบัน"; }
-  echo "</section>\n";
-}
-
-function paint_respondent_history($historical) {
-  echo "<section>\n";
-  echo "<h4><i class=\"pe-history pe-fw\"></i> งานวิจัยในอดีต</h4>\n";
-  if (0 < count($historical)) {
-    echo "<table class=\"table table-hover\">\n";
-    echo "  <tr class=\"active\">\n";
-    echo "    <th width=\"20%\">งานวิจัย</th>\n";
-    echo "    <th width=\"20%\">การเข้าร่วมของคุณ</th>\n";
-    echo "    <th width=\"20%\">คุณเข้าร่วมครั้งล่าสุด</th>\n";
-    echo "    <th width=\"40%\">สถานะปัจจุบัน</th>\n";
-    echo "  </tr>\n";
-    foreach ($historical as $sid => $info) {
-      list ($name, $status, $date, $avail) = $info;
-      printf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>', $name, $status, $date, $avail);
-    }
-    echo "</table>\n";
-  }
-  else { echo "ไม่มีงานวิจัยในอดีต"; }
-  echo "</section>\n";
-}
-
-function get_survey_info(&$surveys, &$responses, &$accessibility) {
-  $surveys       = array();
-  $responses     = array();
-  $accessibility = array();
-
-  survey_get_public($surveys);
-  $sids = array_keys($surveys);
-
-  $ok = get_current_respondent($respondent);
-  if ($ok && array_key_exists('realm', $respondent)) {
-    survey_get_in_realm($respondent['realm'], $private);
-    survey_merge_sets($surveys, $private);
-    $sids = array_keys($surveys);
-    survey_get_responses($responses, $sids, $respondent['username']);
-    survey_get_accessibility($accessibility, $sids, $respondent['username'], $respondent['realm']);
-  }
-  else { survey_get_accessibility($accessibility, $sids); }
-  return true;
-}
-
-function partition_surveys($surveys, $responses, $accessibility, &$current, &$historical) {
-  foreach ($surveys as $sid => $survey) {
-    if (isset($accessibility[$sid]['available']) && true === (bool)$accessibility[$sid]['available']) {
-      $name = sprintf('<a href="%s">%s</a>', survey_fetch_url_by_survey_name($survey['name']), $survey['title']);
-      $status = fetch_status($sid, $responses);
-      $date = fetch_latest_submission_date($sid, $responses);
-      $avail = fetch_availability($survey, $availability);
-      if (STATUS_OPEN !== $availability) { $name = $survey['title']; }
-      $current[] = array($name, $status, $date, $avail);
-    } else {
-      $name = $survey['title'];
-      $status = fetch_status($sid, $responses);
-      $date = fetch_latest_submission_date($sid, $responses);
-      $avail = "ปิดรับความคิดเห็นไปแล้ว";
-      $historical[] = array($name, $status, $date, $avail);
-    }
-  }
-}
-
-function fetch_status($sid, $responses) {
-  if (isset($responses[$sid])) {
-    if (isset($responses[$sid]['complete'])) { $status = ('Y' == $responses[$sid]['complete'] ? STATUS_FINISHED : STATUS_ALL_PARTIAL); }
-    else { $status = STATUS_FINISHED; foreach ($responses[$sid] as $response) { if ('N' == $response['complete']) { $status = STATUS_SOME_PARTIAL; } } }
-  }
-  else { $status = STATUS_NOT_STARTED; }
-  return $status;
-}
-
-function fetch_latest_submission_date($sid, $responses) {
-  if (isset($responses[$sid])) {
-    if (isset($responses[$sid]['submitted'])) { $date = $responses[$sid]['submitted']; }
-    else { $date = '0000-00-00 00:00:00'; foreach ($responses[$sid] as $response) { if ($date < $response['submitted']) { $date = $response['submitted']; } } }
-    $datets = strtotime($date);
-    if (-1 !== $datets) { $date = strftime(FORMAT_DATE, $datets); }
-  }
-  else { $date = ''; }
-  return $date;
-}
-
-function fetch_availability($survey, &$rc) {
-  $rc = survey_open($survey['open_date'], $survey['close_date']);
-  switch ($rc) {
-    case STATUS_OPEN: return "เปิดรับความคิดเห็นอยู่ คุณสามารถเข้าร่วมได้"; break;
-    case STATUS_CLOSED_TOO_EARLY: return "งานวิจัยชิ้นนี้ยังไม่เปิดรับความคิดเห็น คุณต้องรอก่อน"; break;
-    case STATUS_CLOSED_TOO_LATE: return "งานวิจัยชิ้นนี้ได้ปิดรับความคิดเห็นไปแล้ว"; break;
-    default: assert('false; // unexpected case reached; code bug'); return '';
-  }
-}
-
-function render_login_form() {
-  $username = (isset($_REQUEST['username']) ? $_REQUEST['username'] : '');
-  if ($_message) { echo mkerror($_message); }
-  require_once WPUBLIC.'/login.inc';
-}
-
-function render_profile_change_form() {
-  $firstName = (isset($_REQUEST[$firstNameVar]) ? htmlentities($_REQUEST[$firstNameVar]) : '');
-  $lastName = (isset($_REQUEST[$lastNameVar]) ? htmlentities($_REQUEST[$lastNameVar]) : '');
-  $emailAddress = (isset($_REQUEST[$emailVar]) ? htmlentities($_REQUEST[$emailVar]) : '');
-  include WPUBLIC.'/changeprofile.inc';
-}
-
-function render_passwd_change_form() {
-  include WPUBLIC.'/changepass.inc';
 }
 
 ?>

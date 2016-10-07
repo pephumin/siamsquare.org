@@ -109,6 +109,7 @@ function pageHeader($title) {
                   <li class="dropdown-header">Create a survey</li>
                   <li><a href="<?php echo(MYADMIN."?w=new"); ?>"><i class="pe-file-o pe-fw"></i> New survey</a></li>
                 </ul>
+              </li>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-graduation-cap pe-fw"></i> My team <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -119,6 +120,7 @@ function pageHeader($title) {
                   <li><a href="<?php echo(MYADMIN."?w=admdesigner"); ?>" title="Add a new member"><i class="pe-user-plus pe-fw"></i> Add a new member</a></li>
                   <li><a href="#" title="Member permission"><i class="pe-cogs pe-fw"></i> Member permission</a></li>
                 </ul>
+              </li>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-user pe-fw"></i> My profile <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -126,6 +128,7 @@ function pageHeader($title) {
                   <li><a href="<?php echo(MYADMIN."?w=admdesigner&amp;u=".$user."&amp;r=".$g); ?>" title="Change your info"><i class="pe-cog pe-fw"></i> Change your info</a></li>
                   <li><a href="<?php echo(MYADMIN."?w=passwd"); ?>" title="Change your password"><i class="pe-key pe-fw"></i> Change your password</a></li>
                 </ul>
+              </li>
   <?php if ($_SESSION['acl']['superuser'] == 'Y') { ?>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-unlock-alt pe-fw"></i> Superuser <span class="caret"></span></a>
@@ -136,11 +139,11 @@ function pageHeader($title) {
                   <li><a href="<?php echo(MYADMIN."?w=groups"); ?>" title="Manage groups"><i class="pe-database pe-fw"></i> Manage groups</a></li>
                   <li><a href="<?php echo(MYADMIN."?w=help"); ?>" title="Admin guide"><i class="pe-list-alt pe-fw"></i> Admin guide</a></li>
                 </ul>
+              </li>
   <?php } ?>
 <?php } else { ?>
               <li><a href="<?php echo MYADMIN; ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> Home</a></i>
-              <li><a href="<?php echo(MYADMIN."request.php"); ?>" title="Request for an access"><i class="pe-bullhorn pe-fw"></i> Request for an access</a></li>
-              <li><a href="<?php echo(MYADMIN."contact.php"); ?>" title="Contact us"><i class="pe-envelope-o pe-fw"></i> Contact us</a></li>
+              <li><a href="<?php echo(MYADMIN."request.php"); ?>" title="Request for an access"><i class="pe-ticket pe-fw"></i> Request for an access</a></li>
 <?php } ?>
             </ul>
           </div>
@@ -160,7 +163,6 @@ function pageFooter($notes = null) {
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-1">
       <div class="container">
-        <h4>&#9836; &#9819; &#9962; &#9969; &#9748; &#10000; &#10175; &#9820; &#9822; &#9731; &#9973; &#8485; &#8488; &#8523; &#8492; &#9961;</h4>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-2">
@@ -179,6 +181,7 @@ function pageFooter($notes = null) {
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3">
       <div class="container">
+        <h4 class="avatar">&#9836; &#9819; &#9962; &#9969; &#9748; &#10000; &#10175; &#9820; &#9822; &#9731; &#9973; &#8485; &#8488; &#8523; &#8492; &#9961;</h4>
       </div>
     </div>
   </div>
@@ -246,44 +249,31 @@ function notify($messages) {
 
 function debugOutput() {
   echo "<section class=\"container\"><div class=\"row\"><div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
-  echo "<pre class=\"small\">\n";
-  echo "POST\n";
+  echo "<pre>\n";
+  echo "<strong>POST</strong>\n";
   print_r($_POST);
+  echo "</pre>\n";
+  echo "<pre>\n";
+  echo "<strong>GET</strong>\n";
+  print_r($_GET);
+  echo "</pre>\n";
+  echo "<pre>\n";
+  echo "<strong>REQUEST</strong>\n";
+  print_r($_REQUEST);
+  echo "</pre>\n";
+  echo "<pre>\n";
+  echo "<strong>COOKIE</strong>\n";
+  print_r($_COOKIE);
   echo "</pre>\n";
   echo "</div>\n";
   echo "<div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
-  echo "<pre class=\"small\">\n";
-  echo "SID = ".session_id()."\n";
+  echo "<pre>\n";
+  echo "<strong>SID = ".session_id()."</strong>\n";
   print_r($_SESSION);
   echo "</pre>\n";
   echo "</div>\n";
   echo "</div></div></section>\n";
 }
-
-// function displayTabNav_tabs() {
-//   global $tab;
-//   echo "<ul class=\"nav nav-tabs\">\n";
-//   echo "<input type=\"hidden\" name=\"where\" value=\"tab\" />";
-//   if ($tab == "general") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_general\" value=\"General\" /></li>\n"; }
-//   else { echo "<li><input type=\"submit\" name=\"tab_general\" value=\"General\" /></li>\n"; }
-//   echo "&nbsp;\n";
-//   if ($tab == "questions") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_questions\" value=\"Questions\" /></li>\n"; }
-//   else { echo "<li><input type=\"submit\" name=\"tab_questions\" value=\"Questions\" /></li>\n"; }
-//   echo "&nbsp;\n";
-//   if ($tab == "order") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_order\" value=\"Order\" /></li>\n"; }
-//   else { echo "<li><input type=\"submit\" name=\"tab_order\" value=\"Order\" /></li>\n"; }
-//   echo "&nbsp;\n";
-//   if ($tab == "conditions") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_conditions\" value=\"Conditions\" /></li>\n"; }
-//   else { echo "<li><input type=\"submit\" name=\"tab_conditions\" value=\"Conditions\" /></li>\n"; }
-//   echo "&nbsp;\n";
-//   if ($tab == "preview") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_preview\" value=\"Preview\" /></li>\n"; }
-//   else { echo "<li><input type=\"submit\" name=\"tab_preview\" value=\"Preview\" /></li>\n"; }
-//   echo "&nbsp;\n";
-//   if ($tab == "finish") { echo "<li class=\"active\"><input type=\"submit\" name=\"tab_finish\" value=\"Finish\" /></li>\n"; }
-//   else { echo "<li><input type=\"submit\" name=\"tab_finish\" value=\"Finish\" /></li>\n"; }
-//   echo "</ul>\n";
-//   echo "<br /><br />\n";
-// }
 
 function displayTabNav() {
   global $tab;
@@ -306,37 +296,37 @@ function displayTabNav1($tab) {
 function displayTabNav2($tab) {
   global $tab;
   echo "<p>\n";
-  if ($tab == "general") { echo "  <input type=\"submit\" name=\"tab_general\" value=\"General\" class=\"btn btn-default active btn-sm\">\n"; }
-  else { echo "  <input type=\"submit\" name=\"tab_general\" value=\"General\" class=\"btn btn-default btn-sm\">\n"; }
-  echo "  <i class=\"pe-angle-double-right pe-fw\"></i>\n";
-  if ($tab == "questions") { echo "  <input type=\"submit\" name=\"tab_questions\" value=\"Questions\" class=\"btn btn-default active btn-sm\">\n"; }
-  else { echo "  <input type=\"submit\" name=\"tab_questions\" value=\"Questions\" class=\"btn btn-default btn-sm\">\n"; }
-  echo "  <i class=\"pe-angle-double-right pe-fw\"></i>\n";
-  if ($tab == "order") { echo "  <input type=\"submit\" name=\"tab_order\" value=\"Order\" class=\"btn btn-default active btn-sm\">\n"; }
-  else { echo "  <input type=\"submit\" name=\"tab_order\" value=\"Order\" class=\"btn btn-default btn-sm\">\n"; }
-  echo "  <i class=\"pe-angle-double-right pe-fw\"></i>\n";
-  if ($tab == "conditions") { echo "  <input type=\"submit\" name=\"tab_conditions\" value=\"Conditions\" class=\"btn btn-default active btn-sm\">\n"; }
-  else { echo "  <input type=\"submit\" name=\"tab_conditions\" value=\"Conditions\" class=\"btn btn-default btn-sm\">\n"; }
-  echo "  <i class=\"pe-angle-double-right pe-fw\"></i>\n";
-  if ($tab == "preview") { echo "  <input type=\"submit\" name=\"tab_preview\" value=\"Preview\" class=\"btn btn-default active btn-sm\">\n"; }
-  else { echo "  <input type=\"submit\" name=\"tab_preview\" value=\"Preview\" class=\"btn btn-default btn-sm\">\n"; }
-  echo "  <i class=\"pe-angle-double-right pe-fw\"></i>\n";
-  if ($tab == "finish") { echo "  <input type=\"submit\" name=\"tab_finish\" value=\"Finish\" class=\"btn btn-default active btn-sm\">\n"; }
-  else { echo "  <input type=\"submit\" name=\"tab_finish\" value=\"Finish\" class=\"btn btn-default btn-sm\">\n"; }
-  echo "</p>\n";
+  if ($tab == "general") { echo "  <input type=\"submit\" name=\"tab_general\" value=\"General\" class=\"btn btn-default active btn-sm\">"; }
+  else { echo "  <input type=\"submit\" name=\"tab_general\" value=\"General\" class=\"btn btn-default btn-sm\">"; }
+  echo " <i class=\"pe-angle-double-right pe-fw\"></i>\n";
+  if ($tab == "questions") { echo "  <input type=\"submit\" name=\"tab_questions\" value=\"Questions\" class=\"btn btn-default active btn-sm\">"; }
+  else { echo "  <input type=\"submit\" name=\"tab_questions\" value=\"Questions\" class=\"btn btn-default btn-sm\">"; }
+  echo " <i class=\"pe-angle-double-right pe-fw\"></i>\n";
+  if ($tab == "order") { echo "  <input type=\"submit\" name=\"tab_order\" value=\"Order\" class=\"btn btn-default active btn-sm\">"; }
+  else { echo "  <input type=\"submit\" name=\"tab_order\" value=\"Order\" class=\"btn btn-default btn-sm\">"; }
+  echo " <i class=\"pe-angle-double-right pe-fw\"></i>\n";
+  if ($tab == "conditions") { echo "  <input type=\"submit\" name=\"tab_conditions\" value=\"Conditions\" class=\"btn btn-default active btn-sm\">"; }
+  else { echo "  <input type=\"submit\" name=\"tab_conditions\" value=\"Conditions\" class=\"btn btn-default btn-sm\">"; }
+  echo " <i class=\"pe-angle-double-right pe-fw\"></i>\n";
+  if ($tab == "preview") { echo "  <input type=\"submit\" name=\"tab_preview\" value=\"Preview\" class=\"btn btn-default active btn-sm\">"; }
+  else { echo "  <input type=\"submit\" name=\"tab_preview\" value=\"Preview\" class=\"btn btn-default btn-sm\">"; }
+  echo " <i class=\"pe-angle-double-right pe-fw\"></i>\n";
+  if ($tab == "finish") { echo "  <input type=\"submit\" name=\"tab_finish\" value=\"Finish\" class=\"btn btn-default active btn-sm\">"; }
+  else { echo "  <input type=\"submit\" name=\"tab_finish\" value=\"Finish\" class=\"btn btn-default btn-sm\">"; }
+  echo "\n</p>\n";
 }
 
 function displayTabNav3($tab) {
   global $tab;
-  echo "<p class=\"text-muted\">\n";
-  if ($tab == "general") { echo "  <strong>General</strong> tab is all about survey information including title and other important descriptions\n"; }
-  elseif ($tab == "questions") { echo "  <strong>Questions</strong> tab is where individual survey questions and their answers are added and modified.\n"; }
-  elseif ($tab == "order") { echo "  <strong>Order</strong> tab is where the inserted questions can be rearranged/ reordered or even deleted\n"; }
-  elseif ($tab == "conditions") { echo "  <strong>Conditions</strong> tab is for setting a specific questionnaire flow or skipping routes based on an answer.\n"; }
-  elseif ($tab == "preview") { echo "  <strong>Preview</strong> tab shows how the questionnaire will look like. It is highly recommended to preview it as much as possible.\n"; }
-  elseif ($tab == "finish") { echo "  <strong>Finish</strong> tab is the final tab where everything is done and your survey is ready to move to the next step, Live.\n"; }
+  echo "<p class=\"text-muted\">";
+  if ($tab == "general") { echo "  <strong>General</strong> tab is all about survey information including title and other important descriptions."; }
+  elseif ($tab == "questions") { echo "  <strong>Questions</strong> tab is where individual survey questions and their answers are added and modified."; }
+  elseif ($tab == "order") { echo "  <strong>Order</strong> tab is where the inserted questions can be rearranged/ reordered or even deleted"; }
+  elseif ($tab == "conditions") { echo "  <strong>Conditions</strong> tab is for setting a specific questionnaire flow or skipping routes based on an answer."; }
+  elseif ($tab == "preview") { echo "  <strong>Preview</strong> tab shows how the questionnaire will look like. It is highly recommended to preview it as much as possible."; }
+  elseif ($tab == "finish") { echo "  <strong>Finish</strong> tab is the final tab where everything is done and your survey is ready to move to the next step, the Data collection."; }
   echo "</p>\n";
-  echo "<hr>\n\n";
+  echo "<hr>\n";
 }
 
 ?>
