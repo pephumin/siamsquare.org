@@ -1,16 +1,5 @@
 <?php
 
-// function esp_where($where = null) {
-//   $cfg =& $GLOBALS['ESPCONFIG'];
-//   if (empty($where)) { $where = 'index'; }
-//   $where = strtolower(preg_replace('/ +/','_',$where));
-//   if (!preg_match('/^[A-Za-z0-9_]+$/',$where)) { $where = 'index'; }
-//   $filecheck = WADMIN.'/'.$where.'.inc';
-//   if (!file_exists($filecheck)) { $where = 'index'; }
-//   if (!file_exists($filecheck)) { echo('Unable to open include file. Check INI settings. Aborting.'); exit; }
-//   return($filecheck);
-// }
-
 function wAdmin($w = null) {
   if (empty($w)) { $w = 'index'; }
   $where = strtolower(preg_replace('/ +/','_',$w));
@@ -64,15 +53,15 @@ function esp_require_once($path) {
   return true;
 }
 
-function esp_file_get_contents($file) {
-  if (function_exists('file_get_contents')) { return file_get_contents($file); }
-  $f = fopen($file,'r');
-  if (!$f) { return ''; }
-  $t = '';
-  while ($s = fread($f, 100000)) { $t .= $s; }
-  fclose($f);
-  return $t;
-}
+// function esp_file_get_contents($file) {
+//   if (function_exists('file_get_contents')) { return file_get_contents($file); }
+//   $f = fopen($file,'r');
+//   if (!$f) { return ''; }
+//   $t = '';
+//   while ($s = fread($f, 100000)) { $t .= $s; }
+//   fclose($f);
+//   return $t;
+// }
 
 function check_checksum($file) {
   $checksum = trim(esp_file_get_contents($file.".checksum"));
@@ -646,10 +635,8 @@ function authenticate_in_realm($username, $password, $realm) {
 }
 
 function set_session_authentication($isAuthenticated) {
-  require INCLUDEADM.'/session.inc';
   @header('P3P: CP="NOI ADM DEV PSAi COM NAV OUR OTRo STP IND DEM"');
-  // start sessions if needed
-  if ('' == session_name()) { session_start(); }
+  if ('' == session_name()) { session_start(); } // start sessions if needed
   if ($isAuthenticated) { $_SESSION['authenticated'] = true; }
   else {
     $_SESSION = array (); // wipe out the session...
@@ -667,6 +654,7 @@ function is_session_authenticated() {
 function set_current_respondent($username, $realm, $password = null) {
   $cfg =& $GLOBALS['ESPCONFIG'];
   $sql = sprintf('SELECT * FROM %s WHERE username = %s AND realm = %s', X_RESPONDENT, _addslashes($username), _addslashes($realm));
+  echo $sql;
   $res = execute_sql($sql, null, ADODB_FETCH_ASSOC);
   if (!$res) { $GLOBALS['errmsg'] = mkerror('Unable to set current respondent'); return false; }
 
@@ -723,30 +711,30 @@ function mkrespercent($counts, $total, $precision, $showTotals) {
     if ($num > 0) { $percent = $num/$total*100.0; }
     else { $percent = 0; }
     if ($percent > 100) { $percent = 100; }
-    echo "<tr>\n";
-    echo "<td width=\"30%\" align=\"right\">$content</td>\n";
-    echo "<td>\n";
+    echo "  <tr>\n";
+    echo "   <td width=\"30%\" align=\"right\">$content</td>\n";
+    echo "   <td>";
     if ($num) {
-      echo "<div class=\"progress\"><div class=\"progress-bar progress-bar-info progress-bar-striped active\" role=\"progressbar\" style=\"width: $percent%;\">$percent%</div></div>\n";
+      echo "<div class=\"progress\"><div class=\"progress-bar progress-bar-info progress-bar-striped active\" role=\"progressbar\" style=\"width: $percent%;\">$percent%</div></div>";
     } else {
-      echo "<div class=\"progress\"><div class=\"progress-bar progress-bar-info progress-bar-striped\" role=\"progressbar\" style=\"min-width: 2em;\">0%</div></div>\n";
+      echo "<div class=\"progress\"><div class=\"progress-bar progress-bar-info progress-bar-striped\" role=\"progressbar\" style=\"min-width: 2em;\">0%</div></div>";
     }
-    echo "</td>\n";
-    echo "<td>($num)</td>\n";
-    echo "</tr>\n";
+    echo "    </td>\n";
+    echo "    <td>($num)</td>\n";
+    echo "  </tr>\n";
     $i += $num;
   } // end while
   if ($showTotals) {
     if ($i > 0) { $percent = $i/$total*100.0; }
     else { $percent = 0; }
     if ($percent > 100) { $percent = 100; }
-    echo "<tr>\n";
-    echo "<td width=\"30%\" align=\"right\"><strong>TOTAL</strong></td>\n";
-    echo "<td><strong>\n";
+    echo "  <tr>\n";
+    echo "    <td width=\"30%\" align=\"right\"><strong>TOTAL</strong></td>\n";
+    echo "    <td><strong>";
     echo "<div class=\"progress\"><div class=\"progress-bar\" role=\"progressbar\" style=\"width: $percent%;\">$percent%</div></div>\n";
     echo "</strong></td>\n";
-    echo "<td width=\"20%\"><strong> (".$i." of ".$total.")</strong></td>\n";
-    echo "</tr>\n";
+    echo "    <td width=\"20%\"><strong> (".$i." of ".$total.")</strong></td>\n";
+    echo "  </tr>\n";
   }
   echo "</table>\n";
 }
@@ -754,12 +742,12 @@ function mkrespercent($counts, $total, $precision, $showTotals) {
 function mkresrank($counts, $total, $precision, $showTotals) {
   $bg = '';
   echo "<table class=\"table table-hover\">\n";
-  echo "<tr>\n";
-  echo "<td><strong>Rank</strong></td>\n";
-  echo "<td>&nbsp;</td>\n";
-  echo "<td>&nbsp;</td>\n";
-  echo "<td>&nbsp;</td>\n";
-  echo "</tr>\n";
+  echo "  <tr>\n";
+  echo "    <td><strong>Rank</strong></td>\n";
+  echo "    <td>&nbsp;</td>\n";
+  echo "    <td>&nbsp;</td>\n";
+  echo "    <td>&nbsp;</td>\n";
+  echo "  </tr>\n";
   arsort($counts);
   $i=0; $pt=0;
   while (list($content, $num) = each($counts)) {
@@ -767,22 +755,22 @@ function mkresrank($counts, $total, $precision, $showTotals) {
     else { $p = 0; }
     $pt += $p;
     $bb = ++$i;
-    echo "<tr>\n";
-    echo "<td align=\"right\"><strong>$bb</strong></td>\n";
-    echo "<td>$content</td>\n";
+    echo "  <tr>\n";
+    echo "    <td align=\"right\"><strong>$bb</strong></td>\n";
+    echo "    <td>$content</td>\n";
     if ($p) { $pp = printf("%.${precision}f%%",$p); }
-    echo "<td width=\"60%\">$pp</td>\n";
-    echo "<td width=\"60%\">$num</td>\n";
-    echo "</tr>\n";
+    echo "    <td width=\"60%\">$pp</td>\n";
+    echo "    <td width=\"60%\">$num</td>\n";
+    echo "  </tr>\n";
   } // end while
   if ($showTotals) {
-    echo "<tr>\n";
-    echo "<td colspan=\"2\"><strong>TOTAL</strong></td>\n";
+    echo "  <tr>\n";
+    echo "    <td colspan=\"2\"><strong>TOTAL</strong></td>\n";
     $cc = printf("%.${precision}f%%",$pt);
     $dd = print "$i ($total)";
-    echo "<td colspan=\"2\"><strong>$cc</strong></td>\n";
-    echo "<td colspan=\"2\"><strong>$dd</strong></td>\n";
-    echo "</tr>\n";
+    echo "    <td colspan=\"2\"><strong>$cc</strong></td>\n";
+    echo "    <td colspan=\"2\"><strong>$dd</strong></td>\n";
+    echo "  </tr>\n";
   }
 echo "</table>\n";
 }
@@ -792,22 +780,22 @@ function mkrescount($counts,$total,$precision,$showTotals) {
   echo "<table class=\"table table-hover\">\n";
   $bg = '';
   while (list($content,$num) = each($counts)) {
-    echo "<tr>\n";
-    echo "<td>$content</td>\n";
-    echo "<td width=\"60%\">$num</td>\n";
+    echo "  <tr>\n";
+    echo "    <td>$content</td>\n";
+    echo "    <td width=\"60%\">$num</td>\n";
     if ($num) { $nn = printf("%.${precision}f",$num/$total*100.0); }
-    echo "<td width=\"60%\">$nn</td>\n";
-    echo "</tr>\n";
+    echo "    <td width=\"60%\">$nn</td>\n";
+    echo "  </tr>\n";
     $i += $num;
   } // end while
   if ($showTotals) {
-    echo "<tr>\n";
-    echo "<td colspan=\"2\"><strong>TOTAL</strong></td>\n";
+    echo "  <tr>\n";
+    echo "    <td colspan=\"2\"><strong>TOTAL</strong></td>\n";
     $oo = print "$i ($total)";
     if ($i) { $qq = printf("%.${precision}f",$i/$total*100.0); }
-    echo "<td colspan=\"2\"><strong>$oo</strong></td>\n";
-    echo "<td colspan=\"2\"><strong>$qq</strong></td>\n";
-    echo "</tr>\n";
+    echo "    <td colspan=\"2\"><strong>$oo</strong></td>\n";
+    echo "    <td colspan=\"2\"><strong>$qq</strong></td>\n";
+    echo "  </tr>\n";
   }
 echo "</table>\n";
 }
@@ -815,11 +803,11 @@ echo "</table>\n";
 function mkreslist($counts, $total, $precision, $showTotals) {
   if ($total == 0) { return; }
   echo "<table class=\"table table-hover\">\n";
-  echo "<tr>\n";
-  echo "<th>#</th>\n";
-  echo "<th>Response</th>\n";
+  echo "  <tr>\n";
+  echo "    <th>#</th>\n";
+  echo "    <th>Response</th>\n";
   while (list($text, $num) = each($counts)) {
-    echo("<tr><th>$num</th><td>$text</td></tr>\n");
+    echo("  <tr><th>$num</th><td>$text</td></tr>\n");
   }
 echo "</table>\n";
 }
@@ -828,37 +816,37 @@ function mkresavg($counts, $total, $precision, $showTotals, $length) {
   if (!$length) { $length = 5; }
   $width = 200 / $length;
   echo "<table class=\"table table-hover\">\n";
-  echo "<tr>\n";
-  echo "<td></td>\n";
+  echo "  <tr>\n";
+  echo "    <td></td>\n";
   $ll = $length + 2;
-  echo "<td colspan=\"$ll\">Average Rank</td>\n";
-  echo "</tr>\n";
-  echo "<tr>\n";
-  echo "<td></td>\n";
+  echo "    <td colspan=\"$ll\">Average Rank</td>\n";
+  echo "  </tr>\n";
+  echo "  <tr>\n";
+  echo "    <td></td>\n";
   for ($i = 0; $i < $length;)
-    echo( "<td align=\"right\" width=\"$width\">". ++$i ."</td>\n");
-  echo "<td width=\"20%\"></td>\n";
-  echo "<td></td>\n";
-  echo "</tr>\n";
+    echo( "    <td align=\"right\" width=\"$width\">". ++$i ."</td>\n");
+  echo "    <td width=\"20%\"></td>\n";
+  echo "    <td></td>\n";
+  echo "  </tr>\n";
   $bg = '';
   while (list($content, $avg) = each($counts)) {
-    echo "<tr>\n";
-    echo "<td width=\"30%\" align=\"right\">$content</td>\n";
+    echo "  <tr>\n";
+    echo "    <td width=\"30%\" align=\"right\">$content</td>\n";
     $kk = $length + 1;
-    echo "<td colspan=\"$kk\">\n";
+    echo "    <td colspan=\"$kk\">";
     if ($avg) {
       //echo('<img src="/images/hbar_l.gif" height="9" width="4">');
       if (($j = $avg * $width - 11) > 0) {
         //printf('<img src="/images/hbar.gif" height="9" width="%d">', $j);
-        echo "<div class=\"progress\"><div class=\"progress-bar progress-bar-info progress-bar-striped active\" role=\"progressbar\" style=\"width: $avg;\">$avg</div></div>\n";
+        echo "<div class=\"progress\"><div class=\"progress-bar progress-bar-info progress-bar-striped active\" role=\"progressbar\" style=\"width: $avg;\">$avg</div></div>";
       }
       //echo('<img src="/images/hbar_r.gif" height="9" width="4">');
     }
     echo "</td>\n";
   //$jj = printf("%.${precision}f",$avg);
   //echo "<div class=\"progress\"><div class=\"progress-bar progress-bar-info progress-bar-striped active\" role=\"progressbar\" style=\"width:".printf("%.${precision}f",$avg)." ;\">".printf("%.${precision}f",$avg)."</div></div>\n";
-  echo "<td width=\"30%\">$jj</td>\n";
-  echo "</tr>\n";
+  echo "    <td width=\"30%\">$jj</td>\n";
+  echo "  </tr>\n";
   } // end while
   echo "</table>\n";
 }
@@ -1028,21 +1016,21 @@ function response_delete_all($sid) {
     $res = execute_sql($sql);
   }
   /* ensure responses from testing status are also deleted */
-  $sql = "DELETE FROM ".X_RESPONSE." WHERE survey_id=${sid}";
+  $sql = "DELETE FROM ".X_RESPONSE." WHERE survey_id = ${sid}";
   execute_sql($sql);
 }
 
 function response_insert($sid, $section, $rid) {
-  $sql = "SELECT name, email, public FROM ".X_SURVEY." WHERE id=${sid}";
+  $sql = "SELECT name, email, public FROM ".X_SURVEY." WHERE id = ${sid}";
   $result = execute_sql($sql);
   list($name, $email, $survey_public) = fetch_row($result);
 
   if (isset($_SESSION['espuser'])) { $userid = $_SESSION['espuser']; } else { $userid = "anonymous"; }
 
-  $ip="";
-  if (isset($_SERVER['REMOTE_ADDR'])) $ip = $_SERVER['REMOTE_ADDR'];
-  if (isset($_SERVER['HTTP_CLIENT_IP'])) $ip = "$ip (".$_SERVER['HTTP_CLIENT_IP'].")";
-  elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) $ip = "$ip (".$_SERVER['HTTP_X_FORWARDED_FOR'].")";
+  $ip = "";
+  if (isset($_SERVER['REMOTE_ADDR'])) { $ip = $_SERVER['REMOTE_ADDR']; }
+  if (isset($_SERVER['HTTP_CLIENT_IP'])) { $ip = "$ip (".$_SERVER['HTTP_CLIENT_IP'].")"; }
+  elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) { $ip = "$ip (".$_SERVER['HTTP_X_FORWARDED_FOR'].")"; }
 
   $userid = _addslashes($userid);
 
@@ -1075,13 +1063,13 @@ function response_insert($sid, $section, $rid) {
   $count = get_one($sql);
   if ($count > 0) { return $rid; }
 
-  switch($table) {
+  switch ($table) {
 
     case 'response_bool':
-       $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." (response_id, question_id, choice_id) VALUES ( ${rid},${qid},${val} )";
-       if (!empty($val))
-       $result = execute_sql($sql);
-       break;
+      $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." (response_id, question_id, choice_id) VALUES ( ${rid},${qid},${val} )";
+      if (!empty($val))
+      $result = execute_sql($sql);
+      break;
 
     case 'response_text':
       // only insert if non-empty content
@@ -1156,8 +1144,7 @@ function response_insert($sid, $section, $rid) {
         list($cid) = fetch_row($c_result);
         $c_result->MoveNext();
         if (!isset($_POST["${qid}_${cid}"]) || empty($_POST["${qid}_${cid}"])) { continue; }
-        if (!isset($_POST[$qid])) { $_POST[$qid] = array($cid); }
-        else { array_push($_POST[$qid], $cid); }
+        if (!isset($_POST[$qid])) { $_POST[$qid] = array($cid); } else { array_push($_POST[$qid], $cid); }
         $other = _addslashes($_POST["${qid}_${cid}"]);
         if (ereg("[^ \t\n]", $other)) {
           $sql = "INSERT INTO ".X_RESPONSE_OTHER." (response_id, question_id, choice_id, response) VALUES (${rid}, ${qid}, ${cid}, ${other})";
@@ -1167,7 +1154,6 @@ function response_insert($sid, $section, $rid) {
       db_close($c_result);
       if (!isset($_POST[$qid]) || !is_array($_POST[$qid]))
       break;
-
       foreach ($_POST[$qid] as $cid) {
         $cid = _addslashes($cid);
         if (ereg("other_[0-9]+", $cid))
@@ -1180,26 +1166,23 @@ function response_insert($sid, $section, $rid) {
     case 'response_rank':
       //if ($tid == 5 || $tid == 6) {
       if ($tid == 6) {
-      $sql = "SELECT id FROM ".X_QUESTION_CHOICE." WHERE question_id=${qid}";
-      $cid_result = execute_sql($sql);
-      while (!$cid_result->EOF) {
-        list($cid) = fetch_row($cid_result);
-        $cid_result->MoveNext();
-        if (!isset($_POST["${qid}_${cid}"]))
-        continue;
-        $val = $_POST["${qid}_${cid}"];
-        if (strtolower($val) == "n/a") { $rank = -1; }
-        else { $rank = intval($val); }
-        $rank = _addslashes($rank);
-        $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." (response_id, question_id, choice_id, rank) ";
-        $sql .= "VALUES ( ${rid},${qid},${cid},${rank} )";
-        $result=execute_sql($sql);
+        $sql = "SELECT id FROM ".X_QUESTION_CHOICE." WHERE question_id = ${qid}";
+        $cid_result = execute_sql($sql);
+        while (!$cid_result->EOF) {
+          list($cid) = fetch_row($cid_result);
+          $cid_result->MoveNext();
+          if (!isset($_POST["${qid}_${cid}"]))
+          continue;
+          $val = $_POST["${qid}_${cid}"];
+          if (strtolower($val) == "n/a") { $rank = -1; } else { $rank = intval($val); }
+          $rank = _addslashes($rank);
+          $sql = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." (response_id, question_id, choice_id, rank) VALUES (${rid}, ${qid}, ${cid}, ${rank}) ";
+          $result = execute_sql($sql);
+        }
+        db_close($cid_result);
+        break;
       }
-      db_close($cid_result);
-      break;
-      }
-      if (strtolower($bareval) == "n/a") { $rank = -1; }
-      else { $rank = intval($bareval); }
+      if (strtolower($bareval) == "n/a") { $rank = -1; } else { $rank = intval($bareval); }
       $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." (response_id, question_id, rank) VALUES (${rid}, ${qid}, ${rank})";
       $result = execute_sql($sql);
       break;
@@ -1211,10 +1194,10 @@ function response_insert($sid, $section, $rid) {
 
 function response_commit($rid) {
   $ip = "";
-  if (isset($_SERVER['REMOTE_ADDR'])) $ip=$_SERVER['REMOTE_ADDR'];
-  if (isset($_SERVER['HTTP_CLIENT_IP'])) $ip="$ip (".$_SERVER['HTTP_CLIENT_IP'].")";
-  elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) $ip="$ip (".$_SERVER['HTTP_X_FORWARDED_FOR'].")";
-  $sql = "UPDATE ".X_RESPONSE." SET complete='Y', submitted =".sys_time_stamp().",ip='$ip' WHERE id=${rid}";
+  if (isset($_SERVER['REMOTE_ADDR'])) { $ip = $_SERVER['REMOTE_ADDR']; }
+  if (isset($_SERVER['HTTP_CLIENT_IP'])) { $ip = "$ip (".$_SERVER['HTTP_CLIENT_IP'].")"; }
+  elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) { $ip = "$ip (".$_SERVER['HTTP_X_FORWARDED_FOR'].")"; }
+  $sql = "UPDATE ".X_RESPONSE." SET complete = 'Y', submitted = ".sys_time_stamp().", ip = '$ip' WHERE id = ${rid}";
   if (execute_sql($sql))
   return(true);
   return(false);
@@ -1227,8 +1210,8 @@ function response_key_cmp($l, $r) {
   $rc = intval($rx[0]);
   if ($lc == $rc) {
     if (count($lx) > 1 && count($rx) > 1) { $lc = intval($lx[1]); $rc = intval($rx[1]); }
-    else if (count($lx) > 1) { $lc++; }
-    else if (count($rx) > 1) { $rc++; }
+    elseif (count($lx) > 1) { $lc++; }
+    elseif (count($rx) > 1) { $rc++; }
   }
   if ($lc == $rc)
   return 0;
@@ -1247,7 +1230,7 @@ function response_select($sid, $rid, $col = null, $qids = null) {
 
   // --------------------- response_bool ---------------------
 
-  $sql = "SELECT q.id $col,a.choice_id FROM ".X_RESPONSE_BOOL." a, ".X_QUESTION." q WHERE a.response_id=${rid} AND a.question_id=q.id $qids";
+  $sql = "SELECT q.id $col, a.choice_id FROM ".X_RESPONSE_BOOL." a, ".X_QUESTION." q WHERE a.response_id = ${rid} AND a.question_id=q.id $qids ";
   $result = execute_sql($sql);
   while (!$result->EOF) {
     $row = fetch_row($result);
@@ -1265,7 +1248,7 @@ function response_select($sid, $rid, $col = null, $qids = null) {
 
   // --------------------- response_single ---------------------
 
-  $sql = "SELECT q.id $col,c.content,c.id,c.feedback,c.credit FROM ".X_RESPONSE_SINGLE." a, ".X_QUESTION." q, ".X_QUESTION_CHOICE." c WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids";
+  $sql = "SELECT q.id $col, c.content, c.id, c.feedback, c.credit FROM ".X_RESPONSE_SINGLE." a, ".X_QUESTION." q, ".X_QUESTION_CHOICE." c WHERE a.response_id = ${rid} AND a.question_id = q.id AND a.choice_id = c.id $qids ";
   $result = execute_sql($sql);
   while (!$result->EOF) {
     $row = fetch_row($result);
@@ -1281,7 +1264,7 @@ function response_select($sid, $rid, $col = null, $qids = null) {
 
   // --------------------- response_multiple ---------------------
 
-  $sql = "SELECT q.id $col,c.content,c.id,c.feedback,c.credit FROM ".X_RESPONSE_MULTIPLE." a, ".X_QUESTION." q, ".X_QUESTION_CHOICE." c WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids ORDER BY a.question_id,c.id";
+  $sql = "SELECT q.id $col, c.content, c.id, c.feedback, c.credit FROM ".X_RESPONSE_MULTIPLE." a, ".X_QUESTION." q, ".X_QUESTION_CHOICE." c WHERE a.response_id = ${rid} AND a.question_id = q.id AND a.choice_id = c.id $qids ORDER BY a.question_id, c.id ";
   $result = execute_sql($sql);
   $arr = array();
   $tmp = null;
@@ -1312,7 +1295,7 @@ function response_select($sid, $rid, $col = null, $qids = null) {
 
   // --------------------- response_other ---------------------
 
-  $sql = "SELECT q.id,c.id $col,a.response FROM ".X_RESPONSE_OTHER." a, ".X_QUESTION." q, ".X_QUESTION_CHOICE." c WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids ORDER BY a.question_id,c.id";
+  $sql = "SELECT q.id, c.id $col, a.response FROM ".X_RESPONSE_OTHER." a, ".X_QUESTION." q, ".X_QUESTION_CHOICE." c WHERE a.response_id = ${rid} AND a.question_id = q.id AND a.choice_id = c.id $qids ORDER BY a.question_id, c.id ";
   $result = execute_sql($sql);
   while (!$result->EOF) {
     $row = fetch_row($result);
@@ -1326,7 +1309,7 @@ function response_select($sid, $rid, $col = null, $qids = null) {
 
   // --------------------- response_rank ---------------------
 
-  $sql = "SELECT (". $GLOBALS['ESPCONFIG']['adodb_conn']->Concat("q.id","'_'","c.id") .") AS id $col,c.content,a.rank FROM ".X_RESPONSE_RANK." a, ".X_QUESTION." q, ".X_QUESTION_CHOICE." c WHERE a.response_id=${rid} AND a.question_id=q.id AND a.choice_id=c.id $qids ORDER BY a.question_id,c.id";
+  $sql = "SELECT (". $GLOBALS['ESPCONFIG']['adodb_conn']->Concat("q.id","'_'","c.id") .") AS id $col, c.content, a.rank FROM ".X_RESPONSE_RANK." a, ".X_QUESTION." q, ".X_QUESTION_CHOICE." c WHERE a.response_id = ${rid} AND a.question_id = q.id AND a.choice_id = c.id $qids ORDER BY a.question_id, c.id ";
   $result = execute_sql($sql);
   while (!$result->EOF) {
     $row = fetch_row($result);
@@ -1340,7 +1323,7 @@ function response_select($sid, $rid, $col = null, $qids = null) {
 
   // --------------------- response_text ---------------------
 
-  $sql = "SELECT q.id $col,a.response FROM ".X_RESPONSE_TEXT." a, ".X_QUESTION." q WHERE a.response_id=${rid} AND a.question_id=q.id $qids";
+  $sql = "SELECT q.id $col, a.response FROM ".X_RESPONSE_TEXT." a, ".X_QUESTION." q WHERE a.response_id = ${rid} AND a.question_id = q.id $qids ";
   $result = execute_sql($sql);
   while (!$result->EOF) {
     $row = fetch_row($result);
@@ -1354,7 +1337,7 @@ function response_select($sid, $rid, $col = null, $qids = null) {
 
   // --------------------- response_date ---------------------
 
-  $sql = "SELECT q.id $col,a.response FROM ".X_RESPONSE_DATE." a, ".X_QUESTION." q WHERE a.response_id=${rid} AND a.question_id=q.id $qids";
+  $sql = "SELECT q.id $col, a.response FROM ".X_RESPONSE_DATE." a, ".X_QUESTION." q WHERE a.response_id = ${rid} AND a.question_id = q.id $qids ";
   $result = execute_sql($sql);
   while (!$result->EOF) {
     $row = fetch_row($result);
@@ -1373,7 +1356,7 @@ function response_select($sid, $rid, $col = null, $qids = null) {
 }
 
 function response_select_human($sid, $rid, $qids = null) {
-  $res = response_select($sid, $rid, 'type_id,content', $qids);
+  $res = response_select($sid, $rid, 'type_id, content', $qids);
   $hmn = array();
   reset($res);
   $tmpk = null;
@@ -1515,8 +1498,8 @@ function response_select_name($sid, $rid, $qids = null) {
 }
 
 function response_send_email($sid, $rid) {
-  if (!$GLOBALS['ESPCONFIG']['allow_email']) { return true; }
-  $sql = "SELECT name, email, public FROM ".X_SURVEY." WHERE id=${sid}";
+  // if (!$GLOBALS['ESPCONFIG']['allow_email']) { return true; }
+  $sql = "SELECT name, email, public FROM ".X_SURVEY." WHERE id = ${sid}";
   $result = execute_sql($sql);
   list($name, $email, $survey_public) = fetch_row($result);
   db_close($result);
@@ -1533,13 +1516,7 @@ function response_send_email($sid, $rid) {
     $isep = ',';
     $end = "\n";
   }
-
-  $user = array(
-    'survey.id' => $sid,
-    'survey.name' => $name,
-    'survey.response' => $rid,
-  );
-
+  $user = array('survey.id' => $sid, 'survey.name' => $name, 'survey.response' => $rid);
   $userid = "";
   if ($_SESSION['espuser']) {
     $userid = $_SESSION['espuser'];
@@ -1662,12 +1639,11 @@ function survey_fetch_limiting_where($statusColumn = 'status', $ownerColumn = 'o
   $statusok = db_bin($statusColumn, STATUS_ACTIVE | STATUS_DONE);
   $statusno = db_bin($statusColumn, STATUS_DELETED);
   $where = "($statusok) AND (NOT $statusno)";
-
   if (isset($_SESSION['acl']) && is_array($_SESSION['acl'])) {
     if (isset($_SESSION['acl']['superuser']) && 'Y' != $_SESSION['acl']['superuser']) {
       $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'], $_SESSION['acl']['pdata']));
       if (is_string($realmColumn)) { $access = sprintf('%s %s', $realmColumn, $realms); }
-      else if (is_array($realmColumn)) {
+      elseif (is_array($realmColumn)) {
         $access = array ();
         foreach ($realmColumn as $column) { $access[] = sprintf('%s %s', $column, $realms); }
         $access = implode(' OR ', $access);
@@ -1744,8 +1720,8 @@ function survey_get_accessibility(&$accessibility, $sids, $username = null, $rea
   $openForBiz = "CASE WHEN NOT (tblSurvey.open_date IS NULL OR '0000-00-00 00:00:00' = tblSurvey.open_date) AND $now < tblSurvey.open_date THEN $STATUS_CLOSED_TOO_EARLY WHEN NOT (tblSurvey.close_date IS NULL OR '0000-00-00 00:00:00' = tblSurvey.close_date) AND tblSurvey.close_date < $now THEN $STATUS_CLOSED_TOO_LATE ELSE $STATUS_OPEN END";
   // ... available
   if (isset($username)) {
-      $username = _addslashes($username);
-      $mayRespond = "CASE WHEN ( 0 = COALESCE(maxlogin, 0) OR (SELECT COUNT(*) FROM ".X_RESPONSE." as tblResponse WHERE tblResponse.survey_id = tblAccess.survey_id AND tblResponse.username = $username AND tblResponse.complete = $yes) < maxlogin) THEN 1 ELSE 0 END";
+    $username = _addslashes($username);
+    $mayRespond = "CASE WHEN ( 0 = COALESCE(maxlogin, 0) OR (SELECT COUNT(*) FROM ".X_RESPONSE." as tblResponse WHERE tblResponse.survey_id = tblAccess.survey_id AND tblResponse.username = $username AND tblResponse.complete = $yes) < maxlogin) THEN 1 ELSE 0 END";
   }
   else { $mayRespond = '1'; }
   // ... visible
@@ -1793,20 +1769,19 @@ function survey_merge_sets(&$merged, $a /* ... */) {
 }
 
 function survey_fetch_url_by_survey_name($name) {
-  $target = MYSURVEY."?name=".htmlentities($name);
+  $target = htmlspecialchars(MYSURVEY."?name=".$name);
   return rtrim($target);
 }
 
 function survey_assign_new_name() {
-  $sql = "SELECT name FROM ".X_SURVEY." ORDER BY id DESC";
-  $result = execute_sql($sql,"",ADODB_FETCH_ASSOC);
+  $sql = "SELECT name FROM ".X_SURVEY." ORDER BY id DESC ";
+  $result = execute_sql($sql, "", ADODB_FETCH_ASSOC);
   if ($arr = fetch_row($result)) { $curr = $arr['name']; }
   db_close($result);
   $currentNo = substr($curr, -4);
   $newNo = $currentNo + "1";
   $newFormattedNo = sprintf("%04d", $newNo);
   $newName = "PEB".$newFormattedNo;
-  //return $newFormattedNo;
   return $newName;
 }
 
@@ -1837,7 +1812,7 @@ function stat_fetch_with_summary($limitToCurrentUser = true) {
 
 function survey_stat_fetch_all($sid) {
   $cfg =& $GLOBALS['ESPCONFIG'];
-  $sql = sprintf('SELECT * FROM %1$s WHERE survey_id=%2$s', X_SURVEY_STATISTICS, $sid);
+  $sql = sprintf('SELECT * FROM %1$s WHERE survey_id = %2$s', X_SURVEY_STATISTICS, $sid);
   $res = execute_sql($sql, null, ADODB_FETCH_ASSOC);
   if ($res) { $values = fetch_row($res); unset($values['survey_id']); return $values; }
   else { $GLOBALS['errmsg'] = mkerror('Unable to fetch statistics for survey'); return false; }
@@ -1845,7 +1820,7 @@ function survey_stat_fetch_all($sid) {
 
 function survey_stat_fetch($metric, $sid) {
   $cfg =& $GLOBALS['ESPCONFIG'];
-  $sql = sprintf('SELECT %1$s FROM %2$s WHERE survey_id=%3$s', $metric, X_SURVEY_STATISTICS, $sid);
+  $sql = sprintf('SELECT %1$s FROM %2$s WHERE survey_id = %3$s', $metric, X_SURVEY_STATISTICS, $sid);
   $res = execute_sql($sql);
   if ($res) { list ($value) = fetch_row($res); return $value; }
   else { $GLOBALS['errmsg'] = mkerror('Unable to fetch statistic for survey'); return false; }
@@ -1853,10 +1828,10 @@ function survey_stat_fetch($metric, $sid) {
 
 function survey_stat_increment($metric, $sid) {
   $cfg =& $GLOBALS['ESPCONFIG'];
-  $sql = sprintf('UPDATE %1$s SET %2$s=%2$s+1 WHERE survey_id=%3$s', X_SURVEY_STATISTICS, $metric, $sid);
+  $sql = sprintf('UPDATE %1$s SET %2$s=%2$s+1 WHERE survey_id = %3$s', X_SURVEY_STATISTICS, $metric, $sid);
   $res = execute_sql($sql);
   if (0 == affected_rows()) {
-    $sql = sprintf('INSERT INTO %1$s (survey_id,%2$s) VALUES (%3$s,1)', X_SURVEY_STATISTICS, $metric, $sid);
+    $sql = sprintf('INSERT INTO %1$s (survey_id, %2$s) VALUES (%3$s, 1)', X_SURVEY_STATISTICS, $metric, $sid);
     $res = execute_sql($sql);
     if (0 == affected_rows()) { $GLOBALS['errmsg'] = mkwarn('Unable to increment statistic for survey'); return false; }
   }
@@ -1866,7 +1841,7 @@ function survey_stat_increment($metric, $sid) {
 function survey_stat_decrement($metric, $sid) {
   $cfg =& $GLOBALS['ESPCONFIG'];
   // Only decrement when current value is more than 0. If you need to set negative statistics, use survey_stat_set();
-  $sql = sprintf('UPDATE %1$s SET %2$s=%2$s-1 WHERE survey_id=%3$s AND 0 < %2$s', X_SURVEY_STATISTICS, $metric, $sid);
+  $sql = sprintf('UPDATE %1$s SET %2$s = %2$s-1 WHERE survey_id = %3$s AND 0 < %2$s', X_SURVEY_STATISTICS, $metric, $sid);
   $res = execute_sql($sql);
   if (0 < affected_rows()) { return true; }
   else { $GLOBALS['errmsg'] = mkwarn('Unable to decrement statistic for survey'); return false; }
@@ -1874,10 +1849,10 @@ function survey_stat_decrement($metric, $sid) {
 
 function survey_stat_set($metric, $sid, $value) {
   $cfg =& $GLOBALS['ESPCONFIG'];
-  $sql = sprintf('UPDATE %1$s SET %2$s=%4$s WHERE survey_id=%3$s', X_SURVEY_STATISTICS, $metric, $sid, $value);
+  $sql = sprintf('UPDATE %1$s SET %2$s = %4$s WHERE survey_id = %3$s', X_SURVEY_STATISTICS, $metric, $sid, $value);
   $res = execute_sql($sql);
   if (0 == affected_rows()) {
-    $sql = sprintf('INSERT INTO %1$s (survey_id,%2$s) VALUES (%3$s,%4$s)', X_SURVEY_STATISTICS, $metric, $sid, $value);
+    $sql = sprintf('INSERT INTO %1$s (survey_id, %2$s) VALUES (%3$s, %4$s)', X_SURVEY_STATISTICS, $metric, $sid, $value);
     $res = execute_sql($sql);
     if (0 == affected_rows()) { $GLOBALS['errmsg'] = mkwarn('Unable to set statistic for survey'); return false; }
   }
@@ -1905,6 +1880,2768 @@ function survey_stat_purge($sid) {
   $res = execute_sql($sql);
   if (0 == affected_rows()) { $GLOBALS['errmsg'] = mkerror('Unable to purge statistics for survey'); return false; }
   return true;
+}
+
+//  proto bool question_render($question, int question_number)
+
+//    ID     Question type       Has choice?    Table
+//    1     'Single answer (SA)'     'Y'        'response_single'
+//    2     'Multiple answer (MA)'   'Y'        'response_multiple'
+//    3     'Open-end (short)'       'N'        'response_text'
+//    4     'Open-end (long)'        'N'        'response_text'
+//    5     'Rating scale'           'Y'        'response_rank'
+//    6     'Attribute rating'       'Y'        'response_rank'
+//    7     'Drop down'              'Y'        'response_single'
+//    8     'Date'                   'N'        'response_date'
+//    9     'Numeric'                'N'        'response_text'
+//    10    'Others'                 'N'        'response_text'
+//    99    'Page Break'             'N'        ''
+//    100   'Section Text'           'N'        ''
+
+
+function question_render($question, $question_number, $auto_num, $on_one_line = 0) {
+  // process each question
+  $qid  = &$question['id'];
+  $tid  = &$question['type_id'];
+  $size = &$question['length'];
+  $prec = &$question['precise'];
+  $extra = &$question['extra'];
+  $extra_th = &$question['extra_th'];
+
+  $has_choices = esp_type_has_choices();
+
+  if ($has_choices[$tid]) {
+    $sql = "SELECT * FROM ".X_QUESTION_CHOICE." WHERE question_id = $qid AND content NOT LIKE '!others%' ORDER BY id";
+    $choices_result = execute_sql($sql, "", ADODB_FETCH_ASSOC);
+    $sql = "SELECT * FROM ".X_QUESTION_CHOICE." WHERE question_id = $qid AND content LIKE '!others%' ORDER BY id";
+    $others_result = execute_sql($sql, "", ADODB_FETCH_ASSOC);
+    $others = record_count($others_result);
+  } else { $choices_result = ''; }
+
+  $questionname = "Q".$question_number.". ";
+
+  if ($question['content_th']) { $questionname .= $question['content_th']; }
+  else { $questionname .= $question['content']; }
+
+  echo "\n";
+
+  // Section text (tid=100)
+  if ($tid == 100) {
+    echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
+    echo "    <div class=\"well showconcept\">\n";
+    if ($question['content_th']) { echo "      <h4>".nl2br($question['content_th'])."</h4>\n"; }
+    else { echo "      <h4>".nl2br($question['content'])."</h4>\n"; }
+    echo "    </div>\n";
+    echo "  </div>\n\n";
+    echo "<br>\n";
+    return;
+  }
+
+  switch ($tid) {
+
+    // Single answer (SA) - radio (tid=1)
+    case '1':
+    $msg = "คำตอบเดียว / Single answer";
+    echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
+    echo "    <div class=\"panel panel-default\">\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
+    echo "      <div class=\"panel-body clearfix\">\n";
+    while ($choice = fetch_row($choices_result)) {
+      $choices_result->MoveNext();
+      $ridd = $choice['id'];
+      if ($choice['content_th']) { echo "      <div class=\"radio radio-primary\">" . mkradio($qid,$ridd) . "<label for=\"$ridd\">" . $choice['content_th'] . "</label></div>\n"; }
+      else { echo "      <div class=\"radio radio-primary\">" . mkradio($qid,$ridd) . "<label for=\"$ridd\">" . $choice['content'] . "</label></div>\n"; }
+    }
+    $j=0;
+    while ($other = fetch_row($others_result)) {
+      $others_result->MoveNext();
+      $cid = $other['id'];
+      if (!strcmp($other['content'],"!others")) {
+        if ($other['content_th']) { $other_text = $other['content_th']; }
+        else { $other_text = 'Others:'; }
+      }
+      else { $other_text = preg_replace(array("/^!others=/","/^!others/"), array('',''), $other['content']); }
+      echo "      <div class=\"radio radio-primary\">" . mkradio($qid,"other_$cid");
+      $did = "${qid}_${cid}";
+          echo("<label for=\"other_$cid\">$other_text <input class=\"form-control\" type=\"text\" name=\"$did\" onKeyPress=\"other_check(this.name)\"");
+          if (isset($_POST[$did])) { echo(' value="'. _stripslashes(htmlspecialchars($_POST[$did])) .'"'); echo(">"); }
+            $j++;
+            echo "</label></div>\n";
+    }
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n\n";
+    break;
+
+    // Multiple answer (MA) - checkbox (tid=2)
+    case '2':
+    $msg = "หลายคำตอบ / Multiple answer";
+    echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
+    echo "    <div class=\"panel panel-default\">\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
+    echo "      <div class=\"panel-body clearfix\">\n";
+    while ($choice = fetch_row($choices_result)) {
+      $choices_result->MoveNext();
+      $ridd = $choice['id'];
+      if ($choice['content_th']) { echo "      <div class=\"checkbox checkbox-primary\">" . mkcheckbox($qid,$ridd) . "<label for=\"$ridd\">" . $choice['content_th'] . "</label></div>\n"; }
+      else { echo "      <div class=\"checkbox checkbox-primary\">" . mkcheckbox($qid,$ridd) . "<label for=\"$ridd\">" . $choice['content'] . "</label></div>\n"; }
+    }
+    $j=0;
+    while ($other = fetch_row($others_result)) {
+      $others_result->MoveNext();
+      $cid = $other['id'];
+      if (!strcmp($other['content'],"!others")) {
+        if ($other['content_th']) { $other_text = $other['content_th']; }
+        else { $other_text = 'Others:'; }
+      }
+      else { $other_text = preg_replace(array("/^!others=/","/^!others/"), array('',''), $other['content']); }
+      echo "      <div class=\"checkbox checkbox-primary\">" . mkcheckbox($qid,"other_$cid");
+          $did = "${qid}_${cid}";
+          echo "<label for=\"other_$cid\">$other_text <input class=\"form-control\" type=\"text\" name=\"$did\" onKeyPress=\"other_check(this.name)\"";
+          if (isset($_POST[$did])) { echo(' value="'. _stripslashes(htmlspecialchars($_POST[$did])) .'"'); echo(">"); }
+      $j++;
+      echo "</label></div>\n";
+    }
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n\n";
+    break;
+
+    // Single-line open-end (tid=3)
+    case '3':
+    $msg = "บันทึกคำตอบ / Fill in your answer";
+    echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
+    echo "    <div class=\"panel panel-default\">\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
+    echo "      <div class=\"panel-body clearfix\">\n";
+    if ($extra_th) { $insert = $extra_th; }
+    elseif ($extra) { $insert = $extra; }
+    if ($extra || $extra_th) {
+      echo "      <div class=\"input-group\">\n";
+      echo(mktext($qid, $size, $prec));
+      echo "        <span class=\"input-group-addon\">".$insert."</span>\n";
+      echo "      </div>\n";
+    } else {
+      echo(mktext($qid, $size, $prec));
+    }
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n\n";
+    break;
+
+    // Multi-line open-end (tid=4)
+    case '4':
+    $msg = "บันทึกคำตอบ / Fill in your answer";
+    echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
+    echo "    <div class=\"panel panel-default\">\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
+    echo "      <div class=\"panel-body clearfix\">\n";
+    echo(mktextarea($qid, $prec, $size, 'virtual'));
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n\n";
+    break;
+
+    // Rating scale (tid=5)
+    case '5':
+    $msg = "คำตอบเดียว / Single answer";
+    echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
+    echo "    <div class=\"panel panel-default\">\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
+    echo "      <div class=\"panel-body clearfix\">\n";
+    while ($choice = fetch_row($choices_result)) {
+      $choices_result->MoveNext();
+      $ridd = $choice['id'];
+      if ($choice['content_th']) { echo "      <div class=\"radio\">" . mkradio($qid,$ridd) . "<label for=\"$ridd\">" .$choice['content_th']."</label></div>\n"; }
+      else { echo "      <div class=\"radio\">" . mkradio($qid,$ridd) . "<label for=\"$ridd\">" .$choice['content']."</label></div>\n"; }
+    }
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n\n";
+    break;
+
+    // Attribute rating (tid=6)
+    case '6':
+    $msg = "คำตอบเดียว / Single answer";
+    echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\" id=\"".$qid."\">\n";
+    echo "    <div class=\"panel panel-default\">\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
+    echo "      <div class=\"panel-body clearfix\">\n";
+    if ($size == '0') { $size = '5'; }
+    echo "      <table class=\"table table-hover table-condensed\">\n";
+    echo "        <tr class=\"active\">\n";
+    echo "          <td>Attributes</td>\n";
+    for ($j = 0; $j < $size; $j++) {
+      $k = $j+1;
+      echo "          <td align=\"right\"><div class=\"radio radio-primary\">".$k."</div></td>\n";
+    }
+    if ($prec) {
+      echo "          <td align=\"right\"><div class=\"radio radio-primary\">N/A</div></td>\n";
+    }
+    echo "        </tr>\n";
+
+    while ($choice = fetch_row($choices_result)) {
+      $choices_result->MoveNext();
+      $cid = $choice['id'];
+      $str = "${qid}_$cid";
+      echo "        <tr>\n";
+      if ($choice['content_th']) { echo "          <td>".$choice['content_th']."</td>\n"; }
+      else { echo "          <td>".$choice['content']."</td>\n"; }
+      for ($j = 0; $j < $size; $j++) {
+        $k = $j+1;
+        echo "          <td align=\"right\"><div class=\"radio radio-primary\">".mkradio($str,$k)."<label for=\"$k\"></label></div></td>\n";
+      }
+      if ($prec) {
+        echo "          <td align=\"right\"><div class=\"radio radio-primary\">".mkradio($str,'-1')."<label for=\"-1\"></label></div></td>\n";
+      }
+      echo "        </tr>\n";
+    }
+    echo "      </table>\n";
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n\n";
+    break;
+
+    // Drop down (tid=7)
+    case '7':
+    $msg = "คำตอบเดียว / Single answer";
+    echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
+    echo "    <div class=\"panel panel-default\">\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
+    echo "      <div class=\"panel-body clearfix\">\n";
+    while ($choice = fetch_row($choices_result)) {
+      $choices_result->MoveNext();
+      if ($choice['content_th']) { $options[$choice['id']] = $choice['content_th']; }
+      else { $options[$choice['id']] = $choice['content']; }
+    }
+    if ($extra_th) { $insert = $extra_th; }
+    elseif ($extra) { $insert = $extra; }
+    if ($extra || $extra_th) {
+      echo "      <div class=\"input-group\">\n";
+      echo mkselect($qid, $options);
+      echo "        <span class=\"input-group-addon\">".$insert."</span>\n";
+      echo "      </div>\n";
+    } else {
+      echo mkselect($qid, $options);
+    }
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n\n";
+    break;
+
+    // Date (tid=8)
+    case '8':
+    $msg = "บันทึกคำตอบ / Fill in your answer";
+    echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
+    echo "    <div class=\"panel panel-default\">\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
+    echo "      <div class=\"panel-body clearfix\">\n";
+    if ($extra_th) { $insert = $extra_th; }
+    elseif ($extra) { $insert = $extra; }
+    if ($extra || $extra_th) {
+      echo "      <div class=\"input-group\">\n";
+      echo(mktext($qid, 10, 10));
+      echo "<em>(This format only: ". strftime (FORMAT_DATE, strtotime("now")) .")</em>\n";
+      echo "        <span class=\"input-group-addon\">".$insert."</span>\n";
+      echo "      </div>\n";
+    } else {
+      echo(mktext($qid, 10, 10));
+      echo "<em>(This format only: ". strftime (FORMAT_DATE, strtotime("now")) .")</em>\n";
+    }
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n\n";
+    break;
+
+    // Numeric (tid=9)
+    case '9':
+    $msg = "บันทึกคำตอบ / Fill in your answer";
+    echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
+    echo "    <div class=\"panel panel-default\">\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
+    echo "      <div class=\"panel-body clearfix\">\n";
+    $size++; // for sign
+    if ($prec) { $size += 1 + $prec; }
+    if ($extra_th) { $insert = $extra_th; }
+    elseif ($extra) { $insert = $extra; }
+    if ($extra || $extra_th) {
+      echo "      <div class=\"input-group\">\n";
+      echo mktext($qid, $size, $size);
+      echo "        <span class=\"input-group-addon\">".$insert."</span>\n";
+      echo "      </div>\n";
+    } else {
+      echo mktext($qid, $size, $size);
+    }
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n\n";
+    break;
+
+    // Others (tid=10)
+    case '10':
+    $msg = "บันทึกคำตอบ / Fill in your answer";
+    echo "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" id=\"".$qid."\">\n";
+    echo "    <div class=\"panel panel-default\">\n";
+    echo "      <div class=\"panel-heading bg-info\"><h4>$questionname</h4><h6>$msg</h6></div>\n";
+    echo "      <div class=\"panel-body clearfix\">\n";
+    echo(mktext($qid, $size, $prec));
+    echo "      </div>\n";
+    echo "    </div>\n";
+    echo "  </div>\n\n";
+    break;
+  }
+  return;
+}
+
+function survey_render($sid, $section = 1, $rid=0, $message = '') {
+  global $preview;
+  @reset($_POST);
+  if (empty($section)) { $section = 1; }
+  $sql = "SELECT * FROM ".X_SURVEY." WHERE id = ${sid}";
+  $result = execute_sql($sql,"", ADODB_FETCH_ASSOC);
+  if (record_count($result) != 1) { return(false); }
+  $survey = fetch_row($result);
+  db_close($result);
+  $sections = survey_get_sections($sid);
+  $num_sections = count($sections);
+  if ($section-- > $num_sections) { return(false); } // invalid section
+  $section_questions = survey_get_section_questions($sid);
+  $sec_sql = array_to_insql($sections[$section]);
+  $sql = "SELECT * FROM ".X_QUESTION." WHERE id $sec_sql ORDER BY position,id ";
+  $questions_result = execute_sql($sql,"", ADODB_FETCH_ASSOC);
+  if (record_count($questions_result) < 1) { return(false); }
+
+  $i=0;
+  for ($j=0; $j<$section; $j++) { $i += count($section_questions[$j]); }
+
+  echo "<h2>Project ".$survey["title"]." ";
+  if ($survey["subtitle_th"]) { echo "<small>(".$survey["subtitle_th"].")</small>"; }
+  else { echo "<small>(".$survey["subtitle"].")</small>"; }
+  echo "</h2>\n";
+  echo "<br>\n\n";
+
+  echo "<div class=\"well showprojectdetail\">\n";
+  if ($survey["info_th"]) { echo "<p>".nl2br($survey["info_th"])."</p>\n\n"; }
+  else { echo "<p>".nl2br($survey["info"])."</p>\n\n"; }
+  echo "</div>\n";
+
+  if (!$preview) {
+    echo "<span class=\"ubuntu\"><small>PROGRESS:</small></span>\n";
+    echo progressbar($_SESSION['sec'], $num_sections);
+    echo "\n\n";
+  }
+
+  echo "<div class=\"row\">\n";
+
+  $questions_shown = 0;
+  while ($question = fetch_row($questions_result)) {
+    $questions_result->MoveNext();
+    $i++;
+    // process each question
+    $qid = &$question['id'];
+    $tid = &$question['type_id'];
+    if ($tid == 100) { $i--; }
+
+    if (question_conditioncheck($sid, $qid, $rid)) { $questions_shown = 1; question_render($question, $i, $survey['auto_num']); }
+    elseif (isset($_POST['tab']) && ($_POST['tab']=="preview")) { $questions_shown = 1; question_render($question, $i, $survey['auto_num']); }
+  }
+
+  if ($questions_shown == 0) { echo "<p>No questions in this section.</p>\n"; echo "<br><br>\n\n"; }
+  echo "</div>\n\n";
+  return;
+}
+
+function isequal (&$val1, &$val2) {
+  return $val1 == $val2;
+}
+
+function isnequal (&$val1, &$val2) {
+  return $val1 != $val2;
+}
+
+function issmallerthan (&$val1, &$val2) {
+  return $val1 < $val2;
+}
+
+function isbiggerthan (&$val1, &$val2) {
+  return $val1 > $val2;
+}
+
+function question_conditioncheck($sid, $qid, $rid) {
+  $conditions[0] = "isequal";
+  $conditions[1] = "isnequal";
+  $conditions[2] = "issmallerthan";
+  $conditions[3] = "isbiggerthan";
+  $return_result = TRUE;
+  $sql = "SELECT * FROM ".X_CONDITION." WHERE q1_id = '$qid'";
+  $result = execute_sql($sql);
+  # If there are no conditions, we need to show the question, so we return true
+  if (record_count($result) == 0) { return true; }
+  while (list($id, $sid, $q1_id, $q2_id, $cond, $cond_val) = fetch_row($result)) {
+    $result->MoveNext();
+    if ($rid>0) {
+      $resp = array();
+      $resp = response_select($sid, $rid, $col = null, array($q2_id));
+      if (isset($resp[$q2_id])) {
+        $resp_val = $resp[$q2_id][0];
+        // for dropdown and some other types, this value is an array
+        // we take the value (for now) and not the index ...
+        if (is_array($resp_val)) { $resp_val = $resp_val[0]; }
+        // the condition is fullfilled, so we need to show the question
+        if (call_user_func($conditions[$cond], $resp_val, $cond_val) == TRUE) { return true; }
+      }
+    }
+  }
+  return false;
+}
+
+function progress($step = NULL) {
+  if (empty($step)) { $step = 1; }
+  if ($step == "1") { $a = "<li class=\"progress-step is-active\">"; $b = "<li class=\"progress-step\">"; $c = "<li class=\"progress-step\">"; }
+  elseif ($step == "2") { $a = "<li class=\"progress-step is-completed\">"; $b = "<li class=\"progress-step is-active\">"; $c = "<li class=\"progress-step\">"; }
+  elseif ($step == "3") { $a = "<li class=\"progress-step is-completed\">"; $b = "<li class=\"progress-step is-completed\">"; $c = "<li class=\"progress-step is-active\">"; }
+?>
+<ul class="progress-tracker progress-tracker--text progress-tracker--center">
+  <?php echo $a; ?>
+    <span class="progress-marker"></span>
+    <span class="progress-text">
+      <span class="progress-title">Step 1</span>
+      Set up
+    </span>
+  </li>
+  <?php echo $b; ?>
+    <span class="progress-marker"></span>
+    <span class="progress-text">
+      <span class="progress-title">Step 2</span>
+      Data collection
+    </span>
+  </li>
+  <?php echo $c; ?>
+    <span class="progress-marker"></span>
+    <span class="progress-text">
+      <span class="progress-title">Step 3</span>
+      Completed
+    </span>
+  </li>
+</ul>
+<?php
+}
+
+function survey_listing($start = "0", $limit = "5", $page = NULL) {
+  $sids = array();
+  if (!empty($_POST['list'])) { while (list(,$sid) = each($_POST['list'])) { array_push($sids, intval($sid)); } survey_purge($sids); }
+  if (empty($start)) { $start = 0; }
+  if (empty($limit)) { $limit = 5; }
+  if ($page) { $start = ($page-1) * $limit; }
+  $to_record = $start + $limit;
+  $add = " LIMIT $start, $limit";
+  if ($_SESSION['acl']['superuser'] == 'Y') {
+    $sql1 = "SELECT s.id, s.name, s.title, s.status, s.owner, s.realm, COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC";
+    $sql2 = "SELECT s.id, s.name, s.title, s.status, s.owner, s.realm, COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC"  . $add;
+  } else {
+    $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'], array_merge($_SESSION['acl']['pall'], $_SESSION['acl']['pdesign'])));
+    $sql1 = "SELECT s.id, s.name, s.title, s.status, s.owner, s.realm, COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC";
+    $sql2 = "SELECT s.id, s.name, s.title, s.status, s.owner, s.realm, COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC"  . $add;
+  }
+  $result1 = execute_sql($sql1);
+  $result2 = execute_sql($sql2);
+  $rows = record_count($result1);
+  if ($to_record > $rows) { $to_record = $rows; }
+  $from_record = $start + 1;
+
+  echo "<h2>Listing your surveys</h2>\n";
+  echo "<p>You have a total of $rows $type projects (showing results $from_record to $to_record)</p>\n";
+  echo "<div class=\"row\">\n";
+
+  $realms = array_intersect($_SESSION['acl']['pstatus'], array_merge($_SESSION['acl']['pall'], $_SESSION['acl']['pstatus']));
+  while (list($sid, $name, $title, $status, $owner, $realm, $qnum) = fetch_row($result2)) {
+    echo "<div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6 manage-border-space\">\n";
+    echo "<div class=\"manage-listing\">\n";
+    $result2->MoveNext();
+
+    $tt1 = htmlspecialchars(MYSURVEY."?name=".$name);
+    $tt2 = htmlspecialchars(MYSURVEY."?name=".$name."&test=1");
+    $tt3 = htmlspecialchars(MYADMIN."?w=tab&newid=".$sid);
+    $tt4 = htmlspecialchars(MYADMIN."?w=copy&sid=".$sid);
+    $tt5 = htmlspecialchars(MYADMIN."?w=results&sid=".$sid);
+    $tt6 = htmlspecialchars(MYADMIN."?w=results&sid=".$sid."&type=cross");
+    $tt7 = htmlspecialchars(MYADMIN."?w=dpspec&sid=".$sid);
+
+    // results
+    $flexx = "<a href=\"$tt5\">Result <i class=\"pe-pie-chart pe-fw\"></i></a> | \n";
+    $flexx .= "<a href=\"$tt6\">Cross tab <i class=\"pe-bar-chart pe-fw\"></i></a> | \n";
+    $flexx .= "<a href=\"$tt7\">DP spec <i class=\"pe-table pe-fw\"></i></a>\n";
+
+    if ($status & STATUS_DELETED) {
+      $stat = "Archived";
+      $progress = "3";
+      $test1 = 'Archived';
+      $test2 = 'Archived';
+      $done = '&nbsp;';
+      $act = '&nbsp;';
+      $del = '&nbsp;';
+    } elseif ($status & STATUS_DONE) {
+      $stat = "Ended";
+      $progress = "3";
+      $test1 = $act = '&nbsp;';
+      $test2 = $act = '&nbsp;';
+      $done = '&nbsp;';
+      $act = '&nbsp;';
+      $del = '&nbsp;';
+    } elseif ($status & STATUS_ACTIVE) {
+      $stat = "Active";
+      $progress = "2";
+      $test1 = "<span class=\"label label-success\"><i class=\"pe-check pe-fw\"></i> Active</span>";
+      $test2 = "[".$results."]";
+      $done = '&nbsp;';
+      $act = '&nbsp;';
+      $del = '&nbsp;';
+    } elseif ($status & STATUS_TEST) {
+      $stat = "Testing";
+      $progress = "1";
+      $test1 = "<span class=\"label label-warning\"><i class=\"pe-paper-plane pe-fw\"></i> Testing</span>";
+      $test2 = "[ <a href=\"".htmlspecialchars(MYADMIN."?w=status&op=m&sid=".$sid)."\">change to Editing</a> ]";
+      $done = '&nbsp;';
+      $act = '&nbsp;';
+      $del = '&nbsp;';
+    } else {
+      $stat = "Editing";
+      $progress = "1";
+      $test1 = "<span class=\"label label-danger\"><i class=\"pe-pencil-square-o pe-fw\"></i> Editing</span>";
+      $test2 = "[ <a href=\"".htmlspecialchars(MYADMIN."?w=status&op=t&sid=".$sid)."\">change to Testing</a> ]";
+      if ($_SESSION['acl']['superuser'] == 'Y') { $done = "<a href=\"".htmlspecialchars(MYADMIN."?w=status&op=e&sid=".$sid)."\"><i class=\"pe-trash-o pe-fw\"></i></a>"; }
+      else { $done = '&nbsp;'; }
+      $act  = "<a href=\"".htmlspecialchars(MYADMIN."?w=status&op=a&sid=".$sid)."\" onclick='return activateConfirm()'><i class=\"pe-toggle-on pe-fw\"></i></a>";
+      $del  = "<a href=\"".htmlspecialchars(MYADMIN."?w=status&op=d&sid=".$sid)."\"><i class=\"pe-archive pe-fw\"></i></a>";
+    }
+    if ($_SESSION['acl']['superuser'] != 'Y' && !in_array($realm, $realms)) {
+      $act  = '&nbsp;';
+      $done = '&nbsp;';
+      $del  = '&nbsp;';
+    }
+    if ($stat == 'Active') { $title = "<a href=\"$tt1\">$title</a>"; }
+    elseif ($stat == 'Testing') { $title = "<a href=\"$tt2\">$title</a>"; }
+    elseif ($stat == 'Editing') { $title = "<a href=\"$tt3\">$title</a>"; }
+    elseif ($stat == 'Archived') { $title = $title; }
+    else { $title = $title; }
+    // edit/copy & activate/end
+    $copy = "<a href=\"$tt4\"><i class=\"pe-files-o pe-fw\"></i></a>\n";
+    if ($stat == 'Active') { $act = ""; }
+    elseif ($stat == 'Testing') { $act = "<a href=\"$tt2\"><i class=\"pe-paper-plane pe-fw\"></i></a> $copy $act $done"; }
+    elseif ($stat == 'Editing') { $act = "<a href=\"$tt3\"><i class=\"pe-pencil-square-o pe-fw\"></i></a> $copy $act $done"; }
+    elseif ($stat == 'Archived') { $act = ""; }
+    else { $act = "<i class=\"pe-pencil-square-o pe-fw\"></i>"; }
+
+    echo "<h3>$title</h3>\n";
+    echo progress($progress);
+    echo "<p>Owner: $owner </p>\n";
+    echo "<p>Company: $realm</p>\n";
+    echo "<p>No. of questions: $qnum</p>\n";
+    echo "<p>Status: $test2</p>\n";
+    echo "<p>Results: $flexx</p>\n";
+    echo "<p>Tools <small>(edit/copy/activate)</small>: $act</p>\n";
+    if ($_SESSION['acl']['superuser'] == 'Y') { echo "Delete?: \n"; }
+    echo "<p>$test1</p>\n";
+    echo "</div>\n";
+    echo "</div>\n";
+  }
+  echo "  </div>\n";
+
+  $total = ceil($rows/$limit);
+  $offset = ($currentpage - 1) * $rowsperpage;
+  echo "<nav class=\"pagination-centered\">\n";
+  echo "<ul class=\"pagination\">\n";
+  if ($page > 1) { $previous = $page-1; echo "<li><a class=\"btn btn-sm btn-default\" role=\"button\" href=\"".MYADMIN."?&p=".$previous."\">&laquo;</a></li>\n"; }
+  else { echo "<li class=\"disabled\"><a class=\"btn btn-sm btn-warning\" role=\"button\" href=\"\">&laquo;</a></li>\n"; }
+  for ($i=1; $i<=$total; $i++) {
+    if ($i == $page) { echo "<li class=\"active\"><a class=\"btn btn-sm btn-default\" role=\"button\" href=\"".MYADMIN."?&p=".$i."\">".$i."</a></li>\n"; }
+    else { echo "<li><a class=\"btn btn-sm btn-default\" role=\"button\" href=\"".MYADMIN."?&p=".$i."\">".$i."</a></li>\n"; }
+  }
+  if ($page != $total) { $next = $page+1; echo "<li><a class=\"btn btn-sm btn-default\" role=\"button\" href=\"".MYADMIN."?&p=".$next."\">&raquo;</a></li>\n"; }
+  else { echo "<li class=\"disabled\"><a class=\"btn btn-sm btn-warning\" role=\"button\" href=\"\">&raquo;</a></li>\n"; }
+  echo "</ul>\n";
+  echo "</nav>\n\n";
+  echo "<br>\n\n";
+  echo "<ul class=\"pe-ul\">\n";
+  echo "  <li><i class=\"pe-li pe-check-square\"></i><strong>Test</strong> transitions a survey into testing mode. At which point you may perform a live test by taking the survey, and viewing the results. The survey may be switched back into <strong>Edit</strong> mode if additional edits are needed.</li>\n";
+  echo "  <li><i class=\"pe-li pe-check-square\"></i><strong>Activate</strong> transitions a survey into active mode. In this mode the survey is open for production use, and may be put online. This will clear any results from testing mode (if any). No further editing of survey is allowed.</li>\n";
+  echo "  <li><i class=\"pe-li pe-check-square\"></i><strong>End</strong> transitions a survey into ended mode. In this mode, <u>no edits are possible</u>, no users may take the survey (it is inactive), but results are still viewable from the results menu.</li>\n";
+  echo "  <li><i class=\"pe-li pe-check-square\"></i><strong>Archive</strong> removes this survey. It is still stored in the database, but no further interaction is allowed. You may <b>not</b> view the results of an archived survey.</li>\n";
+  echo "</ul>\n";
+  echo "<br>\n";
+}
+
+function survey_status($start = "0", $limit = "5", $page = NULL) {
+  $sids = array();
+  if (!empty($_POST['list'])) { while (list(,$sid) = each($_POST['list'])) { array_push($sids, intval($sid)); } survey_purge($sids); }
+  if ($page) { $start = ($page-1) * $limit; }
+  $to_record = $start + $limit;
+  $add = " LIMIT $start, $limit";
+  if ($_SESSION['acl']['superuser'] == 'Y') {
+    $sql1 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC";
+    $sql2 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC"  . $add;
+  } else {
+    $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'], array_merge($_SESSION['acl']['pall'], $_SESSION['acl']['pdesign'])));
+    $sql1 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC";
+    $sql2 = "SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC"  . $add;
+  }
+  $result1 = execute_sql($sql1);
+  $result2 = execute_sql($sql2);
+  $rows = record_count($result1);
+  if ($to_record > $rows) { $to_record = $rows; }
+  $from_record = $start + 1;
+  echo "<p class=\"text-right\">showing results $from_record to $to_record [<a href=\"".MYADMIN."?w=status"."\">total of $rows</a>]</p>";
+  echo "<table class=\"table table-hover\">\n";
+  echo "  <tr class=\"active\">\n";
+  echo "    <th>Project</th>\n";
+  echo "    <th>Owner (Group)</th>\n";
+  echo "    <th>No. of questions</th>\n";
+  echo "    <th>Status</th>\n";
+  echo "    <th>Tools<br><small>[edit/copy/activate]</small></th>\n";
+  //if ($_SESSION['acl']['superuser'] == 'Y') { echo "    <th>Delete?</th>\n"; }
+  echo "  </tr>\n";
+
+  $realms = array_intersect($_SESSION['acl']['pstatus'], array_merge($_SESSION['acl']['pall'], $_SESSION['acl']['pstatus']));
+  while (list($sid,$name,$title,$status,$owner,$realm,$qnum) = fetch_row($result2)) {
+    $result2->MoveNext();
+    $tt1 = htmlspecialchars(MYSURVEY."?name=".$name);
+    $tt2 = htmlspecialchars(MYSURVEY."?name=".$name."&test=1");
+    $tt3 = htmlspecialchars(MYADMIN."?w=tab&newid=".$sid);
+    $tt4 = htmlspecialchars(MYADMIN."?w=copy&sid=".$sid);
+    $tt5 = htmlspecialchars(MYADMIN."?w=results&sid=".$sid);
+    $tt6 = htmlspecialchars(MYADMIN."?w=results&sid=".$sid."&type=cross");
+    $tt7 = htmlspecialchars(MYADMIN."?w=dpspec&sid=".$sid);
+    // results
+    $results = "<a href=\"$tt5\">Result <i class=\"pe-pie-chart pe-fw\"></i></a> | \n";
+    $results .= "<a href=\"$tt6\">Cross tab <i class=\"pe-bar-chart pe-fw\"></i></a> | \n";
+    $results .= "<a href=\"$tt7\">DP spec <i class=\"pe-table pe-fw\"></i></a>\n";
+    if ($status & STATUS_DELETED) {
+      $stat = "Archived";
+      $test = 'Archived';
+      $done = '&nbsp;';
+      $act = '&nbsp;';
+      $del = '&nbsp;';
+    } elseif ($status & STATUS_DONE) {
+      $stat = "Ended";
+      $test = $act = '&nbsp;';
+      $done = '&nbsp;';
+      $act = '&nbsp;';
+      $del = '&nbsp;';
+    } elseif ($status & STATUS_ACTIVE) {
+      $stat = "Active";
+      $test = "<span class=\"label label-success\"><i class=\"pe-check pe-fw\"></i> Active</span> <small>[".$results."]</small>";
+      $done = '&nbsp;';
+      $act = '&nbsp;';
+      $del = '&nbsp;';
+    } elseif ($status & STATUS_TEST) {
+      $stat = "Testing";
+      $test = "<span class=\"label label-warning\"><i class=\"pe-paper-plane pe-fw\"></i> Testing</span> <small>[ <a href=\"".htmlspecialchars(MYADMIN."?w=status&op=m&sid=".$sid)."\">change to Editing</a> ]</small>";
+      $done = '&nbsp;';
+      $act = '&nbsp;';
+      $del = '&nbsp;';
+    } else {
+      $stat = "Editing";
+      $test = "<span class=\"label label-danger\"><i class=\"pe-pencil-square-o pe-fw\"></i> Editing</span> <small>[ <a href=\"".htmlspecialchars(MYADMIN."?w=status&op=t&sid=".$sid)."\">change to Testing</a> ]</small>";
+      if ($_SESSION['acl']['superuser'] == 'Y') { $done = "<a href=\"".htmlspecialchars(MYADMIN."?w=status&op=e&sid=".$sid)."\"><i class=\"pe-trash-o pe-fw\"></i></a>"; }
+      else { $done = '&nbsp;'; }
+      $act  = "<a href=\"".htmlspecialchars(MYADMIN."?w=status&op=a&sid=".$sid)."\" onclick='return activateConfirm()'><i class=\"pe-toggle-on pe-fw\"></i></a>";
+      $del  = "<a href=\"".htmlspecialchars(MYADMIN."?w=status&op=d&sid=".$sid)."\"><i class=\"pe-archive pe-fw\"></i></a>";
+    }
+    // whack things back to permissions set by ACL for everyone _not_ superuser
+    if ($_SESSION['acl']['superuser'] != 'Y' && !in_array($realm, $realms)) {
+      $act  = '&nbsp;';
+      $done = '&nbsp;';
+      $del  = '&nbsp;';
+    }
+    echo "  <tr>\n";
+    // title
+    if ($stat == 'Active') { echo "    <td><a href=\"$tt1\">$title</a></td>\n"; }
+    elseif ($stat == 'Testing') { echo "    <td><a href=\"$tt2\">$title</a></td>\n"; }
+    elseif ($stat == 'Editing') { echo "    <td><a href=\"$tt3\">$title</a></td>\n"; }
+    elseif ($stat == 'Archived') { echo "    <td>$title</td>\n"; }
+    else { echo "    <td>$title</td>\n"; }
+    // user/group
+    echo "    <td>$owner ($realm)</td>\n";
+    // question numbers
+    echo "    <td class=\"text-center\">$qnum</td>\n";
+    // test or edit
+    echo "    <td>$test</td>\n";
+    // edit/copy & activate/end
+     $copy = "<a href=\"$tt4\"><i class=\"pe-files-o pe-fw\"></i></a>\n";
+    if ($stat == 'Active') { echo "    <td>&nbsp;</td>\n"; }
+    elseif ($stat == 'Testing') { echo "    <td><a href=\"$tt2\"><i class=\"pe-paper-plane pe-fw\"></i></a> $copy $act $done</td>\n"; }
+    elseif ($stat == 'Editing') { echo "    <td><a href=\"$tt3\"><i class=\"pe-pencil-square-o pe-fw\"></i></a> $copy $act $done</td>\n"; }
+    elseif ($stat == 'Archived') { echo "    <td>&nbsp;</td>\n"; }
+    else { echo "    <td><i class=\"pe-pencil-square-o pe-fw\"></i></td>\n"; }
+    // delete (disable)
+    //echo "    <td>$del</td>\n";
+    //if ($_SESSION['acl']['superuser'] == 'Y') {
+    //  //echo "    <td><input type=\"checkbox\" name=\"list[]\" value=\"$sid\">";
+    //  //echo "<p class=\"text-center\">\n";
+    //  //echo "<td \"text-center\">\n";
+    //  echo "<td class=\"text-right\">\n";
+    //  if ($status & STATUS_DELETED) {
+    //    echo "Deleted\n";
+    //  } else {
+    //    echo "<input type=\"checkbox\" name=\"list[]\" value=\"$sid\">";
+    //  }
+    //  echo "</td>\n\n";
+    //  //echo "<input class=\"btn btn-default\" type=\"reset\" name=\"reset\" value=\"Clear Checks\">\n";
+    //  //echo "</p>\n\n";
+    //
+    //}
+    echo "  </tr>\n";
+  }
+  echo "</table>\n\n";
+
+  //if ($_SESSION['acl']['superuser'] == 'Y') {
+  //
+  //  echo "<p class=\"text-right\">\n";
+  //  echo "<input type=\"hidden\" name=\"where\" value=\"purge\"> &nbsp; \n";
+  //  $confirmText = "You are about to PERMANENTLY and IRREVOCABLY remove ALL information about the selected surveys. Click Ok if you are absolutely //sure this is what you want to do.\n";
+  //  echo "<input class=\"btn btn-danger btn-sm\" type=\"submit\" name=\"submit\" onclick='return confirm(\"You are about to PERMANENTLY and IRREVOCABLY remove ALL information about the selected surveys. Click Ok if you are absolutely sure this is what you want to do.\")' onkeypress='return confirm (\"You are about to PERMANENTLY and IRREVOCABLY remove ALL information about the selected surveys. Click Ok if you //are absolutely sure this is what you want to do.\");' value=\"Delete selected data\">\n";
+  //  echo "<input class=\"btn btn-default btn-sm\" type=\"reset\" name=\"reset\" value=\"Clear checks\">";
+  //  echo "</p>\n\n";
+  //}
+
+  // pagination
+  $total = ceil($rows/$limit);
+  $offset = ($currentpage - 1) * $rowsperpage;
+  echo "<nav class=\"pagination-centered\">\n";
+  echo "  <ul class=\"pagination\">\n";
+  if ($page > 1) { $previous = $page-1; echo "    <li><a class=\"btn btn-sm btn-default\" href=\"".MYADMIN."?w=status&p=".$previous."\">&laquo;</a></li>\n"; }
+  else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm btn-default\" href=\"\">&laquo;</a></li>\n"; }
+  for ($i=1; $i<=$total; $i++) {
+    if ($i == $page) { echo "    <li class=\"active\"><a class=\"btn btn-sm btn-default\" href=\"".MYADMIN."?w=status&p=".$i."\">".$i."</a></li>\n"; }
+    else { echo "    <li><a class=\"btn btn-sm btn-default\" href=\"".MYADMIN."?w=status&p=".$i."\">".$i."</a></li>\n"; }
+  }
+  if ($page != $total) { $next = $page+1; echo "    <li><a class=\"btn btn-sm btn-default\" href=\"".MYADMIN."?w=status&p=".$next."\">&raquo;</a></li>\n"; }
+  else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm btn-default\" href=\"\">&raquo;</a></li>\n"; }
+  echo "  </ul>\n";
+  echo "</nav>\n\n";
+  echo "<br>\n\n";
+}
+
+function progressbar($section, $total) {
+  $progress = ($section/$total) * 100;
+  $progress = round ($progress, 1);
+  $output = "<div class=\"progress\">\n";
+  $output .= "  <div class=\"progress-bar progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$progress\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: $progress%\">\n";
+  $output .= "   $progress% <span class=\"sr-only\">$progress% completion</span>\n";
+  $output .= "  </div>\n";
+  $output .= "</div>\n";
+  return $output;
+}
+
+function autotext($choice_content, $choice_content_th) {
+  if ($choice_content_th == '') {
+    if ($choice_content == '!others') { $choice_content_th = 'อื่นๆ (ระบุ)'; }
+    if ($choice_content == '!others Other (please specify)') { $choice_content_th = 'อื่นๆ (ระบุ)'; }
+    if ($choice_content == 'Refused to answer') { $choice_content_th = 'ปฏิเสธ'; }
+    if ($choice_content == 'Cannot remember') { $choice_content_th = 'จำไม่ได้'; }
+    if ($choice_content == 'Prefer not to answer') { $choice_content_th = 'ปฏิเสธ'; }
+    if ($choice_content == 'None of the above') { $choice_content_th = 'ไม่มีที่กล่าวข้างต้น'; }
+    if ($choice_content == 'Male') { $choice_content_th = 'ผู้ชาย'; }
+    if ($choice_content == 'Female') { $choice_content_th = 'ผู้หญิง'; }
+    if ($choice_content == 'SES-A') { $choice_content_th = 'สถานะภาพทางสังคม A'; }
+    if ($choice_content == 'SES-B') { $choice_content_th = 'สถานะภาพทางสังคม B'; }
+    if ($choice_content == 'SES-C') { $choice_content_th = 'สถานะภาพทางสังคม C'; }
+    if ($choice_content == 'SES-D') { $choice_content_th = 'สถานะภาพทางสังคม D'; }
+    if ($choice_content == 'SES-E') { $choice_content_th = 'สถานะภาพทางสังคม E'; }
+  }
+  return $choice_content_th;
+}
+
+function ago($time) {
+  $periods = array("second", "minute", "hour", "day", "week", "month", "year", "decade");
+  $lengths = array("60","60","24","7","4.35","12","10");
+  $now = time();
+  $difference = $now - $time;
+  $tense = "ago";
+  for ($j = 0; $difference >= $lengths[$j] && $j < count($lengths)-1; $j++) { $difference /= $lengths[$j]; }
+  $difference = round($difference);
+  if ($difference != 1) { $periods[$j].= "s"; }
+  return "$difference $periods[$j] 'ago' ";
+}
+
+function textreplacement($text) {
+  $replace = array(
+    'wordpress' => '<a href="#">wordpress</a>',
+    'excerpt' => '<a href="#">excerpt</a>',
+    'function' => '<a href="#">function</a>'
+  );
+  $text = str_replace(array_keys($replace), $replace, $text);
+  return $text;
+}
+
+function clickemail($text) {
+  $text = eregi_replace('([_\.0-9a-z-]+@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,3})','<a href="mailto:\\1">\\1</a>', $text);
+  return $text;
+}
+
+function fileWrite($file, $message) {
+  fwrite(fopen($file, 'a'), $message . "\n");
+}
+
+function fileRead($file) {
+  $lines = file($file);
+  foreach ($lines as $line_num => $line) { echo "$line</br>\n"; }
+}
+
+function decode_json($json) {
+  //$json ='{"id":1,"name":"foo","interest":["wordpress","php"]} ';
+  $obj = json_decode($json);
+  return $obj->interest[1]; //prints php
+}
+
+function makelink($str) {
+  $reg_exUrl = "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
+  $urls = array();
+  $urlsToReplace = array();
+  if (preg_match_all($reg_exUrl, $str, $urls)) {
+    $numOfMatches = count($urls[0]);
+    $numOfUrlsToReplace = 0;
+    for ($i=0; $i<$numOfMatches; $i++) {
+      $alreadyAdded = false;
+      $numOfUrlsToReplace = count($urlsToReplace);
+      for ($j=0; $j<$numOfUrlsToReplace; $j++) { if ($urlsToReplace[$j] == $urls[0][$i]) { $alreadyAdded = true; } }
+      if (!$alreadyAdded) { array_push($urlsToReplace, $urls[0][$i]); }
+    }
+    $numOfUrlsToReplace = count($urlsToReplace);
+    for ($i=0; $i<$numOfUrlsToReplace; $i++) { $str = str_replace($urlsToReplace[$i], "<a href=\"".$urlsToReplace[$i]."\">".$urlsToReplace[$i]."</a> ", $str); }
+    return $str;
+  }
+  else { return $str; }
+}
+
+function br2newline($input) {
+  $out = str_replace( "<br>", "\n", $input );
+  $out = str_replace( "<br/>", "\n", $out );
+  $out = str_replace( "<br>", "\n", $out );
+  $out = str_replace( "<BR>", "\n", $out );
+  $out = str_replace( "<BR/>", "\n", $out );
+  $out = str_replace( "<br>", "\n", $out );
+  return $out;
+}
+
+function br2nl($input) {
+  return preg_replace('/<br(\s+)?\/?>/i', "\n", $input);
+}
+
+function dataURIs($file) {
+  $datafile = base64_encode(file_get_contents($file)); // convert gif to data
+  return $datafile;
+}
+
+function survey_update(&$survey_id, &$tab, $old_tab) {
+  global $errstr;
+  if (empty($old_tab)) { return(1); }
+  $f_arr = array();
+  $v_arr = array();
+  if (isset($_POST['name'])) {
+    $_POST['name'] = preg_replace("/[^A-Z0-9]+/i","_", trim($_POST['name']));
+    $_POST['name'] = preg_replace("/(^_|_$)/i","", $_POST['name']);
+  }
+  // new survey
+  if (empty($survey_id)) {
+    if (empty($_POST['name']) || empty($_POST['title']) || empty($_POST['realm'])) { $tab = "general"; $errstr = 'Sorry, please fill out the name, group, and title before proceeding.'; return(0); }
+    $fields = array('name', 'realm', 'public', 'status', 'open_date', 'close_date', 'title', 'email', 'subtitle', 'subtitle_th', 'info', 'info_th', 'theme', 'thanks_page', 'thank_head', 'thank_body', 'auto_num');
+    foreach ($fields as $f) { if (isset($_POST[$f])) { array_push($f_arr,$f); array_push($v_arr, _addslashes($_POST[$f])); } }
+    array_push($f_arr, 'owner');
+    array_push($v_arr, _addslashes($_SESSION['acl']['username']));
+    array_push($f_arr, 'added');
+    array_push($v_arr, sys_time_stamp());
+    array_push($f_arr, 'changed');
+    array_push($v_arr, sys_time_stamp());
+    $sql = "INSERT INTO ".X_SURVEY." (" . join(',',$f_arr) . ") VALUES (" . join(',',$v_arr) . ")";
+    $result = execute_sql($sql);
+    if (!$result) { $tab = "general"; $errstr = 'Sorry, name already in use. Pick a new name.' .' [ ' .ErrorNo().': '.ErrorMsg().' ]'; return(0); }
+    $sql = "SELECT id FROM ".X_SURVEY." WHERE name = ".  _addslashes($_POST['name']);
+    $result = execute_sql($sql);
+    $survey_id = $result->fields[0];
+    $sqlaccess = "INSERT INTO ".X_ACCESS." (`survey_id`, `realm`, `maxlogin`, `resume`, `navigate`) VALUES (" . $survey_id . ", 'RD-Email', 10, 'Y', 'Y'), (" . $survey_id . ", 'RD-Facebook', 10, 'Y', 'Y'), (" . $survey_id . ", 'RD-Twitter', 10, 'Y', 'Y'), (" . $survey_id . ", 'RD-Google', 10, 'Y', 'Y')";
+    $resultaccess = execute_sql($sqlaccess);
+    return(1);
+  }
+
+  // survey already started
+  switch ($old_tab) {
+
+    case "general":
+      if (empty($_POST['name']) || empty($_POST['title']) || empty($_POST['realm'])) { $tab = "general"; $errstr = 'Sorry, please fill out the name, group, and title before proceeding.'; return(0); }
+      $fields = array('name', 'realm', 'public', 'open_date', 'close_date', 'title', 'email', 'subtitle', 'subtitle_th', 'info', 'info_th', 'theme', 'thanks_page', 'thank_head', 'thank_head_th', 'thank_body', 'thank_body_th', 'auto_num');
+      $sql = "SELECT name FROM ".X_SURVEY." WHERE id = ${survey_id}";
+      $name = get_one($sql);
+
+      if ($name != $_POST['name']) { // trying to change survey name
+        $sql = "SELECT COUNT(*) FROM ".X_SURVEY." WHERE name=" . _addslashes($_POST['name']);
+        $count = get_one($sql);
+        if ($count != 0) { $tab = "general"; $errstr = 'Sorry, that name is already in use.'; return(0); }
+      }
+
+      array_push($f_arr, 'changed = '.sys_time_stamp()); // UPDATE the row in the DB with current values
+      foreach ($fields as $f) { array_push($f_arr, $f ."=" . _addslashes($_POST[$f])); }
+      $sql = "UPDATE ".X_SURVEY." SET " . join(', ',$f_arr) . " WHERE id = ${survey_id}";
+      $result = execute_sql($sql);
+      if (!$result) {
+        $tab = "general";
+        $errstr = 'Warning, error encountered.' .' [ '.ErrorNo().': '.ErrorMsg().' ]';
+        return(0);
+      }
+      return(1);
+
+    case "questions":
+      if (empty($_POST['content']) && empty($_POST['name'])) { return(1); } // if the question box is empty ... ignore everything else
+      if (empty($_POST['content'])) { $tab = 'questions'; $dont_clear = 1; $errstr = 'Please enter text for this question.'; return(0); }
+      if (empty($_POST['name'])) {
+        $str1 = $_POST['content'];
+        do {
+          $str2 = $str1;
+          $str1 = eregi_replace("(^| )(what|which|why|how|who|where|how|is|are|were|the|a|it|of|do|you|your|please|enter)[ ?]", " ", $str2);
+        }
+        while ($str1 != $str2);
+        $_POST['name'] = $str1;
+      }
+      $_POST['name'] = strtoupper(preg_replace("/[^A-Z0-9]+/i","_", trim($_POST['name'])));
+      $_POST['name'] = preg_replace("/(^_|_$)/i","", $_POST['name']);
+      // constraint: question type required
+      if (empty($_POST['type_id'])) { $tab = 'questions'; $dont_clear = 1; $errstr= 'Sorry, you must select a type for this question.'; return(0); }
+      $_POST['type_id'] = intval($_POST['type_id']);
+      if ($_POST['id'] == 'New Field') { $qid = ''; }
+      $qid = intval($_POST['id']);  # curr_q_id
+      // constraint: can not change between question w/ answer choices and one w/o
+      $has_choices = esp_type_has_choices();
+      print_r($_SESSION['new_survey']);
+      if (!empty($qid)) {
+        $sql =  "SELECT Q.type_id FROM ".X_QUESTION." Q WHERE Q.survey_id = ${survey_id} AND Q.id = ${qid}";
+        $old_type_id = get_one($sql);
+        if ($has_choices[$_POST['type_id']] != $has_choices[$old_type_id]) { // trying to change between incompatible question types
+          $tab = "questions";
+          $_POST['type_id'] = $old_type_id;
+          $dont_clear = 1;
+          $errstr = 'Sorry, you cannot change between those types of question. Create a new question instead.';
+          return(0);
+        }
+      }
+      // constraint: length must be int
+      $_POST['length'] = intval($_POST['length']) or 0;
+      // constraint: precise must be int
+      $_POST['precise'] = intval($_POST['precise']) or 0;
+      // defaults for length field
+      if (empty($_POST['length']) && $_POST['type_id'] < 50) {
+        $arr = array(
+            0,    // 0: unused
+            0,    // 1: Single answer / radio
+            0,    // 2: Multiple answer / checkbox
+            20,    // 3: Single-line open-end       (width)
+            60,    // 4: Multi-line open-end        (width)
+            5,    // 5: Rating scale           (#cols)
+            5,    // 6: Attribute rating         (#cols)
+            0,    // 7: Drop down
+            0,    // 8: Date
+            10,    // 9: Numeric             (digit)
+            0    // 10: Others
+        );
+        $_POST['length'] = $arr[$_POST['type_id']];
+      }
+      // defaults for precision field
+      if (empty($_POST['precise']) && $_POST['type_id'] < 50) {
+        $arr = array(
+            0,    // 0: unused
+            10,    // 1: Single answer / radio
+            0,    // 2: Multiple answer / checkbox
+            0,    // 3: Single-line open-end
+            5,    // 4: Multi-line open-end        (height)
+            0,    // 5: Rating scale           (for N/A)
+            0,    // 6: Attribute rating         (for N/A)
+            0,    // 7: Drop down
+            0,    // 8: Date
+            0,    // 9: Numeric             (decimal)
+            0    // 10: Others
+        );
+        $_POST['precise'] = $arr[$_POST['type_id']];
+      }
+      // UPDATE row in the DB for the current question
+      if ($qid != '') {
+        // conditional questions can't be required
+        //$sql = "SELECT COUNT(*) FROM ".$GLOBALS['ESPCONFIG']['condition_table']." WHERE q1_id='$qid'";
+        //$count = get_one($sql);
+        //if ($count != 0) {
+        //   $_POST['required']='N';
+        //}
+        $fields = array('name', 'type_id', 'length', 'precise', 'required', 'content', 'content_th', 'ans_uniq', 'extra', 'extra_th');
+        foreach ($fields as $f) { if (isset($_POST[$f])) { array_push($f_arr, $f."="._addslashes($_POST[$f])); } }
+        $sql = "UPDATE ".X_QUESTION." SET " . join(', ',$f_arr) . " WHERE id = ${qid}";
+
+        // INSERT row in the DB for new question
+      } else {
+        // set the position to the end
+        $sql = "SELECT MAX(position)+1 FROM ".X_QUESTION." WHERE survey_id = ${survey_id}";
+        $_POST['position'] = get_one($sql);
+        $_POST['survey_id'] = $survey_id;
+        $fields = array('survey_id','name','type_id','length','precise','required','content','content_th','position');
+        foreach ($fields as $f) {
+          if (isset($_POST[$f])) {
+            array_push($f_arr, $f);
+            array_push($v_arr, _addslashes($_POST[$f]));
+          }
+        }
+        $sql = "INSERT INTO ".X_QUESTION." (" . join(', ',$f_arr) . ") VALUES (" . join(', ',$v_arr) .")";
+      }
+      $result = execute_sql($sql);
+      if ($qid == '') { $qid = insert_id('question_id_seq'); }
+      $_POST['id'] = $qid;
+      if (!$result) { $tab = 'questions'; $dont_clear = 1; $errstr = 'Warning, error encountered.' .' [ '.ErrorNo().': '.ErrorMsg().' ]'; return(0); }
+
+      // UPDATE or INSERT rows for each of the question choices for this question
+      if ($has_choices[$_POST['type_id']]) {
+        $cids = array();
+        $sql = "SELECT c.id FROM ".X_QUESTION." q, ".X_QUESTION_CHOICE." c WHERE q.id = c.question_id AND q.survey_id = ${survey_id}";
+        $result = execute_sql($sql);
+        for ($i = 0; $i < record_count($result); ++$i) { $result->Move($i); array_push($cids, $result->fields[0]); }
+        db_close($result);
+        $count = 0;
+        for ($i=1; $i<$_POST['num_choices']+1; $i++) {
+          $sql = '';
+          $choice_id = intval($_POST["choice_id_${i}"]);
+          $choice_content = $_POST["choice_content_${i}"];
+          $choice_content_th = $_POST["choice_content_th_${i}"];
+          $choice_feedback = $_POST["choice_feedback_${i}"];
+          $choice_credit = $_POST["choice_credit_${i}"];
+          //constraint: for rate questions (type_id=5), we don't allow "!others" as a choice
+          if ($_POST['type_id'] == 5 && $choice_content == '!others') { $errstr = 'For rate questions, "!others" is not a possible answer'; return(0); }
+          // autotext
+          $choice_content_th = autotext($choice_content, $choice_content_th);
+          // for safety, we add slashes
+          if ($choice_content != '') { $choice_content = _addslashes($choice_content); }
+          $choice_content_th = _addslashes($choice_content_th);
+          $choice_feedback = _addslashes($choice_feedback);
+          $choice_credit = _addslashes($choice_credit);
+
+          if ($choice_id == '' && $choice_content != '') { // new data injected to sql
+            $sql = "INSERT INTO ".X_QUESTION_CHOICE." (question_id, content, content_th, feedback, credit) VALUES (${qid}, ${choice_content}, ${choice_content_th}, ${choice_feedback}, ${choice_credit}) ";
+            ++$count;
+          } elseif ($choice_id != '' && $choice_content == '') { // remove data from sql
+            $sql = "DELETE FROM ".X_QUESTION_CHOICE." WHERE id = ${choice_id} ";
+          } elseif ($choice_id != '' && ($choice_content != '' || $choice_feedback != '' || $choice_credit != '') && in_array($choice_id, $cids)) {
+            $sql = "UPDATE ".X_QUESTION_CHOICE." SET content = ${choice_content}, content_th = ${choice_content_th} WHERE id = ${choice_id}";
+            ++$count; // update sql with new data
+          }
+          if ($sql != '') {
+            $result = execute_sql($sql);
+            if (!$result) { $tab = 'questions'; $dont_clear = 1; $errstr = 'Warning, error encountered.' .' [ '.ErrorNo().': '.ErrorMsg().' ]'; return(0); }
+          }
+        }
+        if (!$count && !isset($_POST['extra_choices'])) {
+          $tab = 'questions';
+          $dont_clear = 1;
+          $errstr = 'Sorry, you need at least one answer option for this question type.' . ' [ '. _('ID') .': '. $_POST['type_id'] .' ]';
+          return(0);
+        }
+      }
+      return(1);
+
+    case "preview":
+      return(1); // can not change anything here yet, so no need to update DB.
+
+    case "order":
+      if (isset($_POST['questions_order'])) { $questions_order = $_POST['questions_order']; }
+      $sid = $survey_id;
+      if (isset($_POST['questions_order'])) {
+        $sql = "SELECT id, position FROM ".X_QUESTION." WHERE survey_id = $sid AND deleted = 'N' ORDER BY position";
+        $result = execute_sql($sql);
+        $max = record_count($result);
+        $order = split('\|', $questions_order);
+        for ($i = 0; $i < count($order); $i++) {
+          $ord = _addslashes($order[$i]);
+          $sql = "UPDATE ".X_QUESTION." SET position = $i WHERE id = $ord AND survey_id = $sid";
+          execute_sql($sql);
+        }
+      }
+      if (isset($_POST['removeit'])) {
+        if ($_POST['removeit'] == 1) {
+          if (isset($_POST['questions'])) {
+            $qid = intval($_POST['questions']);
+            $sql = "UPDATE ".X_QUESTION." SET deleted = 'Y' WHERE id = $qid AND survey_id = $sid";
+            execute_sql($sql);
+          }
+        }
+      }
+      if (isset($_POST['addbreak'])) {
+        $sql = "SELECT MAX(position)+1 FROM ".X_QUESTION." WHERE survey_id = $sid";
+        $pos = get_one($sql);
+        $sql = "INSERT INTO ".X_QUESTION." (survey_id, name, type_id, position, content) VALUES ($sid, 'break', 99, $pos, 'break')";
+        execute_sql($sql);
+      }
+      db_close($result);
+      return(1);
+
+    case "conditions":
+      $sid = $survey_id;
+      if (isset($_POST['addcondition'])) {
+        $id1 = $_POST['q1_id'];
+        $id2 = $_POST['q2_id'];
+        if ($id1 == $id2) { $errstr = 'Please select two different questions.'; return(0); }
+        $cond = $_POST['cond'];
+        $cond_val = _addslashes($_POST['cond_value']);
+        $sql = "INSERT INTO ".X_CONDITION." (survey_id, q1_id, q2_id, cond, cond_value) VALUES ($sid, $id1, $id2, $cond, $cond_val)";
+        $result = execute_sql($sql);
+        if (!$result) { $errstr = 'Warning, error encountered.' .' [ '.ErrorNo().': '.ErrorMsg().' ]'; }
+      }
+      elseif (isset($_POST['deletecondition'])) {
+        $sql = "DELETE FROM ".X_CONDITION." WHERE id = ".key($_POST['deletecondition']);
+        $result = execute_sql($sql);
+        if (!$result) { $errstr = 'Warning, error encountered.' .' [ '.ErrorNo().': '.ErrorMsg().' ]'; }
+      }
+      return(1);
+  }
+  return(1);
+}
+
+function survey_results_navbar($sid, $curr_rid) {
+  $sql = "SELECT R.id FROM ".X_RESPONSE." R WHERE R.survey_id = '${sid}' AND R.complete = 'Y' ORDER BY R.id";
+  $result = execute_sql($sql);
+  $total = record_count($result);
+  if ($total < 1) { return; }
+  $rids = array();
+  $i = 0;
+  $curr_pos = -1;
+  while ($row = fetch_row($result)) {
+    $result->MoveNext();
+    array_push($rids, $row[0]);
+    if ($row[0] == $curr_rid) { $curr_pos = $i; }
+    $i++;
+  }
+  db_close($result);
+  $prev_rid = ($curr_pos > 0) ? $rids[$curr_pos - 1] : null;
+  $next_rid = ($curr_pos < $total - 1) ? $rids[$curr_pos + 1] : null;
+  $rows_per_page = 1;
+  $pages = ceil($total / $rows_per_page);
+
+  $url = htmlspecialchars(MYADMIN."?w=results&sid=".$sid);
+  $mlink = create_function('$i,$r', 'return "<a href=\"'.$url.'&rid=$r\">$i</a>";');
+  $linkarr = array();
+  $display_pos = 1;
+  if ($prev_rid != null) { array_push($linkarr, "<a href=\"$url&rid=$prev_rid\">".'Previous'.'</a>'); }
+  for ($i = 0; $i < $curr_pos; $i++) { array_push($linkarr, "<a href=\"$url&rid=".$rids[$i]."\">$display_pos</a>"); $display_pos++; }
+  array_push($linkarr, "<a href=\"$url&rid=$curr_rid\"><b>$display_pos</b></a>");
+  for (++$i; $i < $total; $i++) { $display_pos++; array_push($linkarr, "<a href=\"$url&rid=".$rids[$i]."\">$display_pos</a>"); }
+  if ($next_rid != null) { array_push($linkarr, "<a href=\"$url&rid=$next_rid\">".'Next'.'</a>'); }
+
+  echo "<h2>Detailed result by individual respondent</h2>\n";
+  echo "<div class=\"nav-rd\">\n";
+  echo "<p class=\"nav-rd-head\"><strong><i class=\"pe-medkit pe-fw\"></i> Health check by each respondent:</strong></p>\n";
+  echo "<p class=\"nav-rd-body\">";
+  echo implode(' | ', $linkarr);
+  echo "</p></div>\n";
+}
+
+function survey_results($sid, $precision = 1, $showTotals = 1, $qid = '', $cids = '', $rid = '', $guicross='') {
+  if (empty($precision))  $precision  = 1;
+  if ($showTotals === '')  $showTotals = 1;
+  if (is_int($cids)) { $cids = array($cids); }
+  if (is_string($cids)) { $cids = preg_split("/ /",$cids); } // turn space seperated list into array
+
+  $cross = !empty($qid);
+  if ($cross) { if (is_array($cids) && count($cids) > 0) { $cidstr = array_to_insql($cids); } else { $cidstr = ''; } }
+
+  $has_choices = array();
+  $response_table = array();
+  $sql = "SELECT id, has_choices, response_table FROM ".X_QUESTION_TYPE." ORDER BY id ";
+  if (!($result = execute_sql($sql))) { $errmsg = sprintf('%s [ %s: question_type ]', 'Error system table corrupt.', 'Table'); return($errmsg); }
+  while ($row = fetch_row($result)) {
+    $result->MoveNext();
+    $has_choices[$row[0]] = $row[1];
+    $response_table[$row[0]] = $row[2];
+  }
+  db_close($result);
+  // load survey title (and other globals)
+  $sql = "SELECT * FROM ".X_SURVEY." WHERE id = ${sid} ";
+  if (!($result = execute_sql($sql,"", ADODB_FETCH_ASSOC))) { $errmsg = 'Error opening survey.' ." [ ID:${sid} R:" . record_count($result) ."]"; return($errmsg); }
+  $survey = fetch_row($result);
+  db_close($result);
+  // load survey questions
+  $sql = "SELECT * FROM ".X_QUESTION." WHERE survey_id = ${sid} AND deleted = 'N' ORDER BY position, id ";
+  if (!($questions_result = execute_sql($sql,"", ADODB_FETCH_ASSOC))) { $errmsg = 'Error opening survey.' .' '. 'No questions found.' ." [ ID:${sid} ]"; return($errmsg); }
+
+  // find out more about the question we are cross analyzing on (if any)
+  if ($cross) {
+    $sql = "SELECT type_id FROM ".X_QUESTION." WHERE id = ${qid} ";
+    $result = execute_sql($sql, "", ADODB_FETCH_ASSOC);
+    while ($content = fetch_row($result)){
+      $result->MoveNext();
+      $crossTable = $response_table[$content['type_id']];
+      $q_content = $content['type_id'];
+    }
+    db_close($result);
+    if (!in_array($crossTable, array('response_single','response_bool','response_multiple'))) {
+      $errmsg = 'Error cross-analyzing due to an invalid type of question.' .' [ '. 'Table' .": ${crossTable} ]";
+      return($errmsg);
+    }
+  }
+
+  if (!empty($rid)) { $ridstr = "= ${rid} "; $total = 1; }
+  else {
+    $sql = "";
+    if ($cross) {
+      if (!empty($cidstr)) { $sql = "SELECT A.response_id FROM ".$GLOBALS['ESPCONFIG'][$crossTable.'_table']." A, ".X_RESPONSE." R WHERE A.response_id = R.id AND R.complete = 'Y' AND A.question_id = ${qid} AND A.choice_id ${cidstr} ORDER BY A.response_id"; }
+      else { $sql = "SELECT A.response_id FROM ".$GLOBALS['ESPCONFIG'][$crossTable.'_table']." A, ".X_RESPONSE." R WHERE A.response_id = R.id AND R.complete = 'Y' AND A.question_id = ${qid} AND A.choice_id = 0 ORDER BY A.response_id"; }
+    }
+    else {
+    $sql = "SELECT R.id FROM ".X_RESPONSE." R WHERE R.survey_id = '${sid}' AND R.complete = 'Y' ORDER BY R.id";
+  }
+  if (!($result = execute_sql($sql))) { $errmsg = "Error opening survey. [ ID:${sid} ] [ ".ErrorMsg()."]"; return($errmsg); }
+  $total = record_count($result);
+  if ($total < 1) {
+    $errmsg = "Error opening survey. No responses found. [ ID:${sid} ]";
+    return($errmsg);
+    echo("<!-- \$errmsg = '$errmsg' -->\n");
+  }
+  $rids = array();
+  while ($row = fetch_row($result)) { $result->MoveNext(); array_push($rids, $row[0]); }
+  db_close($result);
+  $ridstr = array_to_insql($rids);
+}
+
+if (!empty($rid)) { survey_results_navbar($sid, $rid); } // show response navigation bar
+
+?>
+<h2><?php echo($survey["title"]); ?></h2>
+<h4><?php echo($survey["subtitle"]); ?></h4>
+<p><?php echo($survey["info"]); ?></p>
+<?php if ($cross) { echo("<p>" .'Cross analysis on QN:' ." ${q_content}</p>\n"); } ?>
+
+<table class="table table-hover">
+
+<?php
+  $i=0; // question number counter
+  while ($question = fetch_row($questions_result)) {
+    $questions_result->MoveNext();
+    $qid = $question['id'];
+    $tid = $question['type_id'];
+    $table = $response_table[$tid];
+    $totals = $showTotals;
+    if ($tid == 99) { echo("<tr><td><hr></td></tr>\n"); continue; }
+    if ($tid == 100) { echo("<tr><td>". $question['content'] ."</td></tr>\n"); continue; }
+    echo "<tr><td>";
+
+    if ($tid < 50) {
+      if (!empty($guicross)) {
+        echo '<input type="hidden" name="w" value="results">';
+        echo '<input type="hidden" name="sid" value="'.$sid.'">';
+        echo "\n<table class=\"table table-hover\">\n";
+        echo ("<tbody>\n");
+        echo ("   <tr>\n");
+        echo ("      <td width=\"34\" height=\"31\" bgcolor=\"khaki\">\n");
+        if ($tid == 1 || $tid == 2 || $tid == 5 || $tid == 6) {
+          echo ("<div align=\"center\">\n");
+          echo ("   <input type=\"radio\" name=\"qid\" value=\"".$qid."\">\n");
+          echo ("</div>\n");
+        }
+        echo ("</td>\n");
+        echo ("<td width=\"429\" bgcolor=\"#CCCCCC\">\n");
+      } //end if empty($guicross)
+      echo ("<a name=\"Q".++$i."\"><strong>".$i.".</strong></a>\n");
+      echo ("<strong>".$question['content']."</strong>\n");
+      if (!empty($guicross)){
+        echo ("</td>\n");
+        echo ("<td width=\"33\" bgcolor=\"#CC0000\">\n");
+        if ($tid == 1 || $tid == 2 || $tid == 5 || $tid == 6) {
+          echo ("<div align=\"center\">\n");
+          echo ("<input type=\"radio\" name=\"qidr\" value=\"".$qid."\">\n");
+          echo ("</div>\n");
+        }
+        echo ("</td>\n");
+        echo ("<td width=\"32\" bgcolor=\"#0099FF\">\n");
+        if ($tid == 1 || $tid == 2 || $tid == 5 || $tid == 6) {
+          echo ("<div align=\"center\">\n");
+          echo ("<input type=\"radio\" name=\"qidc\" value=\"".$qid."\">\n");
+          echo ("</div>\n");
+        }
+        echo ("</td>\n");
+        echo ("</tr>\n");
+        echo ("</tbody>\n");
+        echo ("</table>\n");
+      } //end if empty($guicross)
+    } //end if ($tid < 50)
+  $counts = array();
+  switch ($table) {
+
+    case 'response_bool':
+      $counts = array('Yes' => 0, 'No' => 0);
+      $sql = "SELECT A.choice_id, COUNT(A.response_id) FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE A.question_id = '${qid}' AND A.response_id ${ridstr} AND A.choice_id != '' GROUP BY A.choice_id ";
+      echo("<!-- \$sql = '$sql' -->\n");
+      if ($result = execute_sql($sql)) {
+        while (list($ccontent,$count) = fetch_row($result)) {
+          $result->MoveNext();
+          $ccontent = htmlspecialchars($ccontent);
+          if ($ccontent == 'Y') { $ccontent = 'Yes'; } else { $ccontent = 'No'; }
+          $counts[$ccontent] = $count;
+        }
+        db_close($result);
+      }
+      if (empty($question["result_id"])) { $question["result_id"] = 1; } // default to percentages for yes/no
+      break;
+
+    case 'response_multiple':
+      $totals = 0;
+    case 'response_single':
+      $sql = "SELECT C.content FROM ".X_QUESTION_CHOICE." C WHERE C.question_id = '${qid}' AND C.content NOT LIKE '!others%' ORDER BY C.id ";
+      if ($result = execute_sql($sql)) {
+        for ($j = 0; $j < record_count($result); $j++) {
+          $result->Move($j);
+          $counts[htmlspecialchars($result->fields[0])] = 0;
+        }
+        db_close($result);
+      }
+
+      $sql = "SELECT C.content, COUNT(A.response_id) AS num FROM ".X_QUESTION_CHOICE." C, ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE C.question_id = '${qid}' AND C.content NOT LIKE '!others%' AND A.question_id = C.question_id AND A.choice_id = C.id AND A.response_id ${ridstr} GROUP BY C.id, C.content ";
+      echo("<!-- \$sql = '$sql' -->\n");
+      if ($result = execute_sql($sql)) {
+        while (list($ccontent,$count) = fetch_row($result)) {
+          $result->MoveNext();
+          $ccontent = htmlspecialchars($ccontent);
+          $counts[$ccontent] = $count;
+        }
+        db_close($result);
+      }
+      $sql = "SELECT A.response, C.content FROM ".X_RESPONSE_OTHER." A, ".X_QUESTION_CHOICE." C WHERE A.question_id = '${qid}' AND A.choice_id = C.id AND A.response_id ${ridstr} ORDER BY C.id, A.response ";
+      echo("<!-- \$sql = '$sql' -->\n");
+      if ($result = execute_sql($sql)) {
+        while (list($answer,$ccontent) = fetch_row($result)) {
+          $result->MoveNext();
+          $ccontent = htmlspecialchars($ccontent);
+          $content = preg_replace(array('/^!others=/', '/^!others/'), array('', 'Other:'), $ccontent);
+          $content .= ' ' . htmlspecialchars($answer);
+          $counts[$content] = (isset($counts[$content]) ? $counts[$content] : 0)+1;
+        }
+        db_close($result);
+      }
+      if (empty($question["result_id"])) { $question["result_id"] = 1; } // default to percentages
+      break;
+
+    case 'response_text':
+      $sql = "SELECT A.response, COUNT(A.response_id) AS num FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE A.question_id = '${qid}' AND A.response_id ${ridstr} GROUP BY A.response ";
+      echo("<!-- \$sql = '$sql' -->\n");
+      if ($result = execute_sql($sql)) {
+        while (list($text, $num) = fetch_row($result)) {
+          $result->MoveNext();
+          if (!empty($text)) { $counts[htmlspecialchars($text)] = $num; }
+        }
+        db_close($result);
+      }
+      $question["result_id"] = 4;  // force "list" type response for text fields
+      break;
+
+    case 'response_date':
+      $sql = "SELECT DATE_FORMAT(A.response, '".FORMAT_DATE."'), COUNT(A.response_id) AS num FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE A.question_id = '${qid}' AND A.response_id ${ridstr} GROUP BY A.response ";
+      echo("<!-- \$sql = '$sql' -->\n");
+      if ($result = execute_sql($sql)) {
+        while (list($text, $num) = fetch_row($result)) {
+          $result->MoveNext();
+          if (!empty($text)) { $counts[htmlspecialchars($text)] = $num; }
+        }
+        db_close($result);
+      }
+      $question["result_id"] = 4;  // force "list" type response for date fields
+      break;
+
+    case 'response_rank':
+      if ($tid == 6) { //Rank
+        $sql = "SELECT C.content FROM ".X_QUESTION_CHOICE." C WHERE C.question_id = '${qid}' AND C.content NOT LIKE '!others%' ORDER BY C.id ";
+          if ($result = execute_sql($sql)) {
+            for ($j = 0; $j < record_count($result); $j++) {
+              $result->Move($j);
+              $counts[htmlspecialchars($result->fields[0])] = null;
+            }
+            db_close($result);
+          }
+        $sql = "SELECT C.content, AVG(A.rank+1) AS average FROM ".X_QUESTION_CHOICE." C, ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE C.question_id = '${qid}' AND A.question_id = '${qid}' AND A.choice_id = C.id AND A.rank>=0 AND A.response_id ${ridstr} GROUP BY C.id, C.content ";
+        echo("<!-- \$sql = '$sql' -->\n");
+        if ($result = execute_sql($sql)) {
+          while (list($ccontent,$avg) = fetch_row($result)) {
+            $result->MoveNext();
+            $ccontent = htmlspecialchars($ccontent);
+            $counts[$ccontent] = $avg;
+          }
+          db_close($result);
+        }
+        $question["result_id"] = 99;  // force to rank
+      } else {
+        $sql = "SELECT A.rank, COUNT(A.response_id) AS num FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE A.question_id = '${qid}' AND A.response_id ${ridstr} GROUP BY A.rank ";
+        if ($result = execute_sql($sql)) {
+          while (list($rank, $num) = fetch_row($result)) {
+            $result->MoveNext();
+            if ($rank == -1) { $rank = "N/A"; }
+            $counts[_($rank)] += $num;
+          }
+          db_close($result);
+        }
+        if (empty($question["result_id"])) { $question["result_id"] = 2; } // default to rank
+      }
+      break;
+    }
+
+  if (!empty($guicross) && $question["result_id"] == 1) {
+    mkcrossformat($counts, $qid, $tid);
+  } else {
+    switch ($question["result_id"]) {
+      case "1": // Percentages
+        mkrespercent($counts, $total, $precision, $totals); break;
+      case "2": // Rank
+        mkresrank($counts, $total, $precision, $totals); break;
+      case "3": // Count
+        mkrescount($counts, $total, $precision, $totals); break;
+      case "4": // List
+        mkreslist($counts, $total, $precision, $totals); break;
+      case "99": // Average
+        mkresavg($counts, $total, $precision, $totals, $question['length']); break;
+    } // end switch
+  } //end if
+?>
+    </td>
+  </tr>
+<?php } // end while ?>
+</table>
+
+<?php
+  db_close($questions_result);
+  return;
+}
+
+function survey_report($sid, $details = 0, $format = '') {
+  if (empty($sid)) return;
+  $has_choices = array();
+  $response_table = array();
+  $sql = "SELECT id, has_choices, response_table FROM ".X_QUESTION_TYPE." ORDER BY id ";
+  if (!($result = execute_sql($sql))) {
+    $errmsg = "Error system table corrupt. [ ". 'Table' .": question_type ]";
+    return($errmsg);
+  }
+  while ($row = fetch_row($result)) {
+    $result->MoveNext();
+    $has_choices[$row[0]] = $row[1];
+    $response_table[$row[0]] = $row[2];
+  }
+  db_close($result);
+  // load survey title (and other globals)
+  $sql = "SELECT * FROM ".X_SURVEY." WHERE id = $sid ";
+  if (!($result = execute_sql($sql,"", ADODB_FETCH_ASSOC))) {
+    $errmsg = "Error opening survey. [ ID:${sid} R:" . record_count($result) ."]";
+    return($errmsg);
+  }
+  $survey = fetch_row($result);
+  db_close($result);
+  // load survey questions
+  $sql = "SELECT * FROM ".X_QUESTION." WHERE survey_id = $sid AND deleted = 'N' ORDER BY position ";
+  if (!($questions_result = execute_sql($sql,"", ADODB_FETCH_ASSOC))) {
+    $errmsg = "Error opening survey. No questions found. [ ID:${sid} ]";
+    return($errmsg);
+  }
+?>
+<h2>DP specification for project: <?php echo($survey["title"]); ?></h2>
+<h4><?php echo($survey["subtitle"]); ?></h4>
+<p><?php echo($survey["info"]); ?></p>
+
+<table class="table table-hover">
+<tr class="bg-primary">
+  <th width="10%">No.</th>
+  <th width="10%">ID</th>
+  <th width="10%">Public?</th>
+  <th colspan="2">Question</th>
+</tr>
+<?php
+  $i = 0;
+  while ($question = fetch_row($questions_result)) {
+    $questions_result->MoveNext();
+    $qid = &$question['id'];
+    $tid  = &$question['type_id'];
+    $publ = ($question['public'] == 'Y') ? 'Yes' : 'No';
+    $table = &$response_table[$tid];
+    // if ($tid == 99) { echo "<tr><td colspan=\"6\" class=\"text-center active\"><small>SECTION BREAK</small></td></tr>\n"; continue; }
+    if ($tid == 99) {
+      echo "</table><p class=\"text-center\">SECTION BREAK</p><table class=\"table table-hover\">";
+      echo "<tr class=\"bg-primary\"><th width=\"10%\">No.</th><th width=\"10%\">ID</th><th width=\"10%\">Public?</th><th colspan=\"2\">Question</th></tr>";
+      continue;
+    }
+?>
+<tr>
+  <td class="bg-info"><strong><?php if ($tid < 50) echo(++$i); ?></strong></td>
+  <td class="bg-info"><small>(<?php echo($qid); ?>)</small></td>
+  <td class="bg-info"><?php echo($publ); ?></td>
+  <td class="bg-info" colspan="2"><strong><?php echo($question["content"]); ?></strong></td>
+</tr>
+<?php
+    if ($has_choices[$tid]) {
+      $sql = "SELECT * FROM ".X_QUESTION_CHOICE." WHERE question_id = $qid ORDER BY id";
+      $choices_result = execute_sql($sql,"", ADODB_FETCH_ASSOC);
+      while ($choice = fetch_row($choices_result)) {
+        $choices_result->MoveNext();
+?>
+<tr>
+  <td width="10%">&nbsp;</td>
+  <td width="10%">&nbsp;</td>
+  <td width="10%">&nbsp;</td>
+  <td width="10%"><small>(<?php echo($choice['id']); ?>)</small></td>
+  <td><?php echo($choice['content']); ?></td>
+</tr>
+  <?php
+      }
+      db_close($choices_result);
+    } // end if has_choices
+  } // end while
+  db_close($questions_result);
+?>
+</table>
+<?php
+  return;
+}
+
+function survey_generate_results($format, $sid) {
+  $output = array();
+  $id_to_csv_map = array(
+    '0',  // 0: unused
+    '1',  // 1: bool -> boolean
+    '1',  // 2: text -> string
+    '1',  // 3: essay -> string
+    '1',  // 4: radio -> string
+    '1',  // 5: check -> string
+    '1',  // 6: dropdn -> string
+    '0',  // 7: rating -> number
+    '0',  // 8: rate -> number
+    '1',  // 9: date -> string
+    '0'   // 10: numeric -> number
+  );
+  $types = array(
+    0,
+    0,
+    1,
+  );
+  $columns = array('RESPONSE', 'SUBMITTED', 'USERNAME');
+  switch ($format) {
+    case 'spss_csv': // SPSS Output
+      $numcols = 3;
+      $columns2 = $columns;
+      $sql = "SELECT q.id, q.type_id FROM ".X_QUESTION." q WHERE q.survey_ID = $sid AND q.deleted = 'N' and q.type_id < 50 ORDER BY position";
+      $result = execute_sql($sql);
+      $qcount = 0; // rating and multiple select (checkbox) count as one
+      while ( list ($qid, $type) = fetch_row($result)) {
+        $result->MoveNext();
+        if ($type == '8' || $type == '5') { //rating question or multiple select (checkbox)
+        $sql = "SELECT c.id FROM ".X_QUESTION." q, ".X_QUESTION_CHOICE." c WHERE q.id = $qid AND q.id = c.question_id ORDER BY c.id ASC";
+        $result2 = execute_sql($sql);
+        $ratecols=0;
+        $qcount++;
+        while ( list($cid) = fetch_row($result2) ) {
+          $result2->MoveNext();
+          $ratecols++;
+          array_push($columns, array("Q".$qcount."_".$ratecols));
+          array_push($columns2, $qid."_".$cid);
+          array_push($types, $id_to_csv_map[$type]);
+        }
+        $numcols = $numcols + $ratecols;
+        db_close($result2);
+      } else {
+        $numcols++;
+        $qcount++;
+        array_push($columns, array("Q".$qcount));
+        array_push($columns2, $qid);
+        array_push($types, $id_to_csv_map[$type]);
+      }
+    }
+    db_close($result);
+
+    // Generate Data (This could get tricky)
+    $sql = "SELECT r.id, r.submitted, r.username FROM ".X_RESPONSE." r WHERE r.survey_id=$sid AND r.complete='Y' ORDER BY r.submitted";
+    $result = execute_sql($sql);
+    $columns[0] = array('RESPONSE');
+    $columns[1] = array('SUBMITTED');
+    $columns[2] = array('USERNAME');
+    while ($row = fetch_row($result)) {
+      $result->MoveNext();
+      //Get the Response
+      $response = response_select($sid, $row[0], 'type_id,name');
+      array_push($columns[0], $row[0]);
+      array_push($columns[1], $row[1]);
+      array_push($columns[2], $row[2]);
+      // Merge Repsonse into output array
+      for ($i = 3; $i < $numcols; $i++) {
+        $key = preg_split("/_/",$columns2[$i]);
+        if (isset($response[$columns2[$i]]) || isset($response[$key[0]])) { // This is a hack for multiple select, it seems easier than modifying response_select
+          if (isset($response[$key[0]][0]) && is_array($response[$key[0]][0])) { // check box (only question type that returns an array)
+            $match = 0;
+            for ($j = 0; $j < sizeof ($response[$key[0]]); $j++) {
+              if ($response[$key[0]][$j][3] == 'other'.'_'.$key[1]) { array_push($columns[$i],"Other: ".$response[$key[0].'_'.$key[1]][2]); $match = 1; }
+              elseif ($response[$key[0]][$j][3] == $key[1]) { array_push($columns[$i],$response[$key[0]][$j][2]); $match = 1; }
+            }
+            if ($match == 0) { array_push($columns[$i], " "); }
+          }
+          elseif (isset($response[$columns2[$i]][0]) && $response[$columns2[$i]][0] == 8) { array_push($columns[$i], $response[$columns2[$i]][3]); } // rating
+          elseif (isset($response[$columns2[$i]][0]) && ($response[$columns2[$i]][0] == 4 || $response[$columns2[$i]][0] == 6)) { /* radio or dropdown*/
+            if ($response[$columns2[$i]][2] == "!others") { list(,$c)=preg_split("/_/", $response[$columns2[$i]][3]); array_push($columns[$i], "Other: ".$response[$columns2[$i].'_'.$c][2]); }
+            else { array_push($columns[$i], $response[$columns2[$i]][2]); }
+          }
+          else { array_push($columns[$i], $response[$columns2[$i]][2]); }
+        }
+        else { array_push($columns[$i], " "); }
+      }
+    }
+    db_close($result);
+
+    $output = array();
+    for ($i = 0; $i < $numcols; $i++) {
+      $x = 0;
+      $temp_val = "";
+      foreach ($columns[$i] as $key => $value) {
+        if (!isset($output[$x])) { $output[$x] = array(); }
+        if (is_array($value)) { $temp_val = join(',', $value); }
+        else { $temp_val = $value; }
+        switch ($types[$i]) {
+          case 1: /* string */
+            $temp_val = preg_replace("/[\r\t]/", ' ', $temp_val);
+            $temp_val = preg_replace('/"/', '""', $temp_val);
+            $temp_val = '"'. $temp_val .'"';
+            break;
+        }
+        $output[$x][$i] = $temp_val;
+        $x++;
+      }
+    }
+    return $output;
+    break;
+
+    case 'csv_short_header':
+      //NOT IMPLEMENTED YET
+      break;
+
+    case 'xml':
+      //NOT IMPLEMENTED YET
+      break;
+
+    case 'tab':
+      $columns2 = $columns; //columns2 is used to relate columns to data returned from response_select()
+      $numcols = 3; //total columns
+      $qcount = 0; //total questions (rating questions count as 1)
+      $sql = "SELECT q.id, q.type_id FROM ".X_QUESTION." q WHERE q.survey_id = $sid AND q.deleted = 'N' AND q.type_id < 50 ORDER BY position";
+      $result = execute_sql($sql);
+      while (list($qid, $type ) = fetch_row($result)) {
+        $result->MoveNext();
+        if ($type == '8') { //rating question
+        $sql = "SELECT c.id FROM ".X_QUESTION." q, ".X_QUESTION_CHOICE." c WHERE q.id = $qid AND q.id = c.question_id ORDER BY position";
+        $result2 = execute_sql($sql);
+        $ratecols = 0;
+        $qcount++;
+        while (list($cid) = fetch_row($result2)) {
+          $result2->MoveNext();
+          $ratecols++;
+          array_push($columns, $qcount."_".$ratecols);
+          array_push($columns2, $qid."_".$cid);
+          array_push($types, $id_to_csv_map[$type]);
+        }
+        $numcols = $numcols + $ratecols;
+        db_close($result2);
+        } else {
+          $numcols++;
+          $qcount++;
+          array_push($columns, $qcount);
+          array_push($columns2, $qid);
+          array_push($types, $id_to_csv_map[$type]);
+        }
+      }
+      array_push($output, $columns);
+      db_close($result);
+      //Generate data:
+      $sql = "SELECT r.id,r.submitted,r.username FROM ".X_RESPONSE." r WHERE r.survey_id = $sid AND r.complete = 'Y' ORDER BY r.submitted";
+      $result = execute_sql($sql);
+      while ($row = fetch_row($result)) {
+        $result->MoveNext();
+        // get the response
+        $response = response_select($sid, $row[0], 'type_id,name');
+        $arr = array();
+        array_push($arr, $row[0]);
+        array_push($arr, $row[1]);
+        array_push($arr, $row[2]);
+        // merge it
+        for ($i = 3; $i < $numcols; $i++) {
+          if (isset($response[$columns2[$i]])) {
+            if (isset($response[$columns2[$i]][0]) && is_array($response[$columns2[$i]][0])) {
+              $tempresult = array(); /* check box */
+              foreach ($response[$columns2[$i]] as $checkboxdata) {
+                if ($checkboxdata[2] == "!others") { list(,$c)=preg_split("/_/", $checkboxdata[3]); array_push($tempresult,"Other: ".$response[$columns2[$i].'_'.$c][2]); }
+                else { array_push($tempresult, $checkboxdata[2]); }
+              }
+              $thisresult = implode(",", $tempresult);
+            }
+            elseif (isset($response[$columns2[$i]][0]) && $response[$columns2[$i]][0] == 8 ) { $thisresult = $response[$columns2[$i]][3]; } //db has these as 0 to N-1, lets add 1
+            elseif (isset($response[$columns2[$i]][0]) && ($response[$columns2[$i]][0] == 4 || $response[$columns2[$i]][0] == 6)) {
+              if ($response[$columns2[$i]][2] == "!others") { list(,$c)=preg_split("/_/", $response[$columns2[$i]][3]); $thisresult = "Other: ".$response[$columns2[$i].'_'.$c][2]; }
+              else { $thisresult=$response[$columns2[$i]][2]; } /* radio or dropdown*/
+            }
+            else { $thisresult=$response[$columns2[$i]][3]; }
+          }
+          else { $thisresult = ""; }
+          switch ($types[$i]) {
+            case 2: /* special */
+              break;
+            case 1: /* string */
+              if (isset($response[$columns2[$i]])) {
+                $thisresult = preg_replace("/[\r\t]/", ' ', $thisresult);
+                $thisresult = preg_replace('/"/', '""', $thisresult);
+                $thisresult = '"'. $thisresult .'"';
+              }
+            case 0: /* number */
+              if (isset($response[$columns2[$i]])) { array_push($arr, $thisresult); }
+              else { array_push($arr, ''); }
+              break;
+          }
+        }
+        array_push($output, $arr);
+      }
+      db_close($result);
+      break;
+
+      default:
+        //csv_full_header
+        $numcols = 3;
+        $sql = "SELECT q.id, q.name, q.type_id FROM ".X_QUESTION." q WHERE q.survey_id = $sid AND q.deleted = 'N' AND q.type_id < 50 ORDER BY position";
+        $result = execute_sql($sql);
+        $numcols += record_count($result);
+        while (list( $qid, $col, $type ) = fetch_row($result)) {
+          $result->MoveNext();
+          if ($type == 8) { /* rate */
+            $sql = "SELECT ".$GLOBALS['ESPCONFIG']['adodb_conn']->Concat("q.name", "' '", "c.content").", c.id FROM ".X_QUESTION." q, ".X_QUESTION_CHOICE." c WHERE q.id = $qid AND q.id = c.question_id";
+            $result2 = execute_sql($sql);
+            $numcols += record_count($result2) - 1;
+            while (list($col, $rid) = fetch_row($result2)) {
+              $result2->MoveNext();
+              $str1 = $col;
+              do {
+                  $str2 = $str1;
+                  $str1 = preg_replace( "/(^| )(what|which|why|how|who|where|how|is|are|were|the|a|it|of|do|you|your|please|enter)[ ?]/i", " ", $str2);
+              } while ($str1 != $str2);
+                $col = $str1;
+                $col = trim(strtoupper(preg_replace("/[^A-Z0-9]+/", " ", $col)));
+                $col = preg_replace('/ +/','_',$col);
+                array_push($columns, array($qid."_".$rid=>$col));
+                array_push($types, $id_to_csv_map[$type]);
+              }
+              db_close($result2);
+            } else {
+              array_push($columns, array($qid=>$col));
+              array_push($types, $id_to_csv_map[$type]);
+            }
+        }
+        db_close($result);
+        $num = 0;
+        $sql = "SELECT r.id,r.submitted,r.username FROM ".X_RESPONSE." r WHERE r.survey_id = $sid AND r.complete = 'Y' ORDER BY r.submitted";
+        $result = execute_sql($sql);
+        $y = 0;
+        if (record_count($result) == 0) {
+          $columns[0] = array('RESPONSE');
+          $columns[1] = array('SUBMITTED');
+          $columns[2] = array('USERNAME');
+        }
+        while ($row = fetch_row($result)) {
+          $result->MoveNext();
+          if ($y == 0) {
+            $columns[0] = array($row[0]=>'RESPONSE');
+            $columns[1] = array($row[0]=>'SUBMITTED');
+            $columns[2] = array($row[0]=>'USERNAME');
+            $y = 1;
+          }
+          // get the response
+          $response = response_select_name($sid, $row[0]);
+          // merge it
+          for ($i = 0; $i < $numcols; $i++) {
+            $match = 0;
+            foreach ($response as $key => $value) {
+              if ($key === key($columns[$i])) { $match = 1; array_push($columns[$i], $value[key($value)]); }
+            }
+            if (($match == 0) and ($i > 2)) { array_push($columns[$i], ""); }
+            if ($i <= 2) { array_push($columns[$i], $row[$i]); }
+          }
+        }
+        db_close($result);
+        $output = array();
+        for ($i = 0; $i < $numcols; $i++) {
+          $x = 0;
+          $temp_val = "";
+          foreach ($columns[$i] as $key => $value) {
+            if (!isset($output[$x])) { $output[$x] = array(); }
+            if (is_array($value)) { $temp_val = join(',', $value); }
+            else { $temp_val = $value; }
+
+            switch ($types[$i]) {
+              case 1: /* string */
+                $temp_val = preg_replace("/[\r\t]/", ' ', $temp_val);
+                $temp_val = preg_replace('/"/', '""', $temp_val);
+                $temp_val = '"'. $temp_val .'"';
+                break;
+            }
+            $output[$x][$i] = $temp_val;
+            $x++;
+          }
+      }
+    }
+    return $output;
+}
+
+function survey_export_results($type, $sid, $filename) {
+  $umask = umask(0077);
+  $fh = fopen($filename, 'w');
+  umask($umask);
+  if (!$fh) { return 0; }
+  switch ($type) {
+    case 'spss_csv':
+      $data = survey_generate_results($type, $sid);
+      foreach ($data as $row) { fputs($fh, implode(',', $row) . "\r\n"); }
+      break;
+    case 'xml':
+      $data = survey_generate_results($type, $sid);
+      break;
+    case 'tab':
+      $data = survey_generate_results($type, $sid);
+      foreach ($data as $row) { fputs($fh, implode("\t", $row) . "\r\n"); }
+      break;
+    default: //csv_full_header, csv_short_header
+      $data = survey_generate_results($type, $sid);
+      foreach ($data as $row) { fputs($fh, implode(',', $row) . "\r\n"); }
+  }
+  fflush($fh);
+  fclose($fh);
+  return 1;
+}
+
+function parse_file_tab($group, $file) {
+  $tab_array = array();
+  foreach ($file as $row) {
+    array_push($tab_array, explode("\t", rtrim($row)));
+  }
+  return $tab_array;
+}
+
+function parse_file_csv(){}
+function parse_file_xml(){}
+
+function account_upload(&$exceptions, $upload_type, $account_type, $group_acl, $upload_file) {
+  $error = 0;
+  $bool_validate = array('Y', 'N');
+  switch ($upload_type) {
+    case 'tab':
+      $arr = parse_file_tab($group_acl, $upload_file); break;
+    case 'csv':
+      $arr = parse_file_csv(); break;
+    case 'xml':
+      $arr = parse_file_xml(); break;
+    default:
+      $error=1; break;
+  }
+
+  switch ($account_type) {
+    case 'respondents':
+      array_push($exceptions, array("Username", "Password", "Group", "First Name", "Last Name", "Email", "Expiration", "Disabled", "Error"));
+      foreach ($arr as $row) {
+        /* check for data in required fields */
+        if ($row[0]) { $username = $row[0]; } else { $error=1; break; }
+        if ($row[1]) { $password = $row[1]; } else { $error=1; break; }
+        if ($row[2]) {
+          $realm = $row[2];
+          if (isset($row[3])) { $fname = $row[3]; } else { $fname = ''; }
+          if (isset($row[4])) { $lname = $row[4]; } else { $lname = ''; }
+          if (isset($row[5])) { $email = $row[5]; } else { $email = ''; }
+          if (isset($row[6])) { $expir = $row[6]; } else { $expir = ''; }
+          if (isset($row[7])) { $disabled = $row[7]; } else { $disabled = ''; }
+          /* validate email address.  */
+          if ($email != '') {
+            if (!preg_match( "/^[a-z0-9]+([_\\.-][a-z0-9]+)*@/i" . "([a-z0-9]+([\.-][a-z0-9]+)*)+\\.[a-z]{2,}$", $email)) {
+              array_push($exceptions, array($username, $password, $realm, $fname, $lname, $email, $expir, $disabled, "Invalid Email Address"));
+              continue;
+            }
+          }
+          if ($expir) {
+            $year = substr($expir, 0, 4);
+            $month = substr($expir, 4, 2);
+            $day = substr($expir, 6, 2);
+            if (!checkdate($month, $day, $year)) {
+              array_push($exceptions, array($username, $password, $realm, $fname, $lname, $email, $expir, $disabled, "Invalid Expiration. Date"));
+              continue;
+            }
+          }
+          else { $expir = "0"; }
+          if (!in_array($disabled, $bool_validate)) { $disabled = 'N'; }
+          /* Make sure user is authorized to upload this realm */
+          if (!in_array($realm, $group_acl)) {
+            array_push($exceptions, array($username, $password, $realm, $fname, $lname, $email, $expir, $disabled, "Invalid Group"));
+            continue;
+          }
+        }
+        else { $error = 1; break; }
+        $username = _addslashes($username);
+        $password = _addslashes($password);
+        $realm = _addslashes($realm);
+        $fname = _addslashes($fname);
+        $lname = _addslashes($lname);
+        $email = _addslashes($email);
+        $expir = _addslashes($expir);
+        $disabled = _addslashes($disabled);
+        $added = sys_time_stamp();
+        $changed = sys_time_stamp();
+        $sql = "INSERT INTO ".X_RESPONDENT." (username, password, realm, fname, lname, email, expiration, disabled, added, changed) VALUES ($username, ".db_crypt($password).", $realm, $fname, $lname, $email, $expir, $disabled, $added, $changed)";
+        if (!execute_sql($sql)) { array_push($exceptions, array($username, $password, $realm, $fname, $lname, $email, $expir, $disabled, ErrorMsg())); } /* insert failed -- stuff record into failed array */
+      }
+      break;
+
+    case 'designers':
+      array_push($exceptions, array("Username", "Password", "Group", "First Name", "Last Name", "Email", "PDesign", "PStatus", "PData", "PAll", "PGroup", "PUser", "Expiration", "Disabled", "Error"));
+      foreach ($arr as $row) {
+        /* check for data in required fields */
+        if ($row[0]) { $username = $row[0]; } else { $error = 1; break; }
+        if ($row[1]) { $password = $row[1]; } else { $error = 1; break; }
+        if ($row[2]) {
+          $realm = $row[2];
+          if (isset($row[3])) { $fname = $row[3]; } else { $fname = ''; }
+          if (isset($row[4])) { $lname = $row[4]; } else { $lname = ''; }
+          if (isset($row[5])) { $email = $row[5]; } else { $email = ''; }
+          if (isset($row[6])) { $pdesign = $row[6]; } else { $pdesign = ''; }
+          if (isset($row[7])) { $pstatus = $row[7]; } else { $pstatus = ''; }
+          if (isset($row[8])) { $pdata = $row[8]; } else { $pdata = ''; }
+          if (isset($row[9])) { $pall = $row[9]; } else { $pall = ''; }
+          if (isset($row[10])) { $pgroup = $row[10]; } else { $pgroup = ''; }
+          if (isset($row[11])) { $puser = $row[11]; } else { $puser = ''; }
+          if (isset($row[12])) { $expir = $row[12]; } else { $expir = ''; }
+          if (isset($row[13])) { $disabled = $row[13]; } else { $disabled = ''; }
+          if ($email != '') { if (!preg_match( "/^[a-z0-9]+([_\\.-][a-z0-9]+)*@/i" . "([a-z0-9]+([\.-][a-z0-9]+)*)+\\.[a-z]{2,}$", $email)) { array_push($exceptions, array($username, $password, $realm, $fname, $lname, $email, $pdesign, $pstatus, $pdata, $pall, $pgroup, $puser, $expir, $disabled, "Invalid Email Address")); continue; } }
+          if (!in_array($pdesign, $bool_validate)) { $pdesign = 'Y'; }
+          if (!in_array($pstatus, $bool_validate)) { $pstatus = 'N'; }
+          if (!in_array($pdata, $bool_validate)) { $pdata = 'N'; }
+          if (!in_array($pall, $bool_validate)) { $pall = 'N'; }
+          if (!in_array($pgroup, $bool_validate)) { $pgroup = 'N'; }
+          if (!in_array($puser, $bool_validate)) { $puser = 'N'; }
+          if ($expir) {
+            $year = substr($expir, 0, 4); $month = substr($expir, 4, 2); $day = substr($expir, 6, 2);
+            if (!checkdate($month, $day, $year)) { array_push($exceptions, array($username, $password, $realm, $fname, $lname, $email, $pdesign, $pstatus, $pdata, $pall, $pgroup, $puser, $expir, $disabled, "Invalid Expiration Date")); continue; }
+          }
+          else { $expir = "0"; }
+          if (!in_array($disabled, $bool_validate)) { $disabled = 'N'; }
+          if (!in_array($realm, $group_acl)) { array_push($exceptions, array($username, $password, $realm, $fname, $lname, $email, $pdesign, $pstatus, $pdata, $pall, $pgroup, $puser, $expir, $disabled, "Invalid Group")); continue; } /* Make sure user is authorized to upload this realm */
+        }
+        $username = _addslashes($username);
+        $password = _addslashes($password);
+        $realm = _addslashes($realm);
+        $fname = _addslashes($fname);
+        $lname = _addslashes($lname);
+        $email = _addslashes($email);
+        $pdesign = _addslashes($pdesign);
+        $pstatus = _addslashes($pstatus);
+        $pdata = _addslashes($pdata);
+        $pall = _addslashes($pall);
+        $pgroup = _addslashes($pgroup);
+        $puser = _addslashes($puser);
+        $expir = _addslashes($expir);
+        $disabled = _addslashes($disabled);
+        $added = sys_time_stamp();
+        $changed = sys_time_stamp();
+        $sql = "INSERT INTO ".X_DESIGNER." (username, password, realm, fname, lname, email, pdesign, pstatus, pdata, pall, pgroup, puser, expiration, disabled, added, changed) VALUES ($username, ".db_crypt($password).", $realm, $fname, $lname, $email, $pdesign, $pstatus, $pdata, $pall, $pgroup, $puser, $expir, $disabled, $added, $changed) ";
+        if (!execute_sql($sql)) { array_push($exceptions, array($username, $password, $realm, $fname, $lname, $email, $pdesign, $pstatus, $pdata, $pall, $pgroup, $puser, $expir, $disabled, ErrorMsg())); } /* insert failed -- stuff record into failed array */
+      }
+      break;
+  }
+  if (count($exceptions) > 1 or $error) { return 0; }
+  else { return 1; }
+}
+
+function survey_aggregate($sids) {
+  if (is_scalar($sids) && is_numeric($sids)) { $sids = array ($sids); }
+  elseif (! is_array($sids)) { return false; }
+  if (0 == count($sids)) { return true; }
+  reset($sids);
+  $first_sid = current($sids);
+  $sql = sprintf('SELECT * FROM %s WHERE id = %d', X_SURVEY, $first_sid);
+  $res = execute_sql($sql, '', ADODB_FETCH_ASSOC);
+  if (1 == record_count($res)) { $survey = fetch_row($res); }
+  db_close($res);
+  if (!isset($survey)) { return false; }
+  // update its data so that it's a new survey - clear the sid, change the owner, change the name, reset the status
+  $survey['id'] = null;
+  $survey['owner'] = (isset($_SESSION['acl']['username']) ? $_SESSION['acl']['username'] : $survey['owner']);
+  $survey['status'] = 0;
+  $survey['changed'] = sys_time_stamp();
+  $sql = sql_for_insert_into_table(X_SURVEY, $survey);
+  $res = execute_sql($sql);
+  if (! $res) { return false; }
+  $new_sid = insert_id('survey_id_seq');
+  $pos = 0;
+  foreach ($sids as $sid) { $pos = survey_copy_questions_and_conditions($sid, $new_sid, $pos); if (false === $pos) { return false; } }
+  return $new_sid;
+}
+
+function survey_copy_questions_and_conditions($sid, $new_sid, $pos = 0) {
+  $has_choices = esp_type_has_choices();
+  $question_fields = array('id', 'survey_id', 'name', 'type_id', 'result_id', 'length', 'precise', 'position', 'content', 'content_th', 'required', 'deleted', 'public');
+  $sql = "SELECT ". join(', ',$question_fields)." FROM ".X_QUESTION." WHERE survey_id = ${sid} AND deleted = 'N' ORDER by position, id";
+  $result = execute_sql($sql,"", ADODB_FETCH_ASSOC);
+  array_shift($question_fields);
+  while ($question = fetch_row($result)) {
+    $result->MoveNext();
+    $tid = $question['type_id'];
+    $qid = $question['id'];
+    $question['survey_id'] = $new_sid;
+    $question['position'] = $pos++;
+    array_shift($question);
+    if (!isset($question['result_id'])) { $question['result_id'] = 'NULL'; }
+    $question['name'] = _addslashes($question['name']);
+    $question['content'] = _addslashes($question['content']);
+    $question['content_th'] = _addslashes($question['content_th']);
+    $question['required'] = _addslashes($question['required']);
+    $question['deleted'] = _addslashes($question['deleted']);
+    $question['public'] = _addslashes($question['public']);
+    $sql = "INSERT INTO ".X_QUESTION." ";
+    $sql .= '('. join(',', $question_fields) .') ';
+    $sql .= 'VALUES ( '. join(',',array_values($question)) .' )';
+    if (!execute_sql($sql)) { return(false); }
+    $new_qid = insert_id('question_id_seq');
+
+    if ($has_choices[$tid]) {
+      $question_choice_fields = array('question_id', 'content', 'content_th', 'value', 'feedback', 'credit');
+      $sql = "SELECT ". join(', ',$question_choice_fields)." FROM ".X_QUESTION_CHOICE." WHERE question_id = ${qid} ORDER BY id";
+      $result2 = execute_sql($sql,"", ADODB_FETCH_ASSOC);
+      while ($choice = fetch_row($result2)) {
+        $result2->MoveNext();
+        $choice['question_id'] = $new_qid;
+        $choice['content'] = _addslashes($choice['content']);
+        $choice['content_th'] = _addslashes($choice['content_th']);
+        $choice['value'] = _addslashes($choice['value']);
+        $choice['feedback'] = _addslashes($choice['feedback']);
+        $choice['credit'] = _addslashes($choice['credit']);
+        $sql = "INSERT INTO ".X_QUESTION_CHOICE." ";
+        $sql .= '('. join(',',$question_choice_fields) .') ';
+        $sql .= 'VALUES ( '. join(',',array_values($choice)) .' )';
+        if (!execute_sql($sql)) { return(false); }
+      }
+      db_close($result2);
+    }
+  }
+  db_close($result);
+  // copy conditions
+  $sql = "INSERT INTO ".X_CONDITION." (id, survey_id, q1_id, q2_id, cond, cond_value) SELECT NULL, $new_sid, qnew1.id, qnew2.id, cond, cond_value FROM ".X_QUESTION." qold1, ".X_QUESTION." qold2, ".X_QUESTION." qnew1, ".X_QUESTION." qnew2, ".X_CONDITION." c WHERE qold1.id=c.q1_id AND qold2.id=c.q2_id AND qold1.survey_id=$sid AND qold2.survey_id=$sid AND qnew1.survey_id=$new_sid AND qnew1.position=qold1.position AND qnew1.deleted=qold1.deleted AND qnew2.survey_id=$new_sid AND qnew2.position=qold2.position AND qnew2.deleted=qold2.deleted ";
+  $result = execute_sql($sql);
+  if (false === $result) { return false; }
+  return $pos;
+}
+
+function sql_for_insert_into_table($table, $values) {
+  foreach ($values as $field => $value) {
+    if (is_null($value)) { $values[$field] = 'null'; }
+    elseif (is_scalar($value)) {
+      if (!is_numeric($value)) {
+        if ($value == sys_time_stamp()) { }
+        else { $values[$field] = _addslashes($value); }
+      }
+    } else {
+      trigger_error("Unknown value=[$value] at key=[$field]", E_USER_WARNING);
+      $values[$field] = 'null';
+    }
+  }
+  return sprintf('INSERT INTO %s (%s) VALUES (%s)', $table, implode(',', array_keys($values)), implode(',', $values) );
+}
+
+function survey_copy($sid) {
+  return (survey_aggregate($sid) === false ? false : true);
+}
+
+function survey_merge($sids, $precision = 1, $showTotals = 1) {
+  if (!is_array($sids)) { $errmsg = 'Invalid argument.' ." [ ${sids} ]"; return($errmsg); }
+  $num = count($sids);
+  if ($num < 1) { $errmsg = 'Invalid argument.' .' [ '. join(',',$sids) .' ]'; return($errmsg); }
+  if (empty($precision)) { $precision  = 1; }
+  if (empty($showTotals)) { $showTotals = 1; }
+  $sidstr = array_to_insql($sids);
+  $response_table = esp_type_response_table();
+  $sid = $sids[0];
+  $sql = "SELECT * FROM ".X_SURVEY." WHERE id = ${sid}";
+  echo("<!-- \$sql = ${sql} -->\n");
+  if (!($result = execute_sql($sql,"", ADODB_FETCH_ASSOC))) {
+    $errmsg = "Error opening survey. [ ID:${sid} R:" . record_count($result) ."] [ ".ErrorMsg()."]";
+    return($errmsg);
+  }
+  $survey = fetch_row($result);
+  db_close($result);
+  $sql = "SELECT R.id FROM ".X_RESPONSE." R WHERE R.survey_id ${sidstr} AND R.complete='Y'";
+  echo("<!-- \$sql = ${sql} -->\n");
+  if (!($result = execute_sql($sql))) {
+    $errmsg = 'Error opening surveys.' ." [ ID: ${sidstr} ] [ ".ErrorMsg()."]";
+    return($errmsg);
+  }
+  $total = record_count($result);
+  if ($total < 1) {
+    $errmsg = "Error opening survey. No responses found. [ ID: ${sidstr} ] [ ". 'TOTAL' .": ${total} ]";
+    db_close($result);
+    return($errmsg);
+  }
+  $rids = array();
+  while ($row = fetch_row($result)) {
+    $result->MoveNext();
+    array_push($rids, $row[0]);
+  }
+  db_close($result);
+  $ridstr = array_to_insql($rids);
+  for ($i=0; $i<$num; $i++) {
+    $sid = $sids[$i];
+    $sql = "SELECT * FROM ".X_QUESTION." WHERE survey_id = ${sid} AND deleted = 'N' ORDER BY position,id";
+    echo("<!-- \$sql = ${sql} -->\n");
+    $questions[$i] = execute_sql($sql, "", ADODB_FETCH_ASSOC);
+    if (!$questions[$i]) {
+      $errmsg = "Error opening survey. No responses found. [ ID:${sid} ] [ ".ErrorMsg()."]";
+      return($errmsg);
+    }
+  }
+
+?>
+<h2><?php echo($survey["title"]); ?></h2>
+<h3><?php echo($survey["subtitle"]); ?></h3>
+<blockquote><?php echo($survey["info"]); ?></blockquote>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<?php
+  $q=0; // question number counter
+  while (1) { // get next question from each of SIDs (lock-step)
+    $qids = array();
+    for ($i=0; $i<$num; $i++) {
+      if (!($question[$i] = fetch_row($questions[$i]))) {
+        for ($j=0; $j<$num; $j++) { db_close($questions[$j]); }
+        echo("</table>\n");
+        return;
+      }
+      $questions[$i]->MoveNext();
+      echo("<!-- \$i = $i; \$question[\$i]['id'] = ".$question[$i]['id']." -->\n");
+      array_push($qids, $question[$i]['id']);
+    }
+    $qidstr = array_to_insql($qids);
+    echo("<!-- \$qidstr = $qidstr -->\n");
+    $tid = $question[0]['type_id'];
+    $table = $response_table[$tid];
+    echo("<!-- \$table = $table -->\n");
+    if ($tid == 99) { echo("<tr><td><hr></td></tr>\n"); continue; }
+    if ($tid == 100) { echo("<tr><td>". $question[0]['content'] ."</td></tr>\n"); continue; }
+
+    ++$q;
+    $bg = "";
+    if ($bg != '#eeeeee') { $bg = '#eeeeee'; } else { $bg = '#ffffff'; }
+?>
+  <tr bgcolor="<?php echo($bg); ?>">
+     <td>
+      <a name="Q<?php echo($q); ?>"><?php echo($q); ?>.</a>
+      <?php echo($question[0]['content']); ?>
+      <blockquote>
+<?php
+    $counts = array();
+    switch ($table) {
+// -------------------------------- response_bool --------------------------------
+    case 'response_bool':
+      $sql = "SELECT A.choice_id, COUNT(A.response_id) FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE A.question_id ${qidstr} AND A.response_id ${ridstr} GROUP BY A.choice_id";
+      echo("<!-- \$sql = ${sql} -->\n");
+      $result = execute_sql($sql);
+      while (list($text,$count) = fetch_row($result)) {
+        $result->MoveNext();
+        $counts[$text] = $count;
+      }
+      db_close($result);
+
+      if (empty($question[0]['result_id']))
+        $question[0]['result_id'] = 1;  // default to percentages for yes/no
+      break;
+
+// -------------------------------- response_single ----------------------------------
+// -------------------------------- response_multiple --------------------------------
+    case 'response_multiple':
+      $showTotals = 0;
+
+    case 'response_single':
+      for ($i=0; $i<$num; $i++) {
+        $sid = $sids[$i];
+        $qid = $question[$i]['id'];
+        $sql = "SELECT id FROM ".X_QUESTION_CHOICE." WHERE question_id = ${qid} AND content NOT LIKE '!others%' ORDER BY id";
+        echo("<!-- \$sql = ${sql} -->\n");
+        $result = execute_sql($sql);
+        $cids[$i] = array();
+        while (list($cid) = fetch_row($result)) {
+          $result->MoveNext();
+          array_push($cids[$i],$cid);
+        }
+        db_close($result);
+      }
+      $content = array();
+      foreach ($cids[0] as $cid) {
+        $sql = "SELECT content FROM ".X_QUESTION_CHOICE." WHERE id = ${cid}";
+        echo("<!-- \$sql = ${sql} -->\n");
+        $result = get_one($sql);
+        array_push($content, $result);
+      }
+      $cnum = count($content);
+      for ($j=0; $j<$cnum; $j++) {
+        $mycids = array();
+        for ($i=0; $i<$num; $i++) { array_push($mycids, $cids[$i][$j]); }
+        $mycidstr = array_to_insql($mycids);
+        $sql = "SELECT COUNT(*) FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE A.choice_id ${mycidstr} AND A.response_id ${ridstr}";
+        echo("<!-- \$sql = ${sql} -->\n");
+        $result=get_one($sql);
+        $counts[$content[$j]] = $result;
+      }
+      // handle 'other...'
+      for ($i=0; $i<$num; $i++) {
+        $sid = $sids[$i];
+        $qid = $question[$i]['id'];
+        $sql = "SELECT id FROM ".X_QUESTION_CHOICE." WHERE question_id ${qidstr} AND content LIKE '!others%' ORDER BY id ";
+        echo("<!-- \$sql = ${sql} -->\n");
+        $result = execute_sql($sql);
+        $cids[$i] = array();
+        while (list($cid) = fetch_row($result)) {
+          $result->MoveNext();
+          array_push($cids[$i],$cid);
+        }
+        db_close($result);
+      }
+      $content = array();
+      foreach ($cids[0] as $cid) {
+        $sql = "SELECT content FROM ".X_QUESTION_CHOICE." WHERE id = ${cid} ";
+        echo("<!-- \$sql = ${sql} -->\n");
+        $result=get_one($sql);
+        $text = preg_replace("/!others=?/", "", $result);
+        if (!empty($text)) { $text .= ': '; }
+        array_push($content, $text);
+      }
+      $cnum = count($content);
+      for ($j=0; $j<$cnum; $j++) {
+        $mycids = array();
+        for ($i=0; $i<$num; $i++) { array_push($mycids, $cids[$i][$j]); }
+        $mycidstr = array_to_insql($mycids);
+        $sql = "SELECT A.response, COUNT(A.response_id) FROM ".X_RESPONSE_OTHER." A WHERE A.choice_id ${mycidstr} AND A.response_id ${ridstr} GROUP BY A.response ";
+        echo("<!-- \$sql = ${sql} -->\n");
+        $result=execute_sql($sql);
+        while (list($response,$count) = fetch_row($result)) {
+          $result->MoveNext();
+          if (!empty($response)) {
+            $text = $content[$j] . htmlspecialchars($response);
+            $counts[$text] = $count;
+          }
+        }
+        db_close($result);
+      }
+      if (empty($question[0]['result_id']))
+        $question[0]['result_id'] = 1;  // default to percentages
+      break;
+// -------------------------------- response_text --------------------------------
+    case 'response_text':
+      $sql = "SELECT A.response, COUNT(A.response_id) FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE A.question_id ${qidstr} AND A.response_id ${ridstr} GROUP BY A.response ";
+      echo("<!-- \$sql = ${sql} -->\n");
+      $result = execute_sql($sql);
+      while (list($response, $count) = fetch_row($result)) {
+        $result->MoveNext();
+        if (!empty($response)) { $counts[htmlspecialchars($response)] = $count; }
+      }
+      db_close($result);
+      $question[0]['result_id'] = 4;  // force "list" type response for text fields
+      break;
+// -------------------------------- response_rank --------------------------------
+    case 'response_rank':
+      if ($tid == 8) { //Rank
+        for ($i=0; $i<$num; $i++) {
+          $sid = $sids[$i];
+          $qid = $question[$i]['id'];
+          $sql = "SELECT id FROM ".X_QUESTION_CHOICE." WHERE question_id ${qidstr} ORDER BY id ";
+          echo("<!-- \$sql = ${sql} -->\n");
+          $result = execute_sql($sql);
+          $cids[$i] = array();
+          while (list($cid) = fetch_row($result)) {
+            $result->MoveNext();
+            array_push($cids[$i],$cid);
+          }
+          db_close($result);
+        }
+        $content = array();
+        foreach ($cids[0] as $cid) {
+          $sql = "SELECT content FROM ".X_QUESTION_CHOICE." WHERE id = ${cid} ";
+          echo("<!-- \$sql = ${sql} -->\n");
+          $result=get_one($sql);
+          array_push($content, $result);
+        }
+        $cnum = count($content);
+        for ($j=0; $j<$cnum; $j++) {
+          $mycids = array();
+          for ($i=0; $i<$num; $i++) { array_push($mycids, $cids[$i][$j]); }
+          $mycidstr = array_to_insql($mycids);
+          $sql = "SELECT AVG(A.rank) FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE A.choice_id ${mycidstr} AND A.response_id ${ridstr} AND A.rank>0 ";
+          echo("<!-- \$sql = ${sql} -->\n");
+          $result=get_one($sql);
+          $counts[$content[$j]] = $result;
+        }
+        $question[0]['result_id'] = 99;  // force to rank
+      } else {
+        // deprecated ...
+      }
+      break;
+    }
+// ---------------------------------------------------------------------------
+    switch ($question[0]['result_id']) {
+      case '1':  // Percentages
+        mkrespercent($counts, $total, $precision, $showTotals); break;
+      case '2':  // Rank
+        mkresrank($counts, $total, $precision, $showTotals); break;
+      case '3':  // Count
+        mkrescount($counts, $total, $precision, $showTotals); break;
+      case '4':  // List
+        mkreslist($counts, $total, $precision, $showTotals); break;
+      case '99':  // Average
+        mkresavg($counts, $total, $precision, $showTotals, 0); break;
+    } // end switch
+?>
+      </blockquote>
+    </td>
+  </tr>
+<?php  } // end while -- execution should never pass this point ?>
+</table>
+<?php
+  return;
+}
+
+function survey_purge($sids) {
+  if (is_int($sids)) { $sidstr = '='.$sids; }
+  elseif (is_string($sids)) { $sids = preg_split("/ /", $sids); }
+  if (is_array($sids)) { $sidstr = array_to_insql($sids); }
+  $sql = "SELECT id FROM ".X_QUESTION." WHERE survey_id ${sidstr} ";
+  $result = execute_sql($sql);
+  $qids = array();
+  while (list($qid) = fetch_row($result)) {
+    $result->MoveNext();
+    array_push($qids, $qid);
+  }
+  db_close($result);
+  $qidstr = array_to_insql($qids); // work from the bottom up... start with the survey results
+  $tables = array('response_bool', 'response_date', 'response_multiple', 'response_other', 'response_rank', 'response_rating', 'response_single', 'response_text');
+  foreach ($tables as $table) {
+    $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." WHERE question_id ${qidstr} ";
+    $result = execute_sql($sql);
+  }
+  // then responses
+  $sql = "DELETE FROM ".X_RESPONSE." WHERE survey_id ${sidstr}"; execute_sql($sql);
+  // then question choices
+  $sql = "DELETE FROM ".X_QUESTION_CHOICE." WHERE question_id ${qidstr}"; execute_sql($sql);
+  // then questions
+  $sql = "DELETE FROM ".X_QUESTION." WHERE survey_id ${sidstr}"; execute_sql($sql);
+  // then conditions
+  $sql = "DELETE FROM ".X_CONDITION." WHERE survey_id ${sidstr}"; execute_sql($sql);
+  // and finally the survey(s)
+  $sql = "DELETE FROM ".X_SURVEY." WHERE id ${sidstr}"; execute_sql($sql);
+  // erase the access credentials
+  $sql = "DELETE FROM ".X_ACCESS." WHERE survey_id ${sidstr}"; execute_sql($sql);
+  // now, erase the accumulated statistics, we are purging *all* traces of the survey
+  if (is_int($sids)) { $sids = array ($sids); }
+  elseif (is_string($sids)) { $sids = explode(' ', $sids); }
+  if (is_array($sids)) { foreach ($sids as $sid) { survey_stat_purge($sid); } }
+  return;
+}
+
+function response_purge($qids) {
+  if (is_int($qids)) { $qidstr = '='.$qids; }
+  elseif (is_string($qids)) { $qids = preg_split("/ /", $qids); }
+  if (is_array($qids)) { $qidstr = array_to_insql($qids); }
+  $sql = sprintf('SELECT survey_id FROM %s WHERE id %s', X_RESPONSE, $qidstr);
+  $res = execute_sql($sql);
+  while ($row = fetch_row($res)) { $res->MoveNext(); $sid = $row[0]; survey_stat_decrement(SURVEY_STAT_COMPLETED, $sid); }
+  $tables = array('response_bool', 'response_date', 'response_multiple', 'response_other', 'response_rank', 'response_rating', 'response_single', 'response_text');
+  foreach ($tables as $table) {
+    $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." WHERE response_id ${qidstr} ";
+    $result = execute_sql($sql);
+  }
+  $sql = "DELETE FROM ".X_RESPONSE." WHERE id ${qidstr} ";
+  $result = execute_sql($sql);
+  return;
+}
+
+function generateRandom($length = 6, $vals = 'abchefghjkmnpqrstuvwxyz0123456789') {
+  $s = "";
+
+  while(strlen($s) < $length) {
+    mt_getrandmax();
+    $num = rand() % strlen($vals);
+    $s .= substr($vals, $num+4, 1);
+  }
+  return $s;
+}
+
+function randomColor() {
+  $red = rand(0, 255);
+  $green = rand(0, 255);
+  $blue = rand(0, 255);
+  return sprintf("#%x%x%x", $red, $green, $blue);
+}
+
+function stringToSVG($str) {
+  $result = '';
+  $glyphs = array();
+  $x = 5;
+  $y = 30;
+
+  //generates glyphs
+  for ($i=0; $i<strlen($str); $i++) {
+    $rotation = rand(-20, 20); //rotation degree
+    $size = rand (20, 25); //size in pixels
+    $jump = rand(-5, 5); //shift up or down by a number of pixels
+    $color = randomColor();
+    $glyph = sprintf('<text style="fill: %s;" x="%d" y="%d" font-size="%d" transform="translate(%d, %d) rotate(%d) translate(-%d, -%d)">%s</text>%s', $color, $x, $y + $jump, $size, $x, $y + $jump, $rotation, $x, $y + $jump, $str[$i], "\n");
+    $glyphs[] = $glyph;
+    $x += 20; //move carret
+  }
+
+  $indexes = range(0, count($glyphs) - 1);
+  shuffle($indexes); //now shuffle them
+  foreach($indexes as $index) { $result .= $glyphs[$index]; }
+  return $result;
+}
+
+function captchaimage($text) {
+  $captcha_width = 200;
+  $captcha_height = 40;
+  header("Expires: Wed, 1 Jan 1997 00:00:00 GMT");
+  header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+  header("Cache-Control: no-store, no-cache, must-revalidate");
+  header("Cache-Control: post-check=0, pre-check=0", false);
+  header("Pragma: no-cache");
+  header ("Content-type: image/svg+xml");
+  printf('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" width="200" height="40">', CAPTCHA_WIDTH, CAPTCHA_HEIGHT);
+  printf(' <rect x="0" y="0" width="%d" height="%d" style="stroke: none; fill: none;" ></rect> ', $captcha_width, $captcha_height);
+  print stringToSVG($text);
+  print '</svg>';
+}
+
+function handleLogin() {
+  $handleLogin = (!is_session_authenticated() && isset($_REQUEST['doLogin']) && ! empty($_REQUEST['username']) && ! empty($_REQUEST['password']) ? true : false);
+  if ($handleLogin) {
+    $isAuthenticated = authenticate($_REQUEST['username'], $_REQUEST['password'], $realms);
+    $realmsCnt = count($realms);
+    if ($isAuthenticated && 1 === $realmsCnt) {
+      $ok = set_current_respondent($_REQUEST['username'], current($realms), $_REQUEST['password']);
+      if ($ok) {
+        set_session_authentication($isAuthenticated);
+        blur('/public/');
+        assert('false; // NOTREACHED');
+      }
+    }
+    elseif ($isAuthenticated && 2 <= $realmsCnt) { $GLOBALS['errmsg'] = mkerror('Please contact an administrator: multi-realm'); }
+    else { $GLOBALS['errmsg'] = mkerror('Incorrect User ID or Password, or your account has been disabled/expired.'); }
+  }
+}
+
+function handleLogout() {
+  $r = MYPUBLIC;
+  $handleLogout = (isset($_REQUEST['doLogout']) && is_session_authenticated() ? true : false);
+  if ($handleLogout) {
+    set_session_authentication(false);
+    echo "<h2>You have been logged out</h2>";
+    echo mksuccess("You have been successfully logged out. We will redirect you to the front page in a moment.");
+    echo "<p><a href=".MYPUBLIC.">You can click here if you choose not to wait in order to log back in to our system.</a></p>";
+    echo "<br><br>";
+    $notes = array(array("title" => "Logged out", "text" => "You have been successfully logged out from our system.", "image" => "assets/img/notification.svg"));
+    notify($notes);
+    header("Refresh: 10; URL=$r");
+  }
+}
+
+// function handleChangeProfile($note = null) {
+//   $showChangeProfile = (is_session_authenticated() && isset($_REQUEST['doChangeProfile']) ? true : false);
+//   $handleChangeProfile = ($showChangeProfile && get_current_respondent($respondent) && isset($_REQUEST['firstName']) && isset($_REQUEST['lastName']) && isset($_REQUEST['emailAddress']) ? true : false);
+//   if ($handleChangeProfile) {
+//     if ($_REQUEST['captcha'] == $_SESSION["captcha"]) {
+//       $ok = change_profile($respondent['username'], $respondent['realm'], $_REQUEST['firstName'], $_REQUEST['lastName'], $_REQUEST['emailAddress']);
+//       if ($ok) { $showChangeProfile = false; $GLOBALS['errmsg'] = mkerror('Your profile has been updated successfully'); }
+//       else { $GLOBALS['errmsg'] = mkerror('Unable to change your password; contact an administrator'); }
+//     } else { $GLOBALS['errmsg'] = mkerror('Wrong captcha'); }
+//   }
+//
+//   if ($showChangeProfile) {
+//     if (empty($_REQUEST['firstName'])) { $_REQUEST['firstName'] = $respondent['fname']; }
+//     if (empty($_REQUEST['lastName'])) { $_REQUEST['lastName'] = $respondent['lname']; }
+//     if (empty($_REQUEST['emailAddress'])) { $_REQUEST['emailAddress'] = $respondent['email']; }
+//     render_profile_change_form();
+//     if ($notes) { pageFooter($notes); } else { pageFooter(); }
+//     exit;
+//   }
+// }
+
+// function change_profile($username, $realm, $firstName, $lastName, $emailAddress) {
+//   $_username = _addslashes($username); $_realm = _addslashes($realm);
+//   $_firstName = _addslashes($firstName); $_lastName = _addslashes($lastName);
+//   $_emailAddress = _addslashes($emailAddress); $changed  = sys_time_stamp();
+//   $sql = "UPDATE ".X_RESPONDENT." SET fname = $_firstName, lname = $_lastName, email = $_emailAddress, changed = $changed WHERE username = $_username AND realm = $_realm";
+//   $res = execute_sql($sql);
+//   $notes = array (array("title" => "Profile updated", "text" => "You have successfully updated your detailed profile.", "image" => "assets/img/notification.svg"));
+//   if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); notify($notes); return true; }
+//   else { return false; }
+// }
+
+function handleChangePassword($notes = null) {
+  $showChangePassword = (isset($_REQUEST['doChangePassword']) && is_session_authenticated() ? true : false);
+  $handleChangePassword = ($showChangePassword && get_current_respondent($respondent) ? true : false);
+  if ($handleChangePassword) {
+    $isAuthenticated = authenticate($respondent['username'], $_REQUEST['oldPassword'], $realms);
+    $isAuthenticated = (1 === count($realms) ? $isAuthenticated : false);
+    $isMatch = (0 === strcmp($_REQUEST['newPassword'], $_REQUEST['newPasswordConfirm']) ? true : false);
+    if ($isAuthenticated && $isMatch) {
+      $ok = change_password($respondent['username'], $respondent['realm'], $_REQUEST['newPassword']);
+      if ($ok) { $showChangePassword = false; $GLOBALS['errmsg'] = mkerror('Your password has been changed successfully'); }
+      else { $GLOBALS['errmsg'] = mkerror('Unable to change your password; contact an administrator'); }
+    }
+    elseif ($isAuthenticated && ! $isMatch) { $GLOBALS['errmsg'] = mkerror('Passwords do not match; check your typing'); }
+    else { $GLOBALS['errmsg'] = mkerror('Old password incorrect; check your typing'); }
+  }
+  if ($showChangePassword) { render_passwd_change_form(); if ($notes) { pageFooter($notes); } else { pageFooter(); } exit; }
+}
+
+function change_password($username, $realm, $password) {
+  $_username = _addslashes($username); $_realm = _addslashes($realm);
+  $_password = db_crypt(_addslashes($password)); $changed  = sys_time_stamp();
+  $sql = "UPDATE ".X_RESPONDENT." SET password = $_password, changed = $changed WHERE username = $_username AND realm = $_realm";
+  $res = execute_sql($sql);
+  $notes = array (array("title" => "Password changed", "text" => "You have successfully changed your password. Please keep it safe and secure.", "image" => "assets/img/notification.svg"));
+  if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); notify($notes); return true; }
+  else { return false; }
+}
+
+function paint_non_authenticated() {
+  //render_login_form();
+  $username = (isset($_REQUEST['username']) ? $_REQUEST['username'] : '');
+  if ($_message) { echo mkerror($_message); }
+  require_once WPUBLIC.'/login.inc';
+}
+
+function paint_authenticated() {
+  echo "<h2>ข้อมูลโดยสรุป</h2>\n";
+  respondentprofile();
+  get_survey_info($surveys, $responses, $accessibility);
+  partition_surveys($surveys, $responses, $accessibility, $current, $historical);
+  echo "<h2>งานวิจัยทั้งหมด</h2>\n";
+  publicsurvey();
+  currentsurvey($current);
+  historysurvey($historical);
+}
+
+function respondentprofile() {
+  global $respondent;
+  if ($respondent['expiration'] == "0000-00-00 00:00:00") { $expired = "ไม่มีหมดอายุ"; } else { $expired = strftime(FORMAT_DATE, strtotime($respondent['expiration'])); }
+  if ($respondent['added'] == "0000-00-00 00:00:00") { $added = "ไม่มีข้อมูล"; } else { $added = strftime(FORMAT_DATE, strtotime($respondent['added'])); }
+  if ($respondent['gender'] == "M") { $gender = "ผู้ชาย"; } elseif ($respondent['gender'] == "F") { $gender = "ผู้หญิง"; } else { $gender = ""; }
+  $mobile1 = substr($respondent['mobile'], 0, 3);
+  $mobile2 = substr($respondent['mobile'], 3, 3);
+  $mobile3 = substr($respondent['mobile'], 6, 4);
+  echo "<section>\n";
+  echo "<h4><i class=\"pe-user pe-fw\"></i> ข้อมูลส่วนตัว</h4>\n";
+  echo "<div class=\"row\">\n";
+  echo "  <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n";
+  echo "    <h5>ข้อมูลบัญชีของคุณ</h5>\n";
+  echo "    <table class=\"table table-hover\">\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">ชื่อนามสกุล</td>\n";
+  echo "        <td>".$respondent['fname']." ".$respondent['lname']."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">เป็นสมาชิกตั้งแต่</td>\n";
+  echo "        <td>".$added."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">วันหมดอายุ (หากมี)</td>\n";
+  echo "        <td>".$expired."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">คะแนนสะสม</td>\n";
+  echo "        <td>".$respondent['point']."</td>\n";
+  echo "      </tr>\n";
+  echo "    </table>\n";
+  echo "  </div>\n";
+  echo "  <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n";
+  echo "    <h5>ข้อมูลประชากรศาสตร์</h5>\n";
+  echo "    <table class=\"table table-hover\">\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">เพศ</td>\n";
+  echo "        <td>".$gender."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">วันเกิด</td>\n";
+  echo "        <td>".$respondent['birthday_date']."/".$respondent['birthday_month']."/".$respondent['birthday_year']."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">ปัจจุบันอาศัยอยู่</td>\n";
+  echo "        <td>".$respondent['province']."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">หมายเลขโทรศัพท์มือถือ</td>\n";
+  echo "        <td>(".$mobile1.") ".$mobile2."-".$mobile3."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">รายได้ส่วนบุคคล</td>\n";
+  echo "        <td>".$respondent['personal_income']."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">รายได้ครัวเรือน</td>\n";
+  echo "        <td>".$respondent['HH_income']."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">สถานะภาพสมรส</td>\n";
+  echo "        <td>".$respondent['marital']."</td>\n";
+  echo "      </tr>\n";
+  echo "      <tr>\n";
+  echo "        <td width=\"40%\">ระดับการศึกษา</td>\n";
+  echo "        <td>".$respondent['education']."</td>\n";
+  echo "      </tr>\n";
+  echo "    </table>\n";
+  echo "  </div>\n";
+  echo "</div>\n";
+  echo "</section>\n";
+}
+
+function publicsurvey() {
+  get_survey_info($surveys, $_, $accessibility);
+  foreach ($surveys as $sid => $survey) {
+    if (isset($accessibility[$sid]['available']) && true === (bool)$accessibility[$sid]['available']) { continue; }
+    unset($surveys[$sid]);
+  }
+  if (0 < count($surveys)) {
+    echo "<section>\n";
+    echo "<h4><i class=\"pe-book pe-fw\"></i> งานวิจัยที่เปิดรับความคิดเห็นในช่วงนี้</h4>\n";
+    echo "<p>ต่อไปนี้คืองานวิจัยโครงการต่างๆที่กำลังเปิดรับความคิดเห็นอยู่ในขณะนี้ โดยที่ทางระบบได้ทำแสดงผลเฉพาะงานวิจัยที่มีกลุ่มเป้าหมายตรงกับข้อมูลประชากรศาสตร์ของคุณ ตัวอย่างเช่น งานวิจัยในเรื่องเครื่องสำอางค์ จะถูกแสดงผลอยู่บนหน้าจอของสมาชิกที่เป็นผู้หญิงเท่านั้น</p>\n";
+    echo "<p>คุณสามารถกดเพื่อเข้าร่วมงานวิจัยเหล่านี้ได้ทันที</p>\n";
+    foreach ($surveys as $survey) {
+      printf('<a href="%s" class="btn btn-info btn-lg survey-name" role="button"><i class="pe-book pe-fw"></i> %s</a> &nbsp;', survey_fetch_url_by_survey_name($survey['name']), $survey['title']);
+      print "\n";
+    }
+    echo "</section>\n";
+  }
+}
+
+function currentsurvey($current) {
+  echo "<section>\n";
+  echo "<h4><i class=\"pe-wpforms pe-fw\"></i> งานวิจัยในปัจจุบัน</h4>\n";
+  if (0 < count($current)) {
+    echo "<table class=\"table table-hover\">\n";
+    echo "  <tr class=\"active\">\n";
+    echo "    <th width=\"20%\">งานวิจัย</th>\n";
+    echo "    <th width=\"20%\">การเข้าร่วมของคุณ</th>\n";
+    echo "    <th width=\"20%\">คุณเข้าร่วมครั้งล่าสุด</th>\n";
+    echo "    <th width=\"40%\">สถานะปัจจุบัน</th>\n";
+    echo "  </tr>\n";
+    foreach ($current as $sid => $info) {
+      list ($name, $status, $date, $avail) = $info;
+      printf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>', $name, $status, $date, $avail);
+    }
+    echo "</table>\n";
+  }
+  else { echo "ไม่มีงานวิจัยในปัจจุบัน"; }
+  echo "</section>\n";
+}
+
+function historysurvey($historical) {
+  echo "<section>\n";
+  echo "<h4><i class=\"pe-history pe-fw\"></i> งานวิจัยในอดีต</h4>\n";
+  if (0 < count($historical)) {
+    echo "<table class=\"table table-hover\">\n";
+    echo "  <tr class=\"active\">\n";
+    echo "    <th width=\"20%\">งานวิจัย</th>\n";
+    echo "    <th width=\"20%\">การเข้าร่วมของคุณ</th>\n";
+    echo "    <th width=\"20%\">คุณเข้าร่วมครั้งล่าสุด</th>\n";
+    echo "    <th width=\"40%\">สถานะปัจจุบัน</th>\n";
+    echo "  </tr>\n";
+    foreach ($historical as $sid => $info) {
+      list ($name, $status, $date, $avail) = $info;
+      printf('<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>', $name, $status, $date, $avail);
+    }
+    echo "</table>\n";
+  }
+  else { echo "ไม่มีงานวิจัยในอดีต"; }
+  echo "</section>\n";
+}
+
+function get_survey_info(&$surveys, &$responses, &$accessibility) {
+  $surveys       = array();
+  $responses     = array();
+  $accessibility = array();
+
+  survey_get_public($surveys);
+  $sids = array_keys($surveys);
+
+  $ok = get_current_respondent($respondent);
+  if ($ok && array_key_exists('realm', $respondent)) {
+    survey_get_in_realm($respondent['realm'], $private);
+    survey_merge_sets($surveys, $private);
+    $sids = array_keys($surveys);
+    survey_get_responses($responses, $sids, $respondent['username']);
+    survey_get_accessibility($accessibility, $sids, $respondent['username'], $respondent['realm']);
+  }
+  else { survey_get_accessibility($accessibility, $sids); }
+  return true;
+}
+
+function partition_surveys($surveys, $responses, $accessibility, &$current, &$historical) {
+  foreach ($surveys as $sid => $survey) {
+    if (isset($accessibility[$sid]['available']) && true === (bool)$accessibility[$sid]['available']) {
+      $name = sprintf('<a href="%s">%s</a>', survey_fetch_url_by_survey_name($survey['name']), $survey['title']);
+      $status = fetch_status($sid, $responses);
+      $date = fetch_latest_submission_date($sid, $responses);
+      $avail = fetch_availability($survey, $availability);
+      if (STATUS_OPEN !== $availability) { $name = $survey['title']; }
+      $current[] = array($name, $status, $date, $avail);
+    } else {
+      $name = $survey['title'];
+      $status = fetch_status($sid, $responses);
+      $date = fetch_latest_submission_date($sid, $responses);
+      $avail = "ปิดรับความคิดเห็นไปแล้ว";
+      $historical[] = array($name, $status, $date, $avail);
+    }
+  }
+}
+
+function fetch_status($sid, $responses) {
+  if (isset($responses[$sid])) {
+    if (isset($responses[$sid]['complete'])) { $status = ('Y' == $responses[$sid]['complete'] ? STATUS_FINISHED : STATUS_ALL_PARTIAL); }
+    else { $status = STATUS_FINISHED; foreach ($responses[$sid] as $response) { if ('N' == $response['complete']) { $status = STATUS_SOME_PARTIAL; } } }
+  }
+  else { $status = STATUS_NOT_STARTED; }
+  return $status;
+}
+
+function fetch_latest_submission_date($sid, $responses) {
+  if (isset($responses[$sid])) {
+    if (isset($responses[$sid]['submitted'])) { $date = $responses[$sid]['submitted']; }
+    else { $date = '0000-00-00 00:00:00'; foreach ($responses[$sid] as $response) { if ($date < $response['submitted']) { $date = $response['submitted']; } } }
+    $datets = strtotime($date);
+    if (-1 !== $datets) { $date = strftime(FORMAT_DATE, $datets); }
+  }
+  else { $date = ''; }
+  return $date;
+}
+
+function fetch_availability($survey, &$rc) {
+  $rc = survey_open($survey['open_date'], $survey['close_date']);
+  switch ($rc) {
+    case STATUS_OPEN: return "เปิดรับความคิดเห็นอยู่ คุณสามารถเข้าร่วมได้"; break;
+    case STATUS_CLOSED_TOO_EARLY: return "งานวิจัยชิ้นนี้ยังไม่เปิดรับความคิดเห็น คุณต้องรอก่อน"; break;
+    case STATUS_CLOSED_TOO_LATE: return "งานวิจัยชิ้นนี้ได้ปิดรับความคิดเห็นไปแล้ว"; break;
+    default: assert('false; // unexpected case reached; code bug'); return '';
+  }
+}
+
+// function render_login_form() {
+//   $username = (isset($_REQUEST['username']) ? $_REQUEST['username'] : '');
+//   if ($_message) { echo mkerror($_message); }
+//   require_once WPUBLIC.'/login.inc';
+// }
+
+function render_profile_change_form() {
+  $firstName = (isset($_REQUEST[$firstNameVar]) ? htmlentities($_REQUEST[$firstNameVar]) : '');
+  $lastName = (isset($_REQUEST[$lastNameVar]) ? htmlentities($_REQUEST[$lastNameVar]) : '');
+  $emailAddress = (isset($_REQUEST[$emailVar]) ? htmlentities($_REQUEST[$emailVar]) : '');
+  include WPUBLIC.'/changeprofile.inc';
+}
+
+function render_passwd_change_form() {
+  include WPUBLIC.'/changepass.inc';
 }
 
 ?>
