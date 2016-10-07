@@ -10,7 +10,13 @@ if (!$section) { echo "Error: ไม่มีหมวดหมู่ของ�
 
 $from = "From: ".SYSTEMEMAIL;
 $subject = '[pebinary.net] new question suggested';
-$body ="From: ".SYSTEMEMAIL."\n\nChannel: [pebinary.net]\n\nSource: newtopic/form\n\nQuestion: $newquestion\n\nSection: $section\n\n";
+$body = "----- Header --------------- \n\n";
+$body .= "From:".SYSTEMEMAIL."\n\n";
+$body .= "Channel: http://www.pebinary.net\n\n";
+$body .= "Source: newtopic/form/th\n\n";
+$body .= "----- Detail --------------- \n\n";
+$body .= "Question:\n\n$newquestion\n\n";
+$body .= "Section:\n\n$section\n\n";
 $headers = 'From: '.SYSTEMEMAIL."\r\n" .
            'Reply-To: '.SYSTEMEMAIL."\r\n" .
            'X-Mailer: PHP/' . phpversion();

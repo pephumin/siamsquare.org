@@ -12,7 +12,12 @@ if (!$message) { echo "Error: No message provided.\n"; exit; }
 
 $from = "From: ".$email;
 $subject = '[pebinary.com] online query from '.$email;
-$body ="From: $name ($email)\n\nChannel: [pebinary.com]\n\nSource: contact/modal\n\nMessage:\n\n$message\n\n";
+$body = "----- Header --------------- \n\n";
+$body .= "From: $name ($email)\n\n";
+$body .= "Channel: http://www.pebinary.com\n\n";
+$body .= "Source: contact/modal\n\n";
+$body .= "----- Detail --------------- \n\n";
+$body .= "Message:\n\n$message\n\n";
 $headers = 'From: '.$email."\r\n" .
            'Reply-To: '.$email."\r\n" .
            'X-Mailer: PHP/' . phpversion();

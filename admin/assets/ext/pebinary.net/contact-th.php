@@ -12,7 +12,12 @@ if (!$message) { echo "Error: คุณไม่ได้พิมพ์ข้�
 
 $from = "From: ".$email;
 $subject = '[pebinary.net] online query from '.$email;
-$body ="From: $name ($email)\n\nChannel: [pebinary.net]\n\nSource: contact/form\n\nMessage:\n\n$message\n\n";
+$body = "----- Header --------------- \n\n";
+$body .= "From: $name ($email)\n\n";
+$body .= "Channel: http://www.pebinary.net\n\n";
+$body .= "Source: contact/form/th\n\n";
+$body .= "----- Detail --------------- \n\n";
+$body .= "Message:\n\n$message\n\n";
 $headers = 'From: '.$email."\r\n" .
            'Reply-To: '.$email."\r\n" .
            'X-Mailer: PHP/' . phpversion();
