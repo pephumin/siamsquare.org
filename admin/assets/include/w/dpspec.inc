@@ -21,10 +21,10 @@ if (!empty($_GET['sid'])) { $sid = intval($_GET['sid']);
 
 $statusbad = (STATUS_DELETED);
 if ($_SESSION['acl']['superuser'] == 'Y') {
-  $sql = "SELECT id, name, title, owner, realm FROM ".X_SURVEY." WHERE NOT (status & $statusbad) ORDER BY id DESC";
+  $sql = "SELECT id, name, title, owner, realm FROM ".X_SURVEY." WHERE NOT (status & $statusbad) ORDER BY id DESC ";
 } else {
   $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'], $_SESSION['acl']['pdesign']));
-  $sql = "SELECT id, name, title, owner, realm FROM ".X_SURVEY." WHERE (owner = ". _addslashes($_SESSION['acl']['username']) ." || realm $realms) AND NOT (status & $statusbad) ORDER BY id DESC";
+  $sql = "SELECT id, name, title, owner, realm FROM ".X_SURVEY." WHERE (owner = ". _addslashes($_SESSION['acl']['username']) ." || realm $realms) AND NOT (status & $statusbad) ORDER BY id DESC ";
 }
 $result = execute_sql($sql);
 

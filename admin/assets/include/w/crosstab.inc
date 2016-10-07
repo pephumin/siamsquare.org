@@ -2,16 +2,16 @@
 
 function cross_tabulation($sid, $qidc, $qidr, $qid, $cids) {
   // some error handling
-  if (empty($qid) && empty($cids)){
+  if (empty($qid) && empty($cids)) {
     if (!empty($qidc) && !empty($qidr)) {
-      if ($qidc == $qidr){ $errmsg = mkerror('Error cross-tabulating.'.' '. 'Please ensure that your column and row selections are not of the same question.'); }
+      if ($qidc == $qidr){ $errmsg = mkerror('Error cross-tabulating. Please ensure that your column and row selections are not of the same question.'); }
       else { process($sid,$qidc,$qidr); }
     }
-    else if (!empty($qidc) || !empty($qidr)) { $errmsg = mkerror('Error cross-tabulating.'.' '. 'Please ensure you make both a column and row selection.'); }
+    elseif (!empty($qidc) || !empty($qidr)) { $errmsg = mkerror('Error cross-tabulating. Please ensure you make both a column and row selection.'); }
   }
-  else { $errmsg = mkerror('Error cross-tabulating.'. ' '. 'You are attempting to cross analyze and tabulate at the same time. This is not possible!'); }
+  else { $errmsg = mkerror('Error cross-tabulating. You are attempting to cross analyze and tabulate at the same time. This is not possible!'); }
 
-  if (!empty($errmsg)){ echo($errmsg); }
+  if (!empty($errmsg)) { echo($errmsg); }
 }
 
 function process($sid, $qidc, $qidr){

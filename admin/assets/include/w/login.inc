@@ -40,12 +40,11 @@
     $('#clientloginform').formValidation({
       framework: 'bootstrap',
       icon: { valid: 'pe-check', invalid: 'pe-times', validating: 'pe-refresh' },
+      button: { selector: '[type="submit"]', disabled: '' },
       excluded: ':disabled',
       fields: {
-        username: {
-          validators: { notEmpty: { message: 'The username is required' } } },
-        password: {
-          validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 4, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' } } }
+        username: { validators: { notEmpty: { message: 'The username is required' } } },
+        password: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 4, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' } } }
       }
     });
   });

@@ -1,20 +1,16 @@
 <?php
 
-if($_SESSION['acl']['superuser'] != 'Y') {
+if ($_SESSION['acl']['superuser'] != 'Y') {
   echo(mkerror('Only superusers allowed.')."<br>\n");
-  //echo("<a href=\"". $GLOBALS['ESPCONFIG']['ME'] ."?where=manage\">" . _('Go back to Management Interface') . "</a>\n");
   return;
 }
 
 $sids = array();
-if(!empty($_POST['list'])) {
+if (!empty($_POST['list'])) {
   while(list(,$sid) = each($_POST['list'])) { array_push($sids, intval($sid)); }
   survey_purge($sids);
 }
 
-//  $sql = "
-//SELECT s.id,s.name,s.title,s.status,s.owner,s.realm,COUNT(q.id) as count
-//FROM survey s LEFT JOIN question q ON
 $sql = "SELECT s.id, s.name, s.title, s.status, s.owner, s.realm, COUNT(q.id) as count FROM ".X_SURVEY." s LEFT JOIN ".X_QUESTION." q ON s.id = q.survey_id AND q.deleted = 'N' GROUP BY s.id, s.name, s.title, s.status, s.owner, s.realm ORDER BY s.id DESC ";
 
 $result = execute_sql($sql);

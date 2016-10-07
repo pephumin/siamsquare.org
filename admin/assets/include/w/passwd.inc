@@ -2,20 +2,20 @@
 
 $title = "Changing your password";
 
-if (empty($_SESSION["captcha"])) {
-  require INCLUDEADM.'/captcha.inc';
-  $captcha_length = 8;
-  $rText = generateRandom($captcha_length);
-  $_SESSION["captcha"] = $rText;
-}
+if (empty($_SESSION["captcha"])) { $clength = 8; $rText = generateRandom($clength); $_SESSION["captcha"] = $rText; }
 
 if (isset($_REQUEST['captcha'])) {
-  if ($_REQUEST['captcha'] != $_SESSION['captcha']) {
-    if (auth_change_manager_passwd($_SESSION['acl']['username'], _addslashes($_POST['oldpass']), _addslashes($_POST['newpass1']))) {
-      echo(mksuccess('Your password has been changed successfully'));
-      return;
-    } else { echo(mkerror('Error changing your password.')); }
-  } else { echo(mkerror('Wrong captcha.')); }
+
+  $username = cleanstring($_SESSION['acl']['username']);
+  $oldpass = _addslashes(cleanstring($_POST['oldpass']));
+  $newpass1 = _addslashes(cleanstring($_POST['newpass1']));
+
+  if ($_REQUEST['captcha'] == $_SESSION['captcha']) {
+    auth_change_manager_passwd($username, $oldpass, $newpass1);
+    echo mksuccess("Your password has been changed successfully.");
+    return;
+  }
+  else { echo mkerror("Wrong captcha."); }
 }
 
 ?>
@@ -28,8 +28,9 @@ if (isset($_REQUEST['captcha'])) {
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
       <div class="input-group">
         <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
-        <input type="text" name="username" class="form-control" placeholder="<?php echo($_SESSION['acl']['username']); ?>" disabled>
+        <input type="text" name="username" class="form-control" placeholder="<?php echo $username; ?>" disabled>
       </div>
+      <input type="hidden" name="username" value="<?php echo $username; ?>">
       <?php echo mkhidden('username', $GLOBALS); ?>
     </div>
   </div>
@@ -85,6 +86,7 @@ if (isset($_REQUEST['captcha'])) {
     $('#changepassword').formValidation({
       framework: 'bootstrap',
       icon: { valid: 'pe-check', invalid: 'pe-times', validating: 'pe-refresh' },
+      button: { selector: '[type="submit"]', disabled: '' },
       excluded: ':disabled',
       fields: {
         oldpass: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 4, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' } } },

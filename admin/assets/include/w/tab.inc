@@ -55,8 +55,7 @@ echo "<h2>Designing a survey</h2>\n";
 
 if (!empty($errstr)) { echo(mkerror($errstr)); }
 
-// $base = htmlspecialchars($_SERVER['PHP_SELF']);
-$base = htmlspecialchars(ME);
+$base = htmlspecialchars(MYADMIN);
 echo "<form method=\"post\" id=\"tabs\" onsubmit=\"validate();\" action=\"$base\">\n";
 echo "  <input type=\"hidden\" name=\"w\" value=\"tab\">\n";
 

@@ -1,8 +1,8 @@
 <?php
 
-if($_SESSION['acl']['superuser'] != 'Y') { echo(mkerror('Only superusers allowed.')."<br>\n"); return; }
+if ($_SESSION['acl']['superuser'] != 'Y') { echo(mkerror('Only superusers allowed.')."<br>\n"); return; }
 
-if(isset($_POST['q_rid']) && !empty($_POST['q_rid'])) { response_purge($_POST['q_rid']); }
+if (isset($_POST['q_rid']) && !empty($_POST['q_rid'])) { response_purge($_POST['q_rid']); }
 
 echo "<h2>Delete a response</h2>\n";
 echo "<div class=\"alert alert-danger alert-dismissible\" role=\"alert\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\n";

@@ -1,6 +1,6 @@
 <?php
 
-require INCLUDEADM.'/w/crosstab.inc';
+require WADMIN.'/crosstab.inc';
 
 $sid = '';
 if (!empty($_POST['sid'])) { $sid = intval($_POST['sid']); }
@@ -18,7 +18,7 @@ if (!empty($sid)) {
   }
   if (isset($_GET['type'])) { if ($_GET['type'] == "cross") { echo("<h2>Cross tabulation</h2>\n"); } }
 
-  $yoo = htmlspecialchars(ME);
+  $yoo = htmlspecialchars(MYADMIN);
   echo "<form class=\"form-horizontal\" method=\"post\" action=\"$yoo\">\n";
 
   $precision = ''; if (!empty($_GET['precision'])) { $precision = intval($_GET['precision']); }
@@ -76,7 +76,7 @@ echo "<p>Pick a survey below to see a cross tabulation.</p>";
 }
 ?>
 
-<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars(ME); ?>">
+<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars(MYADMIN); ?>">
 
 <input type="hidden" name="rid" value="">
 <input type="hidden" name="sid" value="">
@@ -98,7 +98,7 @@ echo "<p>Pick a survey below to see a cross tabulation.</p>";
   $count = 0;
   while(list($sid,$name,$title,$owner,$realm) = fetch_row($result)) {
     $result->MoveNext();
-    $sql2 = "SELECT count(*) FROM ".X_RESPONSE." WHERE survey_id = $sid AND complete = 'Y'";
+    $sql2 = "SELECT count(*) FROM ".X_RESPONSE." WHERE survey_id = $sid AND complete = 'Y' ";
     $result2 = execute_sql($sql2);
     list($resp) = fetch_row($result2);
     db_close($result2);

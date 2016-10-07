@@ -38,6 +38,8 @@ $i = 0;
 <?php if(!empty($errstr)) echo(mkerror($errstr)); ?>
 <?php if(!empty($success)) echo(mksuccess($success)); ?>
 
+<form method="post" class="form-horizontal" action="<?php echo(htmlspecialchars(MYADMIN)); ?>">
+
 <input type="hidden" name="w" value="groups">
 
 <table class="table table-hover">
@@ -92,5 +94,6 @@ $i = 0;
     <td class="text-center"><input class="btn btn-warning btn-sm" type="submit" name="add" value="Add"></td>
   </tr>
 </table>
+</form>
 <br>
 <p><strong>Note:</strong> Still yet to develop a function that enables text editing for each of the existing group values.</p><br>

@@ -1,6 +1,7 @@
 <?php
 
 if ($_SESSION['acl']['superuser'] != 'Y' && count($_SESSION['acl']['pgroup']) == 0 && !auth_no_access('to access this form')) { return; }
+if (empty($_SESSION["captcha"])) { $clength = 8; $rText = generateRandom($clength); $_SESSION["captcha"] = $rText; }
 
 $errstr = '';
 //$success = '';
@@ -114,7 +115,7 @@ if (!empty($u) && !empty($r)) {
 
 <?php if (!empty($errstr)) echo(mkerror($errstr)); ?>
 
-<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars(ME); ?>">
+<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars(MYADMIN); ?>">
 
   <div class="form-group">
     <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Username <span class="label label-danger">required</span></label>
@@ -145,7 +146,7 @@ if (!empty($u) && !empty($r)) {
     <?php
     $groups = array();
     if ($_SESSION['acl']['superuser'] == 'Y') {
-      $sql = "SELECT name FROM ".$GLOBALS['ESPCONFIG']['realm_table'];
+      $sql = "SELECT name FROM ".X_REALM;
       $result = execute_sql($sql);
       while( list($g) = fetch_row($result) ) {
         array_push($groups, $g);

@@ -4,7 +4,7 @@ if (!empty($_REQUEST['sid'])) { $sid = intval($_REQUEST['sid']); }
 
 /* sid selected for testing */
 if (!empty($sid)) {
-  $sql = "SELECT status, owner, realm, theme FROM ".X_SURVEY." WHERE id=${sid}";
+  $sql = "SELECT status, owner, realm, theme FROM ".X_SURVEY." WHERE id = ${sid} ";
   $result = execute_sql($sql);
   list($status, $owner, $realm, $theme) = fetch_row($result);
   db_close($result);
@@ -39,10 +39,10 @@ $statusbad = (STATUS_DONE | STATUS_DELETED | STATUS_ACTIVE);
 $statusok = STATUS_TEST;
 
 if ($_SESSION['acl']['superuser'] == 'Y') {
-  $sql = "SELECT id, name, title, owner, realm FROM ".X_SURVEY." WHERE ".db_bin("status", $statusok) ." AND NOT ".db_bin("status", $statusbad)." ORDER BY id DESC";
+  $sql = "SELECT id, name, title, owner, realm FROM ".X_SURVEY." WHERE ".db_bin("status", $statusok) ." AND NOT ".db_bin("status", $statusbad)." ORDER BY id DESC ";
 } else {
   $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'],$_SESSION['acl']['pdesign']));
-  $sql = "SELECT id, name, title, owner, realm FROM ".X_SURVEY." WHERE ".db_bin("status", $statusok) ." AND NOT ".db_bin("status", $statusbad) ." AND (owner = ". _addslashes($_SESSION['acl']['username']) ." || realm $realms) ORDER BY id DESC";
+  $sql = "SELECT id, name, title, owner, realm FROM ".X_SURVEY." WHERE ".db_bin("status", $statusok) ." AND NOT ".db_bin("status", $statusbad) ." AND (owner = ". _addslashes($_SESSION['acl']['username']) ." || realm $realms) ORDER BY id DESC ";
 }
 // echo $sql;
 $result = execute_sql($sql);
@@ -52,10 +52,9 @@ echo "<p>Pick a survey from the list below to test</p>\n";
 //echo "<br>\n\n";
 echo "<table class=\"table table-hover\">\n";
 echo "  <tr class=\"active\">\n";
-echo "    <th>Name</th>\n";
+// echo "    <th>Name</th>\n";
 echo "    <th>Title</th>\n";
-echo "    <th>Owner</th>\n";
-echo "    <th>Group</th>\n";
+echo "    <th>Owner (Group)</th>\n";
 echo "    <th>Testing</th>\n";
 echo "    <th>Results</th>\n";
 echo "    <th>Export</th>\n";
@@ -70,10 +69,9 @@ while(list($sid, $name, $title, $owner, $realm) = fetch_row($result)) {
   $tt4 = htmlspecialchars(MYADMIN);
 
   echo "  <tr>\n";
-  echo "    <td>$name</td>\n";
-  echo "    <td>$title</td>\n";
-  echo "    <td>$owner</td>\n";
-  echo "    <td>$realm</td>\n";
+  // echo "    <td>$name</td>\n";
+  echo "    <td><a href=\"$tt1\">$title</a></td>\n";
+  echo "    <td>$owner ($realm)</td>\n";
   //echo "    <td><a href=\"$tt1\">Test</a> [<a href=\"$tt2\">standalone</a>]</td>\n";
   echo "    <td><a href=\"$tt1\">Test</a></td>\n";
   echo "    <td><a href=\"$tt3\">Results</a></td>\n";

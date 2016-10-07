@@ -1,7 +1,5 @@
 <?php
 
-// if (($_SESSION['acl']['superuser'] != 'Y') && count($_SESSION['acl']['pgroup']) == 0 && !auth_no_access('to access this form')) { return; }
-
 $sql = 'SELECT username, fname, lname, realm, disabled, expiration, email, pdesign, pstatus, pdata, pall, pgroup, puser, added, changed FROM '.X_DESIGNER;
 
 if ($_SESSION['acl']['superuser'] != 'Y') { $realms = array_to_insql(array_merge($_SESSION['acl']['pall'], $_SESSION['acl']['puser'])); $sql .= " WHERE realm $realms"; }
@@ -27,7 +25,7 @@ $result = execute_sql($sql);
 
 <h2>My team</h2>
 
-<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars(ME); ?>">
+<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars(MYADMIN); ?>">
 
 <p><Click on a username to edit, or click on add new user below.</p>
 

@@ -102,13 +102,13 @@ if ($sid) {
 </ul>
 
 
-<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars(ME); ?>">
+<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars(MYADMIN); ?>">
 
 <?php if ($sid) { ?>
 
   <h4>Current access</h4>
 
-  <input type="hidden" name="where" value="access">
+  <input type="hidden" name="w" value="access">
   <input type="hidden" name="sid" value="<?php echo($sid); ?>">
   <input type="hidden" name="op" value="a">
 

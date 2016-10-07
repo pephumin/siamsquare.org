@@ -1,13 +1,10 @@
 <?php
 
-// $base =& $GLOBALS['ESPCONFIG']['ME'];
-
-// load names and titles of all surveys available to _this_ user
 if($_SESSION['acl']['superuser'] == 'Y') {
-  $sql = "SELECT s.id, s.name, s.title, s.owner, s.realm FROM ".X_SURVEY." s WHERE s.status = 0 ORDER BY s.id DESC";
+  $sql = "SELECT s.id, s.name, s.title, s.owner, s.realm FROM ".X_SURVEY." s WHERE s.status = 0 ORDER BY s.id DESC ";
 } else {
   $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'], $_SESSION['acl']['pdesign']));
-  $sql = "SELECT s.id, s.name, s.title, s.owner, s.realm FROM ".X_SURVEY." s WHERE s.status = 0 AND (s.owner = ". _addslashes($_SESSION['acl']['username']) ." || s.realm $realms) ORDER BY id DESC";
+  $sql = "SELECT s.id, s.name, s.title, s.owner, s.realm FROM ".X_SURVEY." s WHERE s.status = 0 AND (s.owner = ". _addslashes($_SESSION['acl']['username']) ." || s.realm $realms) ORDER BY id DESC ";
 }
 $result = execute_sql($sql);
 
@@ -25,7 +22,7 @@ echo "  </tr>\n";
 
 while(list($sid, $name, $title, $owner, $realm) = fetch_row($result)) {
   $result->MoveNext();
-  $tt1 = htmlentities(MYADMIN."?w=tab&newid=".$sid);
+  $tt1 = htmlspecialchars(MYADMIN."?w=tab&newid=".$sid);
   echo "  <tr>\n";
   echo "    <td><a href=\"$tt1\">$title</a></td>\n";
   echo "    <td>$owner</td>\n";

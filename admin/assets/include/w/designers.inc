@@ -26,7 +26,7 @@ $result = execute_sql($sql);
 
 <h2>Managing Designer Accounts</h2>
 
-<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars(ME); ?>">
+<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars(MYADMIN); ?>">
 
 <p><Click on a username to edit, or click on add new user below.</p>
 

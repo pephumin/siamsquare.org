@@ -6,8 +6,6 @@ else $sid = '';
 
 ?>
 
-</form>
-
 <h2>Export survey data</h2>
 
 <table class="table table-hover">
@@ -28,10 +26,10 @@ if(!$sid) {
 
   $statusok = (STATUS_ACTIVE | STATUS_DONE | STATUS_DELETED);
   if($_SESSION['acl']['superuser'] == 'Y') {
-    $sql = "SELECT id, name, title, status, owner, realm FROM ".X_SURVEY." WHERE (status & $statusok) ORDER BY id DESC";
+    $sql = "SELECT id, name, title, status, owner, realm FROM ".X_SURVEY." WHERE (status & $statusok) ORDER BY id DESC ";
   } else {
     $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'], $_SESSION['acl']['pdata']));
-    $sql = "SELECT id, name, title, status, owner, realm FROM ".X_SURVEY." WHERE (status & $statusok) AND (owner = ". _addslashes($_SESSION['acl']['username']) ." || realm $realms) ORDER BY id DESC";
+    $sql = "SELECT id, name, title, status, owner, realm FROM ".X_SURVEY." WHERE (status & $statusok) AND (owner = ". _addslashes($_SESSION['acl']['username']) ." || realm $realms) ORDER BY id DESC ";
   }
   $result = execute_sql($sql);
 
@@ -52,7 +50,7 @@ if(!$sid) {
     <td><?php echo($owner); ?> (<?php echo($realm); ?>)</td>
     <td><?php echo($stat); ?></td>
     <td style="font-size: xx-small; vertical-align: top;">
-    <form id="export<?php echo($sid) ?>" action="<?php echo(htmlspecialchars(ME)); ?>">
+    <form id="export<?php echo($sid) ?>" action="<?php echo(htmlspecialchars(MYADMIN)); ?>">
       <div>
         <select name="type">
             <option value="csv_full_header" selected="selected">CSV Full Headers</option>
@@ -94,7 +92,7 @@ if(!$sid) {
   } else {
     if($_SESSION['acl']['superuser'] != 'Y' && !auth_is_owner($sid, $_SESSION['acl']['username']) &&
     !in_array($srealm, array_intersect($_SESSION['acl']['pdata'], $_SESSION['acl']['pall'])) &&
-    !auth_no_access(_('to access this survey'))) { return; }
+    !auth_no_access('to access this survey')) { return; }
   }
 
   $type = isset($_GET['type']) ? $_GET['type'] : 'csv_full_header';

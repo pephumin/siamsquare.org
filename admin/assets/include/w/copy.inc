@@ -7,17 +7,17 @@
 if(!empty($_GET['sid'])) {
   $sid = intval($_GET['sid']);
   $srealm = auth_get_survey_realm($sid);
-  if($_SESSION['acl']['superuser'] != 'Y' && !auth_is_owner($sid, $_SESSION['acl']['username']) && !in_array($srealm, array_intersect($_SESSION['acl']['pdesign'], $_SESSION['acl']['pall'])) && !auth_no_access(_('to access this survey'))) { return; }
+  if($_SESSION['acl']['superuser'] != 'Y' && !auth_is_owner($sid, $_SESSION['acl']['username']) && !in_array($srealm, array_intersect($_SESSION['acl']['pdesign'], $_SESSION['acl']['pall'])) && !auth_no_access('to access this survey')) { return; }
   if(!survey_copy($sid)) { echo(mkerror('Error copying survey.' ." (". ErrorMsg() .")") . "<br>\n"); return; }
   mksuccess ("The new copy of a survey has been created.");
   return;
 }
 
 if($_SESSION['acl']['superuser'] == 'Y') {
-  $sql = 'SELECT id,name,title,status,owner,realm FROM '.$GLOBALS['ESPCONFIG']['survey_table'].' ORDER BY id DESC';
+  $sql = "SELECT id, name, title, status, owner, realm FROM ".X_SURVEY." ORDER BY id DESC ";
 } else {
   $realms = array_to_insql(array_intersect($_SESSION['acl']['pall'], $_SESSION['acl']['pdesign']));
-  $sql = "SELECT id,name,title,status,owner,realm FROM ".$GLOBALS['ESPCONFIG']['survey_table']." WHERE NOT (status & ". STATUS_DELETED .") AND (owner = ". _addslashes($_SESSION['acl']['username']) ." || realm $realms) ORDER BY id DESC";
+  $sql = "SELECT id, name, title, status, owner, realm FROM ".X_SURVEY." WHERE NOT (status & ". STATUS_DELETED .") AND (owner = ". _addslashes($_SESSION['acl']['username']) ." || realm $realms) ORDER BY id DESC ";
 }
 
 $result = execute_sql($sql);

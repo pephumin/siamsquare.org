@@ -15,7 +15,7 @@ $srealm = auth_get_survey_realm($sid);
 if (isset($_GET['test'])) { /* check ACL to see if user is allowed to test _this_ survey */
   if ($_SESSION['acl']['superuser'] != 'Y' && !auth_is_owner($sid, $_SESSION['acl']['username']) && !in_array($srealm, array_intersect($_SESSION['acl']['pdesign'], $_SESSION['acl']['pall'])) && !auth_no_access('to access this survey')) { return; }
 } else { /* check ACL to see if user is allowed to export _this_ survey */
-  if ($_SESSION['acl']['superuser'] != 'Y' && !auth_is_owner($sid, $_SESSION['acl']['username']) && !in_array($srealm, array_intersect($_SESSION['acl']['pdata'], $_SESSION['acl']['pall'])) && !auth_no_access(_('to access this survey'))) { return; }
+  if ($_SESSION['acl']['superuser'] != 'Y' && !auth_is_owner($sid, $_SESSION['acl']['username']) && !in_array($srealm, array_intersect($_SESSION['acl']['pdata'], $_SESSION['acl']['pall'])) && !auth_no_access('to access this survey')) { return; }
 }
 
 function printCommonHeaders() {

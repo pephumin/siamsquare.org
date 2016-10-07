@@ -60,7 +60,7 @@ if (isset($_POST['submit'])) {
   }
 
   /* new user - check acl */
-  if ($_SESSION['acl']['superuser'] == 'Y' || in_array($r2, $_SESSION['acl']['puser']) || auth_no_access(_('to access this group'))) {
+  if ($_SESSION['acl']['superuser'] == 'Y' || in_array($r2, $_SESSION['acl']['puser']) || auth_no_access('to access this group')) {
     $sql = "SELECT * FROM ".X_RESPONDENT." WHERE username = $u AND realm = $r";
     $result = execute_sql($sql);
     if (record_count($result) < 1) {
@@ -105,13 +105,6 @@ if (!empty($u) && !empty($r)) {
   $sql = "SELECT * FROM ".X_RESPONDENT." WHERE username = $u AND realm = $r";
   $result = execute_sql($sql, "", ADODB_FETCH_ASSOC);
   if ($arr = fetch_row($result)) {
-    #foreach(array(
-    #  'username', 'fname', 'lname', 'email',
-    #  'realm', 'disabled', 'expiration') as $col)
-    #  { $$col = $arr[$col]; }
-    #$u =& $username;
-    #$r =& $realm;
-    #if (intval($expiration) > 0) {
     $arr['u'] = $arr['username'];
     $arr['r'] = $arr['realm'];
     if (intval($arr['expiration']) > 0) {
@@ -134,7 +127,7 @@ if (!empty($u) && !empty($r)) {
 
 <?php if (!empty($errstr)) echo(mkerror($errstr)); ?>
 
-<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars(ME); ?>">
+<form class="form-horizontal" method="post" action="<?php echo htmlspecialchars(MYADMIN); ?>">
 
   <div class="form-group">
     <label class="col-sm-3 control-label">Username <span class="label label-danger">required</span></label>

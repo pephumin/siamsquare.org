@@ -1,12 +1,7 @@
 <?php
 
-// $base =& $GLOBALS['ESPCONFIG']['ME'];
-// $public =& $GLOBALS['ESPCONFIG']['autopub_url'];
-
 if (!empty($_GET['sid'])) { $sid = intval($_GET['sid']); }
-
 if ($_GET['p']) { $p = $_GET['p']; }
-
 if ($p == '') { $p = "1"; }
 
 /* operation selected ... */
