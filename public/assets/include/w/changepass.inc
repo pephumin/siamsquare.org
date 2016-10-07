@@ -1,19 +1,21 @@
 <?php
 
-if (empty($_SESSION["captcha"])) {
-  require INCLUDEADM.'/captcha.inc';
-  $captcha_length = 8;
-  $rText = generateRandom($captcha_length);
-  $_SESSION["captcha"] = $rText;
-}
+if (empty($_SESSION["captcha"])) { $clength = 8; $rText = generateRandom($clength); $_SESSION["captcha"] = $rText; }
 
 if (isset($_REQUEST['captcha'])) {
-  if ($_REQUEST['captcha'] != $_SESSION['captcha']) {
-    if (change_password($respondent['username'], $respondent['realm'], $_REQUEST['newPassword'])) {
-      echo(mksuccess('Your password has been changed successfully'));
-      return;
-    } else { echo(mkerror('Error changing your password.')); }
-  } else { echo(mkerror('Wrong captcha.')); }
+
+  $username = cleanstring($respondent['username']);
+  $oldPassword = cleanstring($_REQUEST['oldPassword']);
+  $newPassword = cleanstring($_REQUEST['newPassword']);
+  $newPasswordConfirm = cleanstring($_REQUEST['newPasswordConfirm']);
+  $captcha = cleanstring($_REQUEST['captcha']);
+
+  if ($_REQUEST['captcha'] == $_SESSION['captcha']) {
+    change_password($username, $respondent['realm'], $_REQUEST['newPassword'])
+    echo mksuccess("คุณได้ทำการเปลี่ยนรหัสผ่านเป็นที่เรียบร้อยแล้ว");
+    return;
+  }
+  else { echo mkerror("คุณใส่ตัวเลขและตัวอักษรตามรูปภาพไม่ถูกต้อง"); }
 }
 
 ?>
@@ -26,9 +28,9 @@ if (isset($_REQUEST['captcha'])) {
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
           <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
-          <input type="text" name="username" class="form-control" placeholder="<?php echo $respondent['username']; ?>" disabled>
+          <input type="text" name="username" class="form-control" placeholder="<?php echo $username; ?>" disabled>
         </div>
-        <input type="hidden" name="username" value="<?php echo $respondent['username']; ?>">
+        <input type="hidden" name="username" value="<?php echo $username; ?>">
      </div>
   </div>
   <hr>
