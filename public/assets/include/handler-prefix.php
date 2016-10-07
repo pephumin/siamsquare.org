@@ -1,26 +1,19 @@
 <?php
 
 if (!defined('ESP-FIRST-INCLUDED')) { echo "In order to conduct surveys, please include first.php (not handler-prefix.php)"; exit; }
-
 if (defined('ESP-HANDLER-PREFIX')) { return; }
 define('ESP-HANDLER-PREFIX', true);
 
 $GLOBALS['errmsg'] = '';
 
-if(isset($_REQUEST['results']) || isset($_REQUEST['results'])) { $GLOBALS['errmsg'] = mkerror('Error processing survey: Security violation.'); return; }
+if (isset($_REQUEST['results']) || isset($_REQUEST['results'])) { $GLOBALS['errmsg'] = mkerror('Error processing survey: Security violation.'); return; }
 
 if (isset($sid) && !empty($sid)) { $sid = intval($sid); }
 elseif (isset($_REQUEST['sid']) && !empty($_REQUEST['sid'])) { $sid = intval($_REQUEST['sid']); }
 if (!isset($sid) || empty($sid)) { blur('/public'); assert('false; // NOTREACHED'); }
 
-// if (!isset($_css)) { $_css = ""; }
-// if (!isset($_title)) { $_title = ""; }
-// if (!isset($survey_name)) { $survey_name = ""; }
+if (empty($_REQUEST['rid'])) { $request_rid = 0; } else { $request_rid = intval($_REQUEST['rid']) ? intval($_REQUEST['rid']) : 0; }
 
-if (empty($_REQUEST['rid'])) { $request_rid = 0; }
-else { $request_rid = intval($_REQUEST['rid']) ? intval($_REQUEST['rid']) : 0; }
-
-//require_once $_SERVER['DOCUMENT_ROOT'] . '/admin/assets/include/lib.inc';
 if (isset($_REQUEST['username']) && ($_REQUEST['username'] != "")) { $_SESSION['espuser'] = $_REQUEST['username']; }
 if (isset($_SESSION['espuser'])) { $espuser = $_SESSION['espuser']; } else { $espuser = ""; }
 if (isset($_REQUEST['password']) && ($_REQUEST['password'] != "")) { $_SESSION['esppass'] = $_REQUEST['password']; }
