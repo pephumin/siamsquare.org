@@ -27,11 +27,12 @@
       </div>
     </div>
   </div>
-  <div class="form-group">
-    <div class="col-xs-offset-0 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-xs-12 col-sm-7 col-md-7 col-lg-7">
-      <button class="btn btn-info" name="doLogin" type="submit">ล็อคอิน <i class="pe-check-circle-o"></i></button>
-    </div>
-  </div>
+  <hr>
+  <p class="text-center">
+    <input type="hidden" name="Logmein" value="true">
+    <button type="submit" class="btn btn-info">ล็อคอิน <i class="pe-check-circle-o"></i></button>
+    <button type="reset" class="btn btn-default">Cancel</button>
+  </p>
 </form>
 <script>
   $(document).ready(function() {
