@@ -150,6 +150,7 @@ define('FORMAT_DATE', '%d/%m/%Y');
 define('MYCONFIG',    DOCROOT."/admin/assets/include/config.php");
 define('MYLIB',       DOCROOT."/admin/assets/include/lib.inc");
 define('MYTEXT',      DOCROOT."/admin/assets/text");
+define('MYXML',       DOCROOT."/admin/assets/xml");
 define('INCLUDEADM',  DOCROOT."/admin/assets/include");
 define('INCLUDEPUB',  DOCROOT."/public/assets/include");
 define('WADMIN',      DOCROOT."/admin/assets/include/w");
@@ -206,6 +207,7 @@ define('STATUS_SOME_PARTIAL',     'เสร็จไปบางส่วน �
 define('STATUS_FINISHED',         'เสร็จเรียบร้อย');
 
 require_once MYLIB;
+require_once INCLUDEADM.'/old.inc';
 
 $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
 

@@ -45,7 +45,7 @@ if ($msg) { echo $msg; }
   <section data-step="0">
     <legend>ลงทะเบียนใหม่ เริ่มต้นด้วยการตั้งค่าล็อคอินของคุณ</legend>
     <div class="form-group">
-      <label for="username" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">อีเมล์ <span style="font-weight: bold; color: red">*</span></label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">อีเมล์ <span style="font-weight: bold; color: red">*</span></label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
           <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
@@ -54,7 +54,7 @@ if ($msg) { echo $msg; }
       </div>
     </div>
     <div class="form-group">
-      <label for="password" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ตั้งรหัสผ่าน</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ตั้งรหัสผ่าน</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
           <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
@@ -63,7 +63,7 @@ if ($msg) { echo $msg; }
       </div>
     </div>
     <div class="form-group">
-      <label for="password2" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">รหัสผ่านอีกครั้ง</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">รหัสผ่านอีกครั้ง</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
           <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
@@ -77,176 +77,87 @@ if ($msg) { echo $msg; }
   <section data-step="1">
     <legend>ทางบริษัทขอสงวนสิทธิ์สำหรับผู้ที่ให้ข้อมูลถูกต้องเท่านั้น หากพบว่าข้อมูลที่ไม่ตรงตามจริง ทุกอย่างจะถือเป็นโมฆะทันที และหากพบว่าข้อมูลเป็นเท็จ คุณอาจถูกดำเนินคดีตาม พรบ.คอมพิวเตอร์ฯ</legend>
     <div class="form-group">
-      <label for="name" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ชื่อ</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ชื่อ</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <input type="text" name="fname" class="form-control" placeholder="First name">
       </div>
     </div>
     <hr>
     <div class="form-group">
-      <label for="name" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">นามสกุล</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">นามสกุล</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <input type="text" name="lname" class="form-control" placeholder="Last name">
       </div>
     </div>
     <hr>
     <div class="form-group">
-      <label for="gender" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">เพศ <span style="font-weight: bold; color: red">*</span></label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">เพศ <span style="font-weight: bold; color: red">*</span></label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-        <div class="radio radio-success radio-inline">
-          <input type="radio" id="male" name="gender" value="male"><label for="male">ผู้ชาย</label>
-        </div>
-        <div class="radio radio-success radio-inline">
-          <input type="radio" id="female" name="gender" value="female"><label for="female">ผู้หญิง</label>
-        </div>
+<?php
+  $xml = new SimpleXMLElement (file_get_contents(MYXML."/gender.xml"));
+  foreach ($xml as $a) { $aa = $a['id']; echo "        <div class=\"radio radio-success radio-inline\"><input type=\"radio\" id=\"$aa\" name=\"gender\" value=\"$aa\"><label for=\"$aa\">$a</label></div>\n"; }
+?>
       </div>
     </div>
     <hr>
     <div class="form-group">
-      <label for="birthday" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">วันเกิด <span style="font-weight: bold; color: red">*</span></label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">วันเกิด <span style="font-weight: bold; color: red">*</span></label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7 form-group">
         <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-          <label for="birthday_date" class="control-label">วันที่</label>
+          <label class="control-label">วันที่</label>
           <select class="form-control input-sm" name="birthday_date">
             <option value="" selected>--วันที่--</option>
-            <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option>
-            <option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option>
-            <option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option>
-            <option value="31">31</option>
+<?php
+  $xml = new SimpleXMLElement (file_get_contents(MYXML."/date.xml"));
+  foreach ($xml as $a) { echo "            <option value=\"$a\">$a</option>\n"; }
+?>
           </select>
         </div>
         <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-          <label for="birthday_month" class="control-label">เดือน</label>
+          <label class="control-label">เดือน</label>
           <select class="form-control input-sm" name="birthday_month">
             <option value="" selected>--เดือน--</option>
-            <option value="01">January</option>
-            <option value="02">February</option>
-            <option value="03">March</option>
-            <option value="04">April</option>
-            <option value="05">May</option>
-            <option value="06">June</option>
-            <option value="07">July</option>
-            <option value="08">August</option>
-            <option value="09">September</option>
-            <option value="10">October</option>
-            <option value="11">November</option>
-            <option value="12">December</option>
+<?php
+  $xml = new SimpleXMLElement (file_get_contents(MYXML."/month.xml"));
+  foreach ($xml as $a) { $aa = $a['id']; echo "            <option value=\"$aa\">$a</option>\n"; }
+?>
           </select>
         </div>
         <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-          <label for="birthday_year" class="control-label">ปี</label>
+          <label class="control-label">ปี</label>
           <select class="form-control input-sm" name="birthday_year">
             <option value="" selected>--ปี--</option>
-            <option value="1931">1931</option><option value="1932">1932</option><option value="1933">1933</option><option value="1934">1934</option><option value="1935">1935</option><option value="1936">1936</option><option value="1937">1937</option><option value="1938">1938</option><option value="1939">1939</option><option value="1940">1940</option>
-            <option value="1941">1941</option><option value="1942">1942</option><option value="1943">1943</option><option value="1944">1944</option><option value="1945">1945</option><option value="1946">1946</option><option value="1947">1947</option><option value="1948">1948</option><option value="1949">1949</option><option value="1950">1950</option>
-            <option value="1951">1951</option><option value="1952">1952</option><option value="1953">1953</option><option value="1954">1954</option><option value="1955">1955</option><option value="1956">1956</option><option value="1957">1957</option><option value="1958">1958</option><option value="1959">1959</option><option value="1960">1960</option>
-            <option value="1961">1961</option><option value="1962">1962</option><option value="1963">1963</option><option value="1964">1964</option><option value="1965">1965</option><option value="1966">1966</option><option value="1967">1967</option><option value="1968">1968</option><option value="1969">1969</option><option value="1970">1970</option>
-            <option value="1971">1971</option><option value="1972">1972</option><option value="1973">1973</option><option value="1974">1974</option><option value="1975">1975</option><option value="1976">1976</option><option value="1977">1977</option><option value="1978">1978</option><option value="1979">1979</option><option value="1980">1980</option>
-            <option value="1981">1981</option><option value="1982">1982</option><option value="1983">1983</option><option value="1984">1984</option><option value="1985">1985</option><option value="1986">1986</option><option value="1987">1987</option><option value="1988">1988</option><option value="1989">1989</option><option value="1990">1990</option>
-            <option value="1991">1991</option><option value="1992">1992</option><option value="1993">1993</option><option value="1994">1994</option><option value="1995">1995</option><option value="1996">1996</option><option value="1997">1997</option><option value="1998">1998</option><option value="1999">1999</option><option value="2000">2000</option>
-            <option value="2001">2001</option><option value="2002">2002</option><option value="2003">2003</option><option value="2004">2004</option><option value="2005">2005</option><option value="2006">2006</option><option value="2007">2007</option><option value="2008">2008</option><option value="2009">2009</option><option value="2010">2010</option>
-            <option value="2011">2011</option><option value="2012">2012</option><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option>
+<?php
+  $xml = new SimpleXMLElement (file_get_contents(MYXML."/year.xml"));
+  foreach ($xml as $a) { echo "            <option value=\"$a\">$a</option>\n"; }
+?>
           </select>
         </div>
       </div>
     </div>
     <hr>
     <div class="form-group">
-      <label for="province" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ปัจจุบันอาศัยอยู่</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ปัจจุบันอาศัยอยู่</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <select class="form-control input-sm" name="province">
           <option value="" selected>--------- เลือกจังหวัด ---------</option>
-          <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
-          <option value="กระบี่">กระบี่</option>
-          <option value="กาญจนบุรี">กาญจนบุรี</option>
-          <option value="กาฬสินธุ์">กาฬสินธุ์</option>
-          <option value="กำแพงเพชร">กำแพงเพชร</option>
-          <option value="ขอนแก่น">ขอนแก่น</option>
-          <option value="จันทบุรี">จันทบุรี</option>
-          <option value="ฉะเชิงเทรา">ฉะเชิงเทรา</option>
-          <option value="ชัยนาท">ชัยนาท</option>
-          <option value="ชัยภูมิ">ชัยภูมิ</option>
-          <option value="ชุมพร">ชุมพร</option>
-          <option value="ชลบุรี">ชลบุรี</option>
-          <option value="เชียงใหม่">เชียงใหม่</option>
-          <option value="เชียงราย">เชียงราย</option>
-          <option value="ตรัง">ตรัง</option>
-          <option value="ตราด">ตราด</option>
-          <option value="ตาก">ตาก</option>
-          <option value="นครนายก">นครนายก</option>
-          <option value="นครปฐม">นครปฐม</option>
-          <option value="นครพนม">นครพนม</option>
-          <option value="นครราชสีมา">นครราชสีมา</option>
-          <option value="นครศรีธรรมราช">นครศรีธรรมราช</option>
-          <option value="นครสวรรค์">นครสวรรค์</option>
-          <option value="นราธิวาส">นราธิวาส</option>
-          <option value="น่าน">น่าน</option>
-          <option value="นนทบุรี">นนทบุรี</option>
-          <option value="บึงกาฬ">บึงกาฬ</option>
-          <option value="บุรีรัมย์">บุรีรัมย์</option>
-          <option value="ประจวบคีรีขันธ์">ประจวบคีรีขันธ์</option>
-          <option value="ปทุมธานี">ปทุมธานี</option>
-          <option value="ปราจีนบุรี">ปราจีนบุรี</option>
-          <option value="ปัตตานี">ปัตตานี</option>
-          <option value="พะเยา">พะเยา</option>
-          <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
-          <option value="พังงา">พังงา</option>
-          <option value="พิจิตร">พิจิตร</option>
-          <option value="พิษณุโลก">พิษณุโลก</option>
-          <option value="เพชรบุรี">เพชรบุรี</option>
-          <option value="เพชรบูรณ์">เพชรบูรณ์</option>
-          <option value="แพร่">แพร่</option>
-          <option value="พัทลุง">พัทลุง</option>
-          <option value="ภูเก็ต">ภูเก็ต</option>
-          <option value="มหาสารคาม">มหาสารคาม</option>
-          <option value="มุกดาหาร">มุกดาหาร</option>
-          <option value="แม่ฮ่องสอน">แม่ฮ่องสอน</option>
-          <option value="ยโสธร">ยโสธร</option>
-          <option value="ยะลา">ยะลา</option>
-          <option value="ร้อยเอ็ด">ร้อยเอ็ด</option>
-          <option value="ระนอง">ระนอง</option>
-          <option value="ระยอง">ระยอง</option>
-          <option value="ราชบุรี">ราชบุรี</option>
-          <option value="ลพบุรี">ลพบุรี</option>
-          <option value="ลำปาง">ลำปาง</option>
-          <option value="ลำพูน">ลำพูน</option>
-          <option value="เลย">เลย</option>
-          <option value="ศรีสะเกษ">ศรีสะเกษ</option>
-          <option value="สกลนคร">สกลนคร</option>
-          <option value="สงขลา">สงขลา</option>
-          <option value="สมุทรสาคร">สมุทรสาคร</option>
-          <option value="สมุทรปราการ">สมุทรปราการ</option>
-          <option value="สมุทรสงคราม">สมุทรสงคราม</option>
-          <option value="สระแก้ว">สระแก้ว</option>
-          <option value="สระบุรี">สระบุรี</option>
-          <option value="สิงห์บุรี">สิงห์บุรี</option>
-          <option value="สุโขทัย">สุโขทัย</option>
-          <option value="สุพรรณบุรี">สุพรรณบุรี</option>
-          <option value="สุราษฎร์ธานี">สุราษฎร์ธานี</option>
-          <option value="สุรินทร์">สุรินทร์</option>
-          <option value="สตูล">สตูล</option>
-          <option value="หนองคาย">หนองคาย</option>
-          <option value="หนองบัวลำภู">หนองบัวลำภู</option>
-          <option value="อำนาจเจริญ">อำนาจเจริญ</option>
-          <option value="อุดรธานี">อุดรธานี</option>
-          <option value="อุตรดิตถ์">อุตรดิตถ์</option>
-          <option value="อุทัยธานี">อุทัยธานี</option>
-          <option value="อุบลราชธานี">อุบลราชธานี</option>
-          <option value="อ่างทอง">อ่างทอง</option>
-          <option value="อื่นๆ">อื่นๆ</option>
+<?php
+  $xml = new SimpleXMLElement (file_get_contents(MYXML."/province.xml"));
+  foreach ($xml as $a) { $aa = $a['id']; echo "          <option value=\"$aa\">$a</option>\n"; }
+?>
         </select>
       </div>
     </div>
     <hr>
     <div class="form-group">
-      <label for="mobile" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">โทรศัพท์มือถือ</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">โทรศัพท์มือถือ</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <div class="input-group">
           <input type="text" size="3" name="mobile1" class="form-control" placeholder="081">
           <span class="input-group-addon"><i class="pe-minus pe-fw"></i></span>
-          <input type="text" size="3" name="mobile2" class="form-control" placeholder="833">
+          <input type="text" size="3" name="mobile2" class="form-control" placeholder="888">
           <span class="input-group-addon"><i class="pe-minus pe-fw"></i></span>
-          <input type="text" size="4" name="mobile3" class="form-control" placeholder="4444">
+          <input type="text" size="4" name="mobile3" class="form-control" placeholder="7777">
         </div>
       </div>
     </div>
@@ -256,83 +167,42 @@ if ($msg) { echo $msg; }
   <section data-step="2">
     <legend>คุณต้องกรอก <strong>ข้อมูลจริงเท่านั้น</strong> เพราะข้อมูลเหล่านี้จะถูกนำไปใช้สำหรับการค้นหางานวิจัยที่ตรงกับคุณ เช่นงานวิจัยเกี่ยวกับเครื่องสำอางค์จะแสดงให้กับสมาชิกที่เป็นผู้หญิงเท่านั้น</legend>
     <div class="form-group">
-      <label for="personal_income" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">รายได้ส่วนบุคคล</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">รายได้ส่วนบุคคล</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-        <div class="radio radio-success">
-          <input type="radio" id="L1" name="personal_income" value="L1"><label for="L1">60,000 บาทต่อเดือนหรือมากกว่า</label>
-        </div>
-        <div class="radio radio-success">
-          <input type="radio" id="L2" name="personal_income" value="L2"><label for="L2">50,001-60,000 บาทต่อเดือน</label>
-        </div>
-        <div class="radio radio-success">
-          <input type="radio" id="L3" name="personal_income" value="L3"><label for="L3">34,501-50,000 บาทต่อเดือน</label>
-        </div>
-        <div class="radio radio-success">
-          <input type="radio" id="L4" name="personal_income" value="L4"><label for="L4">20,000-34,500 บาทต่อเดือน</label>
-        </div>
-        <div class="radio radio-success">
-          <input type="radio" id="L5" name="personal_income" value="L5"><label for="L5">ต่ำกว่า 20,000 บาทต่อเดือน</label>
-        </div>
+<?php
+  $xml = new SimpleXMLElement (file_get_contents(MYXML."/personal_income.xml"));
+  foreach ($xml as $a) { $aa = $a['id']; echo "        <div class=\"radio radio-success\"><input type=\"radio\" id=\"$aa\" name=\"personal_income\" value=\"$aa\"><label for=\"$aa\">$a</label></div>\n"; }
+?>
       </div>
     </div>
     <hr>
     <div class="form-group">
-      <label for="HH_income" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">รายได้ครัวเรือน</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">รายได้ครัวเรือน</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-        <div class="radio radio-success">
-          <input type="radio" id="SES-A" name="HH_income" value="SES-A"><label for="SES-A">60,000 บาทต่อเดือนหรือมากกว่า</label>
-        </div>
-        <div class="radio radio-success">
-          <input type="radio" id="SES-B" name="HH_income" value="SES-B"><label for="SES-B">50,001-60,000 บาทต่อเดือน</label>
-        </div>
-        <div class="radio radio-success">
-          <input type="radio" id="SES-C" name="HH_income" value="SES-C"><label for="SES-C">34,501-50,000 บาทต่อเดือน</label>
-        </div>
-        <div class="radio radio-success">
-          <input type="radio" id="SES-D" name="HH_income" value="SES-D"><label for="SES-D">20,000-34,500 บาทต่อเดือน</label>
-        </div>
-        <div class="radio radio-success">
-          <input type="radio" id="SES-E" name="HH_income" value="SES-E"><label for="SES-E">ต่ำกว่า 20,000 บาทต่อเดือน</label>
-        </div>
+<?php
+  $xml = new SimpleXMLElement (file_get_contents(MYXML."/HH_income.xml"));
+  foreach ($xml as $a) { $aa = $a['id']; echo "        <div class=\"radio radio-success\"><input type=\"radio\" id=\"$aa\" name=\"HH_income\" value=\"$aa\"><label for=\"$aa\">$a</label></div>\n"; }
+?>
       </div>
     </div>
     <hr>
     <div class="form-group">
-      <label for="marital" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">สถานะภาพสมรส</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">สถานะภาพสมรส</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-        <div class="radio radio-success">
-          <input type="radio" id="A1" name="marital" value="A1"><label for="A1">โสด</label>
-        </div>
-        <div class="radio radio-success">
-          <input type="radio" id="A2" name="marital" value="A2"><label for="A2">สมรส ไม่มีบุตร</label>
-        </div>
-        <div class="radio radio-success">
-          <input type="radio" id="A3" name="marital" value="A3"><label for="A3">สมรส มีบุตร</label>
-        </div>
-        <div class="radio radio-success">
-          <input type="radio" id="A4" name="marital" value="A4"><label for="A4">หย่า ม่าย แยกทาง แยกกันอยู่</label>
-        </div>
+<?php
+  $xml = new SimpleXMLElement (file_get_contents(MYXML."/marital.xml"));
+  foreach ($xml as $a) { $aa = $a['id']; echo "        <div class=\"radio radio-success\"><input type=\"radio\" id=\"$aa\" name=\"marital\" value=\"$aa\"><label for=\"$aa\">$a</label></div>\n"; }
+?>
       </div>
     </div>
     <hr>
     <div class="form-group">
-      <label for="education" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ระดับการศึกษา</label>
+      <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ระดับการศึกษา</label>
       <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-        <div class="radio radio-success">
-          <input type="radio" id="B1" name="education" value="B1"><label for="B1">ประถมศึกษา</label>
-        </div>
-        <div class="radio radio-success">
-          <input type="radio" id="B2" name="education" value="B2"><label for="B2">มัธยมศึกษา</label>
-        </div>
-        <div class="radio radio-success">
-          <input type="radio" id="B3" name="education" value="B3"><label for="B3">อาชีวะ อนุปริญญา</label>
-        </div>
-        <div class="radio radio-success">
-          <input type="radio" id="B4" name="education" value="B4"><label for="B4">ปริญญาตรี</label>
-        </div>
-        <div class="radio radio-success">
-          <input type="radio" id="B5" name="education" value="B5"><label for="B5">ปริญญาโทหรือสูงกว่า</label>
-        </div>
+<?php
+  $xml = new SimpleXMLElement (file_get_contents(MYXML."/education.xml"));
+  foreach ($xml as $a) { $aa = $a['id']; echo "        <div class=\"radio radio-success\"><input type=\"radio\" id=\"$aa\" name=\"education\" value=\"$aa\"><label for=\"$aa\">$a</label></div>\n"; }
+?>
       </div>
     </div>
   </section>
@@ -374,14 +244,14 @@ if ($msg) { echo $msg; }
       //   if (isValidStep === false || isValidStep === null) { return false; }
       //   return true;
       // },
-      // onFinishing: function(e, currentIndex) {
-      //   var fv = $('#signup').data('formValidation'),
-      //   $container = $('#signup').find('section[data-step="' + currentIndex +'"]');
-      //   fv.validateContainer($container);
-      //   var isValidStep = fv.isValidContainer($container);
-      //   if (isValidStep === false || isValidStep === null) { return false; }
-      //   return true;
-      // },
+      onFinishing: function(e, currentIndex) {
+        var fv = $('#signup').data('formValidation'),
+        $container = $('#signup').find('section[data-step="' + currentIndex +'"]');
+        fv.validateContainer($container);
+        var isValidStep = fv.isValidContainer($container);
+        if (isValidStep === false || isValidStep === null) { return false; }
+        return true;
+      },
       onFinished: function(e, currentIndex) {
         $('#signup').formValidation('defaultSubmit');
         // $('#welcomeModal').modal();

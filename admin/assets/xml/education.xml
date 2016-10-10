@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+  <education id="B1">ประถมศึกษา</education>
+  <education id="B2">มัธยมศึกษา</education>
+  <education id="B3">อาชีวะ อนุปริญญา</education>
+  <education id="B4">ปริญญาตรี</education>
+  <education id="B5">ปริญญาโทหรือสูงกว่า</education>
+</data>
