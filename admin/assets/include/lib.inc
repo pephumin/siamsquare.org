@@ -22,13 +22,10 @@ function wPublic($w = null) {
 
 function esp_init_adodb() {
   $cfg =& $GLOBALS['ESPCONFIG'];
-  $dbcheck = INCLUDEADM.'/adodb/adodb.inc.php';
-  if (!file_exists($dbcheck)) { echo('Unable to open ADODB include file. Check INI settings. Aborting.'); exit; }
-  else { include INCLUDEADM.'/adodb/adodb.inc.php'; }
+  include INCLUDEADM.'/adodb/adodb.inc.php';
   if (isset($cfg['adodb_conn'])) { return; }
   $cfg['adodb_conn'] = &ADONewConnection("mysql");
   error_reporting(0);  // Hide errors
-
   //$cfg['adodb_conn']->debug=1;
   $dbconnected = $cfg['adodb_conn']->PConnect(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
   $charset = "SET NAMES utf8";
@@ -52,16 +49,6 @@ function esp_require_once($path) {
   require_once INCLUDEADM.$path.'.inc';
   return true;
 }
-
-// function esp_file_get_contents($file) {
-//   if (function_exists('file_get_contents')) { return file_get_contents($file); }
-//   $f = fopen($file,'r');
-//   if (!$f) { return ''; }
-//   $t = '';
-//   while ($s = fread($f, 100000)) { $t .= $s; }
-//   fclose($f);
-//   return $t;
-// }
 
 function check_checksum($file) {
   $checksum = trim(esp_file_get_contents($file.".checksum"));
@@ -122,22 +109,6 @@ function check_referer($referer) {
   }
   else { $retstr = ""; }
   return $retstr;
-}
-
-function blur($url, $forwardingLabel = 'Please click here to continue...') {
-  session_write_close();
-  if (0 !== strpos($url, 'http')) { $url = rtrim(MYHOME, '/') . '/' . ltrim($url, '/'); }
-  if (headers_sent()) {
-    echo <<<EOHTML
-<script type='text/javascript'>
-  window.location = "$url";
-</script>
-<noscript>
-  <a href="$url">$forwardingLabel</a>
-</noscript>
-EOHTML;
-  } else { header(sprintf('Location: %s', $url)); }
-  exit(0);
 }
 
 function execute_sql($command, $limit = null, $assoc = ADODB_FETCH_NUM) {
@@ -221,31 +192,6 @@ function ErrorMsg() {
   $cfg =& $GLOBALS['ESPCONFIG'];
   return $cfg['adodb_conn']->ErrorMsg();
 }
-
-// function password_upgrade($username, $password, $table) {
-//   $cfg =& $GLOBALS['ESPCONFIG'];
-//   if ($cfg['adodb_database_type'] == "mysql") {
-//     $info = $cfg['adodb_conn']->ServerInfo();
-//     $version = $info['version'];
-//     if ($version > 4.0) {
-//       $username = _addslashes($username);
-//       $sql = "SELECT * FROM ".$table." WHERE username = ".$username." AND password = OLD_PASSWORD($password) AND disabled = 'N' AND (expiration = '0000-00-00 00:00:00' OR expiration > ". sys_time_stamp().")";
-//       $accres = execute_sql( $sql, "", ADODB_FETCH_ASSOC );
-//       if (!$accres) { echo (ErrorMsg()); }
-//       if (record_count($accres) == 1) {
-//         // A matching row was found - upgrade his password.
-//         $sql = "UPDATE $table SET password = PASSWORD($password) WHERE username = $username";
-//         $accres = execute_sql( $sql, "", ADODB_FETCH_ASSOC );
-//         if (!$accres) { echo (ErrorMsg()); }
-//       }
-//     }
-//   }
-// }
-
-// function MetaTables() {
-//  $cfg =& $GLOBALS['ESPCONFIG'];
-//  return $cfg['adodb_conn']->MetaTables('TABLES');
-// }
 
 function cleanstring($string) {
   $bad = array("content-type","bcc:","to:","cc:","href");
@@ -654,7 +600,7 @@ function is_session_authenticated() {
 function set_current_respondent($username, $realm, $password = null) {
   $cfg =& $GLOBALS['ESPCONFIG'];
   $sql = sprintf('SELECT * FROM %s WHERE username = %s AND realm = %s', X_RESPONDENT, _addslashes($username), _addslashes($realm));
-  echo $sql;
+  // echo $sql;
   $res = execute_sql($sql, null, ADODB_FETCH_ASSOC);
   if (!$res) { $GLOBALS['errmsg'] = mkerror('Unable to set current respondent'); return false; }
 
@@ -899,15 +845,13 @@ function merge_expand_cids($targetc, $questions) {
 //      100     'Section Text'          'N'             ''
 
 function response_check_answers($sid, $rid, $section) {
-  $sql = "SELECT id, type_id, content, required, ans_uniq FROM ".X_QUESTION." ". survey_select_section_sql($sid, $section) ." AND deleted = 'N' AND type_id < 98 ORDER BY position";
+  $sql = "SELECT id, type_id, content, content_th, required, ans_uniq FROM ".X_QUESTION." ". survey_select_section_sql($sid, $section) ." AND deleted = 'N' AND type_id < 98 ORDER BY position ";
   $result = execute_sql($sql);
-  if (record_count($result) < 1) { db_close($result); return(''); } // no rows returned, so no need to continue
-  $missing = array(); // array of missing answers
-  $not_numeric = array(); // array of numerical answers that are non-numeric
-  $unique_answers = array(); // array of questions that must have a unique answer (only for Textbox or numerical types)
-  // we loop through all the questions and check for missing and non-numerical issues, but only if the question
-  // was shown in the first place (it might have had a condition on it)
-  while (list($qid, $tid, $content, $required, $ans_uniq) = fetch_row($result)) {
+  if (record_count($result) < 1) { db_close($result); return(''); }
+  $missing = array();
+  $not_numeric = array();
+  $unique_answers = array(); // only for Textbox or numerical types
+  while (list($qid, $tid, $content, $content_th, $required, $ans_uniq) = fetch_row($result)) {
     // if the question has no condition:    $question_was_shown=true
     // if the question has a condition:     $question_was_shown=true if condition is fulfilled, false otherwise
     $question_was_shown = question_conditioncheck($sid, $qid, $rid);
@@ -931,7 +875,7 @@ function response_check_answers($sid, $rid, $section) {
         $cid_result = execute_sql($sql);
         while (list($cid) = fetch_row($cid_result)) {
           if (!isset($_POST["${qid}_${cid}"])) {
-            $missing[$qid] = $content;
+            if ($content_th) { $missing[$qid] = $content_th; } else { $missing[$qid] = $content; }
             break;
           }
           $cid_result->MoveNext();
@@ -941,10 +885,10 @@ function response_check_answers($sid, $rid, $section) {
 
       // Numeric
       if ($required=='Y' && $tid == 9 && $_POST[$qid] === '0') { $result->MoveNext(); continue; }
-      elseif ($tid == 9 && !empty($_POST[$qid]) && !is_numeric($_POST[$qid])) { $not_numeric[$qid] = $content; }
+      elseif ($tid == 9 && !empty($_POST[$qid]) && !is_numeric($_POST[$qid])) { if ($content_th) { $not_numeric[$qid] = $content_th; } else { $not_numeric[$qid] = $content; } }
 
       if (!isset($_POST[$qid])) { $_POST[$qid] = ''; }
-      if ($required == 'Y' && $tid != 6 && empty($_POST[$qid]) && $_POST[$qid] != '0') { $missing[$qid] = $content; }
+      if ($required == 'Y' && $tid != 6 && empty($_POST[$qid]) && $_POST[$qid] != '0') { if ($content_th) { $missing[$qid] = $content_th; } else { $missing[$qid] = $content; } }
     }
     $result->MoveNext();
   }
@@ -954,29 +898,30 @@ function response_check_answers($sid, $rid, $section) {
 
   // missing required variables
   if (count($missing) > 0) {
-    $message .= "You are missing the following required questions:<br>\n";
-    while (list($qid, $content) = each($missing)) {
+    $message .= "<p><strong>คุณยังไม่ได้ตอบ สำหรับคำถามดังต่อไปนี้:</strong><br>\n";
+    while (list($qid, $content, $content_th) = each($missing)) {
       $message .= "<!-- ${qid} -->";
-      $message .= "==> ${content}<br>\n";
+      if ($content_th) { $message .= "==> ${content_th}<br>\n"; } else { $message .= "==> ${content}<br>\n"; }
     }
+    $message .= "</p>\n";
   }
-
   // missing numeric
   if (count($not_numeric) > 0) {
-    $message .= "Please only use numbers for the following questions:<br>\n";
-    while (list($qid, $content) = each($not_numeric)) {
+    $message .= "<p><strong>กรุณาตอบด้วยตัวเลขเท่านั้น สำหรับคำถามดังต่อไปนี้:</strong><br>\n";
+    while (list($qid, $content, $content_th) = each($not_numeric)) {
       $message .= "<!-- ${qid} -->";
-      $message .= "==> ${content}<br>\n";
+      if ($content_th) { $message .= "==> ${content_th}<br>\n"; } else { $message .= "==> ${content}<br>\n"; }
     }
+    $message .= "</p>\n";
   }
-
   // double responses on unique
   if (count($unique_answers) > 0) {
-    $message .= "Please use a different answer for the following questions:<br>\n";
-    while (list($qid, $content) = each($unique_answers)) {
+    $message .= "<p><strong>กรุณาตอบด้วยคำตอบอื่น สำหรับคำถามดังต่อไปนี้:</strong><br>\n";
+    while (list($qid, $content, $content_th) = each($unique_answers)) {
       $message .= "<!-- ${qid} -->";
-      $message .= "==> ${content}<br>\n";
+      if ($content_th) { $message .= "==> ${content_th}<br>\n"; } else { $message .= "==> ${content}<br>\n"; }
     }
+    $message .= "</p>\n";
   }
 
   return($message);
@@ -1066,7 +1011,7 @@ function response_insert($sid, $section, $rid) {
   switch ($table) {
 
     case 'response_bool':
-      $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." (response_id, question_id, choice_id) VALUES ( ${rid},${qid},${val} )";
+      $sql  = "INSERT INTO ".$GLOBALS['ESPCONFIG'][$table.'_table']." (response_id, question_id, choice_id) VALUES ( ${rid}, ${qid}, ${val} )";
       if (!empty($val))
       $result = execute_sql($sql);
       break;
@@ -1106,7 +1051,7 @@ function response_insert($sid, $section, $rid) {
 
     case 'response_single':
       if (empty($bareval)) {
-        $sql = "SELECT id FROM ".X_QUESTION_CHOICE." WHERE question_id=${qid} AND content LIKE '!others%' ORDER BY id";
+        $sql = "SELECT id FROM ".X_QUESTION_CHOICE." WHERE question_id = ${qid} AND content LIKE '!others%' ORDER BY id";
         $c_result = execute_sql($sql);
         while (!$c_result) {
           $c_result->MoveNext();
@@ -1399,7 +1344,7 @@ function response_select_human($sid, $rid, $qids = null) {
           array_push($val, $subarr[2]);
         }
       }
-  } else {
+    } else {
       $key = $arr[1];
       if (ereg("^!others", $arr[2])) {
         $val = preg_replace(array("/^!others=/", "/^!others/"), array('', 'Others'), $arr[2]);
@@ -1549,7 +1494,6 @@ function response_send_email($sid, $rid) {
     if (isset($x)) { if (is_array($x)) { $v .= ' (' . implode($isep, $x) . ')'; } else { $v .= ' = ' . $x; } }
     $body .= $k . $qsep . $v . $end;
   }
-
   // support for multiple emails separated by ;
   if (strpos($email, ';') !== false) {
     $retVal = 1;
@@ -1564,7 +1508,7 @@ function response_send_email($sid, $rid) {
 function response_select_max_pos($sid, $rid) {
   $max = 0;
   foreach (array('X_RESPONSE_BOOL', 'X_RESPONSE_DATE', 'X_RESPONSE_MULTIPLE', 'X_RESPONSE_OTHER', 'X_RESPONSE_RANK', 'X_RESPONSE_RATING', 'X_RESPONSE_SINGLE', 'X_RESPONSE_TEXT') as $tbl) {
-    $sql = "SELECT MAX(q.position) FROM ".$tbl." a, ".X_QUESTION." q WHERE a.response_id = $rid AND q.id = a.question_id AND q.survey_id = $sid AND q.deleted = 'N'";
+    $sql = "SELECT MAX(q.position) FROM ".$tbl." a, ".X_QUESTION." q WHERE a.response_id = $rid AND q.id = a.question_id AND q.survey_id = $sid AND q.deleted = 'N' ";
     $num = get_one($sql);
     if ($num > $max) { $max = $num; }
   }
@@ -1573,7 +1517,7 @@ function response_select_max_pos($sid, $rid) {
 
 function response_select_max_sec($sid, $rid) {
   $pos = response_select_max_pos($sid, $rid);
-  $sql = "SELECT COUNT(*)+1 FROM ".X_QUESTION." q WHERE q.survey_id = $sid AND q.type_id = 99 AND q.position < $pos AND q.deleted = 'N'";
+  $sql = "SELECT COUNT(*)+1 FROM ".X_QUESTION." q WHERE q.survey_id = $sid AND q.type_id = 99 AND q.position < $pos AND q.deleted = 'N' ";
   $max = get_one($sql);
   return $max;
 }
@@ -3966,7 +3910,7 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
   }
   $survey = fetch_row($result);
   db_close($result);
-  $sql = "SELECT R.id FROM ".X_RESPONSE." R WHERE R.survey_id ${sidstr} AND R.complete='Y'";
+  $sql = "SELECT R.id FROM ".X_RESPONSE." R WHERE R.survey_id ${sidstr} AND R.complete = 'Y' ";
   echo("<!-- \$sql = ${sql} -->\n");
   if (!($result = execute_sql($sql))) {
     $errmsg = 'Error opening surveys.' ." [ ID: ${sidstr} ] [ ".ErrorMsg()."]";
@@ -3987,7 +3931,7 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
   $ridstr = array_to_insql($rids);
   for ($i=0; $i<$num; $i++) {
     $sid = $sids[$i];
-    $sql = "SELECT * FROM ".X_QUESTION." WHERE survey_id = ${sid} AND deleted = 'N' ORDER BY position,id";
+    $sql = "SELECT * FROM ".X_QUESTION." WHERE survey_id = ${sid} AND deleted = 'N' ORDER BY position, id ";
     echo("<!-- \$sql = ${sql} -->\n");
     $questions[$i] = execute_sql($sql, "", ADODB_FETCH_ASSOC);
     if (!$questions[$i]) {
@@ -4037,7 +3981,7 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
     switch ($table) {
 // -------------------------------- response_bool --------------------------------
     case 'response_bool':
-      $sql = "SELECT A.choice_id, COUNT(A.response_id) FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE A.question_id ${qidstr} AND A.response_id ${ridstr} GROUP BY A.choice_id";
+      $sql = "SELECT A.choice_id, COUNT(A.response_id) FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE A.question_id ${qidstr} AND A.response_id ${ridstr} GROUP BY A.choice_id ";
       echo("<!-- \$sql = ${sql} -->\n");
       $result = execute_sql($sql);
       while (list($text,$count) = fetch_row($result)) {
@@ -4081,7 +4025,7 @@ function survey_merge($sids, $precision = 1, $showTotals = 1) {
         $mycids = array();
         for ($i=0; $i<$num; $i++) { array_push($mycids, $cids[$i][$j]); }
         $mycidstr = array_to_insql($mycids);
-        $sql = "SELECT COUNT(*) FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE A.choice_id ${mycidstr} AND A.response_id ${ridstr}";
+        $sql = "SELECT COUNT(*) FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." A WHERE A.choice_id ${mycidstr} AND A.response_id ${ridstr} ";
         echo("<!-- \$sql = ${sql} -->\n");
         $result=get_one($sql);
         $counts[$content[$j]] = $result;
@@ -4216,9 +4160,11 @@ function survey_purge($sids) {
   }
   db_close($result);
   $qidstr = array_to_insql($qids); // work from the bottom up... start with the survey results
-  $tables = array('response_bool', 'response_date', 'response_multiple', 'response_other', 'response_rank', 'response_rating', 'response_single', 'response_text');
+  //$tables = array('response_bool', 'response_date', 'response_multiple', 'response_other', 'response_rank', 'response_rating', 'response_single', 'response_text');
+  $tables = array('X_RESPONSE_BOOL', 'X_RESPONSE_DATE', 'X_RESPONSE_MULTIPLE', 'X_RESPONSE_OTHER', 'X_RESPONSE_RANK', 'X_RESPONSE_RATING', 'X_RESPONSE_SINGLE', 'X_RESPONSE_TEXT');
   foreach ($tables as $table) {
-    $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." WHERE question_id ${qidstr} ";
+    //$sql = "DELETE FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." WHERE question_id ${qidstr} ";
+    $sql = "DELETE FROM ".$table." WHERE question_id ${qidstr} ";
     $result = execute_sql($sql);
   }
   // then responses
@@ -4247,9 +4193,11 @@ function response_purge($qids) {
   $sql = sprintf('SELECT survey_id FROM %s WHERE id %s', X_RESPONSE, $qidstr);
   $res = execute_sql($sql);
   while ($row = fetch_row($res)) { $res->MoveNext(); $sid = $row[0]; survey_stat_decrement(SURVEY_STAT_COMPLETED, $sid); }
-  $tables = array('response_bool', 'response_date', 'response_multiple', 'response_other', 'response_rank', 'response_rating', 'response_single', 'response_text');
+  // $tables = array('response_bool', 'response_date', 'response_multiple', 'response_other', 'response_rank', 'response_rating', 'response_single', 'response_text');
+  $tables = array('X_RESPONSE_BOOL', 'X_RESPONSE_DATE', 'X_RESPONSE_MULTIPLE', 'X_RESPONSE_OTHER', 'X_RESPONSE_RANK', 'X_RESPONSE_RATING', 'X_RESPONSE_SINGLE', 'X_RESPONSE_TEXT');
   foreach ($tables as $table) {
-    $sql = "DELETE FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." WHERE response_id ${qidstr} ";
+    //$sql = "DELETE FROM ".$GLOBALS['ESPCONFIG'][$table.'_table']." WHERE response_id ${qidstr} ";
+    $sql = "DELETE FROM ".$table." WHERE response_id ${qidstr} ";
     $result = execute_sql($sql);
   }
   $sql = "DELETE FROM ".X_RESPONSE." WHERE id ${qidstr} ";
@@ -4313,125 +4261,25 @@ function captchaimage($text) {
   print '</svg>';
 }
 
-function handleLogin() {
-  $handleLogin = (!is_session_authenticated() && isset($_REQUEST['doLogin']) && ! empty($_REQUEST['username']) && ! empty($_REQUEST['password']) ? true : false);
-  if ($handleLogin) {
-    $isAuthenticated = authenticate($_REQUEST['username'], $_REQUEST['password'], $realms);
-    $realmsCnt = count($realms);
-    if ($isAuthenticated && 1 === $realmsCnt) {
-      $ok = set_current_respondent($_REQUEST['username'], current($realms), $_REQUEST['password']);
-      if ($ok) {
-        set_session_authentication($isAuthenticated);
-        blur('/public/');
-        assert('false; // NOTREACHED');
-      }
-    }
-    elseif ($isAuthenticated && 2 <= $realmsCnt) { $GLOBALS['errmsg'] = mkerror('Please contact an administrator: multi-realm'); }
-    else { $GLOBALS['errmsg'] = mkerror('Incorrect User ID or Password, or your account has been disabled/expired.'); }
-  }
-}
-
-function handleLogout() {
-  $r = MYPUBLIC;
-  $handleLogout = (isset($_REQUEST['doLogout']) && is_session_authenticated() ? true : false);
-  if ($handleLogout) {
-    set_session_authentication(false);
-    echo "<h2>You have been logged out</h2>";
-    echo mksuccess("You have been successfully logged out. We will redirect you to the front page in a moment.");
-    echo "<p><a href=".MYPUBLIC.">You can click here if you choose not to wait in order to log back in to our system.</a></p>";
-    echo "<br><br>";
-    $notes = array(array("title" => "Logged out", "text" => "You have been successfully logged out from our system.", "image" => "assets/img/notification.svg"));
-    notify($notes);
-    header("Refresh: 10; URL=$r");
-  }
-}
-
-// function handleChangeProfile($note = null) {
-//   $showChangeProfile = (is_session_authenticated() && isset($_REQUEST['doChangeProfile']) ? true : false);
-//   $handleChangeProfile = ($showChangeProfile && get_current_respondent($respondent) && isset($_REQUEST['firstName']) && isset($_REQUEST['lastName']) && isset($_REQUEST['emailAddress']) ? true : false);
-//   if ($handleChangeProfile) {
-//     if ($_REQUEST['captcha'] == $_SESSION["captcha"]) {
-//       $ok = change_profile($respondent['username'], $respondent['realm'], $_REQUEST['firstName'], $_REQUEST['lastName'], $_REQUEST['emailAddress']);
-//       if ($ok) { $showChangeProfile = false; $GLOBALS['errmsg'] = mkerror('Your profile has been updated successfully'); }
-//       else { $GLOBALS['errmsg'] = mkerror('Unable to change your password; contact an administrator'); }
-//     } else { $GLOBALS['errmsg'] = mkerror('Wrong captcha'); }
-//   }
-//
-//   if ($showChangeProfile) {
-//     if (empty($_REQUEST['firstName'])) { $_REQUEST['firstName'] = $respondent['fname']; }
-//     if (empty($_REQUEST['lastName'])) { $_REQUEST['lastName'] = $respondent['lname']; }
-//     if (empty($_REQUEST['emailAddress'])) { $_REQUEST['emailAddress'] = $respondent['email']; }
-//     render_profile_change_form();
-//     if ($notes) { pageFooter($notes); } else { pageFooter(); }
-//     exit;
-//   }
-// }
-
-// function change_profile($username, $realm, $firstName, $lastName, $emailAddress) {
-//   $_username = _addslashes($username); $_realm = _addslashes($realm);
-//   $_firstName = _addslashes($firstName); $_lastName = _addslashes($lastName);
-//   $_emailAddress = _addslashes($emailAddress); $changed  = sys_time_stamp();
-//   $sql = "UPDATE ".X_RESPONDENT." SET fname = $_firstName, lname = $_lastName, email = $_emailAddress, changed = $changed WHERE username = $_username AND realm = $_realm";
-//   $res = execute_sql($sql);
-//   $notes = array (array("title" => "Profile updated", "text" => "You have successfully updated your detailed profile.", "image" => "assets/img/notification.svg"));
-//   if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); notify($notes); return true; }
-//   else { return false; }
-// }
-
-function handleChangePassword($notes = null) {
-  $showChangePassword = (isset($_REQUEST['doChangePassword']) && is_session_authenticated() ? true : false);
-  $handleChangePassword = ($showChangePassword && get_current_respondent($respondent) ? true : false);
-  if ($handleChangePassword) {
-    $isAuthenticated = authenticate($respondent['username'], $_REQUEST['oldPassword'], $realms);
-    $isAuthenticated = (1 === count($realms) ? $isAuthenticated : false);
-    $isMatch = (0 === strcmp($_REQUEST['newPassword'], $_REQUEST['newPasswordConfirm']) ? true : false);
-    if ($isAuthenticated && $isMatch) {
-      $ok = change_password($respondent['username'], $respondent['realm'], $_REQUEST['newPassword']);
-      if ($ok) { $showChangePassword = false; $GLOBALS['errmsg'] = mkerror('Your password has been changed successfully'); }
-      else { $GLOBALS['errmsg'] = mkerror('Unable to change your password; contact an administrator'); }
-    }
-    elseif ($isAuthenticated && ! $isMatch) { $GLOBALS['errmsg'] = mkerror('Passwords do not match; check your typing'); }
-    else { $GLOBALS['errmsg'] = mkerror('Old password incorrect; check your typing'); }
-  }
-  if ($showChangePassword) { render_passwd_change_form(); if ($notes) { pageFooter($notes); } else { pageFooter(); } exit; }
-}
-
-function change_password($username, $realm, $password) {
-  $_username = _addslashes($username); $_realm = _addslashes($realm);
-  $_password = db_crypt(_addslashes($password)); $changed  = sys_time_stamp();
-  $sql = "UPDATE ".X_RESPONDENT." SET password = $_password, changed = $changed WHERE username = $_username AND realm = $_realm";
-  $res = execute_sql($sql);
-  $notes = array (array("title" => "Password changed", "text" => "You have successfully changed your password. Please keep it safe and secure.", "image" => "assets/img/notification.svg"));
-  if (1 === affected_rows()) { set_current_respondent($username, $realm); db_close($res); notify($notes); return true; }
-  else { return false; }
-}
-
-function paint_non_authenticated() {
-  //render_login_form();
-  $username = (isset($_REQUEST['username']) ? $_REQUEST['username'] : '');
-  if ($_message) { echo mkerror($_message); }
-  require_once WPUBLIC.'/login.inc';
-}
-
-function paint_authenticated() {
-  echo "<h2>ข้อมูลโดยสรุป</h2>\n";
-  respondentprofile();
-  get_survey_info($surveys, $responses, $accessibility);
-  partition_surveys($surveys, $responses, $accessibility, $current, $historical);
-  echo "<h2>งานวิจัยทั้งหมด</h2>\n";
-  publicsurvey();
-  currentsurvey($current);
-  historysurvey($historical);
-}
-
 function respondentprofile() {
   global $respondent;
   if ($respondent['expiration'] == "0000-00-00 00:00:00") { $expired = "ไม่มีหมดอายุ"; } else { $expired = strftime(FORMAT_DATE, strtotime($respondent['expiration'])); }
   if ($respondent['added'] == "0000-00-00 00:00:00") { $added = "ไม่มีข้อมูล"; } else { $added = strftime(FORMAT_DATE, strtotime($respondent['added'])); }
-  if ($respondent['gender'] == "M") { $gender = "ผู้ชาย"; } elseif ($respondent['gender'] == "F") { $gender = "ผู้หญิง"; } else { $gender = ""; }
+  $xml = new SimpleXMLElement (file_get_contents(MYXML."/gender.xml"));
+  foreach ($xml as $a) { $aa = $a['id']; if ($respondent['gender'] == $aa) { $gender = $a; } }
   $mobile1 = substr($respondent['mobile'], 0, 3);
   $mobile2 = substr($respondent['mobile'], 3, 3);
   $mobile3 = substr($respondent['mobile'], 6, 4);
+  $xml = new SimpleXMLElement (file_get_contents(MYXML."/province.xml"));
+  foreach ($xml as $a) { $aa = $a['id']; if ($respondent['province'] == $aa) { $province = $a; } }
+  $xml = new SimpleXMLElement (file_get_contents(MYXML."/personal_income.xml"));
+  foreach ($xml as $a) { $aa = $a['id']; if ($respondent['personal_income'] == $aa) { $personal_income = $a; } }
+  $xml = new SimpleXMLElement (file_get_contents(MYXML."/HH_income.xml"));
+  foreach ($xml as $a) { $aa = $a['id']; if ($respondent['HH_income'] == $aa) { $HH_income = $a; } }
+  $xml = new SimpleXMLElement (file_get_contents(MYXML."/marital.xml"));
+  foreach ($xml as $a) { $aa = $a['id']; if ($respondent['marital'] == $aa) { $marital = $a; } }
+  $xml = new SimpleXMLElement (file_get_contents(MYXML."/education.xml"));
+  foreach ($xml as $a) { $aa = $a['id']; if ($respondent['education'] == $aa) { $education = $a; } }
   echo "<section>\n";
   echo "<h4><i class=\"pe-user pe-fw\"></i> ข้อมูลส่วนตัว</h4>\n";
   echo "<div class=\"row\">\n";
@@ -4469,7 +4317,7 @@ function respondentprofile() {
   echo "      </tr>\n";
   echo "      <tr>\n";
   echo "        <td width=\"40%\">ปัจจุบันอาศัยอยู่</td>\n";
-  echo "        <td>".$respondent['province']."</td>\n";
+  echo "        <td>".$province."</td>\n";
   echo "      </tr>\n";
   echo "      <tr>\n";
   echo "        <td width=\"40%\">หมายเลขโทรศัพท์มือถือ</td>\n";
@@ -4477,19 +4325,19 @@ function respondentprofile() {
   echo "      </tr>\n";
   echo "      <tr>\n";
   echo "        <td width=\"40%\">รายได้ส่วนบุคคล</td>\n";
-  echo "        <td>".$respondent['personal_income']."</td>\n";
+  echo "        <td>".$personal_income."</td>\n";
   echo "      </tr>\n";
   echo "      <tr>\n";
   echo "        <td width=\"40%\">รายได้ครัวเรือน</td>\n";
-  echo "        <td>".$respondent['HH_income']."</td>\n";
+  echo "        <td>".$HH_income."</td>\n";
   echo "      </tr>\n";
   echo "      <tr>\n";
   echo "        <td width=\"40%\">สถานะภาพสมรส</td>\n";
-  echo "        <td>".$respondent['marital']."</td>\n";
+  echo "        <td>".$marital."</td>\n";
   echo "      </tr>\n";
   echo "      <tr>\n";
   echo "        <td width=\"40%\">ระดับการศึกษา</td>\n";
-  echo "        <td>".$respondent['education']."</td>\n";
+  echo "        <td>".$education."</td>\n";
   echo "      </tr>\n";
   echo "    </table>\n";
   echo "  </div>\n";
@@ -4625,23 +4473,6 @@ function fetch_availability($survey, &$rc) {
     case STATUS_CLOSED_TOO_LATE: return "งานวิจัยชิ้นนี้ได้ปิดรับความคิดเห็นไปแล้ว"; break;
     default: assert('false; // unexpected case reached; code bug'); return '';
   }
-}
-
-// function render_login_form() {
-//   $username = (isset($_REQUEST['username']) ? $_REQUEST['username'] : '');
-//   if ($_message) { echo mkerror($_message); }
-//   require_once WPUBLIC.'/login.inc';
-// }
-
-function render_profile_change_form() {
-  $firstName = (isset($_REQUEST[$firstNameVar]) ? htmlentities($_REQUEST[$firstNameVar]) : '');
-  $lastName = (isset($_REQUEST[$lastNameVar]) ? htmlentities($_REQUEST[$lastNameVar]) : '');
-  $emailAddress = (isset($_REQUEST[$emailVar]) ? htmlentities($_REQUEST[$emailVar]) : '');
-  include WPUBLIC.'/changeprofile.inc';
-}
-
-function render_passwd_change_form() {
-  include WPUBLIC.'/changepass.inc';
 }
 
 ?>
