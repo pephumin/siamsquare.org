@@ -30,8 +30,8 @@ $result = execute_sql($sql);
 <p><Click on a username to edit, or click on add new user below.</p>
 
 <p>
-  <a class="btn btn-warning" href="<?php echo(htmlspecialchars(MYADMIN."?w=admdesigner")); ?>"><i class="pe-user-plus pe-fw"></i> Add a new designer</a>&nbsp;
-  <a class="btn btn-warning" href="<?php echo(htmlspecialchars(MYADMIN."?w=upload&account_type=designers")); ?>" disabled><i class="pe-upload pe-fw"></i> Bulk upload designers</a>
+  <a class="btn btn-warning" href="<?php echo(htmlspecialchars(MYADMIN."?w=admdesigner")); ?>"><i class="pe-user-plus pe-fw"></i> Add a new user</a>&nbsp;
+  <a class="btn btn-warning" href="<?php echo(htmlspecialchars(MYADMIN."?w=upload&account_type=designers")); ?>" disabled><i class="pe-upload pe-fw"></i> Bulk upload users</a>
 </p>
 
 <br>
@@ -40,7 +40,7 @@ $result = execute_sql($sql);
   <tr class="active">
     <th><a href="<?php echo(htmlspecialchars(MYADMIN."?w=designers".$u)); ?>">Login</a></th>
     <th><a href="<?php echo(htmlspecialchars(MYADMIN."?w=designers".$f)); ?>">Name</a></th>
-    <th><a href="<?php echo(htmlspecialchars(MYADMIN."?w=designers".$l)); ?>">Description</a></th>
+    <th><a href="<?php echo(htmlspecialchars(MYADMIN."?w=designers".$l)); ?>">Title</a></th>
     <!-- <th><a href="<?php echo(htmlspecialchars(MYADMIN."?w=designers".$g)); ?>">Group</a></th> -->
     <th>Email</th>
     <th>Added</th>

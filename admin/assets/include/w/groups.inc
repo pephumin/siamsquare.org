@@ -61,7 +61,7 @@ $i = 0;
     <td><?php echo ($realm); ?></td>
     <td><?php echo ($title); ?></td>
     <td class="text-center"><?php echo ($count); ?></td>
-    <td class="text-center"><?php echo ($count ? "&nbsp;" : "<a class=\"btn btn-danger btn-xs\" role=\"button\" href=\"".htmlspecialchars(MYADMIN."?w=groups&del=".$type)."\">Delete</a>"); ?></td>
+    <td class="text-center"><?php echo ($count ? "&nbsp;" : "<a class=\"btn btn-danger btn-xs\" role=\"button\" href=\"".htmlspecialchars(MYADMIN."?w=groups&del=".$realm)."\">Delete</a>"); ?></td>
   </tr>
 <?php
   }
@@ -75,7 +75,7 @@ $i = 0;
     <td><?php echo ($realm); ?></td>
     <td><?php echo ($title); ?></td>
     <td class="text-center"><?php echo ($count); ?></td>
-    <td class="text-center"><?php echo ($count ? "&nbsp;" : "<a class=\"btn btn-danger btn-xs\" role=\"button\" href=\"".htmlspecialchars(MYADMIN."?w=groups&del=".$type)."\">Delete</a>"); ?></td>
+    <td class="text-center"><?php echo ($count ? "&nbsp;" : "<a class=\"btn btn-danger btn-xs\" role=\"button\" href=\"".htmlspecialchars(MYADMIN."?w=groups&del=".$realm)."\">Delete</a>"); ?></td>
   </tr>
 <?php
   }

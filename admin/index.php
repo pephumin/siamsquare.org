@@ -11,7 +11,7 @@ esp_init_adodb();
 
 if (get_cfg_var('register_globals')) { $_SESSION['acl'] = &$acl; }
 
-print_r(get_cfg_var('register_globals'));
+// print_r(get_cfg_var('register_globals'));
 
 $w = '';
 
