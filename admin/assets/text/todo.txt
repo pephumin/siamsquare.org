@@ -4,7 +4,7 @@
 <p>Things I still need to do...</p>
 
 <ol>
-<li>One</li>
-<li>Two</li>
-<li>Three</li>
+  <li>Add link to reset a forgotten password</li>
+  <li>Add response ID/confirmation number to finished surveys</li>
+  <li>...</li>
 </ol>
