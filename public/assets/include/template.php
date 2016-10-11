@@ -38,6 +38,8 @@ function pageHeader($title) {
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <title><?php echo $title; ?></title>
   <link rel="stylesheet" type="text/css" href="assets/css/main.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/survey.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/surveyeditor.css">
   <link rel="shortcut icon" type="image/x-icon" href="assets/icons/favicon.ico">
   <link rel="apple-touch-icon" sizes="57x57" href="assets/icons/apple-icon-57x57.png">
   <link rel="apple-touch-icon" sizes="60x60" href="assets/icons/apple-icon-60x60.png">
@@ -62,6 +64,20 @@ function pageHeader($title) {
   <script type="text/javascript" src="assets/js/jquery-ui.min.js"></script>
   <script type="text/javascript" src="assets/js/fv/formValidation.min.js"></script>
   <script type="text/javascript" src="assets/js/fv/bootstrap.min.js"></script>
+  <script type="text/javascript" src="assets/js/survey/knockout-3.4.0.js"></script>
+  <script type="text/javascript" src="assets/js/survey/survey.bootstrap.js"></script>
+  <script type="text/javascript" src="assets/js/survey/ace.min.js"></script>
+  <script type="text/javascript" src="assets/js/survey/worker-json.js"></script>
+  <script type="text/javascript" src="assets/js/survey/mode-json.js"></script>
+  <script type="text/javascript" src="assets/js/survey/surveyeditor.js"></script>
+  <script type="text/javascript">
+    var survey = new Survey.Survey(
+    {pages:[{name:"page1",questions:[{type:"radiogroup",name:"frameworkUsing",title:"Do you use any front-end framework like Bootstrap?",isRequired:true,choices:["Yes","No"]},{type:"checkbox",name:"framework",visible:false,title:"What front-end framework do you use?",isRequired:true,hasOther:true,choices:["Bootstrap","Foundation"]}]},{name:"page2",questions:[{type:"radiogroup",name:"mvvmUsing",title:"Do you use any MVVM framework?",isRequired:true,choices:["Yes","No"]},{type:"checkbox",name:"mvvm",visible:false,title:"What MVVM framework do you use?",isRequired:true,hasOther:true,choices:["AngularJS","KnockoutJS","React"]}]},{name:"page3",questions:[{type:"comment",name:"about",title:"Please tell us about your main requirements for Survey library"}]}],title:"Tell us, what technologies do you use?",triggers:[{type:"visible",operator:"equal",value:"Yes",name:"frameworkUsing",questions:["framework"]},{type:"visible",operator:"equal",value:"Yes",name:"mvvmUsing",questions:["mvvm"]}]});
+    survey.onComplete.add(function (s) {
+    alert("The results are:" + JSON.stringify(s.data));
+     });
+    survey.render("mySurveyJSName");
+  </script>
 </head>
 <body>
 <header>
@@ -180,7 +196,6 @@ function pageFooter($notes = null) {
 </script>
 <script type="text/javascript" src="assets/js/anchor.js"></script>
 <script type="text/javascript" src="assets/js/notification.js"></script>
-<script type="text/javascript" src="assets/js/thprovinces.js"></script>
 <script type="text/javascript" src="assets/js/tops.js"></script>
 <script type="text/javascript" src="assets/js/functions.js"></script>
 <script type="text/javascript">
