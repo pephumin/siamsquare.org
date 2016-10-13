@@ -1,3 +1,13 @@
+#surveyjseditor, #surveyjseditor > .btn {
+  font-family: "ubuntu";
+  font-size: 11px;
+}
+
+#mySurveyJSName {
+  font-family: "boon";
+  font-size: 14px;
+}
+
 [draggable] {
   -moz-user-select: none;
   -khtml-user-select: none;
