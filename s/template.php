@@ -33,6 +33,8 @@ function pageHeader($title) {
   <script type="text/javascript" src="js/ace/ace.js"></script>
   <script type="text/javascript" src="js/ace/worker-json.js"></script>
   <script type="text/javascript" src="js/ace/mode-json.js"></script>
+  <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/globalize/0.1.1/globalize.min.js"></script>
+  <script type="text/javascript" src="http://cdn3.devexpress.com/jslib/15.1.5/js/dx.chartjs.js"></script>
 </head>
 <body>
 <header>
