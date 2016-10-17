@@ -1,5 +1,3 @@
-/* display survey */
-
 #mySurveyJSName, #surveyjs {
   font-family: "boon";
   font-size: 14px;
@@ -145,10 +143,6 @@
   position: absolute;
   clip: rect(0px, 0px, 0px, 0px);
   pointer-events: none; }
-
-
-
-/* display survey editor */
 
 #surveyjseditor {
   width: 100%;
