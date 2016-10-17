@@ -80,14 +80,14 @@
 
 <script type="text/javascript">
 
-
+  // var options = {};
   var options = {
     questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "matrixdynamic", "html"], //alwaySaveTextInPropertyEditors : false
   };
-  // var options = {};
   options.generateValidJSON = true;
   var editor = new SurveyEditor.SurveyEditor("surveyjseditor", options);
   editor.showOptions = true;
+  // editor.showProgressBar = "bottom";
   editor.generateValidJSONChangedCallback = function(newValue) {
     $.get("/api/MySurveys/setGenerationJSONType?generateValidJSON="+ newValue, function (data) {
     }).fail(function (error) {
@@ -125,7 +125,8 @@
   editor.surveyPostId = modelData.PostId;
   editor.saveSurveyFunc =  function() {
     $.ajax({
-      url: "https://dxsurveyapi.azurewebsites.net/api/MySurveys/changeJson",
+      //url: "https://dxsurveyapi.azurewebsites.net/api/MySurveys/changeJson",
+      url: "/api/MySurveys/changeJson",
       type: "POST",
       data: { Id: modelData.Id, Text: editor.text, Json: editor.text },
       success: function (data) {
@@ -168,6 +169,30 @@
   });
 
 
+  // survey.css = {
+  //   matrix: { root: "table table-hover" },
+  //   header: "panel-heading",
+  //   body: "panel-body",
+  //   footer: "panel-footer",
+  //   navigationButton: "btn btn-info",
+  //   navigation: { complete: "", prev: "", next: "" },
+  //   progress: "progress center-block",
+  //   progressBar: "progress-bar progress-bar-info progress-bar-striped",
+  //   pageTitle: "",
+  //   row: "",
+  //   question: { root: "", title: "", comment: "form-control", indent: 20 },
+  //   error: { root: "alert alert-danger", icon: "pe-exclamation-circle", item: "" },
+  //   checkbox: { root: "form-inline", item: "checkbox", other: "" },
+  //   comment: "form-control",
+  //   dropdown: "form-control",
+  //   matrix: { root: "table table-hover" },
+  //   matrixdropdown: { root: "table table-hover" },
+  //   matrixdynamic: { root: "table table-hover", button: "btn btn-info" },
+  //   multipletext: { root: "table table-hover", itemTitle: "", itemValue: "form-control" },
+  //   radiogroup: { root: "form-inline", item: "radio", other: "" },
+  //   rating: { root: "btn-group", item: "btn btn-default" },
+  //   text: "form-control"
+  // };
 
   // function getParameterByName(name, url) {
   //   if (!url) url = window.location.href;
@@ -187,31 +212,6 @@
 
   // survey.locale = "th";
   // survey.showProgressBar = "bottom";
-
-  // survey.css = {
-  //   matrix: { root: "table table-hover" },
-  //   header: "panel-heading",
-  //   body: "panel-body",
-  //   footer: "panel-footer",
-  //   navigationButton: "btn btn-warning",
-  //   navigation: { complete: "", prev: "", next: "" },
-  //   progress: "progress center-block",
-  //   progressBar: "progress-bar progress-bar-warning progress-bar-striped",
-  //   pageTitle: "",
-  //   row: "",
-  //   question: { root: "", title: "", comment: "form-control", indent: 20 },
-  //   error: { root: "alert alert-danger", icon: "pe-exclamation", item: "" },
-  //   checkbox: { root: "form-inline", item: "checkbox", other: "" },
-  //   comment: "form-control",
-  //   dropdown: "form-control",
-  //   matrix: { root: "table table-hover" },
-  //   matrixdropdown: { root: "table table-hover" },
-  //   matrixdynamic: { root: "table table-hover", button: "btn btn-warning" },
-  //   multipletext: { root: "table table-hover", itemTitle: "", itemValue: "form-control" },
-  //   radiogroup: { root: "form-inline", item: "radio", other: "" },
-  //   rating: { root: "btn-group", item: "btn btn-default" },
-  //   text: "form-control"
-  // };
 
   //Example of adding new locale into the library.
   var Survey;

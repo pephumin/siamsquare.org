@@ -1,6 +1,6 @@
 /* display survey */
 
-#mySurveyJSName {
+#mySurveyJSName, #surveyjs {
   font-family: "boon";
   font-size: 14px;
 }
@@ -57,7 +57,7 @@
 .sv_main {
   width: 100%; }
 
-sv_body {
+.sv_body {
   margin-bottom: 10px; }
 
 .sv_page_empty {
