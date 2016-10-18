@@ -9,11 +9,13 @@
   <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
   <script type="text/javascript" src="js/bootstrap.js"></script>
   <script type="text/javascript" src="js/knockout.js"></script>
-  <script type="text/javascript" src="js/ace.js"></script>
+  <script type="text/javascript" src="js/ace/ace.js"></script>
   <script type="text/javascript" src="js/ace/worker-json.js"></script>
   <script type="text/javascript" src="js/ace/mode-json.js"></script>
-  <script type="text/javascript" src="js/survey.bootstrap.js"></script>
+  <script type="text/javascript" src="js/survey.ko.js"></script>
   <script type="text/javascript" src="js/surveyeditor.js"></script>
+  <script type="text/javascript" src="js/globalize.min.js"></script>
+  <script type="text/javascript" src="js/dx.chartjs.js"></script>
 </head>
 <body>
 <header>
@@ -74,117 +76,123 @@
 
 
 <script type="text/javascript">
-    // var options = {};
-    var options = {
-      questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "matrixdynamic", "html"],
-      //alwaySaveTextInPropertyEditors : false
-    };
-    options.generateValidJSON = true;
-    var editor = new SurveyEditor.SurveyEditor("editor", options);
-    editor.showOptions = true;
-    editor.generateValidJSONChangedCallback = function(newValue) {
-        $.get("/api/MySurveys/setGenerationJSONType?generateValidJSON="+ newValue, function (data) {
-        }).fail(function (error) {
 
-        });
-    };
+  function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    url = url.toLowerCase();
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+      results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+  }
 
-    // modelData = {
-    //   "Json": null,
-    //   "Text": null,
-    //   "GenerateValidJSON": true,
-    //   "Name": "New Survey",
-    //   "IsArchived": false,
-    //   "UserId": "cb705132-d953-48c3-9856-223fbae49d06",
-    //   "PostId": "859d7210-471b-4039-a679-78c58425aea6",
-    //   "ResultId": "566d7b43-885a-49f4-b80f-405e66a42a82",
-    //   "PublishId": null,
-    //   "IsPublished": false,
-    //   "UseCookies": false,
-    //   "CreatedAt": "2016-10-17T09:22:51.8235264",
-    //   "AllowAccessResult": false,
-    //   "StoreIPAddress": false,
-    //   "Id": "d7f01db8-1573-4579-b4dd-469073b9f0d8",
-    //   "Data": {
-    //     "Id": "d7f01db8-1573-4579-b4dd-469073b9f0d8"
-    //   }
-    // }
+  var options = {
+    questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "matrixdynamic", "html"],
+    //alwaySaveTextInPropertyEditors : false
+  };
+  options.generateValidJSON = true;
 
-    modelData = {
-      "Json": "{\"locale\":\"th\",\"pages\":[{\"name\":\"หน้าแรก\",\"questions\":[{\"type\":\"checkbox\",\"choices\":[{\"value\":\"A1\",\"text\":\"iPhone\"},{\"value\":\"A2\",\"text\":\"iPad mini\"},{\"value\":\"A3\",\"text\":\"iPad Air\"},{\"value\":\"A4\",\"text\":\"iPad Pro\"}],\"choicesOrder\":\"asc\",\"commentText\":\"นี่มันคืออะไรเนี่ย\",\"hasOther\":true,\"isRequired\":true,\"name\":\"Q1\",\"otherErrorText\":\"อื่นๆก็มี Error ได้สินะ\",\"otherText\":\"อื่นๆ (ระบุ)\",\"title\":\"What is my name?\"},{\"type\":\"radiogroup\",\"name\":\"Q2\",\"title\":\"How many gf do I have?\",\"isRequired\":true,\"choices\":[{\"value\":\"1\",\"text\":\"One\"},{\"value\":\"2\",\"text\":\"Two\"},{\"value\":\"3\",\"text\":\"Three\"},{\"value\":\"4\",\"text\":\"Four\"},{\"value\":\"5+\",\"text\":\"Five or more\"}],\"otherText\":\"อื่นๆ (ระบุ)\"},{\"type\":\"comment\",\"name\":\"Q3\",\"title\":\"Any comments?\",\"isRequired\":true}],\"title\":\"เอายังไง\"},{\"name\":\"หน้าสุดท้าย\",\"questions\":[{\"type\":\"rating\",\"name\":\"Q4\",\"title\":\"What is my overall satisfaction to my gf?\",\"isRequired\":true,\"mininumRateDescription\":\"Not at all satisfied\",\"maximumRateDescription\":\"Very satisfied\"},{\"type\":\"radiogroup\",\"name\":\"Q5\",\"title\":\"Do I own a car?\",\"isRequired\":true,\"choices\":[{\"value\":\"Y\",\"text\":\"Yes\"},{\"value\":\"N\",\"text\":\"No\"}],\"otherText\":\"อื่นๆ (ระบุ)\"},{\"type\":\"checkbox\",\"choices\":[{\"value\":\"JP1\",\"text\":\"Toyota\"},{\"value\":\"JP2\",\"text\":\"Honda\"},{\"value\":\"JP3\",\"text\":\"Mitsubishi\"},{\"value\":\"JP4\",\"text\":\"Nissan\"},{\"value\":\"EU1\",\"text\":\"Mercedes\"},{\"value\":\"EU2\",\"text\":\"BMW\"},{\"value\":\"EU3\",\"text\":\"Volvo\"},{\"value\":\"EU4\",\"text\":\"Chevrolet\"},{\"value\":\"O1\",\"text\":\"Others\"},{\"value\":\"O2\",\"text\":\"Others\"}],\"choicesOrder\":\"random\",\"colCount\":2,\"name\":\"Q6\",\"otherText\":\"Others (describe)\",\"title\":\"What brands of cars do I currently own?\"}],\"title\":\"ยังไงก็ได้\"}],\"showProgressBar\":\"top\",\"storeOthersAsComment\":false,\"title\":\"Project Domino\"}",
-      "Text": "{\"locale\":\"th\",\"pages\":[{\"name\":\"หน้าแรก\",\"questions\":[{\"type\":\"checkbox\",\"choices\":[{\"value\":\"A1\",\"text\":\"iPhone\"},{\"value\":\"A2\",\"text\":\"iPad mini\"},{\"value\":\"A3\",\"text\":\"iPad Air\"},{\"value\":\"A4\",\"text\":\"iPad Pro\"}],\"choicesOrder\":\"asc\",\"commentText\":\"นี่มันคืออะไรเนี่ย\",\"hasOther\":true,\"isRequired\":true,\"name\":\"Q1\",\"otherErrorText\":\"อื่นๆก็มี Error ได้สินะ\",\"otherText\":\"อื่นๆ (ระบุ)\",\"title\":\"What is my name?\"},{\"type\":\"radiogroup\",\"name\":\"Q2\",\"title\":\"How many gf do I have?\",\"isRequired\":true,\"choices\":[{\"value\":\"1\",\"text\":\"One\"},{\"value\":\"2\",\"text\":\"Two\"},{\"value\":\"3\",\"text\":\"Three\"},{\"value\":\"4\",\"text\":\"Four\"},{\"value\":\"5+\",\"text\":\"Five or more\"}],\"otherText\":\"อื่นๆ (ระบุ)\"},{\"type\":\"comment\",\"name\":\"Q3\",\"title\":\"Any comments?\",\"isRequired\":true}],\"title\":\"เอายังไง\"},{\"name\":\"หน้าสุดท้าย\",\"questions\":[{\"type\":\"rating\",\"name\":\"Q4\",\"title\":\"What is my overall satisfaction to my gf?\",\"isRequired\":true,\"mininumRateDescription\":\"Not at all satisfied\",\"maximumRateDescription\":\"Very satisfied\"},{\"type\":\"radiogroup\",\"name\":\"Q5\",\"title\":\"Do I own a car?\",\"isRequired\":true,\"choices\":[{\"value\":\"Y\",\"text\":\"Yes\"},{\"value\":\"N\",\"text\":\"No\"}],\"otherText\":\"อื่นๆ (ระบุ)\"},{\"type\":\"checkbox\",\"choices\":[{\"value\":\"JP1\",\"text\":\"Toyota\"},{\"value\":\"JP2\",\"text\":\"Honda\"},{\"value\":\"JP3\",\"text\":\"Mitsubishi\"},{\"value\":\"JP4\",\"text\":\"Nissan\"},{\"value\":\"EU1\",\"text\":\"Mercedes\"},{\"value\":\"EU2\",\"text\":\"BMW\"},{\"value\":\"EU3\",\"text\":\"Volvo\"},{\"value\":\"EU4\",\"text\":\"Chevrolet\"},{\"value\":\"O1\",\"text\":\"Others\"},{\"value\":\"O2\",\"text\":\"Others\"}],\"choicesOrder\":\"random\",\"colCount\":2,\"name\":\"Q6\",\"otherText\":\"Others (describe)\",\"title\":\"What brands of cars do I currently own?\"}],\"title\":\"ยังไงก็ได้\"}],\"showProgressBar\":\"top\",\"storeOthersAsComment\":false,\"title\":\"Project Domino\"}",
-      "GenerateValidJSON": true,
-      "Name": "Bird",
-      "IsArchived": false,
-      "UserId": "cb705132-d953-48c3-9856-223fbae49d06",
-      "PostId": "4f74cc5f-c610-4b93-9e70-8d32015367a2",
-      "ResultId": "e27d71a3-dd74-4e83-b5aa-3b25a12b2b06",
-      "PublishId": "9edaf7af-87f3-41d0-9125-454910fed4cb",
-      "IsPublished": false,
-      "UseCookies": false,
-      "CreatedAt": "2016-10-11T01:52:28.2132412",
-      "AllowAccessResult": true,
-      "StoreIPAddress": true,
-      "Id": "ba876803-471f-46c2-b990-a562a2a1b02f",
-      "Data": {
-        "Id": "ba876803-471f-46c2-b990-a562a2a1b02f"
-      }
-    };
-
-    if(modelData.Text) {
-        editor.text = modelData.Text;
-    }
-    editor.surveyId = modelData.Id;
-    editor.surveyPostId = modelData.PostId;
-    editor.saveSurveyFunc =  function() {
-        $.ajax({
-            url: "/api/MySurveys/changeJson",
-            type: "POST",
-            data: { Id: modelData.Id, Text: editor.text, Json : editor.text },
-            success: function (data) {
-                if (data.isSuccess) {
-                }
-            }
-        });
-    }
-    var PublishSurveyModel = function (isPublished, publishedId, useCookies) {
-        var self = this;
-        self.serviceUrl = "/api/MySurveys/";
-        self.isPublished = ko.observable(isPublished);
-        self.publishedId = ko.observable(publishedId);
-        self.useCookies = ko.observable(useCookies);
-        self.useCookies.subscribe(function(newValue) {
-            self.setUseCookies(newValue);
-        });
-        self.url = ko.computed(function(){ return "/published?id=" + self.publishedId();}, self);
-        self.publish = function () {
-            $.get(self.serviceUrl + "publish?id=(d7f01db8-1573-4579-b4dd-469073b9f0d8)&generateNewId=false", function (data) {
-                self.publishedId(data);
-                self.isPublished(true);
-            }).fail(function (error) {
-                self.onFail(error);
-            });
-        }
-        self.unPublish = function() {
-            $.get(self.serviceUrl + "unpublish?id=(d7f01db8-1573-4579-b4dd-469073b9f0d8)", function (data) {
-                self.isPublished(false);
-            }).fail(function (error) {
-                self.onFail(error);
-            });
-        }
-        self.setUseCookies = function(useCookies) {
-            $.get(self.serviceUrl + "setUseCookies?id=(d7f01db8-1573-4579-b4dd-469073b9f0d8)&useCookies=" + useCookies, function (data) {
-            }).fail(function (error) {
-                self.onFail(error);
-            });
-        }
-        self.onFail = function (error) {
-            alert(JSON.stringify(error));
-        }
-    }
-    jQuery(document).ready(function () {
-        ko.applyBindings(new PublishSurveyModel('False' == 'True', '', 'False' == 'True'), document.getElementById("publishRoot"));
+  var editor = new SurveyEditor.SurveyEditor("editor", options);
+  editor.showOptions = true;
+  editor.generateValidJSONChangedCallback = function(newValue) {
+    $.get("/api/MySurveys/setGenerationJSONType?generateValidJSON="+ newValue, function (data) {
+    }).fail(function (error) {
     });
+  };
+
+  var surveyId = getParameterByName("surveyid");
+  if(surveyId) { editor.loadSurvey(surveyId); }
+
+  // modelData = {
+  //   "Json": null,
+  //   "Text": null,
+  //   "GenerateValidJSON": true,
+  //   "Name": "New Survey",
+  //   "IsArchived": false,
+  //   "UserId": "cb705132-d953-48c3-9856-223fbae49d06",
+  //   "PostId": "859d7210-471b-4039-a679-78c58425aea6",
+  //   "ResultId": "566d7b43-885a-49f4-b80f-405e66a42a82",
+  //   "PublishId": null,
+  //   "IsPublished": false,
+  //   "UseCookies": false,
+  //   "CreatedAt": "2016-10-17T09:22:51.8235264",
+  //   "AllowAccessResult": false,
+  //   "StoreIPAddress": false,
+  //   "Id": "d7f01db8-1573-4579-b4dd-469073b9f0d8",
+  //   "Data": {
+  //     "Id": "d7f01db8-1573-4579-b4dd-469073b9f0d8"
+  //   }
+  // }
+
+  modelData = {
+    "Json": "{\"locale\":\"th\",\"pages\":[{\"name\":\"หน้าแรก\",\"questions\":[{\"type\":\"checkbox\",\"choices\":[{\"value\":\"A1\",\"text\":\"iPhone\"},{\"value\":\"A2\",\"text\":\"iPad mini\"},{\"value\":\"A3\",\"text\":\"iPad Air\"},{\"value\":\"A4\",\"text\":\"iPad Pro\"}],\"choicesOrder\":\"asc\",\"commentText\":\"นี่มันคืออะไรเนี่ย\",\"hasOther\":true,\"isRequired\":true,\"name\":\"Q1\",\"otherErrorText\":\"อื่นๆก็มี Error ได้สินะ\",\"otherText\":\"อื่นๆ (ระบุ)\",\"title\":\"What is my name?\"},{\"type\":\"radiogroup\",\"name\":\"Q2\",\"title\":\"How many gf do I have?\",\"isRequired\":true,\"choices\":[{\"value\":\"1\",\"text\":\"One\"},{\"value\":\"2\",\"text\":\"Two\"},{\"value\":\"3\",\"text\":\"Three\"},{\"value\":\"4\",\"text\":\"Four\"},{\"value\":\"5+\",\"text\":\"Five or more\"}],\"otherText\":\"อื่นๆ (ระบุ)\"},{\"type\":\"comment\",\"name\":\"Q3\",\"title\":\"Any comments?\",\"isRequired\":true}],\"title\":\"เอายังไง\"},{\"name\":\"หน้าสุดท้าย\",\"questions\":[{\"type\":\"rating\",\"name\":\"Q4\",\"title\":\"What is my overall satisfaction to my gf?\",\"isRequired\":true,\"mininumRateDescription\":\"Not at all satisfied\",\"maximumRateDescription\":\"Very satisfied\"},{\"type\":\"radiogroup\",\"name\":\"Q5\",\"title\":\"Do I own a car?\",\"isRequired\":true,\"choices\":[{\"value\":\"Y\",\"text\":\"Yes\"},{\"value\":\"N\",\"text\":\"No\"}],\"otherText\":\"อื่นๆ (ระบุ)\"},{\"type\":\"checkbox\",\"choices\":[{\"value\":\"JP1\",\"text\":\"Toyota\"},{\"value\":\"JP2\",\"text\":\"Honda\"},{\"value\":\"JP3\",\"text\":\"Mitsubishi\"},{\"value\":\"JP4\",\"text\":\"Nissan\"},{\"value\":\"EU1\",\"text\":\"Mercedes\"},{\"value\":\"EU2\",\"text\":\"BMW\"},{\"value\":\"EU3\",\"text\":\"Volvo\"},{\"value\":\"EU4\",\"text\":\"Chevrolet\"},{\"value\":\"O1\",\"text\":\"Others\"},{\"value\":\"O2\",\"text\":\"Others\"}],\"choicesOrder\":\"random\",\"colCount\":2,\"name\":\"Q6\",\"otherText\":\"Others (describe)\",\"title\":\"What brands of cars do I currently own?\"}],\"title\":\"ยังไงก็ได้\"}],\"showProgressBar\":\"top\",\"storeOthersAsComment\":false,\"title\":\"Project Domino\"}",
+    "Text": "{\"locale\":\"th\",\"pages\":[{\"name\":\"หน้าแรก\",\"questions\":[{\"type\":\"checkbox\",\"choices\":[{\"value\":\"A1\",\"text\":\"iPhone\"},{\"value\":\"A2\",\"text\":\"iPad mini\"},{\"value\":\"A3\",\"text\":\"iPad Air\"},{\"value\":\"A4\",\"text\":\"iPad Pro\"}],\"choicesOrder\":\"asc\",\"commentText\":\"นี่มันคืออะไรเนี่ย\",\"hasOther\":true,\"isRequired\":true,\"name\":\"Q1\",\"otherErrorText\":\"อื่นๆก็มี Error ได้สินะ\",\"otherText\":\"อื่นๆ (ระบุ)\",\"title\":\"What is my name?\"},{\"type\":\"radiogroup\",\"name\":\"Q2\",\"title\":\"How many gf do I have?\",\"isRequired\":true,\"choices\":[{\"value\":\"1\",\"text\":\"One\"},{\"value\":\"2\",\"text\":\"Two\"},{\"value\":\"3\",\"text\":\"Three\"},{\"value\":\"4\",\"text\":\"Four\"},{\"value\":\"5+\",\"text\":\"Five or more\"}],\"otherText\":\"อื่นๆ (ระบุ)\"},{\"type\":\"comment\",\"name\":\"Q3\",\"title\":\"Any comments?\",\"isRequired\":true}],\"title\":\"เอายังไง\"},{\"name\":\"หน้าสุดท้าย\",\"questions\":[{\"type\":\"rating\",\"name\":\"Q4\",\"title\":\"What is my overall satisfaction to my gf?\",\"isRequired\":true,\"mininumRateDescription\":\"Not at all satisfied\",\"maximumRateDescription\":\"Very satisfied\"},{\"type\":\"radiogroup\",\"name\":\"Q5\",\"title\":\"Do I own a car?\",\"isRequired\":true,\"choices\":[{\"value\":\"Y\",\"text\":\"Yes\"},{\"value\":\"N\",\"text\":\"No\"}],\"otherText\":\"อื่นๆ (ระบุ)\"},{\"type\":\"checkbox\",\"choices\":[{\"value\":\"JP1\",\"text\":\"Toyota\"},{\"value\":\"JP2\",\"text\":\"Honda\"},{\"value\":\"JP3\",\"text\":\"Mitsubishi\"},{\"value\":\"JP4\",\"text\":\"Nissan\"},{\"value\":\"EU1\",\"text\":\"Mercedes\"},{\"value\":\"EU2\",\"text\":\"BMW\"},{\"value\":\"EU3\",\"text\":\"Volvo\"},{\"value\":\"EU4\",\"text\":\"Chevrolet\"},{\"value\":\"O1\",\"text\":\"Others\"},{\"value\":\"O2\",\"text\":\"Others\"}],\"choicesOrder\":\"random\",\"colCount\":2,\"name\":\"Q6\",\"otherText\":\"Others (describe)\",\"title\":\"What brands of cars do I currently own?\"}],\"title\":\"ยังไงก็ได้\"}],\"showProgressBar\":\"top\",\"storeOthersAsComment\":false,\"title\":\"Project Domino\"}",
+    "GenerateValidJSON": true,
+    "Name": "Bird",
+    "IsArchived": false,
+    "UserId": "cb705132-d953-48c3-9856-223fbae49d06",
+    "PostId": "4f74cc5f-c610-4b93-9e70-8d32015367a2",
+    "ResultId": "e27d71a3-dd74-4e83-b5aa-3b25a12b2b06",
+    "PublishId": "9edaf7af-87f3-41d0-9125-454910fed4cb",
+    "IsPublished": false,
+    "UseCookies": false,
+    "CreatedAt": "2016-10-11T01:52:28.2132412",
+    "AllowAccessResult": true,
+    "StoreIPAddress": true,
+    "Id": "ba876803-471f-46c2-b990-a562a2a1b02f",
+    "Data": {
+      "Id": "ba876803-471f-46c2-b990-a562a2a1b02f"
+    }
+  };
+
+  if(modelData.Text) {
+    editor.text = modelData.Text;
+  }
+  editor.surveyId = modelData.Id;
+  editor.surveyPostId = modelData.PostId;
+  editor.saveSurveyFunc =  function() {
+    $.ajax({
+      url: "/api/MySurveys/changeJson",
+      type: "POST",
+      data: { Id: modelData.Id, Text: editor.text, Json : editor.text },
+      success: function (data) {
+        if (data.isSuccess) {
+        }
+      }
+    });
+  }
+  var PublishSurveyModel = function (isPublished, publishedId, useCookies) {
+    var self = this;
+    self.serviceUrl = "/api/MySurveys/";
+    self.isPublished = ko.observable(isPublished);
+    self.publishedId = ko.observable(publishedId);
+    self.useCookies = ko.observable(useCookies);
+    self.useCookies.subscribe(function(newValue) { self.setUseCookies(newValue); });
+    self.url = ko.computed(function(){ return "/published?id=" + self.publishedId();}, self);
+    self.publish = function () {
+      $.get(self.serviceUrl + "publish?id=(d7f01db8-1573-4579-b4dd-469073b9f0d8)&generateNewId=false", function (data) {
+        self.publishedId(data);
+        self.isPublished(true);
+      }).fail(function (error) { self.onFail(error); });
+    }
+    self.unPublish = function() {
+      $.get(self.serviceUrl + "unpublish?id=(d7f01db8-1573-4579-b4dd-469073b9f0d8)", function (data) {
+        self.isPublished(false);
+      }).fail(function (error) { self.onFail(error); });
+    }
+    self.setUseCookies = function(useCookies) {
+      $.get(self.serviceUrl + "setUseCookies?id=(d7f01db8-1573-4579-b4dd-469073b9f0d8)&useCookies=" + useCookies, function (data) {
+      }).fail(function (error) { self.onFail(error); });
+    }
+    self.onFail = function (error) {
+      alert(JSON.stringify(error));
+    }
+  }
+  jQuery(document).ready(function () {
+    ko.applyBindings(new PublishSurveyModel('False' == 'True', '', 'False' == 'True'), document.getElementById("publishRoot"));
+  });
 </script>
 
 </main>

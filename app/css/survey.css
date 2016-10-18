@@ -147,12 +147,31 @@
 #surveyjseditor {
   width: 100%;
   margin-top: 20px;
-  padding: 0px;
-}
+  padding: 0px; }
 
 #surveyjseditor::after {
-  clear: both;
+  clear: both; }
+
+.nav-tabs>li>a {
+  font-family: "boon";
+  font-size: 14px;
 }
+li.editor-topnav-left > a {
+ color: #666 !important;
+ padding: 10px 15px;
+ font-family: "ubuntu";
+ font-size: 12px;
+ font-weight: bold; }
+
+li.editor-topnav-left > a:hover, .editor-topnav-left > a:focus {
+  color: #fff !important;
+  background-color: crimson !important; }
+
+li.editor-topnav-right > button, li.editor-topnav-right > div > button {
+  font-family: "ubuntu";
+  font-size: 11px;
+  margin: 5px;
+  width: 70px; }
 
 [draggable] {
   -moz-user-select: none;
@@ -175,7 +194,8 @@
   text-overflow: ellipsis; }
 
 .svd_q_selected {
-  border-width: 3px; }
+  border-width: 3px;
+  border-color: crimson; }
 
 .svd_q_design {
   pointer-events: none; }

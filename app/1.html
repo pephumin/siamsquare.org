@@ -9,11 +9,13 @@
   <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
   <script type="text/javascript" src="js/bootstrap.js"></script>
   <script type="text/javascript" src="js/knockout.js"></script>
-  <script type="text/javascript" src="js/ace.js"></script>
+  <script type="text/javascript" src="js/ace/ace.js"></script>
   <script type="text/javascript" src="js/ace/worker-json.js"></script>
   <script type="text/javascript" src="js/ace/mode-json.js"></script>
-  <script type="text/javascript" src="js/survey.bootstrap.js"></script>
+  <script type="text/javascript" src="js/survey.ko.js"></script>
   <script type="text/javascript" src="js/surveyeditor.js"></script>
+  <script type="text/javascript" src="js/globalize.min.js"></script>
+  <script type="text/javascript" src="js/dx.chartjs.js"></script>
 </head>
 <body>
 <header>
@@ -90,6 +92,11 @@
       showChart(options.dataList);
     }
   });
+
+  // // Prevent showing the "Thank You for Completing the Survey!"
+  // survey.onComplete.add(function (s) {
+  //   document.getElementById("mySurveyElementId").style.display = 'none';
+  // });
 
   survey.locale = "th";
   survey.showProgressBar = "bottom";
