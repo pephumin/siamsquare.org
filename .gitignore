@@ -7,3 +7,6 @@ _sass
 firebase.json
 firebase-debug.log
 run
+admin
+public
+_sass
