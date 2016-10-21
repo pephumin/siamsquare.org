@@ -1,5 +1,5 @@
 .DS_Store
-README.md
+#README.md
 Icon?
 .sass-cache
 _sass
@@ -7,7 +7,3 @@ _sass
 firebase.json
 firebase-debug.log
 run
-admin
-public
-_sass
-index.php
