@@ -252,3 +252,13 @@ li.editor-topnav-right > button, li.editor-topnav-right > div > button {
   font-weight: normal;
   color: #777;
 }
+
+.alert {
+  font-size: 14px !important;
+  font-weight: bold;
+  padding: 10px;
+  margin: 15px auto;
+}
+i.pe-exclamation-circle {
+  margin-right: 5px;
+}
