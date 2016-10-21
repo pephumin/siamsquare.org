@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<data>
-  <HH_income id="SES-A">60,000 บาทต่อเดือนหรือมากกว่า</HH_income>
-  <HH_income id="SES-B">50,001-60,000 บาทต่อเดือน</HH_income>
-  <HH_income id="SES-C">34,501-50,000 บาทต่อเดือน</HH_income>
-  <HH_income id="SES-D">20,000-34,500 บาทต่อเดือน</HH_income>
-  <HH_income id="SES-E">ต่ำกว่า 20,000 บาทต่อเดือน</HH_income>
-</data>
