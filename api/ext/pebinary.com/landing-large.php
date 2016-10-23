@@ -1,6 +1,6 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/api/ext/config.inc';
+require_once $_SERVER['DOCUMENT_ROOT'].'/api/config.inc';
 
 $name = cleanstring($_REQUEST['name']);
 $email = cleanstring($_REQUEST['email']);
