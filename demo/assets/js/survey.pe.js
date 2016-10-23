@@ -1264,8 +1264,8 @@ var Survey;
         }
         dxSurveyService.prototype.loadSurvey = function (surveyId, onLoad) {
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', dxSurveyService.serviceUrl + '/getSurvey?surveyId=' + surveyId);
-            //xhr.open('GET', dxSurveyService.serviceUrl + '/j_projects/' + surveyId);
+            //xhr.open('GET', dxSurveyService.serviceUrl + '/getSurvey?surveyId=' + surveyId);
+            xhr.open('GET', dxSurveyService.serviceUrl + '/survey' + surveyId);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onload = function () {
                 var result = JSON.parse(xhr.response);
@@ -1342,8 +1342,8 @@ var Survey;
             };
             xhr.send();
         };
-        dxSurveyService.serviceUrl = "https://dxsurveyapi.azurewebsites.net/api/Survey";
-        //dxSurveyService.serviceUrl = "http://www.siamsquare.org/api/index.php";
+        //dxSurveyService.serviceUrl = "https://dxsurveyapi.azurewebsites.net/api/Survey";
+        dxSurveyService.serviceUrl = "http://www.siamsquare.org/api/index.php";
         return dxSurveyService;
     }());
     Survey.dxSurveyService = dxSurveyService;

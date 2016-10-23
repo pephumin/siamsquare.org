@@ -95,35 +95,19 @@
 
 <script type="text/javascript">
 
-  // generateGUID = (typeof(window.crypto) != 'undefined' && typeof(window.crypto.getRandomValues) != 'undefined') ?
-  // function() {
-  //   var buf = new Uint16Array(8);
-  //   window.crypto.getRandomValues(buf);
-  //   var S4 = function(num) {
-  //     var ret = num.toString(16);
-  //     while(ret.length < 4){
-  //       ret = "0"+ret;
-  //     }
-  //     return ret;
-  //   };
-  //   return (S4(buf[0])+S4(buf[1])+"-"+S4(buf[2])+"-"+S4(buf[3])+"-"+S4(buf[4])+"-"+S4(buf[5])+S4(buf[6])+S4(buf[7]));
-  // }
-  // :
-  // function() {
-  //   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-  //     var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-  //     return v.toString(16);
-  //   });
-  // };
-  // var myID1 = generateGUID();
-  // console.log(myID1);
-
-  var survey = new Survey.Survey ({
-    //surveyId: 'ba876803-471f-46c2-b990-a562a2a1b02f',
-    surveyId: '/2/data',
-    surveyPostId: '4f74cc5f-c610-4b93-9e70-8d32015367a2'
-  });
-
+  function getsurveydata() {
+    var result = "";
+    $.ajax({
+      url: 'http://www.siamsquare.org/api/index.php/survey/2/data',
+      dataType: 'json',
+      type: 'get',
+      cache: false,
+      async: false,
+      success: function(data) { result = data; }
+   });
+   return result;
+  }
+  var survey = new Survey.Survey (getsurveydata());
   survey.onSendResult.add(function(s, options) {
     if(options.success) {
       s.getResult('e27d71a3-dd74-4e83-b5aa-3b25a12b2b06', 'Q2');
@@ -136,30 +120,7 @@
   //   }
   // });
 
-  // survey.css = {
-  //   matrix: { root: "table table-hover" },
-  //   header: "panel-heading",
-  //   body: "panel-body",
-  //   footer: "panel-footer",
-  //   navigationButton: "btn",
-  //   navigation: { complete: "btn-success", prev: "btn-warning", next: "btn-warning" },
-  //   progress: "progress center-block",
-  //   progressBar: "progress-bar progress-bar-warning progress-bar-striped",
-  //   pageTitle: "",
-  //   row: "",
-  //   question: { root: "", title: "", comment: "form-control", indent: 20 },
-  //   error: { root: "alert alert-warning", icon: "pe-exclamation-circle", item: "" },
-  //   checkbox: { root: "form-inline", item: "checkbox", other: "" },
-  //   comment: "form-control",
-  //   dropdown: "form-control",
-  //   matrix: { root: "table table-hover" },
-  //   matrixdropdown: { root: "table table-hover" },
-  //   matrixdynamic: { root: "table table-hover", button: "btn btn-warning" },
-  //   multipletext: { root: "table table-hover", itemTitle: "", itemValue: "form-control" },
-  //   radiogroup: { root: "form-inline", item: "radio", other: "" },
-  //   rating: { root: "btn-group", item: "btn btn-default" },
-  //   text: "form-control"
-  // };
+
 
   //Example of adding new locale into the library.
   var Survey;
