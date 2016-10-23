@@ -36,7 +36,7 @@
   <script type="text/javascript" src="assets/js/ace/ace.js"></script>
   <script type="text/javascript" src="assets/js/ace/worker-json.js"></script>
   <script type="text/javascript" src="assets/js/ace/mode-json.js"></script>
-  <script type="text/javascript" src="assets/js/survey.pe.js"></script>
+  <script type="text/javascript" src="assets/js/survey.js"></script>
   <script type="text/javascript" src="assets/js/surveyeditor.js"></script>
   <script type="text/javascript" src="assets/js/globalize.min.js"></script>
   <script type="text/javascript" src="assets/js/dx.chartjs.js"></script>
@@ -97,31 +97,31 @@
   var survey = new Survey.Survey ({
     // surveyId: 'fb79b5c0-3ad5-44ab-ac5e-4834250f22d6',
     surveyId: '/1/data',
-    surveyPostId: '700d9888-1eff-4513-afa2-ee02fcbc1217'
+    surveyPostId: '1'
   });
 
-  survey.onSendResult.add(function(s, options) {
-    if(options.success) {
-      s.getResult('5c7bb91e-0619-4763-b47b-8e29368f3aaf', 'Q6');
-    }
-  });
-
-  survey.onGetResult.add(function(s, options) {
-    if(options.success) {
-      showChart(options.dataList);
-    }
-  });
-
-  function showChart(chartDataSource) {
-    document.getElementById("chartContainer").style.height = "500px";
-    $("#chartContainer").dxPieChart({
-      dataSource: chartDataSource,
-      series: {
-        argumentField: 'name',
-        valueField: 'value'
-      }
-    });
-  }
+  // survey.onSendResult.add(function(s, options) {
+  //   if(options.success) {
+  //     s.getResult('5c7bb91e-0619-4763-b47b-8e29368f3aaf', 'Q6');
+  //   }
+  // });
+  //
+  // survey.onGetResult.add(function(s, options) {
+  //   if(options.success) {
+  //     showChart(options.dataList);
+  //   }
+  // });
+  //
+  // function showChart(chartDataSource) {
+  //   document.getElementById("chartContainer").style.height = "500px";
+  //   $("#chartContainer").dxPieChart({
+  //     dataSource: chartDataSource,
+  //     series: {
+  //       argumentField: 'name',
+  //       valueField: 'value'
+  //     }
+  //   });
+  // }
 
   function reRunSurvey() {
     survey.clear();

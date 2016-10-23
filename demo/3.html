@@ -36,7 +36,7 @@
   <script type="text/javascript" src="assets/js/ace/ace.js"></script>
   <script type="text/javascript" src="assets/js/ace/worker-json.js"></script>
   <script type="text/javascript" src="assets/js/ace/mode-json.js"></script>
-  <script type="text/javascript" src="assets/js/survey.pe.js"></script>
+  <script type="text/javascript" src="assets/js/survey.js"></script>
   <script type="text/javascript" src="assets/js/surveyeditor.js"></script>
   <script type="text/javascript" src="assets/js/globalize.min.js"></script>
   <script type="text/javascript" src="assets/js/dx.chartjs.js"></script>
@@ -94,25 +94,69 @@
 </div>
 
 <script type="text/javascript">
-
+  var myID = 2;
+  function getip() {
+    var ret_ip;
+    $.ajaxSetup({async: false});
+    $.get('http://jsonip.com/', function(r){ ret_ip = r.ip; });
+    return ret_ip;
+  }
   function getsurveydata() {
     var result = "";
     $.ajax({
-      url: 'http://www.siamsquare.org/api/index.php/survey/2/data',
+      url: 'http://www.siamsquare.org/api/index.php/survey/' + myID + '/data',
       dataType: 'json',
       type: 'get',
       cache: false,
       async: false,
       success: function(data) { result = data; }
+    });
+    return result;
+  }
+  function postsurveydata(data) {
+    var result = "";
+    var ip = getip();
+    $.ajax({
+      url: 'http://www.siamsquare.org/api/index.php',
+      dataType: 'json',
+      type: 'post',
+      contentType: 'application/json; charset=utf-8',
+      data: '{"rd": "email@domain.com", "ip": "' + ip + '", "surveyid": ' + myID + ', "data": ' + JSON.stringify(JSON.stringify(data)) + '}',
+      success: function(data) { result = data; }
    });
    return result;
   }
   var survey = new Survey.Survey (getsurveydata());
+
+  survey.onComplete.add(function (s) {
+    postsurveydata(survey.data);
+    // var result = "\nThe results are:\n" + JSON.stringify(survey.data);
+    // document.getElementById('chartContainer').innerHTML = result;
+    // document.getElementById('survey_oncomplete').style.display = '';
+  });
+
   survey.onSendResult.add(function(s, options) {
     if(options.success) {
       s.getResult('e27d71a3-dd74-4e83-b5aa-3b25a12b2b06', 'Q2');
     }
   });
+
+  // function reRunSurvey() {
+  //   survey.clear();
+  //   survey.render('survey');
+  // }
+  //
+  // function renderSurvey() {
+  //   if(typeof survey == 'undefined') return;
+  //   survey.onComplete.add(function (s) {
+  //     var result = "\nThe results are:\n" + JSON.stringify(survey.data);
+  //     document.getElementById('chartContainer').innerHTML = result;
+  //     document.getElementById('survey_oncomplete').style.display = '';
+  //   });
+  //   survey.render("mySurveyJSName");
+  // }
+  //
+  // renderSurvey();
 
   // survey.onGetResult.add(function(s, options) {
   //   if(options.success) {
@@ -175,22 +219,6 @@
   //   });
   // }
 
-  function reRunSurvey() {
-    survey.clear();
-    survey.render('survey');
-  }
-
-  function renderSurvey() {
-    if(typeof survey == 'undefined') return;
-    survey.onComplete.add(function (s) {
-      var result = "\nThe results are:\n" + JSON.stringify(survey.data);
-      document.getElementById('chartContainer').innerHTML = result;
-      document.getElementById('survey_oncomplete').style.display = '';
-    });
-    survey.render("mySurveyJSName");
-  }
-
-  renderSurvey();
 
 </script>
 

@@ -1277,9 +1277,12 @@ var Survey;
             if (clientId === void 0) { clientId = null; }
             if (isPartialCompleted === void 0) { isPartialCompleted = false; }
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', dxSurveyService.serviceUrl + '/post/');
+            //xhr.open('POST', dxSurveyService.serviceUrl + '/post/');
+            //xhr.open('POST', dxSurveyService.serviceUrl + '/newsubmission');
+            xhr.open('POST', dxSurveyService.serviceUrl);
             xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
-            var data = { postId: postId, surveyResult: JSON.stringify(result) };
+            //var data = { postId: postId, surveyResult: JSON.stringify(result) };
+            var data = { rd: 'demo@system.com', ip: '203.121.145.100', surveyid: postId, data: JSON.stringify(result) };
             if (clientId)
                 data['clientId'] = clientId;
             if (isPartialCompleted)
@@ -1381,24 +1384,24 @@ var Survey;
         completeText: "Complete",
         otherItemText: "Other (describe)",
         progressText: "Page {0} of {1}",
-        emptySurvey: "There is no any visible page or visible question in the survey.",
-        completingSurvey: "Thank You for Completing the Survey!",
+        emptySurvey: "There is no any visible page or visible question in the survey",
+        completingSurvey: "Thank you for completing the survey",
         loadingSurvey: "Survey is loading from the server...",
         optionsCaption: "Choose...",
         requiredError: "Please answer the question.",
-        numericError: "The value should be a numeric.",
-        textMinLength: "Please enter at least {0} symbols.",
-        minRowCountError: "Please fill at least {0} rows.",
-        minSelectError: "Please select at least {0} variants.",
-        maxSelectError: "Please select not more than {0} variants.",
+        numericError: "The value should be a numeric",
+        textMinLength: "Please enter at least {0} symbols",
+        minRowCountError: "Please fill at least {0} rows",
+        minSelectError: "Please select at least {0} variants",
+        maxSelectError: "Please select not more than {0} variants",
         numericMinMax: "The '{0}' should be equal or more than {1} and equal or less than {2}",
         numericMin: "The '{0}' should be equal or more than {1}",
         numericMax: "The '{0}' should be equal or less than {1}",
-        invalidEmail: "Please enter a valid e-mail.",
+        invalidEmail: "Please enter a valid e-mail",
         urlRequestError: "The request return error '{0}'. {1}",
         urlGetChoicesError: "The request returns empty data or the 'path' property is incorrect",
-        exceedMaxSize: "The file size should not exceed {0}.",
-        otherRequiredError: "Please enter the others value.",
+        exceedMaxSize: "The file size should not exceed {0}",
+        otherRequiredError: "Please enter the others value",
         uploadingFile: "Your file is uploading. Please wait several seconds and try again.",
         addRow: "Add Row",
         removeRow: "Remove"
