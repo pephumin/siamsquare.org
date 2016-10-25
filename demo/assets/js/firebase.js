@@ -47,15 +47,13 @@ function writeNewPost(uid, username, picture, title, body) {
     authorPic: picture
   };
 
-  var postTest = {"postId":"700d9888-1eff-4513-afa2-ee02fcbc1217","surveyResult":"{\"Q1\":[\"A2\"],\"Q2\":\"2\",\"Q3\":\"poi\",\"Q4\":5,\"ownCar\":\"N\"}"};
-
   // Get a key for a new Post.
   var newPostKey = firebase.database().ref().child('posts').push().key;
 
   // Write the new post's data simultaneously in the posts list and the user's post list.
   var updates = {};
-  updates['/posts/' + newPostKey] = postTest;
-  updates['/user-posts/' + uid + '/' + newPostKey] = postTest;
+  updates['/posts/' + newPostKey] = postData;
+  updates['/user-posts/' + uid + '/' + newPostKey] = postData;
 
   return firebase.database().ref().update(updates);
 }

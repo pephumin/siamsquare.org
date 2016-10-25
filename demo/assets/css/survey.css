@@ -196,7 +196,7 @@
   padding: 0px;
   border: 1px solid #aaa; }
 
-#mySurveyJSName, #surveyjs {
+#mySurveyJSName, #surveyContainer, #surveyjs {
   font-family: "boon" !important;
   font-size: 16px !important; }
 
@@ -270,3 +270,7 @@ li.editor-topnav-right > button, li.editor-topnav-right > div > button {
 
 i.pe-exclamation-circle {
   margin-right: 5px; }
+
+.eachquestion {
+  margin-top: 10px;
+  margin-bottom: 40px; }

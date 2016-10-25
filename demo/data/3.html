@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="utf-8">
   <meta charset="utf-8">
@@ -9,8 +9,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <title>Editor</title>
-  <link rel="stylesheet" type="text/css" href="assets/css/admin.css">
+  <title>Conduct a survey</title>
+  <link rel="stylesheet" type="text/css" href="assets/css/public.css">
   <link rel="stylesheet" type="text/css" href="assets/css/survey.css">
   <link rel="shortcut icon" type="image/x-icon" href="assets/icons/favicon.ico">
   <link rel="apple-touch-icon" sizes="57x57" href="assets/icons/apple-icon-57x57.png">
@@ -80,69 +80,19 @@
 </header>
 <main class="container">
 
-<h2>Edit Survey: <em>Survey name</em></h2>
-    <!-- <div style="margin-bottom:5px;margin-top:10px"><a href='/Home/RunSurvey/fb79b5c0-3ad5-44ab-ac5e-4834250f22d6' }" target="_blank">Test your survey on a separate page</a>. Remember to save the survey first.</div> -->
-<div id="publishRoot" style="display: table-cell; vertical-align:middle">
-  <div data-bind="visible:!isPublished()"  style="display:none">
-    <button data-bind="click:publish">Publish the survey</button>
-  </div>
-  <div data-bind="visible:isPublished" style="display:none">
-    <button data-bind="click:unPublish">Stop publishing the survey</button>
-    <a data-bind="attr:{href:url}" target="_blank">Run the survey </a>
-    <input type="checkbox" data-bind="checked:useCookies" /><span> Use Cookies</span>
-  </div>
+<h2>Conduct a survey</h2>
+
+
+<div id="surveyContainer">
+  <div id="mySurveyJSName"></div>
 </div>
 
-<br>
+<div id="survey_oncomplete" style="display:none">
+  <div id="chartContainer"></div>
+  <input id="btnreRun" class="btn btn-warning" type="button" onclick="document.getElementById('surveyContainer').style.display = ''; document.getElementById('survey_oncomplete').style.display = 'none';  reRunSurvey();" value="ตอบแบบสอบถามชุดนี้ใหม่อีกครั้ง"></input>
+</div>
 
-<div id="editor" style="min-width:100%; width:100%"></div>
-
-<script type="text/javascript">
-  // Declears required variables
-  var myID = 5;
-
-  // Declears all required functions
-  function getsurveydata() {
-    var result = "";
-    $.ajax({
-      url: 'http://www.siamsquare.org/api/index.php/survey/' + myID,
-      dataType: 'json',
-      type: 'get',
-      cache: false,
-      async: false,
-      success: function(data) { result = data; }
-    });
-    return result;
-  }
-  var options = { questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "matrixdynamic", "html"] };
-  options.generateValidJSON = true;
-  var editor = new SurveyEditor.SurveyEditor("editor", options);
-  editor.showOptions = true;
-  editor.generateValidJSONChangedCallback = function(newValue) {
-    $.get("/api/MySurveys/setGenerationJSONType?generateValidJSON="+ newValue, function (data) {
-    }).fail(function (error) {
-    });
-  };
-
-  mm = getsurveydata();
-
-  if (mm.data) {
-    editor.text = mm.data;
-  }
-  editor.surveyId = mm.id;
-  editor.surveyPostId = mm.id;
-  editor.saveSurveyFunc = function() {
-    $.ajax({
-      url: 'http://www.siamsquare.org/api/index.php/survey/' + myID,
-      dataType: 'json',
-      type: 'put',
-      contentType: 'application/json; charset=utf-8',
-      data: '{ "data": ' + JSON.stringify(editor.text) + ' }',
-      success: function(data) { if (data.isSuccess) { } }
-    });
-  };
-
-</script>
+<script type="text/javascript" src="assets/js/pe.js"></script>
 
 </main>
 <footer>
