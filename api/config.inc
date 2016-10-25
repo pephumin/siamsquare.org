@@ -87,8 +87,8 @@ define('STATUS_ALL_PARTIAL',      'เริ่มแล้ว แต่ยั�
 define('STATUS_SOME_PARTIAL',     'เสร็จไปบางส่วน แต่ยังไ่ม่สมบูรณ์');
 define('STATUS_FINISHED',         'เสร็จเรียบร้อย');
 
-require_once MYLIB;
-require_once INCLUDEADM.'/old.inc';
+// require_once MYLIB;
+// require_once INCLUDEADM.'/old.inc';
 
 $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
 

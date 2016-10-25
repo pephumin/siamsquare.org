@@ -1,6 +1,7 @@
 <?php
 
-$dsn = 'mysql://sinbad:2bbadd@magenta.thaiweb.net/siamsquare/';
+require_once './config.inc';
+$dsn = 'mysql://'.DB_USER.':'.DB_PASS.'@'.DB_HOST.'/'.DB_DATABASE.'/';
 // $clients = array
 // (
 //     '127.0.0.1',
@@ -14,103 +15,100 @@ else if (peDB::Query($dsn) === false) { exit(peDB::Reply(peDB::$HTTP[503])); }
 if (array_key_exists('_method', $_GET) === true) { $_SERVER['REQUEST_METHOD'] = strtoupper(trim($_GET['_method'])); }
 else if (array_key_exists('HTTP_X_HTTP_METHOD_OVERRIDE', $_SERVER) === true) { $_SERVER['REQUEST_METHOD'] = strtoupper(trim($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'])); }
 
-peDB::Serve('GET', '/(#any)/(#any)/(#any)', function ($table, $id, $data) {
-  $query = array(
-    sprintf('SELECT * FROM "%s"', $table),
-    sprintf('WHERE "%s" %s ?', $id, (ctype_digit($data) === true) ? '=' : 'LIKE'),
-  );
-  if (isset($_GET['by']) === true) {
-    if (isset($_GET['order']) !== true) { $_GET['order'] = 'ASC'; }
-    $query[] = sprintf('ORDER BY "%s" %s', $_GET['by'], $_GET['order']);
-  }
-  if (isset($_GET['limit']) === true) {
-    $query[] = sprintf('LIMIT %u', $_GET['limit']);
-    if (isset($_GET['offset']) === true) { $query[] = sprintf('OFFSET %u', $_GET['offset']); }
-  }
-  $query = sprintf('%s;', implode(' ', $query));
-  $result = peDB::Query($query, $data);
-  if ($result === false) { $result = peDB::$HTTP[404]; }
-  else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
-  return peDB::Reply($result);
-});
-
-peDB::Serve('GET', '/(#any)/(#num)?', function ($table, $id = null) {
-  $query = array ( sprintf('SELECT data FROM "%s"', $table), );
-  if (isset($id) === true) { $query[] = sprintf('WHERE "%s" = ? LIMIT 1', 'id'); }
-  else {
-    if (isset($_GET['by']) === true) {
-      if (isset($_GET['order']) !== true) { $_GET['order'] = 'ASC'; }
-      $query[] = sprintf('ORDER BY "%s" %s', $_GET['by'], $_GET['order']);
-    }
-    if (isset($_GET['limit']) === true) {
-      $query[] = sprintf('LIMIT %u', $_GET['limit']);
-      if (isset($_GET['offset']) === true) { $query[] = sprintf('OFFSET %u', $_GET['offset']); }
-    }
-  }
-  $query = sprintf('%s;', implode(' ', $query));
-  $result = (isset($id) === true) ? peDB::Query($query, $id) : peDB::Query($query);
-  if ($result === false) { $result = peDB::$HTTP[404]; }
-  else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
-  else if (isset($id) === true) { $result = array_shift($result); }
-  return peDB::Reply($result);
-});
-
-peDB::Serve('DELETE', '/(#any)/(#num)', function ($table, $id) {
-  $query = array (sprintf('DELETE FROM "%s" WHERE "%s" = ?', $table, 'id'), );
+peDB::Serve('GET', '/(#any)/(#any)/(#any)', function ($category, $id, $col) {
+  if ($category == "survey") { $table = "j_projects"; $extended = sprintf('WHERE "%s" = ? ', 'id'); }
+  else if ($category == "result") { $table = "j_results"; $extended = sprintf('WHERE "%s" = ? ', 'surveyid'); }
+  else if ($category == "user") { $table = "j_users"; $extended = sprintf('WHERE "%s" = ? ', 'id'); }
+  else if ($category == "respondent") { $table = "j_respondents"; $extended = sprintf('WHERE "%s" = ? ', 'id'); }
+  else { $result = peDB::$HTTP[404]; }
+  $query = array(sprintf('SELECT "%s" FROM "%s"', $col, $table), $extended,);
+    // sprintf('WHERE "%s" %s ?', $id, (ctype_digit($data) === true) ? '=' : 'LIKE'),
   $query = sprintf('%s;', implode(' ', $query));
   $result = peDB::Query($query, $id);
+  foreach($result as $r) {
+    $result = $r[$col];
+    $result = str_replace("  ", "", $result);
+    $result = str_replace("\r\n", "", $result);
+    $result = str_replace("\\n", "", $result);
+    $result = str_replace("\\", "", $result);
+  }
   if ($result === false) { $result = peDB::$HTTP[404]; }
   else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
+  return peDB::Reply($result);
+});
+
+peDB::Serve('GET', '/(#any)/(#num)?', function ($category, $id = null) {
+  if ($category == "survey") { $table = "j_projects"; $extended = sprintf('WHERE "%s" = ? ', 'id'); }
+  else if ($category == "result") { $table = "j_results"; $extended = sprintf('WHERE "%s" = ? ', 'surveyid'); }
+  else if ($category == "user") { $table = "j_users"; $extended = sprintf('WHERE "%s" = ? ', 'id'); }
+  else if ($category == "respondent") { $table = "j_respondents"; $extended = sprintf('WHERE "%s" = ? ', 'id'); }
+  else { $result = peDB::$HTTP[404]; }
+  $query = array ( sprintf('SELECT * FROM "%s"', $table), );
+  if (isset($id) === true) { $query[] = $extended; }
+  $query = sprintf('%s;', implode(' ', $query));
+  $result = (isset($id) === true) ? peDB::Query($query, $id) : peDB::Query($query);
+  // print_r($result);
+  if ($table == "j_projects") {
+    for($i = 0; $i < count($result); ++$i) {
+      // $result[$i]['data'] = str_replace("  ", "", $result[$i]['data']);
+      // $result[$i]['data'] = str_replace("\r\n", "", $result[$i]['data']);
+      // $result[$i]['data'] = str_replace("\\n\\n", "", $result[$i]['data']);
+    }
+  }
+  if ($result === false) { $result = peDB::$HTTP[404]; }
+  else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
+  if (($category != "result") && (isset($id) === true)) { $result = array_shift($result); }
+  return peDB::Reply($result);
+});
+
+// peDB::Serve('DELETE', '/(#any)/(#num)', function ($table, $id) {
+//   $query = array (sprintf('DELETE FROM "%s" WHERE "%s" = ?', $table, 'id'), );
+//   $query = sprintf('%s;', implode(' ', $query));
+//   $result = peDB::Query($query, $id);
+//   if ($result === false) { $result = peDB::$HTTP[404]; }
+//   else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
+//   else { $result = peDB::$HTTP[200]; }
+//   return peDB::Reply($result);
+// });
+
+peDB::Serve('PUT', '/(#any)/(#num)', function ($table, $id) {
+  $put = file_get_contents('php://input');
+  if ($put) {
+    $extended = sprintf('WHERE "%s" = ?', 'id');
+    $pp = json_decode($put, true);
+    $table = "j_projects";
+    $data = [];
+    foreach ($pp as $key => $value) { $data[$key] = sprintf('"%s" = ?', $key); }
+    $query = array(sprintf('UPDATE "%s" SET %s WHERE "%s" = ?', $table, implode(', ', $data), 'id'),);
+    $query = sprintf('%s;', implode(' ', $query));
+  }
+  // print_r($query);
+  $result = peDB::Query($query, $pp, $id);
+  if ($result === false) { $result = peDB::$HTTP[409]; }
   else { $result = peDB::$HTTP[200]; }
   return peDB::Reply($result);
 });
 
-if (in_array($http = strtoupper($_SERVER['REQUEST_METHOD']), ['POST', 'PUT']) === true) {
-  if (preg_match('~^\x78[\x01\x5E\x9C\xDA]~', $data = file_get_contents('php://input')) > 0) { $data = gzuncompress($data); }
-  if ((array_key_exists('CONTENT_TYPE', $_SERVER) === true) && (empty($data) !== true)) {
-    if (strncasecmp($_SERVER['CONTENT_TYPE'], 'application/json', 16) === 0) { $GLOBALS['_' . $http] = json_decode($data, true); }
-    else if ((strncasecmp($_SERVER['CONTENT_TYPE'], 'application/x-www-form-urlencoded', 33) === 0) && (strncasecmp($_SERVER['REQUEST_METHOD'], 'PUT', 3) === 0)) { parse_str($data, $GLOBALS['_' . $http]); }
-  }
-  if ((isset($GLOBALS['_' . $http]) !== true) || (is_array($GLOBALS['_' . $http]) !== true)) { $GLOBALS['_' . $http] = []; }
-  unset($data);
-}
-
-peDB::Serve('POST', '/(#any)', function ($table) {
-  if (empty($_POST) === true) { $result = peDB::$HTTP[204]; }
-  else if (is_array($_POST) === true) {
-    $queries = [];
-    if (count($_POST) == count($_POST, COUNT_RECURSIVE)) { $_POST = [$_POST]; }
-    foreach ($_POST as $row)
-    {
-      $data = [];
-      foreach ($row as $key => $value) { $data[sprintf('"%s"', $key)] = $value; }
-      $query = array (sprintf('INSERT INTO "%s" (%s) VALUES (%s)', $table, implode(', ', array_keys($data)), implode(', ', array_fill(0, count($data), '?'))), );
-      $queries[] = array (sprintf('%s;', implode(' ', $query)), $data, );
-    }
-    if (count($queries) > 1) {
-      peDB::Query()->beginTransaction();
-      while (is_null($query = array_shift($queries)) !== true) { if (($result = peDB::Query($query[0], $query[1])) === false) { peDB::Query()->rollBack(); break; } }
-      if (($result !== false) && (peDB::Query()->inTransaction() === true)) { $result = peDB::Query()->commit(); }
-    }
-    else if (is_null($query = array_shift($queries)) !== true) { $result = peDB::Query($query[0], $query[1]); }
-    if ($result === false) { $result = peDB::$HTTP[409]; }
-    else { $result = peDB::$HTTP[201]; }
-  }
-
-  return peDB::Reply($result);
-});
-
-peDB::Serve('PUT', '/(#any)/(#num)', function ($table, $id) {
-  if (empty($GLOBALS['_PUT']) === true) { $result = peDB::$HTTP[204]; }
-  else if (is_array($GLOBALS['_PUT']) === true) {
+peDB::Serve('POST', '/', function() {
+  $post = file_get_contents('php://input');
+  if ($post) {
+    $pp = json_decode($post, true);
+    $table = "j_results";
     $data = [];
-    foreach ($GLOBALS['_PUT'] as $key => $value) { $data[$key] = sprintf('"%s" = ?', $key); }
-    $query = array (sprintf('UPDATE "%s" SET %s WHERE "%s" = ?', $table, implode(', ', $data), 'id'), );
-    $query = sprintf('%s;', implode(' ', $query));
-    $result = peDB::Query($query, $GLOBALS['_PUT'], $id);
-    if ($result === false) { $result = peDB::$HTTP[409]; }
-    else { $result = peDB::$HTTP[200]; }
+    foreach ($pp as $key => $value) { $data[sprintf('"%s"', $key)] = $value; }
+    $query = array (sprintf('INSERT INTO "%s" (%s) VALUES (%s)', $table, implode(', ', array_keys($data)), implode(', ', array_fill(0, count($data), '?'))), );
+    $queries[] = array (sprintf('%s;', implode(' ', $query)), $data, );
   }
+  // print_r($query);
+  // print_r($queries);
+  if (count($queries) > 1) {
+    peDB::Query()->beginTransaction();
+    while (is_null($query = array_shift($queries)) !== true) { if (($result = peDB::Query($query[0], $query[1])) === false) { peDB::Query()->rollBack(); break; } }
+    if (($result !== false) && (peDB::Query()->inTransaction() === true)) { $result = peDB::Query()->commit(); }
+  }
+  else if (is_null($query = array_shift($queries)) !== true) { $result = peDB::Query($query[0], $query[1]); }
+  if ($result === false) { $result = peDB::$HTTP[409]; }
+  else { $result = peDB::$HTTP[201]; }
   return peDB::Reply($result);
 });
 
@@ -190,10 +188,7 @@ class peDB {
             if (($page = intval(shell_exec('getconf PAGESIZE'))) > 0) { $pragmas['page_size'] = $page; }
             if (is_readable('/proc/meminfo') === true) {
               if (is_resource($handle = fopen('/proc/meminfo', 'rb')) === true) {
-                while (($line = fgets($handle, 1024)) !== false) {
-                  if (sscanf($line, 'MemTotal: %d kB', $memory) == 1) { $memory = round($memory / 131072) * 131072; break; }
-                }
-                fclose($handle);
+                while (($line = fgets($handle, 1024)) !== false) { if (sscanf($line, 'MemTotal: %d kB', $memory) == 1) { $memory = round($memory / 131072) * 131072; break; } } fclose($handle);
               }
             }
             $pragmas['cache_size'] = intval($memory * 0.25 / ($pragmas['page_size'] / 1024));
@@ -230,6 +225,9 @@ class peDB {
       }
       if (headers_sent() !== true) { header(sprintf('Content-Type: application/%s; charset=utf-8', (empty($callback) === true) ? 'json' : 'javascript')); }
     }
+    // added by pe - 22 October 2016
+    if (substr($_SERVER['PATH_INFO'], -4) == 'data') { $result = str_replace("\\", "", $result); }
+    $result = trim($result, '"');
     return $result;
   }
 
