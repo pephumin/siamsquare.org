@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="utf-8">
   <meta charset="utf-8">
@@ -9,8 +9,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <title>Editor</title>
-  <link rel="stylesheet" type="text/css" href="assets/css/admin.css">
+  <title>Conduct a survey #1</title>
+  <link rel="stylesheet" type="text/css" href="assets/css/public.css">
   <link rel="stylesheet" type="text/css" href="assets/css/survey.css">
   <link rel="shortcut icon" type="image/x-icon" href="assets/icons/favicon.ico">
   <link rel="apple-touch-icon" sizes="57x57" href="assets/icons/apple-icon-57x57.png">
@@ -37,7 +37,7 @@
   <script type="text/javascript" src="assets/js/ace/worker-json.js"></script>
   <script type="text/javascript" src="assets/js/ace/mode-json.js"></script>
   <script type="text/javascript" src="assets/js/survey.js"></script>
-  <script type="text/javascript" src="assets/js/surveyeditor.js"></script>
+  <!-- <script type="text/javascript" src="assets/js/surveyeditor.js"></script> -->
   <script type="text/javascript" src="assets/js/globalize.min.js"></script>
   <script type="text/javascript" src="assets/js/dx.chartjs.js"></script>
 </head>
@@ -80,32 +80,35 @@
 </header>
 <main class="container">
 
-<h2>Edit Survey: <em>Survey name</em></h2>
-    <!-- <div style="margin-bottom:5px;margin-top:10px"><a href='/Home/RunSurvey/fb79b5c0-3ad5-44ab-ac5e-4834250f22d6' }" target="_blank">Test your survey on a separate page</a>. Remember to save the survey first.</div> -->
-<div id="publishRoot" style="display: table-cell; vertical-align:middle">
-  <div data-bind="visible:!isPublished()"  style="display:none">
-    <button data-bind="click:publish">Publish the survey</button>
-  </div>
-  <div data-bind="visible:isPublished" style="display:none">
-    <button data-bind="click:unPublish">Stop publishing the survey</button>
-    <a data-bind="attr:{href:url}" target="_blank">Run the survey </a>
-    <input type="checkbox" data-bind="checked:useCookies" /><span> Use Cookies</span>
-  </div>
+<div id="surveyContainer"></div>
+
+<div id="survey_oncomplete" style="display:none">
+  <div id="chartContainer"></div>
+  <div id="survey_result"></div>
+  <input id="btnreRun" class="btn btn-warning" type="button" onclick="document.getElementById('surveyContainer').style.display = ''; document.getElementById('survey_oncomplete').style.display = 'none';  reRunSurvey();" value="ตอบแบบสอบถามชุดนี้ใหม่อีกครั้ง"></input>
 </div>
 
-<br>
-
-<div id="editor" style="min-width:100%; width:100%"></div>
-
 <script type="text/javascript">
-  // Declears required variables
-  var myID = 5;
 
-  // Declears all required functions
-  function getsurveydata() {
+  function get(name, url) {
+    if (!url) { url = window.location.href; }
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+    results = regex.exec(url); if (!results) return null; if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+  }
+
+  function getip() {
+    var rip;
+    $.ajaxSetup({async: false});
+    $.get('http://jsonip.com/', function(r){ rip = r.ip; });
+    return rip;
+  }
+
+  function getsurveydata(id) {
     var result = "";
     $.ajax({
-      url: 'http://www.siamsquare.org/api/index.php/survey/' + myID,
+      url: 'http://www.siamsquare.org/api/index.php/survey/' + id + '/data',
       dataType: 'json',
       type: 'get',
       cache: false,
@@ -114,35 +117,106 @@
     });
     return result;
   }
-  var options = { questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "matrixdynamic", "html"] };
-  options.generateValidJSON = true;
-  var editor = new SurveyEditor.SurveyEditor("editor", options);
-  editor.showOptions = true;
-  editor.generateValidJSONChangedCallback = function(newValue) {
-    $.get("/api/MySurveys/setGenerationJSONType?generateValidJSON="+ newValue, function (data) {
-    }).fail(function (error) {
-    });
-  };
 
-  mm = getsurveydata();
-
-  if (mm.data) {
-    editor.text = mm.data;
-  }
-  editor.surveyId = mm.id;
-  editor.surveyPostId = mm.id;
-  editor.saveSurveyFunc = function() {
+  function postsurveydata(cid, cip, id, data) {
+    var result = "";
     $.ajax({
-      url: 'http://www.siamsquare.org/api/index.php/survey/' + myID,
+      url: 'http://www.siamsquare.org/api/index.php',
       dataType: 'json',
-      type: 'put',
+      type: 'post',
       contentType: 'application/json; charset=utf-8',
-      data: '{ "data": ' + JSON.stringify(editor.text) + ' }',
-      success: function(data) { if (data.isSuccess) { } }
+      data: '{"rd": "' + cid + '", "ip": "' + cip + '", "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + '}',
+      success: function(data) { result = data; }
     });
-  };
+    return result;
+  }
+
+  function getsurveyresult(id, no) {
+    var result = "";
+    $.ajax({
+      url: 'http://www.siamsquare.org/api/index.php/result/' + id + '/' + no,
+      dataType: 'json',
+      type: 'get',
+      cache: false,
+      async: false,
+      success: function(data) { result = data; }
+    });
+    return result;
+  }
+
+  function showChart(data) {
+    document.getElementById("chartContainer").style.height = "500px";
+    $("#chartContainer").dxPolaChart({
+      dataSource: data,
+      series: [
+          { valueField: "R1", name: "รสชาติ" },
+          { valueField: "R2", name: "บรรจุภัณฑ์" },
+          { valueField: "R3", name: "ขนาด" },
+          { valueField: "R4", name: "ราคา" },
+          { valueField: "R5", name: "ภาพลักษณ์" }
+      ],
+      commonSeriesSettings: {
+          argumentField: "เห็นด้วย",
+          type: "scatter"
+      }
+    });
+  }
+
+
+  // function onIsSurveyCompleted(success, result, response) {
+  //   if(!success) return;
+  //   if(result == 'completed') { alert('You have already run the survey!'); }
+  //   else { runSurvey(); }
+  // }
+  // function runSurveyCheck() {
+  //   // var clientId = document.getElementById('clientId').value;
+  //   var clientId = "myemail@domain.com";
+  //   new Survey.dxSurveyService().isCompleted('47e699f7-d523-4476-8fcd-be601c91d119', clientId, onIsSurveyCompleted);
+  // }
+  // function runSurvey() {
+  //   var survey = new Survey.Survey (getsurveydata(), "surveyContainer");
+  //   survey.clientId = document.getElementById('clientId').value;
+  //   survey.sendResultOnPageNext = document.getElementById('sendResultOnPageNext').checked;
+  //   survey.onComplete.add(function (s) {
+  //     document.getElementById('surveyContainer').innerHTML = "";
+  //     document.getElementById("clientIdContainer").style.display = "inline";
+  //   });
+  //   survey.onSendResult.add(function (survey) {
+  //     var text = "clientId:" + survey.clientId + ". The results are:" + JSON.stringify(survey.data)  + String.fromCharCode(13, 10);
+  //     var memo = document.getElementById('sentResults');
+  //     memo.value = memo.value + text;
+  //   });
+  //   document.getElementById("clientIdContainer").style.display = "none";
+  //   survey.render("surveyContainer");
+  // }
+
+  // Start scripting by pe (phumin@sawasdee.org)
+  var myID = get('s');
+  var clientID = "myemail@domain.com";
+  var clientIP = getip();
+  var survey = new Survey.Survey (getsurveydata(myID), "surveyContainer");
+  survey.onComplete.add(function (s) { postsurveydata(clientID, clientIP, myID, survey.data); });
+  survey.onSendResult.add(function(s, options) { if(options.success) { s.getResult(myID, 'Q2'); } });
+  survey.onGetResult.add(function(s, options) { if(options.success) { showChart(options.dataList); } });
+  // survey.clear();
+
+  // function reRunSurvey() { survey.clear(); survey.render('survey'); }
+  //
+  // function renderSurvey() {
+  //   if (typeof survey == 'undefined') return;
+  //   survey.onComplete.add(function (s) {
+  //     var result = "\nThe results are:\n" + JSON.stringify(survey.data);
+  //     document.getElementById('chartContainer').innerHTML = result;
+  //     document.getElementById('survey_oncomplete').style.display = '';
+  //   });
+  //   survey.render("mySurveyJSName");
+  // }
+  //
+  // renderSurvey();
+
 
 </script>
+
 
 </main>
 <footer>

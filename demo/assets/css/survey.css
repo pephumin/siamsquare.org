@@ -274,3 +274,14 @@ i.pe-exclamation-circle {
 .eachquestion {
   margin-top: 10px;
   margin-bottom: 40px; }
+
+h5.pageTitle {
+  font-style: italic;
+  color:#777;
+  text-align:right;
+  font-weight:bold }
+
+a.tabsmenu {
+  font-family: "roboto" !important;
+  font-size: 16px !important;
+  font-weight: bold; }

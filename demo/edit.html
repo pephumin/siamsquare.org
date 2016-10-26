@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="th">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta charset="utf-8">
@@ -9,8 +9,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <title>Conduct a survey #1</title>
-  <link rel="stylesheet" type="text/css" href="assets/css/public.css">
+  <title>Survey editor</title>
+  <link rel="stylesheet" type="text/css" href="assets/css/admin.css">
   <link rel="stylesheet" type="text/css" href="assets/css/survey.css">
   <link rel="shortcut icon" type="image/x-icon" href="assets/icons/favicon.ico">
   <link rel="apple-touch-icon" sizes="57x57" href="assets/icons/apple-icon-57x57.png">
@@ -37,7 +37,7 @@
   <script type="text/javascript" src="assets/js/ace/worker-json.js"></script>
   <script type="text/javascript" src="assets/js/ace/mode-json.js"></script>
   <script type="text/javascript" src="assets/js/survey.js"></script>
-  <!-- <script type="text/javascript" src="assets/js/surveyeditor.js"></script> -->
+  <script type="text/javascript" src="assets/js/surveyeditor.js"></script>
   <script type="text/javascript" src="assets/js/globalize.min.js"></script>
   <script type="text/javascript" src="assets/js/dx.chartjs.js"></script>
 </head>
@@ -80,32 +80,26 @@
 </header>
 <main class="container">
 
-<div id="surveyContainer"></div>
+<h2 id="h2pageTitle"></h2>
 
-<div id="survey_oncomplete" style="display:none">
-  <div id="chartContainer"></div>
-  <div id="survey_result"></div>
-  <input id="btnreRun" class="btn btn-warning" type="button" onclick="document.getElementById('surveyContainer').style.display = ''; document.getElementById('survey_oncomplete').style.display = 'none';  reRunSurvey();" value="ตอบแบบสอบถามชุดนี้ใหม่อีกครั้ง"></input>
-</div>
+<br>
+
+<div id="editor"></div>
 
 <script type="text/javascript">
 
-  // Declears required variables
-  var myID = 5;
-  var clientId = "myemail@domain.com";
-
-  // Declears all required functions
-  function getip() {
-    var ret_ip;
-    $.ajaxSetup({async: false});
-    $.get('http://jsonip.com/', function(r){ ret_ip = r.ip; });
-    return ret_ip;
+  function get(name, url) {
+    if (!url) { url = window.location.href; }
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+    results = regex.exec(url); if (!results) return null; if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
   }
 
-  function getsurveydata() {
+  function getsurveydata(id) {
     var result = "";
     $.ajax({
-      url: 'http://www.siamsquare.org/api/index.php/survey/' + myID + '/data',
+      url: 'http://www.siamsquare.org/api/index.php/survey/' + id,
       dataType: 'json',
       type: 'get',
       cache: false,
@@ -114,91 +108,32 @@
     });
     return result;
   }
+  var options = { questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "matrixdynamic", "html"] };
+  options.generateValidJSON = true;
+  var editor = new SurveyEditor.SurveyEditor("editor", options);
+  var surveyid = get('s');
+  mm = getsurveydata(surveyid);
+  var blank = JSON.stringify({"completeText":"ยืนยันและส่งความคิดเห็น","completedHtml":"<h2>คุณได้ส่งความคิดเห็นเป็นที่เรียบร้อยแล้ว</h2>\n\n<p>ความคิดเห็นของคุณได้ถูกส่งเข้าสู่ระบบของเราเป็นที่เรียบร้อยแล้ว ซึ่งทางเราจะดำเนินการประมวลผลข้อมูลความคิดเห็นเหล่านี้รวมกับผู้ที่ให้ความคิดเห็นท่านอื่น และจะนำไปใช้สำหรับการวิเคราะห์ผลในลำดับต่อไป</p>\n\n<p>เราขอย้ำอีกครั้งว่า ระบบของเราถูกสร้างขึ้นมาเพื่อเก็บข้อมูลอย่างเป็นความลับ เราจะไม่มีการเปิดเผยชื่อของคุณอย่างเด็ดขาด</p>\n\n<p>สุดท้ายนี้ ในนามของบริษัท เราขอขอบคุณอีกครั้งที่สละเวลาแสดงความคิดเห็น ทุกๆเสียงของคุณมีความหมายเพื่อใช้พัฒนาให้ก้าวหน้าต่อไป</p>","pageNextText":"หน้าถัดไป","pagePrevText":"หน้าที่แล้ว","pages":[{"name":"page1","title":"หน้าแรก"}],"questionTitleTemplate":"{no}. {title} {require}","showProgressBar":"top"});
 
-  function postsurveydata(data) {
-    var result = "";
-    var ip = getip();
+  if (mm.data) { editor.text = mm.data; } else { editor.text = blank; }
+  editor.surveyId = mm.id;
+  editor.surveyPostId = mm.id;
+  editor.saveSurveyFunc = function() {
     $.ajax({
-      url: 'http://www.siamsquare.org/api/index.php',
+      url: 'http://www.siamsquare.org/api/index.php/survey/' + surveyid,
       dataType: 'json',
-      type: 'post',
+      type: 'put',
       contentType: 'application/json; charset=utf-8',
-      data: '{"rd": "' + clientId + '", "ip": "' + ip + '", "surveyid": ' + myID + ', "data": ' + JSON.stringify(JSON.stringify(data)) + '}',
-      success: function(data) { result = data; }
+      data: '{ "data": ' + JSON.stringify(editor.text) + ' }',
+      success: function(data) { if (data.isSuccess) { } }
     });
-    return result;
-  }
+  };
 
-  // function showChart(chartDataSource) {
-  //   document.getElementById("chartContainer").style.height = "500px";
-  //   $("#chartContainer").dxPolaChart({
-  //     dataSource: chartDataSource,
-  //     series: [
-  //         { valueField: "R1", name: "รสชาติ" },
-  //         { valueField: "R2", name: "บรรจุภัณฑ์" },
-  //         { valueField: "R3", name: "ขนาด" },
-  //         { valueField: "R4", name: "ราคา" },
-  //         { valueField: "R5", name: "ภาพลักษณ์" }
-  //     ],
-  //     commonSeriesSettings: {
-  //         argumentField: "เห็นด้วย",
-  //         type: "scatter"
-  //     }
-  //   });
-  // }
-
-
-  // function onIsSurveyCompleted(success, result, response) {
-  //   if(!success) return;
-  //   if(result == 'completed') { alert('You have already run the survey!'); }
-  //   else { runSurvey(); }
-  // }
-  // function runSurveyCheck() {
-  //   // var clientId = document.getElementById('clientId').value;
-  //   var clientId = "myemail@domain.com";
-  //   new Survey.dxSurveyService().isCompleted('47e699f7-d523-4476-8fcd-be601c91d119', clientId, onIsSurveyCompleted);
-  // }
-  // function runSurvey() {
-  //   var survey = new Survey.Survey (getsurveydata(), "surveyContainer");
-  //   survey.clientId = document.getElementById('clientId').value;
-  //   survey.sendResultOnPageNext = document.getElementById('sendResultOnPageNext').checked;
-  //   survey.onComplete.add(function (s) {
-  //     document.getElementById('surveyContainer').innerHTML = "";
-  //     document.getElementById("clientIdContainer").style.display = "inline";
-  //   });
-  //   survey.onSendResult.add(function (survey) {
-  //     var text = "clientId:" + survey.clientId + ". The results are:" + JSON.stringify(survey.data)  + String.fromCharCode(13, 10);
-  //     var memo = document.getElementById('sentResults');
-  //     memo.value = memo.value + text;
-  //   });
-  //   document.getElementById("clientIdContainer").style.display = "none";
-  //   survey.render("surveyContainer");
-  // }
-
-  // Start scripting by pe (phumin@sawasdee.org)
-  var survey = new Survey.Survey (getsurveydata(), "surveyContainer");
-  survey.onComplete.add(function (s) { postsurveydata(survey.data); });
-  survey.onSendResult.add(function(s, options) { if(options.success) { s.getResult('e27d71a3-dd74-4e83-b5aa-3b25a12b2b06', 'Q2'); } });
-  survey.onGetResult.add(function(s, options) { if(options.success) { showChart(options.dataList); } });
-  // survey.clear();
-
-  // function reRunSurvey() { survey.clear(); survey.render('survey'); }
-  //
-  // function renderSurvey() {
-  //   if (typeof survey == 'undefined') return;
-  //   survey.onComplete.add(function (s) {
-  //     var result = "\nThe results are:\n" + JSON.stringify(survey.data);
-  //     document.getElementById('chartContainer').innerHTML = result;
-  //     document.getElementById('survey_oncomplete').style.display = '';
-  //   });
-  //   survey.render("mySurveyJSName");
-  // }
-  //
-  // renderSurvey();
-
+  if (mm.data) { var result = "Editing an existing project"; pname = "Project: " + mm.title; } else { var result = "Creating a new project"; }
+  document.getElementById('h2pageTitle').innerHTML = result;
+  document.getElementById('projectname').innerHTML = pname;
 
 </script>
-
 
 </main>
 <footer>

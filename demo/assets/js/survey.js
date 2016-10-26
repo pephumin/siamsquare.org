@@ -1311,8 +1311,9 @@ var Survey;
         };
         dxSurveyService.prototype.getResult = function (resultId, name, onGetResult) {
             var xhr = new XMLHttpRequest();
-            var data = 'resultId=' + resultId + '&name=' + name;
-            xhr.open('GET', dxSurveyService.serviceUrl + '/getResult?' + data);
+            //var data = 'resultId=' + resultId + '&name=' + name;
+            //xhr.open('GET', dxSurveyService.serviceUrl + '/getResult?' + data);
+            xhr.open('GET', dxSurveyService.serviceUrl + '/result' + resultId + name);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             var self = this;
             xhr.onload = function () {
@@ -5381,14 +5382,14 @@ var Survey;
         footer: "panel-footer",
         navigationButton: "btn", navigation: { complete: "btn-success", prev: "btn-default", next: "btn-default" },
         progress: "progress center-block", progressBar: "progress-bar progress-bar-striped active",
-        pageTitle: "",
+        pageTitle: "pageTitle",
         row: "eachquestion",
         question: { root: "", title: "", comment: "form-control", indent: 20 },
         error: { root: "alert alert-danger alert-th", icon: "glyphicon glyphicon-exclamation-sign", item: "" },
         checkbox: { root: "form-inline", item: "checkbox", other: "" },
         comment: "form-control",
         dropdown: "form-control",
-        matrix: { root: "table" },
+        matrix: { root: "table table-hover" },
         matrixdropdown: { root: "table table-hover" },
         matrixdynamic: { root: "table table-hover", button: "btn btn-default btn-sm" },
         multipletext: { root: "table table-hover", itemTitle: "", itemValue: "form-control" },

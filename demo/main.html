@@ -3,16 +3,17 @@
 <head>
   <meta charset="utf-8">
   <title>Main</title>
-  <link rel="stylesheet" type="text/css" href="assets/css/public.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/admin.css">
   <link rel="stylesheet" type="text/css" href="assets/css/survey.css">
   <link rel="shortcut icon" type="image/x-icon" href="assets/icons/favicon.ico">
+  <script type="text/javascript" src="assets/js/moment.js"></script>
   <script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
   <script type="text/javascript" src="assets/js/bootstrap.js"></script>
   <script type="text/javascript" src="assets/js/knockout.js"></script>
   <script type="text/javascript" src="assets/js/ace/ace.js"></script>
   <script type="text/javascript" src="assets/js/ace/worker-json.js"></script>
   <script type="text/javascript" src="assets/js/ace/mode-json.js"></script>
-  <script type="text/javascript" src="assets/js/survey.ko.js"></script>
+  <script type="text/javascript" src="assets/js/survey.js"></script>
   <script type="text/javascript" src="assets/js/surveyeditor.js"></script>
   <script type="text/javascript" src="assets/js/globalize.min.js"></script>
   <script type="text/javascript" src="assets/js/dx.chartjs.js"></script>
@@ -56,86 +57,270 @@
 </header>
 <main class="container">
 
+<h2>My surveys</h2>
+
+<p>At this page, you will be able to manage all your surveys effectively. You can create a new survey, or move a survey to your archive section, or even delete permanently from your database.</p>
+
+<nav>
+  <ul class="nav nav-tabs">
+    <li data-bind="css: {active: showActive()}"><a class="tabsmenu btn" data-bind="click: loadActive" href="">Active projects <i class="pe-cubes"></i></a></li>
+    <li data-bind="css: {active: !showActive()}"><a class="tabsmenu btn" data-bind="click: loadArchive" href="">Past projects <i class="pe-archive"></i></a></li>
+  </ul>
+</nav>
+
+<br>
+
+<p class="pull-right"><a class="btn btn-success" data-bind="click: createNew, visible: showActive, enable: !isNewSurveyCreating()" href="">New project <i class="pe-cube"></i></a></p>
+
+<table class="table table-hover">
+  <thead>
+    <tr class="bg-success">
+      <th width="10%"></th>
+      <th width="20%">Project</th>
+      <th width="20%">Created</th>
+      <th width="20%">Last updated</th>
+      <th width="30%"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr data-bind="visible: isNewSurveyCreating" class="bg-info">
+      <td></td>
+      <td colspan="3"><input id="newsurveybox" type="text" class="form-control" data-bind="textInput: newSurveyName"></td>
+      <td>
+        <a class="btn btn-xs" data-bind="click: postNew, enable: newSurveyName() != ''" href="">Create <i class="pe-check-circle-o"></i></a>
+        <a class="btn btn-xs" data-bind="click: cancelNew" href="">Cancel <i class="pe-times-circle-o"></i></a>
+      </td>
+    </tr>
+    <!-- ko foreach: surveys -->
+    <tr>
+      <td>
+        <a href="" data-bind="click: $parent.showInfo" title="More Info...">
+          <i data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i>
+        </a>
+      </td>
+      <td>
+        <span data-bind="text: title"></span>
+        <a href="" data-bind="click: $parent.startEdit, visible: $parent.showActive" title="Change Name"> <i class="pe-edit"></i></a>
+      </td>
+      <td>
+        <span data-bind="text: created"></span>
+      </td>
+      <td>
+        <span data-bind="text: lastupdated"></span>
+      </td>
+      <td>
+        <a class="btn btn-default btn-xs" data-bind="attr: { href: 'edit.html?s=' + id }, visible: $parent.showActive">Edit <i class="pe-edit"></i></a>
+        <a class="btn btn-default btn-xs" data-bind="attr: { href: 'result.html?s=' + id }">Results <i class="pe-pie-chart"></i></a>
+        <a class="btn btn-warning btn-xs" data-bind="click: $parent.archive, visible: $parent.showActive" href="">Archive <i class="pe-archive"></i></a>
+        <a class="btn btn-default btn-xs" data-bind="click: $parent.restore, visible: !$parent.showActive()" href="">Restore <i class="pe-undo"></i></a>
+        <a class="btn btn-danger btn-xs" data-bind="click: $parent.delete, visible: !$parent.showActive()" href="">Delete <i class="pe-trash"></i></a>
+        <!-- <a class="btn btn-danger btn-xs" data-bind="visible: !$parent.showActive()" href="" data-toggle="modal" data-target="#confirmdeletebox" id="deletebutton">Delete <i class="pe-trash"></i></a> -->
+      </td>
+    </tr>
+    <tr data-bind="visible: isEditing()" class="bg-info">
+      <td></td>
+      <td colspan="2">
+        <input data-bind="textInput: editingName, visible: isEditing()" class="form-control">
+      </td>
+      <td>
+        <a class="btn btn-sm" data-bind="click: $parent.postEdit, enable: title() != ''" href="">Rename <i class="pe-check-circle-o"></i></a>
+        <a class="btn btn-sm" data-bind="click: $parent.cancelEdit" href="">Cancel <i class="pe-times-circle-o"></i></a>
+      </td>
+      <td></td>
+    </tr>
+    <tr data-bind="visible: showInfo">
+      <td style="border-top-style:none"></td>
+      <td colspan="3" style="border-top-style:none">
+        <dl class="dl-horizontal">
+          <dt>Id</dt>
+          <dd><span data-bind="text: id"></span></dd>
+          <dt>resultid</dt>
+          <dd><span data-bind="text: resultid"></span></dd>
+          <dt>postid</dt>
+          <dd><span data-bind="text: postid"></span></dd>
+        </dl>
+      </td>
+    </tr>
+    <!-- /ko -->
+  </tbody>
+</table>
 
 
-<div class="container body-content">
-    <ul class="nav nav-tabs">
-        <li data-bind="css: {active: showActive()}"><a class="btn btn-default" data-bind="click: loadActive" href="#">Active Surveys</a></li>
-        <li data-bind="css: {active: !showActive()}"><a class="btn btn-default" data-bind="click: loadArchive" href="#">Archived Surveys</a></li>
-    </ul>
-
-<div class="panel">
-  <div class="panel-body">
-    <a class="btn btn-default" data-bind="click: createNew, visible: showActive, enable: !isNewSurveyCreating()" href="#" style="margin:5px">Create New</a>
-    <table class="table">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Name</th>
-          <th>Created At</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr data-bind="visible: isNewSurveyCreating">
-          <td></td>
-          <td colspan="2"><input type="text" class="form-control" data-bind="textInput: newSurveyName" /></td>
-          <td>
-            <a class="btn btn-default" data-bind="click: postNew, enable: newSurveyName() != ''" href="#" style="margin:5px">Create</a>
-            <a class="btn btn-default" data-bind="click: cancelNew" href="#" style="margin:5px">Cancel</a>
-          </td>
-        </tr>
-        <!-- ko foreach: surveys -->
-        <tr>
-          <td>
-            <a href="#" data-bind="click: $parent.showInfo" title="More Info...">
-              <span class="glyphicon" data-bind="css: {'glyphicon-chevron-down': !showInfo(), 'glyphicon-chevron-up': showInfo()}"></span>
-            </a>
-          </td>
-          <td>
-            <input data-bind="textInput:editingName, visible: isEditing()" />
-            <div data-bind="visible: !isEditing()">
-              <span data-bind="text:name"></span>
-              <a href="#" data-bind="click: $parent.startEdit, visible: $parent.showActive" title="Change Name">
-                <span class="glyphicon glyphicon-edit"></span>
-              </a>
-            </div>
-          </td>
-          <td>
-            <div data-bind="visible: isEditing()">
-              <a class="btn btn-default" data-bind="click: $parent.postEdit, enable: name() != ''" href="#" style="margin:5px">Update</a>
-              <a class="btn btn-default" data-bind="click: $parent.cancelEdit" href="#" style="margin:5px">Cancel</a>
-            </div>
-            <span data-bind="text:createdAt, visible: !isEditing()"></span>
-          </td>
-          <td>
-            <a class="btn btn-default" data-bind="attr: { href: '/Home/EditSurvey/' + id }, visible: $parent.showActive" style="margin:5px">Edit</a>
-            <a class="btn btn-default" data-bind="attr: { href: '/Home/SurveyResults/' + id }" style="margin:5px">Results</a>
-            <a class="btn btn-default" data-bind="click: $parent.archive, visible: $parent.showActive" href="#" style="margin:5px">Archive</a>
-            <a class="btn btn-default" data-bind="click: $parent.restore, visible: !$parent.showActive()" href="#" style="margin:5px">Restore</a>
-            <a class="btn btn-default" data-bind="click: $parent.delete, visible: !$parent.showActive()" href="#" style="margin:5px">Delete</a>
-          </td>
-        </tr>
-        <tr data-bind="visible: showInfo">
-          <td style="border-top-style:none"></td>
-          <td colspan="3" style="border-top-style:none">
-            <dl class="dl-horizontal">
-              <dt>Id</dt>
-              <dd><span data-bind="text: id"></span></dd>
-              <dt>ResultId</dt>
-              <dd><span data-bind="text: resultId"></span></dd>
-              <dt>PostId</dt>
-              <dd><span data-bind="text: postId"></span></dd>
-            </dl>
-          </td>
-        </tr>
-        <!-- /ko -->
-      </tbody>
-    </table>
+<div id="confirmdeletebox" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">You are about to delete this project from our database!</h4>
+      </div>
+      <div class="modal-body">
+        <p>You need to consider this very carefully. At least you should be aware that once this process is done it will not be reversible.</p>
+        <p>And all data regarding to this project, such as the questionaire, all responses collected from respondents, the final data file, etc., will be gone forever.</p>
+        <p>Are you sure you still want to proceed?</p>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-danger" data-bind="click: $root.delete, visible: !$root.showActive()" href="" id="btnYes">Delete <i class="pe-check-circle-o"></i></a>
+        <button type="button" data-dismiss="modal" class="btn btn-default">Cancel <i class="pe-times-circle-o"></i></button>
+      </div>
+    </div>
   </div>
 </div>
 
-<script type="text/javascript" src="assets/js/main.js"></script>
+
+
+
+<script type="text/javascript">
+
+  var input = document.getElementById('#newsurveybox');
+  input.focus();
+  input.select();
+
+  var userid = 1;
+
+  var Survey = function (title, created, lastupdated, id, resultid, postid) {
+    this.title = ko.observable(title);
+    this.editingName = ko.observable(title);
+    this.created = created;
+    this.lastupdated = lastupdated;
+    this.id = id;
+    this.resultid = postid;
+    this.postid = postid;
+    this.showInfo = ko.observable(false);
+    this.isEditing = ko.observable(false);
+    // this.del = ko.observable({});
+  }
+
+  var ViewModel = function () {
+    var self = this;
+    this.surveys = ko.observableArray([]);
+    this.url = "http://www.siamsquare.org/api/project.php";
+    this.showActive = ko.observable(true);
+    this.isNewSurveyCreating = ko.observable(false);
+    this.newSurveyName = ko.observable("");
+
+    this.loadData = function (showActive) {
+      self.showActive(showActive);
+      var url = showActive ? "/" + userid + "/active" : "/" + userid + "/archive";
+      $.getJSON(self.url + url, function (data) {
+        var list = [];
+        for (var i = 0; i < data.length; i++) { list.push(self.createSurveyObject(data[i])); }
+        self.surveys(list);
+      }).fail(function (error) { self.onFail(error); });
+    }
+    this.loadActive = function () { self.loadData(true); }
+    this.loadArchive = function () { self.loadData(false); }
+    this.archive = function (survey) {
+      $.ajax({
+        url: 'http://www.siamsquare.org/api/project.php/' + survey.id + '/movetoarchive',
+        dataType: 'json',
+        type: 'put',
+        contentType: 'application/json; charset=utf-8',
+        data: '{ "status": 3 }',
+        success: function (data) { self.removeSurvey(survey); },
+        error: function (error) { self.onFail(error); }
+      });
+    }
+    this.restore = function (survey) {
+      $.ajax({
+        url: 'http://www.siamsquare.org/api/project.php/' + survey.id + '/movetoactive',
+        dataType: 'json',
+        type: 'put',
+        contentType: 'application/json; charset=utf-8',
+        data: '{ "status": 2 }',
+        success: function (data) { self.removeSurvey(survey); },
+        error: function (error) { self.onFail(error); }
+      });
+    }
+    this.delete = function (survey) {
+      $.ajax({
+        url: 'http://www.siamsquare.org/api/project.php/' + survey.id + '/delete',
+        dataType: 'json',
+        type: 'delete',
+        contentType: 'application/json; charset=utf-8',
+        success: function (data) { self.removeSurvey(survey); },
+        error: function (error) { self.onFail(error); }
+      });
+    }
+    // this.modalDelete = function (survey) {
+    //   // self.del;
+    //   self.delete;
+    //   // $.ajax({
+    //   //   url: 'http://www.siamsquare.org/api/project.php/' + survey.id + '/delete',
+    //   //   dataType: 'json',
+    //   //   type: 'delete',
+    //   //   contentType: 'application/json; charset=utf-8',
+    //   //   success: function (data) { self.removeSurvey(survey); },
+    //   //   error: function (error) { self.onFail(error); }
+    //   // });
+    // }
+    this.removeSurvey = function (survey) {
+      var index = self.surveys.indexOf(survey);
+      if (index > -1) { self.surveys.splice(index, 1); }
+    }
+    // this.confirmDelete = function () { self.delete(true); }
+    this.createNew = function () {
+      self.isNewSurveyCreating(true);
+      self.newSurveyName("New survey");
+    }
+    this.cancelNew = function () {
+      self.isNewSurveyCreating(false);
+    }
+    this.postNew = function () {
+      self.cancelNew();
+      $.ajax({
+        url: 'http://www.siamsquare.org/api/project.php/' + userid + '/new?name=' + self.newSurveyName(),
+        dataType: 'json',
+        type: 'get',
+        contentType: 'application/json; charset=utf-8',
+        success: function (data) { self.surveys.splice(0, 0, self.createSurveyObject(data)); },
+        error: function (error) { self.onFail(error); }
+      });
+    }
+    this.startEdit = function (survey) {
+      survey.editingName(survey.title());
+      survey.isEditing(true);
+    }
+    this.postEdit = function (survey) {
+      self.cancelEdit(survey);
+      $.ajax({
+        url: 'http://www.siamsquare.org/api/project.php/' + survey.id + '/rename',
+        dataType: 'json',
+        type: 'put',
+        contentType: 'application/json; charset=utf-8',
+        data: '{ "title": "' + survey.editingName() + '" }',
+        success: function (data) { survey.title(survey.editingName()); },
+        error: function (error) { self.onFail(error); }
+      });
+    }
+    this.cancelEdit = function (survey) {
+      survey.isEditing(false);
+    }
+    this.createSurveyObject = function (data) {
+      moment.locale('en');
+      var s1 = moment(data.created).fromNow();
+      var s2 = moment(data.created).format('lll');
+      // var created = s2 + ' (' + s1 + ')';
+      var created = s1;
+      var t1 = moment(data.updated).fromNow();
+      var t2 = moment(data.updated).format('lll');
+      // var lastupdated = t2 + ' (' + t1 + ')';
+      var lastupdated = t1;
+      return new Survey(data.title, created, lastupdated, data.id, data.resultid, data.postid);
+    }
+    this.onFail = function (error) {
+      alert(JSON.stringify(error));
+    }
+    this.showInfo = function (survey) {
+      survey.showInfo(!survey.showInfo());
+    }
+    this.loadActive();
+  }
+  jQuery(document).ready(function () {
+    ko.applyBindings(new ViewModel());
+  });
+
+
+</script>
 
 </main>
 <footer>
@@ -179,7 +364,7 @@
   firebase.initializeApp(config);
 </script>
 <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (function (i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function (){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
