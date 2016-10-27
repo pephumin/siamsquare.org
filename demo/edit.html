@@ -88,6 +88,8 @@
 
 <script type="text/javascript">
 
+  var api = "http://www.siamsquare.org/api/index.php";
+
   function get(name, url) {
     if (!url) { url = window.location.href; }
     name = name.replace(/[\[\]]/g, "\\$&");
@@ -99,7 +101,7 @@
   function getsurveydata(id) {
     var result = "";
     $.ajax({
-      url: 'http://www.siamsquare.org/api/index.php/survey/' + id,
+      url: api + '/survey/' + id,
       dataType: 'json',
       type: 'get',
       cache: false,
@@ -120,12 +122,12 @@
   editor.surveyPostId = mm.id;
   editor.saveSurveyFunc = function() {
     $.ajax({
-      url: 'http://www.siamsquare.org/api/index.php/survey/' + surveyid,
+      url: api + '/survey/' + surveyid + '/updatedata',
       dataType: 'json',
       type: 'put',
       contentType: 'application/json; charset=utf-8',
       data: '{ "data": ' + JSON.stringify(editor.text) + ' }',
-      success: function(data) { if (data.isSuccess) { } }
+      success: function(data) { editor.setState("saved"); if (data.isSuccess) {  } }
     });
   };
 
