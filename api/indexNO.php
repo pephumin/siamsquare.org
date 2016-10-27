@@ -15,75 +15,82 @@ else if (peDB::Query($dsn) === false) { exit(peDB::Reply(peDB::$HTTP[503])); }
 if (array_key_exists('_method', $_GET) === true) { $_SERVER['REQUEST_METHOD'] = strtoupper(trim($_GET['_method'])); }
 else if (array_key_exists('HTTP_X_HTTP_METHOD_OVERRIDE', $_SERVER) === true) { $_SERVER['REQUEST_METHOD'] = strtoupper(trim($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'])); }
 
+// URL: /survey/1/data (show data of surveyid #1)
+// URL: /result/27/data (show result of surveyid #27)
+// URL: /user/4/mobile (show mobile number of userid #4)
+// URL: /respondent/17/lastlogin (show lastlogin of respondentid #17)
 
-peDB::Serve('GET', '/(#num)/(#any)?', function ($id, $what) {
-  $table = "j_projects";
-  if ($what == "list") {
-    $extended = sprintf('WHERE "%s" = ?', 'userid');
-    $query = array(sprintf('SELECT * FROM "%s"', $table), $extended,);
-    $query = sprintf('%s;', implode(' ', $query));
-    $result = peDB::Query($query, $id);
-    if ($result === false) { $result = peDB::$HTTP[404]; }
-    else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
-  }
-  else if ($what == "active") {
-    $extended = sprintf('WHERE status < 3 AND "%s" = ?', 'userid');
-    $query = array(sprintf('SELECT * FROM "%s"', $table), $extended,);
-    $query = sprintf('%s;', implode(' ', $query));
-    $result = peDB::Query($query, $id);
-    if ($result === false) { $result = peDB::$HTTP[404]; }
-    else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
-  }
-  else if ($what == "archive") {
-    $extended = sprintf('WHERE status = 3 AND "%s" = ?', 'userid');
-    $query = array(sprintf('SELECT * FROM "%s"', $table), $extended,);
-    $query = sprintf('%s;', implode(' ', $query));
-    $result = peDB::Query($query, $id);
-    if ($result === false) { $result = peDB::$HTTP[404]; }
-    else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
-  }
-  else if ($what == "new") {
-    $content = '{ "title": "'.$_GET['name'].'", "userid": '.$id.', "status": 1, "postid": 1, "resultid": 1, "cookie": "false" }';
-    $pp = json_decode($content, true);
-    $data = [];
-    foreach ($pp as $key => $value) { $data[sprintf('"%s"', $key)] = $value; }
-    $query = array (sprintf('INSERT INTO "%s" (%s) VALUES (%s)', $table, implode(', ', array_keys($data)), implode(', ', array_fill(0, count($data), '?'))), );
-    $queries[] = array (sprintf('%s;', implode(' ', $query)), $data, );
-    if (count($queries) > 1) {
-      peDB::Query()->beginTransaction();
-      while (is_null($query = array_shift($queries)) !== true) { if (($result = peDB::Query($query[0], $query[1])) === false) { peDB::Query()->rollBack(); break; } }
-      if (($result !== false) && (peDB::Query()->inTransaction() === true)) { $result = peDB::Query()->commit(); }
-    }
-    else if (is_null($query = array_shift($queries)) !== true) { $result = peDB::Query($query[0], $query[1]); }
-    if ($result === false) { $result = peDB::$HTTP[409]; }
-    else { $result = peDB::$HTTP[201]; }
-    $extended = sprintf('ORDER BY "%s" DESC LIMIT 1', 'id');
-    $query = array(sprintf('SELECT * FROM "%s"', $table), $extended,);
-    $query = sprintf('%s;', implode(' ', $query));
-    $result = peDB::Query($query);
-    if ($result === false) { $result = peDB::$HTTP[404]; }
-    else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
-    $result = array_shift($result);
-  }
-  return peDB::Reply($result);
-});
-
-peDB::Serve('DELETE', '/(#num)', function ($id) {
-  $table = "j_projects";
-  $query = array (sprintf('DELETE FROM "%s" WHERE "%s" = ?', $table, 'id'), );
+peDB::Serve('GET', '/(#any)/(#any)/(#any)', function ($what, $id, $col) {
+  if ($what == "survey") { $table = "j_projects"; $extended = sprintf('WHERE "%s" = ? ', 'id'); }
+  else if ($what == "result") { $table = "j_results"; $extended = sprintf('WHERE "%s" = ? ', 'surveyid'); }
+  else if ($what == "user") { $table = "j_users"; $extended = sprintf('WHERE "%s" = ? ', 'id'); }
+  else if ($what == "respondent") { $table = "j_respondents"; $extended = sprintf('WHERE "%s" = ? ', 'id'); }
+  else { $result = peDB::$HTTP[404]; }
+  $query = array(sprintf('SELECT "%s" FROM "%s"', $col, $table), $extended,);
   $query = sprintf('%s;', implode(' ', $query));
   $result = peDB::Query($query, $id);
+  foreach($result as $r) {
+    $result = $r[$col];
+    $result = str_replace("  ", "", $result);
+    $result = str_replace("\r\n", "", $result);
+    $result = str_replace("\\n", "", $result);
+    $result = str_replace("\\", "", $result);
+  }
   if ($result === false) { $result = peDB::$HTTP[404]; }
   else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
-  else { $result = peDB::$HTTP[200]; }
   return peDB::Reply($result);
 });
 
-peDB::Serve('PUT', '/(#num)/(#any)', function ($id, $what) {
-  $table = "j_projects";
+
+// URL: /survey/7 (show all info of surveyid #7)
+// URL: /result/21 (show all results of surveyid #21)
+// URL: /user/8 (show all info of userid #8)
+// URL: /respondent/37 (show all info of respondentid #37)
+
+peDB::Serve('GET', '/(#any)/(#num)?', function ($what, $id = null) {
+  if ($what == "survey") { $table = "j_projects"; $extended = sprintf('WHERE "%s" = ? ', 'id'); }
+  else if ($what == "result") { $table = "j_results"; $extended = sprintf('WHERE "%s" = ? ', 'surveyid'); }
+  else if ($what == "user") { $table = "j_users"; $extended = sprintf('WHERE "%s" = ? ', 'id'); }
+  else if ($what == "respondent") { $table = "j_respondents"; $extended = sprintf('WHERE "%s" = ? ', 'id'); }
+  else if ($what == "active") { $table = "j_projects"; $extended = sprintf('WHERE "status" < 3 AND "%s" = ? ', 'userid'); }
+  else if ($what == "archive") { $table = "j_projects"; $extended = sprintf('WHERE "status" = 3 AND "%s" = ? ', 'userid'); }
+  else { $result = peDB::$HTTP[404]; }
+  $query = array ( sprintf('SELECT * FROM "%s"', $table), );
+  if (isset($id) === true) { $query[] = $extended; }
+  $query = sprintf('%s;', implode(' ', $query));
+  // print_r($query);
+  $result = (isset($id) === true) ? peDB::Query($query, $id) : peDB::Query($query);
+  // print_r($result);
+  if ($table == "j_projects") {
+    for($i = 0; $i < count($result); ++$i) {
+      // $result[$i]['data'] = str_replace("  ", "", $result[$i]['data']);
+      // $result[$i]['data'] = str_replace("\r\n", "", $result[$i]['data']);
+      // $result[$i]['data'] = str_replace("\\n\\n", "", $result[$i]['data']);
+    }
+  }
+  if ($result === false) { $result = peDB::$HTTP[404]; }
+  else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
+  if (($what == "survey") || ($what == "user") || ($what == "respondent") && (isset($id) === true)) { $result = array_shift($result); }
+  return peDB::Reply($result);
+});
+
+// peDB::Serve('DELETE', '/(#any)/(#num)', function ($table, $id) {
+//   $query = array (sprintf('DELETE FROM "%s" WHERE "%s" = ?', $table, 'id'), );
+//   $query = sprintf('%s;', implode(' ', $query));
+//   $result = peDB::Query($query, $id);
+//   if ($result === false) { $result = peDB::$HTTP[404]; }
+//   else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
+//   else { $result = peDB::$HTTP[200]; }
+//   return peDB::Reply($result);
+// });
+
+// Update survey data via surveyeditor.js
+peDB::Serve('PUT', '/(#any)/(#num)', function ($table, $id) {
   $put = file_get_contents('php://input');
-  if (($what == "rename") || ($what == "movetoarchive") || ($what == "movetoactive")) {
+  if ($put) {
+    $extended = sprintf('WHERE "%s" = ?', 'id');
     $pp = json_decode($put, true);
+    $table = "j_projects";
     $data = [];
     foreach ($pp as $key => $value) { $data[$key] = sprintf('"%s" = ?', $key); }
     $query = array(sprintf('UPDATE "%s" SET %s WHERE "%s" = ?', $table, implode(', ', $data), 'id'),);
@@ -93,6 +100,29 @@ peDB::Serve('PUT', '/(#num)/(#any)', function ($id, $what) {
   $result = peDB::Query($query, $pp, $id);
   if ($result === false) { $result = peDB::$HTTP[409]; }
   else { $result = peDB::$HTTP[200]; }
+  return peDB::Reply($result);
+});
+
+peDB::Serve('POST', '/', function() {
+  $post = file_get_contents('php://input');
+  if ($post) {
+    $pp = json_decode($post, true);
+    $table = "j_results";
+    $data = [];
+    foreach ($pp as $key => $value) { $data[sprintf('"%s"', $key)] = $value; }
+    $query = array (sprintf('INSERT INTO "%s" (%s) VALUES (%s)', $table, implode(', ', array_keys($data)), implode(', ', array_fill(0, count($data), '?'))), );
+    $queries[] = array (sprintf('%s;', implode(' ', $query)), $data, );
+  }
+  // print_r($query);
+  // print_r($queries);
+  if (count($queries) > 1) {
+    peDB::Query()->beginTransaction();
+    while (is_null($query = array_shift($queries)) !== true) { if (($result = peDB::Query($query[0], $query[1])) === false) { peDB::Query()->rollBack(); break; } }
+    if (($result !== false) && (peDB::Query()->inTransaction() === true)) { $result = peDB::Query()->commit(); }
+  }
+  else if (is_null($query = array_shift($queries)) !== true) { $result = peDB::Query($query[0], $query[1]); }
+  if ($result === false) { $result = peDB::$HTTP[409]; }
+  else { $result = peDB::$HTTP[201]; }
   return peDB::Reply($result);
 });
 
