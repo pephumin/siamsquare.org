@@ -2,6 +2,7 @@
 
 require_once './config.inc';
 $dsn = 'mysql://'.DB_USER.':'.DB_PASS.'@'.DB_HOST.'/'.DB_DATABASE.'/';
+$key = "aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8";
 // $clients = array
 // (
 //     '127.0.0.1',
@@ -9,6 +10,7 @@ $dsn = 'mysql://'.DB_USER.':'.DB_PASS.'@'.DB_HOST.'/'.DB_DATABASE.'/';
 //     '127.0.0.3',
 // )
 
+// if ($_REQUEST('key') != $key) { exit(peDB::Reply(peDB::$HTTP[511])); }
 if (strcmp(PHP_SAPI, 'cli') === 0) { exit('peDB should not be run from CLI.' . PHP_EOL); }
 if ((empty($clients) !== true) && (in_array($_SERVER['REMOTE_ADDR'], (array) $clients) !== true)) { exit(peDB::Reply(peDB::$HTTP[403])); }
 else if (peDB::Query($dsn) === false) { exit(peDB::Reply(peDB::$HTTP[503])); }
@@ -253,7 +255,7 @@ class peDB {
           if (strncasecmp($query, 'mysql', 5) === 0) {
             $options += array (
               \PDO::ATTR_AUTOCOMMIT => true,
-              \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "utf8" COLLATE "utf8_unicode_ci", time_zone = "+00:00";',
+              \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "utf8" COLLATE "utf8_unicode_ci", time_zone = "+07:00";',
               \PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
             );
           }

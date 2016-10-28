@@ -15,11 +15,11 @@
     };
     firebase.initializeApp(config);
   </script>
-  <link href="assets/css/firebase.css" rel="stylesheet" type="text/css" media="screen" />
   <script src="https://www.gstatic.com/firebasejs/ui/live/0.5/firebase-ui-auth.js"></script>
   <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/live/0.5/firebase-ui-auth.css" />
   <link rel="stylesheet" type="text/css" href="assets/css/admin.css">
   <link rel="stylesheet" type="text/css" href="assets/css/survey.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/firebase.css">
   <link rel="shortcut icon" type="image/x-icon" href="assets/icons/favicon.ico">
   <script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
   <script type="text/javascript" src="assets/js/bootstrap.js"></script>
@@ -38,7 +38,8 @@
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-1">
       <div class="container">
-        <a href="http://www.siamsquare.org/admin/?w=login" class="btn btn-warning btn-xs" title="Log in"><i class="pe-power-off pe-fw"></i> Log in</a> <a href="http://www.pebinary.net/en/clients/" class="btn btn-danger btn-xs"><i class="pe-university pe-fw"></i> Help</a>
+        <div id="user-signed-out" class="hiddenz"><button id="sign-in-with-redirect" class="btn btn-warning btn-xs" title="Log in"><i class="pe-power-off pe-fw"></i> Log in</button> <a href="http://www.pebinary.net/en/clients/" class="btn btn-danger btn-xs"><i class="pe-university pe-fw"></i> Help</a></div>
+        <div id="user-signed-in" class="hiddenz">Welcome <div id="name"></div> <button id="sign-out" class="btn btn-warning btn-xs" title="Log out"><i class="pe-sign-out pe-fw"></i> Log out</button> <a href="http://www.pebinary.net/en/clients/" class="btn btn-danger btn-xs"><i class="pe-university pe-fw"></i> Help</a></div>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-2">
@@ -75,9 +76,9 @@
   <div id="container">
     <h3>FirebaseUI Demo</h3>
     <div id="loading">Loading...</div>
-    <div id="loaded" class="hidden">
+    <div id="loaded" class="hiddenz">
       <div id="main">
-        <div id="user-signed-in" class="hidden">
+        <div id="user-signed-in" class="hiddenz">
           <div id="user-info">
             <div id="photo-container">
               <img id="photo"></img>
@@ -91,7 +92,7 @@
             <button id="delete-account">Delete account</button>
           </p>
         </div>
-        <div id="user-signed-out" class="hidden">
+        <div id="user-signed-out" class="hiddenz">
           <h4>You are signed out.</h4>
           <p>
             <button id="sign-in-with-redirect">Sign In with Redirect</button>
@@ -238,9 +239,6 @@
 </div>
 
 
-
-
-
 <div id="confirmdeletebox" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -262,7 +260,6 @@
 </div>
 
 
-<script type="text/javascript" src="assets/js/firebase.js"></script>
 
 
 <script type="text/javascript">
@@ -400,6 +397,7 @@
   });
 
 </script>
+
 </main>
 <footer>
   <div class="row">
@@ -429,6 +427,8 @@
   </div>
 </footer>
 <div class="scroll-to-top"><i class="pe-arrow-up pe-lg"></i></div>
+<script type="text/javascript" src="assets/js/firebase.js"></script>
+
 <script>
   (function (i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function (){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

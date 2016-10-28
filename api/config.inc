@@ -44,6 +44,9 @@ define('DB_DATABASE', "siamsquare");
 define('DB_PORT',     3306);
 define('DB_CHARSET',  "utf8");
 
+define('TIMEZONE',    "Asia/Bangkok");
+date_default_timezone_set(TIMEZONE);
+
 define('X_ACCESS',            'x_access');
 define('X_DESIGNER',          'x_designer');
 define('X_QUESTION',          'x_question');

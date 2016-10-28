@@ -196,7 +196,7 @@
   padding: 0px;
   border: 1px solid #aaa; }
 
-#mySurveyJSName, #surveyjs {
+#mySurveyJSName, #surveyContainer, #surveyjs {
   font-family: "boon" !important;
   font-size: 16px !important; }
 
@@ -218,6 +218,9 @@
 #surveyEmbedingHead, #surveyEmbedingBody, #surveyEmbedingJava {
   font-family: "boon" !important;
   font-size: 14px !important; }
+
+.navbar-brand {
+  margin-top: 3px; }
 
 .navbar-right {
   margin-right: 0px;
@@ -270,3 +273,18 @@ li.editor-topnav-right > button, li.editor-topnav-right > div > button {
 
 i.pe-exclamation-circle {
   margin-right: 5px; }
+
+.eachquestion {
+  margin-top: 10px;
+  margin-bottom: 40px; }
+
+h5.pageTitle {
+  font-style: italic;
+  color:#777;
+  text-align:right;
+  font-weight:bold }
+
+a.tabsmenu {
+  font-family: "roboto" !important;
+  font-size: 16px !important;
+  font-weight: bold; }
