@@ -2,7 +2,7 @@
 #README.md
 Icon?
 .sass-cache
-_sass
+sass
 .firebaserc
 firebase.json
 firebase-debug.log
