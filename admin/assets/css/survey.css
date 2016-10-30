@@ -1,15 +1,14 @@
-
 .sv_window {
   position: fixed;
   bottom: 3px;
   right: 10px;
   background-color: cadetblue;
   padding: 1px;
-  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
-  line-height: 1.42857143;
+  line-height: 1.42857;
   text-align: left;
   text-align: start;
   text-decoration: none;
@@ -42,11 +41,16 @@
   padding: 8px;
   margin: 0; }
 
-.sv_window_title a, .sv_window_title a:link, .sv_window_title a:visited {
+.sv_window_title a {
   text-decoration: none;
   font-size: 14px;
   font-style: normal;
   color: black; }
+  .sv_window_title a:link, .sv_window_title a:visited {
+    text-decoration: none;
+    font-size: 14px;
+    font-style: normal;
+    color: black; }
 
 .sv_main {
   width: 100%; }
@@ -84,11 +88,14 @@
 .sv_q_matrix {
   width: 100%;
   max-width: 100%; }
-  .sv_q_matrix th, .sv_q_matrix td {
+  .sv_q_matrix th {
     text-align: center;
     vertical-align: central; }
-  .sv_q_matrix td:first-child {
-    text-align: left; }
+  .sv_q_matrix td {
+    text-align: center;
+    vertical-align: central; }
+    .sv_q_matrix td:first-child {
+      text-align: left; }
 
 .sv_q_checkbox {
   display: inline-block; }
@@ -101,14 +108,12 @@
 
 .sv_q_rating {
   display: inline-block; }
-
-.sv_q_rating > :first-child {
-  border-bottom-left-radius: 4px;
-  border-top-left-radius: 4px; }
-
-.sv_q_rating > :last-child {
-  border-bottom-right-radius: 4px;
-  border-top-right-radius: 4px; }
+  .sv_q_rating > :first-child {
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px; }
+  .sv_q_rating > :last-child {
+    border-bottom-right-radius: 4px;
+    border-top-right-radius: 4px; }
 
 .sv_q_rating_item {
   margin-left: -1px;
@@ -126,14 +131,12 @@
   user-select: none;
   background-image: none;
   border: 1px solid #ccc; }
-
-.sv_q_rating_item.active {
-  background-color: #d4d4d4;
-  border-color: #8c8c8c; }
-
-.sv_q_rating_item:hover {
-  background-color: #e6e6e6;
-  border-color: #adadad; }
+  .sv_q_rating_item.active {
+    background-color: #d4d4d4;
+    border-color: #8c8c8c; }
+  .sv_q_rating_item:hover {
+    background-color: #e6e6e6;
+    border-color: #adadad; }
 
 [data-toggle='buttons'] > .sv_q_rating_item input[type='radio'] {
   position: absolute;
@@ -151,14 +154,13 @@
 
 .svd_table-nowrap {
   table-layout: fixed; }
-
-.svd_table-nowrap td {
-  white-space: nowrap;
-  font-family: "ubuntu";
-  font-size: 10.5px;
-  text-align: left;
-  overflow: visible;
-  text-overflow: ellipsis; }
+  .svd_table-nowrap td {
+    white-space: nowrap;
+    font-family: "ubuntu";
+    font-size: 10.5px;
+    text-align: left;
+    overflow: visible;
+    text-overflow: ellipsis; }
 
 .svd_q_selected {
   border-width: 3px;
@@ -226,17 +228,20 @@
   margin-right: 0px;
   margin-top: 3px; }
 
-.nav-tabs>li>a {
+.nav-tabs > li > a {
   font-family: "boon";
   font-size: 14px; }
 
 li.editor-topnav-left > a {
- color: #666 !important;
- padding: 10px 15px;
- font-family: "roboto";
- font-size: 14px; }
+  color: #666 !important;
+  padding: 10px 15px;
+  font-family: "roboto";
+  font-size: 14px; }
+  li.editor-topnav-left > a:hover {
+    color: #fff !important;
+    background-color: #5cb85c !important; }
 
-li.editor-topnav-left > a:hover, .editor-topnav-left > a:focus {
+.editor-topnav-left > a:focus {
   color: #fff !important;
   background-color: #5cb85c !important; }
 
@@ -244,7 +249,7 @@ li.editor-topnav-right > button, li.editor-topnav-right > div > button {
   font-family: "roboto";
   font-size: 12px;
   margin: 3px;
-  font-weight: bold }
+  font-weight: bold; }
 
 .panel-heading-embed {
   font-weight: bold; }
@@ -254,7 +259,7 @@ li.editor-topnav-right > button, li.editor-topnav-right > div > button {
   font-size: 12px;
   font-weight: normal; }
 
-#right-menu-button > table > tbody> tr > td {
+#right-menu-button > table > tbody > tr > td {
   font-family: "roboto";
   font-size: 11px;
   font-weight: normal; }
@@ -280,11 +285,16 @@ i.pe-exclamation-circle {
 
 h5.pageTitle {
   font-style: italic;
-  color:#777;
-  text-align:right;
-  font-weight:bold }
+  color: #777;
+  text-align: right;
+  font-weight: bold; }
 
 a.tabsmenu {
   font-family: "roboto" !important;
   font-size: 16px !important;
   font-weight: bold; }
+
+.btn-bold {
+  font-weight: bold; }
+
+/*# sourceMappingURL=survey.css.map */
