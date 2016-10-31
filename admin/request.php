@@ -2,18 +2,20 @@
 
 $title = 'Request for an access';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once INCLUDEADM.'/template.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/template.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/login.class.php';
 
 $sent = false;
 
+$login = new Login();
 if (empty($_SESSION["captcha"])) { $clength = 8; $rText = generateRandom($clength); $_SESSION["captcha"] = $rText; }
 
 if (isset($_REQUEST['captcha'])) {
 
-  $name = cleanstring($_REQUEST['name']);
-  $email = cleanstring($_REQUEST['email']);
-  $message = cleanstring($_REQUEST['message']);
-  $captcha = cleanstring($_REQUEST['captcha']);
+  $name = $_REQUEST['name'];
+  $email = $_REQUEST['email'];
+  $message = $_REQUEST['message'];
+  $captcha = $_REQUEST['captcha'];
 
   if (!$name) { echo "Error: No name provided.\n"; exit; }
   if (!$email) { echo "Error: No email provided.\n"; exit; }
@@ -54,9 +56,9 @@ echo "<br>\n";
       <div class="input-group">
         <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
         <?php if ($sent) { ?>
-        <input type="text" class="form-control" name="name" placeholder="First &amp; Last Name" value="<?php echo htmlspecialchars($name); ?>" disabled>
+        <input type="text" class="form-control" name="name" placeholder="First &amp; last name" value="<?php echo htmlspecialchars($name); ?>" disabled>
         <?php } else { ?>
-        <input type="text" class="form-control" name="name" placeholder="First &amp; Last Name" value="<?php echo htmlspecialchars($name); ?>">
+        <input type="text" class="form-control" name="name" placeholder="First &amp; last name" value="<?php echo htmlspecialchars($name); ?>">
         <?php } ?>
       </div>
     </div>
@@ -92,7 +94,7 @@ echo "<br>\n";
     <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Confirmation</label>
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
       <p>Please type in the words as shown in this picture<br>
-      <img src="assets/include/captcha.php" alt="captcha"></p>
+      <img src="/admin/assets/include/captcha.php" alt="captcha"></p>
       <div class="input-group">
         <span class="input-group-addon"><i class="pe-cog pe-fw"></i></span>
         <?php if ($sent) { ?>

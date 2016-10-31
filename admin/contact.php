@@ -2,10 +2,12 @@
 
 $title = "Contact us";
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once INCLUDEADM.'/template.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/template.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/login.class.php';
 
 $sent = false;
 
+$login = new Login();
 if (empty($_SESSION["captcha"])) { $clength = 8; $rText = generateRandom($clength); $_SESSION["captcha"] = $rText; }
 
 if (isset($_REQUEST['captcha'])) {
