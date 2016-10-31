@@ -1,0 +1,38 @@
+{
+  "Columns": [{
+    "Name": "HappendAt",
+    "DisplayName": "Submited",
+    "DataType": 0,
+    "Visibility": 0,
+    "Location": 0,
+    "Id": "00000000-0000-0000-0000-000000000000",
+    "Data": {
+      "Id": "00000000-0000-0000-0000-000000000000"
+    }
+  }, {
+    "Name": "IPAddress",
+    "DisplayName": "IPAddress",
+    "DataType": 0,
+    "Visibility": 2,
+    "Location": 0,
+    "Id": "00000000-0000-0000-0000-000000000000",
+    "Data": {
+      "Id": "00000000-0000-0000-0000-000000000000"
+    }
+  }, {
+    "Name": "question1",
+    "DisplayName": "question1",
+    "DataType": 2,
+    "Visibility": 0,
+    "Location": 1,
+    "Id": "00000000-0000-0000-0000-000000000000",
+    "Data": {
+      "Id": "00000000-0000-0000-0000-000000000000"
+    }
+  }],
+  "NewColumnsVisibility": 0,
+  "Id": "00000000-0000-0000-0000-000000000000",
+  "Data": {
+    "Id": "00000000-0000-0000-0000-000000000000"
+  }
+}
