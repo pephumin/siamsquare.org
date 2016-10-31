@@ -11,7 +11,7 @@ if ($_GET['p']) { $p = $_GET['p']; }
 if ($p == '') { $p = "1"; }
 
 if (empty($start)) { $start = 0; }
-if (empty($limit)) { $limit = 10; }
+if (empty($limit)) { $limit = 20; }
 if ($p) { $start = ($p-1) * $limit; }
 $to_record = $start + $limit;
 $add = " LIMIT $start, $limit ";
@@ -21,7 +21,13 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
 if (!$db->set_charset("utf8")) { $errors[] = $db->error; }
 
-if ($_SESSION['userid'] == "1") {
+if ($_GET['d']) {
+  $del = "DELETE FROM j_users_logs WHERE id = '".base64_decode($_GET['d'])."';";
+  $db->query($del);
+  echo mksuccess("A log record has been deleted.");
+}
+
+if ($_SESSION['level'] == "9") {
   $sql1A = "SELECT * FROM j_users_logs ORDER BY recorded DESC;";
   $sql1B = "SELECT * FROM j_users_logs ORDER BY recorded DESC ".$add.";";
 } else {
@@ -48,7 +54,7 @@ echo "<h4>There are a total of $rows records in our database (showing results $f
         <tr class="bg-success">
           <th width="20%"><i class="pe-clock-o pe-fw"></i> Time</th>
           <th width="70%"><i class="pe-tv pe-fw"></i> Activity</th>
-          <?php if ($_SESSION['level'] == "9") { echo "<th width=\"10%\"><i class=\"pe-cogs pe-fw\"></i> Actions</th>"; } ?>
+          <?php if ($_SESSION['level'] == "9") { echo "<th width=\"10%\"></th>"; } ?>
         </tr>
       </thead>
       <tbody>
@@ -56,6 +62,7 @@ echo "<h4>There are a total of $rows records in our database (showing results $f
 while($r = $query1B->fetch_object()) {
   $t = ago($r->recorded);
   $color = "";
+  if ($_GET['p']) { $delete = MYADMIN."?w=activity&d=".base64_encode($r->id)."&p=".$_GET['p']; } else { $delete = MYADMIN."?w=activity&d=".base64_encode($r->id); }
   if (preg_match("/pilot test/i", $r->data)) { $insert = "<i class=\"pe-paper-plane pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/edited and saved/i", $r->data)) { $insert = "<i class=\"pe-save pe-fw\"></i> &nbsp; "; $color = "bisque"; }
   else if (preg_match("/conducted a survey/i", $r->data)) { $insert = "<i class=\"pe-plane pe-fw\"></i> &nbsp; "; $color = "aliceblue"; }
@@ -63,13 +70,14 @@ while($r = $query1B->fetch_object()) {
   else if (preg_match("/logged out/i", $r->data)) { $insert = "<i class=\"pe-sign-out pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed info/i", $r->data)) { $insert = "<i class=\"pe-cog pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed password/i", $r->data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; $color = "lightsteelblue"; }
+  else if (preg_match("/created a new survey/i", $r->data)) { $insert = "<i class=\"pe-flask pe-fw\"></i> &nbsp; "; $color = "skyblue"; }
   else { $insert = ""; }
   if ($color) { $td = "<td style=\"background:$color\">"; } else { $td = "<td>"; }
   if ($insert) { $r->data = $insert." ".$r->data; } else { $r->data = $r->data; }
   echo "        <tr>\n";
   echo "          $td$t</td>\n";
   echo "          $td$r->data</td>\n";
-  if ($_SESSION['level'] == "9") { echo "          <td></td>\n"; }
+  if ($_SESSION['level'] == "9") { echo "          $td<a href=\"$delete\" class=\"btn btn-danger btn-xs\">Delete <i class=\"pe-trash-o\"></i></a></td>\n"; }
   echo "        </tr>\n";
 }
 ?>
