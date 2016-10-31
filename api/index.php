@@ -18,14 +18,14 @@ if (array_key_exists('_method', $_GET) === true) { $_SERVER['REQUEST_METHOD'] = 
 else if (array_key_exists('HTTP_X_HTTP_METHOD_OVERRIDE', $_SERVER) === true) { $_SERVER['REQUEST_METHOD'] = strtoupper(trim($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'])); }
 
 // URL: /survey/1/data (show data of surveyid #1)
-peDB::Serve('GET', '/survey/(#num)/(#any)', function ($id, $col) {
+peDB::Serve('GET', '/survey/(#num)/(#any)', function ($id, $what) {
   $table = "j_projects";
   $extended = sprintf('WHERE "%s" = ? LIMIT 1', 'id');
-  $query = array(sprintf('SELECT "%s" FROM "%s"', $col, $table), $extended,);
+  $query = array(sprintf('SELECT "%s" FROM "%s"', $what, $table), $extended,);
   $query = sprintf('%s;', implode(' ', $query));
   $result = peDB::Query($query, $id);
   foreach($result as $r) {
-    $result = $r[$col];
+    $result = $r[$what];
     $result = str_replace("  ", "", $result);
     $result = str_replace("\r\n", "", $result);
     $result = str_replace("\\n", "", $result);
@@ -37,7 +37,7 @@ peDB::Serve('GET', '/survey/(#num)/(#any)', function ($id, $col) {
 });
 
 // URL: /survey/7 (show all info of surveyid #7)
-peDB::Serve('GET', '/survey/(#num)?', function ($id = null) {
+peDB::Serve('GET', '/survey/(#num)', function ($id = null) {
   $table = "j_projects";
   $extended = sprintf('WHERE "%s" = ? LIMIT 1', 'id');
   $query = array ( sprintf('SELECT * FROM "%s"', $table), );
@@ -55,29 +55,46 @@ peDB::Serve('GET', '/survey/(#num)?', function ($id = null) {
   return peDB::Reply($result);
 });
 
-// Get survey list and info by userid
-peDB::Serve('GET', '/user/(#num)/(#any)?', function ($id, $what) {
+// URL: /survey (show all info of all surveys)
+peDB::Serve('GET', '/survey', function () {
   $table = "j_projects";
-  // URL: /user/1/all (listing all surveys for userid 1)
-  if ($what == "all") {
-    $extended = sprintf('WHERE "%s" = ? ORDER BY "%s" DESC', 'userid', 'updated');
+  $query = array ( sprintf('SELECT * FROM "%s"', $table), );
+  $query = sprintf('%s;', implode(' ', $query));
+  $result = (isset($id) === true) ? peDB::Query($query, $id) : peDB::Query($query);
+  // for($i = 0; $i < count($result); ++$i) {
+    // $result[$i]['data'] = str_replace("  ", "", $result[$i]['data']);
+    // $result[$i]['data'] = str_replace("\r\n", "", $result[$i]['data']);
+    // $result[$i]['data'] = str_replace("\\n\\n", "", $result[$i]['data']);
+  // }
+  if ($result === false) { $result = peDB::$HTTP[404]; }
+  else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
+  //$result = array_shift($result);
+  return peDB::Reply($result);
+});
+
+// Get survey info by different type of survey by userid
+peDB::Serve('GET', '/user/(#num)/(#any)', function ($id, $what) {
+  $table = "j_projects";
+  // URL: /user/1/A (listing type A surveys for userid 1)
+  if ($what == "A") {
+    $extended = sprintf('WHERE status = 1 AND "%s" = ? ORDER BY "%s" DESC', 'userid', 'updated');
     $query = array(sprintf('SELECT * FROM "%s"', $table), $extended,);
     $query = sprintf('%s;', implode(' ', $query));
     $result = peDB::Query($query, $id);
     if ($result === false) { $result = peDB::$HTTP[404]; }
     else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
   }
-  // URL: /user/1/active (listing all active surveys for userid 1)
-  else if ($what == "active") {
-    $extended = sprintf('WHERE status < 3 AND "%s" = ? ORDER BY "%s" DESC', 'userid', 'updated');
+  // URL: /user/1/B (listing type B surveys for userid #1)
+  else if ($what == "B") {
+    $extended = sprintf('WHERE status = 2 AND "%s" = ? ORDER BY "%s" DESC', 'userid', 'updated');
     $query = array(sprintf('SELECT * FROM "%s"', $table), $extended,);
     $query = sprintf('%s;', implode(' ', $query));
     $result = peDB::Query($query, $id);
     if ($result === false) { $result = peDB::$HTTP[404]; }
     else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
   }
-  // URL: /user/1/archive (listing all surveys for userid 1)
-  else if ($what == "archive") {
+  // URL: /user/1/C (listing type C surveys for userid #1)
+  else if ($what == "C") {
     $extended = sprintf('WHERE status = 3 AND "%s" = ? ORDER BY "%s" DESC', 'userid', 'updated');
     $query = array(sprintf('SELECT * FROM "%s"', $table), $extended,);
     $query = sprintf('%s;', implode(' ', $query));
@@ -85,9 +102,18 @@ peDB::Serve('GET', '/user/(#num)/(#any)?', function ($id, $what) {
     if ($result === false) { $result = peDB::$HTTP[404]; }
     else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
   }
-  // URL: /user/1/new?name=Title (create a new survey for userid 1 with default survey settings)
+  // URL: /user/1/D (listing type D surveys for userid #1)
+  else if ($what == "D") {
+    $extended = sprintf('WHERE status = 4 AND "%s" = ? ORDER BY "%s" DESC', 'userid', 'updated');
+    $query = array(sprintf('SELECT * FROM "%s"', $table), $extended,);
+    $query = sprintf('%s;', implode(' ', $query));
+    $result = peDB::Query($query, $id);
+    if ($result === false) { $result = peDB::$HTTP[404]; }
+    else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
+  }
+  // URL: /user/1/new?name=Title (create a new survey for userid #1 by the title given and apply all default settings)
   else if ($what == "new") {
-    $content = '{ "title": "'.$_GET['name'].'", "userid": '.$id.', "status": 1, "postid": 1, "resultid": 1, "cookie": "false" }';
+    $content = '{ "title": "'.$_GET['name'].'", "userid": '.$id.', "status": 1, "cookie": "false" }';
     $pp = json_decode($content, true);
     $data = [];
     foreach ($pp as $key => $value) { $data[sprintf('"%s"', $key)] = $value; }
@@ -114,25 +140,37 @@ peDB::Serve('GET', '/user/(#num)/(#any)?', function ($id, $what) {
   return peDB::Reply($result);
 });
 
-// URL: /survey/7/delete (delete surveyid 1)
-peDB::Serve('DELETE', '/survey/(#num)/(#any)', function ($id, $what) {
+// URL: /user/1 (listing all surveys for userid #1)
+peDB::Serve('GET', '/user/(#num)', function ($id) {
   $table = "j_projects";
-  $query = array (sprintf('DELETE FROM "%s" WHERE "%s" = ?', $table, 'id'), );
+  $extended = sprintf('WHERE "%s" = ? ORDER BY "%s" DESC', 'userid', 'updated');
+  $query = array(sprintf('SELECT * FROM "%s"', $table), $extended,);
   $query = sprintf('%s;', implode(' ', $query));
   $result = peDB::Query($query, $id);
   if ($result === false) { $result = peDB::$HTTP[404]; }
   else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
-  else { $result = peDB::$HTTP[200]; }
   return peDB::Reply($result);
 });
 
+// URL: /survey/7/delete (delete surveyid #7)
+// peDB::Serve('DELETE', '/survey/(#num)/(#any)', function ($id, $what) {
+//   $table = "j_projects";
+//   $query = array (sprintf('DELETE FROM "%s" WHERE "%s" = ?', $table, 'id'), );
+//   $query = sprintf('%s;', implode(' ', $query));
+//   $result = peDB::Query($query, $id);
+//   if ($result === false) { $result = peDB::$HTTP[404]; }
+//   else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
+//   else { $result = peDB::$HTTP[200]; }
+//   return peDB::Reply($result);
+// });
+
 // URL: /survey/1/rename (rename Title for surveyid #1)
 // URL: /survey/4/movetoactive (move surveyid #4 to active)
-// URL: /survey/2/updatedata (update data by surveyjseditor.js)
+// URL: /survey/2/updatedata (update data of surveyid #2 by surveyjseditor.js)
 peDB::Serve('PUT', '/survey/(#num)/(#any)', function ($id, $what) {
   $table = "j_projects";
   $put = file_get_contents('php://input');
-  if (($what == "rename") || ($what == "movetoarchive") || ($what == "movetoactive") || ($what == "updatedata")) {
+  if (($what == "rename") || ($what == "archive") || ($what == "restore") || ($what == "delete") || ($what == "updatedata")) {
     $pp = json_decode($put, true);
     $data = [];
     foreach ($pp as $key => $value) { $data[$key] = sprintf('"%s" = ?', $key); }
@@ -146,11 +184,33 @@ peDB::Serve('PUT', '/survey/(#num)/(#any)', function ($id, $what) {
 });
 
 // Submit survey result to the result table
-peDB::Serve('POST', '/', function() {
+peDB::Serve('POST', '/submit', function() {
   $post = file_get_contents('php://input');
   if ($post) {
     $pp = json_decode($post, true);
     $table = "j_results";
+    $data = [];
+    foreach ($pp as $key => $value) { $data[sprintf('"%s"', $key)] = $value; }
+    $query = array (sprintf('INSERT INTO "%s" (%s) VALUES (%s)', $table, implode(', ', array_keys($data)), implode(', ', array_fill(0, count($data), '?'))), );
+    $queries[] = array (sprintf('%s;', implode(' ', $query)), $data, );
+  }
+  if (count($queries) > 1) {
+    peDB::Query()->beginTransaction();
+    while (is_null($query = array_shift($queries)) !== true) { if (($result = peDB::Query($query[0], $query[1])) === false) { peDB::Query()->rollBack(); break; } }
+    if (($result !== false) && (peDB::Query()->inTransaction() === true)) { $result = peDB::Query()->commit(); }
+  }
+  else if (is_null($query = array_shift($queries)) !== true) { $result = peDB::Query($query[0], $query[1]); }
+  if ($result === false) { $result = peDB::$HTTP[409]; }
+  else { $result = peDB::$HTTP[201]; }
+  return peDB::Reply($result);
+});
+
+// Log user actions
+peDB::Serve('POST', '/log', function() {
+  $post = file_get_contents('php://input');
+  if ($post) {
+    $pp = json_decode($post, true);
+    $table = "j_users_logs";
     $data = [];
     foreach ($pp as $key => $value) { $data[sprintf('"%s"', $key)] = $value; }
     $query = array (sprintf('INSERT INTO "%s" (%s) VALUES (%s)', $table, implode(', ', array_keys($data)), implode(', ', array_fill(0, count($data), '?'))), );
