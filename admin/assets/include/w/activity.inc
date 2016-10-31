@@ -1,5 +1,12 @@
 <?php
 
+$title = "Activity";
+pageHeader($title);
+echo "<h2>$title</h2>";
+echo "<p>This page shows the activities sorted by time where the most recent activity is on the top of the list. While the default is set to have each user only sees his/her own activity, users with a higher access permission will also see the activity of other members within the same group.</p>\n";
+echo "<p>Feel free to contact us if you find any problems using our site. Any other suggestions are also more than welcome.</p>\n";
+echo "<br>\n";
+
 if ($_GET['p']) { $p = $_GET['p']; }
 if ($p == '') { $p = "1"; }
 
@@ -9,10 +16,6 @@ if ($p) { $start = ($p-1) * $limit; }
 $to_record = $start + $limit;
 $add = " LIMIT $start, $limit ";
 
-$title = "View activity";
-pageHeader($title);
-
-echo "<h2>$title</h2>";
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
@@ -33,7 +36,7 @@ $rows = $query1A->num_rows;
 if ($to_record > $rows) { $to_record = $rows; }
 $from_record = $start + 1;
 
-echo "<p>There are a total of $rows records in our database (showing results $from_record to $to_record)</p>\n";
+echo "<h4>There are a total of $rows records in our database (showing results $from_record to $to_record)</h4>\n";
 
 ?>
 
@@ -43,19 +46,30 @@ echo "<p>There are a total of $rows records in our database (showing results $fr
     <table class="table table-hover">
       <thead>
         <tr class="bg-success">
-          <th width="30%"><i class="pe-calendar pe-fw"></i> Date</th>
-          <th width="40%"><i class="pe-tv pe-fw"></i> Activity</th>
-          <th width="30%"><i class="pe-cogs pe-fw"></i> Actions</th>
+          <th width="20%"><i class="pe-clock-o pe-fw"></i> Time</th>
+          <th width="70%"><i class="pe-tv pe-fw"></i> Activity</th>
+          <?php if ($_SESSION['level'] == "9") { echo "<th width=\"10%\"><i class=\"pe-cogs pe-fw\"></i> Actions</th>"; } ?>
         </tr>
       </thead>
       <tbody>
 <?php
 while($r = $query1B->fetch_object()) {
   $t = ago($r->recorded);
+  $color = "";
+  if (preg_match("/pilot test/i", $r->data)) { $insert = "<i class=\"pe-paper-plane pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/edited and saved/i", $r->data)) { $insert = "<i class=\"pe-save pe-fw\"></i> &nbsp; "; $color = "bisque"; }
+  else if (preg_match("/conducted a survey/i", $r->data)) { $insert = "<i class=\"pe-plane pe-fw\"></i> &nbsp; "; $color = "aliceblue"; }
+  else if (preg_match("/logged in/i", $r->data)) { $insert = "<i class=\"pe-sign-in pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/logged out/i", $r->data)) { $insert = "<i class=\"pe-sign-out pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed info/i", $r->data)) { $insert = "<i class=\"pe-cog pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed password/i", $r->data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; $color = "lightsteelblue"; }
+  else { $insert = ""; }
+  if ($color) { $td = "<td style=\"background:$color\">"; } else { $td = "<td>"; }
+  if ($insert) { $r->data = $insert." ".$r->data; } else { $r->data = $r->data; }
   echo "        <tr>\n";
-  echo "          <td>$t</td>\n";
-  echo "          <td>$r->data</td>\n";
-  echo "          <td></td>\n";
+  echo "          $td$t</td>\n";
+  echo "          $td$r->data</td>\n";
+  if ($_SESSION['level'] == "9") { echo "          <td></td>\n"; }
   echo "        </tr>\n";
 }
 ?>

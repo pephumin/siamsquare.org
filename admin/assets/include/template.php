@@ -21,7 +21,7 @@ function pageHeader($title) {
     $ww = "Logged in as $show";
   } else {
     $signed = "<a href=\"$v1\" class=\"btn btn-warning btn-xs\" title=\"Log in\"><i class=\"pe-power-off pe-fw\"></i> Log in</a> <a href=\"$v3\" class=\"btn btn-danger btn-xs\"><i class=\"pe-university pe-fw\"></i> Help</a>\n";
-    $ww = "<i class=\"pe-exclamation-triangle pe-fw\"></i> Authorised clients only";
+    $ww = "<span class=\"deepgreen\"><i class=\"pe-info-circle pe-fw\"></i> Authorised clients only</span>";
   }
   header("Content-language: en");
   header("Content-type: text/html; charset=utf-8");
@@ -40,7 +40,6 @@ function pageHeader($title) {
   <title>SiamSquare: <?php echo $title; ?></title>
   <link rel="stylesheet" type="text/css" href="/admin/assets/css/admin.css">
   <?php if (($_REQUEST["w"]) == "edit") { echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/survey.css\">"; } ?>
-  <!-- <link rel="stylesheet" type="text/css" href="/admin/assets/css/firebase.css"> -->
   <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/live/0.5/firebase-ui-auth.css">
   <link rel="shortcut icon" type="image/x-icon" href="/admin/assets/icons/favicon.ico">
   <link rel="apple-touch-icon" sizes="57x57" href="/admin/assets/icons/apple-icon-57x57.png">
@@ -75,17 +74,7 @@ function pageHeader($title) {
   <script type="text/javascript" src="/admin/assets/js/survey/globalize.min.js"></script>
   <script type="text/javascript" src="/admin/assets/js/survey/dx.chartjs.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/firebasejs/3.4.1/firebase.js"></script>
-  <script type="text/javascript" src="https://www.gstatic.com/firebasejs/ui/live/0.5/firebase-ui-auth.js"></script>
-  <script type="text/javascript">
-    var config = {
-      apiKey: "AIzaSyBhLjEc1SwSq06Pg494R6pdM2NqLHF8Ag0",
-      authDomain: "siamsquare-6f543.firebaseapp.com",
-      databaseURL: "https://siamsquare-6f543.firebaseio.com",
-      storageBucket: "siamsquare-6f543.appspot.com",
-      messagingSenderId: "485767684184"
-    };
-    firebase.initializeApp(config);
-  </script>
+  <!-- <script type="text/javascript" src="https://www.gstatic.com/firebasejs/ui/live/0.5/firebase-ui-auth.js"></script> -->
 </head>
 <body>
 <header>
@@ -122,26 +111,13 @@ function pageHeader($title) {
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-cubes pe-fw"></i> My surveys <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">Overview of all surveys</li>
-                  <li><a href="<?php echo(MYADMIN."?w=surveys"); ?>"><i class="pe-file-o pe-fw"></i> All surveys</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=surveys"); ?>"><i class="pe-wpforms pe-fw"></i> All surveys</a></li>
                   <li role="separator" class="divider"></li>
                   <li class="dropdown-header">Surveys by stage</li>
-                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=A"); ?>"><i class="pe-paper-plane pe-fw"></i> Before data collection</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=B"); ?>"><i class="pe-puzzle-piece pe-fw"></i> During data collection</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=C"); ?>"><i class="pe-flask pe-fw"></i> After data collection</a></li>
-                  <!-- <li role="separator" class="divider"></li> -->
-                  <!-- <li class="dropdown-header">Past surveys</li> -->
-                  <!-- <li><a href="<?php echo(MYADMIN."?w=surveys&c=D"); ?>"><i class="pe-archive pe-fw"></i> Archived</a></li> -->
-                </ul>
-              </li>
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-graduation-cap pe-fw"></i> My team <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li class="dropdown-header">Team overview</li>
-                  <li><a href="<?php echo(MYADMIN."?w=team"); ?>"><i class="pe-user pe-fw"></i> My team</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li class="dropdown-header">Manage your team</li>
-                  <li><a href="<?php echo(MYADMIN."?w=admdesigner"); ?>" title="Add a new member"><i class="pe-user-plus pe-fw"></i> Add a new member</a></li>
-                  <li><a href="#" title="Member permission"><i class="pe-cogs pe-fw"></i> Member permission</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=A"); ?>"><i class="pe-hourglass-start pe-fw"></i> Before data collection</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=B"); ?>"><i class="pe-hourglass-half pe-fw"></i> During data collection</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=C"); ?>"><i class="pe-hourglass-end pe-fw"></i> After data collection</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=D"); ?>"><i class="pe-archive pe-fw"></i> Archived</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -153,6 +129,17 @@ function pageHeader($title) {
                   <li class="dropdown-header">Manage your profile</li>
                   <li><a href="<?php echo(MYADMIN."?w=changeinfo"); ?>" title="Change info"><i class="pe-cog pe-fw"></i> Change info</a></li>
                   <li><a href="<?php echo(MYADMIN."?w=changepass"); ?>" title="Change password"><i class="pe-key pe-fw"></i> Change password</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-graduation-cap pe-fw"></i> My team <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li class="dropdown-header">Team overview</li>
+                  <li><a href="<?php echo(MYADMIN."?w=team"); ?>"><i class="pe-user pe-fw"></i> My team</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li class="dropdown-header">Manage your team</li>
+                  <li><a href="<?php echo(MYADMIN."?w=admdesigner"); ?>" title="Add a new member"><i class="pe-user-plus pe-fw"></i> Add a new member</a></li>
+                  <li><a href="#" title="Member permission"><i class="pe-cogs pe-fw"></i> Member permission</a></li>
                 </ul>
               </li>
               <!-- <li class="dropdown">
@@ -167,7 +154,7 @@ function pageHeader($title) {
               </li> -->
 <?php } else { ?>
               <li><a href="<?php echo MYADMIN; ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> Home</a></i>
-              <li><a href="<?php echo(MYADMIN."request.php"); ?>" title="Request for an access"><i class="pe-vcard pe-fw"></i> Request for an access</a></li>
+              <li><a href="<?php echo(MYADMIN."request.php"); ?>" title="Request for an access"><i class="pe-credit-card pe-fw"></i> Request for an access</a></li>
 <?php } ?>
             </ul>
           </div>
@@ -211,7 +198,20 @@ function pageFooter($notes = null) {
   </div>
 </footer>
 <div class="scroll-to-top"><i class="pe-arrow-up pe-lg"></i></div>
-<script>
+<script type="text/javascript" src="/admin/assets/js/anchor.js"></script>
+<script type="text/javascript" src="/admin/assets/js/notification.js"></script>
+<script type="text/javascript" src="/admin/assets/js/etc.js"></script>
+<script type="text/javascript">
+  var config = {
+    apiKey: "AIzaSyBhLjEc1SwSq06Pg494R6pdM2NqLHF8Ag0",
+    authDomain: "siamsquare-6f543.firebaseapp.com",
+    databaseURL: "https://siamsquare-6f543.firebaseio.com",
+    storageBucket: "siamsquare-6f543.appspot.com",
+    messagingSenderId: "485767684184"
+  };
+  firebase.initializeApp(config);
+</script>
+<script type="text/javascript">
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -219,10 +219,8 @@ function pageFooter($notes = null) {
   ga('create', 'UA-82554411-3', 'auto');
   ga('send', 'pageview');
 </script>
-<script type="text/javascript" src="/admin/assets/js/anchor.js"></script>
-<script type="text/javascript" src="/admin/assets/js/notification.js"></script>
-<script type="text/javascript" src="/admin/assets/js/etc.js"></script>
-<?php if ($notes) { notify($notes); } debugOutput(); ?>
+<?php if ($notes) { notify($notes); } ?>
+<?php //debugOutput(); ?>
 </body>
 </html>
 <?php

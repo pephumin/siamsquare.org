@@ -1,24 +1,18 @@
 <?php
 
-$title = "Pilot test a survey";
+$title = "Conduct a survey";
 pageHeader($title);
 echo "<h2>$title</h2>\n";
-echo "<p>Although testing a survey here will act like a real survey and result will be posted to the main database, we will not include any test results into the analysis where it will only contain the actual responses from respondents. Therefore, feel free to conduct a test survey as much as you want as it will not impact to the true result as described here.</p>\n";
-echo "<br>\n";
 
 ?>
 
 <div id="showalert"></div>
 
-<p class="text-right">Testing with your account: <strong id="clientIdContainer"><?php echo $_SESSION["email"]; ?></strong></p>
+<p class="text-right">Using your account: <strong id="clientIdContainer"><?php echo $_SESSION["email"]; ?></strong></p>
 
 <div id="surveyContainer"></div>
 
-<div id="survey_oncomplete" style="display:none">
-  <p><input id="btnreRun" class="btn btn-warning" type="button" onclick="document.getElementById('surveyContainer').style.display = ''; document.getElementById('survey_oncomplete').style.display = 'none';  reRunSurvey();" value="Rerun this test again"></input></p>
-  <p id="chartContainer"></p>
-  <p id="survey_result"></p>
-</div>
+<div id="survey_oncomplete" style="display:none"></div>
 
 <script type="text/javascript">
 
@@ -70,20 +64,19 @@ echo "<br>\n";
       dataType: 'json',
       type: 'post',
       contentType: 'application/json; charset=utf-8',
-      data: '{"rd": "' + cid + '", "ip": "' + cip + '", "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ', "test": "true" }',
+      data: '{"rd": "' + cid + '", "ip": "' + cip + '", "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ' }',
       //success: function(data) { result = data; }
       success: function(data) {
-        $('#showalert').html("<div class='alert alert-success'><i class='pe-check-square-o pe-fw'></i> Your test results have been successfully submitted.</div>");
+        $('#showalert').html("<div class='alert alert-success'><i class='pe-check-square-o pe-fw'></i> Your results have been successfully submitted.</div>");
         $.ajax({
           url: api + '/log/' + cid + '/' + id,
           dataType: 'json',
           type: 'post',
           contentType: 'application/json; charset=utf-8',
-          data: '{ "userid": "' + cid + '", "ip": "' + cip + '", "data": "' + email + ' did a pilot test with ' + etitle + ' (id=' + id + ')" }',
+          data: '{ "userid": "' + cid + '", "ip": "' + cip + '", "data": "' + email + ' conducted a survey of ' + etitle + ' (id=' + id + ')" }',
           success: function(data) { result = data; }
         });
       }
-      //success: function(data) { $('#showalert').html("<div class='alert alert-success'><i class='pe-save pe-fw'></i> </div>"); }
     });
     return result;
   }
@@ -110,22 +103,7 @@ echo "<br>\n";
   mm = getsurveyinfo(myID);
   var survey = new Survey.Survey (getsurveydata(myID), "surveyContainer");
   Survey.Survey.cssType = "bootstrap";
-  survey.onSendResult.add(function(s, options) { if(options.success) { s.getResult(myID, 'Q2'); } });
-
-  function reRunSurvey() { survey.clear(); survey.render('survey'); }
-
-  function renderSurvey() {
-    if (typeof survey == 'undefined') return;
-    survey.onComplete.add(function (s) {
-      postsurveydata(clientID, clientIP, clientEMAIL, myID, survey.data, mm.title);
-      var result = "\nYour answers are:\n" + JSON.stringify(survey.data);
-      document.getElementById('chartContainer').innerHTML = result;
-      document.getElementById('survey_oncomplete').style.display = '';
-    });
-    survey.render("mySurveyJSName");
-  }
-
-  renderSurvey();
+  survey.onComplete.add(function (s) { postsurveydata(clientID, clientIP, clientEMAIL, myID, survey.data, mm.title); });
 
 </script>
 

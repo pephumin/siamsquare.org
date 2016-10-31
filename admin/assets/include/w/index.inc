@@ -2,6 +2,12 @@
 
 $title = "Client control panel";
 pageHeader($title);
+echo "<h2>$title</h2>";
+echo "<p>Welcome to client control panel. This site allows all of our clients to be able to create, test, manage, and monitor your surveys effectively. Our system includes the user hierarchy where different access permissions will be set for each of the users according which will help ensuring the right persons will manage the right tasks.</p>\n";
+echo "<p>Feel free to contact us if you find any problems using our site. Any other suggestions are also more than welcome.</p>\n";
+echo "<br>\n";
+
+$_SESSION['ip'] = getip();
 
 ?>
 

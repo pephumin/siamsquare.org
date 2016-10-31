@@ -1,5 +1,12 @@
 <?php
 
+$title = "Client login";
+pageHeader($title);
+echo "<h2>$title</h2>";
+echo "<p>This section is reserved only for our clients whom we have granted with a high level of secured access. Within this section you will be able to access to a highly confidential data such as questionnaire design, data collected from respondents, reports, etc. We carefully design our system to ensure such high important data is kept separately for different users or user groups.</p>\n";
+echo "<p>Should you need an access to our system, or should you need any further support on how-to use our system, you can either contact us directly or read our documents at our support site.</p>\n";
+echo "<br>\n";
+
 if (isset($login)) {
   if ($login->errors) { foreach ($login->errors as $error) { echo $error; } }
   if ($login->messages) { foreach ($login->messages as $message) { echo $message; } }
@@ -8,44 +15,39 @@ if (isset($login)) {
 ?>
 
 <form id="clientloginform" method="post" action="<?php echo ME; ?>" class="form-horizontal">
-  <h2>Client login</h2>
-  <p>This section is reserved only for our clients whom we have granted with a high level of secured access. Within this section you will be able to access to a highly confidential data such as questionnaire design, data collected from respondents, reports, etc. We carefully design our system to ensure such high important data is kept separately for different users or user groups.</p>
-  <p>Should you need any support for accessing this section, please do not hesitate to contact our staff right away.</p>
-  <section id="clientloginform">
-    <div class="form-group">
-      <label for="email" class="col-sm-3 control-label">Email</label>
-      <div class="col-sm-7">
-        <div class="input-group">
-          <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
-          <input type="text" name="email" id="email" class="form-control" placeholder="email@domain.com" autofocus>
-        </div>
+  <div class="form-group">
+    <label for="email" class="col-sm-3 control-label">Email</label>
+    <div class="col-sm-7">
+      <div class="input-group">
+        <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
+        <input type="text" name="email" id="email" class="form-control" placeholder="email@domain.com" autofocus>
       </div>
     </div>
-    <div class="form-group">
-      <label for="password" class="col-sm-3 control-label">Password</label>
-      <div class="col-sm-7">
-        <div class="input-group">
-          <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
-          <input type="password" name="password" id="password" class="form-control" placeholder="Password">
-        </div>
+  </div>
+  <div class="form-group">
+    <label for="password" class="col-sm-3 control-label">Password</label>
+    <div class="col-sm-7">
+      <div class="input-group">
+        <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
+        <input type="password" name="password" id="password" class="form-control" placeholder="Password">
       </div>
     </div>
-    <!-- <div class="form-group">
-      <div class="col-sm-offset-3 col-sm-9">
-        <div class="checkbox checkbox-warning">
-          <input id="rememberme" type="checkbox" checked> <label for="rememberme">Remember me</label>
-        </div>
-      </div>
-    </div> -->
-    <br>
-    <div class="form-group">
-      <div class="col-sm-offset-3 col-sm-9">
-        <input type="hidden" name="do" value="login">
-        <button class="btn btn-warning" name="Login" type="submit">Log in <i class="pe-check-circle-o"></i></button>
-        <button class="btn btn-default" name="Cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
+  </div>
+  <!-- <div class="form-group">
+    <div class="col-sm-offset-3 col-sm-9">
+      <div class="checkbox checkbox-warning">
+        <input id="rememberme" type="checkbox" checked> <label for="rememberme">Remember me</label>
       </div>
     </div>
-  </section>
+  </div> -->
+  <br>
+  <div class="form-group">
+    <div class="col-sm-offset-3 col-sm-9">
+      <input type="hidden" name="do" value="login">
+      <button class="btn btn-warning" name="Login" type="submit">Log in <i class="pe-check-circle-o"></i></button>
+      <button class="btn btn-default" name="Cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
+    </div>
+  </div>
 </form>
 <script>
   $(document).ready(function() {
@@ -72,3 +74,5 @@ if (isset($login)) {
     <li><i class="pe-li pe-check-square"></i> Information you see must not be shared to the public due to our terms of confidentiality.</li>
   </ul>
 </div>
+
+<?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>

@@ -26,6 +26,9 @@ class Login {
         $result_of_login_check = $this->db_connection->query($sql);
         if ($result_of_login_check->num_rows == 1) {
           $result_row = $result_of_login_check->fetch_object();
+          // $hash = password_hash($_POST['password'], PASSWORD_DEFAULT);
+          // if (password_verify($_POST['password'], $hash)) {
+          // echo $result_row->password;
           if (password_verify($_POST['password'], $result_row->password)) {
             $_SESSION['logged_in'] = 1;
             $_SESSION['userid'] = $result_row->id;

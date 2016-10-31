@@ -1,13 +1,15 @@
 <?php
 
+$title = "Update your information";
+pageHeader($title);
+echo "<h2>$title</h2>";
+echo "<p>You can update your informtion in this page. However, please be noted that there are some specific information that requires our involvement to get changed since it will impact to the registration record and how we manage our users.</p>\n";
+echo "<p>Feel free to contact us if you find any problems using our site. Any other suggestions are also more than welcome.</p>\n";
+// echo "<br>\n";
+
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 
-$title = "Changing information";
-pageHeader($title);
-
 if (empty($_SESSION["captcha"])) { $clength = 8; $rText = generateRandom($clength); $_SESSION["captcha"] = $rText; }
-
-echo "<h2>$title</h2>";
 
 if (isset($_REQUEST['captcha'])) {
 
@@ -31,7 +33,7 @@ if (isset($_REQUEST['captcha'])) {
 
 ?>
 
-<br>
+<hr>
 
 <form id="changeinfo" class="form-horizontal" method="post" action="<?php echo(htmlspecialchars(ME)); ?>">
   <div class="form-group">
@@ -118,6 +120,6 @@ if (isset($_REQUEST['captcha'])) {
   });
 </script>
 
-<a href="/admin/?w=activity" class="btn btn-danger btn-sm pull-right" style="margin-top:50px; margin-bottom: 20px"><i class="pe-chevron-circle-left pe-fw"></i> Back to My Profile</a>
+<!-- <a href="/admin/?w=activity" class="btn btn-danger btn-sm pull-right" style="margin-top:50px; margin-bottom: 20px"><i class="pe-chevron-circle-left pe-fw"></i> Back to My Profile</a> -->
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>

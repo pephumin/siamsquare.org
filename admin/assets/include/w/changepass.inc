@@ -1,20 +1,23 @@
 <?php
 
+$title = "Change your password";
+pageHeader($title);
+echo "<h2>$title</h2>";
+echo "<p>We pay a lot of attentions to the system security and therefore changing your password to be more secure is strongly recommended. Therefore, feel free to use this page to change your password as often as you need.</p>\n";
+echo "<p>Please note that all passwords stored in the system are in 'encrypted' format which is not readable by anyone including our staff. And they are not crackable.</p>\n";
+echo "<p>Feel free to contact us if you find any problems using our site. Any other suggestions are also more than welcome.</p>\n";
+//echo "<br>\n";
+
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 
-$title = "Changing password";
-pageHeader($title);
-
 if (empty($_SESSION["captcha"])) { $clength = 8; $rText = generateRandom($clength); $_SESSION["captcha"] = $rText; }
-
-echo "<h2>$title</h2>";
 
 if (isset($_REQUEST['captcha'])) {
 
   $email = $_SESSION['email'];
   $oldpass = $_POST['oldpass'];
   $newpass = $_POST['newpass1'];
-  $hash = password_hash($newpass, PASSWORD_BCRYPT);
+  $hash = password_hash($newpass, PASSWORD_DEFAULT);
 
   if ($_REQUEST['captcha'] == $_SESSION['captcha']) {
     $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
@@ -32,7 +35,7 @@ if (isset($_REQUEST['captcha'])) {
 
 ?>
 
-<br>
+<hr>
 
 <form id="changepassword" class="form-horizontal" method="post" action="<?php echo(htmlspecialchars(ME)); ?>">
   <div class="form-group">
@@ -122,6 +125,6 @@ if (isset($_REQUEST['captcha'])) {
   </ul>
 </div>
 
-<a href="/admin/?w=activity" class="btn btn-danger btn-sm pull-right" style="margin-top:50px; margin-bottom: 20px"><i class="pe-chevron-circle-left pe-fw"></i> Back to My Profile</a>
+<!-- <a href="/admin/?w=activity" class="btn btn-danger btn-sm pull-right" style="margin-top:50px; margin-bottom: 20px"><i class="pe-chevron-circle-left pe-fw"></i> Back to My Profile</a> -->
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
