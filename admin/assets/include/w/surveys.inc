@@ -89,7 +89,7 @@ echo "<p>$details</p><br>\n";
         </tr>
         <tr data-bind="visible: isEditing()" class="bg-info">
           <td colspan="2">
-            <input data-bind="textInput: editingName, visible: isEditing()" class="form-control">
+            <input data-bind="textInput: editingName, visible: isEditing()" onclick="this.select()" class="form-control">
           </td>
           <td>
             <a class="btn btn-sm" data-bind="click: $parent.postEdit, enable: title() != ''" href="">Rename <i class="pe-check-circle-o"></i></a>
@@ -115,6 +115,8 @@ echo "<p>$details</p><br>\n";
 
 <script type="text/javascript">
   var userid = <?php echo $_SESSION['userid']; ?>;
+  var email = "<?php echo $_SESSION['email']; ?>";
+  var ip = "<?php echo getip(); ?>";
   var api = "http://www.siamsquare.org/api/index.php";
   var key = "aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8";
 
@@ -214,7 +216,17 @@ echo "<p>$details</p><br>\n";
         dataType: 'json',
         type: 'get',
         contentType: 'application/json; charset=utf-8',
-        success: function (data) { self.surveys.splice(0, 0, self.createSurveyObject(data)); },
+        success: function (data) {
+          self.surveys.splice(0, 0, self.createSurveyObject(data));
+          $.ajax({
+            url: api + '/log/' + userid + '/' + data.id,
+            dataType: 'json',
+            type: 'post',
+            contentType: 'application/json; charset=utf-8',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' created a new survey named ' + self.newSurveyName() + ' (id=' + data.id + ')" }',
+            success: function(data) { result = data; }
+          });
+        },
         error: function (error) { self.onFail(error); }
       });
     }
