@@ -24,13 +24,8 @@ define('MYEMAIL',     "phumin@sawasdee.org");
 define('SYSTEMEMAIL', "survey@siamsquare.org");
 define('MYADMIN',     MYHOME."/admin/");
 define('MYPUBLIC',    MYHOME."/public/");
-define('MYSURVEY',    MYHOME."/public/survey.php");
 define('ME',          $_SERVER['SCRIPT_NAME']);
 define('DOCROOT',     $_SERVER['DOCUMENT_ROOT']);
-define('MYCONFIG',    DOCROOT."/admin/assets/include/config.php");
-define('MYLIB',       DOCROOT."/admin/assets/include/lib.inc");
-define('MYTEXT',      DOCROOT."/admin/assets/text");
-define('MYXML',       DOCROOT."/admin/assets/xml");
 define('INCLUDEADM',  DOCROOT."/admin/assets/include");
 define('INCLUDEPUB',  DOCROOT."/public/assets/include");
 
