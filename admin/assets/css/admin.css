@@ -12746,12 +12746,12 @@ form#debug, form#debug > input {
   padding: 10px 15px; }
 
 .navbar-default .navbar-nav > li > a {
-  color: #666666; }
+  color: #003E08; }
   .navbar-default .navbar-nav > li > a:hover {
     color: #EC971F; }
 
 .navbar-default .navbar-brand {
-  color: #666666; }
+  color: #003E08; }
 
 nav.footer {
   font-family: "ubuntu";
@@ -12770,6 +12770,11 @@ nav.footer {
     nav.footer a:hover, nav.footer a:focus {
       text-decoration: underline;
       color: #FF851B; }
+
+a.tabsmenu {
+  font-family: "roboto" !important;
+  font-size: 15px !important;
+  color: #003E08; }
 
 .panel-heading h4 {
   margin-bottom: 0px !important;
