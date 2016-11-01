@@ -28,6 +28,7 @@ define('ME',          $_SERVER['SCRIPT_NAME']);
 define('DOCROOT',     $_SERVER['DOCUMENT_ROOT']);
 define('INCLUDEADM',  DOCROOT."/admin/assets/include");
 define('INCLUDEPUB',  DOCROOT."/public/assets/include");
+define('MYXML',       DOCROOT."/public/assets/xml");
 
 define('DB_HOST',     "magenta.thaiweb.net");
 define('DB_USER',     "sinbad");
