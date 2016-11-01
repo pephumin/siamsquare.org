@@ -106,7 +106,6 @@ function pageHeader($title) {
             <ul class="nav navbar-nav navbar-right">
 <?php if ($_SESSION['email']) { ?>
               <li><a href="<?php echo(MYADMIN); ?>" title="Home"><i class="pe-home pe-fw"></i> Home</a></i>
-              <!-- <li><a href="<?php echo(MYADMIN."?w=surveys"); ?>" title="My surveys"><i class="pe-cubes pe-fw"></i> My surveys</a></i> -->
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-cubes pe-fw"></i> My surveys <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -142,16 +141,6 @@ function pageHeader($title) {
                   <li><a href="#" title="Member permission"><i class="pe-cogs pe-fw"></i> Member permission</a></li>
                 </ul>
               </li>
-              <!-- <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-unlock-alt pe-fw"></i> Superuser <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li class="dropdown-header">Special menu</li>
-                  <li><a href="<?php echo(MYADMIN."?w=delete_survey"); ?>" title="Delete a survey"><i class="pe-trash-o pe-fw"></i> Delete a survey</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=delete_response"); ?>" title="Delete a response"><i class="pe-recycle pe-fw"></i> Delete a response</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=groups"); ?>" title="Manage groups"><i class="pe-database pe-fw"></i> Manage groups</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=help"); ?>" title="Admin guide"><i class="pe-list-alt pe-fw"></i> Admin guide</a></li>
-                </ul>
-              </li> -->
 <?php } else { ?>
               <li><a href="<?php echo MYADMIN; ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> Home</a></i>
               <li><a href="<?php echo(MYADMIN."request.php"); ?>" title="Request for an access"><i class="pe-credit-card pe-fw"></i> Request for an access</a></li>

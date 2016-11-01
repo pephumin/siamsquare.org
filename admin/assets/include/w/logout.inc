@@ -3,8 +3,6 @@
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/login.class.php';
 $target = "/admin";
 
-//$title = "You have been logged out";
-//pageHeader($title);
 echo "<h2>$title</h2>";
 echo mksuccess("You have been successfully logged out. We will redirect you to the front page in a moment.");
 echo "<p>Thank you for using our system. And feel free to come back as often as you need.</p>\n";
@@ -17,7 +15,5 @@ $notes = array (
 );
 
 header("refresh: 10; url=$target");
-
-//if ($notes) { pageFooter($notes); } else { pageFooter(); }
 
 ?>

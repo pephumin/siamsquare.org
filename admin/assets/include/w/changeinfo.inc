@@ -100,8 +100,8 @@ if (isset($_REQUEST['captcha'])) {
   <hr>
   <p class="text-center">
     <input type="hidden" name="w" value="changeinfo">
-    <button type="submit" class="btn btn-warning">Change <i class="pe-check-circle-o"></i></button>
-    <button type="submit" class="btn btn-default">Cancel</button>
+    <button class="btn btn-warning" name="Change" type="submit">Change <i class="pe-check-circle-o"></i></button>
+    <button class="btn btn-default" name="Cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
 </form>
 <script>

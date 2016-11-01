@@ -29,6 +29,7 @@ if (isset($_REQUEST['captcha'])) {
     $sql2 = "INSERT INTO j_users_logs (userid, ip, data) VALUE ('".$_SESSION["userid"]."', '".$_SESSION["ip"]."', '".$_SESSION["email"]." changed password');";
     // echo $sql2;
     $db->query($sql2);
+    $notes = array (array("title" => "Password changed", "text" => "You have just changed your password.", "image" => "assets/img/notification.svg"));
   }
   else { echo mkerror("Wrong captcha."); }
 }
@@ -91,8 +92,8 @@ if (isset($_REQUEST['captcha'])) {
   <hr>
   <p class="text-center">
     <input type="hidden" name="w" value="changepass">
-    <button type="submit" class="btn btn-warning">Change <i class="pe-check-circle-o"></i></button>
-    <button type="submit" class="btn btn-default">Cancel</button>
+    <button class="btn btn-warning" name="Change" type="submit">Change <i class="pe-check-circle-o"></i></button>
+    <button class="btn btn-default" name="Cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
 </form>
 <script>
@@ -112,7 +113,7 @@ if (isset($_REQUEST['captcha'])) {
   });
 </script>
 <br><br>
-<div class="alert alert-info alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+<div class="alert alert-warning alert-dismissible" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
   <h4><i class="pe-lightbulb-o pe-fw pe-lg"></i> Tips for choosing a strong password</h4>
   <p>Below are some nice tips for anyone who cares about setting up a good strong password</p>
   <ul class="pe-ul">
