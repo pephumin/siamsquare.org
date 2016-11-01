@@ -1,6 +1,6 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/public/assets/include/config.php';
+// require_once $_SERVER['DOCUMENT_ROOT'].'/public/assets/include/config.php';
 
 class Login {
 

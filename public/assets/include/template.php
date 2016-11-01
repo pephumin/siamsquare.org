@@ -23,7 +23,7 @@ function pageHeader($title) {
     $signed = "<a href=\"$v1\" class=\"btn btn-info btn-xs\" title=\"เข้าสู่ระบบ\"><i class=\"pe-power-off pe-fw\"></i> เข้าสู่ระบบ</a> <a href=\"$v3\" class=\"btn btn-primary btn-xs\"><i class=\"pe-university pe-fw\"></i> ช่วยเหลือ</a>";
     $ww = "<i class=\"pe-info-circle pe-fw\"></i> สำหรับสมาชิกที่ลงทะเบียนไว้แล้วเท่านั้น";
   }
-  header("Content-language: en");
+  header("Content-language: th");
   header("Content-type: text/html; charset=utf-8");
 ?>
 <!doctype html>
@@ -107,25 +107,25 @@ function pageHeader($title) {
 <?php if ($_SESSION['email']) { ?>
               <li><a href="<?php echo MYPUBLIC; ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> หน้าแรก</a></i>
               <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button" title="ข้อมูลส่วนตัว"><i class="pe-user pe-fw"></i> ข้อมูลส่วนตัว <span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-cubes pe-fw"></i> งานวิจัย <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li class="dropdown-header">ข้อมูลส่วนตัว</li>
-                  <li><a href="<?php echo(MYPUBLIC."?w=profile"); ?>" title="ข้อมูลส่วนตัวโดยสรุป"><i class="pe-user pe-fw"></i> ข้อมูลส่วนตัวโดยสรุป</a></li>
-                  <li class="divider" role="separator"></li>
-                  <li class="dropdown-header">เปลี่ยนแปลงข้อมูล</li>
-                  <li><a href="<?php echo(MYPUBLIC."?w=changeprofile"); ?>" title="แก้ไขเปลี่ยนแปลงข้อมูลเกี่ยวกับตัวคุณ"><i class="pe-cog pe-fw"></i> แก้ไขข้อมูลของคุณ</a></li>
-                  <li><a href="<?php echo(MYPUBLIC."?w=changepass"); ?>" title="แก้ไขเปลี่ยนแปลงรหัสผ่าน"><i class="pe-key pe-fw"></i> เปลี่ยนรหัสผ่าน</a></li>
+                  <li class="dropdown-header">ภาพรวมงานวิจัย</li>
+                  <li><a href="<?php echo(MYPUBLIC."?w=surveys"); ?>"><i class="pe-wpforms pe-fw"></i> งานวิจัยทั้งหมด</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li class="dropdown-header">รายละเอียด</li>
+                  <li><a href="<?php echo(MYPUBLIC."?w=surveys&c=A"); ?>"><i class="pe-hourglass-start pe-fw"></i> งานวิจัยที่เปิดรับความคิดเห็นอยู่</a></li>
+                  <li><a href="<?php echo(MYPUBLIC."?w=surveys&c=B"); ?>"><i class="pe-hourglass-half pe-fw"></i> งานวิจัยที่ปิดรับความคิดเห็นแล้ว</a></li>
                 </ul>
               </li>
               <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-commenting pe-fw"></i> งานวิจัย <span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-user pe-fw"></i> ข้อมูลส่วนตัว <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li class="dropdown-header">ภาพรวมงานวิจัย</li>
-                  <li><a href="<?php echo(MYPUBLIC."?w=survey"); ?>" title="งานวิจัยทั้งหมด"><i class="pe-user pe-fw"></i> งานวิจัยทั้งหมด</a></li>
-                  <li class="divider" role="separator"></li>
-                  <li class="dropdown-header">การเข้าร่วม</li>
-                  <li><a href="<?php echo(MYPUBLIC."?w=surveycurrent"); ?>" title="Current surveys"><i class="pe-wpforms pe-fw"></i> งานวิจัยในปัจจุบัน</a></li>
-                  <li><a href="<?php echo(MYPUBLIC."?w=surveyhistory"); ?>" title="History"><i class="pe-history pe-fw"></i> งานวิจัยในอดีต</a></li>
+                  <li class="dropdown-header">Your activity</li>
+                  <li><a href="<?php echo(MYPUBLIC."?w=activity"); ?>" title="View activity"><i class="pe-tv pe-fw"></i> View activity</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li class="dropdown-header">เปลี่ยนแปลงข้อมูลส่วนตัว</li>
+                  <li><a href="<?php echo(MYPUBLIC."?w=changeinfo"); ?>" title="Change info"><i class="pe-cog pe-fw"></i> แก้ไขข้อมูลส่วนตัว</a></li>
+                  <li><a href="<?php echo(MYPUBLIC."?w=changepass"); ?>" title="Change password"><i class="pe-key pe-fw"></i> เปลี่ยนรหัสผ่าน</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -196,7 +196,7 @@ function pageFooter($notes = null) {
   };
   firebase.initializeApp(config);
 </script>
-<script>
+<script type="text/javascript">
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -205,7 +205,7 @@ function pageFooter($notes = null) {
   ga('send', 'pageview');
 </script>
 <?php if ($notes) { notify($notes); } ?>
-<?php // debugOutput(); ?>
+<?php debugOutput(); ?>
 </body>
 </html>
 <?php

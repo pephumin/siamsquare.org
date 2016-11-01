@@ -1,65 +1,62 @@
 <?php
 
-$r = MYPUBLIC;
+$title = "แก้ไขข้อมูลของคุณ";
+pageHeader($title);
+echo "<h2>$title</h2>";
+echo "<p>คุณสามารถแก้ไขข้อมูลของคุณได้ที่นี่ แต่ทางเรานั้นจะอนุญาตให้แก้ไขได้เพียงข้อมูลบางอย่างเท่านั้น</p>\n";
+echo "<p>ทางเราขอสงวนสิทธิ์ในการจำกัดการแก้ไขสำหรับบางข้อมูลเช่นอีเมล์เนื่องจากจะมีผลต่อการจัดการข้อมูลในระบบเพราะต้องใช้สำหรับการล็อคอินด้วย รวมถึงข้อมูลเรื่องเพศและวันเกิดซึ่งเราเชื่อว่าคุณได้กรอกตามจริงตั้งแต่สมัครสมาชิกแล้วนั่นเอง</p>\n";
+// echo "<br>\n";
+
+require_once $_SERVER['DOCUMENT_ROOT'].'/public/assets/include/config.php';
+
 if (empty($_SESSION["captcha"])) { $clength = 8; $rText = generateRandom($clength); $_SESSION["captcha"] = $rText; }
 
-$username = cleanstring($respondent['username']);
-$fname = cleanstring($respondent['fname']);
-$lname = cleanstring($respondent['lname']);
-$gender = cleanstring($respondent['gender']);
-$birthday_date = cleanstring($respondent['birthday_date']);
-$birthday_month = cleanstring($respondent['birthday_month']);
-$birthday_year = cleanstring($respondent['birthday_year']);
-$province = cleanstring($respondent['province']);
-$mobile = cleanstring($respondent['mobile']);
-$mobile1 = substr($mobile, 0, 3);
-$mobile2 = substr($mobile, 3, 3);
-$mobile3 = substr($mobile, 6, 4);
-$personal_income = cleanstring($respondent['personal_income']);
-$HH_income = cleanstring($respondent['HH_income']);
-$marital = cleanstring($respondent['marital']);
-$education = cleanstring($respondent['education']);
+if (isset($_REQUEST['captcha'])) {
 
-if (($_POST['_captcha']) && $_POST['w'] == "changeprofile") {
+  $email = $_SESSION['email'];
+  $gender = $_SESSION['gender'];
+  $birthday_date = $_SESSION['birthday_date'];
+  $birthday_month = $_SESSION['birthday_month'];
+  $birthday_year = $_SESSION['birthday_year'];
 
-  if ($_POST['_captcha'] == $_SESSION['captcha']) {
-    $_username = _addslashes($_POST['_username']);
-    $_realm = _addslashes($respondent['realm']);
-    $_fname = _addslashes($_POST['_fname']);
-    $_lname = _addslashes($_POST['_lname']);
-    $_province = _addslashes($_POST['_province']);
-    $_mobile = _addslashes($_POST['_mobile1'].$_POST['_mobile2'].$_POST['_mobile3']);
-    $_personal_income = _addslashes($_POST['_personal_income']);
-    $_HH_income = _addslashes($_POST['_HH_income']);
-    $_marital = _addslashes($_POST['_marital']);
-    $_education = _addslashes($_POST['_education']);
-    $_changed  = sys_time_stamp();
-    $sql = "UPDATE ".X_RESPONDENT." SET fname = $_fname, lname = $_lname, province = $_province, mobile = $_mobile, personal_income = $_personal_income, HH_income = $_HH_income, marital = $_marital, education = $_education, changed = NOW() WHERE username = $_username AND realm = $_realm ";
-    //echo $sql;
-    $res = execute_sql($sql);
-    echo "<h2>แก้ไขข้อมูลสำเร็จ</h2>\n";
+  $fullname = $_POST['fullname'];
+  $mobile = $_POST['mobile'];
+  $province = $_POST['province'];
+  $personal_income = $_POST['personal_income'];
+  $HH_income = $_POST['HH_income'];
+  $marital = $_POST['marital'];
+  $education = $_POST['education'];
+
+  if ($_REQUEST['captcha'] == $_SESSION['captcha']) {
+    $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
+    if (!$db->set_charset("utf8")) { $errors[] = $db->error; }
+    $sql1 = "UPDATE j_users SET fullname = '".$fullname."', mobile = '".$mobile."' WHERE email = '".$email."';";
+    // echo $sql1;
+    $query = $db->query($sql1);
+    if ($query) { echo mksuccess("คุณได้ทำการแก้ไขข้อมูลของคุณเป็นที่เรียบร้อยแล้ว"); }
+    $sql2 = "INSERT INTO j_users_logs (userid, ip, data) VALUE ('".$_SESSION["userid"]."', '".$_SESSION["ip"]."', '".$_SESSION["email"]." changed info');";
+    // echo $sql2;
+    $db->query($sql2);
     $notes = array (array("title" => "Profile updated", "text" => "คุณได้ทำการแก้ไขข้อมูลของคุณเป็นที่เรียบร้อยแล้ว", "image" => "assets/img/notification.svg"));
-    if (1 === affected_rows()) { set_current_respondent($respondent['username'], $respondent['realm']); db_close($res); echo mksuccess("คุณได้ทำการแก้ไขข้อมูลของคุณเป็นที่เรียบร้อยแล้ว"); header("Refresh: 5; URL=$r"); return; }
-    else { echo mkerror("ไม่สามารถทำรายได้ขณะนี้ กรุณาลองใหม่ภายหลัง"); }
   }
   else { echo mkerror("คุณใส่ตัวเลขและตัวอักษรตามรูปภาพไม่ถูกต้อง"); }
-
-} else {
+}
 
 ?>
-<form id="changeprofile" class="form-horizontal" method="post" action="<?php echo htmlspecialchars(MYPUBLIC); ?>">
-  <h2>แก้ไขข้อมูลของคุณ</h2>
-  <p>คุณสามารถแก้ไขข้อมูลของคุณได้ที่นี่</p>
-  <p>เราอนุญาตให้แก้ไขได้เพียงข้อมูลที่เหมาะสมเท่านั้น ขอสงวนสิทธิ์ในการจำกัดการแก้ไขสำหรับบางข้อมูลเช่นอีเมล์เนื่องจากเป็นข้อมูลหลักสำหรับใช้ในการล็อคอินเข้าระบบด้วยนั่นเอง</p>
+
+<hr>
+
+<form id="changeinfo" class="form-horizontal" method="post" action="<?php echo(htmlspecialchars(ME)); ?>">
   <div class="form-group">
-    <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">ล็อคอิน</label>
-      <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-        <div class="input-group">
-          <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
-          <input type="text" name="_username" class="form-control" value="<?php echo $username; ?>" disabled>
-        </div>
-        <input type="hidden" name="_username" value="<?php echo $username; ?>">
-     </div>
+    <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">อีเมล์</label>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+      <div class="input-group">
+        <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
+        <input type="text" name="email" class="form-control" placeholder="<?php echo $_SESSION['email']; ?>" disabled>
+      </div>
+      <input type="hidden" name="email" value="<?php echo $_SESSION['email']; ?>">
+      <span class="red" style="font-size:0.8rem">If you need to change this, please contact us separately.</span>
+    </div>
   </div>
   <hr>
   <div class="form-group">
@@ -191,14 +188,14 @@ if (($_POST['_captcha']) && $_POST['w'] == "changeprofile") {
   </div>
   <hr>
   <p class="text-center">
-    <input type="hidden" name="w" value="changeprofile">
-    <button type="submit" class="btn btn-info">Change <i class="pe-check-circle-o"></i></button>
-    <button type="reset" class="btn btn-default">Cancel</button>
+    <input type="hidden" name="w" value="changeinfo">
+    <button class="btn btn-info" name="Change" type="submit">เปลี่ยน <i class="pe-check-circle-o"></i></button>
+    <button class="btn btn-default" name="Cancel" type="reset">ยกเลิก <i class="pe-times-circle-o"></i></button>
   </p>
 </form>
 <script>
   $(document).ready(function() {
-    $('#changeprofile').formValidation({
+    $('#changeinfo').formValidation({
       framework: 'bootstrap',
       icon: { valid: 'pe-check', invalid: 'pe-times', validating: 'pe-refresh' },
       button: { selector: '[type="submit"]', disabled: '' },
@@ -224,4 +221,7 @@ if (($_POST['_captcha']) && $_POST['w'] == "changeprofile") {
     });
   });
 </script>
-<?php } ?>
+
+<!-- <a href="/public/?w=activity" class="btn btn-danger btn-sm pull-right" style="margin-top:50px; margin-bottom: 20px"><i class="pe-chevron-circle-left pe-fw"></i> Back to My Profile</a> -->
+
+<?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
