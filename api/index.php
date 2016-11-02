@@ -16,6 +16,7 @@ if ((empty($clients) !== true) && (in_array($_SERVER['REMOTE_ADDR'], (array) $cl
 else if (peDB::Query($dsn) === false) { exit(peDB::Reply(peDB::$HTTP[503])); }
 if (array_key_exists('_method', $_GET) === true) { $_SERVER['REQUEST_METHOD'] = strtoupper(trim($_GET['_method'])); }
 else if (array_key_exists('HTTP_X_HTTP_METHOD_OVERRIDE', $_SERVER) === true) { $_SERVER['REQUEST_METHOD'] = strtoupper(trim($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'])); }
+// header("Access-Control-Allow-Origin: http://localhost:5000");
 
 // URL: /survey/1/data (show data of surveyid #1)
 peDB::Serve('GET', '/survey/(#num)/(#any)', function ($id, $what) {
