@@ -1,14 +1,24 @@
 <?php
 
-require_once './config.inc';
-$dsn = 'mysql://'.DB_USER.':'.DB_PASS.'@'.DB_HOST.'/'.DB_DATABASE.'/';
+############################################################################
+#                                                                          #
+#     ▄██ █▄   ▄█████  ▀██████▄  ▄█  ███▄▄▄▄    ▄█████    ▄█████ ▄█   ▄    #
+#    ██   ██  ██   ██   ██   ██  ██  ██▀▀▀█▄   ██   ██   ██   ██ ██   █▄   #
+#    ██   ██  ██   █▀   ██   ██  ██▌ ██   ██   ██   ██   ██   ██ ██▄▄▄██   #
+#    ██   ██ ▄██▄▄▄    ▄██▄▄▄█▀  ██▌ ██   ██   ██   ██  ▄██▄▄▄█▀ ▀▀▀▀▀██   #
+#  ▀██████▀ ▀▀██▀▀▀   ▀▀██▀▀▀█▄  ██▌ ██   ██ ▀████████ ▀▀██▀▀▀▀  ▄█   ██   #
+#    ██       ██   █▄   ██   █▄  ██  ██   ██   ██   ██ ▀████████ ██   ██   #
+#    ██       ██   ██   ██   ██  ██  ██   ██   ██   ██   ██   ██ ██   ██   #
+#   ▄███▀     ███████ ▄███████▀  █▀  ▀█   █▀   ██   █▀   ██   ██  ▀████▀   #
+#                                                             ██    ██     #
+#                                                                          #
+############################################################################
+
+$dsn = 'mysql://sinbad:2bbadd@magenta.thaiweb.net/siamsquare/';
 $key = "aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8";
-// $clients = array
-// (
-//     '127.0.0.1',
-//     '127.0.0.2',
-//     '127.0.0.3',
-// )
+// $clients = array('203.121.145.99', '203.121.145.100', '203.121.145.120', '203.121.145.121')
+
+################################################################################
 
 // if ($_REQUEST('key') != $key) { exit(peDB::Reply(peDB::$HTTP[511])); }
 if (strcmp(PHP_SAPI, 'cli') === 0) { exit('peDB should not be run from CLI.' . PHP_EOL); }
@@ -16,7 +26,9 @@ if ((empty($clients) !== true) && (in_array($_SERVER['REMOTE_ADDR'], (array) $cl
 else if (peDB::Query($dsn) === false) { exit(peDB::Reply(peDB::$HTTP[503])); }
 if (array_key_exists('_method', $_GET) === true) { $_SERVER['REQUEST_METHOD'] = strtoupper(trim($_GET['_method'])); }
 else if (array_key_exists('HTTP_X_HTTP_METHOD_OVERRIDE', $_SERVER) === true) { $_SERVER['REQUEST_METHOD'] = strtoupper(trim($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'])); }
-// header("Access-Control-Allow-Origin: http://localhost:5000");
+header("Access-Control-Allow-Origin: http://www.siamsquare.org");
+
+################################################################################
 
 // URL: /survey/1/data (show data of surveyid #1)
 peDB::Serve('GET', '/survey/(#num)/(#any)', function ($id, $what) {
@@ -153,6 +165,74 @@ peDB::Serve('GET', '/user/(#num)', function ($id) {
   return peDB::Reply($result);
 });
 
+// URL: /result/5/title (show data of surveyid #5)
+peDB::Serve('GET', '/result/(#num)/(#any)', function ($id, $what) {
+  $table = "j_results";
+  $extended = sprintf('WHERE "%s" = ? AND "%s" = 1 ORDER BY "%s" DESC', 'surveyid', 'status', 'submitted');
+  $query = array(sprintf('SELECT "%s" FROM "%s"', $what, $table), $extended,);
+  $query = sprintf('%s;', implode(' ', $query));
+  // echo $query;
+  $result = peDB::Query($query, $id);
+  for($i = 0; $i < count($result); ++$i) {
+    $result[$i]['data'] = str_replace("  ", "", $result[$i]['data']);
+    $result[$i]['data'] = str_replace("\r\n", "", $result[$i]['data']);
+    $result[$i]['data'] = str_replace("\\n\\n", "", $result[$i]['data']);
+  }
+  if ($result === false) { $result = peDB::$HTTP[404]; }
+  else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
+  // $result = array_shift($result);
+  return peDB::Reply($result);
+});
+
+// URL: /result/raw/8 (listing only raw data for surveyid #8)
+peDB::Serve('GET', '/result/raw/(#num)', function ($id) {
+  $table = "j_results";
+  $extended = sprintf('WHERE "%s" = ? AND "%s" = 1 ORDER BY "%s" DESC', 'surveyid', 'status', 'submitted');
+  // $query = array(sprintf('SELECT id, rd, email, ip, submitted, data FROM "%s"', $table), $extended,);
+  $query = array(sprintf('SELECT id, submitted, data FROM "%s"', $table), $extended,);
+  $query = sprintf('%s;', implode(' ', $query));
+  $ww = peDB::Query($query, $id);
+  for($i=0; $i<count($ww); $i++) {
+    $ww[$i]['data'] = json_decode($ww[$i]['data'], true);
+    $ww[$i]['submitted'] = ago($ww[$i]['submitted']); 
+  }
+  $result = json_encode($ww);
+  if ($result === false) { $result = peDB::$HTTP[404]; }
+  else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
+  return peDB::Reply($result);
+});
+
+// URL: /result/focus/8 (listing only raw data for surveyid #8)
+peDB::Serve('GET', '/result/focus/(#num)', function ($id) {
+  $table = "j_results";
+  $extended = sprintf('WHERE "%s" = ? AND "%s" = 1 ORDER BY "%s" DESC', 'surveyid', 'status', 'submitted');
+  $query = array(sprintf('SELECT * FROM "%s"', $table), $extended,);
+  $query = sprintf('%s;', implode(' ', $query));
+  $ww = peDB::Query($query, $id);
+  $a = array();
+  foreach($ww as $k => $v) { array_push($a, json_decode($v['data'])); }
+  $result = array_values($a);
+  if ($result === false) { $result = peDB::$HTTP[404]; }
+  else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
+  return peDB::Reply($result);
+});
+
+// URL: /result/8 (listing all results for surveyid #8)
+peDB::Serve('GET', '/result/(#num)', function ($id) {
+  $table = "j_results";
+  $extended = sprintf('WHERE "%s" = ? AND "%s" = 1 ORDER BY "%s" DESC', 'surveyid', 'status', 'submitted');
+  $query = array(sprintf('SELECT * FROM "%s"', $table), $extended,);
+  $query = sprintf('%s;', implode(' ', $query));
+  // echo $query;
+  $result = peDB::Query($query, $id);
+  if ($result === false) { $result = peDB::$HTTP[404]; }
+  else if (empty($result) === true) { $result = peDB::$HTTP[204]; }
+  return peDB::Reply($result);
+});
+
+
+################################################################################
+
 // URL: /survey/7/delete (delete surveyid #7)
 // peDB::Serve('DELETE', '/survey/(#num)/(#any)', function ($id, $what) {
 //   $table = "j_projects";
@@ -164,6 +244,8 @@ peDB::Serve('GET', '/user/(#num)', function ($id) {
 //   else { $result = peDB::$HTTP[200]; }
 //   return peDB::Reply($result);
 // });
+
+################################################################################
 
 // URL: /survey/1/rename (rename Title for surveyid #1)
 // URL: /survey/4/movetoactive (move surveyid #4 to active)
@@ -183,6 +265,8 @@ peDB::Serve('PUT', '/survey/(#num)/(#any)', function ($id, $what) {
   else { $result = peDB::$HTTP[200]; }
   return peDB::Reply($result);
 });
+
+################################################################################
 
 // Submit survey result to the result table
 peDB::Serve('POST', '/submit', function() {
@@ -227,6 +311,8 @@ peDB::Serve('POST', '/log', function() {
   else { $result = peDB::$HTTP[201]; }
   return peDB::Reply($result);
 });
+
+################################################################################
 
 exit(peDB::Reply(peDB::$HTTP[400]));
 
@@ -345,6 +431,8 @@ class peDB {
     if (substr($_SERVER['PATH_INFO'], -4) == 'data') {
       $result = str_replace("\\n", "", $result);
       $result = str_replace("\\", "", $result);
+    } else if (preg_match("/raw/i", $_SERVER['PATH_INFO'])) {
+      $result = str_replace("\\", "", $result);
     }
     $result = trim($result, '"');
     return $result;
@@ -360,3 +448,45 @@ class peDB {
     return false;
   }
 }
+
+################################################################################
+
+function ago($datetime, $depth=1) {
+  $units = array("year"=>31104000, "month"=>2592000, "week"=>604800, "day"=>86400, "hour"=>3600, "minute"=>60, "second"=>1 );
+  $plural = "s";
+  $conjugator = " and ";
+  $separator = ", ";
+  $suffix1 = " ago";
+  $suffix2 = " left";
+  $now = "now";
+  $empty = "";
+
+  $timediff = time()-strtotime($datetime);
+  if ($timediff == 0) return $now;
+  if ($depth < 1) return $empty;
+  $max_depth = count($units);
+  $remainder = abs($timediff);
+  $output = "";
+  $count_depth = 0;
+  $fix_depth = true;
+
+  foreach ($units as $unit=>$value) {
+    if ($remainder>$value && $depth-->0) {
+      if ($fix_depth) {
+        $max_depth -= ++$count_depth;
+        if ($depth>=$max_depth) $depth=$max_depth;
+        $fix_depth = false;
+      }
+      $u = (int)($remainder/$value);
+      $remainder %= $value;
+      $pluralise = $u>1?$plural:$empty;
+      $separate = $remainder==0||$depth==0?$empty:
+        ($depth==1?$conjugator:$separator);
+      $output .= "{$u} {$unit}{$pluralise}{$separate}";
+    }
+    $count_depth++;
+  }
+  return $output.($timediff<0?$suffix2:$suffix1);
+}
+
+?>

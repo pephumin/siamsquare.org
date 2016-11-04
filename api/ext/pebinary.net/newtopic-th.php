@@ -1,6 +1,6 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/api/config.inc';
+require_once '../config.inc.php';
 
 $newquestion = cleanstring($_REQUEST['newquestionth']);
 $section = cleanstring($_REQUEST['section']);
