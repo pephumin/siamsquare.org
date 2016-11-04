@@ -39,6 +39,7 @@ function pageHeader($title) {
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <title>SiamSquare: <?php echo $title; ?></title>
   <link rel="stylesheet" type="text/css" href="/admin/assets/css/admin.css">
+  <link rel="stylesheet" type="text/css" href="/admin/assets/css/csv.css">
   <?php if (($_REQUEST["w"]) == "edit") { echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/survey.css\">"; } ?>
   <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/live/0.5/firebase-ui-auth.css">
   <link rel="shortcut icon" type="image/x-icon" href="/admin/assets/icons/favicon.ico">
@@ -63,6 +64,9 @@ function pageHeader($title) {
   <script type="text/javascript" src="/admin/assets/js/bootstrap.js"></script>
   <script type="text/javascript" src="/admin/assets/js/jquery.steps.js"></script>
   <script type="text/javascript" src="/admin/assets/js/moment.js"></script>
+  <script type="text/javascript" src="/admin/assets/js/jquery-csv.js"></script>
+  <script type="text/javascript" src="/admin/assets/js/csv.js"></script>
+  <script type="text/javascript" src="/admin/assets/js/highlight.js"></script>
   <script type="text/javascript" src="/admin/assets/js/fv/formValidation.min.js"></script>
   <script type="text/javascript" src="/admin/assets/js/fv/bootstrap.min.js"></script>
   <script type="text/javascript" src="/admin/assets/js/survey/knockout.js"></script>

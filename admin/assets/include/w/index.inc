@@ -66,4 +66,6 @@ $_SESSION['ip'] = getip();
 <?php } ?>
 </div>
 
+
+
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
