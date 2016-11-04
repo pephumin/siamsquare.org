@@ -64,7 +64,7 @@ echo "<h2>$title</h2>\n";
       dataType: 'json',
       type: 'post',
       contentType: 'application/json; charset=utf-8',
-      data: '{"rd": "' + cid + '", "ip": "' + cip + '", "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ' }',
+      data: '{"rd": "' + cid + '", "ip": "' + cip + '", "email": "' + email + '", "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ', "status": "1" }',
       //success: function(data) { result = data; }
       success: function(data) {
         $('#showalert').html("<div class='alert alert-success'><i class='pe-check-square-o pe-fw'></i> Your results have been successfully submitted.</div>");
@@ -95,12 +95,13 @@ echo "<h2>$title</h2>\n";
   }
 
   // Start scripting by pe (phumin@sawasdee.org)
-  var api = "http://www.siamsquare.org/api/index.php";
+  var api = "http://www.siamsquare.org.uk";
   var myID = <?php echo $_GET['s']; ?>;
   var clientID = "<?php echo $_SESSION['userid']; ?>";
   var clientEMAIL = "<?php echo $_SESSION['email']; ?>";
   var clientIP = "<?php echo getip(); ?>";
   mm = getsurveyinfo(myID);
+  survey.deleteCookie();
   var survey = new Survey.Survey (getsurveydata(myID), "surveyContainer");
   Survey.Survey.cssType = "bootstrap";
   survey.onComplete.add(function (s) { postsurveydata(clientID, clientIP, clientEMAIL, myID, survey.data, mm.title); });

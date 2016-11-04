@@ -49,7 +49,7 @@ echo "<p>While you can edit your questionnaire as often as you want, it is impor
   options.generateValidJSON = true;
   var editor = new SurveyEditor.SurveyEditor("editor", options);
   Survey.Survey.cssType = "bootstrap";
-  var api = "http://www.siamsquare.org/api/index.php";
+  var api = "http://www.siamsquare.org.uk";
   var surveyid = <?php echo $_GET['s']; ?>;
   var userid = <?php echo $_SESSION['userid']; ?>;
   var email = "<?php echo $_SESSION['email']; ?>";

@@ -70,7 +70,7 @@ echo "<br>\n";
       dataType: 'json',
       type: 'post',
       contentType: 'application/json; charset=utf-8',
-      data: '{"rd": "' + cid + '", "ip": "' + cip + '", "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ', "test": "true" }',
+      data: '{"rd": "' + cid + '", "ip": "' + cip + '", "email": "' + email + '",  "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ', "status": "0" }',
       //success: function(data) { result = data; }
       success: function(data) {
         $('#showalert').html("<div class='alert alert-success'><i class='pe-check-square-o pe-fw'></i> Your test results have been successfully submitted.</div>");
@@ -83,7 +83,6 @@ echo "<br>\n";
           success: function(data) { result = data; }
         });
       }
-      //success: function(data) { $('#showalert').html("<div class='alert alert-success'><i class='pe-save pe-fw'></i> </div>"); }
     });
     return result;
   }
@@ -102,7 +101,7 @@ echo "<br>\n";
   }
 
   // Start scripting by pe (phumin@sawasdee.org)
-  var api = "http://www.siamsquare.org/api/index.php";
+  var api = "http://www.siamsquare.org.uk";
   var myID = <?php echo $_GET['s']; ?>;
   var clientID = "<?php echo $_SESSION['userid']; ?>";
   var clientEMAIL = "<?php echo $_SESSION['email']; ?>";
@@ -122,6 +121,7 @@ echo "<br>\n";
       document.getElementById('chartContainer').innerHTML = result;
       document.getElementById('survey_oncomplete').style.display = '';
     });
+    survey.deleteCookie();
     survey.render("mySurveyJSName");
   }
 

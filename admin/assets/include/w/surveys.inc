@@ -117,20 +117,8 @@ echo "<p>$details</p><br>\n";
   var userid = <?php echo $_SESSION['userid']; ?>;
   var email = "<?php echo $_SESSION['email']; ?>";
   var ip = "<?php echo getip(); ?>";
-  var api = "http://www.siamsquare.org/api/index.php";
+  var api = "http://www.siamsquare.org.uk";
   var key = "aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8";
-
-  // var Survey = function (title, created, lastupdated, id, resultid, postid) {
-  //   this.title = ko.observable(title);
-  //   this.editingName = ko.observable(title);
-  //   this.created = created;
-  //   this.lastupdated = lastupdated;
-  //   this.id = id;
-  //   this.resultid = postid;
-  //   this.postid = postid;
-  //   this.showInfo = ko.observable(false);
-  //   this.isEditing = ko.observable(false);
-  // }
 
   var Listing = function (title, description, created, lastupdated, id) {
     this.title = ko.observable(title);
