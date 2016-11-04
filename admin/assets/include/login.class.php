@@ -9,12 +9,13 @@ class Login {
   public $messages = array();
 
   public function __construct() {
+    if (isset($_SERVER['HTTP_REFERER'])) { $ref = $_SERVER['HTTP_REFERER']; }
     session_start();
     if ($_REQUEST["w"] == "logout") { $this->doLogout(); }
-    elseif ($_REQUEST["do"] == "login") { $this->dologinWithPostData(); }
+    elseif ($_REQUEST["do"] == "login") { $this->dologinWithPostData($ref); }
   }
 
-  private function dologinWithPostData() {
+  private function dologinWithPostData($ref) {
     if (empty($_POST['email'])) { $this->errors[] = mkerror("Email was empty"); }
     elseif (empty($_POST['password'])) { $this->errors[] = mkerror("Password was empty"); }
     elseif (!empty($_POST['email']) && !empty($_POST['password'])) {
@@ -43,6 +44,7 @@ class Login {
             $result_of_update = $this->db_connection->query($sql1);
             $sql2 = "INSERT INTO j_users_logs (userid, ip, data) VALUE ('" . $_SESSION["userid"] . "', '" . $_SESSION["ip"] . "', '" . $_SESSION["email"] . " logged in');";
             $result_of_update = $this->db_connection->query($sql2);
+            if ($ref) { header("location: $ref"); }
             // if ($result_of_update->num_rows == 1) { }
           }
           else { $this->errors[] = mkerror("Wrong password"); }
