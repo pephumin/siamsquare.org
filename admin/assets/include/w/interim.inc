@@ -1,424 +1,86 @@
 <?php
 
-$title = "Interim result";
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
+$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
+if (!$db->set_charset("utf8")) { $errors[] = $db->error; }
+
+// Get projcet title
+$sql1 = "SELECT title FROM j_projects WHERE id = '".$_GET['s']."';";
+$result1 = $db->query($sql1);
+$a = $result1->fetch_assoc();
+$project = $a['title'];
+
+// Get counts
+$sql2 = "SELECT SUM(IF(status = '1', 1, 0)) AS S1, SUM(IF(status = '0', 1, 0)) AS S2, SUM(IF(status = '-1', 1, 0)) AS S3 FROM j_results WHERE surveyid = '".$_GET['s']."' ";
+$result2 = $db->query($sql2);
+$b = $result2->fetch_assoc();
+$responses_good = $b['S1'];
+$responses_test = $b['S2'];
+$responses_deleted = $b['S3'];
+$responses_total = $responses_good + $responses_test + $responses_deleted;
+$percentage_good = ($responses_good * 100) / $responses_total;
+
+// Get result stats (first)
+$sql3 = "SELECT id, email, ip, submitted FROM j_results WHERE surveyid = '".$_GET['s']."' AND status = 1 ORDER BY submitted LIMIT 1";
+$result3 = $db->query($sql3);
+$c = $result3->fetch_assoc();
+$first_id = $c['id'];
+$first_email = $c['email'];
+$first_ip = $c['ip'];
+$first_submitted = $c['submitted'];
+
+// Get result stats (last)
+$sql4 = "SELECT id, email, ip, submitted FROM j_results WHERE surveyid = '".$_GET['s']."' AND status = 1 ORDER BY submitted DESC LIMIT 1";
+$result4 = $db->query($sql4);
+$d = $result4->fetch_assoc();
+$last_id = $d['id'];
+$last_email = $d['email'];
+$last_ip = $d['ip'];
+$last_submitted = $d['submitted'];
+
+$title = "Interim result: Project $project";
 pageHeader($title);
 echo "<h2>$title</h2>";
 echo "<p>Please make sure you use the interim result with cautions. It is very important to understand that interim result is not necesary a true reflection of the final result (or even showing the same direction). While interim shows one thing, the final result may end up with another.</p>";
 echo "<p>Therefore, it is imperative that any business decisions must not be made based on this interim result. We strongly suggest that results to be used for business decision should come from the final result e.g. when the data collection period has ended, and the data has been checked to be clean and good to use.</p>";
 echo "<p>We take no responsibility on any damages happened from using interim result, you must use it at your own risk.</p>";
-// echo "<br>\n";
 
 ?>
 
 <hr>
 
-<h3>Project Domino</h3>
-
-<dl class="dl-horizontal">
-  <dt>First response:</dt>
-  <dd>10/14/2016 12:02:22 AM</dd>
-  <dt>Last response:</dt>
-  <dd>10/15/2016 11:39:15 PM</dd>
-  <dt>Total responses:</dt>
-  <dd>13</dd>
-</dl>
-
-<div class="row">
-  <div class="col-sm-7 btn-group btn-sm">
-    <strong>Group by:</strong>
-    <ul class="pagination">
-      <li class=""><a href="/Home/SurveyResults/fb79b5c0-3ad5-44ab-ac5e-4834250f22d6?groupedColumn=Q1">Q1</a></li>
-      <li class=""><a href="/Home/SurveyResults/fb79b5c0-3ad5-44ab-ac5e-4834250f22d6?groupedColumn=Q2">Q2</a></li>
-      <li class=""><a href="/Home/SurveyResults/fb79b5c0-3ad5-44ab-ac5e-4834250f22d6?groupedColumn=Q4">Q4</a></li>
-      <li class=""><a href="/Home/SurveyResults/fb79b5c0-3ad5-44ab-ac5e-4834250f22d6?groupedColumn=Q5">Q5</a></li>
-      <li class=""><a href="/Home/SurveyResults/fb79b5c0-3ad5-44ab-ac5e-4834250f22d6?groupedColumn=Q6">Q6</a></li>
-    </ul>
-  </div>
-  <div class="col-sm-5 btn-group btn-sm">
-    <button type="button" style="margin-right:10px" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Export <span class="caret"></span></button>
-    <ul class="dropdown-menu">
-      <li><a href="/Home/ExportResults/fb79b5c0-3ad5-44ab-ac5e-4834250f22d6?format=csv">CSV</a></li>
-      <li><a href="/Home/ExportResults/fb79b5c0-3ad5-44ab-ac5e-4834250f22d6?format=xls">XLS</a></li>
-      <li><a href="/Home/ExportResults/fb79b5c0-3ad5-44ab-ac5e-4834250f22d6?format=xlsx">XLSX</a></li>
-    </ul>
-    <button type="button" style="margin-right:10px" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Page size <span class="caret"></span></button>
-    <ul class="dropdown-menu">
-      <li><a href="/Home/SurveyResults/fb79b5c0-3ad5-44ab-ac5e-4834250f22d6?pageIndex=0&amp;pageSize=10">10</a></li>
-      <li><a href="/Home/SurveyResults/fb79b5c0-3ad5-44ab-ac5e-4834250f22d6?pageIndex=0&amp;pageSize=20">20</a></li>
-      <li><a href="/Home/SurveyResults/fb79b5c0-3ad5-44ab-ac5e-4834250f22d6?pageIndex=0&amp;pageSize=50">50</a></li>
-      <li><a href="/Home/SurveyResults/fb79b5c0-3ad5-44ab-ac5e-4834250f22d6?pageIndex=0&amp;pageSize=100">100</a></li>
-    </ul>
-    <button id="btnCustomizeColumns" type="button" style="margin-right:10px" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#resultColumnsModal">Customise columns</button>
-  </div>
+<div class="stats">
+  <h4>Project statistics</h4>
+  <dl class="dl-horizontal">
+    <dt>Total response:</dt>
+    <dd><?php echo $responses_total; ?></dd>
+    <dt>Valid response:</dt>
+    <dd><?php echo $responses_good; ?> (<?php echo $percentage_good; ?>%)</dd>
+    <dt>First response:</dt>
+    <dd><?php echo ago($first_submitted); ?> by <?php echo $first_email; ?> (<?php echo $first_ip; ?>)</dd>
+    <dt>Last/latest response:</dt>
+    <dd><?php echo ago($last_submitted); ?> by <?php echo $last_email; ?> (<?php echo $last_ip; ?>)</dd>
+  </dl>
 </div>
 
-<table class="table table-hover">
-  <thead>
-    <tr class="bg-success">
-      <th></th>
-      <th>Submitted</th>
-      <th>IP address</th>
-      <th>Q1</th>
-      <th>Q2</th>
-      <th>Q3</th>
-      <th>Q4</th>
-      <th>Q5</th>
-      <th>Q6</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        <a id="rowshow0" href="#" onclick="return showRow(event, 0)"><i class="pe-chevron-down"></i>
-        <a id="rowhide0" href="#" onclick="return hideRow(event, 0)" style="display:none"><i class="pe-chevron-up"></i></a>
-      </td>
-      <td>10/15/2016 11:39:15 PM +00:00</td>
-      <td>159.192.253.248</td>
-      <td>[A2, A4]</td>
-      <td>3</td>
-      <td>only two</td>
-      <td>1</td>
-      <td>Y</td>
-      <td>[JP3, EU3, JP2]</td>
-    </tr>
-    <tr id="row0" style="display:none">
-      <td style="border-top-style:none" colspan="9">
-        <dl></dl>
-        <button class="btn btn-sm btn-danger" onclick="deleteSurveyResult('b8c3081c-d831-4d2f-9103-ca6b376adeab')">Delete</button>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a id="rowshow1" href="#" onclick="return showRow(event, 1)"><i class="pe-chevron-down"></i>
-        <a id="rowhide1" href="#" onclick="return hideRow(event, 1)" style="display:none"><i class="pe-chevron-up"></i></a>
-      </td>
-      <td>10/15/2016 11:36:51 PM +00:00</td>
-      <td>159.192.253.248</td>
-      <td>[A3, A1]</td>
-      <td>3</td>
-      <td>only one</td>
-      <td>5</td>
-      <td>Y</td>
-      <td>[JP3, EU4, O2]</td>
-    </tr>
-    <tr id="row1" style="display:none">
-      <td style="border-top-style:none" colspan="9">
-        <dl></dl>
-        <button class="btn btn-sm btn-danger" onclick="deleteSurveyResult('ae1f1062-faa4-44eb-a105-4f7e817481a7')">Delete</button>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a id="rowshow2" href="#" onclick="return showRow(event, 2)"><i class="pe-chevron-down"></i>
-        <a id="rowhide2" href="#" onclick="return hideRow(event, 2)" style="display:none"><i class="pe-chevron-up"></i></a>
-      </td>
-      <td>10/15/2016 10:40:40 PM +00:00</td>
-      <td>159.192.253.248</td>
-      <td>[A4, A3, A2]</td>
-      <td>3</td>
-      <td>I love you</td>
-      <td>5</td>
-      <td>Y</td>
-      <td>[JP1, EU1, EU2]</td>
-    </tr>
-    <tr id="row2" style="display:none">
-      <td style="border-top-style:none" colspan="9">
-        <dl></dl>
-        <button class="btn btn-sm btn-danger" onclick="deleteSurveyResult('605304c9-68d9-4a48-9187-eb8198cda8ca')">Delete</button>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a id="rowshow3" href="#" onclick="return showRow(event, 3)"><i class="pe-chevron-down"></i>
-        <a id="rowhide3" href="#" onclick="return hideRow(event, 3)" style="display:none"><i class="pe-chevron-up"></i></a>
-      </td>
-      <td>10/14/2016 2:21:02 AM +00:00</td>
-      <td>159.192.253.139</td>
-      <td>[one]</td>
-      <td>5+</td>
-      <td>Yellow is not blue</td>
-      <td>5</td>
-      <td>Y</td>
-      <td>[JP3, EU3, O1]</td>
-    </tr>
-    <tr id="row3" style="display:none">
-      <td style="border-top-style:none" colspan="9">
-        <dl></dl>
-        <button class="btn btn-sm btn-danger" onclick="deleteSurveyResult('b24de2e4-5049-45fa-b0e4-02a0574ee68e')">Delete</button>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a id="rowshow4" href="#" onclick="return showRow(event, 4)"><i class="pe-chevron-down"></i>
-        <a id="rowhide4" href="#" onclick="return hideRow(event, 4)" style="display:none"><i class="pe-chevron-up"></i></a>
-      </td>
-      <td>10/14/2016 12:36:57 AM +00:00</td>
-      <td>159.192.253.139</td>
-      <td>[two]</td>
-      <td>3</td>
-      <td>Yeah</td>
-      <td>4</td>
-      <td>Y</td>
-      <td>[JP1, JP3, EU2]</td>
-    </tr>
-    <tr id="row4" style="display:none">
-      <td style="border-top-style:none" colspan="9">
-        <dl></dl>
-        <button class="btn btn-sm btn-danger" onclick="deleteSurveyResult('58e76b81-2ddb-4569-9811-fa94f9ec656d')">Delete</button>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a id="rowshow5" href="#" onclick="return showRow(event, 5)"><i class="pe-chevron-down"></i>
-        <a id="rowhide5" href="#" onclick="return hideRow(event, 5)" style="display:none"><i class="pe-chevron-up"></i></a>
-      </td>
-      <td>10/14/2016 12:25:47 AM +00:00</td>
-      <td>159.192.253.139</td>
-      <td>[three]</td>
-      <td>3</td>
-      <td>Three only</td>
-      <td>1</td>
-      <td>Y</td>
-      <td>[EU3, EU2]</td>
-    </tr>
-    <tr id="row5" style="display:none">
-      <td style="border-top-style:none" colspan="9">
-        <dl></dl>
-        <button class="btn btn-sm btn-danger" onclick="deleteSurveyResult('cc681754-9da0-4f1d-aa25-e054220a94e0')">Delete</button>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a id="rowshow6" href="#" onclick="return showRow(event, 6)"><i class="pe-chevron-down"></i>
-        <a id="rowhide6" href="#" onclick="return hideRow(event, 6)" style="display:none"><i class="pe-chevron-up"></i></a>
-      </td>
-      <td>10/14/2016 12:21:44 AM +00:00</td>
-      <td>159.192.253.139</td>
-      <td>[one]</td>
-      <td>1</td>
-      <td>Single and available</td>
-      <td>5</td>
-      <td>Y</td>
-      <td>[JP1, EU1, EU4]</td>
-    </tr>
-    <tr id="row6" style="display:none">
-      <td style="border-top-style:none" colspan="9">
-        <dl></dl>
-        <button class="btn btn-sm btn-danger" onclick="deleteSurveyResult('f7af0a5b-2a39-49b9-b11b-40c9655ecd3e')">Delete</button>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a id="rowshow7" href="#" onclick="return showRow(event, 7)"><i class="pe-chevron-down"></i>
-        <a id="rowhide7" href="#" onclick="return hideRow(event, 7)" style="display:none"><i class="pe-chevron-up"></i></a>
-      </td>
-      <td>10/14/2016 12:21:05 AM +00:00</td>
-      <td>159.192.253.139</td>
-      <td>[three]</td>
-      <td>2</td>
-      <td>Two</td>
-      <td>4</td>
-      <td>Y</td>
-      <td>[O2, JP2]</td>
-    </tr>
-    <tr id="row7" style="display:none">
-      <td style="border-top-style:none" colspan="9">
-        <dl></dl>
-        <button class="btn btn-sm btn-danger" onclick="deleteSurveyResult('9c613876-3a31-4022-8997-2844cd3d3dc4')">Delete</button>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a id="rowshow8" href="#" onclick="return showRow(event, 8)"><i class="pe-chevron-down"></i>
-        <a id="rowhide8" href="#" onclick="return hideRow(event, 8)" style="display:none"><i class="pe-chevron-up"></i></a>
-      </td>
-      <td>10/14/2016 12:18:42 AM +00:00</td>
-      <td>159.192.253.139</td>
-      <td>[three]</td>
-      <td>2</td>
-      <td>Only two</td>
-      <td>5</td>
-      <td>N</td>
-      <td>[O1, EU3]</td>
-    </tr>
-    <tr id="row8" style="display:none">
-      <td style="border-top-style:none" colspan="9">
-        <dl></dl>
-        <button class="btn btn-sm btn-danger" onclick="deleteSurveyResult('697ac516-d728-4232-9049-35bb20921143')">Delete</button>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a id="rowshow9" href="#" onclick="return showRow(event, 9)"><i class="pe-chevron-down"></i>
-        <a id="rowhide9" href="#" onclick="return hideRow(event, 9)" style="display:none"><i class="pe-chevron-up"></i></a>
-      </td>
-      <td>10/14/2016 12:17:47 AM +00:00</td>
-      <td>159.192.253.139</td>
-      <td>[three]</td>
-      <td>4</td>
-      <td>Loads of GFs</td>
-      <td>4</td>
-      <td>N</td>
-      <td>[O2, EU4]</td>
-    </tr>
-    <tr id="row9" style="display:none">
-      <td style="border-top-style:none" colspan="9">
-        <dl></dl>
-        <button class="btn btn-sm btn-danger" onclick="deleteSurveyResult('11c8703f-1d2e-47e0-9b86-d78c50072254')">Delete</button>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a id="rowshow10" href="#" onclick="return showRow(event, 10)"><i class="pe-chevron-down"></i>
-        <a id="rowhide10" href="#" onclick="return hideRow(event, 10)" style="display:none"><i class="pe-chevron-up"></i></a>
-      </td>
-      <td>10/14/2016 12:15:16 AM +00:00</td>
-      <td>159.192.253.139</td>
-      <td>[one]</td>
-      <td>1</td>
-      <td>Loyalty seems good</td>
-      <td>3</td>
-      <td>N</td>
-      <td>[JP1, EU1, JP4]</td>
-    </tr>
-    <tr id="row10" style="display:none">
-      <td style="border-top-style:none" colspan="9">
-        <dl></dl>
-        <button class="btn btn-sm btn-danger" onclick="deleteSurveyResult('5b107440-5246-4f87-8feb-93f21f2dcb9c')">Delete</button>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a id="rowshow11" href="#" onclick="return showRow(event, 11)"><i class="pe-chevron-down"></i>
-        <a id="rowhide11" href="#" onclick="return hideRow(event, 11)" style="display:none"><i class="pe-chevron-up"></i></a>
-      </td>
-      <td>10/14/2016 12:04:25 AM +00:00</td>
-      <td>159.192.253.139</td>
-      <td>[two]</td>
-      <td>2</td>
-      <td>hello</td>
-      <td>5</td>
-      <td>Y</td>
-      <td>[JP1, JP2, JP4]</td>
-    </tr>
-    <tr id="row11" style="display:none">
-      <td style="border-top-style:none" colspan="9">
-        <dl></dl>
-        <button class="btn btn-sm btn-danger" onclick="deleteSurveyResult('3a14fc97-37c8-4453-bd54-5bd936a090c9')">Delete</button>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a id="rowshow12" href="#" onclick="return showRow(event, 12)"><i class="pe-chevron-down"></i>
-        <a id="rowhide12" href="#" onclick="return hideRow(event, 12)" style="display:none"><i class="pe-chevron-up"></i></a>
-      </td>
-      <td>10/14/2016 12:02:22 AM +00:00</td>
-      <td>159.192.253.139</td>
-      <td>[two]</td>
-      <td>2</td>
-      <td>Wow</td>
-      <td>5</td>
-      <td>Y</td>
-      <td>[EU1, EU3, EU2, JP4]</td>
-    </tr>
-    <tr id="row12" style="display:none">
-      <td style="border-top-style:none" colspan="9">
-        <dl></dl>
-        <button class="btn btn-sm btn-danger" onclick="deleteSurveyResult('462a2746-46c6-4889-a703-ff726152a440')">Delete</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<hr>
 
-<br>
-
-<div class="row">
-  <div class="col-sm-2 pull-left btn-group btn-sm">
-    <button class="btn btn-danger" onclick="showClearAll()">Clear All Results</button>
-  </div>
-  <div class="col-sm-7 text-center btn-group btn-sm">
-    <ul class="pagination">
-      <li class="active"><a href="#">1</a></li>
-    </ul>
-  </div>
-  <div class="col-sm-2 pull-right btn-group btn-sm">
-  </div>
+<div class="csv">
+  <h4>Showing data ordered by the most recent (total of <span class="rows count"></span> records)</h4>
+  <p>In order to view all responses, you would need to either <a download="result.csv" href="" class="download"><i class="pe-download pe-fw"></i> download the data file</a> or <a href="" class="raw"><i class="pe-desktop pe-fw"></i> view the data file online</a>.</p>
+  <textarea class="editing form-control" readonly></textarea>
+  <div class="table rendered"><table class="table"></table></div>
+  <span class="tablenotice">You may need to scroll right if there are many columns <i class="pe-hand-o-right"></i></span>
 </div>
 
-<div id="ctrlClearAll" class="row" style="visibility:collapse">
-  <div class="col-md-6">
-    <div class="alert alert-warning" role="alert">All response data will be deleted. This operation cannot be undone.</div>
-    <div class="input-group">
-      <input type="text" class="form-control" onchange="onClearAllTextChange(this.value)" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();" placeholder="Type the survey name">
-      <span class="input-group-btn"><button id="btnClearAllData" onclick="doClearAllResults()" class="btn btn-default" type="button" disabled>Clear All Data</button></span>
-    </div>
-  </div>
-</div>
-<div id="defaultColumns">
-  <div id="resultColumnsModal" class="modal fade" role="dialog">
-    <div class="modal-dialog" style="width:700px">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Customize Columns</h4>
-        </div>
-        <div class="modal-body">
-          <div data-bind="visible:showColumns">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>Column Name</th>
-                  <th>Column Text</th>
-                  <th>Visibility</th>
-                  <th>Location</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- ko foreach: columns -->
-                <tr>
-                  <td>
-                    <a href="#" data-bind="click:$parent.columnUp"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></a>
-                    <a href="#" data-bind="click:$parent.columnDown"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></a>
-                  </td>
-                  <td data-bind="text:name"></td>
-                  <td><input type="text" data-bind="value:displayName" /></td>
-                  <td>
-                    <select data-bind="value:visibility">
-                      <option value="0">Public</option>
-                      <option value="1">Hidden</option>
-                      <option value="2">Private</option>
-                    </select>
-                  </td>
-                  <td>
-                    <select data-bind="value:location">
-                      <option value="0">Column</option>
-                      <option value="1">Detail</option>
-                    </select>
-                  </td>
-                </tr>
-                <!-- /ko -->
-              </tbody>
-            </table>
-            <span>Visibility for undefined columns submitted in responses: </span>
-            <select data-bind="value:newColumnsVisibility">
-              <option value="0">Public</option>
-              <option value="1">Hidden</option>
-              <option value="2">Private</option>
-            </select>
-          </div>
-          <div data-bind="visible:!showColumns()">Loding data...</div>
-        </div>
-        <div class="modal-footer">
-          <input type="button" data-dismiss="modal" data-bind="click: onApplyClick" value="Apply" style="width:100px">
-          <input type="button" data-dismiss="modal" value="Close" style="width:100px">
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 <script type="text/javascript">
+
+  var userid = <?php echo $_SESSION['userid']; ?>;
+  var surveyid = <?php echo $_GET['s']; ?>;
+  var api = 'http://www.siamsquare.org.uk';
+
   function showRow(e, rowIndex) {
     showhideRow(rowIndex, true);
     e.preventDefault();
@@ -434,138 +96,109 @@ echo "<p>We take no responsibility on any damages happened from using interim re
     document.getElementById("rowhide" + rowIndex).style.display = show ? "" : "none";
     document.getElementById("rowshow" + rowIndex).style.display =  show ? "none" : "";
   }
-  function deleteSurveyResult(instanceId) {
-    $.get("/api/MySurveys/deleteResult?postId=700d9888-1eff-4513-afa2-ee02fcbc1217&instanceId=" + instanceId , function (data) {
-      window.location.reload();
-    }).fail(function (error) { alert(error); });
+  function deleteSurveyResult(id) {
+    // $.ajax({
+    //   url: api + '/result/' + id + '/delete',
+    //   dataType: 'json',
+    //   type: 'get',
+    //   cache: false,
+    //   contentType: 'application/json; charset=utf-8',
+    //   success: function (data) { window.location.reload(); },
+    //   error: function (error) { alert(error); }
+    // });
   }
-</script>
 
-<script type="text/javascript">
-  var ResultColumn = function (name, displayName, visibility, location) {
-    this.name = name;
-    this.displayName = ko.observable(displayName);
-    this.visibility = ko.observable(visibility ? visibility : 0);
-    this.location = ko.observable(location? location: 0);
-    this.getJson = function() {
-      var json = {name: this.name};
-      if (this.name != this.displayName()) { json.displayname = this.displayName(); }
-      if (this.visibility() > 0) { json.visibility = this.visibility(); }
-      if (this.location() > 0) { json.location = this.location(); }
-      return json;
-    }
+  function showCSV(rendered) {
+    if (rendered) { if ($(".csv table").html()) { $(".csv .rendered").show(); $(".csv .editing").hide(); } }
+    else { $(".csv .rendered").hide(); $(".csv .editing").show().focus(); }
   }
-  var ResultColumnsModel = function (surveyId) {
-    var template = JSON.stringify({ "Columns": [{ "Name": "HappendAt", "DisplayName": "Submited", "DataType": 0, "Visibility": 0, "Location": 0, "Id": "00000000-0000-0000-0000-000000000000", "Data": { "Id": "00000000-0000-0000-0000-000000000000" } }, { "Name": "IPAddress", "DisplayName": "IPAddress", "DataType": 0, "Visibility": 2, "Location": 0, "Id": "00000000-0000-0000-0000-000000000000", "Data": { "Id": "00000000-0000-0000-0000-000000000000" } }, { "Name": "question1", "DisplayName": "question1", "DataType": 2, "Visibility": 0, "Location": 1, "Id": "00000000-0000-0000-0000-000000000000", "Data": { "Id": "00000000-0000-0000-0000-000000000000" } }], "NewColumnsVisibility": 0, "Id": "00000000-0000-0000-0000-000000000000", "Data": { "Id": "00000000-0000-0000-0000-000000000000" } });
-    var self = this;
-    this.showColumns = ko.observable(false);
-    this.newColumnsVisibility = ko.observable(0);
-    this.surveyId = surveyId;
-    this.columns = ko.observableArray([]);
-    this.loadData = function () {
-      $.getJSON(template, function (data) {
-        self.newColumnsVisibility(data.NewColumnsVisibility);
-        var list = [];
-        for (var i = 0; i < data.Columns.length; i++) { list.push(self.createColumn(data.Columns[i])); }
-        self.columns(list);
-        self.showColumns(true);
-      }).fail(function (error) { self.onFail(error); });
-    }
-    this.saveData = function() {
-      $.ajax({
-        url: "/api/MySurveys/setResultColumns",
-        type: "POST",
-        data: { Id: this.surveyId, Json: JSON.stringify(this.getJson()) },
-        success: function (data) { window.location.reload(); }
-      });
-    }
-    this.onApplyClick = function () {
-      this.saveData();
-    }
-    this.getJson = function () {
-      var json = {};
-      if (this.newColumnsVisibility() != 0) { json.newcolumnsvisibility = this.newColumnsVisibility(); }
-      json.columns = [];
-      for (var i = 0; i < this.columns().length; i++) { json.columns.push(this.columns()[i].getJson()); }
-      return json;
-    }
-    this.createColumn = function (column) {
-      return new ResultColumn(column.Name, column.DisplayName, column.Visibility, column.Location);
-    }
-    this.columnUp = function (column) {
-      var index = self.columns.indexOf(column);
-      if (index <= 0) return;
-      var prevColumn = self.columns()[index - 1];
-      self.columns.splice(index - 1, 1, column);
-      self.columns.splice(index, 1, prevColumn);
-    }
-    this.columnDown = function (column) {
-      var index = self.columns.indexOf(column);
-      if (index >= self.columns().length) return;
-      var nextColumn = self.columns()[index + 1];
-      self.columns.splice(index + 1, 1, column);
-      self.columns.splice(index, 1, nextColumn);
-    }
-    this.onFail = function (error) {
-      alert(JSON.stringify(error));
-    }
-  }
-</script>
 
+  function renderCSV(objects) {
+    var rows = $.csv.fromObjects(objects, {justArrays: true});
+    if (rows.length < 1) return;
 
-<script type="text/javascript">
+    var table = $(".csv table")[0];
+    $(table).html("").attr("id", "interimtable");
 
-  function showClearAll() {
-    document.getElementById("ctrlClearAll").style.visibility = "visible";
+    var thead = document.createElement("thead");
+    var tr = document.createElement("tr");
+    var header = rows[0];
+    for (field in header) {
+      var th = document.createElement("th");
+      $(th).html(header[field]).addClass("bg-primary");
+      tr.appendChild(th);
+    }
+    thead.appendChild(tr);
+
+    var tbody = document.createElement("tbody");
+    $(thead).find('th:first-child').css("background", "#555"); $(thead).find('th:nth-child(2)').css("background", "#555");
+    for (var i=1; i<rows.length; i++) {
+      tr = document.createElement("tr");
+      var a1 = document.createElement('a'); a1.innerHTML = ' <i class="pe-chevron-down"></i>'; a1.setAttribute('id', 'rowshow' + i); a1.setAttribute('href', '#'); a1.setAttribute('onclick', 'return showRow(event, ' + i + ')');
+      var a2 = document.createElement('a'); a2.innerHTML = ' <i class="pe-chevron-up"></i>'; a2.setAttribute('id', 'rowhide' + i); a2.setAttribute('href', '#'); a2.setAttribute('onclick', 'return hideRow(event, ' + i + ')'); a2.setAttribute('style', 'display:none');
+      var buttonnode = document.createElement('button'); buttonnode.setAttribute('class', 'btn btn-danger btn-tiny disabled'); buttonnode.innerHTML = 'Delete <i class="pe-trash"></i>'; buttonnode.onclick = deleteSurveyResult(surveyid);
+      var td2 = document.createElement("td"); td2.setAttribute('colspan', '2'); td2.setAttribute('style', 'border-top-style:none');
+      var tr2 = document.createElement("tr"); tr2.setAttribute('id', 'row' + i); tr2.setAttribute('style', 'display:none');
+      for (field in rows[i]) {
+        var td = document.createElement("td");
+        $(td).html(rows[i][field]);
+        tr.appendChild(td);
+        $(tr).find('td:first-child').append(a1).append(a2);
+      }
+      tbody.appendChild(tr);
+      td2.appendChild(buttonnode);
+    tr2.appendChild(td2);
+    tbody.appendChild(tr2);
+    }
+    table.appendChild(thead);
+    table.appendChild(tbody);
   }
-  function onClearAllTextChange(text) {
-    if ('Domino' == text) { document.getElementById("btnClearAllData").removeAttribute("disabled") }
-    else { document.getElementById("btnClearAllData").setAttribute("disabled"); }
-  }
-  function doClearAllResults() {
-    $.get("/api/MySurveys/deleteAllResults?id={fb79b5c0-3ad5-44ab-ac5e-4834250f22d6}", function (data) {
-      window.location.reload();
+
+  function getsurveyrawdata(surveyid) {
+    var result = "";
+    $.ajax({
+      url: api + '/result/raw/' + surveyid,
+      dataType: 'json',
+      type: 'get',
+      cache: false,
+      async: false,
+      success: function(data) { result = data; }
     });
+    return result;
   }
-  var SurveyResultAccessModel = function (id, access) {
-    var self = this;
-    this.id = id;
-    this.accesstype = ko.observable(access == "True");
-    this.url = "/api/MySurveys/";
-    self.changeAccessType = function (newAccessType) {
-      $.getJSON(self.url + "makeResultPublic?id=" + self.id + "&makeResultPublic=" + newAccessType, function (data) {
-        self.accesstype(data);
-      });
-    }
-    self.allowAccess = function () { self.changeAccessType(true); }
-    self.disableAccess = function () { self.changeAccessType(false); }
-  }
-  var SurveyStoreIPModel = function (id, storeIP) {
-    var self = this;
-    this.id = id;
-    this.storeIP = ko.observable(storeIP == "True");
-    this.url = "/api/MySurveys/";
-    self.changeStoreIP = function (newValue) {
-      $.getJSON(self.url + "storeIPAddressInResult?id=" + self.id + "&storeIPAddress=" + newValue, function (data) {
-        self.storeIP(data);
-      });
-    }
-    self.allowStoreIP = function () { self.changeStoreIP(true); }
-    self.disableStoreIP = function () { self.changeStoreIP(false); }
-  }
+
   jQuery(document).ready(function () {
-    ko.applyBindings(new SurveyResultAccessModel("fb79b5c0-3ad5-44ab-ac5e-4834250f22d6", "True"), document.getElementById("resultaccess"));
-    ko.applyBindings(new SurveyStoreIPModel("fb79b5c0-3ad5-44ab-ac5e-4834250f22d6", "True"), document.getElementById("resultstoreIP"));
-    var resultsColumnsModel = new ResultColumnsModel("fb79b5c0-3ad5-44ab-ac5e-4834250f22d6");
-    ko.applyBindings(resultsColumnsModel, document.getElementById("defaultColumns"));
-    var btnCustomize = document.getElementById("btnCustomizeColumns");
-    if (btnCustomize) {
-      btnCustomize.onclick = function() { resultsColumnsModel.loadData(); };
-      btnCustomize["data-toggle"] = "modal";
-      btnCustomize["data-target"] = "#resultColumnsModal";
-    }
+    var excerptRows = 50;
+    var inArray = getsurveyrawdata(surveyid);
+    var outArray = [];
+    for (var row in inArray) { outArray[outArray.length] = parse_object(inArray[row]); }
+    $("span.rows.count").text("" + outArray.length);
+    var csv = $.csv.fromObjects(outArray); // excerpt and render first 10 rows
+    renderCSV(outArray.slice(0, excerptRows));
+    showCSV(true);
+    $(".csv textarea").val(csv); // show raw data if people really want it
+    var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+    $(".csv a.download").attr("href", uri);
+    // $(".json textarea").blur(function() {showJSON(true);});
+    // $(".json pre").click(function() {showJSON(false)});
+    $(".csv textarea").blur(function() {showCSV(true);})
+    $(".csv .raw").click(function() {
+      showCSV(false);
+      $(".csv textarea").focus().select();
+      return false;
+    })
+    $(".csv a.download").click(function() {
+      var data = $(".csv textarea").val();
+      if (data) { Events.download(data.length); return true; }
+      else { return false; }
+    });
+    $(".csv textarea").click(function() {$(this).focus().select();}); // highlight CSV on click
   });
+
 </script>
 
+<br>
+
+<a href="/admin/?w=surveys" class="btn btn-danger btn-sm pull-right" style="margin-top:50px; margin-bottom: 20px"><i class="pe-chevron-circle-left pe-fw"></i> Back to the main page</a>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
