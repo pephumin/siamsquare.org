@@ -5377,10 +5377,11 @@ var Survey;
 (function (Survey) {
     Survey.defaultBootstrapCss = {
         root: "",
-        header: "panel-heading",
-        body: "panel-body",
-        footer: "panel-footer",
-        navigationButton: "btn", navigation: { complete: "btn-success", prev: "btn-default", next: "btn-default" },
+        header: "",
+        body: "",
+        footer: "text-center",
+        //navigationButton: "btn", navigation: { complete: "btn-success", prev: "btn-default", next: "btn-default" },
+        navigationButton: "btn", navigation: { complete: "btn-primary", prev: "btn-info", next: "btn-info" },
         progress: "progress center-block", progressBar: "progress-bar progress-bar-striped active",
         pageTitle: "pageTitle",
         row: "eachquestion",
@@ -6484,7 +6485,7 @@ var template;
     (function (window) {
         var ko;
         (function (ko) {
-            ko.html = '<div class="modal-content" style="position: fixed; bottom: 3px; right: 10px;">    <div class="modal-header panel-title">        <a href="#" data-bind="click:doExpand" style="width:100%">            <span class="pull-left" style="padding-right:10px" data-bind="text:title"></span>            <span class="glyphicon pull-right" aria-hidden="true" data-bind="css:{\'glyphicon-chevron-down\': koExpanded(), \'glyphicon-chevron-up\': !koExpanded()}"></span>        </a>    </div>    <div class="modal-body" data-bind="visible:koExpanded">        <div id="windowSurveyJS"></div>    </div></div>';
+            ko.html = '<div class="modal-content" style="position: fixed; bottom: 3px; right: 10px;">    <div class="modal-header panel-title">        <a href="#" data-bind="click:doExpand" style="width:100%">            <span class="pull-left" style="padding-right:10px" data-bind="text:title"></span>            <i class="pull-right" aria-hidden="true" data-bind="css:{\'pe-chevron-down\': koExpanded(), \'pe-chevron-up\': !koExpanded()}"></i>        </a>    </div>    <div class="modal-body" data-bind="visible:koExpanded">        <div id="windowSurveyJS"></div>    </div></div>';
         })(ko = window.ko || (window.ko = {}));
     })(window = template.window || (template.window = {}));
 })(template || (template = {}));

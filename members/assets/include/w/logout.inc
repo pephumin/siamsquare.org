@@ -1,7 +1,6 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/public/assets/include/login.class.php';
-$target = "/public";
+$target = "/members";
 
 echo "<h2>ล็อคเอ้าท์สำเร็จ</h2>";
 echo mksuccess("คุณได้ทำการล็อคเอ้าท์ออกจากระบบอย่างสมบูรณ์แล้ว อีกสักครู่เราจะเปลี่ยนหน้ากลับไปยังหน้าแรก");

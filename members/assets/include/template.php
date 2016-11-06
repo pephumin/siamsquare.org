@@ -1,7 +1,7 @@
 <?php
 
 function logo() {
-  echo "<img src=\"/public/assets/img/ssq.svg\" alt=\"SiamSquare Survey Engine by PE BINARY CO., LTD.\">";
+  echo "<img src=\"/members/assets/img/ssq.svg\" alt=\"SiamSquare Survey Engine by PE BINARY CO., LTD.\">";
 }
 
 function ssqlogo() {
@@ -15,7 +15,7 @@ function peblogo() {
 function pageHeader($title) {
   $user = $_SESSION['email'];
   $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>";
-  $v1 = MYPUBLIC."?w=login"; $v2 = MYPUBLIC."?w=logout"; $v3 = "http://www.pebinary.net/th/members/";
+  $v1 = MYMEMBER."?w=login"; $v2 = MYMEMBER."?w=logout"; $v3 = "http://www.pebinary.net/th/members/";
   if ($_SESSION['email']) {
     $signed = "<a href=\"$v2\" class=\"btn btn-info btn-xs\" title=\"ออกจากระบบ\"><i class=\"pe-sign-out pe-fw\"></i> ออกจากระบบ</a> <a href=\"$v3\" class=\"btn btn-primary btn-xs\"><i class=\"pe-university pe-fw\"></i> ช่วยเหลือ</a>";
     $ww = "ยินดีต้อนรับ $show";
@@ -30,7 +30,7 @@ function pageHeader($title) {
 <html lang="th">
 <head>
   <meta charset="utf-8">
-  <?php if (($_REQUEST["w"]) == "logout") { echo "<meta http-equiv=\"refresh\" content=\"10; url=/public\">"; } ?>
+<?php if (($_REQUEST["w"]) == "logout") { echo "<meta http-equiv=\"refresh\" content=\"10; url=/members\">"; } ?>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="handheldfriendly" content="true">
   <meta name="mobileoptimized" content="240">
@@ -38,41 +38,40 @@ function pageHeader($title) {
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <title>SiamSquare: <?php echo $title; ?></title>
-  <link rel="stylesheet" type="text/css" href="/public/assets/css/public.css">
-  <link rel="stylesheet" type="text/css" href="/public/assets/css/survey.css">
+  <link rel="stylesheet" type="text/css" href="/members/assets/css/members.css">
+  <link rel="stylesheet" type="text/css" href="/members/assets/css/survey.css">
   <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/live/0.5/firebase-ui-auth.css">
-  <link rel="shortcut icon" type="image/x-icon" href="/public/assets/icons/favicon.ico">
-  <link rel="apple-touch-icon" sizes="57x57" href="/public/assets/icons/apple-icon-57x57.png">
-  <link rel="apple-touch-icon" sizes="60x60" href="/public/assets/icons/apple-icon-60x60.png">
-  <link rel="apple-touch-icon" sizes="72x72" href="/public/assets/icons/apple-icon-72x72.png">
-  <link rel="apple-touch-icon" sizes="76x76" href="/public/assets/icons/apple-icon-76x76.png">
-  <link rel="apple-touch-icon" sizes="114x114" href="/public/assets/icons/apple-icon-114x114.png">
-  <link rel="apple-touch-icon" sizes="120x120" href="/public/assets/icons/apple-icon-120x120.png">
-  <link rel="apple-touch-icon" sizes="144x144" href="/public/assets/icons/apple-icon-144x144.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="/public/assets/icons/apple-icon-152x152.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/public/assets/icons/apple-icon-180x180.png">
-  <link rel="icon" type="image/png" sizes="192x192"  href="/public/assets/icons/android-icon-192x192.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/public/assets/icons/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="96x96" href="/public/assets/icons/favicon-96x96.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/public/assets/icons/favicon-16x16.png">
-  <link rel="manifest" href="/public/assets/icons/manifest.json">
+  <link rel="shortcut icon" type="image/x-icon" href="/members/assets/icons/favicon.ico">
+  <link rel="apple-touch-icon" sizes="57x57" href="/members/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/members/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/members/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/members/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/members/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/members/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/members/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/members/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/members/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/members/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/members/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/members/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/members/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/members/assets/icons/manifest.json">
   <meta name="msapplication-TileColor" content="#FFFFFF">
-  <meta name="msapplication-TileImage" content="/public/assets/icons/ms-icon-144x144.png">
+  <meta name="msapplication-TileImage" content="/members/assets/icons/ms-icon-144x144.png">
   <meta name="theme-color" content="#FFFFFF">
-  <script type="text/javascript" src="/public/assets/js/jquery-2.1.4.min.js"></script>
-  <script type="text/javascript" src="/public/assets/js/bootstrap.js"></script>
-  <script type="text/javascript" src="/public/assets/js/jquery.steps.js"></script>
-  <script type="text/javascript" src="/public/assets/js/moment.js"></script>
-  <script type="text/javascript" src="/public/assets/js/fv/formValidation.min.js"></script>
-  <script type="text/javascript" src="/public/assets/js/fv/bootstrap.min.js"></script>
-  <script type="text/javascript" src="/public/assets/js/survey/knockout.js"></script>
-  <script type="text/javascript" src="/public/assets/js/survey/ace/ace.js"></script>
-  <script type="text/javascript" src="/public/assets/js/survey/ace/worker-json.js"></script>
-  <script type="text/javascript" src="/public/assets/js/survey/ace/mode-json.js"></script>
-  <script type="text/javascript" src="/public/assets/js/survey/survey.ko.js"></script>
-  <script type="text/javascript" src="/public/assets/js/survey/surveyeditor.js"></script>
-  <script type="text/javascript" src="/public/assets/js/survey/globalize.min.js"></script>
-  <script type="text/javascript" src="/public/assets/js/survey/dx.chartjs.js"></script>
+  <script type="text/javascript" src="/members/assets/js/jquery-2.1.4.min.js"></script>
+  <script type="text/javascript" src="/members/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/members/assets/js/jquery.steps.js"></script>
+  <script type="text/javascript" src="/members/assets/js/moment.js"></script>
+  <script type="text/javascript" src="/members/assets/js/fv/formValidation.min.js"></script>
+  <script type="text/javascript" src="/members/assets/js/fv/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/members/assets/js/survey/knockout.js"></script>
+  <script type="text/javascript" src="/members/assets/js/survey/ace/ace.js"></script>
+  <script type="text/javascript" src="/members/assets/js/survey/ace/worker-json.js"></script>
+  <script type="text/javascript" src="/members/assets/js/survey/ace/mode-json.js"></script>
+  <script type="text/javascript" src="/members/assets/js/survey/survey.ko.js"></script>
+  <script type="text/javascript" src="/members/assets/js/survey/globalize.min.js"></script>
+  <script type="text/javascript" src="/members/assets/js/survey/dx.chartjs.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/firebasejs/3.4.1/firebase.js"></script>
   <!-- <script type="text/javascript" src="https://www.gstatic.com/firebasejs/ui/live/0.5/firebase-ui-auth.js"></script> -->
 </head>
@@ -86,7 +85,7 @@ function pageHeader($title) {
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-2">
       <div class="container">
-        <h1><a href="<?php echo MYPUBLIC; ?>" title="<?php echo MYDESC; ?>"><?php logo(); ?></a></h1>
+        <h1><a href="<?php echo MYMEMBER; ?>" title="<?php echo MYDESC; ?>"><?php logo(); ?></a></h1>
         <p class="description">เพราะทุกเสียงของคุณมีความหมายสำหรับเรา</p>
       </div>
     </div>
@@ -105,27 +104,27 @@ function pageHeader($title) {
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
 <?php if ($_SESSION['email']) { ?>
-              <li><a href="<?php echo MYPUBLIC; ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> หน้าแรก</a></i>
+              <li><a href="<?php echo MYMEMBER; ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> หน้าแรก</a></i>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-cubes pe-fw"></i> งานวิจัย <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">ภาพรวมงานวิจัย</li>
-                  <li><a href="<?php echo(MYPUBLIC."?w=surveys"); ?>"><i class="pe-wpforms pe-fw"></i> งานวิจัยทั้งหมด</a></li>
+                  <li><a href="<?php echo(MYMEMBER."?w=surveys"); ?>"><i class="pe-wpforms pe-fw"></i> งานวิจัยทั้งหมด</a></li>
                   <li role="separator" class="divider"></li>
                   <li class="dropdown-header">รายละเอียด</li>
-                  <li><a href="<?php echo(MYPUBLIC."?w=surveys&c=A"); ?>"><i class="pe-hourglass-start pe-fw"></i> งานวิจัยที่เปิดรับความคิดเห็นอยู่</a></li>
-                  <li><a href="<?php echo(MYPUBLIC."?w=surveys&c=B"); ?>"><i class="pe-hourglass-half pe-fw"></i> งานวิจัยที่ปิดรับความคิดเห็นแล้ว</a></li>
+                  <li><a href="<?php echo(MYMEMBER."?w=surveys&c=A"); ?>"><i class="pe-hourglass-start pe-fw"></i> งานวิจัยที่เปิดรับความคิดเห็นอยู่</a></li>
+                  <li><a href="<?php echo(MYMEMBER."?w=surveys&c=B"); ?>"><i class="pe-hourglass-half pe-fw"></i> งานวิจัยที่ปิดรับความคิดเห็นแล้ว</a></li>
                 </ul>
               </li>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-user pe-fw"></i> ข้อมูลส่วนตัว <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li class="dropdown-header">Your activity</li>
-                  <li><a href="<?php echo(MYPUBLIC."?w=activity"); ?>" title="View activity"><i class="pe-tv pe-fw"></i> View activity</a></li>
+                  <li><a href="<?php echo(MYMEMBER."?w=activity"); ?>" title="View activity"><i class="pe-tv pe-fw"></i> View activity</a></li>
                   <li role="separator" class="divider"></li>
                   <li class="dropdown-header">เปลี่ยนแปลงข้อมูลส่วนตัว</li>
-                  <li><a href="<?php echo(MYPUBLIC."?w=changeinfo"); ?>" title="Change info"><i class="pe-cog pe-fw"></i> แก้ไขข้อมูลส่วนตัว</a></li>
-                  <li><a href="<?php echo(MYPUBLIC."?w=changepass"); ?>" title="Change password"><i class="pe-key pe-fw"></i> เปลี่ยนรหัสผ่าน</a></li>
+                  <li><a href="<?php echo(MYMEMBER."?w=changeinfo"); ?>" title="Change info"><i class="pe-cog pe-fw"></i> แก้ไขข้อมูลส่วนตัว</a></li>
+                  <li><a href="<?php echo(MYMEMBER."?w=changepass"); ?>" title="Change password"><i class="pe-key pe-fw"></i> เปลี่ยนรหัสผ่าน</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -137,9 +136,9 @@ function pageHeader($title) {
                 </ul>
               </li>
 <?php } else { ?>
-              <li><a href="<?php echo MYPUBLIC; ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> หน้าแรก</a></i>
-              <li><a href="<?php echo(MYPUBLIC."signup.php"); ?>" title="สมัครสมาชิก"><i class="pe-user-plus pe-fw"></i> สมัครสมาชิก</a></li>
-              <li><a href="<?php echo(MYPUBLIC."contact.php"); ?>" title="ติดต่อเรา"><i class="pe-envelope-o pe-fw"></i> ติดต่อเรา</a></li>
+              <li><a href="<?php echo MYMEMBER; ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> หน้าแรก</a></i>
+              <li><a href="<?php echo(MYMEMBER."signup.php"); ?>" title="สมัครสมาชิก"><i class="pe-user-plus pe-fw"></i> สมัครสมาชิก</a></li>
+              <li><a href="<?php echo(MYMEMBER."contact.php"); ?>" title="ติดต่อเรา"><i class="pe-envelope-o pe-fw"></i> ติดต่อเรา</a></li>
 <?php } ?>
             </ul>
           </div>
@@ -183,9 +182,9 @@ function pageFooter($notes = null) {
   </div>
 </footer>
 <div class="scroll-to-top"><i class="pe-arrow-up pe-lg"></i></div>
-<script type="text/javascript" src="/public/assets/js/anchor.js"></script>
-<script type="text/javascript" src="/public/assets/js/notification.js"></script>
-<script type="text/javascript" src="/public/assets/js/etc.js"></script>
+<script type="text/javascript" src="/members/assets/js/anchor.js"></script>
+<script type="text/javascript" src="/members/assets/js/notification.js"></script>
+<script type="text/javascript" src="/members/assets/js/etc.js"></script>
 <script type="text/javascript">
   var config = {
     apiKey: "AIzaSyBhLjEc1SwSq06Pg494R6pdM2NqLHF8Ag0",
@@ -278,7 +277,7 @@ function w($w = null) {
   if (empty($w)) { $w = 'index'; }
   $where = strtolower(preg_replace('/ +/','_',$w));
   if (!preg_match('/^[A-Za-z0-9_]+$/',$w)) { $w = 'index'; }
-  $filecheck = $_SERVER['DOCUMENT_ROOT'].'/public/assets/include/w/'.$w.'.inc';
+  $filecheck = $_SERVER['DOCUMENT_ROOT'].'/members/assets/include/w/'.$w.'.inc';
   if (!file_exists($filecheck)) { $w = 'index'; }
   // echo $filecheck;
   if (!file_exists($filecheck)) { echo('Unable to open include file. Check INI settings. Aborting.'); exit; }

@@ -49,7 +49,7 @@ echo "<br>\n";
       button: { selector: '[type="submit"]', disabled: '' },
       excluded: ':disabled',
       fields: {
-        username: { validators: { notEmpty: { message: 'กรุณาระบุอีเมล์ของคุณ' }, emailAddress: { message: 'คุณกรอกอีเมล์ไม่ถูกต้อง' } } },
+        email: { validators: { notEmpty: { message: 'กรุณาระบุอีเมล์ของคุณ' }, emailAddress: { message: 'คุณกรอกอีเมล์ไม่ถูกต้อง' } } },
         password: { validators: { notEmpty: { message: 'กรุณาระบุรหัสผ่านของคุณ' }, stringLength: { min: 4, message: 'รหัสผ่านจะต้องมีอย่างต่ำจำนวน 6 ตัวอักษรหรือตัวเลขผสมกัน' }, different: { field: 'username', message: 'รหัสผ่านต้องไม่เหมือนกับชื่อล็อคอิน' } } }
       }
     });

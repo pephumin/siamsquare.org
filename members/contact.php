@@ -1,9 +1,14 @@
 <?php
 
-$title = 'Contact us';
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once INCLUDEPUB.'/template.php';
-require_once INCLUDEPUB.'/first.php';
+$title = "ติดต่อเรา";
+require_once $_SERVER['DOCUMENT_ROOT'].'/members/assets/include/config.php';
+
+pageHeader($title);
+echo "<h2>$title</h2>\n";
+echo "<p>คุณสามารถใช้แบบฟอร์มในหน้านี้เพื่อส่งข้อความหาเราได้ทุกเวลาตามที่คุณต้องการ</p>\n";
+echo "<p>เรา <i class=\"pe-heart\"></i> ที่จะได้รับฟังความคิดเห็นจากคุณ</p>\n";
+if ($msg) { echo $msg; }
+echo "<br>\n";
 
 $sent = false;
 
@@ -36,14 +41,6 @@ if (isset($_REQUEST['captcha'])) {
   if ($_REQUEST['captcha'] == $_SESSION['captcha']) { @mail(MYEMAIL, $subject, $body, $headers); $msg = mksuccess("ข้อความของคุณได้ถูกส่งเป็นที่เรียบร้อยแล้ว เราจะติดต่อกลับมาหาคุณเร็วๆนี้"); $sent = true; }
   else { $msg = mkerror("คุณใส่ตัวเลขและตัวอักษรตามรูปภาพไม่ถูกต้อง"); }
 }
-
-pageHeader($title);
-echo "<h2>ติดต่อเรา</h2>\n";
-echo "<p>คุณสามารถใช้แบบฟอร์มในหน้านี้เพื่อส่งข้อความหาเราได้ทุกเวลาตามที่คุณต้องการ</p>\n";
-echo "<p>เรา <i class=\"pe-heart\"></i> ที่จะได้รับฟังความคิดเห็นจากคุณ</p>\n";
-echo "<br>\n";
-if ($msg) { echo $msg; }
-echo "<br>\n";
 
 ?>
 

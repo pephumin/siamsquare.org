@@ -1,13 +1,18 @@
 <?php
 
-$title = "Member registration";
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once INCLUDEPUB.'/template.php';
-require_once INCLUDEPUB.'/first.php';
+$title = "สมัครสมาชิกใหม่ด้วยอีเมล์";
+require_once $_SERVER['DOCUMENT_ROOT'].'/members/assets/include/config.php';
 
-esp_init_adodb();
+pageHeader($title);
+echo "<h2>$title</h2>\n";
+echo "<p>เราเปิดรับสมาชิกใหม่อยู่ <strong>รีบสมัครเลยเพราะเรารับจำนวนจำกัดเท่านั้น</strong></p>\n";
+echo "<p>สมาชิกจะได้รับสิทธิ์การเข้าร่วมวิจัยตลาด เพื่อแลกรับของรางวัลและคะแนนสะสม สมาชิกจะไม่มีค่าใช้จ่ายใดๆ</p>\n";
+echo "<p>การสมัครสมาชิกนั้น สามารถทำได้ง่ายๆด้วยตัวคุณเอง ขั้นตอนง่ายๆไม่ยุ่งยาก <strong>จะใช้เวลาไม่เกินสามนาทีเท่านั้น</strong> เพียงแค่คุณกรอกข้อมูลตามที่กำหนดให้ครบถ้วนถูกต้อง <strong>และที่สำคัญตรงตามความจริง</strong> ตามแบบฟอร์มด้านล่างนี้และกดส่งมาหาเรา ทีมงานจะทำการยืนยันความถูกต้องกับคุณอีกครั้ง และจะเปิดบัญชีสมาชิกให้คุณใช้งานในทันที</p>\n";
+if ($msg) { echo $msg; }
+echo "<br>\n";
 
-unset($msg);
+$sent = false;
+
 $fields = array('username','password','email','fname','lname');
 
 if (isset($_POST['submit'])) {
@@ -32,14 +37,8 @@ if (isset($_POST['submit'])) {
   foreach ($fields as $f) { $_POST[$f] = null; unset($_POST[$f]); }
 }
 
-pageHeader($title);
-if ($msg) { echo $msg; }
 ?>
-<h2>สมัครสมาชิกใหม่ด้วยอีเมล์</h2>
-<p>เราเปิดรับสมาชิกใหม่อยู่ <strong>รีบสมัครเลยเพราะเรารับจำนวนจำกัดเท่านั้น</strong></p>
-<p>สมาชิกจะได้รับสิทธิ์การเข้าร่วมวิจัยตลาด เพื่อแลกรับของรางวัลและคะแนนสะสม สมาชิกจะไม่มีค่าใช้จ่ายใดๆ</p>
-<p>การสมัครสมาชิกนั้น สามารถทำได้ง่ายๆด้วยตัวคุณเอง ขั้นตอนง่ายๆไม่ยุ่งยาก <strong>จะใช้เวลาไม่เกินสามนาทีเท่านั้น</strong> เพียงแค่คุณกรอกข้อมูลตามที่กำหนดให้ครบถ้วนถูกต้อง <strong>และที่สำคัญตรงตามความจริง</strong> ตามแบบฟอร์มด้านล่างนี้และกดส่งมาหาเรา ทีมงานจะทำการยืนยันความถูกต้องกับคุณอีกครั้ง และจะเปิดบัญชีสมาชิกให้คุณใช้งานในทันที</p>
-<br>
+
 <form id="signup" method="post" class="form-horizontal" action="<?php echo htmlspecialchars(ME); ?>">
   <h4>ตั้งค่าล็อคอิน</h4>
   <section data-step="0">
