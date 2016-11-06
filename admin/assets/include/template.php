@@ -121,6 +121,9 @@ function pageHeader($title) {
                   <li><a href="<?php echo(MYADMIN."?w=surveys&c=B"); ?>"><i class="pe-hourglass-half pe-fw"></i> During data collection</a></li>
                   <li><a href="<?php echo(MYADMIN."?w=surveys&c=C"); ?>"><i class="pe-hourglass-end pe-fw"></i> After data collection</a></li>
                   <li><a href="<?php echo(MYADMIN."?w=surveys&c=D"); ?>"><i class="pe-archive pe-fw"></i> Archived</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li class="dropdown-header">Utilities</li>
+                  <li><a href="<?php echo(MYADMIN."?w=tableconversion"); ?>"><i class="pe-table pe-fw"></i> Table conversion</a></li>
                 </ul>
               </li>
               <li class="dropdown">

@@ -101,8 +101,8 @@ echo "<h2>$title</h2>\n";
   var clientEMAIL = "<?php echo $_SESSION['email']; ?>";
   var clientIP = "<?php echo getip(); ?>";
   mm = getsurveyinfo(myID);
-  survey.deleteCookie();
   var survey = new Survey.Survey (getsurveydata(myID), "surveyContainer");
+  survey.deleteCookie();
   Survey.Survey.cssType = "bootstrap";
   survey.onComplete.add(function (s) { postsurveydata(clientID, clientIP, clientEMAIL, myID, survey.data, mm.title); });
 

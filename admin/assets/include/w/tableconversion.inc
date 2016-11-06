@@ -1,6 +1,6 @@
 <?php
 
-$title = "Data utility";
+$title = "Table conversion";
 pageHeader($title);
 echo "<h2>$title</h2>";
 echo "<p>This page is a utility for data management where it converts your raw data into an easy-to-read tabulation.</p>\n";
@@ -10,22 +10,22 @@ echo "<hr>\n";
 
 ?>
 
-
 <div class="json">
-  <h4>Paste your data source into the box below</h4>
-  <p>You can get a quick view of your data source by pasting it into this box, and it will automatically generate a nice table for you to view your data.</p>
+  <h4>Paste your data into the box below</h4>
+  <p>You can get a quick view of your data by pasting it into this box below. The program will automatically generate a nice table below which you can then use it for a quick view tool of your data.</p>
   <textarea class="editing form-control"></textarea>
   <pre class="rendered"><code></code></pre>
   <div class="drop">DROP JSON HERE</div>
-  <div class="warning">Extremely large files may cause trouble &mdash; the conversion is done inside your browser.</div>
-  <div class="error">There was an error parsing this JSON data. Please make sure it is a JSON format.</div>
+  <span class="tablenotice warning">Extremely large files may cause trouble as this conversion is done inside your browser</span>
+  <span class="tablenotice error">There was an error parsing this JSON data. Please make sure it is a JSON format.</span>
 </div>
 
-<hr>
+<br><hr>
 
 <div class="csv">
-  <h4>Data automatically generated from your data source</h4>
-  <p>In order to view all responses, you would need to either <a download="result.csv" href="" class="download"><i class="pe-download pe-fw"></i> download the data file</a> or <a href="" class="raw"><i class="pe-desktop pe-fw"></i> view the data file online</a>.</p>
+  <h4>Table generated automatically from your data</h4>
+  <p>The table below has been generated automatically from the data you pasted in the box above. It began with the conversion from your raw data to Comma Separate Value (CSV) format and then it converted the CSV format into this table as shown below.</p>
+  <p>However, for performance purpose, we limit this page to only visualise up to 50 records. Should you need to view it beyond such limit, you can either <a download="result.csv" href="" class="download"><i class="pe-download pe-fw"></i> download the converted data file</a> which includes all of your records or <a href="" class="raw"><i class="pe-desktop pe-fw"></i> view the converted data file online</a> before copy and paste all records to your preferred data processing program such as Microsoft Excel or SPSS.</p>
   <textarea class="editing form-control" readonly></textarea>
   <div class="table rendered"><table class="table"></table></div>
   <span class="tablenotice">You may need to scroll right if there are many columns <i class="pe-hand-o-right"></i></span>
@@ -33,20 +33,16 @@ echo "<hr>\n";
 
 <script type="text/javascript">
 
-  var excerptRows = 7;
+  var excerptRows = 50;
   var input;
   var url;
   var lastSaved;
 
   function doJSON() {
-
-    $(".drop").hide(); // just in case
-    var newInput = $(".json textarea").val(); // get input JSON, try to parse it
+    $(".drop").hide();
+    var newInput = $(".json textarea").val();
     if (newInput == input) return;
     input = newInput;
-    // input = getsurveyrawdata(surveyid);
-    // console.log(input);
-
     if (!input) { $(".json code").html(""); return; }
     var json = jsonFrom(input);
     if (json) {
@@ -101,18 +97,19 @@ echo "<hr>\n";
       tr.appendChild(th);
     }
     thead.appendChild(tr);
+    $(thead).find('th:first-child').css("background", "#555");
 
     var tbody = document.createElement("tbody");
     for (var i=1; i<rows.length; i++) {
       tr = document.createElement("tr");
       for (field in rows[i]) {
         var td = document.createElement("td");
-        $(td)
-          .html(rows[i][field])
-          .attr("title", rows[i][field]);
+        // $(td).html(rows[i][field]).attr("title", rows[i][field]);
+        $(td).html(rows[i][field]);
         tr.appendChild(td);
       }
       tbody.appendChild(tr);
+      $(tbody).find('td:first-child').css("background", "#eee");
     }
     table.appendChild(thead);
     table.appendChild(tbody);
@@ -264,5 +261,8 @@ echo "<hr>\n";
 
 </script>
 
+<br>
+
+<a href="/admin/?w=surveys" class="btn btn-danger btn-sm pull-right" style="margin-top:50px; margin-bottom: 20px"><i class="pe-chevron-circle-left pe-fw"></i> Back to the main page</a>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>

@@ -79,7 +79,7 @@ echo "<p>$details</p><br>\n";
             <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=pilot&amp;s=' + id }, visible: $parent.showActive() == 'A'">Pilot test <i class="pe-paper-plane"></i></a>
             <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=progress&amp;s=' + id }, visible: $parent.showActive() == 'B'">Progress <i class="pe-refresh"></i></a>
             <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=interim&amp;s=' + id }, visible: $parent.showActive() == 'B'">Interim <i class="pe-pie-chart"></i></a>
-            <a class="btn btn-primary btn-xs" data-bind="attr: { href: '/admin/?w=run&amp;s=' + id }, visible: $parent.showActive() == 'B'">Live <i class="pe-plane"></i></a>
+            <a class="btn btn-primary btn-xs" data-bind="attr: { href: '/members/?w=run&amp;s=' + id }, visible: $parent.showActive() == 'B'">Live <i class="pe-plane"></i></a>
             <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=data&amp;s=' + id }, visible: $parent.showActive() == 'C'">Data <i class="pe-table"></i></a>
             <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=report&amp;s=' + id }, visible: $parent.showActive() == 'C'">Report <i class="pe-line-chart"></i></a>
             <a class="btn btn-default btn-xs" data-bind="click: $parent.archive, visible: $parent.showActive() == 'C'" href="">Archive <i class="pe-archive"></i></a>

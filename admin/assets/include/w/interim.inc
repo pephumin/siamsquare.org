@@ -58,7 +58,7 @@ echo "<p>We take no responsibility on any damages happened from using interim re
     <dd><?php echo $responses_good; ?> (<?php echo $percentage_good; ?>%)</dd>
     <dt>First response:</dt>
     <dd><?php echo ago($first_submitted); ?> by <?php echo $first_email; ?> (<?php echo $first_ip; ?>)</dd>
-    <dt>Last/latest response:</dt>
+    <dt>Last response:</dt>
     <dd><?php echo ago($last_submitted); ?> by <?php echo $last_email; ?> (<?php echo $last_ip; ?>)</dd>
   </dl>
 </div>
@@ -123,15 +123,15 @@ echo "<p>We take no responsibility on any damages happened from using interim re
     var thead = document.createElement("thead");
     var tr = document.createElement("tr");
     var header = rows[0];
-    for (field in header) {
-      var th = document.createElement("th");
-      $(th).html(header[field]).addClass("bg-primary");
-      tr.appendChild(th);
-    }
+      for (field in header) {
+        var th = document.createElement("th");
+        $(th).html(header[field]).addClass("bg-primary");
+        tr.appendChild(th);
+      }
     thead.appendChild(tr);
+    $(thead).find('th:first-child').css("background", "#555"); $(thead).find('th:nth-child(2)').css("background", "#555");
 
     var tbody = document.createElement("tbody");
-    $(thead).find('th:first-child').css("background", "#555"); $(thead).find('th:nth-child(2)').css("background", "#555");
     for (var i=1; i<rows.length; i++) {
       tr = document.createElement("tr");
       var a1 = document.createElement('a'); a1.innerHTML = ' <i class="pe-chevron-down"></i>'; a1.setAttribute('id', 'rowshow' + i); a1.setAttribute('href', '#'); a1.setAttribute('onclick', 'return showRow(event, ' + i + ')');
@@ -147,8 +147,9 @@ echo "<p>We take no responsibility on any damages happened from using interim re
       }
       tbody.appendChild(tr);
       td2.appendChild(buttonnode);
-    tr2.appendChild(td2);
-    tbody.appendChild(tr2);
+      tr2.appendChild(td2);
+      tbody.appendChild(tr2);
+      $(tbody).find('td:first-child').css("background", "#eee"); $(tbody).find('td:nth-child(2)').css("background", "#eee");
     }
     table.appendChild(thead);
     table.appendChild(tbody);
@@ -173,14 +174,12 @@ echo "<p>We take no responsibility on any damages happened from using interim re
     var outArray = [];
     for (var row in inArray) { outArray[outArray.length] = parse_object(inArray[row]); }
     $("span.rows.count").text("" + outArray.length);
-    var csv = $.csv.fromObjects(outArray); // excerpt and render first 10 rows
+    var csv = $.csv.fromObjects(outArray);
     renderCSV(outArray.slice(0, excerptRows));
     showCSV(true);
-    $(".csv textarea").val(csv); // show raw data if people really want it
+    $(".csv textarea").val(csv);
     var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
     $(".csv a.download").attr("href", uri);
-    // $(".json textarea").blur(function() {showJSON(true);});
-    // $(".json pre").click(function() {showJSON(false)});
     $(".csv textarea").blur(function() {showCSV(true);})
     $(".csv .raw").click(function() {
       showCSV(false);
