@@ -6,33 +6,6 @@ echo "<h2>$title</h2>";
 echo "<p>We pay a lot of attentions to the system security and therefore changing your password to be more secure is strongly recommended. Therefore, feel free to use this page to change your password as often as you need.</p>\n";
 echo "<p>Please note that all passwords stored in the system are in 'encrypted' format which is not readable by anyone including our staff. And they are not crackable.</p>\n";
 echo "<p>Feel free to contact us if you find any problems using our site. Any other suggestions are also more than welcome.</p>\n";
-//echo "<br>\n";
-
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-
-if (empty($_SESSION["captcha"])) { $clength = 8; $rText = generateRandom($clength); $_SESSION["captcha"] = $rText; }
-
-if (isset($_REQUEST['captcha'])) {
-
-  $email = $_SESSION['email'];
-  $oldpass = $_POST['oldpass'];
-  $newpass = $_POST['newpass1'];
-  $hash = password_hash($newpass, PASSWORD_DEFAULT);
-
-  if ($_REQUEST['captcha'] == $_SESSION['captcha']) {
-    $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
-    if (!$db->set_charset("utf8")) { $errors[] = $db->error; }
-    $sql1 = "UPDATE j_users SET password = '".$hash."' WHERE email = '".$email."';";
-    // echo $sql1;
-    $query = $db->query($sql1);
-    if ($query) { echo mksuccess("Your password has been changed successfully."); }
-    $sql2 = "INSERT INTO j_users_logs (userid, ip, data) VALUE ('".$_SESSION["userid"]."', '".$_SESSION["ip"]."', '".$_SESSION["email"]." changed password');";
-    // echo $sql2;
-    $db->query($sql2);
-    $notes = array (array("title" => "Password changed", "text" => "You have just changed your password.", "image" => "assets/img/notification.svg"));
-  }
-  else { echo mkerror("Wrong captcha."); }
-}
 
 ?>
 
@@ -78,7 +51,7 @@ if (isset($_REQUEST['captcha'])) {
     </div>
   </div>
   <hr>
-  <div class="form-group">
+  <!-- <div class="form-group">
     <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Confirmation</label>
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
       <p>Please type in the words as shown in this picture<br>
@@ -89,10 +62,10 @@ if (isset($_REQUEST['captcha'])) {
       </div>
     </div>
   </div>
-  <hr>
+  <hr> -->
   <p class="text-center">
     <input type="hidden" name="w" value="changepass">
-    <button class="btn btn-warning" name="Change" type="submit">Change <i class="pe-check-circle-o"></i></button>
+    <button class="btn btn-warning" name="Change" value="1" type="submit">Change <i class="pe-check-circle-o"></i></button>
     <button class="btn btn-default" name="Cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
 </form>
@@ -107,7 +80,7 @@ if (isset($_REQUEST['captcha'])) {
         oldpass: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 4, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' } } },
         newpass1: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 6, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' } } },
         newpass2: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 6, message: 'Password must be more than 6 characters long' }, different: { field: 'username', message: 'The password cannot be the same as username' }, identical: { field: 'newpass1', message: 'The confirm password must be the same as the new one' } } },
-        captcha: { validators: { notEmpty: { message: 'Captcha is required' }, stringLength: { min: 8, message: 'Captcha must be 8 characters long' } } }
+        // captcha: { validators: { notEmpty: { message: 'Captcha is required' }, stringLength: { min: 8, message: 'Captcha must be 8 characters long' } } }
       }
     });
   });

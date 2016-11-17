@@ -3,19 +3,20 @@
 $title = 'Request for an access';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/template.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/login.class.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.login.php';
 
 $sent = false;
 
 $login = new Login();
-if (empty($_SESSION["captcha"])) { $clength = 8; $rText = generateRandom($clength); $_SESSION["captcha"] = $rText; }
+
+if (empty($_SESSION["captcha"])) { $clength = 8; $rText = generateRandom($clength); session_start(); $_SESSION["captcha"] = $rText; }
 
 if (isset($_REQUEST['captcha'])) {
 
-  $name = $_REQUEST['name'];
-  $email = $_REQUEST['email'];
-  $message = $_REQUEST['message'];
-  $captcha = $_REQUEST['captcha'];
+  $name = cleanstring($_REQUEST['name']);
+  $email = cleanstring($_REQUEST['email']);
+  $message = cleanstring($_REQUEST['message']);
+  $captcha = cleanstring($_REQUEST['captcha']);
 
   if (!$name) { echo "Error: No name provided.\n"; exit; }
   if (!$email) { echo "Error: No email provided.\n"; exit; }
@@ -112,7 +113,7 @@ echo "<br>\n";
     <?php } else { ?>
     <button type="submit" class="btn btn-warning">Send my request <i class="pe-paper-plane"></i></button>
     <?php } ?>
-    <button type="submit" class="btn btn-default">Cancel</button>
+    <button type="submit" class="btn btn-default">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
 </form>
 <script>

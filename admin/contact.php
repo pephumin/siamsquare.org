@@ -3,12 +3,13 @@
 $title = "Contact us";
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/template.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/login.class.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.login.php';
 
 $sent = false;
 
 $login = new Login();
-if (empty($_SESSION["captcha"])) { $clength = 8; $rText = generateRandom($clength); $_SESSION["captcha"] = $rText; }
+
+if (empty($_SESSION["captcha"])) { $clength = 8; $rText = generateRandom($clength); session_start(); $_SESSION["captcha"] = $rText; }
 
 if (isset($_REQUEST['captcha'])) {
 
@@ -112,7 +113,7 @@ echo "<br>\n";
     <?php } else { ?>
     <button type="submit" class="btn btn-warning">Send <i class="pe-paper-plane"></i></button>
     <?php } ?>
-    <button type="submit" class="btn btn-default">Cancel</button>
+    <button type="submit" class="btn btn-default">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
 </form>
 <script>

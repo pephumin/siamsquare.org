@@ -1,6 +1,6 @@
 <?php
 
-$title = "Table conversion";
+$title = "Convert data to table";
 pageHeader($title);
 echo "<h2>$title</h2>";
 echo "<p>This page is a utility for data management where it converts your raw data into an easy-to-read tabulation.</p>\n";

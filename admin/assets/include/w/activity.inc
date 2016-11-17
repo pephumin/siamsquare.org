@@ -11,33 +11,58 @@ if ($_GET['p']) { $p = $_GET['p']; }
 if ($p == '') { $p = "1"; }
 
 if (empty($start)) { $start = 0; }
-if (empty($limit)) { $limit = 20; }
+if (empty($limit)) { $limit = 100; }
 if ($p) { $start = ($p-1) * $limit; }
 $to_record = $start + $limit;
 $add = " LIMIT $start, $limit ";
 
-
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
-if (!$db->set_charset("utf8")) { $errors[] = $db->error; }
+$db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
 
 if ($_GET['d']) {
-  $del = "DELETE FROM j_users_logs WHERE id = '".base64_decode($_GET['d'])."';";
-  $db->query($del);
-  echo mksuccess("A log record has been deleted.");
+  if ($_SESSION['levelid'] == "9") {
+    $d = base64_decode($_GET['d']);
+    $sql1 = "DELETE FROM j_users_logs WHERE id = :id";
+    $q = $db->prepare($sql1);
+    $q->bindValue(':id', $d, PDO::PARAM_INT);
+    $q->execute();
+    if ($q->rowCount()) { echo mksuccess("This record has been deleted."); $notes = array (array("title" => "A recored has been deleted", "text" => "You have just deleted a log record from the system.", "image" => "assets/img/notification.svg")); }
+    else { echo mkerror("Something wrong, this record has not been deleted."); }
+  }
+  else { echo mkerror("Your level is not high enough to delete this data from the system."); }
 }
 
-if ($_SESSION['level'] == "9") {
-  $sql1A = "SELECT * FROM j_users_logs ORDER BY recorded DESC;";
-  $sql1B = "SELECT * FROM j_users_logs ORDER BY recorded DESC ".$add.";";
+if ($_SESSION['levelid'] == "9") {
+  $sql2A = "SELECT * FROM j_users_logs ORDER BY recorded DESC";
+  $sql2B = "SELECT * FROM j_users_logs ORDER BY recorded DESC ".$add." ";
+  $qA = $db->prepare($sql2A);
+  $qB = $db->prepare($sql2B);
+} else if ($_SESSION['levelid'] == "6") {
+  $sql1A = "SELECT id FROM j_users WHERE companyid = :companyid";
+  $q1A = $db->prepare($sql1A);
+  $q1A->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+  $q1A->execute();
+  while ($rr = $q1A->fetchObject()) {
+    $tt[] = $rr->id;
+  }
+  $sql2A = "SELECT * FROM j_users_logs WHERE userid IN (".implode(',', $tt).") ORDER BY recorded DESC";
+  $sql2B = "SELECT * FROM j_users_logs WHERE userid IN (".implode(',', $tt).") ORDER BY recorded DESC ".$add." ";
+  $qA = $db->prepare($sql2A);
+  $qB = $db->prepare($sql2B);
+  $qA->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+  $qB->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
 } else {
-  $sql1A = "SELECT * FROM j_users_logs WHERE userid = '".$_SESSION['userid']."' ORDER BY recorded DESC;";
-  $sql1B = "SELECT * FROM j_users_logs WHERE userid = '".$_SESSION['userid']."' ORDER BY recorded DESC ".$add.";";
+  $sql2A = "SELECT * FROM j_users_logs WHERE userid = :userid ORDER BY recorded DESC";
+  $sql2B = "SELECT * FROM j_users_logs WHERE userid = :userid ORDER BY recorded DESC ".$add." ";
+  $qA = $db->prepare($sql2A);
+  $qB = $db->prepare($sql2B);
+  $qA->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+  $qB->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
 }
 
-$query1A = $db->query($sql1A);
-$query1B = $db->query($sql1B);
-$rows = $query1A->num_rows;
+$qA->execute();
+$qB->execute();
+$rows = $qA->rowCount();
 
 if ($to_record > $rows) { $to_record = $rows; }
 $from_record = $start + 1;
@@ -49,35 +74,48 @@ echo "<h4>There are a total of $rows records in our database (showing results $f
 <div class="row">
   <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
     <br>
-    <table class="table table-hover">
+    <table class="table table-condensed table-hover">
       <thead>
-        <tr class="bg-success">
-          <th width="20%"><i class="pe-clock-o pe-fw"></i> Time</th>
-          <th width="70%"><i class="pe-tv pe-fw"></i> Activity</th>
-          <?php if ($_SESSION['level'] == "9") { echo "<th width=\"10%\"></th>"; } ?>
+        <tr class="bg-primary">
+          <th width="15%"><small><i class="pe-clock-o pe-fw"></i> Time</small></th>
+          <th width="75%"><small><i class="pe-tv pe-fw"></i> Activity</small></th>
+          <?php if ($_SESSION['levelid'] == "9") { echo "<th width=\"10%\"></th>\n"; } ?>
         </tr>
       </thead>
       <tbody>
 <?php
-while($r = $query1B->fetch_object()) {
+while ($r = $qB->fetchObject()) {
   $t = ago($r->recorded);
   $color = "";
   if ($_GET['p']) { $delete = MYADMIN."?w=activity&d=".base64_encode($r->id)."&p=".$_GET['p']; } else { $delete = MYADMIN."?w=activity&d=".base64_encode($r->id); }
   if (preg_match("/pilot test/i", $r->data)) { $insert = "<i class=\"pe-paper-plane pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/edited and saved/i", $r->data)) { $insert = "<i class=\"pe-save pe-fw\"></i> &nbsp; "; $color = "bisque"; }
+  else if (preg_match("/edited and saved/i", $r->data)) { $insert = "<i class=\"pe-save pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/conducted a survey/i", $r->data)) { $insert = "<i class=\"pe-plane pe-fw\"></i> &nbsp; "; $color = "aliceblue"; }
   else if (preg_match("/logged in/i", $r->data)) { $insert = "<i class=\"pe-sign-in pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/logged out/i", $r->data)) { $insert = "<i class=\"pe-sign-out pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/restored a survey/i", $r->data)) { $insert = "<i class=\"pe-undo pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/deleted a survey/i", $r->data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/archived a survey/i", $r->data)) { $insert = "<i class=\"pe-archive pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed a survey name/i", $r->data)) { $insert = "<i class=\"pe-cube pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed a description/i", $r->data)) { $insert = "<i class=\"pe-cube pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/tried accessing/i", $r->data)) { $insert = "<i class=\"pe-exclamation-triangle pe-fw\"></i> &nbsp; "; $color = "bisque"; }
   else if (preg_match("/changed info/i", $r->data)) { $insert = "<i class=\"pe-cog pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed password/i", $r->data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; $color = "lightsteelblue"; }
   else if (preg_match("/created a new survey/i", $r->data)) { $insert = "<i class=\"pe-flask pe-fw\"></i> &nbsp; "; $color = "skyblue"; }
+  else if (preg_match("/created a new member/i", $r->data)) { $insert = "<i class=\"pe-user-plus pe-fw\"></i> &nbsp; "; $color = "skyblue"; }
+  else if (preg_match("/renamed a member/i", $r->data)) { $insert = "<i class=\"pe-cog pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed a member email/i", $r->data)) { $insert = "<i class=\"pe-envelope pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed a member mobile/i", $r->data)) { $insert = "<i class=\"pe-mobile pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/deleted a member/i", $r->data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/suspended a member/i", $r->data)) { $insert = "<i class=\"pe-pause-circle pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed level for/i", $r->data)) { $insert = "<i class=\"pe-level-up pe-fw\"></i> &nbsp; "; }
   else { $insert = ""; }
-  if ($color) { $td = "<td style=\"background:$color\">"; } else { $td = "<td>"; }
+  if ($color) { $td = "<td style=\"background:$color\"><small>"; } else { $td = "<td><small>"; }
   if ($insert) { $r->data = $insert." ".$r->data; } else { $r->data = $r->data; }
   echo "        <tr>\n";
-  echo "          $td$t</td>\n";
-  echo "          $td$r->data</td>\n";
-  if ($_SESSION['level'] == "9") { echo "          $td<a href=\"$delete\" class=\"btn btn-danger btn-xs\">Delete <i class=\"pe-trash-o\"></i></a></td>\n"; }
+  echo "          $td$t</small></td>\n";
+  echo "          $td$r->data</small></td>\n";
+  if ($_SESSION['levelid'] == "9") { echo "          $td<a href=\"\" data-href=\"$delete\" class=\"btn btn-danger btn-tiny\" data-toggle=\"modal\" data-target=\"#confirm-delete\">Delete <i class=\"pe-trash-o\"></i></a></small></td>\n"; }
   echo "        </tr>\n";
 }
 ?>
@@ -85,6 +123,29 @@ while($r = $query1B->fetch_object()) {
     </table>
   </div>
 </div>
+
+<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h4>Confirm delete?</h4>
+        <p>
+          Are you sure that you want to delete this record permanently?
+        </p>
+        <p>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <a href="" class="btn btn-danger btn-ok">Delete <i class="pe-trash-o"></i></a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $('#confirm-delete').on('show.bs.modal', function(e) {
+    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+  });
+</script>
 
 <?php
 

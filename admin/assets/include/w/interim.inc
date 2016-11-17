@@ -1,49 +1,73 @@
 <?php
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
-if (!$db->set_charset("utf8")) { $errors[] = $db->error; }
+$db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
 
 // Get projcet title
-$sql1 = "SELECT title FROM j_projects WHERE id = '".$_GET['s']."';";
-$result1 = $db->query($sql1);
-$a = $result1->fetch_assoc();
-$project = $a['title'];
+$sql1 = "SELECT title FROM j_projects WHERE id = :surveyid";
+$q = $db->prepare($sql1);
+$q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q->execute();
+while ($row = $q->fetchObject()) { $project = $row->title; }
 
 // Get counts
-$sql2 = "SELECT SUM(IF(status = '1', 1, 0)) AS S1, SUM(IF(status = '0', 1, 0)) AS S2, SUM(IF(status = '-1', 1, 0)) AS S3 FROM j_results WHERE surveyid = '".$_GET['s']."' ";
-$result2 = $db->query($sql2);
-$b = $result2->fetch_assoc();
-$responses_good = $b['S1'];
-$responses_test = $b['S2'];
-$responses_deleted = $b['S3'];
+$sql2 = "SELECT SUM(IF(status = :S1, 1, 0)) AS S1, SUM(IF(status = :S2, 1, 0)) AS S2, SUM(IF(status = :S3, 1, 0)) AS S3 FROM j_results WHERE surveyid = :surveyid ";
+$q = $db->prepare($sql2);
+$q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q->bindValue(':S1', '1', PDO::PARAM_INT);
+$q->bindValue(':S2', '0', PDO::PARAM_INT);
+$q->bindValue(':S3', '-1', PDO::PARAM_INT);
+$q->execute();
+while ($row = $q->fetchObject()) {
+  $responses_good = $row->S1; //echo $responses_good;
+  $responses_test = $row->S2; //echo $responses_test;
+  $responses_deleted = $row->S3; //echo $responses_deleted;
+}
 $responses_total = $responses_good + $responses_test + $responses_deleted;
 $percentage_good = ($responses_good * 100) / $responses_total;
 
 // Get result stats (first)
-$sql3 = "SELECT id, email, ip, submitted FROM j_results WHERE surveyid = '".$_GET['s']."' AND status = 1 ORDER BY submitted LIMIT 1";
-$result3 = $db->query($sql3);
-$c = $result3->fetch_assoc();
-$first_id = $c['id'];
-$first_email = $c['email'];
-$first_ip = $c['ip'];
-$first_submitted = $c['submitted'];
+$sql3 = "SELECT id, email, ip, submitted FROM j_results WHERE surveyid = :surveyid AND status = 1 ORDER BY submitted LIMIT 1";
+$q = $db->prepare($sql3);
+$q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q->execute();
+while ($row = $q->fetchObject()) {
+  $first_id = $row->id;
+  $first_email = $row->email;
+  $first_ip = $row->ip;
+  $first_submitted = $row->submitted;
+}
 
 // Get result stats (last)
 $sql4 = "SELECT id, email, ip, submitted FROM j_results WHERE surveyid = '".$_GET['s']."' AND status = 1 ORDER BY submitted DESC LIMIT 1";
-$result4 = $db->query($sql4);
-$d = $result4->fetch_assoc();
-$last_id = $d['id'];
-$last_email = $d['email'];
-$last_ip = $d['ip'];
-$last_submitted = $d['submitted'];
+$q = $db->prepare($sql4);
+$q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q->execute();
+while ($row = $q->fetchObject()) {
+  $last_id = $row->id;
+  $last_email = $row->email;
+  $last_ip = $row->ip;
+  $last_submitted = $row->submitted;
+}
+
+// Data for tables
+$sql5 = "SELECT id, submitted, data FROM j_results WHERE surveyid = :surveyid AND status = 1 ORDER BY submitted DESC";
+$q = $db->prepare($sql5);
+$q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q->execute();
+$e = array();
+while ($row = $q->fetchObject()) {
+  $row->data = json_decode($row->data, true);
+  array_push($e, $row);
+}
+$datafortable = json_encode($e);
 
 $title = "Interim result: Project $project";
 pageHeader($title);
 echo "<h2>$title</h2>";
-echo "<p>Please make sure you use the interim result with cautions. It is very important to understand that interim result is not necesary a true reflection of the final result (or even showing the same direction). While interim shows one thing, the final result may end up with another.</p>";
-echo "<p>Therefore, it is imperative that any business decisions must not be made based on this interim result. We strongly suggest that results to be used for business decision should come from the final result e.g. when the data collection period has ended, and the data has been checked to be clean and good to use.</p>";
-echo "<p>We take no responsibility on any damages happened from using interim result, you must use it at your own risk.</p>";
+echo "<p>The interim result must be used with cautions because it is not necesary a true reflection of the final result. The final result could possibly end up in a totally different direction (depending on the sample size and other factors).</p>";
+echo "<p>Therefore, it is imperative that business decision must not be made based on the interim result. We strongly suggest using the final result for a better decision since the data would have been verified to ensure the highest integrity.</p>";
+echo "<p>We hereby take no responsibility on any damages happened from the usage of interim result. You must use it at your own risk.</p>";
 
 ?>
 
@@ -65,6 +89,8 @@ echo "<p>We take no responsibility on any damages happened from using interim re
 
 <hr>
 
+<div id="showalert-delete"></div>
+
 <div class="csv">
   <h4>Showing data ordered by the most recent (total of <span class="rows count"></span> records)</h4>
   <p>In order to view all responses, you would need to either <a download="result.csv" href="" class="download"><i class="pe-download pe-fw"></i> download the data file</a> or <a href="" class="raw"><i class="pe-desktop pe-fw"></i> view the data file online</a>.</p>
@@ -74,12 +100,16 @@ echo "<p>We take no responsibility on any damages happened from using interim re
 </div>
 
 
-
 <script type="text/javascript">
 
   var userid = <?php echo $_SESSION['userid']; ?>;
   var surveyid = <?php echo $_GET['s']; ?>;
   var api = 'http://www.siamsquare.org.uk';
+  $('#showalert-delete').html("<div class='alert alert-warning'><i class='pe-trash pe-fw'></i> A result record has been deleted</div>").hide();
+
+<?php if ($_GET['z'] == "true") { ?>
+  $('#showalert-delete').show(); window.setTimeout(function () { $("#showalert-delete").slideUp(500, function () { $("#showalert-delete").hide(); }); }, 8000);
+<?php } ?>
 
   function showRow(e, rowIndex) {
     showhideRow(rowIndex, true);
@@ -96,16 +126,28 @@ echo "<p>We take no responsibility on any damages happened from using interim re
     document.getElementById("rowhide" + rowIndex).style.display = show ? "" : "none";
     document.getElementById("rowshow" + rowIndex).style.display =  show ? "none" : "";
   }
+  function getColumn(anArray, columnNumber) {
+    return anArray.map(function(row) {
+      return row[columnNumber];
+    });
+  }
   function deleteSurveyResult(id) {
-    // $.ajax({
-    //   url: api + '/result/' + id + '/delete',
-    //   dataType: 'json',
-    //   type: 'get',
-    //   cache: false,
-    //   contentType: 'application/json; charset=utf-8',
-    //   success: function (data) { window.location.reload(); },
-    //   error: function (error) { alert(error); }
-    // });
+    $.ajax({
+      url: api + '/delete/result/' + surveyid + '/' + id,
+      dataType: 'json',
+      type: 'put',
+      cache: false,
+      contentType: 'application/json; charset=utf-8',
+      // success: function(data) { result = data; },
+      success: function (data) {
+      <?php if ($_GET['z'] == "true") { ?>
+        window.location.reload();
+      <?php } else { ?>
+        window.location.href = window.location.href + "&z=true";
+      <?php } ?>
+      },
+      error: function (error) { alert(error); }
+    });
   }
 
   function showCSV(rendered) {
@@ -114,11 +156,11 @@ echo "<p>We take no responsibility on any damages happened from using interim re
   }
 
   function renderCSV(objects) {
-    var rows = $.csv.fromObjects(objects, {justArrays: true});
+    var rows = $.csv.fromObjects(objects, {justArrays: true}); //console.log(rows);
     if (rows.length < 1) return;
 
     var table = $(".csv table")[0];
-    $(table).html("").attr("id", "interimtable");
+    $(table).html("").attr("id", "interimtable").addClass("table table-condensed");
 
     var thead = document.createElement("thead");
     var tr = document.createElement("tr");
@@ -133,20 +175,30 @@ echo "<p>We take no responsibility on any damages happened from using interim re
 
     var tbody = document.createElement("tbody");
     for (var i=1; i<rows.length; i++) {
+      resultid = getColumn(rows,0)
       tr = document.createElement("tr");
-      var a1 = document.createElement('a'); a1.innerHTML = ' <i class="pe-chevron-down"></i>'; a1.setAttribute('id', 'rowshow' + i); a1.setAttribute('href', '#'); a1.setAttribute('onclick', 'return showRow(event, ' + i + ')');
-      var a2 = document.createElement('a'); a2.innerHTML = ' <i class="pe-chevron-up"></i>'; a2.setAttribute('id', 'rowhide' + i); a2.setAttribute('href', '#'); a2.setAttribute('onclick', 'return hideRow(event, ' + i + ')'); a2.setAttribute('style', 'display:none');
-      var buttonnode = document.createElement('button'); buttonnode.setAttribute('class', 'btn btn-danger btn-tiny disabled'); buttonnode.innerHTML = 'Delete <i class="pe-trash"></i>'; buttonnode.onclick = deleteSurveyResult(surveyid);
+      var a1 = document.createElement('a'); a1.innerHTML = ' <i class="pe-chevron-down"></i>'; a1.setAttribute('id', 'rowshow' + i); a1.setAttribute('href', ''); a1.setAttribute('onclick', 'return showRow(event, ' + i + ')');
+      var a2 = document.createElement('a'); a2.innerHTML = ' <i class="pe-chevron-up"></i>'; a2.setAttribute('id', 'rowhide' + i); a2.setAttribute('href', ''); a2.setAttribute('onclick', 'return hideRow(event, ' + i + ')'); a2.setAttribute('style', 'display:none');
+<?php if ($_SESSION["levelid"] == "9") { ?>
+      var bb1 = document.createElement('button'); bb1.innerHTML = 'Delete <i class="pe-trash"></i>'; bb1.setAttribute('class', 'btn btn-danger btn-tiny'); bb1.setAttribute('onclick', "deleteSurveyResult('" + resultid[i] + "')");
+      var bb2 = document.createElement('button'); bb2.innerHTML = 'Undelete <i class="pe-undo"></i>'; bb2.setAttribute('class', 'btn btn-warning btn-tiny'); bb2.setAttribute('onclick', "undeleteSurveyResult('" + resultid[i] + "')");
+<?php } else { ?>
+      var bb1 = document.createElement('button'); bb1.innerHTML = 'Delete <i class="pe-trash"></i>'; bb1.setAttribute('class', 'btn btn-danger btn-tiny'); bb1.setAttribute('onclick', "deleteSurveyResult('" + resultid[i] + "')");
+      var bb2 = document.createElement('button'); bb2.innerHTML = 'Undelete <i class="pe-undo"></i>'; bb2.setAttribute('class', 'btn btn-warning btn-tiny disabled'); bb2.setAttribute('onclick', "undeleteSurveyResult('" + resultid[i] + "')");
+<?php } ?>
       var td2 = document.createElement("td"); td2.setAttribute('colspan', '2'); td2.setAttribute('style', 'border-top-style:none');
       var tr2 = document.createElement("tr"); tr2.setAttribute('id', 'row' + i); tr2.setAttribute('style', 'display:none');
       for (field in rows[i]) {
         var td = document.createElement("td");
         $(td).html(rows[i][field]);
+        if (td.contains("upload")) { alert("String Found"); }
         tr.appendChild(td);
         $(tr).find('td:first-child').append(a1).append(a2);
       }
       tbody.appendChild(tr);
-      td2.appendChild(buttonnode);
+      td2.appendChild(bb1);
+      td2.append(" ");
+      td2.appendChild(bb2);
       tr2.appendChild(td2);
       tbody.appendChild(tr2);
       $(tbody).find('td:first-child').css("background", "#eee"); $(tbody).find('td:nth-child(2)').css("background", "#eee");
@@ -158,7 +210,7 @@ echo "<p>We take no responsibility on any damages happened from using interim re
   function getsurveyrawdata(surveyid) {
     var result = "";
     $.ajax({
-      url: api + '/result/raw/' + surveyid,
+      url: api + '/interim/' + surveyid,
       dataType: 'json',
       type: 'get',
       cache: false,
@@ -168,14 +220,23 @@ echo "<p>We take no responsibility on any damages happened from using interim re
     return result;
   }
 
-  jQuery(document).ready(function () {
+  String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+  };
+
+  $(document).ready(function () {
     var excerptRows = 50;
-    var inArray = getsurveyrawdata(surveyid);
+    var ttt = <?php echo $datafortable; ?>;
+    var ttt = JSON.stringify(ttt);
+    ttt = ttt.replaceAll("data", ""); ttt = ttt.replaceAll("upload/", "");
+    // ttt = ttt.replaceAll("upload/", "http://www.siamsquare.org/members/assets/upload/");
+    var inArray = JSON.parse(ttt);
     var outArray = [];
     for (var row in inArray) { outArray[outArray.length] = parse_object(inArray[row]); }
     $("span.rows.count").text("" + outArray.length);
     var csv = $.csv.fromObjects(outArray);
-    renderCSV(outArray.slice(0, excerptRows));
+    renderCSV(outArray.slice(0, excerptRows), this.id);
     showCSV(true);
     $(".csv textarea").val(csv);
     var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
@@ -195,6 +256,7 @@ echo "<p>We take no responsibility on any damages happened from using interim re
   });
 
 </script>
+
 
 <br>
 
