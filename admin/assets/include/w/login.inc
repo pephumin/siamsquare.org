@@ -5,15 +5,15 @@ pageHeader($title);
 echo "<h2>$title</h2>";
 echo "<p>This section is reserved only for our clients whom we have granted with a high level of secured access. Within this section you will be able to access to a highly confidential data such as questionnaire design, data collected from respondents, reports, etc. We carefully design our system to ensure such high important data is kept separately for different users or user groups.</p>\n";
 echo "<p>Should you need an access to our system, or should you need any further support on how-to use our system, you can either contact us directly or read our documents at our support site.</p>\n";
+echo "<br>\n";
 
 if (isset($login)) {
   if ($login->errors) { foreach ($login->errors as $error) { echo $error; } }
   if ($login->messages) { foreach ($login->messages as $message) { echo $message; } }
 }
 
-echo "<br>\n";
-
 ?>
+<br>
 
 <form id="clientloginform" method="post" class="form-horizontal" action="<?php echo(htmlspecialchars(ME)); ?>">
   <div class="form-group">
@@ -21,7 +21,7 @@ echo "<br>\n";
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
       <div class="input-group">
         <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
-        <input type="text" name="email" id="email" class="form-control" placeholder="email@domain.com" autofocus>
+        <input type="email" name="email" id="email" class="form-control" placeholder="email@domain.com" autofocus required>
       </div>
     </div>
   </div>
@@ -30,16 +30,23 @@ echo "<br>\n";
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
       <div class="input-group">
         <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
-        <input type="password" name="password" id="password" class="form-control" placeholder="Password">
+        <input type="password" name="password" id="password" class="form-control" placeholder="Password" autocomplete="off" required>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-xs-12 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-sm-7 col-md-7 col-lg-7">
+      <div class="checkbox checkbox-warning">
+        <input type="checkbox" name="rememberme" value="1" checked> <label for="remember">Keep me logged in</label>
       </div>
     </div>
   </div>
   <br>
   <p class="text-center">
-    <input type="hidden" name="do" value="login">
-    <button class="btn btn-warning" name="Login" type="submit">Log in <i class="pe-check-circle-o"></i></button>
-    <button class="btn btn-default" name="Cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
+    <button class="btn btn-warning" name="login" value="1" type="submit">Log in <i class="pe-check-circle-o"></i></button>
+    <button class="btn btn-default" name="cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
+  <p class="text-center">[<a href="recovery.php">Forgot password?</a>]</p>
 </form>
 <script>
   $(document).ready(function() {

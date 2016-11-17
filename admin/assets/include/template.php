@@ -23,6 +23,10 @@ function pageHeader($title) {
     $signed = "<a href=\"$v1\" class=\"btn btn-warning btn-xs\" title=\"Log in\"><i class=\"pe-power-off pe-fw\"></i> Log in</a> <a href=\"$v3\" class=\"btn btn-danger btn-xs\"><i class=\"pe-university pe-fw\"></i> Help</a>\n";
     $ww = "<span class=\"deepgreen\"><i class=\"pe-info-circle pe-fw\"></i> Authorised clients only</span>";
   }
+  // if (isset($login)) {
+  //   if ($login->errors) { foreach ($login->errors as $error) { echo $error; } }
+  //   if ($login->messages) { foreach ($login->messages as $message) { echo $message; } }
+  // }
   header("Content-language: en");
   header("Content-type: text/html; charset=utf-8");
 ?>
@@ -30,7 +34,7 @@ function pageHeader($title) {
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <?php if (($_REQUEST["w"]) == "logout") { echo "<meta http-equiv=\"refresh\" content=\"10; url=/admin\">"; } ?>
+<?php //if (($_REQUEST["w"]) == "logout") { echo "  <meta http-equiv=\"refresh\" content=\"10; url=/admin\">\n"; } ?>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="handheldfriendly" content="true">
   <meta name="mobileoptimized" content="240">
@@ -40,7 +44,7 @@ function pageHeader($title) {
   <title>SiamSquare: <?php echo $title; ?></title>
   <link rel="stylesheet" type="text/css" href="/admin/assets/css/admin.css">
   <link rel="stylesheet" type="text/css" href="/admin/assets/css/csv.css">
-  <?php if (($_REQUEST["w"]) == "edit") { echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/survey.css\">"; } ?>
+<?php if (($_REQUEST["w"]) == "edit") { echo "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/survey.css\">"; } ?>
   <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/live/0.5/firebase-ui-auth.css">
   <link rel="shortcut icon" type="image/x-icon" href="/admin/assets/icons/favicon.ico">
   <link rel="apple-touch-icon" sizes="57x57" href="/admin/assets/icons/apple-icon-57x57.png">
@@ -75,8 +79,6 @@ function pageHeader($title) {
   <script type="text/javascript" src="/admin/assets/js/survey/ace/mode-json.js"></script>
   <script type="text/javascript" src="/admin/assets/js/survey/survey.ko.js"></script>
   <script type="text/javascript" src="/admin/assets/js/survey/surveyeditor.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/survey/globalize.min.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/survey/dx.chartjs.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/firebasejs/3.4.1/firebase.js"></script>
   <!-- <script type="text/javascript" src="https://www.gstatic.com/firebasejs/ui/live/0.5/firebase-ui-auth.js"></script> -->
 </head>
@@ -113,39 +115,27 @@ function pageHeader($title) {
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-cubes pe-fw"></i> My surveys <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li class="dropdown-header">Overview of all surveys</li>
-                  <li><a href="<?php echo(MYADMIN."?w=surveys"); ?>"><i class="pe-wpforms pe-fw"></i> All surveys</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=surveys"); ?>" title="Surveys"><i class="pe-cube pe-fw"></i> Projects</a></li>
                   <li role="separator" class="divider"></li>
-                  <li class="dropdown-header">Surveys by stage</li>
-                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=A"); ?>"><i class="pe-hourglass-start pe-fw"></i> Before data collection</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=B"); ?>"><i class="pe-hourglass-half pe-fw"></i> During data collection</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=C"); ?>"><i class="pe-hourglass-end pe-fw"></i> After data collection</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=D"); ?>"><i class="pe-archive pe-fw"></i> Archived</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=A"); ?>" title="Pre-fieldwork"><i class="pe-hourglass-start pe-fw"></i> Pre-fieldwork</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=B"); ?>" title="Fieldwork"><i class="pe-hourglass-half pe-fw"></i> Fieldwork</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=C"); ?>" title="Post-fieldwork"><i class="pe-hourglass-end pe-fw"></i> Post-fieldwork</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=D"); ?>" title="Archive"><i class="pe-archive pe-fw"></i> Archive</a></li>
                   <li role="separator" class="divider"></li>
-                  <li class="dropdown-header">Utilities</li>
-                  <li><a href="<?php echo(MYADMIN."?w=tableconversion"); ?>"><i class="pe-table pe-fw"></i> Table conversion</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=data2table"); ?>" title="Data to table"><i class="pe-table pe-fw"></i> Data to table</a></li>
                 </ul>
               </li>
               <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-user pe-fw"></i> My profile <span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-user pe-fw"></i> Profile <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li class="dropdown-header">Your activity</li>
+                  <li><a href="<?php echo(MYADMIN."?w=profile"); ?>" title="My profile"><i class="pe-user pe-fw"></i> My profile</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=changeinfo"); ?>" title="Update my info"><i class="pe-cog pe-fw"></i> Update my info</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=changepass"); ?>" title="Change my password"><i class="pe-key pe-fw"></i> Change my password</a></li>
+<?php if ($_SESSION['levelid'] >= "5") { ?>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="<?php echo(MYADMIN."?w=team"); ?>" title="My team"><i class="pe-graduation-cap pe-fw"></i> My team</a></li>
                   <li><a href="<?php echo(MYADMIN."?w=activity"); ?>" title="View activity"><i class="pe-tv pe-fw"></i> View activity</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li class="dropdown-header">Manage your profile</li>
-                  <li><a href="<?php echo(MYADMIN."?w=changeinfo"); ?>" title="Change info"><i class="pe-cog pe-fw"></i> Change info</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=changepass"); ?>" title="Change password"><i class="pe-key pe-fw"></i> Change password</a></li>
-                </ul>
-              </li>
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-graduation-cap pe-fw"></i> My team <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li class="dropdown-header">Team overview</li>
-                  <li><a href="<?php echo(MYADMIN."?w=team"); ?>"><i class="pe-user pe-fw"></i> My team</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li class="dropdown-header">Manage your team</li>
-                  <li><a href="<?php echo(MYADMIN."?w=admdesigner"); ?>" title="Add a new member"><i class="pe-user-plus pe-fw"></i> Add a new member</a></li>
-                  <li><a href="#" title="Member permission"><i class="pe-cogs pe-fw"></i> Member permission</a></li>
+<?php } ?>
                 </ul>
               </li>
 <?php } else { ?>
@@ -193,10 +183,10 @@ function pageFooter($notes = null) {
     </div>
   </div>
 </footer>
-<div class="scroll-to-top"><i class="pe-arrow-up pe-lg"></i></div>
-<script type="text/javascript" src="/admin/assets/js/anchor.js"></script>
+<!-- <div class="scroll-to-top"><i class="pe-arrow-up pe-lg white"></i></div> -->
+<!-- <script type="text/javascript" src="/admin/assets/js/anchor.js"></script> -->
 <script type="text/javascript" src="/admin/assets/js/notification.js"></script>
-<script type="text/javascript" src="/admin/assets/js/etc.js"></script>
+<!-- <script type="text/javascript" src="/admin/assets/js/etc.js"></script> -->
 <script type="text/javascript">
   var config = {
     apiKey: "AIzaSyBhLjEc1SwSq06Pg494R6pdM2NqLHF8Ag0",
@@ -258,31 +248,38 @@ function notify($messages) {
 }
 
 function debugOutput() {
-  echo "<section class=\"container\"><div class=\"row\"><div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
-  echo "<pre>\n";
-  echo "<strong>POST</strong>\n";
-  print_r($_POST);
-  echo "</pre>\n";
-  echo "<pre>\n";
-  echo "<strong>GET</strong>\n";
+  echo "<section class=\"container small\">\n";
+  echo "  <div class=\"row\">\n";
+  echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
+  echo "      <strong>GET</strong>\n";
+  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
   print_r($_GET);
-  echo "</pre>\n";
-  echo "<pre>\n";
-  echo "<strong>REQUEST</strong>\n";
+  echo "      </code></pre>\n";
+  echo "      <strong>POST</strong>\n";
+  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
+  print_r($_POST);
+  echo "      </code></pre>\n";
+  echo "      <strong>REQUEST</strong>\n";
+  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
   print_r($_REQUEST);
-  echo "</pre>\n";
-  echo "<pre>\n";
-  echo "<strong>COOKIE</strong>\n";
+  echo "      </code></pre>\n";
+  echo "      <strong>COOKIE</strong>\n";
+  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
   print_r($_COOKIE);
-  echo "</pre>\n";
-  echo "</div>\n";
-  echo "<div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
-  echo "<pre>\n";
-  echo "<strong>SID = ".session_id()."</strong>\n";
+  echo "      </code></pre>\n";
+  echo "    </div>\n";
+  echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
+  echo "      <strong>SID = ".session_id()."</strong>\n";
+  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
   print_r($_SESSION);
-  echo "</pre>\n";
-  echo "</div>\n";
-  echo "</div></div></section>\n";
+  echo "      </code></pre>\n";
+  echo "      <strong>FILES</strong>\n";
+  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
+  print_r($_FILES);
+  echo "      </code></pre>\n";
+  echo "    </div>\n";
+  echo "  </div>\n";
+  echo "</section>\n";
 }
 
 function w($w = null) {
@@ -353,7 +350,7 @@ function stringToSVG($str) {
     $size = rand (20, 25); //size in pixels
     $jump = rand(-5, 5); //shift up or down by a number of pixels
     $color = randomColor();
-    $glyph = sprintf('<text style="fill: %s;" x="%d" y="%d" font-size="%d" transform="translate(%d, %d) rotate(%d) translate(-%d, -%d)">%s</text>%s', $color, $x, $y + $jump, $size, $x, $y + $jump, $rotation, $x, $y + $jump, $str[$i], "\n");
+    $glyph = sprintf('<text style="fill: %s;" x="%d" y="%d" font-family="zephyr" font-size="%d" transform="translate(%d, %d) rotate(%d) translate(-%d, -%d)">%s</text>%s', $color, $x, $y + $jump, $size, $x, $y + $jump, $rotation, $x, $y + $jump, $str[$i], "\n");
     $glyphs[] = $glyph;
     $x += 20; //move carret
   }
@@ -422,5 +419,8 @@ function ago($datetime, $depth=1) {
   return $output.($timediff<0?$suffix2:$suffix1);
 }
 
+function percent($number) {
+  return number_format($number * 100, 2).'%';
+}
 
 ?>
