@@ -8,98 +8,212 @@ echo "<br>\n";
 
 ?>
 
+<hr>
+
+<h3>User levels</h3>
+
+<p>Currently we group users into different levels as shown in the table below. Each of these levels will have a different ability to access to different parts of the system. A higher in level would mean a greater ability to do thing including add and delete users.</p>
+
+<br>
+
+<h4>Members</h4>
+
+<p>There are two types of members as shown in the below table.</p>
+
+<table class="table table-hover">
+  <thead>
+    <tr class="bg-primary">
+      <td>User</td>
+      <td>Level</td>
+      <td>Detail</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Respondent (private)</td>
+      <td>1</td>
+      <td>
+        <ul>
+          <li>Access to the private survey where client provide email list in advanced</li>
+          <li>They will receive an email invitation with a survey link included, no registration required, and only complete once</li>
+          <li>No access to public surveys as a default, but will be invited to join using teaser</li>
+          <li>No access to admin section, and only see a limited information in member section</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>Respondent (panel)</td>
+      <td>2</td>
+      <td>
+        <ul>
+          <li>Access to all public surveys where matching demographic/ criteria will be required</li>
+          <li>For each of the surveys they see, they will be allowed to participate only once</li>
+          <li>No access to private surveys</li>
+          <li>No access to admin section, but full access at member section</li>
+          <li>Within this group, a further grouping will be done by using registration type, reward level, etc.</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h4>Clients</h4>
+
+<p>For clients who can access the admin section, there are several more types as shown in the below table.</p>
+
+
+<table class="table table-hover">
+  <thead>
+    <tr class="bg-primary">
+      <td>User</td>
+      <td>Level</td>
+      <td>Detail</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Fieldwork</td>
+      <td>1</td>
+      <td>
+        <ul>
+          <li>Full access to respondent section</li>
+          <li>Read only for all projects</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>DP</td>
+      <td>2</td>
+      <td>
+        <ul>
+          <li>Full access to data section</li>
+          <li>Read only for all projects</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>Researcher</td>
+      <td>3</td>
+      <td>
+        <ul>
+          <li>Full access to assigned projects</li>
+          <li>Read only for other projects</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>Account leader</td>
+      <td>5</td>
+      <td>
+        <ul>
+          <li>Full access to all projects</li>
+          <li>Ability to manage team members</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+
 <h3>Scale [SA]</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   questions:[{
-    type: "rating",
-    name: "satisfaction",
-    title: "How satisfied are you with the Product?",
-    mininumRateDescription: "Not Satisfied",
-    maximumRateDescription: "Completely satisfied"
+    type: &quot;rating&quot;,
+    name: &quot;satisfaction&quot;,
+    title: &quot;How satisfied are you with the Product?&quot;,
+    mininumRateDescription: &quot;Not Satisfied&quot;,
+    maximumRateDescription: &quot;Completely satisfied&quot;
   }]
 });
 var q = survey.getQuestionByName('satisfaction');
-q.mininumRateDescription = "Not at all satisfied";
-q.maximumRateDescription = "Extremely satisfied";
+q.mininumRateDescription = &quot;Not at all satisfied&quot;;
+q.maximumRateDescription = &quot;Extremely satisfied&quot;;
 q.rateValues = empty; // Option of empty, [1,2,3], [{value1, text:Bad}, {value:2, text:Average}, {value:3, text:Good}]
 survey.render();
-</pre>
+
+</code></pre>
 
 <h3>Text [OE]</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   questions: [{
-    type: "text",
-    name: "email",
-    title: "Thank you for taking our survey. Your survey is almost complete, please enter your email address in the box below if you wish to participate in our drawing, then press the 'Submit' button."
+    type: &quot;text&quot;,
+    name: &quot;email&quot;,
+    title: &quot;Thank you for taking our survey. Your survey is almost complete, please enter your email address in the box below if you wish to participate in our drawing, then press the 'Submit' button.&quot;
   }]
 });
 survey.getQuestionByName('email').size = 25; // Text size option of 10, 25, 50, 75, 100
 survey.render();
-</pre>
+
+</code></pre>
 
 <h3>Radio [SA]</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   questions: [{
-    type: "radiogroup",
-    name: "car",
-    title: "What car are you driving?",
+    type: &quot;radiogroup&quot;,
+    name: &quot;car&quot;,
+    title: &quot;What car are you driving?&quot;,
     isRequired: true,
     colCount: 4,
-    choices: ["None", "Ford", "Vauxhall", "Volkswagen", "Nissan", "Audi", "Mercedes-Benz", "BMW", "Peugeot", "Toyota", "Citroen"]
+    choices: [&quot;None&quot;, &quot;Ford&quot;, &quot;Vauxhall&quot;, &quot;Volkswagen&quot;, &quot;Nissan&quot;, &quot;Audi&quot;, &quot;Mercedes-Benz&quot;, &quot;BMW&quot;, &quot;Peugeot&quot;, &quot;Toyota&quot;, &quot;Citroen&quot;]
   }]
 });
 // Ways of setting the 'choice' property
-choices: [{ value: 1, text: "Value 1" }, { value: 2, text: "Value 2" }] // The classic way to set the property. The result values are numbers: 1 and 2
-choices: [{ value: 1 }, { value: "Value 2" }] // The values are: 1 and 'Value 2' and texts are '1' and 'Value 2'
-choices: ["Value 1", "Value 2"] // The values and texts are same
-choices: ["1|Value 1", "2|Value 2"] // The values are '1' and '2' and texts are 'Value 1' and 'Value 2'
+choices: [{ value: 1, text: &quot;Value 1&quot; }, { value: 2, text: &quot;Value 2&quot; }] // The classic way to set the property. The result values are numbers: 1 and 2
+choices: [{ value: 1 }, { value: &quot;Value 2&quot; }] // The values are: 1 and 'Value 2' and texts are '1' and 'Value 2'
+choices: [&quot;Value 1&quot;, &quot;Value 2&quot;] // The values and texts are same
+choices: [&quot;1|Value 1&quot;, &quot;2|Value 2&quot;] // The values are '1' and '2' and texts are 'Value 1' and 'Value 2'
 var q = survey.getQuestionByName('car');
 q.colCount = 1; // Option of 0, 1, 2, 3, 4
 q.choicesOrder = none; // Option of none, asc, desc, random
 q.hasOther = false; // Option of true or false
-q.otherText = "Others (specified)";
+q.otherText = &quot;Others (specified)&quot;;
 survey.render();
-</pre>
+
+</code></pre>
 
 <h3>Dropdown [SA]</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   questions: [{
-    type: "dropdown",
-    name: "car",
-    title: "What car are you driving?",
+    type: &quot;dropdown&quot;,
+    name: &quot;car&quot;,
+    title: &quot;What car are you driving?&quot;,
     isRequired: true,
     colCount: 0,
-    choices: ["None", "Ford", "Vauxhall", "Volkswagen", "Nissan", "Audi", "Mercedes-Benz", "BMW", "Peugeot", "Toyota", "Citroen"]
+    choices: [&quot;None&quot;, &quot;Ford&quot;, &quot;Vauxhall&quot;, &quot;Volkswagen&quot;, &quot;Nissan&quot;, &quot;Audi&quot;, &quot;Mercedes-Benz&quot;, &quot;BMW&quot;, &quot;Peugeot&quot;, &quot;Toyota&quot;, &quot;Citroen&quot;]
   }]
 });
 // Ways of setting the 'choice' property
-choices: [{ value: 1, text: "Value 1" }, { value: 2, text: "Value 2" }] // The classic way to set the property. The result values are numbers: 1 and 2
-choices: [{ value: 1 }, { value: "Value 2" }] // The values are: 1 and 'Value 2' and texts are '1' and 'Value 2'
-choices: ["Value 1", "Value 2"] // The values and texts are same
-choices: ["1|Value 1", "2|Value 2"] // The values are '1' and '2' and texts are 'Value 1' and 'Value 2'
+choices: [{ value: 1, text: &quot;Value 1&quot; }, { value: 2, text: &quot;Value 2&quot; }] // The classic way to set the property. The result values are numbers: 1 and 2
+choices: [{ value: 1 }, { value: &quot;Value 2&quot; }] // The values are: 1 and 'Value 2' and texts are '1' and 'Value 2'
+choices: [&quot;Value 1&quot;, &quot;Value 2&quot;] // The values and texts are same
+choices: [&quot;1|Value 1&quot;, &quot;2|Value 2&quot;] // The values are '1' and '2' and texts are 'Value 1' and 'Value 2'
 var q = survey.getQuestionByName('car');
 q.choicesOrder = none; // Option of none, asc, desc, random
 q.hasOther = false; // Option of true or false
-q.otherText = "Others (specified)";
+q.otherText = &quot;Others (specified)&quot;;
 survey.render();
-</pre>
+
+</code></pre>
 
 <h3>Dropdown with restfull [SA]</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   questions: [{
-    type: "dropdown",
-    name: "country",
-    title: "Select the country...",
+    type: &quot;dropdown&quot;,
+    name: &quot;country&quot;,
+    title: &quot;Select the country...&quot;,
     isRequired: true,
     choicesByUrl: {
-      url: "http://services.groupkt.com/country/get/all",
-      path: "RestResponse;result",
-      valueName: "name"
+      url: &quot;http://services.groupkt.com/country/get/all&quot;,
+      path: &quot;RestResponse;result&quot;,
+      valueName: &quot;name&quot;
     }
   }]
 });
@@ -109,170 +223,178 @@ q.choicesByUrl.path = 'MyPathToTheResult'; // The path to the array of results i
 q.choicesByUrl.valueName = 'thePropertyNameForValue'; // The 'value' element name in the returned json
 q.choicesByUrl.titleName = 'thePropertyNameForTitle'; // The 'title' element name in the returned json (if empty, the value is used)
 q.choicesByUrl.run();
-</pre>
+
+</code></pre>
 
 <h3>Checkbox [MA]</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   questions: [{
-    type: "checkbox",
-    name: "car",
-    title: "What car are you driving?",
+    type: &quot;checkbox&quot;,
+    name: &quot;car&quot;,
+    title: &quot;What car are you driving?&quot;,
     isRequired: true,
     colCount: 4,
-    choices: ["None", "Ford", "Vauxhall", "Volkswagen", "Nissan", "Audi", "Mercedes-Benz", "BMW", "Peugeot", "Toyota", "Citroen"]
+    choices: [&quot;None&quot;, &quot;Ford&quot;, &quot;Vauxhall&quot;, &quot;Volkswagen&quot;, &quot;Nissan&quot;, &quot;Audi&quot;, &quot;Mercedes-Benz&quot;, &quot;BMW&quot;, &quot;Peugeot&quot;, &quot;Toyota&quot;, &quot;Citroen&quot;]
   }]
 });
 // Ways of setting the 'choice' property
-choices: [{ value: 1, text: "Value 1" }, { value: 2, text: "Value 2" }] // The classic way to set the property. The result values are numbers: 1 and 2
-choices: [{ value: 1 }, { value: "Value 2" }] // The values are: 1 and 'Value 2' and texts are '1' and 'Value 2'
-choices: ["Value 1", "Value 2"] // The values and texts are same
-choices: ["1|Value 1", "2|Value 2"] // The values are '1' and '2' and texts are 'Value 1' and 'Value 2'
+choices: [{ value: 1, text: &quot;Value 1&quot; }, { value: 2, text: &quot;Value 2&quot; }] // The classic way to set the property. The result values are numbers: 1 and 2
+choices: [{ value: 1 }, { value: &quot;Value 2&quot; }] // The values are: 1 and 'Value 2' and texts are '1' and 'Value 2'
+choices: [&quot;Value 1&quot;, &quot;Value 2&quot;] // The values and texts are same
+choices: [&quot;1|Value 1&quot;, &quot;2|Value 2&quot;] // The values are '1' and '2' and texts are 'Value 1' and 'Value 2'
 var q = survey.getQuestionByName('car');
 q.colCount = 1; // Option of 0, 1, 2, 3, 4
 q.choicesOrder = none; // Option of none, asc, desc, random
 q.hasOther = false; // Option of true or false
-q.otherText = "Others (specified)";
+q.otherText = &quot;Others (specified)&quot;;
 survey.render();
-</pre>
+
+</code></pre>
 
 <h3>Comment [OE]</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   questions:[{
-    type: "comment",
-    name: "suggestions",
-    title:"What would make you more satisfied with the Product?"
+    type: &quot;comment&quot;,
+    name: &quot;suggestions&quot;,
+    title:&quot;What would make you more satisfied with the Product?&quot;
   }]
 });
 var q = survey.getQuestionByName('suggestions');
 q.rows = 3; // Opton of 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 survey.getQuestionByName('suggestions').cols = 50; // Column option of 10, 25, 50, 75, 100
 survey.render();
-</pre>
+
+</code></pre>
 
 <h3>HTML</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   questions: [{
-    type: "html",
-    name: "info",
-    html: "...HTML CODE..."
+    type: &quot;html&quot;,
+    name: &quot;info&quot;,
+    html: &quot;...HTML CODE...&quot;
   }]
 });
-</pre>
+
+</code></pre>
 
 <h3>Matrix [SA]</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   questions: [{
-    type: "matrix",
-    name: "Quality",
-    title: "Please indicate if you agree or disagree with the following statements",
+    type: &quot;matrix&quot;,
+    name: &quot;Quality&quot;,
+    title: &quot;Please indicate if you agree or disagree with the following statements&quot;,
     columns: [
-      { value: 1, text: "Strongly Disagree" },
-      { value: 2, text: "Disagree" },
-      { value: 3, text: "Neutral" },
-      { value: 4, text: "Agree" },
-      { value: 5, text: "Strongly Agree" }
+      { value: 1, text: &quot;Strongly Disagree&quot; },
+      { value: 2, text: &quot;Disagree&quot; },
+      { value: 3, text: &quot;Neutral&quot; },
+      { value: 4, text: &quot;Agree&quot; },
+      { value: 5, text: &quot;Strongly Agree&quot; }
     ],
     rows: [
-      { value: "affordable", text: "Product is affordable" },
-      { value: "does what it claims", text: "Product does what it claims" },
-      { value: "better then others", text: "Product is better than other products on the market" },
-      { value: "easy to use", text: "Product is easy to use" }
+      { value: &quot;affordable&quot;, text: &quot;Product is affordable&quot; },
+      { value: &quot;does what it claims&quot;, text: &quot;Product does what it claims&quot; },
+      { value: &quot;better then others&quot;, text: &quot;Product is better than other products on the market&quot; },
+      { value: &quot;easy to use&quot;, text: &quot;Product is easy to use&quot; }
     ]
   }]
 });
-</pre>
+
+</code></pre>
 
 <h3>Matrix [MA]</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   questions: [{
-    type: "matrixdropdown",
-    name: "frameworksRate",
-    title: "Please tells us your opinion about JavaScript MVVM frameworks",
-    choices: ["Excelent", "Good", "Average", "Fair", "Poor"],
+    type: &quot;matrixdropdown&quot;,
+    name: &quot;frameworksRate&quot;,
+    title: &quot;Please tells us your opinion about JavaScript MVVM frameworks&quot;,
+    choices: [&quot;Excelent&quot;, &quot;Good&quot;, &quot;Average&quot;, &quot;Fair&quot;, &quot;Poor&quot;],
     columns: [
-      { name: "using", title: "Do you use it?", choices: ["Yes", "No"], cellType: "radiogroup" },
-      { name: "experience", title: "How long do you use it?", choices: [{value: 5, text:"3-5 years"}, {value: 2, text:"1-2 years"}, {value: 1, text:"less then a year"}] },
-      { name: "strength", title: "What is main strength?", choices: ["Easy", "Compact", "Fast", "Powerfull"], cellType: "checkbox" },
-      { name: "knowledge", title: "Please describe your experience", cellType:"text" },
-      { name: "rate", title: "Please rate the framework itself" }
+      { name: &quot;using&quot;, title: &quot;Do you use it?&quot;, choices: [&quot;Yes&quot;, &quot;No&quot;], cellType: &quot;radiogroup&quot; },
+      { name: &quot;experience&quot;, title: &quot;How long do you use it?&quot;, choices: [{value: 5, text:&quot;3-5 years&quot;}, {value: 2, text:&quot;1-2 years&quot;}, {value: 1, text:&quot;less then a year&quot;}] },
+      { name: &quot;strength&quot;, title: &quot;What is main strength?&quot;, choices: [&quot;Easy&quot;, &quot;Compact&quot;, &quot;Fast&quot;, &quot;Powerfull&quot;], cellType: &quot;checkbox&quot; },
+      { name: &quot;knowledge&quot;, title: &quot;Please describe your experience&quot;, cellType:&quot;text&quot; },
+      { name: &quot;rate&quot;, title: &quot;Please rate the framework itself&quot; }
     ],
     rows: [
-      { value: "angularv1", text: "angularjs v1.x" },
-      { value: "angularv2", text: "angularjs v2" },
-      { value: "knockoutjs" },
-      { value: "reactjs"}
+      { value: &quot;angularv1&quot;, text: &quot;angularjs v1.x&quot; },
+      { value: &quot;angularv2&quot;, text: &quot;angularjs v2&quot; },
+      { value: &quot;knockoutjs&quot; },
+      { value: &quot;reactjs&quot;}
     ]
   }]
 });
-</pre>
+
+</code></pre>
 
 <h3>Matrix [dynamics]</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   questions: [{
-    type: "matrixdynamic",
-    name: "frameworksRate",
-    title: "Please rate your teachers",
-    addRowText: "Add Subject",
+    type: &quot;matrixdynamic&quot;,
+    name: &quot;frameworksRate&quot;,
+    title: &quot;Please rate your teachers&quot;,
+    addRowText: &quot;Add Subject&quot;,
     horizontalScroll: true,
-    columnMinWidth: "120px",
+    columnMinWidth: &quot;120px&quot;,
     columnColCount: 1,
-    cellType: "radiogroup",
+    cellType: &quot;radiogroup&quot;,
     choices: [
-      {value: 1 , text: "Yes"},
-      {value: 0, text: "Sometimes"},
-      {value: -1, text: "No"}
+      {value: 1 , text: &quot;Yes&quot;},
+      {value: 0, text: &quot;Sometimes&quot;},
+      {value: -1, text: &quot;No&quot;}
     ],
     columns: [
-      { name: "subject", cellType:"dropdown", title: "Select a subject", isRequired: true, minWidth: "300px", choices: ["English: American Literature", "English: British and World Literature", "Math: Consumer Math", "Math: Practical Math", "Math: Developmental Algebra", "Math: Continuing Algebra", "Math: Pre-Algebra", "Math: Algebra", "Math: Geometry", "Math: Integrated Mathematics", "Science: Physical Science", "Science: Earth Science", "Science: Biology", "Science: Chemistry", "History: World History", "History: Modern World Studies", "History: U.S. History", "History: Modern U.S. History", "Social Sciences: U.S. Government and Politics", "Social Sciences: U.S. and Global Economics", "World Languages: Spanish", "World Languages: French", "World Languages: German", "World Languages: Latin", "World Languages: Chinese", "World Languages: Japanese"]},
-      { name: "explains", title: "Clearly explains the objectives"},
-      { name: "interesting", title: "Makes class interesting" },
-      { name: "effective", title: "Uses class time effectively" },
-      { name: "knowledge", title: "Knows the subject matter" },
-      { name: "recognition", title: "Recognizes and acknowledges effort" },
-      { name: "inform", title: "Keeps me informed of my progress" },
-      { name: "opinion", title: "Encourages and accepts different opinions" },
-      { name: "respect", title: "Has the respect of the student" },
-      { name: "cooperation", title: "Encourages cooperation and participation" },
-      { name: "parents", title: "Communicates with my parents" },
-      { name: "selfthinking", title: "Encourages me to think for myself"},
-      { name:"frusturation", cellType: "comment", title: "Is there anything about this class that frustrates you?", minWidth: "250px"},
-      { name:"likeTheBest", cellType: "comment", title: "What do you like best about this class and/or teacher?", minWidth: "250px"},
-      { name:"improvements", cellType: "comment", title: "What do you wish this teacher would do differently that would improve this class?", minWidth: "250px"}
+      { name: &quot;subject&quot;, cellType:&quot;dropdown&quot;, title: &quot;Select a subject&quot;, isRequired: true, minWidth: &quot;300px&quot;, choices: [&quot;English: American Literature&quot;, &quot;English: British and World Literature&quot;, &quot;Math: Consumer Math&quot;, &quot;Math: Practical Math&quot;, &quot;Math: Developmental Algebra&quot;, &quot;Math: Continuing Algebra&quot;, &quot;Math: Pre-Algebra&quot;, &quot;Math: Algebra&quot;, &quot;Math: Geometry&quot;, &quot;Math: Integrated Mathematics&quot;, &quot;Science: Physical Science&quot;, &quot;Science: Earth Science&quot;, &quot;Science: Biology&quot;, &quot;Science: Chemistry&quot;, &quot;History: World History&quot;, &quot;History: Modern World Studies&quot;, &quot;History: U.S. History&quot;, &quot;History: Modern U.S. History&quot;, &quot;Social Sciences: U.S. Government and Politics&quot;, &quot;Social Sciences: U.S. and Global Economics&quot;, &quot;World Languages: Spanish&quot;, &quot;World Languages: French&quot;, &quot;World Languages: German&quot;, &quot;World Languages: Latin&quot;, &quot;World Languages: Chinese&quot;, &quot;World Languages: Japanese&quot;]},
+      { name: &quot;explains&quot;, title: &quot;Clearly explains the objectives&quot;},
+      { name: &quot;interesting&quot;, title: &quot;Makes class interesting&quot; },
+      { name: &quot;effective&quot;, title: &quot;Uses class time effectively&quot; },
+      { name: &quot;knowledge&quot;, title: &quot;Knows the subject matter&quot; },
+      { name: &quot;recognition&quot;, title: &quot;Recognizes and acknowledges effort&quot; },
+      { name: &quot;inform&quot;, title: &quot;Keeps me informed of my progress&quot; },
+      { name: &quot;opinion&quot;, title: &quot;Encourages and accepts different opinions&quot; },
+      { name: &quot;respect&quot;, title: &quot;Has the respect of the student&quot; },
+      { name: &quot;cooperation&quot;, title: &quot;Encourages cooperation and participation&quot; },
+      { name: &quot;parents&quot;, title: &quot;Communicates with my parents&quot; },
+      { name: &quot;selfthinking&quot;, title: &quot;Encourages me to think for myself&quot;},
+      { name:&quot;frusturation&quot;, cellType: &quot;comment&quot;, title: &quot;Is there anything about this class that frustrates you?&quot;, minWidth: &quot;250px&quot;},
+      { name:&quot;likeTheBest&quot;, cellType: &quot;comment&quot;, title: &quot;What do you like best about this class and/or teacher?&quot;, minWidth: &quot;250px&quot;},
+      { name:&quot;improvements&quot;, cellType: &quot;comment&quot;, title: &quot;What do you wish this teacher would do differently that would improve this class?&quot;, minWidth: &quot;250px&quot;}
     ],
     rowCount: 2
   }]
 });
-</pre>
+
+</code></pre>
 
 <h3>Multiple text</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   questions: [{
-    type: "multipletext",
-    name: "pricelimit",
-    title: "What is the... ",
+    type: &quot;multipletext&quot;,
+    name: &quot;pricelimit&quot;,
+    title: &quot;What is the... &quot;,
     colCount: 2,
     items: [
-      { name: "mostamount", title: "Most amount you would every pay for a product like ours" },
-      { name: "leastamount", title: "The least amount you would feel comfortable paying" }
+      { name: &quot;mostamount&quot;, title: &quot;Most amount you would every pay for a product like ours&quot; },
+      { name: &quot;leastamount&quot;, title: &quot;The least amount you would feel comfortable paying&quot; }
     ]
   }]
 });
-</pre>
+
+</code></pre>
 
 <h3>File uploading</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   questions: [{
-    type: "file",
-    title: "Please upload your photo",
-    name: "image",
+    type: &quot;file&quot;,
+    title: &quot;Please upload your photo&quot;,
+    name: &quot;image&quot;,
     storeDataAsText: true,
     showPreview: true,
     imageWidth: 150,
@@ -285,120 +407,125 @@ survey.getQuestionByName('image').imageHeight; // Image preview height option of
 survey.getQuestionByName('image').imageWidth; // Image preview width option of XX (in pixels) or empty
 survey.getQuestionByName('image').maxSize; // File max size (in bytes) such as 102400, and default is 0 (no limits)
 survey.render();
-</pre>
+
+</code></pre>
 
 <h3>Set cookie</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
-  cookieName: "myuniquesurveyid",
+  cookieName: &quot;myuniquesurveyid&quot;,
   questions: [{
-    type: "checkbox",
-    name: "car",
-    title: "What car are you driving?",
+    type: &quot;checkbox&quot;,
+    name: &quot;car&quot;,
+    title: &quot;What car are you driving?&quot;,
     isRequired: true,
     colCount: 4,
-    choices: ["None", "Ford", "Vauxhall", "Volkswagen", "Nissan", "Audi", "Mercedes-Benz", "BMW", "Peugeot", "Toyota", "Citroen"]
+    choices: [&quot;None&quot;, &quot;Ford&quot;, &quot;Vauxhall&quot;, &quot;Volkswagen&quot;, &quot;Nissan&quot;, &quot;Audi&quot;, &quot;Mercedes-Benz&quot;, &quot;BMW&quot;, &quot;Peugeot&quot;, &quot;Toyota&quot;, &quot;Citroen&quot;]
   }]
 });
-// survey.setCookie();
-// survey.deleteCookie();
-</pre>
+survey.setCookie();
+survey.deleteCookie();
+
+</code></pre>
 
 <h3>Localise the survey</h3>
-<pre class="verysmall">
-survey.locale = "th";
+<pre class="verysmall"><code class="prettyprint">
+survey.locale = &quot;th&quot;;
 var Survey;
 (function (Survey) {
   var mycustomSurveyStrings = {
-    pagePrevText: "หน้าที่แล้ว",
-    pageNextText: "หน้าถัดไป",
-    completeText: "เสร็จสิ้น",
-    otherItemText: "อื่นๆ (ระบุ)",
-    progressText: "หน้าที่ {0} จาก {1}",
-    emptySurvey: "ไม่มีหน้าคำถามหรือข้อคำถามในแบบสอบถามชุดนี้",
-    completingSurvey: "ขอบคุณที่สละเวลาตอบแบบสอบถาม",
-    loadingSurvey: "กำลังโหลดแบบสอบถามจากฐานข้อมูล...",
-    optionsCaption: "กรุณาเลือก...",
-    requiredError: "คุณต้องตอบคำถามข้อนี้",
-    numericError: "คำตอบจะต้องเป็นตัวเลขเท่านั้น",
-    textMinLength: "กรุณาใส่ตัวอักษรอย่างน้อยจำนวน {0} ตัวอักษร",
-    minRowCountError: "กรุณาตอบอย่างน้่อยจำนวน {0} แถว",
-    minSelectError: "กรุณาเลือกอย่างน้่อยจำนวน {0} คำตอบ",
-    maxSelectError: "กรุณาเลือกไม่เกินจำนวน {0} คำตอบ",
-    numericMinMax: "{0} ควรจะเท่ากับหรือมากกว่า {1} และเท่ากับหรือน้อยกว่า {2}",
-    numericMin: "{0} ควรจะเท่ากับหรือมากกว่า {1}",
-    numericMax: "{0} ควรจะเท่ากับหรือน้อยกว่า {1}",
-    invalidEmail: "กรุณาใส่อีเมล์ที่ถูกต้อง",
-    urlRequestError: "เกิดข้อผิดผลาดสำหรับ {0} {1}",
-    urlGetChoicesError: "ไม่มีข้อมูลหรือการตั้งค่าไม่ถูกต้อง",
-    exceedMaxSize: "ไฟล์จะต้องมีขนาดไม่เกิน {0}",
-    otherRequiredError: "กรุณาใส่ค่าอื่นแทน",
-    uploadingFile: "กำลังอัพโหลดไฟล์อยู่ กรุณารอสักครู่แล้วลองใหม่อีกครั้ง",
-    addRow: "เพิ่มแถว",
-    removeRow: "ลบแถว"
+    pagePrevText: &quot;หน้าที่แล้ว&quot;,
+    pageNextText: &quot;หน้าถัดไป&quot;,
+    completeText: &quot;เสร็จสิ้น&quot;,
+    otherItemText: &quot;อื่นๆ (ระบุ)&quot;,
+    progressText: &quot;หน้าที่ {0} จาก {1}&quot;,
+    emptySurvey: &quot;ไม่มีหน้าคำถามหรือข้อคำถามในแบบสอบถามชุดนี้&quot;,
+    completingSurvey: &quot;ขอบคุณที่สละเวลาตอบแบบสอบถาม&quot;,
+    loadingSurvey: &quot;กำลังโหลดแบบสอบถามจากฐานข้อมูล...&quot;,
+    optionsCaption: &quot;กรุณาเลือก...&quot;,
+    requiredError: &quot;คุณต้องตอบคำถามข้อนี้&quot;,
+    numericError: &quot;คำตอบจะต้องเป็นตัวเลขเท่านั้น&quot;,
+    textMinLength: &quot;กรุณาใส่ตัวอักษรอย่างน้อยจำนวน {0} ตัวอักษร&quot;,
+    minRowCountError: &quot;กรุณาตอบอย่างน้่อยจำนวน {0} แถว&quot;,
+    minSelectError: &quot;กรุณาเลือกอย่างน้่อยจำนวน {0} คำตอบ&quot;,
+    maxSelectError: &quot;กรุณาเลือกไม่เกินจำนวน {0} คำตอบ&quot;,
+    numericMinMax: &quot;{0} ควรจะเท่ากับหรือมากกว่า {1} และเท่ากับหรือน้อยกว่า {2}&quot;,
+    numericMin: &quot;{0} ควรจะเท่ากับหรือมากกว่า {1}&quot;,
+    numericMax: &quot;{0} ควรจะเท่ากับหรือน้อยกว่า {1}&quot;,
+    invalidEmail: &quot;กรุณาใส่อีเมล์ที่ถูกต้อง&quot;,
+    urlRequestError: &quot;เกิดข้อผิดผลาดสำหรับ {0} {1}&quot;,
+    urlGetChoicesError: &quot;ไม่มีข้อมูลหรือการตั้งค่าไม่ถูกต้อง&quot;,
+    exceedMaxSize: &quot;ไฟล์จะต้องมีขนาดไม่เกิน {0}&quot;,
+    otherRequiredError: &quot;กรุณาใส่ค่าอื่นแทน&quot;,
+    uploadingFile: &quot;กำลังอัพโหลดไฟล์อยู่ กรุณารอสักครู่แล้วลองใหม่อีกครั้ง&quot;,
+    addRow: &quot;เพิ่มแถว&quot;,
+    removeRow: &quot;ลบแถว&quot;
   };
-  Survey.surveyLocalization.locales["th"] = mycustomSurveyStrings;
+  Survey.surveyLocalization.locales[&quot;th&quot;] = mycustomSurveyStrings;
 })(Survey || (Survey = {}));
-</pre>
+
+</code></pre>
 
 <h3>Several questions in one row</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
-  questionTitleLocation: "bottom", showQuestionNumbers: "off",
+  questionTitleLocation: &quot;bottom&quot;, showQuestionNumbers: &quot;off&quot;,
   pages: [{
-    name: "Address",  title: "Address",
+    name: &quot;Address&quot;,  title: &quot;Address&quot;,
     questions: [
-      { type: "text", name: "address1", title: "Stree Address" },
-      { type: "text", name: "address2", title: "Address Line 2" },
-      { type: "text", name: "city", title: "City" },
-      { type: "text", name: "state", startWithNewLine: false, title: "State / Province / Region" },
-      { type: "text", name: "zip", title: "Zip / Postal Code" },
-      { type: "dropdown", name: "country", startWithNewLine: false, title: "Country",
+      { type: &quot;text&quot;, name: &quot;address1&quot;, title: &quot;Stree Address&quot; },
+      { type: &quot;text&quot;, name: &quot;address2&quot;, title: &quot;Address Line 2&quot; },
+      { type: &quot;text&quot;, name: &quot;city&quot;, title: &quot;City&quot; },
+      { type: &quot;text&quot;, name: &quot;state&quot;, startWithNewLine: false, title: &quot;State / Province / Region&quot; },
+      { type: &quot;text&quot;, name: &quot;zip&quot;, title: &quot;Zip / Postal Code&quot; },
+      { type: &quot;dropdown&quot;, name: &quot;country&quot;, startWithNewLine: false, title: &quot;Country&quot;,
         choicesByUrl: {
-          url: "http://services.groupkt.com/country/get/all",
-          path: "RestResponse;result",
-          valueName: "name"
+          url: &quot;http://services.groupkt.com/country/get/all&quot;,
+          path: &quot;RestResponse;result&quot;,
+          valueName: &quot;name&quot;
         }
       }
     ]
   }]
 });
-</pre>
+
+</code></pre>
 
 <h3>Survey options</h3>
-<pre class="verysmall">
-survey.requiredText = "*";
-survey.showQuestionNumbers = "on"; // Option of on, onPage, off
+<pre class="verysmall"><code class="prettyprint">
+survey.requiredText = &quot;*&quot;;
+survey.showQuestionNumbers = &quot;on&quot;; // Option of on, onPage, off
 survey.showTitle = true; // Option of true, false
 survey.showPageTitles = true; // Option of true, false
 survey.showPageNumbers = false; // Option of true, false
 survey.showProgressbar = off; // Option of top, bottom, off
-survey.completedHtml = "";
+survey.completedHtml = &quot;&quot;;
 survey.render();
-</pre>
+
+</code></pre>
 
 <h3>Include data in survey</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   questions: [
-    { type: "text", name: "name", title: "Your name:"},
-    { type: "text", name: "email", title: "Your e-mail"},
-    { type: "checkbox", name: "car", title: "What car are you driving?", isRequired: true, colCount: 4, choices: ["None", "Ford", "Vauxhall", "Volkswagen", "Nissan", "Audi", "Mercedes-Benz", "BMW", "Peugeot", "Toyota", "Citroen"] }
+    { type: &quot;text&quot;, name: &quot;name&quot;, title: &quot;Your name:&quot;},
+    { type: &quot;text&quot;, name: &quot;email&quot;, title: &quot;Your e-mail&quot;},
+    { type: &quot;checkbox&quot;, name: &quot;car&quot;, title: &quot;What car are you driving?&quot;, isRequired: true, colCount: 4, choices: [&quot;None&quot;, &quot;Ford&quot;, &quot;Vauxhall&quot;, &quot;Volkswagen&quot;, &quot;Nissan&quot;, &quot;Audi&quot;, &quot;Mercedes-Benz&quot;, &quot;BMW&quot;, &quot;Peugeot&quot;, &quot;Toyota&quot;, &quot;Citroen&quot;] }
   ]
 });
-survey.data = { name:"John Doe", email: "johndoe@nobody.com", car:["Ford"] };
+survey.data = { name:&quot;John Doe&quot;, email: &quot;johndoe@nobody.com&quot;, car:[&quot;Ford&quot;] };
 survey.onValueChanged.add(function (sender, options) {
   var el = document.getElementById(options.name);
   if(el) { el.value = options.value; }
 });
-// <div>
-//   <p>Name: <input type="text" id="name" onChange="survey.setValue('name', this.value)" value="John Doe"></p>
-//   <p>Email: <input type="email" id="email" size="30" onChange="survey.setValue('email', this.value)" value="johndoe@nobody.com"></p>
-//   <p>Cars (use comma to separate values, not spaces): <input type="text" id="car" size="50" onChange="survey.setValue('car', this.value.split(','))" value="Ford"></p>
-// </div>
+// &lt;div&gt;
+//   &lt;p&gt;Name: &lt;input type=&quot;text&quot; id=&quot;name&quot; onChange=&quot;survey.setValue('name', this.value)&quot; value=&quot;John Doe&quot;&gt;&lt;/p&gt;
+//   &lt;p&gt;Email: &lt;input type=&quot;email&quot; id=&quot;email&quot; size=&quot;30&quot; onChange=&quot;survey.setValue('email', this.value)&quot; value=&quot;johndoe@nobody.com&quot;&gt;&lt;/p&gt;
+//   &lt;p&gt;Cars (use comma to separate values, not spaces): &lt;input type=&quot;text&quot; id=&quot;car&quot; size=&quot;50&quot; onChange=&quot;survey.setValue('car', this.value.split(','))&quot; value=&quot;Ford&quot;&gt;&lt;/p&gt;
+// &lt;/div&gt;
 survey.getValue('questionName'); // Use getValue to get the value of the question
 survey.setValue('questionName', newValue); // Use setValue to set the value of the question
-survey.data = { "youquestion1": value1, "youquestionN":valueN }; // Use data property to get/set survey data as json
+survey.data = { &quot;youquestion1&quot;: value1, &quot;youquestionN&quot;:valueN }; // Use data property to get/set survey data as json
 //Use onValueChanged event to get a notification on chaning question value.
 survey.onValueChanged.add(function (sender, options) {
   var mySurvey = sender;
@@ -410,10 +537,11 @@ survey.onComplete.add(function (sender) {
   var mySurvey = sender;
   var surveyData = sender.data;
 });
-</pre>
+
+</code></pre>
 
 <h3>Custom navigation</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 // HTML
 survey.onRendered.add(function (sender) {
   var survey = sender;
@@ -427,134 +555,139 @@ survey.onCurrentPageChanged.add(function (sender, options) {
 });
 // JS
 var survey = new Survey.Survey({
-  title: "Software developer survey.",
+  title: &quot;Software developer survey.&quot;,
   pages: [{
-    title: "What operating system do you use?",
-    questions: [{ type:"checkbox", name:"opSystem", title: "OS", hasOther: true, isRequired: true, choices: ["Windows", "Linux", "Macintosh OSX"] }
+    title: &quot;What operating system do you use?&quot;,
+    questions: [{ type:&quot;checkbox&quot;, name:&quot;opSystem&quot;, title: &quot;OS&quot;, hasOther: true, isRequired: true, choices: [&quot;Windows&quot;, &quot;Linux&quot;, &quot;Macintosh OSX&quot;] }
     ]
   }, {
-    title: "What language(s) are you currently using?",
-    questions: [{ type:"checkbox", name:"langs", title:"Plese select from the list", colCount: 4, isRequired: true, choices: ["Javascript", "Java", "Python", "CSS", "PHP", "Ruby", "C++", "C", "Shell", "C#", "Objective-C", "R", "VimL", "Go", "Perl", "CoffeeScript", "TeX", "Swift", "Scala", "Emacs List", "Haskell", "Lua", "Clojure", "Matlab", "Arduino", "Makefile", "Groovy", "Puppet", "Rust", "PowerShell" ] }
+    title: &quot;What language(s) are you currently using?&quot;,
+    questions: [{ type:&quot;checkbox&quot;, name:&quot;langs&quot;, title:&quot;Plese select from the list&quot;, colCount: 4, isRequired: true, choices: [&quot;Javascript&quot;, &quot;Java&quot;, &quot;Python&quot;, &quot;CSS&quot;, &quot;PHP&quot;, &quot;Ruby&quot;, &quot;C++&quot;, &quot;C&quot;, &quot;Shell&quot;, &quot;C#&quot;, &quot;Objective-C&quot;, &quot;R&quot;, &quot;VimL&quot;, &quot;Go&quot;, &quot;Perl&quot;, &quot;CoffeeScript&quot;, &quot;TeX&quot;, &quot;Swift&quot;, &quot;Scala&quot;, &quot;Emacs List&quot;, &quot;Haskell&quot;, &quot;Lua&quot;, &quot;Clojure&quot;, &quot;Matlab&quot;, &quot;Arduino&quot;, &quot;Makefile&quot;, &quot;Groovy&quot;, &quot;Puppet&quot;, &quot;Rust&quot;, &quot;PowerShell&quot; ] }
     ]
   }, {
-    title: "Please enter your name and e-mail",
-    questions: [{ type: "text", name: "name", title: "Name:" }, { type: "text", name: "email", title: "Your e-mail" }]
+    title: &quot;Please enter your name and e-mail&quot;,
+    questions: [{ type: &quot;text&quot;, name: &quot;name&quot;, title: &quot;Name:&quot; }, { type: &quot;text&quot;, name: &quot;email&quot;, title: &quot;Your e-mail&quot; }]
   }]
 });
 survey.showTitle = false;
 survey.onRendered.add(function (sender) { setNavigationVisibility(sender); });
 survey.onCurrentPageChanged.add(function (sender) { setNavigationVisibility(sender); });
 function setNavigationVisibility(survey) {
-  document.getElementById('surveyPrev').style.display = !survey.isFirstPage ? "inline" : "none";
-  document.getElementById('surveyNext').style.display = !survey.isLastPage ? "inline" : "none";
-  document.getElementById('surveyComplete').style.display = survey.isLastPage ? "inline" : "none";
-  document.getElementById('surveyProgress').innerText = "Page " + (survey.currentPage.visibleIndex + 1) + " of " + survey.visiblePageCount + ".";
+  document.getElementById('surveyPrev').style.display = !survey.isFirstPage ? &quot;inline&quot; : &quot;none&quot;;
+  document.getElementById('surveyNext').style.display = !survey.isLastPage ? &quot;inline&quot; : &quot;none&quot;;
+  document.getElementById('surveyComplete').style.display = survey.isLastPage ? &quot;inline&quot; : &quot;none&quot;;
+  document.getElementById('surveyProgress').innerText = &quot;Page &quot; + (survey.currentPage.visibleIndex + 1) + &quot; of &quot; + survey.visiblePageCount + &quot;.&quot;;
 }
-survey.pagePrevText = "Previous";
-survey.pageNextText = "Next";
-survey.completeText = "Submit";
+survey.pagePrevText = &quot;Previous&quot;;
+survey.pageNextText = &quot;Next&quot;;
+survey.completeText = &quot;Submit&quot;;
 survey.showNavigationButtons = true; // Option of true, false
 survey.render();
-</pre>
+
+</code></pre>
 
 <h3>Custom text</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
-  questionTitleTemplate: "{no}) {title} {require}:",
-  questionStartIndex: "A",
-  requiredText: "(*)",
+  questionTitleTemplate: &quot;{no}) {title} {require}:&quot;,
+  questionStartIndex: &quot;A&quot;,
+  requiredText: &quot;(*)&quot;,
   pages: [{
-    title: "This is the page {pageno} of {pagecount}.",
+    title: &quot;This is the page {pageno} of {pagecount}.&quot;,
     questions: [
-      { type: "text", name: "name", title: "Please type your name", isRequired: true },
-      { type: "text", name: "email", title: "Please type your e-mail", isRequired: true, validators: [{ type:"email" }
+      { type: &quot;text&quot;, name: &quot;name&quot;, title: &quot;Please type your name&quot;, isRequired: true },
+      { type: &quot;text&quot;, name: &quot;email&quot;, title: &quot;Please type your e-mail&quot;, isRequired: true, validators: [{ type:&quot;email&quot; }
     ]}
   ]}, {
-    title: "This is the page {pageno} of {pagecount}.",
+    title: &quot;This is the page {pageno} of {pagecount}.&quot;,
     questions: [
-      { type: "comment", name: "comment", title: "{name}, please tell us what is on your mind" }
+      { type: &quot;comment&quot;, name: &quot;comment&quot;, title: &quot;{name}, please tell us what is on your mind&quot; }
     ]}
   ],
-  completedHtml: "<h4>Thank you for sharing this information with us.</h4><p>Your name is: <b>{name}</b></p><p>Your email is: <b>{email}</b></p><p>This is what is on your mind:</p><p>{comment}</p>"
+  completedHtml: &quot;&lt;h4&gt;Thank you for sharing this information with us.&lt;/h4&gt;&lt;p&gt;Your name is: &lt;b&gt;{name}&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Your email is: &lt;b&gt;{email}&lt;/b&gt;&lt;/p&gt;&lt;p&gt;This is what is on your mind:&lt;/p&gt;&lt;p&gt;{comment}&lt;/p&gt;&quot;
 });
-survey.questionTitleTemplate = "{no}) {title} {require}:";
-survey.requiredText = "(*)";
-survey.questionStartIndex = "A";
-</pre>
+survey.questionTitleTemplate = &quot;{no}) {title} {require}:&quot;;
+survey.requiredText = &quot;(*)&quot;;
+survey.questionStartIndex = &quot;A&quot;;
+
+</code></pre>
 
 <h3>Change radio and checkbox template</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
-  title: "Tell us, what technologies do you use?",
+  title: &quot;Tell us, what technologies do you use?&quot;,
   pages: [{
-    name:"page1",
+    name:&quot;page1&quot;,
     questions: [
-      { type: "radiogroup", choices: ["Yes", "No"], isRequired: true, name: "frameworkUsing", title: "Do you use any front-end framework like Bootstrap?" },
-      { type: "checkbox", choices: ["Bootstrap","Foundation"], hasOther: true, isRequired: true, name: "framework", title: "What front-end framework do you use?", visible: false }
+      { type: &quot;radiogroup&quot;, choices: [&quot;Yes&quot;, &quot;No&quot;], isRequired: true, name: &quot;frameworkUsing&quot;, title: &quot;Do you use any front-end framework like Bootstrap?&quot; },
+      { type: &quot;checkbox&quot;, choices: [&quot;Bootstrap&quot;,&quot;Foundation&quot;], hasOther: true, isRequired: true, name: &quot;framework&quot;, title: &quot;What front-end framework do you use?&quot;, visible: false }
     ]
   }, {
-    name: "page2",
+    name: &quot;page2&quot;,
     questions: [
-      { type: "radiogroup", choices: ["Yes","No"], isRequired: true, name: "mvvmUsing", title: "Do you use any MVVM framework?" },
-      { type: "checkbox", choices: ["AngularJS", "KnockoutJS", "React"], hasOther: true, isRequired: true, name: "mvvm", title: "What MVVM framework do you use?", visible: false }
+      { type: &quot;radiogroup&quot;, choices: [&quot;Yes&quot;,&quot;No&quot;], isRequired: true, name: &quot;mvvmUsing&quot;, title: &quot;Do you use any MVVM framework?&quot; },
+      { type: &quot;checkbox&quot;, choices: [&quot;AngularJS&quot;, &quot;KnockoutJS&quot;, &quot;React&quot;], hasOther: true, isRequired: true, name: &quot;mvvm&quot;, title: &quot;What MVVM framework do you use?&quot;, visible: false }
     ]
   }, {
-    name: "page3",
+    name: &quot;page3&quot;,
     questions: [
-      { type: "comment", name: "about", title: "Please tell us about your main requirements for Survey library" }
+      { type: &quot;comment&quot;, name: &quot;about&quot;, title: &quot;Please tell us about your main requirements for Survey library&quot; }
     ]
   }],
   triggers: [
-    { type: "visible", operator: "equal", value: "Yes", name: "frameworkUsing", questions: ["framework"] },
-    { type: "visible", operator: "equal", value: "Yes", name: "mvvmUsing", questions: ["mvvm"] }
+    { type: &quot;visible&quot;, operator: &quot;equal&quot;, value: &quot;Yes&quot;, name: &quot;frameworkUsing&quot;, questions: [&quot;framework&quot;] },
+    { type: &quot;visible&quot;, operator: &quot;equal&quot;, value: &quot;Yes&quot;, name: &quot;mvvmUsing&quot;, questions: [&quot;mvvm&quot;] }
   ]
 });
-new Survey.SurveyTemplateText().replaceText('<div class="btn-group" data-toggle="buttons"><!-- ko foreach: { data: question.visibleChoices, as: "item", afterRender: question.koAfterRender}  --> <label class="btn btn-default" data-bind="css:{active: $data.value == question.koValue()}, style:{width: question.koWidth}">   <input type="radio" data-bind="attr: {name: question.name, value: item.value}, checked: question.koValue" /> <span data-bind="text: item.text"></span></label><!-- /ko --><div data-bind="visible:question.hasOther"><div data-bind="template: { name: \'survey-comment\', data: {\'question\': question, \'visible\': question.koOtherVisible } }"></div></div></div>', "question", "radiogroup");
-new Survey.SurveyTemplateText().replaceText('<div class="btn-group" data-toggle="buttons"><!-- ko foreach: { data: question.visibleChoices, as: "item", afterRender: question.koAfterRender}  --> <label class="btn btn-default" data-bind="css:{active: question.koValue().indexOf($data.value) > -1}, style:{width: question.koWidth}">   <input type="checkbox" data-bind="attr: {name: question.name, value: item.value}, checked: question.koValue" /> <span data-bind="text: item.text"></span></label><!-- /ko --><div data-bind="visible:question.hasOther"><div data-bind="template: { name: \'survey-comment\', data: {\'question\': question, \'visible\': question.koOtherVisible } }"></div></div></div>', "question", "checkbox");
-</pre>
+new Survey.SurveyTemplateText().replaceText('&lt;div class=&quot;btn-group&quot; data-toggle=&quot;buttons&quot;&gt;&lt;!-- ko foreach: { data: question.visibleChoices, as: &quot;item&quot;, afterRender: question.koAfterRender}  --&gt; &lt;label class=&quot;btn btn-default&quot; data-bind=&quot;css:{active: $data.value == question.koValue()}, style:{width: question.koWidth}&quot;&gt;   &lt;input type=&quot;radio&quot; data-bind=&quot;attr: {name: question.name, value: item.value}, checked: question.koValue&quot; /&gt; &lt;span data-bind=&quot;text: item.text&quot;&gt;&lt;/span&gt;&lt;/label&gt;&lt;!-- /ko --&gt;&lt;div data-bind=&quot;visible:question.hasOther&quot;&gt;&lt;div data-bind=&quot;template: { name: \'survey-comment\', data: {\'question\': question, \'visible\': question.koOtherVisible } }&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;', &quot;question&quot;, &quot;radiogroup&quot;);
+new Survey.SurveyTemplateText().replaceText('&lt;div class=&quot;btn-group&quot; data-toggle=&quot;buttons&quot;&gt;&lt;!-- ko foreach: { data: question.visibleChoices, as: &quot;item&quot;, afterRender: question.koAfterRender}  --&gt; &lt;label class=&quot;btn btn-default&quot; data-bind=&quot;css:{active: question.koValue().indexOf($data.value) &gt; -1}, style:{width: question.koWidth}&quot;&gt;   &lt;input type=&quot;checkbox&quot; data-bind=&quot;attr: {name: question.name, value: item.value}, checked: question.koValue&quot; /&gt; &lt;span data-bind=&quot;text: item.text&quot;&gt;&lt;/span&gt;&lt;/label&gt;&lt;!-- /ko --&gt;&lt;div data-bind=&quot;visible:question.hasOther&quot;&gt;&lt;div data-bind=&quot;template: { name: \'survey-comment\', data: {\'question\': question, \'visible\': question.koOtherVisible } }&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;', &quot;question&quot;, &quot;checkbox&quot;);
+
+</code></pre>
 
 <h3>Go to the next page automatically</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
-  title: "American History",
-  showProgressBar: "bottom",
+  title: &quot;American History&quot;,
+  showProgressBar: &quot;bottom&quot;,
   goNextPageAutomatic: true,
   showNavigationButtons: false,
   pages: [
-    { questions: [{ type: "radiogroup",  name: "civilwar", title: "When was the Civil War?", choices: ["1750-1800", "1800-1850", "1850-1900", "1900-1950","after 1950"]} ]},
-    { questions: [{ type: "radiogroup",  name: "libertyordeath", title: "Who said 'Give me liberty or give me death?'", choicesOrder: "random", choices: ["John Hancock", "James Madison", "Patrick Henry", "Samuel Adams"]} ]},
-    { questions: [{ type: "radiogroup",  name: "magnacarta", title: "What is the Magna Carta?", choicesOrder: "random", choices: ["The foundation of the British parliamentary system", "The Great Seal of the monarchs of England", "The French Declaration of the Rights of Man", "The charter signed by the Pilgrims on the Mayflower"]} ]}
+    { questions: [{ type: &quot;radiogroup&quot;,  name: &quot;civilwar&quot;, title: &quot;When was the Civil War?&quot;, choices: [&quot;1750-1800&quot;, &quot;1800-1850&quot;, &quot;1850-1900&quot;, &quot;1900-1950&quot;,&quot;after 1950&quot;]} ]},
+    { questions: [{ type: &quot;radiogroup&quot;,  name: &quot;libertyordeath&quot;, title: &quot;Who said 'Give me liberty or give me death?'&quot;, choicesOrder: &quot;random&quot;, choices: [&quot;John Hancock&quot;, &quot;James Madison&quot;, &quot;Patrick Henry&quot;, &quot;Samuel Adams&quot;]} ]},
+    { questions: [{ type: &quot;radiogroup&quot;,  name: &quot;magnacarta&quot;, title: &quot;What is the Magna Carta?&quot;, choicesOrder: &quot;random&quot;, choices: [&quot;The foundation of the British parliamentary system&quot;, &quot;The Great Seal of the monarchs of England&quot;, &quot;The French Declaration of the Rights of Man&quot;, &quot;The charter signed by the Pilgrims on the Mayflower&quot;]} ]}
   ],
-  completedHtml: "<p>Your anwers are:</p><p>When was the Civil War?: <b>{civilwar}</b>. The correct is: <b>1850-1900</b></p><p>Who said 'Give me liberty or give me death?': <b>{libertyordeath}</b>. The correct is: <b>Patrick Henry</b></p><p>What is the Magna Carta?: <b>{magnacarta}</b>. The correct is: <b>The foundation of the British parliamentary system</b></p>"
+  completedHtml: &quot;&lt;p&gt;Your anwers are:&lt;/p&gt;&lt;p&gt;When was the Civil War?: &lt;b&gt;{civilwar}&lt;/b&gt;. The correct is: &lt;b&gt;1850-1900&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Who said 'Give me liberty or give me death?': &lt;b&gt;{libertyordeath}&lt;/b&gt;. The correct is: &lt;b&gt;Patrick Henry&lt;/b&gt;&lt;/p&gt;&lt;p&gt;What is the Magna Carta?: &lt;b&gt;{magnacarta}&lt;/b&gt;. The correct is: &lt;b&gt;The foundation of the British parliamentary system&lt;/b&gt;&lt;/p&gt;&quot;
 });
 survey.showNavigationButtons = false;
 survey.goNextPageAutomatic = true;
-</pre>
+
+</code></pre>
 
 <h3>Standard validators</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   questions: [
-    { type: "text", name: "email", title: "Please enter your e-mail", isRequired: true, validators: [{ type:"email" }] },
-    { type: "multipletext", name: "pricelimit", title: "What is the... ", isRequired: true, colCount: 2, items: [
-      { name: "leastamount", title: "The least amount you have ever paid for a computer", validators: [{ type: "numeric", minValue: 10, maxValue: 10000 }] },
-      { name: "mostamount", title: "The most amount you have ever paid for a computer", validators: [{ type: "numeric", minValue: 10, maxValue: 10000 }] }
+    { type: &quot;text&quot;, name: &quot;email&quot;, title: &quot;Please enter your e-mail&quot;, isRequired: true, validators: [{ type:&quot;email&quot; }] },
+    { type: &quot;multipletext&quot;, name: &quot;pricelimit&quot;, title: &quot;What is the... &quot;, isRequired: true, colCount: 2, items: [
+      { name: &quot;leastamount&quot;, title: &quot;The least amount you have ever paid for a computer&quot;, validators: [{ type: &quot;numeric&quot;, minValue: 10, maxValue: 10000 }] },
+      { name: &quot;mostamount&quot;, title: &quot;The most amount you have ever paid for a computer&quot;, validators: [{ type: &quot;numeric&quot;, minValue: 10, maxValue: 10000 }] }
     ]},
-    { type: "comment", name: "firstcomputer", title: "Please tell us about your first computer", isRequired: true, validators: [{ type:"text", minLength:20 }] }
+    { type: &quot;comment&quot;, name: &quot;firstcomputer&quot;, title: &quot;Please tell us about your first computer&quot;, isRequired: true, validators: [{ type:&quot;text&quot;, minLength:20 }] }
   ]
 });
-</pre>
+
+</code></pre>
 
 <h3>Custom validation</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var MyTextValidator = (function (_super) {
   __extends(MyTextValidator, _super);
   function MyTextValidator() {
     _super.call(this);
   }
-  MyTextValidator.prototype.getType = function () { return "mytextvalidator"; };
+  MyTextValidator.prototype.getType = function () { return &quot;mytextvalidator&quot;; };
   MyTextValidator.prototype.validate = function (value, name) {
-    if (value.indexOf("survey") < 0) {
+    if (value.indexOf(&quot;survey&quot;) < 0) {
       //report an error
       return new Survey.ValidatorResult(null, new Survey.CustomError(this.getErrorText(name)));
     }
@@ -565,163 +698,169 @@ var MyTextValidator = (function (_super) {
   };
   //the default error text. It shows if user do not set the 'text' property
   MyTextValidator.prototype.getDefaultErrorText = function(name) {
-    return "You text should contains 'survey' word.";
+    return &quot;You text should contains 'survey' word.&quot;;
   }
   return MyTextValidator;
 })(Survey.SurveyValidator);
 Survey.MyTextValidator = MyTextValidator;
 //add into survey Json metaData
-Survey.JsonObject.metaData.addClass("mytextvalidator", [], function () { return new MyTextValidator(); }, "surveyvalidator");
+Survey.JsonObject.metaData.addClass(&quot;mytextvalidator&quot;, [], function () { return new MyTextValidator(); }, &quot;surveyvalidator&quot;);
 // JS
 var survey = new Survey.Survey({
   questions: [{
-    type: "comment",
-    name: "memo",
+    type: &quot;comment&quot;,
+    name: &quot;memo&quot;,
     isRequired: true,
-    title: "Type here 'survey' to pass the validation ",
-    validators: [{ type: "mytext" }]
+    title: &quot;Type here 'survey' to pass the validation &quot;,
+    validators: [{ type: &quot;mytext&quot; }]
   }]
 });
-</pre>
+
+</code></pre>
 
 <h3>Validator on an event</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 survey.onValidateQuestion.add(function (s, options) {
   if (options.name == 'pricelimit') {
     var leastamount = options.value['leastamount'];
     var mostamount = options.value['mostamount'];
-    if (!isNumber(leastamount)) { options.error = "The 'least amount' should be a numeric."; }
+    if (!isNumber(leastamount)) { options.error = &quot;The 'least amount' should be a numeric.&quot;; }
     else {
-      if (!isNumber(mostamount)) { options.error = "The 'most amount' should be a numeric."; }
-      else { if (leastamount > mostamount) { options.error = "The 'most amount' should be more 'less amount'."; } }
+      if (!isNumber(mostamount)) { options.error = &quot;The 'most amount' should be a numeric.&quot;; }
+      else { if (leastamount > mostamount) { options.error = &quot;The 'most amount' should be more 'less amount'.&quot;; } }
     }
   }
   if (options.name == 'firstcomputer') {
-    if (options.value.indexOf('computer') < 0) { options.error = "Please type the word 'computer'."; }
+    if (options.value.indexOf('computer') < 0) { options.error = &quot;Please type the word 'computer'.&quot;; }
   }
 });
 // JS
 var survey = new Survey.Survey({
   questions: [{
-    type: "multipletext",
-    name: "pricelimit",
-    title: "What is the... ",
+    type: &quot;multipletext&quot;,
+    name: &quot;pricelimit&quot;,
+    title: &quot;What is the... &quot;,
     isRequired: true,
     colCount: 2,
     items: [
-      { name: "leastamount", title: "The least amount you have ever paid for a computer", validators: [{ type: "numeric", minValue: 10, maxValue: 10000 }] },
-      {  name: "mostamount", title: "The most amount you have ever paid for a computer", validators: [{ type: "numeric", minValue: 10, maxValue: 10000 }] }
+      { name: &quot;leastamount&quot;, title: &quot;The least amount you have ever paid for a computer&quot;, validators: [{ type: &quot;numeric&quot;, minValue: 10, maxValue: 10000 }] },
+      {  name: &quot;mostamount&quot;, title: &quot;The most amount you have ever paid for a computer&quot;, validators: [{ type: &quot;numeric&quot;, minValue: 10, maxValue: 10000 }] }
     ]
   }, {
-    type: "comment",
-    name: "firstcomputer",
-    title: "Please tell us about your first computer (type the word 'computer')",
+    type: &quot;comment&quot;,
+    name: &quot;firstcomputer&quot;,
+    title: &quot;Please tell us about your first computer (type the word 'computer')&quot;,
     isRequired: true,
-    validators: [{ type:"text", minLength:20 }]
+    validators: [{ type:&quot;text&quot;, minLength:20 }]
   }]
 });
 function isNumber(n) { return n && !isNaN(parseFloat(n)) && isFinite(n); }
-</pre>
+
+</code></pre>
 
 <h3>Visible IF</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
-  showQuestionNumbers: "off",
+  showQuestionNumbers: &quot;off&quot;,
   questions: [
-    { type: "radiogroup", name: "haveKids", title: "Do you have a kid(s)?", isRequired: true, choices: ["Yes", "No"], colCount: 0 },
-    { type: "dropdown", name: "kids", title: "How many kids do you have", visibleIf: "{haveKids}='Yes'", isRequired: true, choices:[ 1, 2, 3, 4, 5 ]},
-    { type: "dropdown", name: "kid1Age", title: "The first kid age:", visibleIf: "{haveKids}='Yes' and {kids} >= 1", isRequired: true, startWithNewLine: false, choices:[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ]},
-    { type: "dropdown", name: "kid2Age", title: "The second kid age:", visibleIf: "{haveKids}='Yes' and {kids} >= 2", isRequired: true, startWithNewLine: false, choices:[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ]},
-    { type: "dropdown", name: "kid3Age", title: "The third kid age:", visibleIf: "{haveKids}='Yes' and {kids} >= 3", isRequired: true, startWithNewLine: false, choices:[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ]},
-    { type: "dropdown", name: "kid4Age", title: "The fourth kid age:", visibleIf: "{haveKids}='Yes' and {kids} >= 4", isRequired: true, startWithNewLine: false, choices:[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ]},
-    { type: "dropdown", name: "kid5Age", title: "The fifth kid age:", visibleIf: "{haveKids}='Yes' and {kids} >= 5", isRequired: true, startWithNewLine: false, choices:[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ]}
+    { type: &quot;radiogroup&quot;, name: &quot;haveKids&quot;, title: &quot;Do you have a kid(s)?&quot;, isRequired: true, choices: [&quot;Yes&quot;, &quot;No&quot;], colCount: 0 },
+    { type: &quot;dropdown&quot;, name: &quot;kids&quot;, title: &quot;How many kids do you have&quot;, visibleIf: &quot;{haveKids}='Yes'&quot;, isRequired: true, choices:[ 1, 2, 3, 4, 5 ]},
+    { type: &quot;dropdown&quot;, name: &quot;kid1Age&quot;, title: &quot;The first kid age:&quot;, visibleIf: &quot;{haveKids}='Yes' and {kids} >= 1&quot;, isRequired: true, startWithNewLine: false, choices:[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ]},
+    { type: &quot;dropdown&quot;, name: &quot;kid2Age&quot;, title: &quot;The second kid age:&quot;, visibleIf: &quot;{haveKids}='Yes' and {kids} >= 2&quot;, isRequired: true, startWithNewLine: false, choices:[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ]},
+    { type: &quot;dropdown&quot;, name: &quot;kid3Age&quot;, title: &quot;The third kid age:&quot;, visibleIf: &quot;{haveKids}='Yes' and {kids} >= 3&quot;, isRequired: true, startWithNewLine: false, choices:[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ]},
+    { type: &quot;dropdown&quot;, name: &quot;kid4Age&quot;, title: &quot;The fourth kid age:&quot;, visibleIf: &quot;{haveKids}='Yes' and {kids} >= 4&quot;, isRequired: true, startWithNewLine: false, choices:[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ]},
+    { type: &quot;dropdown&quot;, name: &quot;kid5Age&quot;, title: &quot;The fifth kid age:&quot;, visibleIf: &quot;{haveKids}='Yes' and {kids} >= 5&quot;, isRequired: true, startWithNewLine: false, choices:[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ]}
   ]
 });
-</pre>
+
+</code></pre>
 
 <h3>Visible triggers (change the choices of the next question based on the answer of this question)</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   triggers: [
-    { type: "visible", name: "type", operator: "equal", value: "Hot hatch", questions: ["Hot hatch"] },
-    { type: "visible", name: "type", value: "sedan", questions: ["Sedan"] },
-    { type: "visible", name: "type", value: "sports", questions: ["Sports"] },
-    { type: "visible", name: "type", value: "Grand tourer", questions: ["Grand tourer"] },
-    { type: "visible", name: "type", value: "SuperCar", questions: ["Supercar"] },
-    { type: "visible", name: "type", value: "Muscle car", questions: ["Muscle car"] },
-    { type: "visible", name: "type", value: "Pony car", questions: ["Pony car"] },
-    { type: "visible", name: "type", value: "Convertible", questions: ["Convertible"] },
-    { type: "visible", name: "type", value: "other", questions: ["otherType"] }
+    { type: &quot;visible&quot;, name: &quot;type&quot;, operator: &quot;equal&quot;, value: &quot;Hot hatch&quot;, questions: [&quot;Hot hatch&quot;] },
+    { type: &quot;visible&quot;, name: &quot;type&quot;, value: &quot;sedan&quot;, questions: [&quot;Sedan&quot;] },
+    { type: &quot;visible&quot;, name: &quot;type&quot;, value: &quot;sports&quot;, questions: [&quot;Sports&quot;] },
+    { type: &quot;visible&quot;, name: &quot;type&quot;, value: &quot;Grand tourer&quot;, questions: [&quot;Grand tourer&quot;] },
+    { type: &quot;visible&quot;, name: &quot;type&quot;, value: &quot;SuperCar&quot;, questions: [&quot;Supercar&quot;] },
+    { type: &quot;visible&quot;, name: &quot;type&quot;, value: &quot;Muscle car&quot;, questions: [&quot;Muscle car&quot;] },
+    { type: &quot;visible&quot;, name: &quot;type&quot;, value: &quot;Pony car&quot;, questions: [&quot;Pony car&quot;] },
+    { type: &quot;visible&quot;, name: &quot;type&quot;, value: &quot;Convertible&quot;, questions: [&quot;Convertible&quot;] },
+    { type: &quot;visible&quot;, name: &quot;type&quot;, value: &quot;other&quot;, questions: [&quot;otherType&quot;] }
   ],
   questions: [
-    { type: "radiogroup", name: "type", isRequired: true, colCount: 4, hasOther: true, title: "Please select the sport cars type.", choices: ["Hot hatch", "sedan|Sports saloon / sports sedan", "sports|Sports Car", "Grand tourer", "SuperCar", "Muscle car", "Pony car", "Convertible"]},
-    { type: "radiogroup", name: "Hot hatch", isRequired: true, colCount: 4, visible: false, title: "Please select the car", hasOther: true, choices: ["Honda Civic Type R", "Renault Megane RS", "Fiat 500 Abarth"]},
-    { type: "radiogroup", name: "Sedan", isRequired: true, colCount: 4, visible: false, title: "Please select the car", hasOther: true, choices: ["BMW M5", "Mazdaspeed6/Mazda 6 MPS", "Dodge Charger", "Dodge SRT-4", "Lotus Cortina", "Mitsubishi EVO"]},
-    { type: "radiogroup", name: "Sports", isRequired: true, colCount: 4, visible: false, title: "Please select the car", hasOther: true, choices: ["Chevrolet Corvette", "Mazda MX-5", "Porsche 911"]},
-    { type: "radiogroup", name: "Grand tourer", isRequired: true, colCount: 4, visible: false, title: "Please select the car", hasOther: true, choices: ["Aston Martin V8", "Lexus SC300/400", "Ferrari 612 Scaglietti"]},
-    { type: "radiogroup", name: "Supercar", isRequired: true, colCount: 4, visible: false, title: "Please select the car", hasOther: true, choices: ["McLaren P1", "Lamborghini Miura", "Bugatti Veyron 16.4"]},
-    { type: "radiogroup", name: "Muscle car", isRequired: true, colCount: 4, visible: false, title: "Please select the car", hasOther: true, choices: ["Ford Torino", "Plymouth Road Runner", "Pontiac GTO", "Ford Falcon", "Holden Monaro", "Valiant Charger"]},
-    { type: "radiogroup", name: "Pony car", isRequired: true, colCount: 4, visible: false, title: "Please select the car", hasOther: true, choices: ["AMC Javelin", "Chevrolet Camaro", "Dodge Challenger"]},
-    { type: "radiogroup", name: "Convertible", isRequired: true, colCount: 4, visible: false, title: "Please select the car", hasOther: true, choices: ["Honda S2000", "Volkswagen Eos", "Volvo C70"]},
-    { type:"comment", name: "otherType", title: "Please describe the car.", isRequired: true, visible: false}
+    { type: &quot;radiogroup&quot;, name: &quot;type&quot;, isRequired: true, colCount: 4, hasOther: true, title: &quot;Please select the sport cars type.&quot;, choices: [&quot;Hot hatch&quot;, &quot;sedan|Sports saloon / sports sedan&quot;, &quot;sports|Sports Car&quot;, &quot;Grand tourer&quot;, &quot;SuperCar&quot;, &quot;Muscle car&quot;, &quot;Pony car&quot;, &quot;Convertible&quot;]},
+    { type: &quot;radiogroup&quot;, name: &quot;Hot hatch&quot;, isRequired: true, colCount: 4, visible: false, title: &quot;Please select the car&quot;, hasOther: true, choices: [&quot;Honda Civic Type R&quot;, &quot;Renault Megane RS&quot;, &quot;Fiat 500 Abarth&quot;]},
+    { type: &quot;radiogroup&quot;, name: &quot;Sedan&quot;, isRequired: true, colCount: 4, visible: false, title: &quot;Please select the car&quot;, hasOther: true, choices: [&quot;BMW M5&quot;, &quot;Mazdaspeed6/Mazda 6 MPS&quot;, &quot;Dodge Charger&quot;, &quot;Dodge SRT-4&quot;, &quot;Lotus Cortina&quot;, &quot;Mitsubishi EVO&quot;]},
+    { type: &quot;radiogroup&quot;, name: &quot;Sports&quot;, isRequired: true, colCount: 4, visible: false, title: &quot;Please select the car&quot;, hasOther: true, choices: [&quot;Chevrolet Corvette&quot;, &quot;Mazda MX-5&quot;, &quot;Porsche 911&quot;]},
+    { type: &quot;radiogroup&quot;, name: &quot;Grand tourer&quot;, isRequired: true, colCount: 4, visible: false, title: &quot;Please select the car&quot;, hasOther: true, choices: [&quot;Aston Martin V8&quot;, &quot;Lexus SC300/400&quot;, &quot;Ferrari 612 Scaglietti&quot;]},
+    { type: &quot;radiogroup&quot;, name: &quot;Supercar&quot;, isRequired: true, colCount: 4, visible: false, title: &quot;Please select the car&quot;, hasOther: true, choices: [&quot;McLaren P1&quot;, &quot;Lamborghini Miura&quot;, &quot;Bugatti Veyron 16.4&quot;]},
+    { type: &quot;radiogroup&quot;, name: &quot;Muscle car&quot;, isRequired: true, colCount: 4, visible: false, title: &quot;Please select the car&quot;, hasOther: true, choices: [&quot;Ford Torino&quot;, &quot;Plymouth Road Runner&quot;, &quot;Pontiac GTO&quot;, &quot;Ford Falcon&quot;, &quot;Holden Monaro&quot;, &quot;Valiant Charger&quot;]},
+    { type: &quot;radiogroup&quot;, name: &quot;Pony car&quot;, isRequired: true, colCount: 4, visible: false, title: &quot;Please select the car&quot;, hasOther: true, choices: [&quot;AMC Javelin&quot;, &quot;Chevrolet Camaro&quot;, &quot;Dodge Challenger&quot;]},
+    { type: &quot;radiogroup&quot;, name: &quot;Convertible&quot;, isRequired: true, colCount: 4, visible: false, title: &quot;Please select the car&quot;, hasOther: true, choices: [&quot;Honda S2000&quot;, &quot;Volkswagen Eos&quot;, &quot;Volvo C70&quot;]},
+    { type:&quot;comment&quot;, name: &quot;otherType&quot;, title: &quot;Please describe the car.&quot;, isRequired: true, visible: false}
   ]
 });
-</pre>
+
+</code></pre>
 
 <h3>Allow to complete the survey from any stage</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   triggers: [
-    { type: "complete", name: "exit1", operator: "equal", value: "Yes" },
-    { type: "complete", name: "exit2", operator: "equal", value: "Yes" }
+    { type: &quot;complete&quot;, name: &quot;exit1&quot;, operator: &quot;equal&quot;, value: &quot;Yes&quot; },
+    { type: &quot;complete&quot;, name: &quot;exit2&quot;, operator: &quot;equal&quot;, value: &quot;Yes&quot; }
   ],
   pages: [{
-    title: "What operating system do you use?",
+    title: &quot;What operating system do you use?&quot;,
     questions: [
-      { type:"checkbox", name:"opSystem", title: "OS", hasOther: true, choices:["Windows", "Linux", "Macintosh OSX"] },
-      { type:"radiogroup", name:"exit1", title:"Do you want to finish the survey?", choices: ["Yes", "No"], colCount: 0 }
+      { type:&quot;checkbox&quot;, name:&quot;opSystem&quot;, title: &quot;OS&quot;, hasOther: true, choices:[&quot;Windows&quot;, &quot;Linux&quot;, &quot;Macintosh OSX&quot;] },
+      { type:&quot;radiogroup&quot;, name:&quot;exit1&quot;, title:&quot;Do you want to finish the survey?&quot;, choices: [&quot;Yes&quot;, &quot;No&quot;], colCount: 0 }
     ]
   }, {
-    title: "What language(s) are you currently using?",
+    title: &quot;What language(s) are you currently using?&quot;,
     questions: [
-      { type:"checkbox", name:"langs",title:"Plese select from the list", colCount: 4, choices:["Javascript", "Java", "Python", "CSS", "PHP", "Ruby", "C++", "C", "Shell", "C#", "Objective-C", "R", "VimL", "Go", "Perl", "CoffeeScript", "TeX", "Swift", "Scala", "Emacs List", "Haskell", "Lua", "Clojure", "Matlab", "Arduino", "Makefile", "Groovy", "Puppet", "Rust", "PowerShell"] },
-      { type:"radiogroup", name:"exit2", title:"Do you want to finish the survey?", choices: ["Yes", "No"], colCount: 0 }
+      { type:&quot;checkbox&quot;, name:&quot;langs&quot;,title:&quot;Plese select from the list&quot;, colCount: 4, choices:[&quot;Javascript&quot;, &quot;Java&quot;, &quot;Python&quot;, &quot;CSS&quot;, &quot;PHP&quot;, &quot;Ruby&quot;, &quot;C++&quot;, &quot;C&quot;, &quot;Shell&quot;, &quot;C#&quot;, &quot;Objective-C&quot;, &quot;R&quot;, &quot;VimL&quot;, &quot;Go&quot;, &quot;Perl&quot;, &quot;CoffeeScript&quot;, &quot;TeX&quot;, &quot;Swift&quot;, &quot;Scala&quot;, &quot;Emacs List&quot;, &quot;Haskell&quot;, &quot;Lua&quot;, &quot;Clojure&quot;, &quot;Matlab&quot;, &quot;Arduino&quot;, &quot;Makefile&quot;, &quot;Groovy&quot;, &quot;Puppet&quot;, &quot;Rust&quot;, &quot;PowerShell&quot;] },
+      { type:&quot;radiogroup&quot;, name:&quot;exit2&quot;, title:&quot;Do you want to finish the survey?&quot;, choices: [&quot;Yes&quot;, &quot;No&quot;], colCount: 0 }
     ]
   }, {
-    title: "Please enter your name and e-mail",
+    title: &quot;Please enter your name and e-mail&quot;,
     questions: [
-      { type: "text", name: "name", title: "Name:" },
-      { type: "text", name: "email", title: "Your e-mail" }
+      { type: &quot;text&quot;, name: &quot;name&quot;, title: &quot;Name:&quot; },
+      { type: &quot;text&quot;, name: &quot;email&quot;, title: &quot;Your e-mail&quot; }
     ]
   }]
 });
-</pre>
+
+</code></pre>
 
 <h3>Insert data to a form</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 var survey = new Survey.Survey({
   triggers: [
-    { type: "setvalue", name: "copy", operator: "equal", value: "Yes", setToName: "name", setValue: "Jon Snow" },
-    { type: "setvalue", name: "copy", operator: "equal", value: "Yes", setToName: "email", setValue: "jon.show@nightwatch.com" },
-    { type: "setvalue", name: "copy", operator: "equal", value: "Yes", setToName: "tempvar", isVariable: true, setValue: "You have decided to use your current information." },
-    { type: "setvalue", name: "copy", operator: "equal", value: "No", setToName: "name", setValue: "" },
-    { type: "setvalue", name: "copy", operator: "equal", value: "No", setToName: "email", setValue: "" },
-    { type: "setvalue", name: "copy", operator: "equal", value: "No", setToName: "tempvar", isVariable: true, setValue: "You have decided not to use your current information." }
+    { type: &quot;setvalue&quot;, name: &quot;copy&quot;, operator: &quot;equal&quot;, value: &quot;Yes&quot;, setToName: &quot;name&quot;, setValue: &quot;Jon Snow&quot; },
+    { type: &quot;setvalue&quot;, name: &quot;copy&quot;, operator: &quot;equal&quot;, value: &quot;Yes&quot;, setToName: &quot;email&quot;, setValue: &quot;jon.show@nightwatch.com&quot; },
+    { type: &quot;setvalue&quot;, name: &quot;copy&quot;, operator: &quot;equal&quot;, value: &quot;Yes&quot;, setToName: &quot;tempvar&quot;, isVariable: true, setValue: &quot;You have decided to use your current information.&quot; },
+    { type: &quot;setvalue&quot;, name: &quot;copy&quot;, operator: &quot;equal&quot;, value: &quot;No&quot;, setToName: &quot;name&quot;, setValue: &quot;&quot; },
+    { type: &quot;setvalue&quot;, name: &quot;copy&quot;, operator: &quot;equal&quot;, value: &quot;No&quot;, setToName: &quot;email&quot;, setValue: &quot;&quot; },
+    { type: &quot;setvalue&quot;, name: &quot;copy&quot;, operator: &quot;equal&quot;, value: &quot;No&quot;, setToName: &quot;tempvar&quot;, isVariable: true, setValue: &quot;You have decided not to use your current information.&quot; }
   ],
   pages: [{
-    title: "Customer information",
+    title: &quot;Customer information&quot;,
     questions: [
-      { type:"radiogroup", name:"copy", title: "Use your current data", choices:["Yes", "No"], isRequired: true, colCount: 0 },
-      { type: "text", name: "name", title: "Name:", isRequired: true },
-      { type: "text", name: "email", title: "Your e-mail", isRequired: true, validators: [{ type:"email" }] }
+      { type:&quot;radiogroup&quot;, name:&quot;copy&quot;, title: &quot;Use your current data&quot;, choices:[&quot;Yes&quot;, &quot;No&quot;], isRequired: true, colCount: 0 },
+      { type: &quot;text&quot;, name: &quot;name&quot;, title: &quot;Name:&quot;, isRequired: true },
+      { type: &quot;text&quot;, name: &quot;email&quot;, title: &quot;Your e-mail&quot;, isRequired: true, validators: [{ type:&quot;email&quot; }] }
     ]
   }],
-  completedHtml: "<h4>Thank you for sharing this information with us.</h4><p>Your name is: <b>{name}</b></p><p>Your email is: <b>{email}</b></p><p>This information is not in the survey data result:<b> {tempvar}</b></p>"
+  completedHtml: &quot;&lt;h4&gt;Thank you for sharing this information with us.&lt;/h4&gt;&lt;p&gt;Your name is: &lt;b&gt;{name}&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Your email is: &lt;b&gt;{email}&lt;/b&gt;&lt;/p&gt;&lt;p&gt;This information is not in the survey data result:&lt;b&gt; {tempvar}&lt;/b&gt;&lt;/p&gt;&quot;
 });
-</pre>
+
+</code></pre>
 
 <h3>Allow only one time survey and show results in every page if needed</h3>
-<pre class="verysmall">
+<pre class="verysmall"><code class="prettyprint">
 function onIsSurveyCompleted(success, result, response) {
   if (!success) return;
   if(result == 'completed') { alert('You have already run the survey!'); }
@@ -735,21 +874,27 @@ function runSurvey() {
   var survey = new Survey.Survey({
     surveyId: 'e7866476-e901-4ab7-9f38-574416387f73',
     surveyPostId: 'df2a04fb-ce9b-44a6-a6a7-6183ac555a68'
-  }, "surveyContainer");
+  }, &quot;surveyContainer&quot;);
   survey.clientId = document.getElementById('clientId').value;
   survey.sendResultOnPageNext = document.getElementById('sendResultOnPageNext').checked;
   survey.onComplete.add(function (s) {
-    document.getElementById('surveyContainer').innerHTML = "";
-    document.getElementById("clientIdContainer").style.display = "inline";
+    document.getElementById('surveyContainer').innerHTML = &quot;&quot;;
+    document.getElementById(&quot;clientIdContainer&quot;).style.display = &quot;inline&quot;;
   });
   survey.onSendResult.add(function (survey) {
-    var text = "clientId:" + survey.clientId + ". The results are:" + JSON.stringify(survey.data)  + String.fromCharCode(13, 10);
+    var text = &quot;clientId:&quot; + survey.clientId + &quot;. The results are:&quot; + JSON.stringify(survey.data)  + String.fromCharCode(13, 10);
     var memo = document.getElementById('sentResults');
     memo.value = memo.value + text;
   });
-  document.getElementById("clientIdContainer").style.display = "none";
+  document.getElementById(&quot;clientIdContainer&quot;).style.display = &quot;none&quot;;
 }
-</pre>
 
+</code></pre>
+
+<script>
+  $(document).ready(function() {
+    $('pre code').each(function(i, e) { hljs.highlightBlock(e) });
+  });
+</script>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
