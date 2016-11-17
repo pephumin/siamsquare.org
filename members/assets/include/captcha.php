@@ -30,7 +30,7 @@ function stringToSVG($str){
     $size = rand (20, 25); //size in pixels
     $jump = rand(-5, 5); //shift up or down by a number of pixels
     $color = randomColor();
-    $glyph = sprintf('<text style="fill: %s;" x="%d" y="%d" font-size="%d" transform="translate(%d, %d) rotate(%d) translate(-%d, -%d)">%s</text>%s', $color, $x, $y + $jump, $size, $x, $y + $jump, $rotation, $x, $y + $jump, $str[$i], "\n");
+    $glyph = sprintf('<text style="fill: %s;" x="%d" y="%d" font-family="zephyr" font-size="%d" transform="translate(%d, %d) rotate(%d) translate(-%d, -%d)">%s</text>%s', $color, $x, $y + $jump, $size, $x, $y + $jump, $rotation, $x, $y + $jump, $str[$i], "\n");
     $glyphs[] = $glyph;
     $x += 20; //move carret
   }

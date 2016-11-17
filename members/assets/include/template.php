@@ -70,8 +70,9 @@ function pageHeader($title) {
   <script type="text/javascript" src="/members/assets/js/survey/ace/worker-json.js"></script>
   <script type="text/javascript" src="/members/assets/js/survey/ace/mode-json.js"></script>
   <script type="text/javascript" src="/members/assets/js/survey/survey.ko.js"></script>
-  <script type="text/javascript" src="/members/assets/js/survey/globalize.min.js"></script>
+  <!-- <script type="text/javascript" src="/members/assets/js/survey/globalize.min.js"></script>
   <script type="text/javascript" src="/members/assets/js/survey/dx.chartjs.js"></script>
+  <script type="text/javascript" src="/members/assets/js/survey/imagetools.js"></script> -->
   <script type="text/javascript" src="https://www.gstatic.com/firebasejs/3.4.1/firebase.js"></script>
   <!-- <script type="text/javascript" src="https://www.gstatic.com/firebasejs/ui/live/0.5/firebase-ui-auth.js"></script> -->
 </head>
@@ -181,10 +182,10 @@ function pageFooter($notes = null) {
     </div>
   </div>
 </footer>
-<div class="scroll-to-top"><i class="pe-arrow-up pe-lg"></i></div>
-<script type="text/javascript" src="/members/assets/js/anchor.js"></script>
+<!-- <div class="scroll-to-top"><i class="pe-arrow-up pe-lg"></i></div> -->
+<!-- <script type="text/javascript" src="/members/assets/js/anchor.js"></script> -->
 <script type="text/javascript" src="/members/assets/js/notification.js"></script>
-<script type="text/javascript" src="/members/assets/js/etc.js"></script>
+<!-- <script type="text/javascript" src="/members/assets/js/etc.js"></script> -->
 <script type="text/javascript">
   var config = {
     apiKey: "AIzaSyBhLjEc1SwSq06Pg494R6pdM2NqLHF8Ag0",
@@ -341,7 +342,7 @@ function stringToSVG($str) {
     $size = rand (20, 25); //size in pixels
     $jump = rand(-5, 5); //shift up or down by a number of pixels
     $color = randomColor();
-    $glyph = sprintf('<text style="fill: %s;" x="%d" y="%d" font-size="%d" transform="translate(%d, %d) rotate(%d) translate(-%d, -%d)">%s</text>%s', $color, $x, $y + $jump, $size, $x, $y + $jump, $rotation, $x, $y + $jump, $str[$i], "\n");
+    $glyph = sprintf('<text style="fill: %s;" x="%d" y="%d" font-family="zephyr" font-size="%d" transform="translate(%d, %d) rotate(%d) translate(-%d, -%d)">%s</text>%s', $color, $x, $y + $jump, $size, $x, $y + $jump, $rotation, $x, $y + $jump, $str[$i], "\n");
     $glyphs[] = $glyph;
     $x += 20; //move carret
   }
