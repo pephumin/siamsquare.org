@@ -12837,14 +12837,6 @@ ul.list, ol.list {
     .members .members-body h4.white {
       color: #fff;
       font-weight: bold; }
-    .members .members-body img.members-photo {
-      background: #FFFFFF;
-      box-shadow: 0 0 0 5px #DDDDDD;
-      -moz-box-shadow: 0 0 0 5px #DDDDDD;
-      -webkit-box-shadow: 0 0 0 5px #DDDDDD;
-      border: none;
-      width: 100px;
-      height: 100px; }
     .members .members-body h5 {
       text-transform: none;
       font-weight: bold; }
@@ -12855,6 +12847,34 @@ ul.list, ol.list {
     position: relative;
     padding: 10px auto;
     margin: 5px auto; }
+
+img.members-photo {
+  background: #FFFFFF;
+  box-shadow: 0 0 0 5px #DDDDDD;
+  -moz-box-shadow: 0 0 0 5px #DDDDDD;
+  -webkit-box-shadow: 0 0 0 5px #DDDDDD;
+  border: none;
+  width: 100px;
+  height: 100px; }
+
+img.members-photo-small {
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px #DDDDDD;
+  -moz-box-shadow: 0 0 0 3px #DDDDDD;
+  -webkit-box-shadow: 0 0 0 3px #DDDDDD;
+  border: none;
+  width: 40px;
+  height: 40px; }
+
+img.members-photo-tiny {
+  display: inline-block;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 1px #DDDDDD;
+  -moz-box-shadow: 0 0 0 1px #DDDDDD;
+  -webkit-box-shadow: 0 0 0 1px #DDDDDD;
+  border: none;
+  width: 20px;
+  height: 20px; }
 
 .pagination-centered {
   font-family: "ubuntu";

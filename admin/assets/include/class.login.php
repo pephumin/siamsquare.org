@@ -29,6 +29,7 @@ class Login {
       $this->loginWithPostData($_POST['email'], $_POST['password'], $_POST['rememberme'], $ref);
     }
     if ($_POST["w"] == "changepass") { $this->editUserPassword($_POST['oldpass'], $_POST['newpass1'], $_POST['newpass2']); }
+    elseif ($_POST["w"] == "updateinfo") { $this->editUserInfo($_POST['fullname'], $_POST['mobile'], $_POST['avatar']); }
     if (isset($_POST["request_password_reset"]) && isset($_POST['email'])) { $this->setPasswordResetDatabaseTokenAndSendMail($_POST['email']); }
     elseif (isset($_GET["email"]) && isset($_GET["verification_code"])) { $this->checkIfEmailVerificationCodeIsValid($_GET["email"], $_GET["verification_code"]); }
     elseif (isset($_POST["submit_new_password"])) { $this->editNewPassword($_POST['email'], $_POST['password_reset'], $_POST['newpass1'], $_POST['newpass2']); }
@@ -93,7 +94,7 @@ class Login {
       $q2->bindValue(':ip', $ip, PDO::PARAM_STR);
       $q2->bindValue(':email', $result_row->email, PDO::PARAM_STR);
       $q2->execute();
-      $q3 = $this->db->prepare("SELECT U.id, U.fullname, U.mobile, U.companyid, C.company, U.status, U.levelid, L.level, U.created, U.updated, U.lastlogin, U.lastip, U.lastlogin2, U.lastip2 FROM j_users U, j_companies C, j_levels L WHERE U.companyid = C.id AND U.levelid = L.id AND U.email = :email");
+      $q3 = $this->db->prepare("SELECT U.id, U.fullname, U.mobile, U.companyid, U.avatar, C.company, U.status, U.levelid, L.level, U.created, U.updated, U.lastlogin, U.lastip, U.lastlogin2, U.lastip2 FROM j_users U, j_companies C, j_levels L WHERE U.companyid = C.id AND U.levelid = L.id AND U.email = :email");
       $q3->bindValue(':email', $result_row->email, PDO::PARAM_STR);
       $q3->execute();
       $resulty = $q3->fetchObject();
@@ -104,6 +105,7 @@ class Login {
       $_SESSION['company'] = $resulty->company;
       $_SESSION['fullname'] = $resulty->fullname;
       $_SESSION['mobile'] = $resulty->mobile;
+      $_SESSION['avatar'] = $resulty->avatar;
       $_SESSION['status'] = $resulty->status;
       $_SESSION['levelid'] = $resulty->levelid;
       $_SESSION['level'] = $resulty->level;
@@ -121,6 +123,7 @@ class Login {
       $this->company = $resulty->company;
       $this->fullname = $resulty->fullname;
       $this->mobile = $resulty->mobile;
+      $this->avatar = $resulty->avatar;
       $this->status = $resulty->status;
       $this->levelid = $resulty->levelid;
       $this->level = $resulty->level;
@@ -142,62 +145,6 @@ class Login {
       if ($ref) { header("location: $ref"); }
     }
   }
-
-  // private function loginWithCookieData() {
-  //   if (isset($_COOKIE['siamsquare'])) {
-  //     list ($userid, $token, $hash) = explode(':', $_COOKIE['siamsquare']);
-  //     if ($hash == hash('sha256', $userid . ':' . $token . COOKIE_SECRET_KEY) && !empty($token)) {
-  //       if ($this->dbconnect()) {
-  //         $sth = $this->db->prepare("SELECT * FROM j_users WHERE id = :userid AND token = :token AND token IS NOT NULL");
-  //         $sth->bindValue(':userid', $userid, PDO::PARAM_INT);
-  //         $sth->bindValue(':token', $token, PDO::PARAM_STR);
-  //         $sth->execute();
-  //         $result = $sth->fetchObject();
-  //         if (isset($result->id)) {
-  //           $qq = $this->db->prepare('SELECT company FROM j_companies WHERE id = :companyid');
-  //           $qq->bindValue(':companyid', $result->companyid, PDO::PARAM_STR);
-  //           $qq->execute();
-  //           $resultz = $qq->fetchObject();
-  //           $_SESSION['logged_in'] = 1;
-  //           $_SESSION['userid'] = $userid;
-  //           $_SESSION['email'] = $result->email;
-  //           $_SESSION['companyid'] = $result->companyid;
-  //           $_SESSION['company'] = $resultz->company;
-  //           $_SESSION['fullname'] = $result->fullname;
-  //           $_SESSION['mobile'] = $result->mobile;
-  //           $_SESSION['status'] = $result->status;
-  //           $_SESSION['level'] = $result->level;
-  //           $_SESSION['created'] = $result->created;
-  //           $_SESSION['updated'] = $result->updated;
-  //           $_SESSION['lastlogin'] = $result->lastlogin;
-  //           $_SESSION['lastlogin2'] = $result->lastlogin2;
-  //           $_SESSION['lastip'] = $result->lastip;
-  //           $_SESSION['lastip2'] = $result->lastip2;
-  //           $this->logged_in = true;
-  //           $this->userid = $userid;
-  //           $this->email = $result->email;
-  //           $this->companyid = $result->companyid;
-  //           $this->company = $resultz->company;
-  //           $this->fullname = $result->fullname;
-  //           $this->mobile = $result->mobile;
-  //           $this->status = $result->status;
-  //           $this->level = $result->level;
-  //           $this->created = $result->created;
-  //           $this->updated = $result->updated;
-  //           $this->lastlogin = $result->lastlogin;
-  //           $this->lastlogin2 = $result->lastlogin2;
-  //           $this->lastip = $result->lastip;
-  //           $this->lastip2 = $result->lastip2;
-  //           $this->newRememberMeCookie();
-  //           return true;
-  //         }
-  //       }
-  //     }
-  //     $this->deleteRememberMeCookie();
-  //     $this->errors[] = mkerror("Invalid cookie");
-  //   }
-  //   return false;
-  // }
 
   private function newloginWithCookieData() {
     $ip = getip();
@@ -234,7 +181,7 @@ class Login {
             $q2->execute();
             $_SESSION['ip'] = $ip;
             $this->ip = $ip;
-            $q3 = $this->db->prepare("SELECT id, fullname, mobile, created, updated, lastlogin, lastip, lastlogin2, lastip2 FROM j_users WHERE email = :email");
+            $q3 = $this->db->prepare("SELECT id, fullname, mobile, avatar, created, updated, lastlogin, lastip, lastlogin2, lastip2 FROM j_users WHERE email = :email");
             $q3->bindValue(':email', $_SESSION['email'], PDO::PARAM_STR);
             $q3->execute();
             $resulty = $q3->fetchObject();
@@ -242,6 +189,7 @@ class Login {
               $_SESSION['userid'] = $resulty->id;
               $_SESSION['fullname'] = $resulty->fullname;
               $_SESSION['mobile'] = $resulty->mobile;
+              $_SESSION['avatar'] = $resulty->avatar;
               $_SESSION['created'] = $resulty->created;
               $_SESSION['updated'] = $resulty->updated;
               $_SESSION['lastlogin'] = $resulty->lastlogin;
@@ -251,6 +199,7 @@ class Login {
               $this->userid = $resulty->id;
               $this->fullname = $resulty->fullname;
               $this->mobile = $resulty->mobile;
+              $this->avatar = $resulty->avatar;
               $this->created = $resulty->created;
               $this->updated = $resulty->updated;
               $this->lastlogin = $resulty->lastlogin;
@@ -310,27 +259,6 @@ class Login {
     return false;
   }
 
-  // public function editUserEmail($email) {
-  //   $email = substr(trim($email), 0, 64);
-  //   if (!empty($email) && $email == $_SESSION["email"]) { $this->errors[] = mkerror("You cannot change to the same email"); }
-  //   elseif (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) { $this->errors[] = mkerror("The email you enter is invalid"); }
-  //   else if ($this->dbconnect()) {
-  //     $query_user = $this->db->prepare('SELECT * FROM j_users WHERE email = :email');
-  //     $query_user->bindValue(':email', $email, PDO::PARAM_STR);
-  //     $query_user->execute();
-  //     $result_row = $query_user->fetchObject();
-  //     if (isset($result_row->id)) { $this->errors[] = mkerror("This email is already in our database - use password recovery instead"); }
-  //     else {
-  //       $query_edit_email = $this->db->prepare('UPDATE j_users SET email = :email WHERE id = :userid');
-  //       $query_edit_email->bindValue(':email', $email, PDO::PARAM_STR);
-  //       $query_edit_email->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
-  //       $query_edit_email->execute();
-  //       if ($query_edit_email->rowCount()) { $_SESSION['email'] = $email; $this->messages[] = mksuccess("Your email has been changed successfully"); }
-  //       else { $this->errors[] = MESSAGE_EMAIL_CHANGE_FAILED; }
-  //     }
-  //   }
-  // }
-
   private function newRememberMeCookie() {
     if ($this->dbconnect()) {
       $random_token_string = hash('sha256', mt_rand());
@@ -351,7 +279,6 @@ class Login {
     setcookie('siamsquare', false, time() - (3600 * 3650), '/', COOKIE_DOMAIN);
   }
 
-
   public function editUserPassword($oldpass, $newpass1, $newpass2) {
     if (empty($newpass1) || empty($newpass2) || empty($oldpass)) { $this->errors[] = mkerror("You have not entered all required fields"); }
     elseif ($newpass1 !== $newpass2) { $this->errors[] = mkerror("Your two new passwords are not matching each other"); }
@@ -369,12 +296,52 @@ class Login {
           if ($query_update->rowCount()) {
             $this->messages[] = mksuccess("Your password has been changed successfully");
             $notes = array (array("title" => "Password changed", "text" => "You have changed your password successfully.", "image" => "assets/img/notification.svg"));
+            $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data) VALUE (:userid, :ip, '".$_SESSION['email']." changed password')");
+            $q4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
+            $q4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
+            $q4->execute();
           }
           else { $this->errors[] = mkerror("Cannot change your password, please try again"); }
         }
         else { $this->errors[] = mkerror("Your current password is incorrect"); }
       }
       else { $this->errors[] = mkerror("This user does not exist in our database"); }
+    }
+  }
+
+  public function editUserInfo($fullname, $mobile, $avatar) {
+    if (empty($fullname) || empty($mobile)) { $this->errors[] = mkerror("You have not entered all required fields"); }
+    elseif (strlen($mobile) < 10) { $this->errors[] = mkerror("Your mobile number has to be 10 digits only"); }
+    elseif (ctype_digit($mobile) != true) { $this->errors[] = mkerror("Your mobile number cannot be non-numeric character"); }
+    elseif (($fullname == $_SESSION['fullname']) && ($mobile == $_SESSION['mobile']) && ($avatar == $_SESSION['avatar'])) { $this->errors[] = mkerror("Nothing has changed therefore we did not update anything"); }
+    else {
+      if ($this->dbconnect()) {
+        if ($avatar) {
+          $query_update = $this->db->prepare('UPDATE j_users SET fullname = :fullname, mobile = :mobile, avatar = :avatar WHERE id = :userid');
+          $query_update->bindValue(':fullname', $fullname, PDO::PARAM_STR);
+          $query_update->bindValue(':mobile', $mobile, PDO::PARAM_STR);
+          $query_update->bindValue(':avatar', $avatar, PDO::PARAM_STR);
+          $query_update->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
+          $query_update->execute();
+        } else {
+          $query_update = $this->db->prepare('UPDATE j_users SET fullname = :fullname, mobile = :mobile WHERE id = :userid');
+          $query_update->bindValue(':fullname', $fullname, PDO::PARAM_STR);
+          $query_update->bindValue(':mobile', $mobile, PDO::PARAM_STR);
+          $query_update->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
+          $query_update->execute();
+        }
+        if ($query_update->rowCount()) {
+          $this->messages[] = mksuccess("Your information has been updated successfully");
+          $notes = array (array("title" => "Info updated", "text" => "You have updated your information successfully.", "image" => "assets/img/notification.svg"));
+          $_SESSION['fullname'] = $fullname;
+          $_SESSION['mobile'] = $mobile;
+          if ($avatar) { $_SESSION['avatar'] = $avatar; }
+          $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data) VALUE (:userid, :ip, '".$_SESSION['email']." updated profile info')");
+          $q4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
+          $q4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
+          $q4->execute();
+        } else { $this->errors[] = mkerror("Cannot update your information, please try again"); }
+      }
     }
   }
 

@@ -6,23 +6,26 @@ echo "<h2>$title</h2>";
 
 ?>
 
-<p>Because you are an account leader, you have a privilege to lead your account by managing other members as a team.</p>
+<p>For this section, only those who are an account leader will have a privilege to manage users as a team within the company including add, edit info, change access permission and delete.</p>
 
-<p>In this section, you will be able to add new users to the system as well as removing the existing users from the system. You will also have a control on how you would like different team members to access different parts of your surveys by setting different access permissions for them accordingly.</p>
+<p>For other users, this page will be shown in a read-only mode but will still provide some good information/indications for the team perspective.</p>
 
 <hr>
 
 <div id="showalert-create"></div><div id="showalert-delete"></div><div id="showalert-edit"></div><div id="showalert-suspend"></div>
 <br>
+<?php if ($_SESSION['levelid'] >= "6") { ?>
 <p class="pull-right"><a class="btn btn-primary" data-bind="click: createNew, enable: !isNewMemberCreating()" href=""><i class="pe-user-plus pe-fw"></i> New member</a></p>
 <br><br><br>
+<?php } ?>
 <div class="row">
+<?php if ($_SESSION['levelid'] >= "6") { ?>
   <div data-bind="visible: isNewMemberCreating" class="col-xs-12 col-sm-6 col-md-4 col-lg-4" style="margin-bottom:20px">
     <div class="members">
       <div class="members-header"></div>
       <div class="members-body">
         <h4 class="white">Create a new member</h4>
-        <p><img src="assets/img/u/04.svg" class="img-circle members-photo" alt="Avatar"></p>
+        <p><img src="assets/img/u/F6.svg" class="img-circle members-photo" alt="Avatar"></p>
         <h5>Enter info below</h5>
         <div class="input-group"><span class="input-group-addon">Name:</span><input type="text" class="form-control" data-bind="textInput: newMemberName" placeholder="Enter first and last name"></div><br>
         <div class="input-group"><span class="input-group-addon">Email:</span><input type="text" class="form-control" data-bind="textInput: newMemberEmail" placeholder="Enter email address"></div><br>
@@ -31,13 +34,14 @@ echo "<h2>$title</h2>";
       </div>
     </div>
   </div>
+<?php } ?>
   <!-- ko foreach: members -->
-  <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4" style="margin-bottom:20px">
+  <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4" style="margin-bottom:20px">
     <div class="members">
       <div class="members-header"></div>
       <div class="members-body">
         <h4 data-bind="text: fullname" class="white"></h4>
-        <p><img src="assets/img/u/04.svg" class="img-circle members-photo" alt="Avatar"></p>
+        <p><img data-bind="attr: {src: avatar}" class="img-circle members-photo" alt="Avatar"></p>
         <h5 data-bind="text: level"></h5>
         <p>
           <small>
@@ -47,11 +51,14 @@ echo "<h2>$title</h2>";
             Last ip: <span data-bind="text: lastip2"></span>
           </small>
         </p>
+<?php if ($_SESSION['levelid'] >= "6") { ?>
         <a class="btn btn-default btn-tiny" data-bind="click: $parent.showInfo"><i class="pe-cogs"></i> Edit <i class="" data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a>
         <a class="btn btn-warning btn-tiny" data-bind="click: $parent.suspend" href=""><i class="pe-pause-circle"></i> Suspend</a>
         <a class="btn btn-danger btn-tiny" data-bind="click: $parent.delete" href=""><i class="pe-trash"></i> Delete</a>
         <br><br>
+<?php } ?>
       </div>
+<?php if ($_SESSION['levelid'] >= "6") { ?>
       <div class="members-footer" data-bind="visible: showInfo()">
         <div class="row" data-bind="visible: !isEditingFullName()">
           <div class="col-sm-4"><small>Name <a href="" data-bind="click: $parent.startEditFullName" title="Change"><i class="pe-edit"></i></a></small></div>
@@ -98,12 +105,13 @@ echo "<h2>$title</h2>";
           <div class="col-sm-8"><small>
             <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.L6" href="">Account Leader</a>
             <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.L5" href="">Researcher</a>
-            <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.L4" href="">Fieldwork</a>
-            <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.L3" href="">Data Processing</a>
+            <!-- <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.L4" href="">Fieldwork</a> -->
+            <!-- <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.L3" href="">Data Processing</a> -->
             <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.cancelEditLevel" href="">Cancel <i class="pe-times-circle-o"></i></a>
           </small><br></div>
         </div>
       </div>
+<?php } ?>
     </div>
   </div>
   <!-- /ko -->
@@ -116,6 +124,7 @@ echo "<h2>$title</h2>";
   var email = "<?php echo $_SESSION['email']; ?>";
   var fullname = "<?php echo $_SESSION['fullname']; ?>";
   var mobile = "<?php echo $_SESSION['mobile']; ?>";
+  var avatar = "<?php echo $_SESSION['avatar']; ?>";
   var companyid = <?php echo $_SESSION['companyid']; ?>;
   var company = "<?php echo $_SESSION['company']; ?>";
   var status = <?php echo $_SESSION['status']; ?>;
@@ -135,7 +144,7 @@ echo "<h2>$title</h2>";
   $('#showalert-edit').html("<div class='alert alert-info'><i class='pe-edit pe-fw'></i> The user information has been edited</div>").hide();
   $('#showalert-suspend').html("<div class='alert alert-warning'><i class='pe-archive pe-fw'></i> The user has been suspended</div>").hide();
 
-  var Listing = function (id, userid, email, fullname, mobile, companyid, status, level, created, updated, lastlogin, lastip, lastlogin2, lastip2) {
+  var Listing = function (id, userid, email, fullname, mobile, avatar, companyid, status, level, created, updated, lastlogin, lastip, lastlogin2, lastip2) {
     this.id = id;
     this.userid = userid;
     this.email = ko.observable(email);
@@ -143,6 +152,7 @@ echo "<h2>$title</h2>";
     this.fullname = ko.observable(fullname);
     this.editingFullName = ko.observable(fullname);
     this.mobile = ko.observable(mobile);
+    this.avatar = avatar;
     this.editingMobile = ko.observable(mobile);
     this.status = ko.observable(status);
     this.editingStatus = ko.observable(status);
@@ -482,7 +492,8 @@ echo "<h2>$title</h2>";
       var sb1 = moment(data.updated).fromNow(); var sb2 = moment(data.updated).format("D MMM YYYY"); updated = sb2 + ' (' + sb1 + ')';
       var sc1 = moment(data.lastlogin).fromNow(); var sc2 = moment(data.lastlogin).format("D MMM YYYY"); lastlogin = sc2 + ' (' + sc1 + ')';
       var sd1 = moment(data.lastlogin2).fromNow(); var sd2 = moment(data.lastlogin2).format("D MMM YYYY"); lastlogin2 = sd2 + ' (' + sd1 + ')';
-      return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, companyid, data.status, data.level, created, updated, lastlogin, data.lastip, lastlogin2, data.lastip2);
+      if (data.avatar != null) { avatar = data.avatar; } else { avatar = "assets/img/u/F6.svg"; }
+      return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, avatar, companyid, data.status, data.level, created, updated, lastlogin, data.lastip, lastlogin2, data.lastip2);
     }
     this.onFail = function (error) { alert(JSON.stringify(error)); }
     this.showInfo = function (member) { member.showInfo(!member.showInfo()); }
@@ -494,6 +505,7 @@ echo "<h2>$title</h2>";
 
 <br>
 
+<?php if ($_SESSION['levelid'] >= "6") { ?>
 <hr>
 
 <h3>Example and reference</h3>
@@ -560,5 +572,7 @@ echo "<h2>$title</h2>";
 </div>
 
 <br>
+<?php } ?>
+
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>

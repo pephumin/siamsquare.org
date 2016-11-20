@@ -13,20 +13,16 @@ function peblogo() {
 }
 
 function pageHeader($title) {
-  $user = $_SESSION['email'];
-  $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>";
+  $user = $_SESSION['email']; $avatar = $_SESSION['avatar'];
+  if (isset($avatar)) { $show = "<img src=\"$avatar\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
   $v1 = MYADMIN."?w=login"; $v2 = MYADMIN."?w=logout"; $v3 = "http://www.pebinary.net/en/clients/";
-  if ($_SESSION['email']) {
+  if ($_SESSION['logged_in']) {
     $signed = "<a href=\"$v2\" class=\"btn btn-warning btn-xs\" title=\"Log out\"><i class=\"pe-sign-out pe-fw\"></i> Log out</a> <a href=\"$v3\" class=\"btn btn-danger btn-xs\"><i class=\"pe-university pe-fw\"></i> Help</a>\n";
     $ww = "Logged in as $show";
   } else {
     $signed = "<a href=\"$v1\" class=\"btn btn-warning btn-xs\" title=\"Log in\"><i class=\"pe-power-off pe-fw\"></i> Log in</a> <a href=\"$v3\" class=\"btn btn-danger btn-xs\"><i class=\"pe-university pe-fw\"></i> Help</a>\n";
     $ww = "<span class=\"deepgreen\"><i class=\"pe-info-circle pe-fw\"></i> Authorised clients only</span>";
   }
-  // if (isset($login)) {
-  //   if ($login->errors) { foreach ($login->errors as $error) { echo $error; } }
-  //   if ($login->messages) { foreach ($login->messages as $message) { echo $message; } }
-  // }
   header("Content-language: en");
   header("Content-type: text/html; charset=utf-8");
 ?>
@@ -34,7 +30,6 @@ function pageHeader($title) {
 <html lang="en">
 <head>
   <meta charset="utf-8">
-<?php //if (($_REQUEST["w"]) == "logout") { echo "  <meta http-equiv=\"refresh\" content=\"10; url=/admin\">\n"; } ?>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="handheldfriendly" content="true">
   <meta name="mobileoptimized" content="240">
@@ -45,7 +40,6 @@ function pageHeader($title) {
   <link rel="stylesheet" type="text/css" href="/admin/assets/css/admin.css">
   <link rel="stylesheet" type="text/css" href="/admin/assets/css/csv.css">
 <?php if (($_REQUEST["w"]) == "edit") { echo "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/survey.css\">"; } ?>
-  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/live/0.5/firebase-ui-auth.css">
   <link rel="shortcut icon" type="image/x-icon" href="/admin/assets/icons/favicon.ico">
   <link rel="apple-touch-icon" sizes="57x57" href="/admin/assets/icons/apple-icon-57x57.png">
   <link rel="apple-touch-icon" sizes="60x60" href="/admin/assets/icons/apple-icon-60x60.png">
@@ -80,7 +74,6 @@ function pageHeader($title) {
   <script type="text/javascript" src="/admin/assets/js/survey/survey.ko.js"></script>
   <script type="text/javascript" src="/admin/assets/js/survey/surveyeditor.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/firebasejs/3.4.1/firebase.js"></script>
-  <!-- <script type="text/javascript" src="https://www.gstatic.com/firebasejs/ui/live/0.5/firebase-ui-auth.js"></script> -->
 </head>
 <body>
 <header>
@@ -110,31 +103,35 @@ function pageHeader($title) {
           </div>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-<?php if ($_SESSION['email']) { ?>
+<?php if ($_SESSION['logged_in'] == 1) { ?>
               <li><a href="<?php echo(MYADMIN); ?>" title="Home"><i class="pe-home pe-fw"></i> Home</a></i>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-cubes pe-fw"></i> My surveys <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="<?php echo(MYADMIN."?w=surveys"); ?>" title="Surveys"><i class="pe-cube pe-fw"></i> Projects</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=A"); ?>" title="Pre-fieldwork"><i class="pe-hourglass-start pe-fw"></i> Pre-fieldwork</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=B"); ?>" title="Fieldwork"><i class="pe-hourglass-half pe-fw"></i> Fieldwork</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=C"); ?>" title="Post-fieldwork"><i class="pe-hourglass-end pe-fw"></i> Post-fieldwork</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=surveys&c=D"); ?>" title="Archive"><i class="pe-archive pe-fw"></i> Archive</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=surveys"); ?>" title="All projects"><i class="pe-cubes pe-fw"></i> All projects</a></li>
+                  <!-- <li role="separator" class="divider"></li> -->
+                  <!-- <li><a href="<?php echo(MYADMIN."?w=surveys&c=A"); ?>" title="Pre-fieldwork"><i class="pe-hourglass-start pe-fw"></i> Pre-fieldwork</a></li> -->
+                  <!-- <li><a href="<?php echo(MYADMIN."?w=surveys&c=B"); ?>" title="Fieldwork"><i class="pe-hourglass-half pe-fw"></i> Fieldwork</a></li> -->
+                  <!-- <li><a href="<?php echo(MYADMIN."?w=surveys&c=C"); ?>" title="Post-fieldwork"><i class="pe-hourglass-end pe-fw"></i> Post-fieldwork</a></li> -->
+                  <!-- <li><a href="<?php echo(MYADMIN."?w=surveys&c=D"); ?>" title="Archive"><i class="pe-archive pe-fw"></i> Archive</a></li> -->
                   <li role="separator" class="divider"></li>
                   <li><a href="<?php echo(MYADMIN."?w=data2table"); ?>" title="Data to table"><i class="pe-table pe-fw"></i> Data to table</a></li>
+<?php if ($_SESSION['levelid'] == "9") { ?>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="<?php echo(MYADMIN."?w=help"); ?>" title="Help"><i class="pe-question-circle pe-fw"></i> Help</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=api"); ?>" title="API commands"><i class="pe-code pe-fw"></i> API commands</a></li>
+<?php } ?>
                 </ul>
               </li>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-user pe-fw"></i> Profile <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a href="<?php echo(MYADMIN."?w=profile"); ?>" title="My profile"><i class="pe-user pe-fw"></i> My profile</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=changeinfo"); ?>" title="Update my info"><i class="pe-cog pe-fw"></i> Update my info</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=changepass"); ?>" title="Change my password"><i class="pe-key pe-fw"></i> Change my password</a></li>
-<?php if ($_SESSION['levelid'] >= "5") { ?>
-                  <li role="separator" class="divider"></li>
                   <li><a href="<?php echo(MYADMIN."?w=team"); ?>" title="My team"><i class="pe-graduation-cap pe-fw"></i> My team</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=activity"); ?>" title="View activity"><i class="pe-tv pe-fw"></i> View activity</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="<?php echo(MYADMIN."?w=activity"); ?>" title="View activity"><i class="pe-map-o pe-fw"></i> View activity</a></li>
+<?php if ($_SESSION['levelid'] == "9") { ?>
+                  <li><a href="<?php echo(MYADMIN."?w=todo"); ?>" title="Todo list"><i class="pe-tasks pe-fw"></i> Todo list</a></li>
 <?php } ?>
                 </ul>
               </li>
@@ -178,33 +175,14 @@ function pageFooter($notes = null) {
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3">
       <div class="container">
-        <h4 class="avatar">&#9836; &#9819; &#9962; &#9969; &#9748; &#10000; &#10175; &#9820; &#9822; &#9731; &#9973; &#8485; &#8488; &#8523; &#8492; &#9961;</h4>
+        <h4 class="avatar">&#9836; &#9819; &#9962; &#9969; &#9748; &#10000; &#9820; &#9822; &#9973; &#8485; &#8488; &#8523; &#8492; &#9961;</h4>
       </div>
     </div>
   </div>
 </footer>
-<!-- <div class="scroll-to-top"><i class="pe-arrow-up pe-lg white"></i></div> -->
-<!-- <script type="text/javascript" src="/admin/assets/js/anchor.js"></script> -->
+<div class="scroll-to-top"><i class="pe-arrow-up pe-lg white"></i></div>
 <script type="text/javascript" src="/admin/assets/js/notification.js"></script>
-<!-- <script type="text/javascript" src="/admin/assets/js/etc.js"></script> -->
-<script type="text/javascript">
-  var config = {
-    apiKey: "AIzaSyBhLjEc1SwSq06Pg494R6pdM2NqLHF8Ag0",
-    authDomain: "siamsquare-6f543.firebaseapp.com",
-    databaseURL: "https://siamsquare-6f543.firebaseio.com",
-    storageBucket: "siamsquare-6f543.appspot.com",
-    messagingSenderId: "485767684184"
-  };
-  firebase.initializeApp(config);
-</script>
-<script type="text/javascript">
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-82554411-3', 'auto');
-  ga('send', 'pageview');
-</script>
+<script type="text/javascript" src="/admin/assets/js/etc.js"></script>
 <?php if ($notes) { notify($notes); } ?>
 <?php debugOutput(); ?>
 </body>
@@ -217,12 +195,12 @@ function notify($messages) {
 <script type="text/javascript">
   function notifyBox(title, text, image) {
     Notification({
-        title: title,
-        text: text,
-        image: image,
-        inAnimation: "bounce",
-        outAnimation: "zoomOut",
-        position: 2
+      title: title,
+      text: text,
+      image: image,
+      inAnimation: "bounce",
+      outAnimation: "zoomOut",
+      position: 2
     });
   }
   function delayNext(title, text, image) {
@@ -234,15 +212,10 @@ function notify($messages) {
   $(document).ready(function() {
     var obj = JSON.parse ('<?php echo json_encode($messages) ?>');
      for (var i=0; i<obj.length; i++) {
-       if (i == 0) {
-         // show the first notification
-         notifyBox(obj[i].title, obj[i].text, obj[i].image);
-       } else {
-         // show the second one with 2 seconds delay
-         delayNext(obj[i].title, obj[i].text, obj[i].image);
-       }
+       if (i == 0) { notifyBox(obj[i].title, obj[i].text, obj[i].image); } // show the first notification
+       else { delayNext(obj[i].title, obj[i].text, obj[i].image); } // show the second one with 2 seconds delay
      }
-    });
+  });
 </script>
 <?php
 }
@@ -369,7 +342,7 @@ function captchaimage($text) {
   header("Cache-Control: no-store, no-cache, must-revalidate");
   header("Cache-Control: post-check=0, pre-check=0", false);
   header("Pragma: no-cache");
-  header ("Content-type: image/svg+xml");
+  header("Content-type: image/svg+xml");
   printf('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" width="200" height="40">', CAPTCHA_WIDTH, CAPTCHA_HEIGHT);
   printf(' <rect x="0" y="0" width="%d" height="%d" style="stroke: none; fill: none;" ></rect> ', $captcha_width, $captcha_height);
   print stringToSVG($text);
@@ -421,6 +394,34 @@ function ago($datetime, $depth=1) {
 
 function percent($number) {
   return number_format($number * 100, 2).'%';
+}
+
+function iconize($data) {
+  if (preg_match("/pilot test/i", $data)) { $insert = "<i class=\"pe-paper-plane pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/edited and saved/i", $data)) { $insert = "<i class=\"pe-save pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/conducted a survey/i", $data)) { $insert = "<i class=\"pe-plane pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/logged in/i", $data)) { $insert = "<i class=\"pe-sign-in pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/logged out/i", $data)) { $insert = "<i class=\"pe-sign-out pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/restored a survey/i", $data)) { $insert = "<i class=\"pe-undo pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/deleted a survey/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/archived a survey/i", $data)) { $insert = "<i class=\"pe-archive pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed a survey name/i", $data)) { $insert = "<i class=\"pe-cube pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed a description/i", $data)) { $insert = "<i class=\"pe-cube pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/tried accessing/i", $data)) { $insert = "<i class=\"pe-exclamation-triangle pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/tried editing/i", $data)) { $insert = "<i class=\"pe-exclamation-triangle pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/updated profile info/i", $data)) { $insert = "<i class=\"pe-cog pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed password/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/created a new survey/i", $data)) { $insert = "<i class=\"pe-flask pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/created a new member/i", $data)) { $insert = "<i class=\"pe-user-plus pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/renamed a member/i", $data)) { $insert = "<i class=\"pe-cog pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed a member email/i", $data)) { $insert = "<i class=\"pe-envelope pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed a member mobile/i", $data)) { $insert = "<i class=\"pe-mobile pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/deleted a member/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/suspended a member/i", $data)) { $insert = "<i class=\"pe-pause-circle pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed level for/i", $data)) { $insert = "<i class=\"pe-level-up pe-fw\"></i> &nbsp; "; }
+  else { $insert = ""; }
+  if ($insert) { $data = $insert." ".$data; } else { $data = $data; }
+  return $data;
 }
 
 ?>
