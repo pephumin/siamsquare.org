@@ -58,23 +58,22 @@ $q->execute();
 $e = array();
 while ($row = $q->fetchObject()) {
   $row->data = json_decode($row->data, true);
+  $row->submitted = ago($row->submitted);
   array_push($e, $row);
 }
 $datafortable = json_encode($e);
 
-$title = "Interim result: Project $project";
+$title = "Interim result";
 pageHeader($title);
 echo "<h2>$title</h2>";
 echo "<p>The interim result must be used with cautions because it is not necesary a true reflection of the final result. The final result could possibly end up in a totally different direction (depending on the sample size and other factors).</p>";
 echo "<p>Therefore, it is imperative that business decision must not be made based on the interim result. We strongly suggest using the final result for a better decision since the data would have been verified to ensure the highest integrity.</p>";
 echo "<p>We hereby take no responsibility on any damages happened from the usage of interim result. You must use it at your own risk.</p>";
-
+echo "<hr>\n";
+echo "<h3>Project $project</h3>\n";
 ?>
 
-<hr>
-
 <div class="stats">
-  <h4>Project statistics</h4>
   <dl class="dl-horizontal">
     <dt>Total response:</dt>
     <dd><?php echo $responses_total; ?></dd>
@@ -191,14 +190,14 @@ echo "<p>We hereby take no responsibility on any damages happened from the usage
       for (field in rows[i]) {
         var td = document.createElement("td");
         $(td).html(rows[i][field]);
-        if (td.contains("upload")) { alert("String Found"); }
+        // if (td.contains("upload")) { alert("String Found"); }
         tr.appendChild(td);
         $(tr).find('td:first-child').append(a1).append(a2);
       }
       tbody.appendChild(tr);
       td2.appendChild(bb1);
       td2.append(" ");
-      td2.appendChild(bb2);
+      // td2.appendChild(bb2);
       tr2.appendChild(td2);
       tbody.appendChild(tr2);
       $(tbody).find('td:first-child').css("background", "#eee"); $(tbody).find('td:nth-child(2)').css("background", "#eee");
@@ -207,18 +206,18 @@ echo "<p>We hereby take no responsibility on any damages happened from the usage
     table.appendChild(tbody);
   }
 
-  function getsurveyrawdata(surveyid) {
-    var result = "";
-    $.ajax({
-      url: api + '/interim/' + surveyid,
-      dataType: 'json',
-      type: 'get',
-      cache: false,
-      async: false,
-      success: function(data) { result = data; }
-    });
-    return result;
-  }
+  // function getsurveyrawdata(surveyid) {
+  //   var result = "";
+  //   $.ajax({
+  //     url: api + '/interim/' + surveyid,
+  //     dataType: 'json',
+  //     type: 'get',
+  //     cache: false,
+  //     async: false,
+  //     success: function(data) { result = data; }
+  //   });
+  //   return result;
+  // }
 
   String.prototype.replaceAll = function(search, replacement) {
     var target = this;
@@ -252,7 +251,7 @@ echo "<p>We hereby take no responsibility on any damages happened from the usage
       if (data) { Events.download(data.length); return true; }
       else { return false; }
     });
-    $(".csv textarea").click(function() {$(this).focus().select();}); // highlight CSV on click
+    $(".csv textarea").click(function() {$(this).focus().select();});
   });
 
 </script>
