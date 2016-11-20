@@ -22,8 +22,7 @@ $db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8',
 if ($_GET['d']) {
   if ($_SESSION['levelid'] == "9") {
     $d = base64_decode($_GET['d']);
-    $sql1 = "DELETE FROM j_users_logs WHERE id = :id";
-    $q = $db->prepare($sql1);
+    $q = $db->prepare("DELETE FROM j_users_logs WHERE id = :id");
     $q->bindValue(':id', $d, PDO::PARAM_INT);
     $q->execute();
     if ($q->rowCount()) { echo mksuccess("This record has been deleted."); $notes = array (array("title" => "A recored has been deleted", "text" => "You have just deleted a log record from the system.", "image" => "assets/img/notification.svg")); }
@@ -33,29 +32,20 @@ if ($_GET['d']) {
 }
 
 if ($_SESSION['levelid'] == "9") {
-  $sql2A = "SELECT * FROM j_users_logs ORDER BY recorded DESC";
-  $sql2B = "SELECT * FROM j_users_logs ORDER BY recorded DESC ".$add." ";
-  $qA = $db->prepare($sql2A);
-  $qB = $db->prepare($sql2B);
-} else if ($_SESSION['levelid'] == "6") {
-  $sql1A = "SELECT id FROM j_users WHERE companyid = :companyid";
-  $q1A = $db->prepare($sql1A);
+  $qA = $db->prepare("SELECT * FROM j_users_logs ORDER BY recorded DESC");
+  $qB = $db->prepare("SELECT * FROM j_users_logs ORDER BY recorded DESC ".$add." ");
+} elseif ($_SESSION['levelid'] == "6") {
+  $q1A = $db->prepare("SELECT id FROM j_users WHERE companyid = :companyid");
   $q1A->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
   $q1A->execute();
-  while ($rr = $q1A->fetchObject()) {
-    $tt[] = $rr->id;
-  }
-  $sql2A = "SELECT * FROM j_users_logs WHERE userid IN (".implode(',', $tt).") ORDER BY recorded DESC";
-  $sql2B = "SELECT * FROM j_users_logs WHERE userid IN (".implode(',', $tt).") ORDER BY recorded DESC ".$add." ";
-  $qA = $db->prepare($sql2A);
-  $qB = $db->prepare($sql2B);
+  while ($rr = $q1A->fetchObject()) { $tt[] = $rr->id; }
+  $qA = $db->prepare("SELECT * FROM j_users_logs WHERE userid IN (".implode(',', $tt).") ORDER BY recorded DESC");
+  $qB = $db->prepare("SELECT * FROM j_users_logs WHERE userid IN (".implode(',', $tt).") ORDER BY recorded DESC ".$add." ");
   $qA->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
   $qB->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
 } else {
-  $sql2A = "SELECT * FROM j_users_logs WHERE userid = :userid ORDER BY recorded DESC";
-  $sql2B = "SELECT * FROM j_users_logs WHERE userid = :userid ORDER BY recorded DESC ".$add." ";
-  $qA = $db->prepare($sql2A);
-  $qB = $db->prepare($sql2B);
+  $qA = $db->prepare("SELECT * FROM j_users_logs WHERE userid = :userid ORDER BY recorded DESC");
+  $qB = $db->prepare("SELECT * FROM j_users_logs WHERE userid = :userid ORDER BY recorded DESC ".$add." ");
   $qA->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
   $qB->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
 }
@@ -78,7 +68,7 @@ echo "<h4>There are a total of $rows records in our database (showing results $f
       <thead>
         <tr class="bg-primary">
           <th width="15%"><small><i class="pe-clock-o pe-fw"></i> Time</small></th>
-          <th width="75%"><small><i class="pe-tv pe-fw"></i> Activity</small></th>
+          <th width="75%"><small><i class="pe-map-o pe-fw"></i> Activity</small></th>
           <?php if ($_SESSION['levelid'] == "9") { echo "<th width=\"10%\"></th>\n"; } ?>
         </tr>
       </thead>
@@ -88,30 +78,14 @@ while ($r = $qB->fetchObject()) {
   $t = ago($r->recorded);
   $color = "";
   if ($_GET['p']) { $delete = MYADMIN."?w=activity&d=".base64_encode($r->id)."&p=".$_GET['p']; } else { $delete = MYADMIN."?w=activity&d=".base64_encode($r->id); }
-  if (preg_match("/pilot test/i", $r->data)) { $insert = "<i class=\"pe-paper-plane pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/edited and saved/i", $r->data)) { $insert = "<i class=\"pe-save pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/conducted a survey/i", $r->data)) { $insert = "<i class=\"pe-plane pe-fw\"></i> &nbsp; "; $color = "aliceblue"; }
-  else if (preg_match("/logged in/i", $r->data)) { $insert = "<i class=\"pe-sign-in pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/logged out/i", $r->data)) { $insert = "<i class=\"pe-sign-out pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/restored a survey/i", $r->data)) { $insert = "<i class=\"pe-undo pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/deleted a survey/i", $r->data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/archived a survey/i", $r->data)) { $insert = "<i class=\"pe-archive pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/changed a survey name/i", $r->data)) { $insert = "<i class=\"pe-cube pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/changed a description/i", $r->data)) { $insert = "<i class=\"pe-cube pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/tried accessing/i", $r->data)) { $insert = "<i class=\"pe-exclamation-triangle pe-fw\"></i> &nbsp; "; $color = "bisque"; }
-  else if (preg_match("/changed info/i", $r->data)) { $insert = "<i class=\"pe-cog pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/changed password/i", $r->data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; $color = "lightsteelblue"; }
-  else if (preg_match("/created a new survey/i", $r->data)) { $insert = "<i class=\"pe-flask pe-fw\"></i> &nbsp; "; $color = "skyblue"; }
-  else if (preg_match("/created a new member/i", $r->data)) { $insert = "<i class=\"pe-user-plus pe-fw\"></i> &nbsp; "; $color = "skyblue"; }
-  else if (preg_match("/renamed a member/i", $r->data)) { $insert = "<i class=\"pe-cog pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/changed a member email/i", $r->data)) { $insert = "<i class=\"pe-envelope pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/changed a member mobile/i", $r->data)) { $insert = "<i class=\"pe-mobile pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/deleted a member/i", $r->data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/suspended a member/i", $r->data)) { $insert = "<i class=\"pe-pause-circle pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/changed level for/i", $r->data)) { $insert = "<i class=\"pe-level-up pe-fw\"></i> &nbsp; "; }
-  else { $insert = ""; }
+  $r->data = iconize($r->data);
+  if (preg_match("/deleted a survey/i", $r->data)) { $color = "aliceblue"; }
+  else if (preg_match("/tried accessing/i", $r->data)) { $color = "lightsteelblue"; }
+  else if (preg_match("/tried editing/i", $r->data)) { $color = "lightsteelblue"; }
+  else if (preg_match("/created a new survey/i", $r->data)) { $color = "skyblue"; }
+  else if (preg_match("/created a new member/i", $r->data)) { $color = "skyblue"; }
+  else if (preg_match("/deleted a member/i", $r->data)) { $color = "aliceblue"; }
   if ($color) { $td = "<td style=\"background:$color\"><small>"; } else { $td = "<td><small>"; }
-  if ($insert) { $r->data = $insert." ".$r->data; } else { $r->data = $r->data; }
   echo "        <tr>\n";
   echo "          $td$t</small></td>\n";
   echo "          $td$r->data</small></td>\n";
