@@ -57,15 +57,12 @@ echo "<hr>\n";
       $("div.error").show();
       $(".json code").html("");
     }
-    setErrorReporting(null, input); // Either way, update the error-reporting link to include the latest
     return true;
   }
 
   function showJSON(rendered) {
-    //console.log("ordered to show JSON: " + rendered);
     if (rendered) {
       if ($(".json code").html()) {
-        //console.log("there's code to show, showing...");
         $(".json .rendered").show();
         $(".json .editing").hide();
       }
@@ -80,14 +77,11 @@ echo "<hr>\n";
     else { $(".csv .rendered").hide(); $(".csv .editing").show().focus(); }
   }
 
-  // takes an array of flat JSON objects, converts them to arrays renders them into a small table as an example
   function renderCSV(objects) {
     var rows = $.csv.fromObjects(objects, {justArrays: true});
     if (rows.length < 1) return;
-
     var table = $(".csv table")[0];
     $(table).html("");
-
     var thead = document.createElement("thead");
     var tr = document.createElement("tr");
     var header = rows[0];
@@ -98,7 +92,6 @@ echo "<hr>\n";
     }
     thead.appendChild(tr);
     $(thead).find('th:first-child').css("background", "#555");
-
     var tbody = document.createElement("tbody");
     for (var i=1; i<rows.length; i++) {
       tr = document.createElement("tr");
@@ -116,104 +109,16 @@ echo "<hr>\n";
   }
 
   function doCSV(json) {
-    // 1) find the primary array to iterate over
-    // 2) for each item in that array, recursively flatten it into a tabular object
-    // 3) turn that tabular object into a CSV row using jquery-csv
     var inArray = arrayFrom(json);
     var outArray = [];
     for (var row in inArray) { outArray[outArray.length] = parse_object(inArray[row]); }
     $("span.rows.count").text("" + outArray.length);
-    var csv = $.csv.fromObjects(outArray); // excerpt and render first 10 rows
+    var csv = $.csv.fromObjects(outArray); // excerpt
     renderCSV(outArray.slice(0, excerptRows));
     showCSV(true);
-    $(".csv textarea").val(csv); // show raw data if people really want it
-    // download link to entire CSV as data
-    // thanks to https://jsfiddle.net/terryyounghk/KPEGU/
-    // and https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
+    $(".csv textarea").val(csv);
     var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
     $(".csv a.download").attr("href", uri);
-  }
-  // loads original pasted JSON from textarea, saves to anonymous gist
-  // rate-limiting means this could easily fail with a 403.
-  function saveJSON() {
-    if (!input) return false;
-    if (input == lastSaved) return false;
-    var gist = {
-      description: "test",
-      public: false,
-      files: { "source.json": { "content": input } }
-    };
-    // TODO: show spinner/msg while this happens
-    console.log("Saving to an anonymous gist...");
-    $.post('https://api.github.com/gists', JSON.stringify(gist)).done(function(data, status, xhr) {
-      setPermalink(data.id); // take new Gist id, make permalink
-      Events.permalink(); // send analytics event
-      lastSaved = input; // mark what we last saved
-      setErrorReporting(data.id, input); // update error-reporting link, including permalink
-      console.log("Remaining this hour: " + xhr.getResponseHeader("X-RateLimit-Remaining"));
-    }).fail(function(xhr, status, errorThrown) {
-      console.log(xhr);
-      Events.permalink_error(status); // send analytics event
-      // TODO: gracefully handle rate limit errors if (status == 403)
-      // TODO: show when saving will be available e.g. "try again in 5 minutes"
-      // var reset = xhr.getResponseHeader("X-RateLimit-Reset");
-      // var date = new Date();
-      // date.setTime(parseInt(reset) * 1000);
-      // use http://momentjs.com/ to say "in _ minutes"
-    });
-    return false;
-  }
-
-  // Updates the error-reporting link to include current details.
-  //
-  // If the passed-in `id` is not null, a permalink is included.
-  // If the passed-in `id` is null, then no permalink is included.
-  // (Needed explicitly because the current URL doesn't always refer
-  // to a permalink related to the current value of the textarea.)
-  //
-  // The current body of the textarea will be encoded into the URI,
-  // to pre-populate the GitHub issue template, but only if the body
-  // is < 7KB (7,168). GitHub's nginx server rejects query strings
-  // longer than ~8KB.
-  //
-  // If no `id` is given, and content is too long, the URL will
-  // encode only a title, and no body.
-  function setErrorReporting(id, content) {
-    var base = "https://github.com/konklone/json/issues/new";
-    var title = "Error parsing some specific JSON";
-    var body = "I'm having an issue converting this JSON:\n\n";
-    if (id) body += ( window.location.protocol + "//" + window.location.host + window.location.pathname + "?id=" + id + "\n\n" );
-    if (content.length <= (7 * 1024)) { body += ("```json\n" + content + "\n```"); }
-    var finalUrl = base + "?title=" + encodeURIComponent(title) + "&body=" + encodeURIComponent(body);
-    $(".error a.report").attr("href", finalUrl);
-    // console.log("Updated error reporting link to:" + finalUrl);
-    return true;
-  }
-
-  // given a valid gist ID, set the permalink to use it
-  function setPermalink(id) {
-    if (history && history.pushState) { history.pushState({id: id}, null, "?id=" + id); }
-    // log("Permalink created! (Copy from the location bar.)")
-  }
-
-  // check query string for gist ID
-  function loadPermalink() {
-    var id = getParam("id");
-    if (!id) return;
-    $.get('https://api.github.com/gists/' + id,
-      function(data, status, xhr) {
-        console.log("Remaining this hour: " + xhr.getResponseHeader("X-RateLimit-Remaining"));
-        var input = data.files["source.json"].content;
-        $(".json textarea").val(input);
-        doJSON();
-        showJSON(true);
-      }
-    ).fail(function(xhr, status, errorThrown) {
-      console.log("Error fetching anonymous gist!");
-      console.log(xhr);
-      console.log(status);
-      console.log(errorThrown);
-    });
   }
 
   $(function() {
@@ -225,17 +130,15 @@ echo "<hr>\n";
       $(".csv textarea").focus().select();
       return false;
     })
-    // if there's no CSV to download, don't download anything, also, log an analytics event.
     $(".csv a.download").click(function() {
       var data = $(".csv textarea").val();
       if (data) { Events.download(data.length); return true; }
       else { return false; }
     });
-    $(".save a, .error a.save").click(saveJSON); // Both elements are present on page-load, so use normal click handler.
-    $(".json textarea") // transform the JSON whenever it's pasted/edited
-      .on('paste', function() { setTimeout(function() { doJSON(); $(".json textarea").blur(); }, 1); }) // delay the showing so the paste is pasted by then
-      .keyup(doJSON); // harmless to repeat doJSON
-    $("body").click(function() { $(".drop").hide(); }); // go away
+    $(".json textarea")
+      .on('paste', function() { setTimeout(function() { doJSON(); $(".json textarea").blur(); }, 1); })
+      .keyup(doJSON);
+    $("body").click(function() { $(".drop").hide(); });
     $(document)
       .on("dragenter", function(e) { e.preventDefault(); e.stopPropagation(); $(".drop").show(); })
       .on("dragover", function(e) { e.preventDefault(); e.stopPropagation(); })
@@ -255,8 +158,7 @@ echo "<hr>\n";
           }
         }
       });
-    $(".csv textarea").click(function() {$(this).focus().select();}); // highlight CSV on click
-    loadPermalink();
+    $(".csv textarea").click(function() {$(this).focus().select();});
   });
 
 </script>
