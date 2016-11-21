@@ -94,7 +94,7 @@ class Login {
       $q2->bindValue(':ip', $ip, PDO::PARAM_STR);
       $q2->bindValue(':email', $result_row->email, PDO::PARAM_STR);
       $q2->execute();
-      $q3 = $this->db->prepare("SELECT U.id, U.fullname, U.mobile, U.companyid, U.avatar, C.company, U.status, U.levelid, L.level, U.created, U.updated, U.lastlogin, U.lastip, U.lastlogin2, U.lastip2 FROM j_users U, j_companies C, j_levels L WHERE U.companyid = C.id AND U.levelid = L.id AND U.email = :email");
+      $q3 = $this->db->prepare("SELECT U.id, U.fullname, U.mobile, U.companyid, U.avatar, C.company, U.status, U.level, U.created, U.updated, U.lastlogin, U.lastip, U.lastlogin2, U.lastip2 FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.email = :email");
       $q3->bindValue(':email', $result_row->email, PDO::PARAM_STR);
       $q3->execute();
       $resulty = $q3->fetchObject();
@@ -107,7 +107,6 @@ class Login {
       $_SESSION['mobile'] = $resulty->mobile;
       $_SESSION['avatar'] = $resulty->avatar;
       $_SESSION['status'] = $resulty->status;
-      $_SESSION['levelid'] = $resulty->levelid;
       $_SESSION['level'] = $resulty->level;
       $_SESSION['created'] = $resulty->created;
       $_SESSION['updated'] = $resulty->updated;
@@ -125,7 +124,6 @@ class Login {
       $this->mobile = $resulty->mobile;
       $this->avatar = $resulty->avatar;
       $this->status = $resulty->status;
-      $this->levelid = $resulty->levelid;
       $this->level = $resulty->level;
       $this->created = $resulty->created;
       $this->updated = $resulty->updated;
@@ -134,6 +132,9 @@ class Login {
       $this->ip = $ip;
       $this->lastip = $resulty->lastip;
       $this->lastip2 = $resulty->lastip2;
+      if ($resulty->level == 9) { $_SESSION['role'] = "Administrator"; $this->role = "Administrator"; }
+      else if ($resulty->level == 6) { $_SESSION['role'] = "Account Leader"; $this->role = "Account Leader"; }
+      else if ($resulty->level == 5) { $_SESSION['role'] = "Researcher"; $this->role = "Researcher"; }
       $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data) VALUE (:userid, :ip, '".$result_row->email." logged in')");
       $q4->bindValue(':userid', $resulty->id, PDO::PARAM_INT);
       $q4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
@@ -152,7 +153,7 @@ class Login {
       list ($userid, $token, $hash) = explode(':', $_COOKIE['siamsquare']);
       if ($hash == hash('sha256', $userid . ':' . $token . COOKIE_SECRET_KEY) && !empty($token)) {
         if ($this->dbconnect()) {
-          $q0 = $this->db->prepare("SELECT U.email, U.companyid, C.company, U.status, U.levelid, L.level FROM j_users U, j_companies C, j_levels L WHERE U.companyid = C.id AND U.levelid = L.id AND U.id = :userid AND U.token = :token AND U.token IS NOT NULL");
+          $q0 = $this->db->prepare("SELECT U.email, U.companyid, C.company, U.status, U.level FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.id = :userid AND U.token = :token AND U.token IS NOT NULL");
           $q0->bindValue(':userid', $userid, PDO::PARAM_INT);
           $q0->bindValue(':token', $token, PDO::PARAM_STR);
           $q0->execute();
@@ -163,15 +164,16 @@ class Login {
             $_SESSION['companyid'] = $result->companyid;
             $_SESSION['company'] = $result->company;
             $_SESSION['status'] = $result->status;
-            $_SESSION['levelid'] = $result->levelid;
             $_SESSION['level'] = $result->level;
             $this->logged_in = true;
             $this->email = $result->email;
             $this->companyid = $result->companyid;
             $this->company = $result->company;
             $this->status = $result->status;
-            $this->levelid = $result->levelid;
             $this->level = $result->level;
+            if ($result->level == 9) { $_SESSION['role'] = "Administrator"; $this->role = "Administrator"; }
+            else if ($result->level == 6) { $_SESSION['role'] = "Account Leader"; $this->role = "Account Leader"; }
+            else if ($result->level == 5) { $_SESSION['role'] = "Researcher"; $this->role = "Researcher"; }
             $q1 = $this->db->prepare("UPDATE j_users SET lastlogin2 = lastlogin, lastip2 = lastip WHERE email = :email");
             $q1->bindValue(':email', $_SESSION['email'], PDO::PARAM_STR);
             $q1->execute();
@@ -427,47 +429,4 @@ class Login {
 
 }
 
-class Registration {
-
-  private $db = null;
-  public $errors = array();
-  public $messages = array();
-
-  public function __construct() {
-    if (isset($_POST["register"])) { $this->registerNewUser(); }
-  }
-
-  private function registerNewUser() {
-    if (empty($_POST['email'])) { $this->errors[] = mkerror("Empty email"); }
-    elseif (empty($_POST['password']) || empty($_POST['password2'])) { $this->errors[] = mkerror("Empty password"); }
-    elseif ($_POST['password'] !== $_POST['password2']) { $this->errors[] = mkerror("Two passwords are not matched"); }
-    elseif (strlen($_POST['password']) < 6) { $this->errors[] = mkerror("Password has a minimum length of 6 characters"); }
-    // elseif (strlen($_POST['email']) > 64 || strlen($_POST['email']) < 2) { $this->errors[] = "Username cannot be shorter than 2 or longer than 64 characters"; }
-    // elseif (!preg_match('/^[a-z\d]{2,64}$/i', $_POST['email'])) { $this->errors[] = "Username does not fit the name scheme: only a-Z and numbers are allowed, 2 to 64 characters"; }
-    elseif (empty($_POST['email'])) { $this->errors[] = mkerror("Email cannot be empty"); }
-    elseif (strlen($_POST['email']) > 64) { $this->errors[] = mkerror("Email cannot be longer than 64 characters"); }
-    elseif (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) { $this->errors[] = mkerror("Your email address is not in a valid email format"); }
-    elseif (!empty($_POST['email']) && strlen($_POST['email']) <= 64 && filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)
-            && !empty($_POST['password']) && !empty($_POST['password2']) && ($_POST['password'] === $_POST['password2'])) {
-      $this->db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_DATABASE);
-      if (!$this->db->set_charset("utf8")) { $this->errors[] = $this->db->error; }
-      if (!$this->db->connect_errno) {
-        // $user_name = $this->db->real_escape_string(strip_tags($_POST['user_name'], ENT_QUOTES));
-        $user_email = $this->db->real_escape_string(strip_tags($_POST['email'], ENT_QUOTES));
-        $user_password = $_POST['password'];
-        $user_password_hash = password_hash($user_password, PASSWORD_BCRYPT);
-        $sql = "SELECT * FROM j_users WHERE email = '" . $email . "';";
-        $query_check_user_name = $this->db->query($sql);
-        if ($query_check_user_name->num_rows == 1) { $this->errors[] = mkerror("Sorry, that email address is already taken"); }
-        else {
-          $sql = "INSERT INTO j_users (email, password) VALUES ('" . $email . "', '" . $user_password_hash . "');";
-          $query_new_user_insert = $this->db->query($sql);
-          if ($query_new_user_insert) { $this->messages[] = mksuccess("Your account has been created successfully. You can now login."); }
-          else { $this->errors[] = mkerror("Sorry, your registration failed. Please go back and try again."); }
-        }
-      }
-      else { $this->errors[] = mkerror("Sorry, no database connection"); }
-    }
-    else { $this->errors[] = mkerror("An unknown error occurred"); }
-  }
-}
+?>

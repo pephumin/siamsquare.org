@@ -6,29 +6,76 @@ echo "<h2>$title</h2>";
 
 ?>
 
-<p>For this section, only those who are an account leader will have a privilege to manage users as a team within the company including add, edit info, change access permission and delete.</p>
+<p>Despite a complex user management system built in our system, we provide our clients with a simple approach regarding to how-to manage users.</p>
 
-<p>For other users, this page will be shown in a read-only mode but will still provide some good information/indications for the team perspective.</p>
+<p>We basically provide two types of users - a normal user and a super user. A normal user is as what one would expect from a standard user account which comes with an ability to manage his/her own data. A super user is which are an ordinary user and an account leader. While an ordinary user would be as one would have expected (e.g. ability to manage his/her own data), other users, this page will be shown in a read-only mode but will still provide some good information/indications for the team perspective.</p>
+
+
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+    <p>To illustrate a clearer picture, please see the table on the right hand side for the real life example of usage.</p>
+    <ul>
+      <li>You may want to have two logins for your two researchers to use for managing their projects independently. In this case, each of these two researchers can view all of your projects but they can make change with the ones they are managing.</li>
+      <br>
+      <li>You may consider having another login specifically for your DP person where an access across all projects is allowed only for the data related component e.g. data validation, download the data file, tabulation check, etc.</li>
+      <br>
+      <li>Lastly, you may also consider having another login for your fieldwork team to manage respondents. Please note this covers only respondents that are uploaded specifically for each of the projects (not include our panel).</li>
+    </ul>
+  </div>
+  <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+    <table class="table table-hover">
+      <thead>
+        <tr class="bg-primary">
+          <td>User</td>
+          <td>Create a new survey</td>
+          <td>Edit and delete own survey</td>
+          <td>Edit and delete any survey</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Account leader</td>
+          <td>
+            <ul>
+              <li>Full access to all survey projects</li>
+              <li>Full access to member management including adding new members, suspend / delete members, and edit some information</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td>Researcher</td>
+          <td>
+            <ul>
+              <li>Full access to self-created projects and read-only for other projects created by other members</li>
+              <li>Manage self profile and read-only for other team members</li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
 <hr>
 
 <div id="showalert-create"></div><div id="showalert-delete"></div><div id="showalert-edit"></div><div id="showalert-suspend"></div>
 <br>
-<?php if ($_SESSION['levelid'] >= "6") { ?>
+<?php if ($_SESSION['level'] >= "6") { ?>
 <p class="pull-right"><a class="btn btn-primary" data-bind="click: createNew, enable: !isNewMemberCreating()" href=""><i class="pe-user-plus pe-fw"></i> New member</a></p>
 <br><br><br>
 <?php } ?>
 <div class="row">
-<?php if ($_SESSION['levelid'] >= "6") { ?>
-  <div data-bind="visible: isNewMemberCreating" class="col-xs-12 col-sm-6 col-md-4 col-lg-4" style="margin-bottom:20px">
+<?php if ($_SESSION['level'] >= "6") { ?>
+  <div data-bind="visible: isNewMemberCreating" class="col-xs-12 col-sm-7 col-md-4 col-lg-4" style="margin-bottom:20px">
     <div class="members">
       <div class="members-header"></div>
       <div class="members-body">
         <h4 class="white">Create a new member</h4>
         <p><img src="assets/img/u/F6.svg" class="img-circle members-photo" alt="Avatar"></p>
         <h5>Enter info below</h5>
-        <div class="input-group"><span class="input-group-addon">Name:</span><input type="text" class="form-control" data-bind="textInput: newMemberName" placeholder="Enter first and last name"></div><br>
-        <div class="input-group"><span class="input-group-addon">Email:</span><input type="text" class="form-control" data-bind="textInput: newMemberEmail" placeholder="Enter email address"></div><br>
+        <div class="input-group"><span class="input-group-addon"><small>Name:</small></span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberName" placeholder="Enter first and last name"></div><br>
+        <div class="input-group"><span class="input-group-addon"><small>Email</small>:</span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberEmail" placeholder="Enter email address"></div><br>
         <a class="btn btn-primary btn-tiny" data-bind="click: postNew, enable: newMemberName() != '', enable: newMemberEmail() != ''" href=""><i class="pe-user-plus"></i> Create</a>
         <a class="btn btn-default btn-tiny" data-bind="click: cancelNew" href=""><i class="pe-times-circle-o"></i> Cancel</a><br><br>
       </div>
@@ -42,74 +89,77 @@ echo "<h2>$title</h2>";
       <div class="members-body">
         <h4 data-bind="text: fullname" class="white"></h4>
         <p><img data-bind="attr: {src: avatar}" class="img-circle members-photo" alt="Avatar"></p>
-        <h5 data-bind="text: level"></h5>
+        <h5 data-bind="text: role"></h5>
+        <small><strong>No. of projects handled: <span data-bind="text: counts"></span></strong></small>
         <p>
           <small>
             Registered: <span data-bind="text: created"></span><br>
             Last updated: <span data-bind="text: updated"></span><br>
             Last login: <span data-bind="text: lastlogin2"></span><br>
-            Last ip: <span data-bind="text: lastip2"></span>
+            Last ip: <span data-bind="text: lastip2"></span><br>
           </small>
         </p>
-<?php if ($_SESSION['levelid'] >= "6") { ?>
-        <a class="btn btn-default btn-tiny" data-bind="click: $parent.showInfo"><i class="pe-cogs"></i> Edit <i class="" data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a>
-        <a class="btn btn-warning btn-tiny" data-bind="click: $parent.suspend" href=""><i class="pe-pause-circle"></i> Suspend</a>
-        <a class="btn btn-danger btn-tiny" data-bind="click: $parent.delete" href=""><i class="pe-trash"></i> Delete</a>
-        <br><br>
+<?php if ($_SESSION['level'] >= "6") { ?>
+        <p>
+          <a class="btn btn-default btn-tiny" data-bind="click: $parent.showInfo"><i class="pe-cogs"></i> Edit <i class="" data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a>
+          <a class="btn btn-warning btn-tiny" data-bind="click: $parent.suspend" href=""><i class="pe-pause-circle"></i> Suspend</a>
+          <a class="btn btn-danger btn-tiny" data-bind="click: $parent.delete" href=""><i class="pe-trash"></i> Delete</a>
+        </p>
 <?php } ?>
       </div>
-<?php if ($_SESSION['levelid'] >= "6") { ?>
+<?php if ($_SESSION['level'] >= "6") { ?>
       <div class="members-footer" data-bind="visible: showInfo()">
         <div class="row" data-bind="visible: !isEditingFullName()">
-          <div class="col-sm-4"><small>Name <a href="" data-bind="click: $parent.startEditFullName" title="Change"><i class="pe-edit"></i></a></small></div>
-          <div class="col-sm-8"><small data-bind="text: fullname"></small><br></div>
+          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Name <a href="" data-bind="click: $parent.startEditFullName" title="Edit fullname"><i class="pe-edit"></i></a></small></div>
+          <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: fullname"></small><br></div>
         </div>
         <div class="row" data-bind="visible: isEditingFullName()">
-          <div class="col-sm-4"><small>Name</small></div>
-          <div class="col-sm-8"><small>
-            <input data-bind="textInput: editingFullName, visible: isEditingFullName()" onclick="this.select()" class="form-control">
+          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Name <a href="" data-bind="click: $parent.cancelEditFullName"><i class="pe-remove"></i></a></small></div>
+          <div class="col-sm-7" style="padding:2px 0px"><small>
+            <input data-bind="textInput: editingFullName, visible: isEditingFullName()" onclick="this.select()" placeholder="First and last name" class="form-control input-sm">
             <a class="btn btn-tiny" data-bind="click: $parent.postEditFullName, enable: fullname() != ''" href="">Change <i class="pe-check-circle-o"></i></a>
             <a class="btn btn-tiny" data-bind="click: $parent.cancelEditFullName" href="">Cancel <i class="pe-times-circle-o"></i></a>
-          </small><br></div>
+          </small></div>
         </div>
         <div class="row" data-bind="visible: !isEditingEmail()">
-          <div class="col-sm-4"><small>Email <a href="" data-bind="click: $parent.startEditEmail" title="Change"><i class="pe-edit"></i></a></small></div>
-          <div class="col-sm-8"><small data-bind="text: email"></small><br></div>
+          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Email <a href="" data-bind="click: $parent.startEditEmail" title="Edit email"><i class="pe-edit"></i></a></small></div>
+          <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: email"></small><br></div>
         </div>
         <div class="row" data-bind="visible: isEditingEmail()">
-          <div class="col-sm-4"><small>Email</small></div>
-          <div class="col-sm-8"><small>
-            <input data-bind="textInput: editingEmail, visible: isEditingEmail()" onclick="this.select()" class="form-control">
+          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Email <a href="" data-bind="click: $parent.cancelEditEmail"><i class="pe-remove"></i></a></small></div>
+          <div class="col-sm-7" style="padding:2px 0px"><small>
+            <input data-bind="textInput: editingEmail, visible: isEditingEmail()" onclick="this.select()" placeholder="email@company.com" class="form-control input-sm">
             <a class="btn btn-tiny" data-bind="click: $parent.postEditEmail, enable: email() != ''" href="">Change <i class="pe-check-circle-o"></i></a>
             <a class="btn btn-tiny" data-bind="click: $parent.cancelEditEmail" href="">Cancel <i class="pe-times-circle-o"></i></a>
-          </small><br></div>
+          </small></div>
         </div>
         <div class="row" data-bind="visible: !isEditingMobile()">
-          <div class="col-sm-4"><small>Mobile <a href="" data-bind="click: $parent.startEditMobile" title="Change"><i class="pe-edit"></i></a></small></div>
-          <div class="col-sm-8"><small data-bind="text: mobile"></small><br></div>
+          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Mobile <a href="" data-bind="click: $parent.startEditMobile" title="Edit mobile no."><i class="pe-edit"></i></a></small></div>
+          <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: mobile"></small><br></div>
         </div>
         <div class="row" data-bind="visible: isEditingMobile()">
-          <div class="col-sm-4"><small>Mobile</small></div>
-          <div class="col-sm-8"><small>
-            <input data-bind="textInput: editingMobile, visible: isEditingMobile()" onclick="this.select()" class="form-control">
+          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Mobile <a href="" data-bind="click: $parent.cancelEditMobile"><i class="pe-remove"></i></a></small></div>
+          <div class="col-sm-7" style="padding:2px 0px"><small>
+            <input data-bind="textInput: editingMobile, visible: isEditingMobile()" onclick="this.select()" placeholder="0813333333" class="form-control input-sm">
             <a class="btn btn-tiny" data-bind="click: $parent.postEditMobile, enable: mobile() != ''" href="">Change <i class="pe-check-circle-o"></i></a>
             <a class="btn btn-tiny" data-bind="click: $parent.cancelEditMobile" href="">Cancel <i class="pe-times-circle-o"></i></a>
-          </small><br></div>
+          </small></div>
         </div>
         <div class="row" data-bind="visible: !isEditingLevel()">
-          <div class="col-sm-4"><small>Level <a href="" data-bind="click: $parent.startEditLevel" title="Change"><i class="pe-edit"></i></a></small></div>
-          <div class="col-sm-8"><small data-bind="text: level"></small><br></div>
+          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Role <a href="" data-bind="click: $parent.startEditLevel" title="Edit user level"><i class="pe-edit"></i></a></small></div>
+          <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: role"></small><br></div>
         </div>
         <div class="row" data-bind="visible: isEditingLevel()">
-          <div class="col-sm-4"><small>Level</small></div>
-          <div class="col-sm-8"><small>
+          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Role <a href="" data-bind="click: $parent.cancelEditLevel"><i class="pe-remove"></i></a></small></div>
+          <div class="col-sm-7" style="padding:2px 0px"><small>
             <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.L6" href="">Account Leader</a>
             <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.L5" href="">Researcher</a>
             <!-- <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.L4" href="">Fieldwork</a> -->
             <!-- <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.L3" href="">Data Processing</a> -->
             <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.cancelEditLevel" href="">Cancel <i class="pe-times-circle-o"></i></a>
-          </small><br></div>
+          </small></div>
         </div>
+        <br>
       </div>
 <?php } ?>
     </div>
@@ -128,7 +178,7 @@ echo "<h2>$title</h2>";
   var companyid = <?php echo $_SESSION['companyid']; ?>;
   var company = "<?php echo $_SESSION['company']; ?>";
   var status = <?php echo $_SESSION['status']; ?>;
-  var levelid = <?php echo $_SESSION['levelid']; ?>;
+  var role = "<?php echo $_SESSION['role']; ?>";
   var level = "<?php echo $_SESSION['level']; ?>";
   var created = "<?php echo $_SESSION['created']; ?>";
   var updated = "<?php echo $_SESSION['updated']; ?>";
@@ -141,10 +191,10 @@ echo "<h2>$title</h2>";
   var key = "aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8";
   $('#showalert-create').html("<div class='alert alert-success'><i class='pe-save pe-fw'></i> A new user has been created</div>").hide();
   $('#showalert-delete').html("<div class='alert alert-danger'><i class='pe-trash pe-fw'></i> The user has been deleted</div>").hide();
-  $('#showalert-edit').html("<div class='alert alert-info'><i class='pe-edit pe-fw'></i> The user information has been edited</div>").hide();
+  $('#showalert-edit').html("<div class='alert alert-success'><i class='pe-edit pe-fw'></i> The user information has been edited</div>").hide();
   $('#showalert-suspend').html("<div class='alert alert-warning'><i class='pe-archive pe-fw'></i> The user has been suspended</div>").hide();
 
-  var Listing = function (id, userid, email, fullname, mobile, avatar, companyid, status, level, created, updated, lastlogin, lastip, lastlogin2, lastip2) {
+  var Listing = function (id, userid, email, fullname, mobile, avatar, companyid, status, role, level, created, updated, lastlogin, lastip, lastlogin2, lastip2, counts) {
     this.id = id;
     this.userid = userid;
     this.email = ko.observable(email);
@@ -156,6 +206,8 @@ echo "<h2>$title</h2>";
     this.editingMobile = ko.observable(mobile);
     this.status = ko.observable(status);
     this.editingStatus = ko.observable(status);
+    this.role = ko.observable(role);
+    this.editingRole = ko.observable(role);
     this.level = ko.observable(level);
     this.editingLevel = ko.observable(level);
     this.created = created;
@@ -164,11 +216,14 @@ echo "<h2>$title</h2>";
     this.lastip = lastip;
     this.lastlogin2 = lastlogin2;
     this.lastip2 = lastip2;
+    this.counts = ko.observable(counts);
+    // this.isSuspended = ko.observable(false);
     this.showInfo = ko.observable(false);
     this.isEditingEmail = ko.observable(false);
     this.isEditingFullName = ko.observable(false);
     this.isEditingMobile = ko.observable(false);
     this.isEditingStatus = ko.observable(false);
+    this.isEditingRole = ko.observable(false);
     this.isEditingLevel = ko.observable(false);
   }
 
@@ -245,7 +300,7 @@ echo "<h2>$title</h2>";
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "levelid": "6" }',
+        data: '{ "level": "6" }',
         success: function (data) {
           $('#showalert-edit').show();
           window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 5000);
@@ -269,7 +324,7 @@ echo "<h2>$title</h2>";
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "levelid": "5" }',
+        data: '{ "level": "5" }',
         success: function (data) {
           $('#showalert-edit').show();
           window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 5000);
@@ -293,7 +348,7 @@ echo "<h2>$title</h2>";
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "levelid": "4" }',
+        data: '{ "level": "4" }',
         success: function (data) {
           $('#showalert-edit').show();
           window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 5000);
@@ -317,7 +372,7 @@ echo "<h2>$title</h2>";
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "levelid": "3" }',
+        data: '{ "level": "3" }',
         success: function (data) {
           $('#showalert-edit').show();
           window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 5000);
@@ -341,8 +396,8 @@ echo "<h2>$title</h2>";
     }
     this.createNew = function () {
       self.isNewMemberCreating(true);
-      self.newMemberName("");
-      self.newMemberEmail("");
+      self.newMemberName("My new member");
+      self.newMemberEmail("user@my-company.com");
     }
     this.cancelNew = function () {
       self.isNewMemberCreating(false);
@@ -457,43 +512,34 @@ echo "<h2>$title</h2>";
       });
     }
     this.cancelEditMobile = function (member) { member.isEditingMobile(false); }
+    this.startEditRole = function (member) {
+      member.editingRole(member.level());
+      member.isEditingRole(true);
+    }
+    this.postEditRole = function (member) {
+      self.cancelEditRole(member);
+    }
+    this.cancelEditRole = function (member) { member.isEditingRole(false); }
     this.startEditLevel = function (member) {
       member.editingLevel(member.level());
       member.isEditingLevel(true);
     }
     this.postEditLevel = function (member) {
       self.cancelEditLevel(member);
-      // $.ajax({
-      //   url: api + '/member/' + member.id + '/relevel',
-      //   dataType: 'json',
-      //   type: 'put',
-      //   contentType: 'application/json; charset=utf-8',
-      //   data: '{ "levelid": "' + member.editingLevel() + '" }',
-      //   success: function (data) {
-      //     member.level(member.editingLevel());
-      //     $('#showalert-edit').show();
-      //     window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 5000);
-      //     $.ajax({
-      //       url: api + '/log',
-      //       dataType: 'json',
-      //       type: 'post',
-      //       contentType: 'application/json; charset=utf-8',
-      //       data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed a member level to ' + member.level() + ' (' + member.email() + ')" }',
-      //       success: function(data) { result = data; }
-      //     });
-      //   },
-      //   error: function (error) { self.onFail(error); }
-      // });
     }
     this.cancelEditLevel = function (member) { member.isEditingLevel(false); }
     this.createMemberObject = function (data) {
       moment.locale('en');
-      var sa1 = moment(data.created).fromNow(); var sa2 = moment(data.created).format("D MMM YYYY"); created = sa2 + ' (' + sa1 + ')';
-      var sb1 = moment(data.updated).fromNow(); var sb2 = moment(data.updated).format("D MMM YYYY"); updated = sb2 + ' (' + sb1 + ')';
-      var sc1 = moment(data.lastlogin).fromNow(); var sc2 = moment(data.lastlogin).format("D MMM YYYY"); lastlogin = sc2 + ' (' + sc1 + ')';
-      var sd1 = moment(data.lastlogin2).fromNow(); var sd2 = moment(data.lastlogin2).format("D MMM YYYY"); lastlogin2 = sd2 + ' (' + sd1 + ')';
+      if (data.created != null) { var sa1 = moment(data.created).fromNow(); var sa2 = moment(data.created).format("D MMM YYYY"); created = sa2 + ' (' + sa1 + ')'; } else { created = data.created; }
+      if (data.updated != null) { var sb1 = moment(data.updated).fromNow(); var sb2 = moment(data.updated).format("D MMM YYYY"); updated = sb2 + ' (' + sb1 + ')'; } else { updated = data.updated; }
+      if (data.lastlogin != null) { var sc1 = moment(data.lastlogin).fromNow(); var sc2 = moment(data.lastlogin).format("D MMM YYYY"); lastlogin = sc2 + ' (' + sc1 + ')'; } else { lastlogin = "never login"; }
+      if (data.lastlogin2 != null) { var sd1 = moment(data.lastlogin2).fromNow(); var sd2 = moment(data.lastlogin2).format("D MMM YYYY"); lastlogin2 = sd2 + ' (' + sd1 + ')'; } else { lastlogin2 = "never login"; }
+      if (data.lastip == null) { data.lastip = "never login"; }
+      if (data.lastip2 == null) { data.lastip2 = "never login"; }
       if (data.avatar != null) { avatar = data.avatar; } else { avatar = "assets/img/u/F6.svg"; }
-      return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, avatar, companyid, data.status, data.level, created, updated, lastlogin, data.lastip, lastlogin2, data.lastip2);
+      if (data.level == 9) { role = "Administrator"; } else if (data.level == 6) { role = "Account Leader"; } else if (data.level == 5) { role = "Researcher"; }
+      //issuspended = false; if (data.status = "0") { issuspended = true; } else { issuspended = false; }
+      return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, avatar, companyid, data.status, role, data.level, created, updated, lastlogin, data.lastip, lastlogin2, data.lastip2, data.counts);
     }
     this.onFail = function (error) { alert(JSON.stringify(error)); }
     this.showInfo = function (member) { member.showInfo(!member.showInfo()); }
@@ -504,75 +550,6 @@ echo "<h2>$title</h2>";
 </script>
 
 <br>
-
-<?php if ($_SESSION['levelid'] >= "6") { ?>
-<hr>
-
-<h3>Example and reference</h3>
-
-<div class="row">
-  <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-    <p>To illustrate a clearer picture, please see the table on the right hand side for the real life example of usage.</p>
-    <ul>
-      <li>You may want to have two logins for your two researchers to use for managing their projects independently. In this case, each of these two researchers can view all of your projects but they can make change with the ones they are managing.</li>
-      <br>
-      <li>You may consider having another login specifically for your DP person where an access across all projects is allowed only for the data related component e.g. data validation, download the data file, tabulation check, etc.</li>
-      <br>
-      <li>Lastly, you may also consider having another login for your fieldwork team to manage respondents. Please note this covers only respondents that are uploaded specifically for each of the projects (not include our panel).</li>
-    </ul>
-  </div>
-  <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-    <table class="table table-hover">
-      <thead>
-        <tr class="bg-primary">
-          <td>User</td>
-          <td>Detail</td>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Fieldwork</td>
-          <td>
-            <ul>
-              <li>Full access to respondent section</li>
-              <li>Read only for all projects</li>
-            </ul>
-          </td>
-        </tr>
-        <tr>
-          <td>DP</td>
-          <td>
-            <ul>
-              <li>Full access to data section</li>
-              <li>Read only for all projects</li>
-            </ul>
-          </td>
-        </tr>
-        <tr>
-          <td>Researcher</td>
-          <td>
-            <ul>
-              <li>Full access to assigned projects</li>
-              <li>Read only for other projects</li>
-            </ul>
-          </td>
-        </tr>
-        <tr>
-          <td>Account leader</td>
-          <td>
-            <ul>
-              <li>Full access to all projects</li>
-              <li>Ability to manage team members</li>
-            </ul>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<br>
-<?php } ?>
 
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>

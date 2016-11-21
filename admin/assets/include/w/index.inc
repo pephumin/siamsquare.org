@@ -15,7 +15,7 @@ if ($q1->rowCount()) {
   // $clientlogo = $d2;
 }
 
-$title = "Client control panel";
+$title = "The main dashboard";
 pageHeader($title);
 echo "<h2>$title</h2>";
 // echo "<br>\n";
@@ -97,7 +97,7 @@ $sumD = $sumB + $sumC;
     <h3>Survey summary</h3>
     <p><strong><?php echo $_SESSION["company"]; ?></strong> currently has a total of <strong><?php echo $count2A; ?> projects</strong> in which <strong><?php echo $count2B; ?> projects</strong> (or <?php echo $percent2; ?>) are directly managed by you.</p>
     <p>Table below breaks down all projects by different stages.</p>
-    <table class="table table-hover small">
+    <table class="table table-hover table-condensed small">
       <thead>
         <tr class="bg-primary">
           <td width="40%"></td>
@@ -139,8 +139,45 @@ $sumD = $sumB + $sumC;
         </tr>
       </tbody>
     </table>
-    <p>There are <strong><?php echo $_SESSION["company"]; ?></strong> currently holds a total of <strong><?php echo $count2A; ?> projects</strong> in which <strong><?php echo $count2B; ?> projects</strong> (or <?php echo $percent2; ?>) are directly managed by you.</p>
-    <p>Table below breaks down all projects by different stages.</p>
+
+    <p>And below are your recent survey projects.
+    <table class="table table-hover table-condensed small">
+      <thead>
+        <tr class="bg-primary">
+          <td width="40%"></td>
+          <td width="20%" align="right"><strong><i class="pe-calendar pe-fw"></i> Created</strong></td>
+          <td width="20%" align="right"><strong><i class="pe-clock-o pe-fw"></i> Last updated</strong></td>
+          <td width="20%" align="right"><strong><i class="pe-flag pe-fw"></i> Status</strong></td>
+        </tr>
+      </thead>
+      <tbody>
+<?php
+$q7 = $db->prepare("SELECT id, title, status, created, updated FROM j_projects WHERE userid = :userid AND companyid = :companyid AND status >= 0 ORDER BY id DESC");
+$q7->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+$q7->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+$q7->execute();
+$counts = $q7->rowCount(); //echo $counts;
+while ($row = $q7->fetchObject()) {
+  $id = $row->id;
+  $title = $row->title;
+  if ($row->status == 1) { $status = "Pre-data collection stage"; }
+  else if ($row->status == 2) { $status = "At data collection stage"; }
+  else if ($row->status == 3) { $status = "Post-data collection stage"; }
+  else if ($row->status == 4) { $status = "Projects are archived"; }
+  $created = ago($row->created);
+  $updated = ago($row->updated);
+  echo "        <tr>\n";
+  echo "          <td width=\"40%\">Project $title</td>\n";
+  echo "          <td width=\"20%\" align=\"right\">$created</td>\n";
+  echo "          <td width=\"20%\" align=\"right\">$updated</td>\n";
+  echo "          <td width=\"20%\" align=\"right\">$status</td>\n";
+  echo "        </tr>\n";
+}
+?>
+      </tbody>
+    </table>
+
+
     <div class="alert alert-success">
       <strong><i class="pe-bullhorn"></i> News:</strong> Clients can have an unlimited number of users.
     </div>
@@ -158,10 +195,10 @@ $sumD = $sumB + $sumC;
     </div>
     <div class="list-group">
 <?php
-$q7 = $db->prepare("SELECT * FROM j_users_logs WHERE userid = :userid ORDER BY recorded DESC LIMIT 5");
-$q7->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
-$q7->execute();
-while ($r = $q7->fetchObject()) {
+$q8 = $db->prepare("SELECT * FROM j_users_logs WHERE userid = :userid ORDER BY recorded DESC LIMIT 5");
+$q8->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+$q8->execute();
+while ($r = $q8->fetchObject()) {
   $t = ago($r->recorded);
   $r->data = iconize($r->data);
   echo "      <button type=\"button\" class=\"list-group-item\"><small>$insert $r->data [$t]</small></button>\n";

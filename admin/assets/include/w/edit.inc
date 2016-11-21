@@ -25,7 +25,7 @@ if ($q->rowCount() == 0) {
   exit;
 }
 while ($row = $q->fetchObject()) { $status = $row->status; }
-if ($_SESSION['levelid'] != "9") {
+if ($_SESSION['level'] != "9") {
   if ($status != 1) {
     $title = "An error has been found";
     pageHeader($title);

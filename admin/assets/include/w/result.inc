@@ -1,6 +1,7 @@
 <?php
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.imgresize.php';
 $db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
 
 
@@ -70,30 +71,40 @@ $r = $q->fetchAll(PDO::FETCH_ASSOC);
 $qq = $show;
 
 if (($qtype == "radiogroup") || ($qtype == "dropdown") || ($qtype == "rating")) {
-  $dout = "";
+  $x = "[";
   for ($i=0; $i < count($r); $i++) {
-    $j = $r[$i]["data"];
-    $j = json_decode($j, true);
-    $k[] = $j[$qq];
+    if ($i != (count($r)-1)) { $x .= $r[$i]["data"].","; } else { $x .= $r[$i]["data"]; }
+  }
+  $x .= "]";
+  $j = json_decode($x, true); //print_r($j);
+  foreach ($j as $k1 => $p1) { $jj[] = $p1; }
+  for ($i=0; $i < count($jj); $i++) {
+    $k[] = $jj[$i][$qq];
   }
   $c = array_count_values($k);
   if (json_decode(str_replace($choice_code, $choice_text, json_encode($c)), true)) { $c = json_decode(str_replace($choice_code, $choice_text, json_encode($c)), true); }
-  // array_map(function ($v) use ($choice_code, $choice_text) { return $v == $value ? $replacement : $v; }, $c);
-  arsort($c);
+  // arsort($c);
   $totalresponses = array_sum($c);
-  $dout .= json_encode($c, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-  $doutA = array_keys($c); $doutB = (array_values($c) );
-  $chartdata = "[ ";
+  $A = array_keys($c); $B = array_values($c); //print_r($c);
+  $C = count($c);
+  $out = "";
+  $out .= "    data.addRows($C);\n";
   for ($m=0; $m < count($c); $m++) {
-    if ($doutA[$m] == $choice_code) { $doutA[$m] == $choice_text; }
-    if ($m != (count($c)-1)) { $chartdata .= "[ '".$doutA[$m]."', ".(($doutB[$m]/$totalrecords)*100)." ], "; }
-    else { $chartdata .= "[ '".$doutA[$m]."', ".(($doutB[$m]/$totalrecords)*100)." ]"; }
+    // if ($A[$m] == $choice_code[$m]) { $A[$m] == $choice_text[$m]; }
+    $BB[$m] = number_format(($B[$m]/$totalrecords)*100, 2);
+    $m1 = $m+1; $m2 = $m1+1;
+    $out .= "    data.setCell($m, 0, '$A[$m]');\n";
+    $out .= "    data.setCell($m, 1, $B[$m]);\n";
+    $out .= "    data.setCell($m, 2, $BB[$m]);\n";
   }
-  $chartdata .= " ]";
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  if ((empty($_GET['type'])) || ($_GET['type'] == "pie")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Pie</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> ]</strong></p><br>\n"; }
+  else if ($_GET['type'] == "donut") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <u>Donut</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> ]</strong></p><br>\n"; }
+  else if ($_GET['type'] == "bar-H") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> ]</strong></p><br>\n"; }
+  else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> ]</strong></p><br>\n"; }
 }
 
 else if ($qtype == "checkbox") {
-  $dout = "";
   $k = array();
   for ($i=0; $i < count($r); $i++) {
     $j = $r[$i]["data"];
@@ -104,82 +115,121 @@ else if ($qtype == "checkbox") {
   }
   $c = array_count_values($k); //print_r($c);
   if (json_decode(str_replace($choice_code, $choice_text, json_encode($c)), true)) { $c = json_decode(str_replace($choice_code, $choice_text, json_encode($c)), true); }
-  arsort($c);
-  $dout .= json_encode($c, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-  $doutA = array_keys($c); $doutB = (array_values($c));
-  $chartdata = "[ ";
+  // arsort($c);
+  // print_r($c);
+  $totalresponses = array_sum($c);
+  $A = array_keys($c); $B = array_values($c); //print_r($c);
+  $C = count($c);
+  $out = "";
+  $out .= "    data.addRows($C);\n";
   for ($m=0; $m < count($c); $m++) {
-    if ($m != (count($c)-1)) { $chartdata .= "[ '".$doutA[$m]."', ".(($doutB[$m]/$totalrecords)*100)." ], "; }
-    else { $chartdata .= "[ '".$doutA[$m]."', ".(($doutB[$m]/$totalrecords)*100)." ]"; }
-    $nn[] = $doutB[$m];
-    $totalresponses = array_sum($nn);
+    // if ($A[$m] == $choice_code[$m]) { $A[$m] == $choice_text[$m]; }
+    $BB[$m] = number_format(($B[$m]/$totalrecords)*100, 2);
+    $m1 = $m+1; $m2 = $m1+1;
+    $out .= "    data.setCell($m, 0, '$A[$m]');\n";
+    $out .= "    data.setCell($m, 1, $B[$m]);\n";
+    $out .= "    data.setCell($m, 2, $BB[$m]);\n";
   }
-  $chartdata .= " ]";
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> ]</strong></p><br>\n"; }
+  else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> ]</strong></p><br>\n"; }
 }
 
 else if ($qtype == "comment") {
-  $dout = "";
   $k = array();
-  $chartdata = "[ ";
+  $out = "[ ";
   for ($i=0; $i < count($r); $i++) {
     $j = $r[$i]["data"];
     $j = json_decode($j, true);
-    $chartdata .= "[ '".$j[$qq]."' ],";
+    $out .= "['".$j[$qq]."'],";
     array_push($k, $j[$qq]);
   }
-  $chartdata .= " ]";
+  $out .= " ]";
   $c = array_count_values($k); arsort($c); //print_r($c);
   $totalresponses = array_sum($c);
-  $dout .= json_encode($c, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 }
 
-else if ($qtype == "matrix") {
-  $dout = "";
-  $j = "[";
-  for ($i=0; $i < count($r); $i++) {
-    if ($i != (count($r)-1)) { $j .= $r[$i]["data"].","; }
-    else { $j .= $r[$i]["data"]; }
-  }
-  $j .= "]";
+else if ($qtype == "file") {
   $k = array();
-  $e = json_decode($j, true); //print_r($e);
   for ($i=0; $i < count($r); $i++) {
-    $f = $e[$i][$qq];
-    $label = array_keys($f);
-    $R1[] = $f["R1"]; $R2[] = $f["R2"]; $R3[] = $f["R3"]; $R4[] = $f["R4"]; $R5[] = $f["R5"];
+    $j = $r[$i]["data"];
+    $j = json_decode($j, true);
+    array_push($k, $j[$qq]);
   }
+  $c = array_count_values($k); arsort($c);
+  $totalresponses = array_sum($c);
 
-  $ee1 = array_count_values($R1); ksort($ee1); list($xA1, $xA2, $xA3, $xA4, $xA5) = $ee1;
-  $ee2 = array_count_values($R2); ksort($ee2); list($xB1, $xB2, $xB3, $xB4, $xB5) = $ee2;
-  $ee3 = array_count_values($R3); ksort($ee3); list($xC1, $xC2, $xC3, $xC4, $xC5) = $ee3;
-  $ee4 = array_count_values($R4); ksort($ee4); list($xD1, $xD2, $xD3, $xD4, $xD5) = $ee4;
-  $ee5 = array_count_values($R5); ksort($ee5); list($xE1, $xE2, $xE3, $xE4, $xE5) = $ee5;
+  // ############# Output for file upload ############# //
 
-  if (empty($xA1)) { $xA1 = 0; } else if (empty($xA2)) { $xA2 = 0; } else if (empty($xA3)) { $xA3 = 0; } else if (empty($xA4)) { $xA4 = 0; } else if (empty($xA5)) { $xA5 = 0; }
-  if (empty($xB1)) { $xB1 = 0; } else if (empty($xB2)) { $xB2 = 0; } else if (empty($xB3)) { $xB3 = 0; } else if (empty($xB4)) { $xB4 = 0; } else if (empty($xB5)) { $xB5 = 0; }
-  if (empty($xC1)) { $xC1 = 0; } else if (empty($xC2)) { $xC2 = 0; } else if (empty($xC3)) { $xC3 = 0; } else if (empty($xC4)) { $xC4 = 0; } else if (empty($xC5)) { $xC5 = 0; }
-  if (empty($xD1)) { $xD1 = 0; } else if (empty($xD2)) { $xD2 = 0; } else if (empty($xD3)) { $xD3 = 0; } else if (empty($xD4)) { $xD4 = 0; } else if (empty($xD5)) { $xD5 = 0; }
-  if (empty($xE1)) { $xE1 = 0; } else if (empty($xE2)) { $xE2 = 0; } else if (empty($xE3)) { $xE3 = 0; } else if (empty($xE4)) { $xE4 = 0; } else if (empty($xE5)) { $xE5 = 0; }
-
-  $SxA = $xA1 + $xA2 + $xA3 + $xA4 + $xA5; $xA1 = ($xA1/$SxA)*100; $xA2 = ($xA2/$SxA)*100; $xA3 = ($xA3/$SxA)*100; $xA4 = ($xA4/$SxA)*100; $xA5 = ($xA5/$SxA)*100;
-  $SxB = $xB1 + $xB2 + $xB3 + $xB4 + $xB5; $xB1 = ($xB1/$SxB)*100; $xB2 = ($xB2/$SxB)*100; $xB3 = ($xB3/$SxB)*100; $xB4 = ($xB4/$SxB)*100; $xB5 = ($xB5/$SxB)*100;
-  $SxC = $xC1 + $xC2 + $xC3 + $xC4 + $xC5; $xC1 = ($xC1/$SxC)*100; $xC2 = ($xC2/$SxC)*100; $xC3 = ($xC3/$SxC)*100; $xC4 = ($xC4/$SxC)*100; $xC5 = ($xC5/$SxC)*100;
-  $SxD = $xD1 + $xD2 + $xD3 + $xD4 + $xD5; $xD1 = ($xD1/$SxD)*100; $xD2 = ($xD2/$SxD)*100; $xD3 = ($xD3/$SxD)*100; $xD4 = ($xD4/$SxD)*100; $xD5 = ($xD5/$SxD)*100;
-  $SxE = $xE1 + $xE2 + $xE3 + $xE4 + $xE5; $xE1 = ($xE1/$SxE)*100; $xE2 = ($xE2/$SxE)*100; $xE3 = ($xE3/$SxE)*100; $xE4 = ($xE4/$SxE)*100; $xE5 = ($xE5/$SxE)*100;
-
-  // $doutA = array_keys($c); $doutB = array_values($c);
-  // $doutA = json_decode(str_replace($row_code, $row_text, json_encode($doutA)), true);
-
-  $chartdata = "[ [";
-  list($a1, $a2, $a3, $a4, $a5) = $column_text;
-  $chartdata .= "'".$a1."', '".$a2."', '".$a3."', '".$a4."', '".$a5."', ";
-  $chartdata .= "{ role: 'annotation' } ], ";
-  $chartdata .= "[ 'Z1', $xA1, $xA2, $xA3, $xA4, $xA5 ],";
-  $chartdata .= "[ 'Z2', $xB1, $xB2, $xB3, $xB4, $xB5 ],";
-  $chartdata .= "[ 'Z3', $xC1, $xC2, $xC3, $xC4, $xC5 ],";
-  $chartdata .= "[ 'Z4', $xD1, $xD2, $xD3, $xD4, $xD5 ],";
-  $chartdata .= "[ 'Z5', $xE1, $xE2, $xE3, $xE4, $xE5 ]";
-  $chartdata .= "]";
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  if (empty($_GET['size']) || ($_GET['size'] == "S")) {
+    $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <u>small</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=M")."\">medium</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=L")."\">large</a> ]</strong></p><br>\n";
+    $bb = 0;
+    $outdirect .= "  <table>\n";
+    $outdirect .= "    <tr>\n";
+    foreach ($k as $A => $B) {
+      if ($B) {
+        $R = new resize('../members/assets/upload/full/'.$B);
+        $R->resizeImage(180, 180, 'auto');
+        $R->saveImage('../members/assets/upload/resized_S/'.$B, 80);
+        $outdirect .= "      <td style=\"text-align:center\"><a href=\"/members/assets/upload/full/$B\" target=\"_blank\" title=\"Click to open a full size image in a new window\"><img src=\"/members/assets/upload/resized_S/$B\" class=\"img-thumbnail\"></a></td>\n";
+        $bb++;
+        if (($bb % 5 == 0) && ($bb > 0)) { $outdirect .= "    </tr><tr>\n"; }
+      }
+    }
+    $outdirect .= "    </tr>\n";
+    $outdirect .= "  </table>\n";
+  } else if ($_GET['size'] == "M") {
+    $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <a href=\"".htmlspecialchars($me."&size=S")."\">small</a> <strong>:</strong> <u>medium</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=L")."\">large</a> ]</strong></p><br>\n";
+    $bb = 0;
+    $outdirect .= "  <table>\n";
+    $outdirect .= "    <tr>\n";
+    foreach ($k as $A => $B) {
+      if ($B) {
+        $R = new resize('../members/assets/upload/full/'.$B);
+        $R->resizeImage(300, 300, 'auto');
+        $R->saveImage('../members/assets/upload/resized_M/'.$B, 80);
+        $outdirect .= "      <td style=\"text-align:center\"><a href=\"/members/assets/upload/full/$B\" target=\"_blank\" title=\"Click to open a full size image in a new window\"><img src=\"/members/assets/upload/resized_M/$B\" class=\"img-thumbnail\"></a></td>\n";
+        $bb++;
+        if (($bb % 3 == 0) && ($bb > 0)) { $outdirect .= "    </tr><tr>\n"; }
+      }
+    }
+    $outdirect .= "    </tr>\n";
+    $outdirect .= "  </table>\n";
+  } else if ($_GET['size'] == "L") {
+    $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <a href=\"".htmlspecialchars($me."&size=S")."\">small</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=M")."\">medium</a> <strong>:</strong> <u>large</u> ]</strong></p><br>\n";
+    $bb = 0;
+    $outdirect .= "  <table>\n";
+    $outdirect .= "    <tr>\n";
+    foreach ($k as $A => $B) {
+      if ($B) {
+        $R = new resize('../members/assets/upload/full/'.$B);
+        $R->resizeImage(450, 450, 'auto');
+        $R->saveImage('../members/assets/upload/resized_L/'.$B, 80);
+        $outdirect .= "      <td style=\"text-align:center\"><a href=\"/members/assets/upload/full/$B\" target=\"_blank\" title=\"Click to open a full size image in a new window\"><img src=\"/members/assets/upload/resized_L/$B\" class=\"img-thumbnail\"></a></td>\n";
+        $bb++;
+        if (($bb % 2 == 0) && ($bb > 0)) { $outdirect .= "    </tr><tr>\n"; }
+      }
+    }
+    $outdirect .= "    </tr>\n";
+    $outdirect .= "  </table>\n";
+  } else {
+    $bb = 0;
+    $outdirect .= "  <table>\n";
+    $outdirect .= "    <tr>\n";
+    foreach ($k as $A => $B) {
+      if ($B) {
+        $R = new resize('../members/assets/upload/full/'.$B);
+        $R->resizeImage(300, 300, 'auto');
+        $R->saveImage('../members/assets/upload/resized_M/'.$B, 80);
+        $outdirect .= "      <td style=\"text-align:center\"><a href=\"/members/assets/upload/full/$B\" target=\"_blank\" title=\"Click to open a full size image in a new window\"><img src=\"/members/assets/upload/resized_M/$B\" class=\"img-thumbnail\"></a></td>\n";
+        $bb++;
+        if (($bb % 3 == 0) && ($bb > 0)) { $outdirect .= "    </tr><tr>\n"; }
+      }
+    }
+    $outdirect .= "    </tr>\n";
+    $outdirect .= "  </table>\n";
+  }
 }
 
 // ------- Questionnaire navigator --------------------------------------------------------------------------
@@ -219,94 +269,262 @@ echo $banner;
 
 $answers = "<p><em>A total of $totalresponses responses answered by $totalrecords respondents</em></p>\n";
 
+$openendquery = "<div style=\"text-align:right\">\n";
+$openendquery .= "<p>Custom key words centering tool</p>\n";
+$openendquery .= "<input id=\"root\" value=\"\" placeholder=\"Enter key words\">\n";
+$openendquery .= "<input type=\"button\" id=\"go\" value=\"Generate\">\n";
+$openendquery .= "</div>\n";
+
 if ($_GET["q"]) {
 
 ?>
 
 <div class="row">
-  <div class="col-sm-12">
+  <div class="col-sm-12 bg-info" style="margin-bottom:40px">
     <?php echo $qout; ?>
     <?php echo $answers; ?>
   </div>
-  <div class="col-sm-4 bg-info">
-    <h4>Data</h4>
-    <table id="tabulation" class="table table-condensed table-hover">
-      <thead>
-        <tr class="bg-primary">
-          <th>Answers</th>
-          <th>Counts</th>
-        </tr>
-      </thead>
-      <tbody>
-
-      </tbody>
-    </table>
-  </div>
-  <div class="col-sm-8 bg-info">
-    <h4>Chart</h4>
+  <div class="col-sm-12">
+<?php if ($qtype == "file") { echo $outdirect; } else { ?>
+    <?php if ($qtype == "comment") { echo $openendquery; } ?>
+    <?php echo $menu; ?>
+    <p><small class="blue">You can sort the results by clicking the table's headers</small></p>
+    <div id="table" style="width:300px"></div>
     <div id="chart"></div>
+<?php } ?>
   </div>
 </div>
 
-<?php
-} else {
+<?php } else { echo "<h4>Please click each of the above questions for viewing the results</h4>"; } ?>
 
-echo "<h4>Please click each of the above questions for viewing the results</h4>";
 
-}
-?>
+<!-- ############# Output for radiogroup, rating and dropdown (single answer) ############# -->
 
-<?php if (($qtype == "radiogroup") || ($qtype == "dropdown") || ($qtype == "rating")) { ?>
+<?php if (($qtype == "radiogroup") || ($qtype == "rating") || ($qtype == "dropdown")) { ?>
 
-  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<?php if ((empty($_GET['type'])) || ($_GET['type'] == "pie")) { ?>
+
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript">
-    google.load('visualization', '1.0', {'packages':['corechart']});
-    google.setOnLoadCallback(drawChart);
-    function drawChart() {
+    google.charts.load('current', {'packages': ['table', 'corechart']});
+    google.charts.setOnLoadCallback(drawSort);
+    function drawSort() {
       var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Topping');
-      data.addColumn('number', 'Slices');
-      data.addRows(<?php print_r($chartdata); ?>);
-      var options = {'title':'<?php echo $qtitle; ?>','is3D':'true','width':'600','height':'600'};
+      data.addColumn('string', 'Answer');
+      data.addColumn('number', 'Count');
+      data.addColumn('number', 'Percentage');
+<?php echo $out; ?>
+      var view = new google.visualization.DataView(data);
+      view.setColumns([0, 1, 2]);
+      var formatter = new google.visualization.NumberFormat({suffix: '%'});
+      formatter.format(data, 2);
+      var options = { title: '<?php echo $qtitle; ?>', is3D: true, width: '100%', height: '400'};
       var chart = new google.visualization.PieChart(document.getElementById('chart'));
-      chart.draw(data, options);
-      var csv = google.visualization.dataTableToCsv(data);
-      console.log(csv);
+      chart.draw(view, options);
+      var table = new google.visualization.Table(document.getElementById('table'));
+      table.draw(view, {width: '100%', height: '100%'});
+      google.visualization.events.addListener(table, 'sort',
+        function(event) {
+          data.sort([{column: event.column, desc: !event.ascending}]);
+          chart.draw(view);
+        });
     }
+  </script>
+
+<?php } else if ($_GET['type'] == "donut") { ?>
+
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    google.charts.load('current', {'packages': ['table', 'corechart']});
+    google.charts.setOnLoadCallback(drawSort);
+    function drawSort() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Answer');
+      data.addColumn('number', 'Count');
+      data.addColumn('number', 'Percentage');
+<?php echo $out; ?>
+      var view = new google.visualization.DataView(data);
+      view.setColumns([0, 1, 2]);
+      var formatter = new google.visualization.NumberFormat({suffix: '%'});
+      formatter.format(data, 2);
+      var options = { title: '<?php echo $qtitle; ?>', pieHole: 0.4, width: '100%', height: '400'};
+      var chart = new google.visualization.PieChart(document.getElementById('chart'));
+      chart.draw(view, options);
+      var table = new google.visualization.Table(document.getElementById('table'));
+      table.draw(view, {width: '100%', height: '100%'});
+      google.visualization.events.addListener(table, 'sort',
+        function(event) {
+          data.sort([{column: event.column, desc: !event.ascending}]);
+          chart.draw(view);
+        });
+    }
+  </script>
+
+<?php } else if ($_GET['type'] == "bar-H") { ?>
+
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    google.charts.load('current', {'packages': ['table', 'corechart']});
+    google.charts.setOnLoadCallback(drawSort);
+    function drawSort() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Answer');
+      data.addColumn('number', 'Count');
+      data.addColumn('number', 'Percentage');
+<?php echo $out; ?>
+      var viewTable = new google.visualization.DataView(data);
+      viewTable.setColumns([0, 1, 2]);
+      var viewChart = new google.visualization.DataView(data);
+      viewChart.setColumns([0, 2]);
+      var formatter = new google.visualization.NumberFormat({suffix: '%'});
+      formatter.format(data, 2);
+      var options = { title: '<?php echo $qtitle; ?>', width: '100%', height: '400', bar: { groupWidth:  '95%' }, legend: { position: 'none' } };
+      var chart = new google.visualization.BarChart(document.getElementById('chart'));
+      chart.draw(viewChart, options);
+      var table = new google.visualization.Table(document.getElementById('table'));
+      table.draw(viewTable, {width: '100%', height: '100%'});
+      google.visualization.events.addListener(table, 'sort',
+        function(event) {
+          data.sort([{column: event.column, desc: !event.ascending}]);
+          chart.draw(viewChart);
+        });
+    }
+  </script>
+
+<?php } else if ($_GET['type'] == "bar-V") { ?>
+
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    google.charts.load('current', {'packages': ['table', 'corechart']});
+    google.charts.setOnLoadCallback(drawSort);
+    function drawSort() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Answer');
+      data.addColumn('number', 'Count');
+      data.addColumn('number', 'Percentage');
+<?php echo $out; ?>
+      var viewTable = new google.visualization.DataView(data);
+      viewTable.setColumns([0, 1, 2]);
+      var viewChart = new google.visualization.DataView(data);
+      viewChart.setColumns([0, 2]);
+      var formatter = new google.visualization.NumberFormat({suffix: '%'});
+      formatter.format(data, 2);
+      var options = { title: '<?php echo $qtitle; ?>', width: '100%', height: '400', bar: { groupWidth:  '95%' }, legend: { position: 'none' } };
+      var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
+      chart.draw(viewChart, options);
+      var table = new google.visualization.Table(document.getElementById('table'));
+      table.draw(viewTable, {width: '100%', height: '100%'});
+      google.visualization.events.addListener(table, 'sort',
+        function(event) {
+          data.sort([{column: event.column, desc: !event.ascending}]);
+          chart.draw(viewChart);
+        });
+    }
+  </script>
+
+<?php } ?>
+
+<!-- ############# Output for checkbox (multiple answer) ############# -->
 
 <?php } else if ($qtype == "checkbox") { ?>
 
-  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<?php if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { ?>
+
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript">
-    google.load('visualization', '1.0', {'packages':['corechart']});
-    google.setOnLoadCallback(drawChart);
-    function drawChart() {
+    google.charts.load('current', {'packages': ['table', 'corechart']});
+    google.charts.setOnLoadCallback(drawSort);
+    function drawSort() {
       var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Topping');
-      data.addColumn('number', 'Slices');
-      data.addRows(<?php print_r($chartdata); ?>);
-      var options = {'title':'<?php echo $qtitle; ?>','is3D':'true','width':'600','height':'600',bar:{groupWidth: "95%"},legend:{position:"none"}};
+      data.addColumn('string', 'Answer');
+      data.addColumn('number', 'Count');
+      data.addColumn('number', 'Percentage');
+<?php echo $out; ?>
+      var viewTable = new google.visualization.DataView(data);
+      viewTable.setColumns([0, 1, 2]);
+      var viewChart = new google.visualization.DataView(data);
+      viewChart.setColumns([0, 2]);
+      var formatter = new google.visualization.NumberFormat({suffix: '%'});
+      formatter.format(data, 2);
+      var options = { title: '<?php echo $qtitle; ?>', width: '100%', height: '400', bar: {groupWidth: '95%' }, legend: {position: 'none' } };
       var chart = new google.visualization.BarChart(document.getElementById('chart'));
-      chart.draw(data, options);
-      var csv = google.visualization.dataTableToCsv(data);
-      console.log(csv);
+      chart.draw(viewChart, options);
+      var table = new google.visualization.Table(document.getElementById('table'));
+      table.draw(viewTable, {width: '100%', height: '100%'});
+      google.visualization.events.addListener(table, 'sort',
+        function(event) {
+          data.sort([{column: event.column, desc: !event.ascending}]);
+          chart.draw(viewChart);
+        });
     }
+  </script>
 
-<?php } else if ($qtype == "matrix") { ?>
+<?php } else if ($_GET['type'] == "newbar-H") { ?>
 
-  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript">
-    google.load('visualization', '1.0', {'packages':['corechart']});
-    google.setOnLoadCallback(drawChart);
-    function drawChart() {
-      var data = new google.visualization.arrayToDataTable(<?php print_r($chartdata); ?>);
-      var options = {'title':'<?php echo $qtitle; ?>','isStacked':'percent','isStacked':'relative','width':'600','height':'600',bar:{groupWidth: "75%"},legend:{position:"top",maxLines:3},isStacked:true};
-      var options_fullStacked = {isStacked:'percent',height:'600',legend:{position:'top',maxLines:3},hAxis:{minValue:0,ticks: [0,.25,.5,.75,1]}};
-      var chart = new google.visualization.BarChart(document.getElementById('chart'));
-      chart.draw(data, options);
-      var csv = google.visualization.dataTableToCsv(data);
-      console.log(csv);
+    google.charts.load('current', {'packages': ['table', 'bar']});
+    google.charts.setOnLoadCallback(drawSort);
+    function drawSort() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Answer');
+      data.addColumn('number', 'Count');
+      data.addColumn('number', 'Percentage');
+<?php echo $out; ?>
+      var viewTable = new google.visualization.DataView(data);
+      viewTable.setColumns([0, 1, 2]);
+      var viewChart = new google.visualization.DataView(data);
+      viewChart.setColumns([0, 2]);
+      // view.setColumns([0, 1, { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation" }, 2]);
+      var formatter = new google.visualization.NumberFormat({suffix: '%'});
+      formatter.format(data, 2);
+      var options = { title: '<?php echo $qtitle; ?>', width: '100%', height: '400', bar: { groupWidth: '95%' }, legend: { position: 'none' }, bars: 'horizontal' };
+      var chart = new google.charts.Bar(document.getElementById('chart'));
+      chart.draw(viewChart, options);
+      var table = new google.visualization.Table(document.getElementById('table'));
+      table.draw(viewTable, {width: '100%', height: '100%'});
+      google.visualization.events.addListener(table, 'sort',
+        function(event) {
+          data.sort([{column: event.column, desc: !event.ascending}]);
+          chart.draw(viewChart);
+        });
     }
+  </script>
+
+<?php } else if ($_GET['type'] == "bar-V") { ?>
+
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    google.charts.load('current', {'packages': ['table', 'corechart']});
+    google.charts.setOnLoadCallback(drawSort);
+    function drawSort() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Answer');
+      data.addColumn('number', 'Count');
+      data.addColumn('number', 'Percentage');
+<?php echo $out; ?>
+      var viewTable = new google.visualization.DataView(data);
+      viewTable.setColumns([0, 1, 2]);
+      var viewChart = new google.visualization.DataView(data);
+      viewChart.setColumns([0, 2]);
+      var formatter = new google.visualization.NumberFormat({suffix: '%'});
+      formatter.format(data, 2);
+      var options = { title: '<?php echo $qtitle; ?>', width: '100%', height: '400', bar: { groupWidth:  '95%' }, legend: { position: 'none' } };
+      var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
+      chart.draw(viewChart, options);
+      var table = new google.visualization.Table(document.getElementById('table'));
+      table.draw(viewTable, {width: '100%', height: '100%'});
+      google.visualization.events.addListener(table, 'sort',
+        function(event) {
+          data.sort([{column: event.column, desc: !event.ascending}]);
+          chart.draw(viewChart);
+        });
+    }
+  </script>
+
+<?php } ?>
+
+<!-- ############# Output for comment (open-end) ############# -->
 
 <?php } else if ($qtype == "comment") { ?>
 
@@ -315,35 +533,17 @@ echo "<h4>Please click each of the above questions for viewing the results</h4>"
     google.charts.load('current', {packages:['wordtree']});
     google.charts.setOnLoadCallback(drawChart);
     function drawChart() {
-      var data = google.visualization.arrayToDataTable(<?php print_r($chartdata); ?>);
-      var options = {wordtree: {format: 'implicit',word: 'cats'}};
+      var data = google.visualization.arrayToDataTable(<?php print_r($out); ?>);
+      var root = document.getElementById('root').value || '';
+      if (root) { var options = { wordtree: { format: 'implicit', type: 'double', word: root }, title: '<?php echo $qtitle; ?>', width: '100%', height: '600' }; }
+      else { var options = { wordtree: { format: 'implicit', type: 'suffix', word: root }, title: '<?php echo $qtitle; ?>', width: '100%', height: '600' }; }
       var chart = new google.visualization.WordTree(document.getElementById('chart'));
       chart.draw(data, options);
-      var csv = google.visualization.dataTableToCsv(data);
-      console.log(csv);
+      document.getElementById('go').onclick = drawChart;
     }
+  </script>
 
 <?php } ?>
-
-<?php if (($qtype == "radiogroup") || ($qtype == "dropdown") || ($qtype == "rating") || ($qtype == "checkbox") || ($qtype == "comment")) { ?>
-
-  var data = <?php echo $dout; ?>;
-  for (var key in data) {
-    var row = $('<tr><td>' + key + '</td><td>' + data[key] + '</td></tr>');
-    $('#tabulation').append(row);
-  }
-
-<?php } else if ($qtype == "matrix") { ?>
-
-  var data = <?php echo $ww; ?>;
-  for (var key in data) {
-    var row = $('<tr><td>' + key + '</td><td>' + data[key] + '</td></tr>');
-    $('#tabulation').append(row);
-  }
-
-<?php } ?>
-
-</script>
 
 <br>
 

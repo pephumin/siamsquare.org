@@ -25,8 +25,23 @@ pageHeader($title);
 <?php } else { ?>
 
 <?php
-// $lastlogin = $_SESSION["lastlogin2"]." (".ago($_SESSION["lastlogin2"]).")";
-// $registersince = $_SESSION["created"]." (".ago($_SESSION["created"]).")";
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
+$db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
+$sql = "SELECT id, title, created FROM j_projects WHERE userid = :userid AND companyid = :companyid AND status >= 0 ORDER BY id DESC";
+$q = $db->prepare($sql);
+$q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+$q->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+$q->execute();
+$counts = $q->rowCount();
+$output = "              <select id=\"projectlist\" multiple class=\"form-control\" disabled>\n";
+while ($row = $q->fetchObject()) {
+  $id = $row->id;
+  $title = $row->title;
+  $created = ago($row->created);
+  $output .= "                <option>Project $title (created: $created)</option>\n";
+}
+$output .= "              </select>\n";
+
 $lastlogin = ago($_SESSION["lastlogin2"]);
 $registersince = ago($_SESSION["created"]);
 
@@ -88,7 +103,7 @@ echo "<br>\n";
             <td width="70%">
               <div class="input-group">
                 <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
-                <input type="text" name="company" class="form-control" value="<?php echo $_SESSION["level"]; ?>" disabled>
+                <input type="text" name="company" class="form-control" value="<?php echo $_SESSION["role"]; ?>" disabled>
               </div>
             </td>
           </tr>
@@ -110,6 +125,13 @@ echo "<br>\n";
                 <span class="input-group-addon"><i class="pe-clock-o pe-fw"></i></span>
                 <input type="text" name="company" class="form-control" value="<?php echo ago($_SESSION["updated"]); ?>" disabled>
               </div>
+            </td>
+          </tr>
+          <tr>
+            <td width="25%" style="text-align:right">Projects handled<br><small>(Total of <?php echo $counts; ?> projects)</small></td>
+            <td width="5%"></td>
+            <td width="70%">
+<?php echo $output; ?>
             </td>
           </tr>
         </table>
@@ -290,6 +312,9 @@ foreach($pictures as $a => $b) {
       $("#avatar1").attr("src",$(this).val());
       $("#avatar2").attr("src",$(this).val());
     });
+  });
+  $(function () {
+    $("#projectlist").css("height", parseInt($("#projectlist option").length) * 25);
   });
 </script>
 

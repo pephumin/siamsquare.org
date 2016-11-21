@@ -116,7 +116,7 @@ function pageHeader($title) {
                   <!-- <li><a href="<?php echo(MYADMIN."?w=surveys&c=D"); ?>" title="Archive"><i class="pe-archive pe-fw"></i> Archive</a></li> -->
                   <li role="separator" class="divider"></li>
                   <li><a href="<?php echo(MYADMIN."?w=data2table"); ?>" title="Data to table"><i class="pe-table pe-fw"></i> Data to table</a></li>
-<?php if ($_SESSION['levelid'] == "9") { ?>
+<?php if ($_SESSION['level'] == "9") { ?>
                   <li role="separator" class="divider"></li>
                   <li><a href="<?php echo(MYADMIN."?w=help"); ?>" title="Help"><i class="pe-question-circle pe-fw"></i> Help</a></li>
                   <li><a href="<?php echo(MYADMIN."?w=api"); ?>" title="API commands"><i class="pe-code pe-fw"></i> API commands</a></li>
@@ -130,7 +130,7 @@ function pageHeader($title) {
                   <li><a href="<?php echo(MYADMIN."?w=team"); ?>" title="My team"><i class="pe-graduation-cap pe-fw"></i> My team</a></li>
                   <li role="separator" class="divider"></li>
                   <li><a href="<?php echo(MYADMIN."?w=activity"); ?>" title="View activity"><i class="pe-map-o pe-fw"></i> View activity</a></li>
-<?php if ($_SESSION['levelid'] == "9") { ?>
+<?php if ($_SESSION['level'] == "9") { ?>
                   <li><a href="<?php echo(MYADMIN."?w=todo"); ?>" title="Todo list"><i class="pe-tasks pe-fw"></i> Todo list</a></li>
 <?php } ?>
                 </ul>
@@ -183,6 +183,15 @@ function pageFooter($notes = null) {
 <div class="scroll-to-top"><i class="pe-arrow-up pe-lg white"></i></div>
 <script type="text/javascript" src="/admin/assets/js/notification.js"></script>
 <script type="text/javascript" src="/admin/assets/js/etc.js"></script>
+<script type="text/javascript">
+  function catch_click(e) {
+    if (!e) var e = window.event;
+    var right_click = (e.which ? (e.which == 3) : (e.button == 2));
+    if (right_click) { alert('Right clicking on this page is not allowed.'); return false; }
+  }
+  document.onmousedown = catch_click;
+  if (document.captureEvents) document.captureEvents(Event.MOUSEDOWN);
+</script>
 <?php if ($notes) { notify($notes); } ?>
 <?php debugOutput(); ?>
 </body>

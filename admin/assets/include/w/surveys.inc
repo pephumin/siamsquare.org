@@ -45,7 +45,7 @@ echo "<p>$details</p>\n";
     <p data-bind="visible: showActive() == 'C'" class="text-muted"><?php echo $detailsC; ?></p>
     <p data-bind="visible: showActive() == 'D'" class="text-muted"><?php echo $detailsD; ?></p>
   </div>
-  <?php if ($_SESSION['levelid'] >= "5") { ?>
+  <?php if ($_SESSION['level'] >= "5") { ?>
   <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
     <p class="pull-right"><a class="btn btn-primary" data-bind="click: createNew, visible: showActive() == 'A', enable: !isNewSurveyCreating()" href=""><i class="pe-cube pe-fw"></i> New project</a></p>
   </div>
@@ -64,7 +64,7 @@ echo "<p>$details</p>\n";
     </tr>
   </thead>
   <tbody>
-  <?php if ($_SESSION['levelid'] >= "5") { ?>
+  <?php if ($_SESSION['level'] >= "5") { ?>
     <tr data-bind="visible: isNewSurveyCreating" class="bg-info">
       <td colspan="3"><input type="text" class="form-control" data-bind="textInput: newSurveyName" placeholder="Enter a new project name"></td>
       <td>
@@ -89,24 +89,24 @@ echo "<p>$details</p>\n";
         <div data-bind="if: canedit">
           <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=edit&amp;s=' + id }, visible: $parent.showActive() == 'A'">Edit <i class="pe-edit"></i></a>
           <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=pilot&amp;s=' + id }, visible: $parent.showActive() == 'A'">Pilot test <i class="pe-paper-plane"></i></a>
-          <?php if ($_SESSION['levelid'] == "9") { ?><a class="orange" title="Move to the next step" data-bind="click: $parent.one2two, visible: $parent.showActive() == 'A'" href=""><i class="pe-arrow-circle-right pe-lg"></i></a><?php } ?>
+          <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the next step" data-bind="click: $parent.one2two, visible: $parent.showActive() == 'A'" href=""><i class="pe-arrow-circle-right pe-lg"></i></a><?php } ?>
         </div>
         <div data-bind="if: canedit">
-          <?php if ($_SESSION['levelid'] == "9") { ?><a class="orange" title="Move to the previous step" data-bind="click: $parent.two2one, visible: $parent.showActive() == 'B'" href=""><i class="pe-arrow-circle-left pe-lg"></i></a><?php } ?>
+          <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the previous step" data-bind="click: $parent.two2one, visible: $parent.showActive() == 'B'" href=""><i class="pe-arrow-circle-left pe-lg"></i></a><?php } ?>
           <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=progress&amp;s=' + id }, visible: $parent.showActive() == 'B'">Progress <i class="pe-flask"></i></a>
           <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=interim&amp;s=' + id }, visible: $parent.showActive() == 'B'">Interim <i class="pe-binoculars"></i></a>
           <a class="btn btn-primary btn-xs" data-bind="attr: { href: '/members/?w=run&amp;by=pass&amp;s=' + id }, visible: $parent.showActive() == 'B'" target="_blank">Live <i class="pe-plane"></i></a>
-          <?php if ($_SESSION['levelid'] == "9") { ?><a class="orange" title="Move to the next step" data-bind="click: $parent.two2three, visible: $parent.showActive() == 'B'" href=""><i class="pe-arrow-circle-right pe-lg"></i></a><?php } ?>
+          <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the next step" data-bind="click: $parent.two2three, visible: $parent.showActive() == 'B'" href=""><i class="pe-arrow-circle-right pe-lg"></i></a><?php } ?>
         </div>
         <div data-bind="if: canedit">
-          <?php if ($_SESSION['levelid'] == "9") { ?><a class="orange" title="Move to the previous step" data-bind="click: $parent.three2two, visible: $parent.showActive() == 'C'" href=""><i class="pe-arrow-circle-left pe-lg"></i></a><?php } ?>
+          <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the previous step" data-bind="click: $parent.three2two, visible: $parent.showActive() == 'C'" href=""><i class="pe-arrow-circle-left pe-lg"></i></a><?php } ?>
           <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=data&amp;s=' + id }, visible: $parent.showActive() == 'C'">Data <i class="pe-table"></i></a>
           <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=result&amp;s=' + id }, visible: $parent.showActive() == 'C'">Result <i class="pe-line-chart"></i></a>
           <a class="btn btn-default btn-xs" data-bind="click: $parent.archive, visible: $parent.showActive() == 'C'" href="">Archive <i class="pe-archive"></i></a>
-          <?php if ($_SESSION['levelid'] == "9") { ?><a class="orange" title="Move to the next step" data-bind="click: $parent.three2four, visible: $parent.showActive() == 'C'" href=""><i class="pe-arrow-circle-right pe-lg"></i></a><?php } ?>
+          <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the next step" data-bind="click: $parent.three2four, visible: $parent.showActive() == 'C'" href=""><i class="pe-arrow-circle-right pe-lg"></i></a><?php } ?>
         </div>
         <div data-bind="if: canedit">
-          <?php if ($_SESSION['levelid'] == "9") { ?><a class="orange" title="Move to the previous step" data-bind="click: $parent.four2three, visible: $parent.showActive() == 'D'" href=""><i class="pe-arrow-circle-left pe-lg"></i></a><?php } ?>
+          <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the previous step" data-bind="click: $parent.four2three, visible: $parent.showActive() == 'D'" href=""><i class="pe-arrow-circle-left pe-lg"></i></a><?php } ?>
           <a class="btn btn-default btn-xs" data-bind="click: $parent.restore, visible: $parent.showActive() == 'D'" href="">Restore <i class="pe-undo"></i></a>
           <a class="btn btn-danger btn-xs" data-bind="click: $parent.delete, visible: $parent.showActive() == 'D'" href="">Delete <i class="pe-trash"></i></a>
         </div>
@@ -153,7 +153,7 @@ echo "<p>$details</p>\n";
 <script type="text/javascript">
 
   var companyid = <?php echo $_SESSION['companyid']; ?>;
-  var levelid = <?php echo $_SESSION['levelid']; ?>;
+  var level = <?php echo $_SESSION['level']; ?>;
   var userid = <?php echo $_SESSION['userid']; ?>;
   var email = "<?php echo $_SESSION['email']; ?>";
   var ip = "<?php echo getip(); ?>";
@@ -194,7 +194,7 @@ echo "<p>$details</p>\n";
     this.loadData = function (i) {
       self.showActive(i);
       //var url = "/user/" + userid + "/" + i;
-      if (levelid == 9) { var url = "/all/" + i; }
+      if (level == 9) { var url = "/all/" + i; }
       else { var url = "/company/" + companyid + "/" + i; }
       $.getJSON(self.url + url, function (data) {
         var list = [];
@@ -371,7 +371,7 @@ echo "<p>$details</p>\n";
     }
     this.createNew = function () {
       self.isNewSurveyCreating(true);
-      self.newSurveyName("");
+      self.newSurveyName("My new project");
     }
     this.cancelNew = function () {
       self.isNewSurveyCreating(false);
@@ -454,8 +454,8 @@ echo "<p>$details</p>\n";
     this.createSurveyObject = function (data) {
       var canedit = false; var readonly = true; var owner = false;
       if (userid == data.userid) { var owner = true; }
-      if (levelid == 9) { var canedit = true; } else if (levelid == 6) { var canedit = true; }
-      else if (levelid == 5) { if (owner == true) { var canedit = true; } }
+      if (level == 9) { var canedit = true; } else if (level == 6) { var canedit = true; }
+      else if (level == 5) { if (owner == true) { var canedit = true; } }
       moment.locale('en');
       var s1 = moment(data.created).fromNow(); var s2 = moment(data.created).format("D MMM YYYY"); created = s2 + ' (' + s1 + ')';
       var t1 = moment(data.updated).fromNow(); var t2 = moment(data.updated).format("D MMM YYYY"); lastupdated = t2 + ' (' + t1 + ')';

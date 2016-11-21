@@ -20,7 +20,7 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 $db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
 
 if ($_GET['d']) {
-  if ($_SESSION['levelid'] == "9") {
+  if ($_SESSION['level'] == "9") {
     $d = base64_decode($_GET['d']);
     $q = $db->prepare("DELETE FROM j_users_logs WHERE id = :id");
     $q->bindValue(':id', $d, PDO::PARAM_INT);
@@ -31,10 +31,10 @@ if ($_GET['d']) {
   else { echo mkerror("Your level is not high enough to delete this data from the system."); }
 }
 
-if ($_SESSION['levelid'] == "9") {
+if ($_SESSION['level'] == "9") {
   $qA = $db->prepare("SELECT * FROM j_users_logs ORDER BY recorded DESC");
   $qB = $db->prepare("SELECT * FROM j_users_logs ORDER BY recorded DESC ".$add." ");
-} elseif ($_SESSION['levelid'] == "6") {
+} elseif ($_SESSION['level'] == "6") {
   $q1A = $db->prepare("SELECT id FROM j_users WHERE companyid = :companyid");
   $q1A->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
   $q1A->execute();
@@ -69,7 +69,7 @@ echo "<h4>There are a total of $rows records in our database (showing results $f
         <tr class="bg-primary">
           <th width="15%"><small><i class="pe-clock-o pe-fw"></i> Time</small></th>
           <th width="75%"><small><i class="pe-map-o pe-fw"></i> Activity</small></th>
-          <?php if ($_SESSION['levelid'] == "9") { echo "<th width=\"10%\"></th>\n"; } ?>
+          <?php if ($_SESSION['level'] == "9") { echo "<th width=\"10%\"></th>\n"; } ?>
         </tr>
       </thead>
       <tbody>
@@ -89,7 +89,7 @@ while ($r = $qB->fetchObject()) {
   echo "        <tr>\n";
   echo "          $td$t</small></td>\n";
   echo "          $td$r->data</small></td>\n";
-  if ($_SESSION['levelid'] == "9") { echo "          $td<a href=\"\" data-href=\"$delete\" class=\"btn btn-danger btn-tiny\" data-toggle=\"modal\" data-target=\"#confirm-delete\">Delete <i class=\"pe-trash-o\"></i></a></small></td>\n"; }
+  if ($_SESSION['level'] == "9") { echo "          $td<a href=\"\" data-href=\"$delete\" class=\"btn btn-danger btn-tiny\" data-toggle=\"modal\" data-target=\"#confirm-delete\">Delete <i class=\"pe-trash-o\"></i></a></small></td>\n"; }
   echo "        </tr>\n";
 }
 ?>
