@@ -8,5 +8,5 @@ firebase.json
 firebase-debug.log
 run
 *.swp
-newssq.sql
-members/assets/upload/*
+siamsquare.sql
+members/assets/upload
