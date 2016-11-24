@@ -1,6 +1,6 @@
 <?php
 
-$title = "Contact us";
+$title = 'Request for an access';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/template.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.login.php';
@@ -28,7 +28,7 @@ if (isset($_REQUEST['captcha'])) {
   $body = "----- Header --------------- \n\n";
   $body .= "From: $name ($email)\n\n";
   $body .= "Channel: http://www.siamsquare.org\n\n";
-  $body .= "Source: admin/contact\n\n";
+  $body .= "Source: admin/request\n\n";
   $body .= "----- Detail --------------- \n\n";
   $body .= "Message:\n\n$message\n\n";
   $headers = 'From: '.$email."\r\n" .
@@ -40,26 +40,28 @@ if (isset($_REQUEST['captcha'])) {
 
 }
 
+if ($_SESSION["logged_in"] == 1) { $msg = mkerror("You already have an access to our system, so no need to request anything. If this request is actually for your colleague, please logout and try again."); }
+
 pageHeader($title);
-echo "<h2>Contact us</h2>\n";
-echo "<p>You can use this contact form to write us a message at anytime.</p>\n";
-echo "<p>We <i class=\"pe-heart\"></i> to hear from you</p>\n";
+echo "<h2>Request for an access to our system</h2>\n";
+echo "<p>Whether you are current client or you will be our future client, feel free to contact us asking for access to our system.</p>\n";
+echo "<p>Once we provide you with a demo account, you will see the whole picture on what our system can do for you.</p>\n";
 echo "<br>\n";
 if ($msg) { echo $msg; }
 echo "<br>\n";
 
 ?>
 
-<form id="contactus" class="form-horizontal" role="form" method="post" action="<?php echo htmlspecialchars(ME); ?>">
+<form id="request" class="form-horizontal" role="form" method="post" action="<?php echo htmlspecialchars(ME); ?>">
   <div class="form-group">
     <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Name</label>
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
       <div class="input-group">
         <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
         <?php if ($sent) { ?>
-        <input type="text" class="form-control" name="name" placeholder="First &amp; Last Name" value="<?php echo htmlspecialchars($name); ?>" disabled>
+        <input type="text" class="form-control" name="name" placeholder="First &amp; last name" value="<?php echo htmlspecialchars($name); ?>" disabled>
         <?php } else { ?>
-        <input type="text" class="form-control" name="name" placeholder="First &amp; Last Name" value="<?php echo htmlspecialchars($name); ?>">
+        <input type="text" class="form-control" name="name" placeholder="First &amp; last name" value="<?php echo htmlspecialchars($name); ?>">
         <?php } ?>
       </div>
     </div>
@@ -95,7 +97,7 @@ echo "<br>\n";
     <label class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Confirmation</label>
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
       <p>Please type in the words as shown in this picture<br>
-      <img src="assets/include/captcha.php" alt="captcha"></p>
+      <img src="/admin/assets/include/captcha.php" alt="captcha"></p>
       <div class="input-group">
         <span class="input-group-addon"><i class="pe-cog pe-fw"></i></span>
         <?php if ($sent) { ?>
@@ -109,16 +111,16 @@ echo "<br>\n";
   <hr>
   <p class="text-center">
     <?php if ($sent) { ?>
-    <button type="submit" class="btn btn-warning" disabled>Send <i class="pe-paper-plane"></i></button>
+    <button type="submit" class="btn btn-warning" disabled>Send my request <i class="pe-paper-plane"></i></button>
     <?php } else { ?>
-    <button type="submit" class="btn btn-warning">Send <i class="pe-paper-plane"></i></button>
+    <button type="submit" class="btn btn-warning">Send my request <i class="pe-paper-plane"></i></button>
     <?php } ?>
     <button type="submit" class="btn btn-default">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
 </form>
 <script>
   $(document).ready(function() {
-    $('#contactus').formValidation({
+    $('#request').formValidation({
       framework: 'bootstrap',
       icon: { valid: 'pe-check', invalid: 'pe-times', validating: 'pe-refresh' },
       button: { selector: '[type="submit"]', disabled: '' },

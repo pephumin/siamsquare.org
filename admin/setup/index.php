@@ -15,18 +15,19 @@ if ($login->passwordResetWasSuccessful() == true && $login->passwordResetLinkIsV
   $title = "Your new password has been activated";
   pageHeader($title);
   echo "<h2>$title</h2>";
-  echo mksuccess("You have successfully reset your password. Please keep the new password safe.");
-  echo "<p>Thank you for using our system. We are glad to have you back on track again.</p>\n";
+  echo mksuccess("You have successfully set a new password. Please keep it safe.");
+  echo "<p>Thank you for using our system. We are glad to have you with us here.</p>\n";
   echo "<p>You can <a href=\"$target\">click here</a> to login and start using our system.</p>\n";
   echo "<br>\n\n";
   $notes = array (array("title" => "Password is reset", "text" => "You have successfully reset your password.", "image" => "assets/img/notification.svg"));
 
 } else if ($login->passwordResetLinkIsValid() == true) {
 
-  $title = "Set your new password";
+  $title = "Set a new password";
   pageHeader($title);
   echo "<h2>$title</h2>";
-  echo "<p>Congratulations, you have successfully verified your identity. This is the the final step where you will set a new password.</p>\n";
+  echo "<p>You have successfully verified your identity.</p>\n";
+  echo "<p>This is the the final step where you will set a new password. Please choose a new password that is not too easy to guess.</p>\n";
   echo "<p>Should you find any problems, please do not hesitate to contact us directly.</p>\n";
 
   if (isset($login)) {
@@ -95,12 +96,23 @@ if ($login->passwordResetWasSuccessful() == true && $login->passwordResetLinkIsV
 
 } else {
 
-  $title = "Password recovery";
-  pageHeader($title);
-  echo "<h2>$title</h2>";
-  echo "<p>Forgot your password? No problem at all.</p>\n";
-  echo "<p>We can help you recovery your account by resetting your password. Just follow the intruction in the below form.</p>\n";
-  echo "<p>Should you find any problems, please do not hesitate to contact us directly.</p>\n";
+  if ($_GET["d"] == "activation") {
+    $title = "Account activation";
+    pageHeader($title);
+    echo "<h2>$title</h2>";
+    echo "<p>We are glad to have you on board with us!</p>\n";
+    echo "<p>In order to start using the system, you would need to activate your account which will verify to see if your email address is active, and then will allow you to set a new password.</p>\n";
+    echo "<p>Please follow the provided instruction to complete this step. It will be very easy and straightforward.</p>\n";
+    echo "<p>Should you find any problems, please do not hesitate to contact us directly.</p>\n";
+  } else {
+    $title = "Password recovery";
+    pageHeader($title);
+    echo "<h2>$title</h2>";
+    echo "<p>Forgot your password? No problem at all.</p>\n";
+    echo "<p>We can help you recovery your account by resetting your password. Just follow the intruction in the below form.</p>\n";
+    echo "<p>Should you find any problems, please do not hesitate to contact us directly.</p>\n";
+  }
+
 
   if (isset($login)) {
     if ($login->errors) { foreach ($login->errors as $error) { echo $error; } }
