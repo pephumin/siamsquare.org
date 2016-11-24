@@ -45,7 +45,7 @@
   font-family: "krungthep";
   src: url("../fonts/krungthep.woff") format("woff"); }
 i {
-  font-family: "pe";
+  font-family: "pe" !important;
   display: inline-block;
   font: normal normal normal 14px/1 "pe";
   font-size: inherit;
@@ -10631,6 +10631,7 @@ button.close {
   color: #FFFFFF;
   bottom: 4%;
   cursor: pointer;
+  display: none;
   position: fixed;
   right: 20px;
   z-index: 999;
