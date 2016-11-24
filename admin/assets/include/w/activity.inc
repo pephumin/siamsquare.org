@@ -10,12 +10,6 @@ echo "<br>\n";
 if ($_GET['p']) { $p = $_GET['p']; }
 if ($p == '') { $p = "1"; }
 
-if (empty($start)) { $start = 0; }
-if (empty($limit)) { $limit = 100; }
-if ($p) { $start = ($p-1) * $limit; }
-$to_record = $start + $limit;
-$add = " LIMIT $start, $limit ";
-
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 $db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
 
@@ -31,33 +25,67 @@ if ($_GET['d']) {
   else { echo mkerror("Your level is not high enough to delete this data from the system."); }
 }
 
+if (empty($_GET['c'])) { $critical = ""; }
+else if ($_GET['c'] == 1) { $critical = "WHERE critical = '1'"; }
+else if ($_GET['c'] == 2) { $critical = "WHERE critical = '2'"; }
+else if ($_GET['c'] == 3) { $critical = "WHERE critical = '3'"; }
+else if ($_GET['c'] == 4) { $critical = "WHERE critical = '4'"; }
+else if ($_GET['c'] == 5) { $critical = "WHERE critical = '5'"; }
+
 if ($_SESSION['level'] == "9") {
-  $qA = $db->prepare("SELECT * FROM j_users_logs ORDER BY recorded DESC");
-  $qB = $db->prepare("SELECT * FROM j_users_logs ORDER BY recorded DESC ".$add." ");
-} elseif ($_SESSION['level'] == "6") {
-  $q1A = $db->prepare("SELECT id FROM j_users WHERE companyid = :companyid");
-  $q1A->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+  $q1A = $db->prepare("SELECT * FROM j_users_logs ".$critical." ORDER BY recorded DESC");
   $q1A->execute();
-  while ($rr = $q1A->fetchObject()) { $tt[] = $rr->id; }
-  $qA = $db->prepare("SELECT * FROM j_users_logs WHERE userid IN (".implode(',', $tt).") ORDER BY recorded DESC");
-  $qB = $db->prepare("SELECT * FROM j_users_logs WHERE userid IN (".implode(',', $tt).") ORDER BY recorded DESC ".$add." ");
-  $qA->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
-  $qB->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+} elseif ($_SESSION['level'] == "6") {
+  $q1 = $db->prepare("SELECT id FROM j_users WHERE companyid = :companyid");
+  $q1->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+  $q1->execute();
+  while ($rr = $q1->fetchObject()) { $tt[] = $rr->id; }
+  $q1A = $db->prepare("SELECT * FROM j_users_logs WHERE userid IN (".implode(',', $tt).") ORDER BY recorded DESC");
+  $q1A->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
 } else {
-  $qA = $db->prepare("SELECT * FROM j_users_logs WHERE userid = :userid ORDER BY recorded DESC");
-  $qB = $db->prepare("SELECT * FROM j_users_logs WHERE userid = :userid ORDER BY recorded DESC ".$add." ");
-  $qA->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
-  $qB->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+  $q1A = $db->prepare("SELECT * FROM j_users_logs WHERE userid = :userid ORDER BY recorded DESC");
+  $q1A->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
 }
 
-$qA->execute();
-$qB->execute();
-$rows = $qA->rowCount();
+if (empty($start)) { $start = 0; }
+if (empty($limit)) { $limit = 100; }
+if ($p) { $start = ($p-1) * $limit; }
+$to_record = $start + $limit;
+$add = " LIMIT $start, $limit ";
+
+$rows = $q1A->rowCount();
+$total = ceil($rows/$limit);
+$offset = ($currentpage - 1) * $rowsperpage;
+// if ($p > $total) { $p = $total; }
+
+if ($_SESSION['level'] == "9") {
+  $q1B = $db->prepare("SELECT * FROM j_users_logs ".$critical." ORDER BY recorded DESC ".$add." ");
+  $q1B->execute();
+} elseif ($_SESSION['level'] == "6") {
+  $q1 = $db->prepare("SELECT id FROM j_users WHERE companyid = :companyid");
+  $q1->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+  $q1->execute();
+  while ($rr = $q1->fetchObject()) { $tt[] = $rr->id; }
+  $q1B = $db->prepare("SELECT * FROM j_users_logs WHERE userid IN (".implode(',', $tt).") ORDER BY recorded DESC ".$add." ");
+  $q1B->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+} else {
+  $q1B = $db->prepare("SELECT * FROM j_users_logs WHERE userid = :userid ORDER BY recorded DESC ".$add." ");
+  $q1B->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+}
 
 if ($to_record > $rows) { $to_record = $rows; }
 $from_record = $start + 1;
 
-echo "<h4>There are a total of $rows records in our database (showing results $from_record to $to_record)</h4>\n";
+echo "<h4>Found a total of $rows records in our database (showing results $from_record to $to_record)</h4>\n";
+
+$me = "/admin/?w=activity";
+// if ($_GET['p']) { $me = $me."&p=".$_GET['p']; }
+if (empty($_GET['c'])) { echo "<div class=\"pull-right\">Select critical level [ <strong>All</strong> : <a href=\"".htmlspecialchars($me."&c=1")."\">1</a> : <a href=\"".htmlspecialchars($me."&c=2")."\">2</a> : <a href=\"".htmlspecialchars($me."&c=3")."\">3</a> : <a href=\"".htmlspecialchars($me."&c=4")."\">4</a> : <a href=\"".htmlspecialchars($me."&c=5")."\">5</a> ]</div>\n"; }
+else if ($_GET['c'] == 1) { echo "<div class=\"pull-right\">Select critical level [ <a href=\"".htmlspecialchars($me)."\">All</a> : <strong>1</strong> : <a href=\"".htmlspecialchars($me."&c=2")."\">2</a> : <a href=\"".htmlspecialchars($me."&c=3")."\">3</a> : <a href=\"".htmlspecialchars($me."&c=4")."\">4</a> : <a href=\"".htmlspecialchars($me."&c=5")."\">5</a> ]</div>\n"; }
+else if ($_GET['c'] == 2) { echo "<div class=\"pull-right\">Select critical level [ <a href=\"".htmlspecialchars($me)."\">All</a> : <a href=\"".htmlspecialchars($me."&c=1")."\">1</a> : <strong>2</strong> : <a href=\"".htmlspecialchars($me."&c=3")."\">3</a> : <a href=\"".htmlspecialchars($me."&c=4")."\">4</a> : <a href=\"".htmlspecialchars($me."&c=5")."\">5</a> ]</div>\n"; }
+else if ($_GET['c'] == 3) { echo "<div class=\"pull-right\">Select critical level [ <a href=\"".htmlspecialchars($me)."\">All</a> : <a href=\"".htmlspecialchars($me."&c=1")."\">1</a> : <a href=\"".htmlspecialchars($me."&c=2")."\">2</a> : <strong>3</strong> : <a href=\"".htmlspecialchars($me."&c=4")."\">4</a> : <a href=\"".htmlspecialchars($me."&c=5")."\">5</a> ]</div>\n"; }
+else if ($_GET['c'] == 4) { echo "<div class=\"pull-right\">Select critical level [ <a href=\"".htmlspecialchars($me)."\">All</a> : <a href=\"".htmlspecialchars($me."&c=1")."\">1</a> : <a href=\"".htmlspecialchars($me."&c=2")."\">2</a> : <a href=\"".htmlspecialchars($me."&c=3")."\">3</a> : <strong>4</strong> : <a href=\"".htmlspecialchars($me."&c=5")."\">5</a> ]</div>\n"; }
+else if ($_GET['c'] == 5) { echo "<div class=\"pull-right\">Select critical level [ <a href=\"".htmlspecialchars($me)."\">All</a> : <a href=\"".htmlspecialchars($me."&c=1")."\">1</a> : <a href=\"".htmlspecialchars($me."&c=2")."\">2</a> : <a href=\"".htmlspecialchars($me."&c=3")."\">3</a> : <a href=\"".htmlspecialchars($me."&c=4")."\">4</a> : <strong>5</strong> ]</div>\n"; }
 
 ?>
 
@@ -74,17 +102,17 @@ echo "<h4>There are a total of $rows records in our database (showing results $f
       </thead>
       <tbody>
 <?php
-while ($r = $qB->fetchObject()) {
+while ($r = $q1B->fetchObject()) {
   $t = ago($r->recorded);
-  $color = "";
-  if ($_GET['p']) { $delete = MYADMIN."?w=activity&d=".base64_encode($r->id)."&p=".$_GET['p']; } else { $delete = MYADMIN."?w=activity&d=".base64_encode($r->id); }
+  if ($_GET['p']) { $ex1 = "&p=".$_GET['p']; } else { $ex1 = ""; }
+  if ($_GET['c']) { $ex2 = "&c=".$_GET['c']; } else { $ex2 = ""; }
+  $delete = MYADMIN."?w=activity&d=".base64_encode($r->id).$ex1.$ex2;
   $r->data = iconize($r->data);
-  if (preg_match("/deleted a survey/i", $r->data)) { $color = "aliceblue"; }
-  else if (preg_match("/tried accessing/i", $r->data)) { $color = "lightsteelblue"; }
-  else if (preg_match("/tried editing/i", $r->data)) { $color = "lightsteelblue"; }
-  else if (preg_match("/created a new survey/i", $r->data)) { $color = "skyblue"; }
-  else if (preg_match("/created a new member/i", $r->data)) { $color = "skyblue"; }
-  else if (preg_match("/deleted a member/i", $r->data)) { $color = "aliceblue"; }
+  if (empty($_GET['c'])) {
+    if ($r->critical == 4) { $color = "#F0F8FF"; }
+    else if ($r->critical == 5) { $color = "#BDEDFF"; }
+    else { $color = ""; }
+  }
   if ($color) { $td = "<td style=\"background:$color\"><small>"; } else { $td = "<td><small>"; }
   echo "        <tr>\n";
   echo "          $td$t</small></td>\n";
@@ -123,17 +151,15 @@ while ($r = $qB->fetchObject()) {
 
 <?php
 
-$total = ceil($rows/$limit);
-$offset = ($currentpage - 1) * $rowsperpage;
 echo "<nav class=\"pagination-centered\">\n";
 echo "  <ul class=\"pagination\">\n";
-if ($p > 1) { $previous = $p-1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".MYADMIN."?w=activity&p=".$previous."\">&laquo;</a></li>\n"; }
+if ($p > 1) { $previous = $p-1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".MYADMIN."?w=activity&c=".$_GET['c']."&p=".$previous."\">&laquo;</a></li>\n"; }
 else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&laquo;</a></li>\n"; }
 for ($i=1; $i<=$total; $i++) {
-  if ($i == $p) { echo "    <li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".MYADMIN."?w=activity&p=".$i."\">".$i."</a></li>\n"; }
-  else { echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".MYADMIN."?w=activity&p=".$i."\">".$i."</a></li>\n"; }
+  if ($i == $p) { echo "    <li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".MYADMIN."?w=activity&c=".$_GET['c']."&p=".$i."\">".$i."</a></li>\n"; }
+  else { echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".MYADMIN."?w=activity&c=".$_GET['c']."&p=".$i."\">".$i."</a></li>\n"; }
 }
-if ($p != $total) { $next = $p+1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".MYADMIN."?w=activity&p=".$next."\">&raquo;</a></li>\n"; }
+if ($p != $total) { $next = $p+1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".MYADMIN."?w=activity&c=".$_GET['c']."&p=".$next."\">&raquo;</a></li>\n"; }
 else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&raquo;</a></li>\n"; }
 echo "  </ul>\n";
 echo "</nav>\n\n";
