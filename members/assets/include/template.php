@@ -205,7 +205,7 @@ function pageFooter($notes = null) {
   ga('send', 'pageview');
 </script>
 <?php if ($notes) { notify($notes); } ?>
-<?php debugOutput(); ?>
+<?php // debugOutput(); ?>
 </body>
 </html>
 <?php

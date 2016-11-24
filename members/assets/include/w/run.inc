@@ -22,7 +22,7 @@ pageHeader($title);
 
 <p class="text-right grey">บัญชีของคุณคือ: <strong><?php echo $email; ?></strong></p>
 
-<div id="showalert"></div>
+<div id="showupload"></div><div id="showcompletion"></div>
 
 <br>
 
@@ -82,8 +82,8 @@ pageHeader($title);
       contentType: 'application/json; charset=utf-8',
       data: '{"rd": "' + cid + '", "ip": "' + cip + '", "email": "' + email + '", "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ', "status": "1" }',
       success: function(data) {
-        $('#showalert').show();
-        window.setTimeout(function () { $("#showalert").slideUp(500, function () { $("#showalert").hide(); }); }, 5000);
+        $('#showupload').hide(); $('#showcompletion').show();
+        // window.setTimeout(function () { $("#showcompletion").slideUp(500, function () { $("#showcompletion").hide(); }); }, 5000);
         $.ajax({
           url: api + '/log/' + cid + '/' + id,
           dataType: 'json',
@@ -116,11 +116,25 @@ pageHeader($title);
   var cid = "<?php echo $userid; ?>";
   var email = "<?php echo $email; ?>";
   var ip = "<?php echo getip(); ?>";
-  $('#showalert').html("<div class='alert alert-success'><i class='pe-check-square-o pe-fw'></i> เราได้ทำการจัดเก็บความคิดเห็นของคุณลงระบบแล้ว</div>").hide();
+  $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> เรากำลังอัพโหลดรูปไปยังระบบ <strong>และอีกสักครู่คุณจะได้รับข้อความจากระบบว่าดำเนินการสำเร็จ</strong> กรุณาอย่ารีเฟรชหรือกดส่งซ้ำ</div>").hide();
+  $('#showcompletion').html("<div class='alert alert-success'><i class='pe-check-square-o pe-lg pe-fw'></i> เราได้ทำการจัดเก็บความคิดเห็นของคุณลงระบบเป็นที่เรียบร้อยแล้ว</div>").hide();
   mm = getsurveyinfo(surveyid);
   Survey.Survey.cssType = "bootstrap";
   var survey = new Survey.Survey (getsurveydata(surveyid), "runsurvey");
   survey.onComplete.add(function (s) { postsurveydata(cid, ip, email, surveyid, survey.data, mm.title); });
+  survey.onUploadFile.add(function (data) { $('#showupload').show(); });
+  // survey.onComplete
+  // survey.onCurrentPageChanged
+  // survey.onValueChanged
+  // survey.onVisibleChanged
+  // survey.onPageVisibleChanged
+  // survey.onQuestionAdded
+  // survey.onQuestionRemoved
+  // survey.onValidateQuestion
+  // survey.onProcessHtml
+  // survey.onSendResult
+  // survey.onGetResult
+  // survey.onUploadFile
 
   survey.locale = "th";
   var Survey;
