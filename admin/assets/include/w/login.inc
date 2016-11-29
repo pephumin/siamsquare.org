@@ -37,7 +37,7 @@ if (isset($login)) {
   <div class="form-group">
     <div class="col-xs-12 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-sm-7 col-md-7 col-lg-7">
       <div class="checkbox checkbox-warning">
-        <input type="checkbox" name="rememberme" value="1" checked> <label for="remember">Keep me logged in</label>
+        <input type="checkbox" name="rememberme" value="1" checked> <label for="remember">Keep me logged in for this device</label>
       </div>
     </div>
   </div>
@@ -46,7 +46,7 @@ if (isset($login)) {
     <button class="btn btn-warning" name="login" value="1" type="submit">Log in <i class="pe-check-circle-o"></i></button>
     <button class="btn btn-default" name="cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
-  <p class="text-center">[<a href="recovery.php">Forgot password?</a>]</p>
+  <p class="text-center"><strong>[</strong> <i class="pe-flag pe-fw"></i> <a href="/admin/setup/?d=activation">Account activation</a> <strong>:</strong> <i class="pe-life-ring pe-fw"></i> <a href="/admin/setup/">Forgot password?</a> <strong>]</strong></p>
 </form>
 <script>
   $(document).ready(function() {
