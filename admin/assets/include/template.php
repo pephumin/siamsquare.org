@@ -14,7 +14,7 @@ function peblogo() {
 
 function pageHeader($title) {
   $user = $_SESSION['email']; $avatar = $_SESSION['avatar'];
-  if (isset($avatar)) { $show = "<img src=\"$avatar\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
+  if (isset($avatar)) { $show = "<img src=\"/admin/$avatar\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
   $v1 = MYADMIN."?w=login"; $v2 = MYADMIN."?w=logout"; $v3 = "http://www.pebinary.net/en/clients/";
   if ($_SESSION['logged_in']) {
     $signed = "<a href=\"$v2\" class=\"btn btn-warning btn-xs\" title=\"Log out\"><i class=\"pe-sign-out pe-fw\"></i> Log out</a> <a href=\"$v3\" class=\"btn btn-danger btn-xs\"><i class=\"pe-university pe-fw\"></i> Help</a>\n";
@@ -74,6 +74,7 @@ function pageHeader($title) {
   <script type="text/javascript" src="/admin/assets/js/survey/survey.ko.js"></script>
   <script type="text/javascript" src="/admin/assets/js/survey/surveyeditor.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/firebasejs/3.4.1/firebase.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <body>
 <header>
@@ -114,6 +115,7 @@ function pageHeader($title) {
                   <!-- <li><a href="<?php echo(MYADMIN."?w=surveys&c=B"); ?>" title="Fieldwork"><i class="pe-hourglass-half pe-fw"></i> Fieldwork</a></li> -->
                   <!-- <li><a href="<?php echo(MYADMIN."?w=surveys&c=C"); ?>" title="Post-fieldwork"><i class="pe-hourglass-end pe-fw"></i> Post-fieldwork</a></li> -->
                   <!-- <li><a href="<?php echo(MYADMIN."?w=surveys&c=D"); ?>" title="Archive"><i class="pe-archive pe-fw"></i> Archive</a></li> -->
+                  <li><a href="<?php echo(MYADMIN."?w=respondents"); ?>" title="Respondents"><i class="pe-users pe-fw"></i> Respondents</a></li>
                   <li role="separator" class="divider"></li>
                   <li><a href="<?php echo(MYADMIN."?w=data2table"); ?>" title="Data to table"><i class="pe-table pe-fw"></i> Data to table</a></li>
 <?php if ($_SESSION['level'] == "9") { ?>
@@ -126,10 +128,12 @@ function pageHeader($title) {
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-user pe-fw"></i> Profile <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="<?php echo(MYADMIN."?w=profile"); ?>" title="My profile"><i class="pe-user pe-fw"></i> My profile</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=team"); ?>" title="My team"><i class="pe-graduation-cap pe-fw"></i> My team</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=profile"); ?>" title="My profile"><i class="pe-user pe-fw"></i> Myself</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=team"); ?>" title="My team"><i class="pe-graduation-cap pe-fw"></i> Team</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=company"); ?>" title="The company"><i class="pe-building pe-fw"></i> Company</a></li>
                   <li role="separator" class="divider"></li>
-                  <li><a href="<?php echo(MYADMIN."?w=activity"); ?>" title="View activity"><i class="pe-map-o pe-fw"></i> View activity</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=news"); ?>" title="Updated news"><i class="pe-bullhorn pe-fw"></i> Updated news</a></li>
+                  <li><a href="<?php echo(MYADMIN."?w=activity"); ?>" title="Activity"><i class="pe-map-o pe-fw"></i> Activity</a></li>
 <?php if ($_SESSION['level'] == "9") { ?>
                   <li><a href="<?php echo(MYADMIN."?w=todo"); ?>" title="Todo list"><i class="pe-tasks pe-fw"></i> Todo list</a></li>
 <?php } ?>
@@ -137,7 +141,8 @@ function pageHeader($title) {
               </li>
 <?php } else { ?>
               <li><a href="<?php echo MYADMIN; ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> Home</a></i>
-              <li><a href="<?php echo(MYADMIN."request.php"); ?>" title="Request for an access"><i class="pe-credit-card pe-fw"></i> Request for an access</a></li>
+              <li><a href="<?php echo(MYADMIN."request/"); ?>" title="Request for an access"><i class="pe-credit-card pe-fw"></i> Request for an access</a></li>
+              <!-- <li><a href="<?php echo(MYADMIN."setup/?d=activation"); ?>" title="Account activation"><i class="pe-flag pe-fw"></i> Account activation</a></li> -->
 <?php } ?>
             </ul>
           </div>
@@ -184,13 +189,13 @@ function pageFooter($notes = null) {
 <script type="text/javascript" src="/admin/assets/js/notification.js"></script>
 <script type="text/javascript" src="/admin/assets/js/etc.js"></script>
 <script type="text/javascript">
-  function catch_click(e) {
-    if (!e) var e = window.event;
-    var right_click = (e.which ? (e.which == 3) : (e.button == 2));
-    if (right_click) { alert('Right clicking on this page is not allowed.'); return false; }
-  }
-  document.onmousedown = catch_click;
-  if (document.captureEvents) document.captureEvents(Event.MOUSEDOWN);
+  // function catch_click(e) {
+  //   if (!e) var e = window.event;
+  //   var right_click = (e.which ? (e.which == 3) : (e.button == 2));
+  //   if (right_click) { alert('Right clicking on this page is not allowed.'); return false; }
+  // }
+  // document.onmousedown = catch_click;
+  // if (document.captureEvents) document.captureEvents(Event.MOUSEDOWN);
 </script>
 <?php if ($notes) { notify($notes); } ?>
 <?php debugOutput(); ?>
@@ -302,9 +307,12 @@ function getip() {
   return $ipaddress;
 }
 
+function generateRandomString($length = 8) {
+  return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length/strlen($x)) )),1,$length);
+}
+
 function generateRandom($length = 6, $vals = 'abchefghjkmnpqrstuvwxyz0123456789') {
   $s = "";
-
   while(strlen($s) < $length) {
     mt_getrandmax();
     $num = rand() % strlen($vals);
@@ -428,9 +436,17 @@ function iconize($data) {
   else if (preg_match("/deleted a member/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/suspended a member/i", $data)) { $insert = "<i class=\"pe-pause-circle pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed level for/i", $data)) { $insert = "<i class=\"pe-level-up pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/wrong password/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/incorrect current password/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/requested a password reset/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/failed to reset password/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed to a new password/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
   else { $insert = ""; }
   if ($insert) { $data = $insert." ".$data; } else { $data = $data; }
   return $data;
 }
 
+function shortdate($timestamp) {
+  return date('j M Y', strtotime($timestamp));
+}
 ?>
