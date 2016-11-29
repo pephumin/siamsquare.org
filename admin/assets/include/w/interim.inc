@@ -19,36 +19,61 @@ $q->bindValue(':S2', '0', PDO::PARAM_INT);
 $q->bindValue(':S3', '-1', PDO::PARAM_INT);
 $q->execute();
 while ($row = $q->fetchObject()) {
-  $responses_good = $row->S1; //echo $responses_good;
-  $responses_test = $row->S2; //echo $responses_test;
-  $responses_deleted = $row->S3; //echo $responses_deleted;
-}
-$responses_total = $responses_good + $responses_test + $responses_deleted;
-$percentage_good = ($responses_good * 100) / $responses_total;
-
-// Get result stats (first)
-$sql3 = "SELECT id, email, ip, submitted FROM j_results WHERE surveyid = :surveyid AND status = 1 ORDER BY submitted LIMIT 1";
-$q = $db->prepare($sql3);
-$q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-$q->execute();
-while ($row = $q->fetchObject()) {
-  $first_id = $row->id;
-  $first_email = $row->email;
-  $first_ip = $row->ip;
-  $first_submitted = $row->submitted;
+  $responses_good = $row->S1;
+  $responses_test = $row->S2;
+  $responses_deleted = $row->S3;
+  $responses_total = $responses_good + $responses_test + $responses_deleted;
 }
 
-// Get result stats (last)
-$sql4 = "SELECT id, email, ip, submitted FROM j_results WHERE surveyid = '".$_GET['s']."' AND status = 1 ORDER BY submitted DESC LIMIT 1";
-$q = $db->prepare($sql4);
-$q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-$q->execute();
-while ($row = $q->fetchObject()) {
-  $last_id = $row->id;
-  $last_email = $row->email;
-  $last_ip = $row->ip;
-  $last_submitted = $row->submitted;
+$stat = "<dl class=\"dl-horizontal\">\n";
+$stat .= "  <dt>Total response:</dt>\n";
+$stat .= "  <dd>$responses_total</dd>\n";
+
+if ($responses_good > 0) {
+  $percentage_good = percent($responses_good / $responses_total);
+  // Get result stats (first & last)
+  $sql3 = "SELECT * FROM j_results WHERE id IN ((SELECT min(id) FROM j_results WHERE surveyid = :surveyid AND status = 1), (SELECT max(id) FROM j_results WHERE surveyid = :surveyid AND status = 1)) ";
+  $q = $db->prepare($sql3);
+  $q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+  $q->execute(); // print_r($q->rowCount());
+  while ($row = $q->fetchAll(PDO::FETCH_ASSOC)) {
+    $first_id = $row[0]['id;'];
+    $first_email = $row[0]['email'];
+    $first_ip = $row[0]['ip'];
+    $t1 = date_parse_from_format("Y-m-d H:i:s", $row[0]['submitted']);
+    // $t1['year']; $t1['month']; $t1['day'];
+    $first_submitted = ago($row[0]['submitted']);
+    $last_id = $row[1]['id'];
+    $last_email = $row[1]['email'];
+    $last_ip = $row[1]['ip'];
+    $t2 = date_parse_from_format("Y-m-d H:i:s", $row[1]['submitted']);
+    // $t2['year']; $t2['month']; $t2['day'];
+    $last_submitted = ago($row[1]['submitted']);
+  }
+  if ($responses_good == 1) {
+    $stat .= "  <dt>Valid response:</dt>\n";
+    $stat .= "  <dd>$responses_good ($percentage_good)</dd>\n";
+    $stat .= "  <dt>First response:</dt>\n";
+    $stat .= "  <dd>$first_submitted by $first_email <small>(from $first_ip)</small></dd>\n";
+    $stat .= "  <dt>Last response:</dt>\n";
+    $stat .= "  <dd><em>NONE</em></dd>\n";
+  } else {
+    $stat .= "  <dt>Valid response:</dt>\n";
+    $stat .= "  <dd>$responses_good ($percentage_good)</dd>\n";
+    $stat .= "  <dt>First response:</dt>\n";
+    $stat .= "  <dd>$first_submitted by $first_email <small>(from $first_ip)</small></dd>\n";
+    $stat .= "  <dt>Last response:</dt>\n";
+    $stat .= "  <dd>$last_submitted by $last_email <small>(from $last_ip)</small></dd>\n";
+  }
+} else {
+  $stat .= "  <dt>Valid response:</dt>\n";
+  $stat .= "  <dd><em>NONE</em></dd>\n";
+  $stat .= "  <dt>First response:</dt>\n";
+  $stat .= "  <dd><em>NONE</em></dd>\n";
+  $stat .= "  <dt>Last response:</dt>\n";
+  $stat .= "  <dd><em>NONE</em></dd>\n";
 }
+$stat .= "</dl>\n";
 
 // Data for tables
 $sql5 = "SELECT id, submitted, data FROM j_results WHERE surveyid = :surveyid AND status = 1 ORDER BY submitted DESC";
@@ -71,20 +96,8 @@ echo "<p>Therefore, it is imperative that business decision must not be made bas
 echo "<p>We hereby take no responsibility on any damages happened from the usage of interim result. You must use it at your own risk.</p>";
 echo "<hr>\n";
 echo "<h3>Project $project</h3>\n";
+echo $stat;
 ?>
-
-<div class="stats">
-  <dl class="dl-horizontal">
-    <dt>Total response:</dt>
-    <dd><?php echo $responses_total; ?></dd>
-    <dt>Valid response:</dt>
-    <dd><?php echo $responses_good; ?> (<?php echo $percentage_good; ?>%)</dd>
-    <dt>First response:</dt>
-    <dd><?php echo ago($first_submitted); ?> by <?php echo $first_email; ?> (<?php echo $first_ip; ?>)</dd>
-    <dt>Last response:</dt>
-    <dd><?php echo ago($last_submitted); ?> by <?php echo $last_email; ?> (<?php echo $last_ip; ?>)</dd>
-  </dl>
-</div>
 
 <hr>
 
@@ -205,19 +218,6 @@ echo "<h3>Project $project</h3>\n";
     table.appendChild(thead);
     table.appendChild(tbody);
   }
-
-  // function getsurveyrawdata(surveyid) {
-  //   var result = "";
-  //   $.ajax({
-  //     url: api + '/interim/' + surveyid,
-  //     dataType: 'json',
-  //     type: 'get',
-  //     cache: false,
-  //     async: false,
-  //     success: function(data) { result = data; }
-  //   });
-  //   return result;
-  // }
 
   String.prototype.replaceAll = function(search, replacement) {
     var target = this;

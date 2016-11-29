@@ -33,12 +33,13 @@ $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
 $q->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
 $q->execute();
 $counts = $q->rowCount();
-$output = "              <select id=\"projectlist\" multiple class=\"form-control\" disabled>\n";
+$output = "              <select id=\"projectlist\" multiple class=\"form-control\" readonly>\n";
 while ($row = $q->fetchObject()) {
   $id = $row->id;
   $title = $row->title;
   $created = ago($row->created);
-  $output .= "                <option>Project $title (created: $created)</option>\n";
+  // $output .= "                <option>Project $title (created: $created)</option>\n";
+  $output .= "                <option>Project $title</option>\n";
 }
 $output .= "              </select>\n";
 
@@ -63,9 +64,9 @@ echo "<br>\n";
   <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8" style="margin:0px 10px">
     <nav>
       <ul class="nav nav-tabs">
-        <li class="active"><a href="#one" data-toggle="tab"><i class="pe-user pe-fw"></i> Profile summary <i class=""></i></a></li>
-        <li><a href="#two" data-toggle="tab"><i class="pe-cog pe-fw"></i> Update your profile <i class=""></i></a></li>
-        <li><a href="#three" data-toggle="tab"><i class="pe-key pe-fw"></i> Change your password <i class=""></i></a></li>
+        <li class="active"><a href="#one" data-toggle="tab"><i class="pe-user pe-fw"></i> Profile summary</a></li>
+        <li><a href="#two" data-toggle="tab"><i class="pe-cog pe-fw"></i> Update your profile</a></li>
+        <li><a href="#three" data-toggle="tab"><i class="pe-key pe-fw"></i> Change your password</a></li>
       </ul>
     </nav>
     <br>
@@ -73,7 +74,7 @@ echo "<br>\n";
       <div id="one" class="tab-pane in active fade">
         <p class="pull-right"><img src="<?php if ($_SESSION["avatar"]) { echo $_SESSION["avatar"]; } else { echo "assets/img/u/M6.svg"; } ?>" id="avatar1" class="img-circle members-photo" alt="Avatar"></p>
         <h4>Welcome to your profile page</h4>
-        <p>Below shows the summary of your profile.</p>
+        <p>Below shows the summary of your profile in a <em>read-only</em> mode.</p>
         <br>
         <table class="table">
           <tr>
@@ -82,7 +83,7 @@ echo "<br>\n";
             <td width="70%">
               <div class="input-group">
                 <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
-                <input type="email" name="email" class="form-control" value="<?php echo $_SESSION["email"]; ?>" disabled>
+                <input type="email" name="email" class="form-control" value="<?php echo $_SESSION["email"]; ?>" onclick="this.select()" readonly>
               </div>
               <input type="hidden" name="email" value="phumin@sawasdee.org">
             </td>
@@ -93,7 +94,7 @@ echo "<br>\n";
             <td width="70%">
               <div class="input-group">
                 <span class="input-group-addon"><i class="pe-building pe-fw"></i></span>
-                <input type="text" name="company" class="form-control" value="<?php echo $_SESSION["company"]; ?>" disabled>
+                <input type="text" name="company" class="form-control" value="<?php echo $_SESSION["company"]; ?>" onclick="this.select()" readonly>
               </div>
             </td>
           </tr>
@@ -103,30 +104,30 @@ echo "<br>\n";
             <td width="70%">
               <div class="input-group">
                 <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
-                <input type="text" name="company" class="form-control" value="<?php echo $_SESSION["role"]; ?>" disabled>
+                <input type="text" name="role" class="form-control" value="<?php echo $_SESSION["role"]; ?>" onclick="this.select()" readonly>
               </div>
             </td>
           </tr>
           <tr>
-            <td width="25%" style="text-align:right">Register since</td>
+            <td width="25%" style="text-align:right">Registered</td>
             <td width="5%"></td>
             <td width="70%">
               <div class="input-group">
                 <span class="input-group-addon"><i class="pe-calendar pe-fw"></i></span>
-                <input type="text" name="company" class="form-control" value="<?php echo ago($_SESSION["created"]); ?>" disabled>
+                <input type="text" name="created" class="form-control" value="<?php echo shortdate($_SESSION["created"]); ?> (<?php echo ago($_SESSION["created"]); ?>)" onclick="this.select()" readonly>
               </div>
             </td>
           </tr>
-          <tr>
+          <!-- <tr>
             <td width="25%" style="text-align:right">Last updated</td>
             <td width="5%"></td>
             <td width="70%">
               <div class="input-group">
                 <span class="input-group-addon"><i class="pe-clock-o pe-fw"></i></span>
-                <input type="text" name="company" class="form-control" value="<?php echo ago($_SESSION["updated"]); ?>" disabled>
+                <input type="text" name="updated" class="form-control" value="<?php echo ago($_SESSION["updated"]); ?>" onclick="this.select()" readonly>
               </div>
             </td>
-          </tr>
+          </tr> -->
           <tr>
             <td width="25%" style="text-align:right">Projects handled<br><small>(Total of <?php echo $counts; ?> projects)</small></td>
             <td width="5%"></td>
@@ -297,9 +298,10 @@ foreach($pictures as $a => $b) {
       </div>
     </div>
     <div class="list-group">
-      <a href="/admin/recovery.php" class="list-group-item list-group-item-warning"><i class="pe-check-circle pe-fw"></i> Reset password &amp; account activation</a>
       <a href="/admin/?w=profile&amp;m=tips" class="list-group-item"><i class="pe-lightbulb-o pe-fw"></i> Tips for choosing a strong password</a>
-      <a href="/admin/contact.php" class="list-group-item"><i class="pe-question-circle pe-fw"></i> Need help? Click to contact us</a>
+      <a href="/admin/contact/" class="list-group-item"><i class="pe-question-circle pe-fw"></i> Need help? Click to contact us</a>
+      <a href="/admin/setup/" class="list-group-item list-group-item-warning"><i class="pe-life-ring pe-fw"></i> Forgot password</a>
+      <a href="/admin/setup/?d=activation" class="list-group-item list-group-item-warning"><i class="pe-flag pe-fw"></i> Account activation</a>
     </div>
   </div>
 </div>
