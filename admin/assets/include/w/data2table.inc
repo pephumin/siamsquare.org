@@ -1,5 +1,20 @@
 <?php
 
+function downloadcsv($results, $name = NULL) {
+  if (!$name) { $name = md5(uniqid() . microtime(TRUE) . mt_rand()). '.csv'; }
+  header('Content-Type: text/csv');
+  header('Content-Disposition: attachment; filename='. $name);
+  header('Pragma: no-cache');
+  header("Expires: 0");
+  $outstream = fopen("php://output", "w");
+  foreach($results as $result) { fputcsv($outstream, $result); }
+  fclose($outstream);
+}
+
+if ($_GET["d"] == "true") {
+  downloadcsv($_GET["data"], 'result.csv');
+}
+
 $title = "Convert data to table";
 pageHeader($title);
 echo "<h2>$title</h2>";
@@ -118,6 +133,7 @@ echo "<hr>\n";
     showCSV(true);
     $(".csv textarea").val(csv);
     var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+    // var uri =  window.location.href + "&d=true&data=data:text/csv;charset=utf-8," + encodeURIComponent(csv);
     $(".csv a.download").attr("href", uri);
   }
 
