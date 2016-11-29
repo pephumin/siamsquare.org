@@ -89,7 +89,7 @@ pageHeader($title);
           dataType: 'json',
           type: 'post',
           contentType: 'application/json; charset=utf-8',
-          data: '{ "userid": "' + cid + '", "ip": "' + cip + '", "data": "' + email + ' conducted a survey of ' + etitle + ' (id=' + id + ')" }',
+          data: '{ "userid": "' + cid + '", "ip": "' + cip + '", "data": "' + email + ' conducted a survey ' + etitle + ' (id=' + id + ')", "critical": "2" }',
           success: function(data) { result = data; }
         });
       }
