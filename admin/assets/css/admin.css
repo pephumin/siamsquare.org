@@ -12863,8 +12863,8 @@ img.members-photo {
   -moz-box-shadow: 0 0 0 5px #DDDDDD;
   -webkit-box-shadow: 0 0 0 5px #DDDDDD;
   border: none;
-  width: 100px;
-  height: 100px; }
+  width: 70px;
+  height: 70px; }
 
 img.members-photo-small {
   background: #FFFFFF;
@@ -12897,5 +12897,23 @@ span.input-group-addon.input-group-addon-top {
 
 pre.verysmall {
   font-size: 0.75rem; }
+
+.announcement-info {
+  padding: 8px 15px;
+  text-align: right;
+  font-size: 0.7rem;
+  font-family: roboto;
+  background-color: #F8F8F8;
+  color: #666666;
+  margin: 0px; }
+  .announcement-info:before {
+    content: " ";
+    display: table; }
+  .announcement-info:after {
+    clear: both; }
+
+.form-control[readonly] {
+  background-color: mintcream;
+  opacity: 1; }
 
 /*# sourceMappingURL=admin.css.map */
