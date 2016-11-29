@@ -81,7 +81,7 @@ echo "<hr>\n";
           dataType: 'json',
           type: 'post',
           contentType: 'application/json; charset=utf-8',
-          data: '{ "userid": "' + cid + '", "ip": "' + cip + '", "data": "' + email + ' did a pilot test with ' + etitle + ' (id=' + id + ')" }',
+          data: '{ "userid": "' + cid + '", "ip": "' + cip + '", "data": "' + email + ' conducted a pilot test with ' + etitle + ' (id=' + id + ')", "critiral": "2" }',
           success: function(data) { result = data; }
         });
       }

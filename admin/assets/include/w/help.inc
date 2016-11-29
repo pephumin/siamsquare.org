@@ -6,115 +6,12 @@ echo "<h2>$title</h2>";
 echo "<p>This page shows a collection of help and examples to be used and applied appropriately.</p>\n";
 echo "<br>\n";
 
+$me = "/admin/?w=help";
+if ((empty($_GET['d'])) || ($_GET['d'] == "survey")) {
+
+  echo "<p class=\"pull-right\"><strong>Select the help topic [</strong> <u>Survey</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&d=user")."\">User</a> <strong>]</strong></p><br>\n";
+
 ?>
-
-<hr>
-
-<h3>User levels</h3>
-
-<p>Currently we group users into different levels as shown in the table below. Each of these levels will have a different ability to access to different parts of the system. A higher in level would mean a greater ability to do thing including add and delete users.</p>
-
-<br>
-
-<h4>Members</h4>
-
-<p>There are two types of members as shown in the below table.</p>
-
-<table class="table table-hover">
-  <thead>
-    <tr class="bg-primary">
-      <td>User</td>
-      <td>Level</td>
-      <td>Detail</td>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Respondent (private)</td>
-      <td>1</td>
-      <td>
-        <ul>
-          <li>Access to the private survey where client provide email list in advanced</li>
-          <li>They will receive an email invitation with a survey link included, no registration required, and only complete once</li>
-          <li>No access to public surveys as a default, but will be invited to join using teaser</li>
-          <li>No access to admin section, and only see a limited information in member section</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td>Respondent (panel)</td>
-      <td>2</td>
-      <td>
-        <ul>
-          <li>Access to all public surveys where matching demographic/ criteria will be required</li>
-          <li>For each of the surveys they see, they will be allowed to participate only once</li>
-          <li>No access to private surveys</li>
-          <li>No access to admin section, but full access at member section</li>
-          <li>Within this group, a further grouping will be done by using registration type, reward level, etc.</li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<h4>Clients</h4>
-
-<p>For clients who can access the admin section, there are several more types as shown in the below table.</p>
-
-
-<table class="table table-hover">
-  <thead>
-    <tr class="bg-primary">
-      <td>User</td>
-      <td>Level</td>
-      <td>Detail</td>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Fieldwork</td>
-      <td>1</td>
-      <td>
-        <ul>
-          <li>Full access to respondent section</li>
-          <li>Read only for all projects</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td>DP</td>
-      <td>2</td>
-      <td>
-        <ul>
-          <li>Full access to data section</li>
-          <li>Read only for all projects</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td>Researcher</td>
-      <td>3</td>
-      <td>
-        <ul>
-          <li>Full access to assigned projects</li>
-          <li>Read only for other projects</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td>Account leader</td>
-      <td>5</td>
-      <td>
-        <ul>
-          <li>Full access to all projects</li>
-          <li>Ability to manage team members</li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<hr>
 
 <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
 
@@ -890,6 +787,138 @@ function runSurvey() {
 }
 
 </code></pre>
+
+<h3>On event functions</h3>
+<pre class="verysmall"><code class="prettyprint">
+Survey.Survey.cssType = "bootstrap";
+var survey = new Survey.Survey (getsurveydata(surveyid), "runsurvey");
+survey.onComplete.add(function (s) { postsurveydata(cid, ip, email, surveyid, survey.data, mm.title); });
+survey.onUploadFile.add(function (data) { $('#showupload').show(); });
+survey.onCurrentPageChanged
+survey.onValueChanged
+survey.onVisibleChanged
+survey.onPageVisibleChanged
+survey.onQuestionAdded
+survey.onQuestionRemoved
+survey.onValidateQuestion
+survey.onProcessHtml
+survey.onSendResult
+survey.onGetResult
+
+</code></pre>
+
+<?php
+} else if ($_GET['d'] == "user") {
+
+  echo "<p class=\"pull-right\"><strong>Select the help topic [</strong> <a href=\"".htmlspecialchars($me."&d=survey")."\">Survey</a> <strong>:</strong> <u>User</u> <strong>]</strong></p><br>\n";
+
+?>
+
+<h3>User levels</h3>
+
+<p>Currently we group users into different levels as shown in the table below. Each of these levels will have a different ability to access to different parts of the system. A higher in level would mean a greater ability to do thing including add and delete users.</p>
+
+<br>
+
+<h4>Members</h4>
+
+<p>There are two types of members as shown in the below table.</p>
+
+<table class="table table-hover">
+  <thead>
+    <tr class="bg-primary">
+      <td>User</td>
+      <td>Level</td>
+      <td>Detail</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Respondent (private)</td>
+      <td>1</td>
+      <td>
+        <ul>
+          <li>Access to the private survey where client provide email list in advanced</li>
+          <li>They will receive an email invitation with a survey link included, no registration required, and only complete once</li>
+          <li>No access to public surveys as a default, but will be invited to join using teaser</li>
+          <li>No access to admin section, and only see a limited information in member section</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>Respondent (panel)</td>
+      <td>2</td>
+      <td>
+        <ul>
+          <li>Access to all public surveys where matching demographic/ criteria will be required</li>
+          <li>For each of the surveys they see, they will be allowed to participate only once</li>
+          <li>No access to private surveys</li>
+          <li>No access to admin section, but full access at member section</li>
+          <li>Within this group, a further grouping will be done by using registration type, reward level, etc.</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h4>Clients</h4>
+
+<p>For clients who can access the admin section, there are several more types as shown in the below table.</p>
+
+
+<table class="table table-hover">
+  <thead>
+    <tr class="bg-primary">
+      <td>User</td>
+      <td>Level</td>
+      <td>Detail</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Fieldwork</td>
+      <td>1</td>
+      <td>
+        <ul>
+          <li>Full access to respondent section</li>
+          <li>Read only for all projects</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>DP</td>
+      <td>2</td>
+      <td>
+        <ul>
+          <li>Full access to data section</li>
+          <li>Read only for all projects</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>Researcher</td>
+      <td>3</td>
+      <td>
+        <ul>
+          <li>Full access to assigned projects</li>
+          <li>Read only for other projects</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>Account leader</td>
+      <td>5</td>
+      <td>
+        <ul>
+          <li>Full access to all projects</li>
+          <li>Ability to manage team members</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<?php } ?>
 
 <script>
   $(document).ready(function() {
