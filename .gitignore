@@ -10,3 +10,4 @@ run
 *.swp
 siamsquare.sql
 members/assets/upload/*
+*png
