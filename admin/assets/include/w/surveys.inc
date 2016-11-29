@@ -1,16 +1,16 @@
 <?php
 
 $title = "All survey projects";
-$titleA = "Pre-fieldwork";
-$titleB = "Fieldwork";
-$titleC = "Post-fieldwork";
-$titleD = "Archive";
+$titleA = "Set up";
+$titleB = "Data-collection";
+$titleC = "Completed";
+$titleD = "Archived";
 
-$details = "All surveys that are belonged to either youself or the organisation that you are a member. There are 4 different tabs within the survey which is separated by the life-stage starting from before data collection, during data collection, after data collection, and the achived surveys.";
-$detailsA = "Surveys in this section are the ones that are still under questionnaire development which includes questionnaire design, questionnaire translation, and the pilot testing to ensure all designed questions and the actual survey flow would work effectively.";
-$detailsB = "Surveys in this section are the ones that are currently on data collection stage. It means changes cannot be made to the questionnaire at all because it will badly impact to how the results will be generated at the end of the survey. In this section you can check for the progress of fieldwork as well as viewing the interim of the results.";
-$detailsC = "Surveys in this section are the ones that have completed collecting data from respondents. They are surveys that are ready for result analysis. In this section you can view tabulation and report online, and furthermore, you can also choose to download data and report in the format you prefer.";
-$detailsD = "Surveys in this section are the ones that are no longer active. Since there is no harm of leaving these surveys in this section, we would not suggest deleting them from the database. However, if you prefer to delete them (due to a confidentiality of the study), you can certainly do it.";
+$details = "All surveys that are belonged to either youself or the company. All of them are categorised into 4 groups based on their life-stage starting from Set-up, Data-collection, Completed and Archived.";
+$detailsA = "Surveys in the Set-up section are still under the development of questionnaire which incudes questionnaire design, questionnaire translation, and pilot interview to ensure the right flow is in place.";
+$detailsB = "Surveys in the Data-collection section are currently on fieldwork. We do not allow any changes to be made to the questionnaire at this stage anymore in order to prevent a mismatch between designed question and collected data at the analysis stage.";
+$detailsC = "Surveys in the Completed section are ready for analysis as their fildwork period has ended. We provide online tools for the real-time result analysis with an option to download the data file for a more in-depth data manipulation.";
+$detailsD = "Surveys in the Archived section are inactive. These surveys can be moved to be active again should you need to. We suggest leaving them in this section rather than delete them from the system completely.";
 
 if ($_GET['c'] == "A") { $title = $titleA; $details = $detailsA; }
 else if ($_GET['c'] == "B") { $title = $titleB; $details = $detailsB; }
@@ -24,7 +24,6 @@ echo "<p>$details</p>\n";
 
 ?>
 
-<div id="showalert-delete"></div><div id="showalert-restore"></div><div id="showalert-archive"></div><div id="showalert-move"></div>
 <br>
 
 <?php if (!$_GET['c']) { ?>
@@ -54,19 +53,21 @@ echo "<p>$details</p>\n";
 
 <?php } ?>
 
+<div id="showalert-delete"></div><div id="showalert-restore"></div><div id="showalert-archive"></div><div id="showalert-move"></div>
+
 <table class="table table-hover">
   <thead>
     <tr class="bg-primary">
-      <th width="20%"><i class="pe-cube pe-fw"></i> Project</th>
-      <th width="25%"><i class="pe-calendar pe-fw"></i> Created</th>
-      <th width="25%"><i class="pe-clock-o pe-fw"></i> Last updated <i class="pe-caret-down pe-fw"></i></th>
+      <th width="30%"><i class="pe-cube pe-fw"></i> Project</th>
+      <th width="20%"><i class="pe-calendar pe-fw"></i> Created</th>
+      <th width="20%"><i class="pe-clock-o pe-fw"></i> Last updated <i class="pe-caret-down pe-fw"></i></th>
       <th width="30%"><i class="pe-cogs pe-fw"></i> Actions</th>
     </tr>
   </thead>
   <tbody>
   <?php if ($_SESSION['level'] >= "5") { ?>
     <tr data-bind="visible: isNewSurveyCreating" class="bg-info">
-      <td colspan="3"><input type="text" class="form-control" data-bind="textInput: newSurveyName" placeholder="Enter a new project name"></td>
+      <td colspan="3"><input type="text" class="form-control" data-bind="textInput: newSurveyName" placeholder="Enter a new project name" onclick="this.select()"></td>
       <td>
         <a class="btn btn-xs" data-bind="click: postNew, enable: newSurveyName() != ''" href="">Create <i class="pe-check-circle-o"></i></a>
         <a class="btn btn-xs" data-bind="click: cancelNew" href="">Cancel <i class="pe-times-circle-o"></i></a>
@@ -77,7 +78,7 @@ echo "<p>$details</p>\n";
     <tr>
       <td>
         <a href="" data-bind="click: $parent.showInfo" title="More Info..."><i data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a>&nbsp;
-        <span data-bind="text: title"></span> <span data-bind="if: owner" class="label label-danger">OWNER</span>
+        <span data-bind="text: title"></span> <span data-bind="if: owner" class="label label-danger">OWNER</span> <span data-bind="if: private" class="label label-success">PRIVATE</span>
       </td>
       <td>
         <small><span data-bind="text: created"></span></small>
@@ -100,14 +101,14 @@ echo "<p>$details</p>\n";
         </div>
         <div data-bind="if: canedit">
           <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the previous step" data-bind="click: $parent.three2two, visible: $parent.showActive() == 'C'" href=""><i class="pe-arrow-circle-left pe-lg"></i></a><?php } ?>
-          <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=data&amp;s=' + id }, visible: $parent.showActive() == 'C'">Data <i class="pe-table"></i></a>
+          <!-- <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=data&amp;s=' + id }, visible: $parent.showActive() == 'C'">Data <i class="pe-table"></i></a> -->
           <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=result&amp;s=' + id }, visible: $parent.showActive() == 'C'">Result <i class="pe-line-chart"></i></a>
-          <a class="btn btn-default btn-xs" data-bind="click: $parent.archive, visible: $parent.showActive() == 'C'" href="">Archive <i class="pe-archive"></i></a>
+          <a class="btn btn-warning btn-xs" data-bind="click: $parent.archive, visible: $parent.showActive() == 'C'" href="">Archive <i class="pe-archive"></i></a>
           <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the next step" data-bind="click: $parent.three2four, visible: $parent.showActive() == 'C'" href=""><i class="pe-arrow-circle-right pe-lg"></i></a><?php } ?>
         </div>
         <div data-bind="if: canedit">
           <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the previous step" data-bind="click: $parent.four2three, visible: $parent.showActive() == 'D'" href=""><i class="pe-arrow-circle-left pe-lg"></i></a><?php } ?>
-          <a class="btn btn-default btn-xs" data-bind="click: $parent.restore, visible: $parent.showActive() == 'D'" href="">Restore <i class="pe-undo"></i></a>
+          <a class="btn btn-warning btn-xs" data-bind="click: $parent.restore, visible: $parent.showActive() == 'D'" href="">Restore <i class="pe-undo"></i></a>
           <a class="btn btn-danger btn-xs" data-bind="click: $parent.delete, visible: $parent.showActive() == 'D'" href="">Delete <i class="pe-trash"></i></a>
         </div>
       </td>
@@ -133,7 +134,6 @@ echo "<p>$details</p>\n";
         <div class="row" data-bind="visible: !isEditingDescription()">
           <div class="col-sm-3" style="padding:10px 20px"><small>Description <a href="" data-bind="if: canedit, click: $parent.startEditDescription, visible: $parent.showActive() == 'A'" title="Change project description"> <i class="pe-edit"></i></a></small></div>
           <div class="col-sm-9" style="padding:10px 20px"><small><span data-bind="text: description"></span></small></div>
-          </div>
         </div>
         <div class="row" data-bind="visible: isEditingDescription()">
           <div class="col-sm-3" style="padding:10px 20px"><small>Description</small></div>
@@ -141,6 +141,20 @@ echo "<p>$details</p>\n";
             <textarea data-bind="textInput: editingDescription, visible: isEditingDescription()" onclick="this.select()" class="form-control" rows="5"></textarea><br>
             <a class="btn btn-sm" data-bind="click: $parent.postEditDescription, enable: description() != ''" href="">Update <i class="pe-check-circle-o"></i></a>
             <a class="btn btn-sm" data-bind="click: $parent.cancelEditDescription" href="">Cancel <i class="pe-times-circle-o"></i></a>
+          </div>
+        </div>
+        <div class="row red" data-bind="visible: !isEditingDescription()">
+          <div class="col-sm-3" style="padding:10px 20px"><small>Private? <a href="" data-bind="if: canedit, click: $parent.startEditDescription, visible: $parent.showActive() == 'A'" title="Change project description"> <i class="pe-edit"></i></a></small></div>
+          <!-- <div class="col-sm-9" style="padding:10px 20px"><small><input type="radio" name="pp" value="private" data-bind="checked: pORp"> Private <input type="radio" name="pp" value="public" data-bind="checked: pORp"> Public</small></div> -->
+          <div class="col-sm-9" style="padding:10px 20px">
+            <small>
+              <div class="btn-group" data-toggle="buttons">
+                <label class="btn btn-primary"><input type="radio" name="options" id="option1" value="1" data-bind="bsChecked: optionsValue">Option 1</label>
+                <label class="btn btn-primary"><input type="radio" name="options" id="option2" value="2" data-bind="bsChecked: optionsValue">Option 2</label>
+                <label class="btn btn-primary"><input type="radio" name="options" id="option3" value="3" data-bind="bsChecked: optionsValue">Option 3</label>
+                <!-- <br><span data-bind="text: optionsValue"></span> -->
+              </div>
+            </small>
           </div>
         </div>
       </td>
@@ -164,7 +178,13 @@ echo "<p>$details</p>\n";
   $('#showalert-archive').html("<div class='alert alert-warning'><i class='pe-archive pe-fw'></i> The project has been moved to your archive</div>").hide();
   $('#showalert-move').html("<div class='alert alert-warning'><i class='pe-exchange pe-fw'></i> The project has been moved to a different stage</div>").hide();
 
-  var Listing = function (title, description, userid, created, lastupdated, id, email, fullname, company, companyid, canedit, readonly, owner) {
+  Date.prototype.toMysqlFormat = function () {
+    function pad(n) { return n < 10 ? '0' + n : n }
+    return this.getFullYear() + "-" + pad(1 + this.getMonth()) + "-" + pad(this.getDate()) + " " + pad(this.getHours()) + ":" + pad(this.getMinutes()) + ":" + pad(this.getSeconds());
+  };
+  var TimeNow = new Date().toMysqlFormat(); // console.log(TimeNow);
+
+  var Listing = function (title, description, userid, created, lastupdated, id, email, fullname, company, companyid, private, canedit, readonly, owner) {
     this.title = ko.observable(title);
     this.editingName = ko.observable(title);
     this.description = ko.observable(description);
@@ -177,12 +197,15 @@ echo "<p>$details</p>\n";
     this.fullname = fullname;
     this.company = company;
     this.companyid = companyid;
+    this.private = ko.observable(private);
     this.showInfo = ko.observable(false);
     this.isEditing = ko.observable(false);
     this.isEditingDescription = ko.observable(false);
+    this.pORp = ko.observable();
     this.canedit = canedit;
     this.readonly = readonly;
     this.owner = owner;
+    this.optionsValue = ko.observable(2);
   }
   var ViewModel = function () {
     var self = this;
@@ -190,7 +213,7 @@ echo "<p>$details</p>\n";
     this.url = api;
     this.showActive = ko.observable(true);
     this.isNewSurveyCreating = ko.observable(false);
-    this.newSurveyName = ko.observable("");
+    this.newSurveyName = ko.observable("New project");
     this.loadData = function (i) {
       self.showActive(i);
       //var url = "/user/" + userid + "/" + i;
@@ -222,7 +245,7 @@ echo "<p>$details</p>\n";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' archived a survey named ' + survey.title() + ' (id=' + survey.id + ')" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' archived a survey named ' + survey.title() + ' (id=' + survey.id + ')", "critical": "3" }',
             success: function(data) { result = data; }
           });
         },
@@ -245,7 +268,7 @@ echo "<p>$details</p>\n";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' restored a survey named ' + survey.title() + ' (id=' + survey.id + ')" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' restored a survey named ' + survey.title() + ' (id=' + survey.id + ')", "critical": "3" }',
             success: function(data) { result = data; }
           });
         },
@@ -268,7 +291,7 @@ echo "<p>$details</p>\n";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted a survey named ' + survey.title() + ' (id=' + survey.id + ')" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted a survey named ' + survey.title() + ' (id=' + survey.id + ')", "critical": "5" }',
             success: function(data) { result = data; }
           });
         },
@@ -281,7 +304,7 @@ echo "<p>$details</p>\n";
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "status": 2 }',
+        data: '{ "status": 2, "L1": "' + TimeNow + '" }',
         success: function (data) {
           $('#showalert-move').show();
           window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 5000);
@@ -296,7 +319,7 @@ echo "<p>$details</p>\n";
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "status": 3 }',
+        data: '{ "status": 3, "L2": "' + TimeNow + '" }',
         success: function (data) {
           $('#showalert-move').show();
           window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 5000);
@@ -326,7 +349,7 @@ echo "<p>$details</p>\n";
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "status": 4 }',
+        data: '{ "status": 4, "L3": "' + TimeNow + '" }',
         success: function (data) {
           $('#showalert-move').show();
           window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 5000);
@@ -390,7 +413,7 @@ echo "<p>$details</p>\n";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' created a new survey named ' + self.newSurveyName() + ' (id=' + survey.id + ')" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' created a new survey named ' + self.newSurveyName() + ' (id=' + survey.id + ')", "critical": "3" }',
             success: function(data) { result = data; }
           });
         },
@@ -416,7 +439,7 @@ echo "<p>$details</p>\n";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed a survey name to ' + survey.title() + ' (id=' + survey.id + ')" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' renamed a survey to ' + survey.title() + ' (id=' + survey.id + ')", "critical": "3" }',
             success: function(data) { result = data; }
           });
         },
@@ -443,7 +466,7 @@ echo "<p>$details</p>\n";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed a description for ' + survey.title() + ' (id=' + survey.id + ')" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed a description for ' + survey.title() + ' (id=' + survey.id + ')", "critical": "3" }',
             success: function(data) { result = data; }
           });
         },
@@ -452,14 +475,15 @@ echo "<p>$details</p>\n";
     }
     this.cancelEditDescription = function (survey) { survey.isEditingDescription(false); }
     this.createSurveyObject = function (data) {
-      var canedit = false; var readonly = true; var owner = false;
+      var private = false; var canedit = false; var readonly = true; var owner = false;
+      if (data.private == 1) { var private = true; } //var pORp = data.private;
       if (userid == data.userid) { var owner = true; }
       if (level == 9) { var canedit = true; } else if (level == 6) { var canedit = true; }
       else if (level == 5) { if (owner == true) { var canedit = true; } }
       moment.locale('en');
       var s1 = moment(data.created).fromNow(); var s2 = moment(data.created).format("D MMM YYYY"); created = s2 + ' (' + s1 + ')';
       var t1 = moment(data.updated).fromNow(); var t2 = moment(data.updated).format("D MMM YYYY"); lastupdated = t2 + ' (' + t1 + ')';
-      return new Listing(data.title, data.description, data.userid, created, lastupdated, data.id, data.email, data.fullname, data.company, data.companyid, canedit, readonly, owner);
+      return new Listing(data.title, data.description, data.userid, created, lastupdated, data.id, data.email, data.fullname, data.company, data.companyid, data.private, canedit, readonly, owner);
     }
     this.onFail = function (error) { alert(JSON.stringify(error)); }
     this.showInfo = function (survey) { survey.showInfo(!survey.showInfo()); }
@@ -470,8 +494,21 @@ echo "<p>$details</p>\n";
     else if ($_GET['c'] == "D") { echo "this.loadD();"; }
     else { echo "this.loadA();"; }
     ?>
+    // this.optionsValue = ko.observable("2");
   }
-  jQuery(document).ready(function () { ko.applyBindings(new ViewModel()); });
+  jQuery(document).ready(function () {
+    ko.applyBindings(new ViewModel());
+    ko.bindingHandlers.bsChecked = {
+      init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        var value = valueAccessor();
+        var newValueAccessor = function () { return { change: function () { value(element.value); } } };
+        ko.bindingHandlers.event.init(element, newValueAccessor, allBindingsAccessor, viewModel, bindingContext);
+      },
+      update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        if ($(element).val() == ko.unwrap(valueAccessor())) { setTimeout(function () { $(element).closest('.btn').button('toggle'); }, 1); }
+      }
+    }
+  });
 
 </script>
 

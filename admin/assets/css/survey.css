@@ -198,7 +198,8 @@
   padding: 0px;
   border: 1px solid #aaa; }
 
-#mySurveyJSName, #surveyContainer, #surveyjs {
+#mySurveyJSName, #surveyContainer, #surveyjs, #surveyjsTest, #surveyjsExample,
+#surveyEmbedingHead, #surveyEmbedingBody, #surveyEmbedingJava, div.modal-body.svd_notopbottompaddings, input.form-control {
   font-family: "boon" !important;
   font-size: 16px !important; }
 
@@ -206,20 +207,12 @@
   margin-top: 10px; }
 
 #surveyjs {
-  font-family: "boon" !important;
-  font-size: 16px !important;
   width: 100%;
   margin: 30px 0px;
   padding: 0px; }
 
 #surveyjsTest {
-  font-family: "boon" !important;
-  font-size: 14px !important;
   margin: 10px; }
-
-#surveyEmbedingHead, #surveyEmbedingBody, #surveyEmbedingJava {
-  font-family: "boon" !important;
-  font-size: 14px !important; }
 
 .navbar-brand {
   margin-top: 3px; }
