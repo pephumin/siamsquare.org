@@ -2,6 +2,7 @@
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.phpmailer.php';
+$url = "/admin/setup/";
 
 class Login {
 
@@ -63,13 +64,13 @@ class Login {
       $query_user->execute();
       $result_row = $query_user->fetchObject();
       if (($result_row->fails == 3) && ($result_row->fails_last > (time() - 3600))) { $this->errors[] = mkwarn("You have entered too many incorrect passwords. You have 2 more chances before we lock your account."); }
-      else if (($result_row->fails == 4) && ($result_row->fails_last > (time() - 3600))) { $this->errors[] = mkwarn("You have entered too many incorrect passwords. You have 1 more chance before we lock your account. Alternatively you can use the <a href='/admin/recovery.php'>Recover Password</a> tool to reset your password."); }
+      else if (($result_row->fails == 4) && ($result_row->fails_last > (time() - 3600))) { $this->errors[] = mkwarn("You have entered too many incorrect passwords. You have 1 more chance before we lock your account. Alternatively you can use the <a href=$url>Password recovery tool</a> to reset your password."); }
       else if (($result_row->fails == 5) && ($result_row->fails_last > (time() - 3600))) {
         $q0 = $this->db->prepare("UPDATE j_users SET status = 0 WHERE email = :email");
         $q0->bindValue(':email', $result_row->email, PDO::PARAM_STR);
         $q0->execute();
-        $this->errors[] = mkwarn("You have entered too many incorrect passwords. Your account has been locked for security reason. Please use the <a href='/admin/recovery.php'>Recover Password</a> tool to unlock and activate your account again.");
-        $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data) VALUE (:userid, :ip, '".$result_row->email." is deactivated due to 5 incorrect login attempts')");
+        $this->errors[] = mkwarn("You have entered too many incorrect passwords. Your account has been locked for security reason. Please use the <a href=$url>Password recovery tool</a> to unlock and activate your account again.");
+        $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$result_row->email." is deactivated due to 5 incorrect login attempts', '5')");
         $q4->bindValue(':userid', $result_row->id, PDO::PARAM_INT);
         $q4->bindValue(':ip', $ip, PDO::PARAM_STR);
         $q4->execute();
@@ -79,11 +80,15 @@ class Login {
     else if ($result_row->status == 0) {
       $since = date("j F Y h:i:s A", $result_row->fails_last);
       $logip = $result_row->fails_ip; //echo $logip;
-      $this->errors[] = mkerror("This user account has been locked due to too many attempts with incorrect password (detected on $since from $logip). In order to unlock and reactivate your account, please use the <a href='/admin/recovery.php'>Recover Password</a> tool.");
+      $this->errors[] = mkerror("This user account has been locked due to too many attempts with incorrect password (detected on $since from $logip). In order to unlock and reactivate your account, please use the <a href=$url>Password recovery tool</a>.");
     }
     else if (!password_verify($password, $result_row->password)) {
       $sth = $this->db->prepare('UPDATE j_users SET fails = fails+1, fails_last = :fails_last, fails_ip = :fails_ip WHERE email = :email');
       $sth->execute(array(':email' => $email, ':fails_last' => time(), ':fails_ip' => $ip));
+      $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$email." failed to log in due to a wrong password', '5')");
+      $q4->bindValue(':userid', $result_row->id, PDO::PARAM_INT);
+      $q4->bindValue(':ip', $ip, PDO::PARAM_STR);
+      $q4->execute();
       $this->errors[] = mkerror("Wrong password");
     }
     else {
@@ -133,9 +138,9 @@ class Login {
       $this->lastip = $resulty->lastip;
       $this->lastip2 = $resulty->lastip2;
       if ($resulty->level == 9) { $_SESSION['role'] = "Administrator"; $this->role = "Administrator"; }
-      else if ($resulty->level == 6) { $_SESSION['role'] = "Account Leader"; $this->role = "Account Leader"; }
-      else if ($resulty->level == 5) { $_SESSION['role'] = "Researcher"; $this->role = "Researcher"; }
-      $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data) VALUE (:userid, :ip, '".$result_row->email." logged in')");
+      else if ($resulty->level == 6) { $_SESSION['role'] = "Manager"; $this->role = "Manager"; }
+      else if ($resulty->level == 5) { $_SESSION['role'] = "User"; $this->role = "User"; }
+      $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$result_row->email." logged in', '1')");
       $q4->bindValue(':userid', $resulty->id, PDO::PARAM_INT);
       $q4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
       $q4->execute();
@@ -172,8 +177,8 @@ class Login {
             $this->status = $result->status;
             $this->level = $result->level;
             if ($result->level == 9) { $_SESSION['role'] = "Administrator"; $this->role = "Administrator"; }
-            else if ($result->level == 6) { $_SESSION['role'] = "Account Leader"; $this->role = "Account Leader"; }
-            else if ($result->level == 5) { $_SESSION['role'] = "Researcher"; $this->role = "Researcher"; }
+            else if ($result->level == 6) { $_SESSION['role'] = "Manager"; $this->role = "Manager"; }
+            else if ($result->level == 5) { $_SESSION['role'] = "User"; $this->role = "User"; }
             $q1 = $this->db->prepare("UPDATE j_users SET lastlogin2 = lastlogin, lastip2 = lastip WHERE email = :email");
             $q1->bindValue(':email', $_SESSION['email'], PDO::PARAM_STR);
             $q1->execute();
@@ -209,7 +214,7 @@ class Login {
               $this->lastip = $resulty->lastip;
               $this->lastip2 = $resulty->lastip2;
               $this->newRememberMeCookie();
-              $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data) VALUE (:userid, :ip, '".$_SESSION['email']." re-logged in')");
+              $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." re-logged in', '1')");
               $q4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
               $q4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
               $q4->execute();
@@ -231,7 +236,7 @@ class Login {
 
   public function doLogout() {
     if ($this->dbconnect()) {
-      $query = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data) VALUE (:userid, :ip, '".$_SESSION['email']." logged out')");
+      $query = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." logged out', '1')");
       $query->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
       $query->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
       $query->execute();
@@ -298,7 +303,7 @@ class Login {
           if ($query_update->rowCount()) {
             $this->messages[] = mksuccess("Your password has been changed successfully");
             $notes = array (array("title" => "Password changed", "text" => "You have changed your password successfully.", "image" => "assets/img/notification.svg"));
-            $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data) VALUE (:userid, :ip, '".$_SESSION['email']." changed password')");
+            $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." changed password', '3')");
             $q4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
             $q4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
             $q4->execute();
@@ -306,6 +311,10 @@ class Login {
           else { $this->errors[] = mkerror("Cannot change your password, please try again"); }
         }
         else { $this->errors[] = mkerror("Your current password is incorrect"); }
+        $q5 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." failed to change password due to an incorrect current password', '3')");
+        $q5->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
+        $q5->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
+        $q5->execute();
       }
       else { $this->errors[] = mkerror("This user does not exist in our database"); }
     }
@@ -338,7 +347,7 @@ class Login {
           $_SESSION['fullname'] = $fullname;
           $_SESSION['mobile'] = $mobile;
           if ($avatar) { $_SESSION['avatar'] = $avatar; }
-          $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data) VALUE (:userid, :ip, '".$_SESSION['email']." updated profile info')");
+          $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." updated profile info', '3')");
           $q4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
           $q4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
           $q4->execute();
@@ -348,6 +357,7 @@ class Login {
   }
 
   public function setPasswordResetDatabaseTokenAndSendMail($email) {
+    $ip = getip();
     $email = trim($email);
     if (empty($email)) { $this->errors[] = mkerror("You did not enter the email address"); }
     else {
@@ -361,7 +371,14 @@ class Login {
         $query_update->bindValue(':password_reset_timestamp', $temporary_timestamp, PDO::PARAM_INT);
         $query_update->bindValue(':email', $email, PDO::PARAM_STR);
         $query_update->execute();
-        if ($query_update->rowCount() == 1) { $this->sendPasswordResetMail($result_row->fullname, $email, $password_reset); return true; }
+        if ($query_update->rowCount() == 1) {
+          $this->sendPasswordResetMail($result_row->fullname, $email, $password_reset);
+          $q6 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$email." requested a password reset', '3')");
+          $q6->bindValue(':userid', $result_row->userid, PDO::PARAM_INT);
+          $q6->bindValue(':ip', $ip, PDO::PARAM_STR);
+          $q6->execute();
+          return true;
+        }
         else { $this->errors[] = mkerror("Cannot send the password reset email, please try again"); }
       }
     }
@@ -375,13 +392,14 @@ class Login {
     $mail->FromName = "no-reply@siamsquare.org";
     $mail->AddAddress($email);
     $mail->Subject = "Password reset at siamsquare.org";
-    $link = "http://www.siamsquare.org/admin/recovery.php".'?email='.urlencode($email).'&verification_code='.urlencode($password_reset);
-    $mail->Body = "You have requested for resetting your password. If this is correct you can proceed by clicking this link:" . ' ' . $link;
-    if (!$mail->Send()) { $this->errors[] = mkerror("Password reset mail NOT successfully sent! Error: " . $mail->ErrorInfo); return false; }
-    else { $this->messages[] = mksuccess("We have sent you the password reset code to your email. Please follow the provided instruction in the email for resetting your password. Also note that the link will be valid for only 1 hour."); return true; }
+    $link = "http://www.siamsquare.org".$url.'?email='.urlencode($email).'&verification_code='.urlencode($password_reset);
+    $mail->Body = "You have recently requested a password reset. If this is correct you can proceed by clicking this link:" . ' ' . $link;
+    if (!$mail->Send()) { $this->errors[] = mkerror("Password reset email was not sent. Error: " . $mail->ErrorInfo); return false; }
+    else { $this->messages[] = mksuccess("We have sent you the password reset code to your email. Please follow the instruction provided in the email. Also note that the code and the link will be valid for only 1 hour."); return true; }
   }
 
   public function checkIfEmailVerificationCodeIsValid($email, $verification_code) {
+    $ip = getip();
     $email = trim($email);
     if (empty($email) || empty($verification_code)) { $this->errors[] = mkerror("Broken link, please make sure you copy and paste all of them"); }
     else {
@@ -389,18 +407,26 @@ class Login {
       if (isset($result_row->id) && $result_row->password_reset == $verification_code) {
         $timestamp_one_hour_ago = time() - 3600; // 3600 seconds are 1 hour
         if ($result_row->password_reset_timestamp > $timestamp_one_hour_ago) { $this->password_reset_invalidlink = true; }
-        else { $this->errors[] = mkerror("The reset link has already expired (more than 1 hour). You need to start the recovery process again and make sure you complete the process within 1 hour."); }
+        else {
+          $this->errors[] = mkerror("The reset link has already expired (more than 1 hour). You need to start the recovery process again and make sure you complete the process within 1 hour.");
+          $q7 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$email." failed to reset password due to an expired reset link', '3')");
+          $q7->bindValue(':userid', $result_row->userid, PDO::PARAM_INT);
+          $q7->bindValue(':ip', $ip, PDO::PARAM_STR);
+          $q7->execute();
+        }
       }
       else { $this->errors[] = mkerror("This password reset link is no longer working. Please restart the recovery process again."); }
     }
   }
 
   public function editNewPassword($email, $password_reset, $newpass1, $newpass2) {
+    $ip = getip();
     $email = trim($email);
     if (empty($email) || empty($password_reset) || empty($newpass1) || empty($newpass2)) { $this->errors[] = mkerror("You have not entered all required fields"); }
     elseif ($newpass1 !== $newpass2) { $this->errors[] = mkerror("Your two new passwords are not matching each other"); }
     elseif (strlen($newpass1) < 6) { $this->errors[] = mkerror("Your password is too short"); }
     else if ($this->dbconnect()) {
+      $result_row = $this->getUserData($email);
       $hash_cost_factor = (defined('HASH_COST_FACTOR') ? HASH_COST_FACTOR : null);
       $password = password_hash($newpass1, PASSWORD_DEFAULT, array('cost' => $hash_cost_factor));
       $query_update = $this->db->prepare('UPDATE j_users SET password = :password, password_reset = NULL, password_reset_timestamp = NULL WHERE email = :email AND password_reset = :password_reset');
@@ -414,6 +440,10 @@ class Login {
         $q1->execute();
         $this->password_reset_successful = true;
         $this->messages[] = mksuccess("Your password has been changed successfully");
+        $q8 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$email." changed to a new password successfully', '3')");
+        $q8->bindValue(':userid', $result_row->userid, PDO::PARAM_INT);
+        $q8->bindValue(':ip', $ip, PDO::PARAM_STR);
+        $q8->execute();
       }
       else { $this->errors[] = mkerror("Cannot change your password, please try again"); }
     }

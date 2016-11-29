@@ -42,9 +42,11 @@ if ($_SESSION['level'] == "9") {
   while ($rr = $q1->fetchObject()) { $tt[] = $rr->id; }
   $q1A = $db->prepare("SELECT * FROM j_users_logs WHERE userid IN (".implode(',', $tt).") ORDER BY recorded DESC");
   $q1A->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+  $q1A->execute();
 } else {
   $q1A = $db->prepare("SELECT * FROM j_users_logs WHERE userid = :userid ORDER BY recorded DESC");
   $q1A->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+  $q1A->execute();
 }
 
 if (empty($start)) { $start = 0; }
@@ -68,9 +70,11 @@ if ($_SESSION['level'] == "9") {
   while ($rr = $q1->fetchObject()) { $tt[] = $rr->id; }
   $q1B = $db->prepare("SELECT * FROM j_users_logs WHERE userid IN (".implode(',', $tt).") ORDER BY recorded DESC ".$add." ");
   $q1B->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+  $q1B->execute();
 } else {
   $q1B = $db->prepare("SELECT * FROM j_users_logs WHERE userid = :userid ORDER BY recorded DESC ".$add." ");
   $q1B->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+  $q1B->execute();
 }
 
 if ($to_record > $rows) { $to_record = $rows; }
