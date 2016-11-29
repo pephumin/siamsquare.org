@@ -6,78 +6,37 @@ echo "<h2>$title</h2>";
 
 ?>
 
-<p>Despite a complex user management system built in our system, we provide our clients with a simple approach regarding to how-to manage users.</p>
+<p>User with an account level of Manager will be able to manage your team members. This includes an ability to create new users, edit existing users, or even suspend or delete users where required.</p>
 
-<p>We basically provide two types of users - a normal user and a super user. A normal user is as what one would expect from a standard user account which comes with an ability to manage his/her own data. A super user is which are an ordinary user and an account leader. While an ordinary user would be as one would have expected (e.g. ability to manage his/her own data), other users, this page will be shown in a read-only mode but will still provide some good information/indications for the team perspective.</p>
-
-
-<div class="row">
-  <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-    <p>To illustrate a clearer picture, please see the table on the right hand side for the real life example of usage.</p>
-    <ul>
-      <li>You may want to have two logins for your two researchers to use for managing their projects independently. In this case, each of these two researchers can view all of your projects but they can make change with the ones they are managing.</li>
-      <br>
-      <li>You may consider having another login specifically for your DP person where an access across all projects is allowed only for the data related component e.g. data validation, download the data file, tabulation check, etc.</li>
-      <br>
-      <li>Lastly, you may also consider having another login for your fieldwork team to manage respondents. Please note this covers only respondents that are uploaded specifically for each of the projects (not include our panel).</li>
-    </ul>
-  </div>
-  <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-    <table class="table table-hover">
-      <thead>
-        <tr class="bg-primary">
-          <td>User</td>
-          <td>Create a new survey</td>
-          <td>Edit and delete own survey</td>
-          <td>Edit and delete any survey</td>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Account leader</td>
-          <td>
-            <ul>
-              <li>Full access to all survey projects</li>
-              <li>Full access to member management including adding new members, suspend / delete members, and edit some information</li>
-            </ul>
-          </td>
-        </tr>
-        <tr>
-          <td>Researcher</td>
-          <td>
-            <ul>
-              <li>Full access to self-created projects and read-only for other projects created by other members</li>
-              <li>Manage self profile and read-only for other team members</li>
-            </ul>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
+<p><strong>It is important to note that once a new member has been created, the new account has to be activated before it can be used</strong> (<a href="http://www.siamsquare.org/admin/setup/?d=activation" title="Account Activation">http://www.siamsquare.org/admin/setup/?d=activation</a>).</p>
 
 <hr>
 
-<div id="showalert-create"></div><div id="showalert-delete"></div><div id="showalert-edit"></div><div id="showalert-suspend"></div>
-<br>
 <?php if ($_SESSION['level'] >= "6") { ?>
-<p class="pull-right"><a class="btn btn-primary" data-bind="click: createNew, enable: !isNewMemberCreating()" href=""><i class="pe-user-plus pe-fw"></i> New member</a></p>
-<br><br><br>
+<div class="rows">
+  <div class="col-sm-12" style="text-align:right">
+    <p class="pull-right"><a class="btn btn-primary" data-bind="click: createNew, enable: !isNewMemberCreating()" href=""><i class="pe-user-plus pe-fw"></i> New member</a></p>
+  </div>
+  <div class="col-sm-12">
+    <div id="showalert-create"></div><div id="showalert-delete"></div><div id="showalert-edit"></div><div id="showalert-suspend"></div>
+  </div>
+</div>
 <?php } ?>
+
 <div class="row">
 <?php if ($_SESSION['level'] >= "6") { ?>
   <div data-bind="visible: isNewMemberCreating" class="col-xs-12 col-sm-7 col-md-4 col-lg-4" style="margin-bottom:20px">
     <div class="members">
-      <div class="members-header"></div>
+      <div class="members-header-new"></div>
       <div class="members-body">
         <h4 class="white">Create a new member</h4>
         <p><img src="assets/img/u/F6.svg" class="img-circle members-photo" alt="Avatar"></p>
         <h5>Enter info below</h5>
-        <div class="input-group"><span class="input-group-addon"><small>Name:</small></span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberName" placeholder="Enter first and last name"></div><br>
+        <div class="input-group"><span class="input-group-addon"><small>Name:</small></span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberName" placeholder="Enter first and last name"></div>
         <div class="input-group"><span class="input-group-addon"><small>Email</small>:</span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberEmail" placeholder="Enter email address"></div><br>
         <a class="btn btn-primary btn-tiny" data-bind="click: postNew, enable: newMemberName() != '', enable: newMemberEmail() != ''" href=""><i class="pe-user-plus"></i> Create</a>
         <a class="btn btn-default btn-tiny" data-bind="click: cancelNew" href=""><i class="pe-times-circle-o"></i> Cancel</a><br><br>
+        <small class="red">Please make sure you input the correct email before creating a new user</small>
       </div>
     </div>
   </div>
@@ -152,11 +111,9 @@ echo "<h2>$title</h2>";
         <div class="row" data-bind="visible: isEditingLevel()">
           <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Role <a href="" data-bind="click: $parent.cancelEditLevel"><i class="pe-remove"></i></a></small></div>
           <div class="col-sm-7" style="padding:2px 0px"><small>
-            <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.L6" href="">Account Leader</a>
-            <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.L5" href="">Researcher</a>
-            <!-- <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.L4" href="">Fieldwork</a> -->
-            <!-- <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.L3" href="">Data Processing</a> -->
-            <a class="btn btn-default btn-block btn-tiny" data-bind="click: $parent.cancelEditLevel" href="">Cancel <i class="pe-times-circle-o"></i></a>
+            <a class="btn btn-default btn-tiny" data-bind="click: $parent.L6" href="">Manager</a>
+            <a class="btn btn-default btn-tiny" data-bind="click: $parent.L5" href="">User</a>
+            <a class="btn btn-default btn-tiny" data-bind="click: $parent.cancelEditLevel" href="">Cancel <i class="pe-times-circle-o"></i></a>
           </small></div>
         </div>
         <br>
@@ -202,7 +159,7 @@ echo "<h2>$title</h2>";
     this.fullname = ko.observable(fullname);
     this.editingFullName = ko.observable(fullname);
     this.mobile = ko.observable(mobile);
-    this.avatar = avatar;
+    this.avatar = ko.observable(avatar);
     this.editingMobile = ko.observable(mobile);
     this.status = ko.observable(status);
     this.editingStatus = ko.observable(status);
@@ -264,7 +221,7 @@ echo "<h2>$title</h2>";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' suspended a member named ' + member.fullname() + ' (' + member.email() + ')" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' suspended a member named ' + member.fullname() + ' (' + member.email() + ')", "critical": "5" }',
             success: function(data) { result = data; }
           });
         },
@@ -287,7 +244,7 @@ echo "<h2>$title</h2>";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted a member named ' + member.fullname() + ' (' + member.email() + ')" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted a member named ' + member.fullname() + ' (' + member.email() + ')", "critical": "5" }',
             success: function(data) { result = data; }
           });
         },
@@ -310,7 +267,7 @@ echo "<h2>$title</h2>";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be Account Leader" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be Manager", "critical": "4" }',
             success: function(data) { result = data; }
           });
           window.location.reload();
@@ -334,7 +291,7 @@ echo "<h2>$title</h2>";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be Researcher" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be User", "critical": "4" }',
             success: function(data) { result = data; }
           });
           window.location.reload();
@@ -358,7 +315,7 @@ echo "<h2>$title</h2>";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be Data Processing" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be Data Processing", "critical": "4" }',
             success: function(data) { result = data; }
           });
           window.location.reload();
@@ -382,7 +339,7 @@ echo "<h2>$title</h2>";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be Fieldwork" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be Fieldwork", "critical": "4" }',
             success: function(data) { result = data; }
           });
           window.location.reload();
@@ -418,7 +375,7 @@ echo "<h2>$title</h2>";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' created a new member ' + self.newMemberName() + ' (' + self.newMemberEmail() + ')" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' created a new member ' + self.newMemberName() + ' (' + self.newMemberEmail() + ')", "critical": "5" }',
             success: function(data) { result = data; }
           });
         },
@@ -446,7 +403,7 @@ echo "<h2>$title</h2>";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' renamed a member ' + member.fullname() + ' (' + member.email() + ')" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' renamed a member ' + member.fullname() + ' (' + member.email() + ')", "critical": "4" }',
             success: function(data) { result = data; }
           });
         },
@@ -475,7 +432,7 @@ echo "<h2>$title</h2>";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed a member email ' + member.email() + ' (' + member.email() + ')" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed a member email ' + member.email() + ' (' + member.email() + ')", "critical": "4" }',
             success: function(data) { result = data; }
           });
         },
@@ -504,7 +461,7 @@ echo "<h2>$title</h2>";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed a member mobile ' + member.mobile() + ' (' + member.email() + ')" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed a member mobile ' + member.mobile() + ' (' + member.email() + ')", "critical": "4" }',
             success: function(data) { result = data; }
           });
         },
@@ -537,7 +494,7 @@ echo "<h2>$title</h2>";
       if (data.lastip == null) { data.lastip = "never login"; }
       if (data.lastip2 == null) { data.lastip2 = "never login"; }
       if (data.avatar != null) { avatar = data.avatar; } else { avatar = "assets/img/u/F6.svg"; }
-      if (data.level == 9) { role = "Administrator"; } else if (data.level == 6) { role = "Account Leader"; } else if (data.level == 5) { role = "Researcher"; }
+      if (data.level == 9) { role = "Administrator"; } else if (data.level == 6) { role = "Manager"; } else if (data.level == 5) { role = "User"; }
       //issuspended = false; if (data.status = "0") { issuspended = true; } else { issuspended = false; }
       return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, avatar, companyid, data.status, role, data.level, created, updated, lastlogin, data.lastip, lastlogin2, data.lastip2, data.counts);
     }
@@ -545,11 +502,47 @@ echo "<h2>$title</h2>";
     this.showInfo = function (member) { member.showInfo(!member.showInfo()); }
     this.loadData();
   }
-  jQuery(document).ready(function () { ko.applyBindings(new ViewModel()); });
+  jQuery(document).ready(function () {
+    ko.applyBindings(new ViewModel());
+  });
 
 </script>
 
+<br><hr>
+
+<h3>Information on account type</h3>
+
+<p>While we have several account types, we currently provide two account types to our clients which are an <strong>user</strong> and a <strong>manager</strong>.</p>
+
+<table class="table table-hover">
+  <thead>
+    <tr class="bg-primary">
+      <td width="20%"><strong>User type</strong></td>
+      <td><strong>Description</strong></td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>User</td>
+      <td>
+        <p>User account is a normal user who can create, edit, or delete surveys projects that are belonged only to this user (defined by projects that are either created by this user or are assigned to this user by a Manager).</p>
+        <p>This user will be able to see other projects that are managed by other members in the team, but those projects will be read-only.</p>
+      </td>
+    </tr>
+    <tr>
+      <td>Manager</td>
+      <td>
+        <p>Manager is a user who can manage both surveys and team members. Manager can create, edit and delete any surveys and any team members (User) of the company.</p>
+        <p>There are also some functions that are only available to Manager such as editing the company information, choosing the survey template, etc.</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p>It is quite common that our clients tend to have just one (or two) manager account together with several user accounts.</p>
+
 <br>
 
+<a href="/admin/?w=surveys" class="btn btn-danger btn-sm pull-right" style="margin-top:50px; margin-bottom: 20px"><i class="pe-chevron-circle-left pe-fw"></i> Back to the main page</a>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
