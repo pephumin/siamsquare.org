@@ -98,10 +98,10 @@ if (($qtype == "radiogroup") || ($qtype == "dropdown") || ($qtype == "rating")) 
     $out .= "    data.setCell($m, 2, $BB[$m]);\n";
   }
   $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
-  if ((empty($_GET['type'])) || ($_GET['type'] == "pie")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Pie</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> ]</strong></p><br>\n"; }
-  else if ($_GET['type'] == "donut") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <u>Donut</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> ]</strong></p><br>\n"; }
-  else if ($_GET['type'] == "bar-H") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> ]</strong></p><br>\n"; }
-  else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> ]</strong></p><br>\n"; }
+  if ((empty($_GET['type'])) || ($_GET['type'] == "pie")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Pie</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
+  else if ($_GET['type'] == "donut") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <u>Donut</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
+  else if ($_GET['type'] == "bar-H") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
+  else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
 }
 
 else if ($qtype == "checkbox") {
@@ -131,8 +131,8 @@ else if ($qtype == "checkbox") {
     $out .= "    data.setCell($m, 2, $BB[$m]);\n";
   }
   $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
-  if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> ]</strong></p><br>\n"; }
-  else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> ]</strong></p><br>\n"; }
+  if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
+  else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
 }
 
 else if ($qtype == "comment") {
@@ -163,7 +163,7 @@ else if ($qtype == "file") {
 
   $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
   if (empty($_GET['size']) || ($_GET['size'] == "S")) {
-    $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <u>small</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=M")."\">medium</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=L")."\">large</a> ]</strong></p><br>\n";
+    $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <u>small</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=M")."\">medium</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=L")."\">large</a> <strong>]</strong></p><br>\n";
     $bb = 0;
     $outdirect .= "  <table>\n";
     $outdirect .= "    <tr>\n";
@@ -180,7 +180,7 @@ else if ($qtype == "file") {
     $outdirect .= "    </tr>\n";
     $outdirect .= "  </table>\n";
   } else if ($_GET['size'] == "M") {
-    $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <a href=\"".htmlspecialchars($me."&size=S")."\">small</a> <strong>:</strong> <u>medium</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=L")."\">large</a> ]</strong></p><br>\n";
+    $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <a href=\"".htmlspecialchars($me."&size=S")."\">small</a> <strong>:</strong> <u>medium</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=L")."\">large</a> <strong>]</strong></p><br>\n";
     $bb = 0;
     $outdirect .= "  <table>\n";
     $outdirect .= "    <tr>\n";
@@ -197,7 +197,7 @@ else if ($qtype == "file") {
     $outdirect .= "    </tr>\n";
     $outdirect .= "  </table>\n";
   } else if ($_GET['size'] == "L") {
-    $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <a href=\"".htmlspecialchars($me."&size=S")."\">small</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=M")."\">medium</a> <strong>:</strong> <u>large</u> ]</strong></p><br>\n";
+    $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <a href=\"".htmlspecialchars($me."&size=S")."\">small</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=M")."\">medium</a> <strong>:</strong> <u>large</u> <strong>]</strong></p><br>\n";
     $bb = 0;
     $outdirect .= "  <table>\n";
     $outdirect .= "    <tr>\n";
@@ -213,45 +213,31 @@ else if ($qtype == "file") {
     }
     $outdirect .= "    </tr>\n";
     $outdirect .= "  </table>\n";
-  } else {
-    $bb = 0;
-    $outdirect .= "  <table>\n";
-    $outdirect .= "    <tr>\n";
-    foreach ($k as $A => $B) {
-      if ($B) {
-        $R = new resize('../members/assets/upload/full/'.$B);
-        $R->resizeImage(300, 300, 'auto');
-        $R->saveImage('../members/assets/upload/resized_M/'.$B, 80);
-        $outdirect .= "      <td style=\"text-align:center\"><a href=\"/members/assets/upload/full/$B\" target=\"_blank\" title=\"Click to open a full size image in a new window\"><img src=\"/members/assets/upload/resized_M/$B\" class=\"img-thumbnail\"></a></td>\n";
-        $bb++;
-        if (($bb % 3 == 0) && ($bb > 0)) { $outdirect .= "    </tr><tr>\n"; }
-      }
-    }
-    $outdirect .= "    </tr>\n";
-    $outdirect .= "  </table>\n";
   }
 }
 
 // ------- Questionnaire navigator --------------------------------------------------------------------------
 
+$limit = 5;
 $sid = $_GET["s"]; $qid = $_GET["q"];
 $qqr = substr($show, -1);
-$banner = "<ul class=\"progress-tracker progress-tracker--text progress-tracker--center\">\n";
+$questionlisting = "<ul class=\"progress-tracker progress-tracker--text progress-tracker--center\">\n";
 $numberofquestions = count($questions);
+// if ($numberofquestions > $limit) { }
 for ($i = 0; $i < $numberofquestions; $i++) {
   $qname1 = $questions[$i]["name"];
   $qtitle1 = $questions[$i]["title"];
   $qtype1 = $questions[$i]["type"];
-  if ($qname1 == $_GET['q']) { $banner .= "<li class=\"progress-step is-active\">\n"; }
-  else { $banner .= "<li class=\"progress-step\">\n"; }
-  $banner .= "  <span class=\"progress-marker\"></span>\n";
-  $banner .= "  <a href=\"/admin/?w=result&s=$sid&q=$qname1\"><span class=\"progress-text\">\n";
-  $banner .= "    <span class=\"progress-title\">$qname1</span>\n";
-  $banner .= "    $qtitle1 ($qtype1)\n";
-  $banner .= "  </span></a>\n";
-  $banner .= "</li>\n";
+  if ($qname1 == $_GET['q']) { $questionlisting .= "<li class=\"progress-step is-active\">\n"; }
+  else { $questionlisting .= "<li class=\"progress-step\">\n"; }
+  $questionlisting .= "  <span class=\"progress-marker\"></span>\n";
+  $questionlisting .= "  <a href=\"/admin/?w=result&s=$sid&q=$qname1\"><span class=\"progress-text\">\n";
+  $questionlisting .= "    <span class=\"progress-title\">$qname1</span>\n";
+  $questionlisting .= "    $qtitle1 ($qtype1)\n";
+  $questionlisting .= "  </span></a>\n";
+  $questionlisting .= "</li>\n";
 }
-$banner .= "</ul>\n";
+$questionlisting .= "</ul>\n";
 
 // ------- Output --------------------------------------------------------------------------
 
@@ -263,9 +249,27 @@ echo "<p>Please note that results here are automatically generated by our system
 echo "<p>There are still some question types where automatic charting is yet to be completed. If you prefer to see more details e.g. cross-tabulation, you would need to download data file and process the data traditional way.</p>\n";
 echo "<hr>\n";
 echo "<h3>Project $project</h3>\n";
+echo "<br>\n";
+echo "<div class=\"row\">\n";
+echo "  <div class=\"col-sm-8\">\n";
+echo "    <p>This survey has a total of <strong>$numberofquestions questions</strong> as shown below. Click one of the below questions to see its real-time results.</p>\n";
+echo "    <p>If you prefer to download the project's data file which contains all responses from all questions in one file, you can just download from the links provided.</p>\n";
+echo "  </div>\n";
+echo "  <div class=\"col-sm-2\" style=\"padding:5px\">\n";
+echo "    <div class=\"list-group small\">\n";
+echo "      <a href=\"\" class=\"list-group-item\"><i class=\"pe-download pe-fw\"></i> Download CSV data file</a>\n";
+echo "      <a href=\"\" class=\"list-group-item\"><i class=\"pe-download pe-fw\"></i> Download ASCII data file</a>\n";
+echo "    </div>\n";
+echo "  </div>\n";
+echo "  <div class=\"col-sm-2\" style=\"padding:5px\">\n";
+echo "    <div class=\"list-group small\">\n";
+echo "      <a href=\"\" class=\"list-group-item\"><i class=\"pe-file-excel-o pe-fw\"></i> Download XLS tabulation</a>\n";
+echo "      <a href=\"\" class=\"list-group-item disabled\"><i class=\"pe-table pe-fw\"></i> View tabulation online</a>\n";
+echo "    </div>\n";
+echo "  </div>\n";
+echo "</div>\n";
 
-echo "There are $numberofquestions questions as shown below:\n";
-echo $banner;
+echo $questionlisting;
 
 $answers = "<p><em>A total of $totalresponses responses answered by $totalrecords respondents</em></p>\n";
 
@@ -275,9 +279,11 @@ $openendquery .= "<input id=\"root\" value=\"\" placeholder=\"Enter key words\">
 $openendquery .= "<input type=\"button\" id=\"go\" value=\"Generate\">\n";
 $openendquery .= "</div>\n";
 
-if ($_GET["q"]) {
-
 ?>
+
+
+
+<?php if ($_GET["q"]) { ?>
 
 <div class="row">
   <div class="col-sm-12 bg-info" style="margin-bottom:40px">
@@ -295,7 +301,7 @@ if ($_GET["q"]) {
   </div>
 </div>
 
-<?php } else { echo "<h4>Please click each of the above questions for viewing the results</h4>"; } ?>
+<?php } else { echo "<h4 class=\"grey\">To view survey results, you just simply click one of the above questions</h4>"; } ?>
 
 
 <!-- ############# Output for radiogroup, rating and dropdown (single answer) ############# -->
@@ -304,7 +310,6 @@ if ($_GET["q"]) {
 
 <?php if ((empty($_GET['type'])) || ($_GET['type'] == "pie")) { ?>
 
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript">
     google.charts.load('current', {'packages': ['table', 'corechart']});
     google.charts.setOnLoadCallback(drawSort);
@@ -333,7 +338,6 @@ if ($_GET["q"]) {
 
 <?php } else if ($_GET['type'] == "donut") { ?>
 
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript">
     google.charts.load('current', {'packages': ['table', 'corechart']});
     google.charts.setOnLoadCallback(drawSort);
@@ -362,7 +366,6 @@ if ($_GET["q"]) {
 
 <?php } else if ($_GET['type'] == "bar-H") { ?>
 
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript">
     google.charts.load('current', {'packages': ['table', 'corechart']});
     google.charts.setOnLoadCallback(drawSort);
@@ -393,7 +396,6 @@ if ($_GET["q"]) {
 
 <?php } else if ($_GET['type'] == "bar-V") { ?>
 
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript">
     google.charts.load('current', {'packages': ['table', 'corechart']});
     google.charts.setOnLoadCallback(drawSort);
@@ -430,7 +432,6 @@ if ($_GET["q"]) {
 
 <?php if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { ?>
 
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript">
     google.charts.load('current', {'packages': ['table', 'corechart']});
     google.charts.setOnLoadCallback(drawSort);
@@ -461,7 +462,6 @@ if ($_GET["q"]) {
 
 <?php } else if ($_GET['type'] == "newbar-H") { ?>
 
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript">
     google.charts.load('current', {'packages': ['table', 'bar']});
     google.charts.setOnLoadCallback(drawSort);
@@ -493,7 +493,6 @@ if ($_GET["q"]) {
 
 <?php } else if ($_GET['type'] == "bar-V") { ?>
 
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript">
     google.charts.load('current', {'packages': ['table', 'corechart']});
     google.charts.setOnLoadCallback(drawSort);
@@ -528,7 +527,6 @@ if ($_GET["q"]) {
 
 <?php } else if ($qtype == "comment") { ?>
 
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript">
     google.charts.load('current', {packages:['wordtree']});
     google.charts.setOnLoadCallback(drawChart);
