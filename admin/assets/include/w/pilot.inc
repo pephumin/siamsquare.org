@@ -8,9 +8,9 @@ echo "<hr>\n";
 
 ?>
 
-<h3 id="projectname" class="text-right grey"></h3>
+<h3 id="projectname"></h3>
 
-<p class="text-right grey">Pilot testing with your account: <strong id="clientIdContainer"><?php echo $_SESSION["email"]; ?></strong></p>
+<p>Pilot testing with your account: <strong id="clientIdContainer"><?php echo $_SESSION["email"]; ?></strong></p>
 
 <div id="showalert"></div>
 
@@ -24,13 +24,13 @@ echo "<hr>\n";
 
 <script type="text/javascript">
 
-  function get(name, url) {
-    if (!url) { url = window.location.href; }
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-    results = regex.exec(url); if (!results) return null; if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-  }
+  // function get(name, url) {
+  //   if (!url) { url = window.location.href; }
+  //   name = name.replace(/[\[\]]/g, "\\$&");
+  //   var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+  //   results = regex.exec(url); if (!results) return null; if (!results[2]) return '';
+  //   return decodeURIComponent(results[2].replace(/\+/g, " "));
+  // }
 
   function getip() {
     var rip;
