@@ -88,35 +88,39 @@ $colordata .= " ]";
 ?>
 
 <div id="timeline"></div>
-
+<p align="right"><a href="/admin/?w=surveys" class="small">More...</a></p>
 <hr>
 
-<h3>Updated news</h3>
+<h3>Message board</h3>
 <div class="row">
   <div class="col-sm-8">
-    <h4>Announcements</h4>
+    <!-- <h4>Announcements</h4> -->
 <?php
-$q3 = $db->prepare("SELECT N.*, U.email, U.fullname FROM j_news N, j_users U WHERE N.userid = U.id AND N.status >= 1 AND N.companyid IN (0, :companyid) ORDER BY N.created DESC LIMIT 5");
+$q3 = $db->prepare("SELECT N.*, U.email, U.fullname FROM j_news N, j_users U WHERE N.userid = U.id AND N.status >= 1 AND N.companyid = :companyid ORDER BY N.created DESC LIMIT 10");
 $q3->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
 $q3->execute();
 while ($r = $q3->fetchObject()) {
-  if ($r->companyid == 0) { echo "    <div class=\"panel panel-primary\">\n"; } else { echo "    <div class=\"panel panel-info small\">\n"; }
+  $postid = base64_encode($r->id);
   $t1 = shortdate($r->created); $t2 = ago($r->created);
-  echo "      <div class=\"panel-heading\"><i class=\"pe-bullhorn pe-fw\"></i> $r->head</div>\n";
-  echo "      <div class=\"announcement-info\"><i class=\"pe-user pe-fw\"></i> $r->fullname &middot; <i class=\"pe-calendar pe-fw\"></i> $t1 ($t2)</div>\n";
-  echo "      <div class=\"panel-body small\">$r->body</div>\n";
+  $body = nl2br($r->body);
+  echo "    <div class=\"panel panel-info\">\n";
+  echo "      <div class=\"panel-heading\" role=\"tab\" id=\"h$postid\"><i class=\"pe-wpforms pe-fw\"></i> <a class=\"collapsed\" data-toggle=\"collapse\" href=\"#c$postid\" aria-expanded=\"false\" aria-controls=\"c$postid\">$r->head</a></div>\n";
+  echo "      <div class=\"announcement-info\"><i class=\"pe-user pe-fw\"></i> $r->fullname ($r->email) &middot; <i class=\"pe-calendar pe-fw\"></i> $t1 ($t2)</div>\n";
+  echo "      <div id=\"c$postid\" class=\"panel-collapse collapse\" role=\"tabpanel\" aria-labelledby=\"h$postid\">\n";
+  echo "        <div class=\"panel-body small\">$body</div>\n";
+  echo "      </div>\n";
   echo "    </div>\n";
 }
 ?>
-    <p align="right"><a href="/admin/?w=news" class="small">More...</a></p>
+    <p align="right"><a href="/admin/?w=board" class="small">More...</a></p>
   </div>
   <div class="col-sm-4 bg-info">
     <h4>Your recent activities</h4>
-    <div class="panel-group">
+    <!-- <div class="panel-group">
       <div class="panel panel-primary">
         <div class="panel-body"><small>Registered: <strong><?php echo shortdate($_SESSION["created"]); ?></strong> (<?php echo ago($_SESSION["created"]); ?>)</small></div>
       </div>
-    </div>
+    </div> -->
     <div class="list-group">
 <?php
 $q1 = $db->prepare("SELECT * FROM j_users_logs WHERE userid = :userid AND critical BETWEEN 2 AND 4 ORDER BY recorded DESC LIMIT 5");
@@ -136,6 +140,11 @@ while ($r = $q1->fetchObject()) {
 
 <br>
 
+<style media="screen">
+  svg g:first-of-type path { stroke: #e6e6e6; }
+  svg g:first-of-type rect:not(:last-child) { fill: #ffffff; }
+</style>
+
 <script type="text/javascript">
   google.charts.load('current', {'packages': ['timeline'] });
   google.charts.setOnLoadCallback(drawTimelineChart);
@@ -151,6 +160,7 @@ while ($r = $q1->fetchObject()) {
     var options = {
       height: <?php echo $height; ?>,
       colors: [ '#B3FFB3', '#00E600', '#009900', '#AAAAAA' ],
+      backgroundColor: { fill: 'transparent' },
       avoidOverlappingGridLines: false,
       timeline: {
         groupByRowLabel: true,
