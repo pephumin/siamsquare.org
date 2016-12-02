@@ -73,7 +73,7 @@ echo "<h2>$title</h2>";
           <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: fullname"></small><br></div>
         </div>
         <div class="row" data-bind="visible: isEditingFullName()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Name <a href="" data-bind="click: $parent.cancelEditFullName"><i class="pe-remove"></i></a></small></div>
+          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Name <a href="" data-bind="click: $parent.cancelEditFullName"><i class="pe-times-circle-o"></i></a></small></div>
           <div class="col-sm-7" style="padding:2px 0px"><small>
             <input data-bind="textInput: editingFullName, visible: isEditingFullName()" onclick="this.select()" placeholder="First and last name" class="form-control input-sm">
             <a class="btn btn-tiny" data-bind="click: $parent.postEditFullName, enable: fullname() != ''" href="">Change <i class="pe-check-circle-o"></i></a>
@@ -85,7 +85,7 @@ echo "<h2>$title</h2>";
           <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: email"></small><br></div>
         </div>
         <div class="row" data-bind="visible: isEditingEmail()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Email <a href="" data-bind="click: $parent.cancelEditEmail"><i class="pe-remove"></i></a></small></div>
+          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Email <a href="" data-bind="click: $parent.cancelEditEmail"><i class="pe-times-circle-o"></i></a></small></div>
           <div class="col-sm-7" style="padding:2px 0px"><small>
             <input data-bind="textInput: editingEmail, visible: isEditingEmail()" onclick="this.select()" placeholder="email@company.com" class="form-control input-sm">
             <a class="btn btn-tiny" data-bind="click: $parent.postEditEmail, enable: email() != ''" href="">Change <i class="pe-check-circle-o"></i></a>
@@ -97,7 +97,7 @@ echo "<h2>$title</h2>";
           <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: mobile"></small><br></div>
         </div>
         <div class="row" data-bind="visible: isEditingMobile()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Mobile <a href="" data-bind="click: $parent.cancelEditMobile"><i class="pe-remove"></i></a></small></div>
+          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Mobile <a href="" data-bind="click: $parent.cancelEditMobile"><i class="pe-times-circle-o"></i></a></small></div>
           <div class="col-sm-7" style="padding:2px 0px"><small>
             <input data-bind="textInput: editingMobile, visible: isEditingMobile()" onclick="this.select()" placeholder="0813333333" class="form-control input-sm">
             <a class="btn btn-tiny" data-bind="click: $parent.postEditMobile, enable: mobile() != ''" href="">Change <i class="pe-check-circle-o"></i></a>
@@ -109,7 +109,7 @@ echo "<h2>$title</h2>";
           <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: role"></small><br></div>
         </div>
         <div class="row" data-bind="visible: isEditingLevel()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Role <a href="" data-bind="click: $parent.cancelEditLevel"><i class="pe-remove"></i></a></small></div>
+          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Role <a href="" data-bind="click: $parent.cancelEditLevel"><i class="pe-times-circle-o"></i></a></small></div>
           <div class="col-sm-7" style="padding:2px 0px"><small>
             <a class="btn btn-default btn-tiny" data-bind="click: $parent.L6" href="">Manager</a>
             <a class="btn btn-default btn-tiny" data-bind="click: $parent.L5" href="">User</a>
