@@ -53,7 +53,7 @@ echo "<p>$details</p>\n";
 
 <?php } ?>
 
-<div id="showalert-delete"></div><div id="showalert-restore"></div><div id="showalert-archive"></div><div id="showalert-move"></div>
+<div id="showalert-delete"></div><div id="showalert-restore"></div><div id="showalert-archive"></div><div id="showalert-move"></div><div id="showalert-pp"></div>
 
 <table class="table table-hover">
   <thead>
@@ -84,11 +84,11 @@ echo "<p>$details</p>\n";
         <small><span data-bind="text: created"></span></small>
       </td>
       <td>
-        <small><span data-bind="text: lastupdated"></span></small>
+        <small><span data-bind="text: updated"></span></small>
       </td>
       <td>
         <div data-bind="if: canedit">
-          <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=edit&amp;s=' + id }, visible: $parent.showActive() == 'A'">Edit <i class="pe-edit"></i></a>
+          <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=edit&amp;s=' + id }, visible: $parent.showActive() == 'A'">Design <i class="pe-edit"></i></a>
           <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=pilot&amp;s=' + id }, visible: $parent.showActive() == 'A'">Pilot test <i class="pe-paper-plane"></i></a>
           <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the next step" data-bind="click: $parent.one2two, visible: $parent.showActive() == 'A'" href=""><i class="pe-arrow-circle-right pe-lg"></i></a><?php } ?>
         </div>
@@ -113,7 +113,7 @@ echo "<p>$details</p>\n";
         </div>
       </td>
     </tr>
-    <tr data-bind="visible: showInfo">
+    <tr data-bind="style: { 'background-color': showInfo() ? 'whitesmoke' : 'none' }, visible: showInfo">
       <td colspan="4" class="grey">
         <div class="row">
           <div class="col-sm-3" style="padding:10px 20px"><small>Project owner</small></div>
@@ -124,7 +124,7 @@ echo "<p>$details</p>\n";
           <div class="col-sm-9" style="padding:10px 20px"><small><span data-bind="text: title"></span> (surveyid = <span data-bind="text: id"></span>)</small></div>
         </div>
         <div class="row" data-bind="visible: isEditing()">
-          <div class="col-sm-3" style="padding:10px 20px"><small>Project name</small></div>
+          <div class="col-sm-3" style="padding:10px 20px"><small>Project name <a href="" data-bind="click: $parent.cancelEdit"><i class="pe-times-circle-o"></i></a></small></div>
           <div class="col-sm-9" style="padding:10px 20px">
             <input data-bind="textInput: editingName" onclick="this.select()" class="form-control"><br>
             <a class="btn btn-sm" data-bind="click: $parent.postEdit, enable: title() != ''" href="">Rename <i class="pe-check-circle-o"></i></a>
@@ -136,25 +136,43 @@ echo "<p>$details</p>\n";
           <div class="col-sm-9" style="padding:10px 20px"><small><span data-bind="text: description"></span></small></div>
         </div>
         <div class="row" data-bind="visible: isEditingDescription()">
-          <div class="col-sm-3" style="padding:10px 20px"><small>Description</small></div>
+          <div class="col-sm-3" style="padding:10px 20px"><small>Description <a href="" data-bind="click: $parent.cancelEditDescription"><i class="pe-times-circle-o"></i></a></small></div>
           <div class="col-sm-9" style="padding:10px 20px">
             <textarea data-bind="textInput: editingDescription, visible: isEditingDescription()" onclick="this.select()" class="form-control" rows="5"></textarea><br>
             <a class="btn btn-sm" data-bind="click: $parent.postEditDescription, enable: description() != ''" href="">Update <i class="pe-check-circle-o"></i></a>
             <a class="btn btn-sm" data-bind="click: $parent.cancelEditDescription" href="">Cancel <i class="pe-times-circle-o"></i></a>
           </div>
         </div>
-        <div class="row red" data-bind="visible: !isEditingDescription()">
-          <div class="col-sm-3" style="padding:10px 20px"><small>Private? <a href="" data-bind="if: canedit, click: $parent.startEditDescription, visible: $parent.showActive() == 'A'" title="Change project description"> <i class="pe-edit"></i></a></small></div>
-          <!-- <div class="col-sm-9" style="padding:10px 20px"><small><input type="radio" name="pp" value="private" data-bind="checked: pORp"> Private <input type="radio" name="pp" value="public" data-bind="checked: pORp"> Public</small></div> -->
+        <div class="row" data-bind="visible: !isEditingPP()">
+          <div class="col-sm-3" style="padding:10px 20px"><small>Type of survey <a href="" data-bind="if: canedit, click: $parent.startEditPP, visible: $parent.showActive() == 'A'" title="Change type of survey"> <i class="pe-edit"></i></a></small></div>
           <div class="col-sm-9" style="padding:10px 20px">
-            <small>
-              <div class="btn-group" data-toggle="buttons">
-                <label class="btn btn-primary"><input type="radio" name="options" id="option1" value="1" data-bind="bsChecked: optionsValue">Option 1</label>
-                <label class="btn btn-primary"><input type="radio" name="options" id="option2" value="2" data-bind="bsChecked: optionsValue">Option 2</label>
-                <label class="btn btn-primary"><input type="radio" name="options" id="option3" value="3" data-bind="bsChecked: optionsValue">Option 3</label>
-                <!-- <br><span data-bind="text: optionsValue"></span> -->
-              </div>
-            </small>
+            <small><strong><span data-bind="text: pp"></span></strong></small>&nbsp;&nbsp;&nbsp;
+            <span data-bind="if: canedit">
+              <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=respondents&amp;s=' + id }, visible: pp == 'Private'">Manage respondents <i class="pe-users"></i></a>
+              <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=template&amp;t=survey&amp;s=' + id }, visible: pp == 'Private'">Edit survey template <i class="pe-wpforms"></i></a>
+              <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=template&amp;t=email&amp;s=' + id }, visible: pp == 'Private'">Edit email template <i class="pe-envelope"></i></a>
+            </span>
+          </div>
+        </div>
+        <div class="row" data-bind="visible: isEditingPP()">
+          <div class="col-sm-3" style="padding:10px 20px"><small>Type of survey <a href="" data-bind="click: $parent.cancelEditPP"><i class="pe-times-circle-o"></i></a></small></div>
+          <div class="col-sm-9" style="padding:10px 20px">
+            <div data-bind="if: private">
+              <a class="btn btn-info btn-tiny" data-bind="click: $parent.toPublic, visible: $parent.showActive() == 'A'" href="">Make it Public <i class="pe-train"></i></a>
+              <a class="btn btn-info btn-tiny" data-bind="click: $parent.toPrivate, visible: $parent.showActive() == 'A'" href="" disabled>Make it Private <i class="pe-car"></i></a>
+              <a class="btn btn-default btn-tiny" data-bind="click: $parent.cancelEditPP, visible: $parent.showActive() == 'A'" href="">Cancel <i class="pe-times-circle-o"></i></a>
+            </div>
+            <div data-bind="ifnot: private">
+              <a class="btn btn-info btn-tiny" data-bind="click: $parent.toPublic, visible: $parent.showActive() == 'A'" href="" disabled>Make it Public <i class="pe-train"></i></a>
+              <a class="btn btn-info btn-tiny" data-bind="click: $parent.toPrivate, visible: $parent.showActive() == 'A'" href="">Make it Private <i class="pe-car"></i></a>
+              <a class="btn btn-default btn-tiny" data-bind="click: $parent.cancelEditPP, visible: $parent.showActive() == 'A'" href="">Cancel <i class="pe-times-circle-o"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12" style="padding:10px 20px" data-bind="if: canedit">
+            <a class="btn btn-danger btn-xs pull-right" href="" style="white-space:normal;width:100px;word-wrap:break-word"><i class="pe-flag-checkered pe-fw"></i> Ready for fieldwork</a>
+            <small>Once you are sure this project is ready for fieldwork, please submit your request using this button and we will proceed for you as soon as possible. <strong>It is important to understand that once the project is moved to the Data-collection stage, you <em>will not</em> be able to make any changes in the questionaire at all</strong>.</small>
           </div>
         </div>
       </td>
@@ -162,6 +180,8 @@ echo "<p>$details</p>\n";
     <!-- /ko -->
   </tbody>
 </table>
+
+
 
 
 <script type="text/javascript">
@@ -176,22 +196,25 @@ echo "<p>$details</p>\n";
   $('#showalert-delete').html("<div class='alert alert-warning'><i class='pe-trash pe-fw'></i> The project has been deleted</div>").hide();
   $('#showalert-restore').html("<div class='alert alert-warning'><i class='pe-undo pe-fw'></i> The project has been restored</div>").hide();
   $('#showalert-archive').html("<div class='alert alert-warning'><i class='pe-archive pe-fw'></i> The project has been moved to your archive</div>").hide();
-  $('#showalert-move').html("<div class='alert alert-warning'><i class='pe-exchange pe-fw'></i> The project has been moved to a different stage</div>").hide();
+  $('#showalert-move').html("<div class='alert alert-info'><i class='pe-exchange pe-fw'></i> The project has been moved to a different stage</div>").hide();
+  $('#showalert-pp').html("<div class='alert alert-info'><i class='pe-exchange pe-fw'></i> The project scope has been changed between Public vs. Private</div>").hide();
 
   Date.prototype.toMysqlFormat = function () {
     function pad(n) { return n < 10 ? '0' + n : n }
     return this.getFullYear() + "-" + pad(1 + this.getMonth()) + "-" + pad(this.getDate()) + " " + pad(this.getHours()) + ":" + pad(this.getMinutes()) + ":" + pad(this.getSeconds());
   };
-  var TimeNow = new Date().toMysqlFormat(); // console.log(TimeNow);
+  var TimeNow = new Date().toMysqlFormat();
 
-  var Listing = function (title, description, userid, created, lastupdated, id, email, fullname, company, companyid, private, canedit, readonly, owner) {
+  var Listing = function (title, description, userid, created, updated, id, email, fullname, company, companyid, private, canedit, owner) {
     this.title = ko.observable(title);
     this.editingName = ko.observable(title);
     this.description = ko.observable(description);
     this.editingDescription = ko.observable(description);
+    // this.pp = ko.observable(private);
+    this.editingPP = ko.observable(private);
     this.userid = userid;
     this.created = created;
-    this.lastupdated = lastupdated;
+    this.updated = updated;
     this.id = id;
     this.email = email;
     this.fullname = fullname;
@@ -201,14 +224,15 @@ echo "<p>$details</p>\n";
     this.showInfo = ko.observable(false);
     this.isEditing = ko.observable(false);
     this.isEditingDescription = ko.observable(false);
-    this.pORp = ko.observable();
+    this.isEditingPP = ko.observable(false);
     this.canedit = canedit;
-    this.readonly = readonly;
     this.owner = owner;
-    this.optionsValue = ko.observable(2);
+    this.selectedOption = ko.observable(private);
+    if (private) { this.pp = "Private"; } else { this.pp = "Public"; }
   }
   var ViewModel = function () {
     var self = this;
+    // this.selectedOption = ko.observable(private);
     this.surveys = ko.observableArray([]);
     this.url = api;
     this.showActive = ko.observable(true);
@@ -388,6 +412,52 @@ echo "<p>$details</p>\n";
         error: function (error) { self.onFail(error); }
       });
     }
+    this.toPublic = function (survey) {
+      $.ajax({
+        url: api + '/survey/' + survey.id + '/2public',
+        dataType: 'json',
+        type: 'put',
+        contentType: 'application/json; charset=utf-8',
+        data: '{ "private": 0 }',
+        success: function (data) {
+          $('#showalert-pp').show();
+          window.setTimeout(function () { $("#showalert-pp").slideUp(500, function () { $("#showalert-pp").hide(); }); }, 5000);
+          $.ajax({
+            url: api + '/log',
+            dataType: 'json',
+            type: 'post',
+            contentType: 'application/json; charset=utf-8',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed survey to public for ' + survey.title() + ' (id=' + survey.id + ')", "critical": "3" }',
+            success: function(data) { result = data; }
+          });
+          window.location.reload();
+        },
+        error: function (error) { self.onFail(error); }
+      });
+    }
+    this.toPrivate = function (survey) {
+      $.ajax({
+        url: api + '/survey/' + survey.id + '/2private',
+        dataType: 'json',
+        type: 'put',
+        contentType: 'application/json; charset=utf-8',
+        data: '{ "private": 1 }',
+        success: function (data) {
+          $('#showalert-pp').show();
+          window.setTimeout(function () { $("#showalert-pp").slideUp(500, function () { $("#showalert-pp").hide(); }); }, 5000);
+          $.ajax({
+            url: api + '/log',
+            dataType: 'json',
+            type: 'post',
+            contentType: 'application/json; charset=utf-8',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed survey to private for ' + survey.title() + ' (id=' + survey.id + ')", "critical": "3" }',
+            success: function(data) { result = data; }
+          });
+          window.location.reload();
+        },
+        error: function (error) { self.onFail(error); }
+      });
+    }
     this.removeSurvey = function (survey) {
       var index = self.surveys.indexOf(survey);
       if (index > -1) { self.surveys.splice(index, 1); }
@@ -474,16 +544,43 @@ echo "<p>$details</p>\n";
       });
     }
     this.cancelEditDescription = function (survey) { survey.isEditingDescription(false); }
+    this.startEditPP = function (survey) {
+      survey.editingPP(survey.private());
+      survey.isEditingPP(true);
+    }
+    this.postEditPP = function (survey) {
+      self.cancelEditPP(survey);
+      // console.log(survey.editingPP());
+      // $.ajax({
+      //   url: api + '/survey/' + survey.id + '/repp',
+      //   dataType: 'json',
+      //   type: 'put',
+      //   contentType: 'application/json; charset=utf-8',
+      //   data: '{ "private": "' + survey.editingPP() + '" }',
+      //   success: function (data) {
+      //     survey.private(survey.editingPP());
+      //     // $.ajax({
+      //     //   url: api + '/log/' + userid + '/' + survey.id,
+      //     //   dataType: 'json',
+      //     //   type: 'post',
+      //     //   contentType: 'application/json; charset=utf-8',
+      //     //   data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed a description for ' + survey.title() + ' (id=' + survey.id + ')", "critical": "3" }',
+      //     //   success: function(data) { result = data; }
+      //     // });
+      //   },
+      //   error: function (error) { self.onFail(error); }
+      // });
+    }
+    this.cancelEditPP = function (survey) { survey.isEditingPP(false); }
     this.createSurveyObject = function (data) {
-      var private = false; var canedit = false; var readonly = true; var owner = false;
-      if (data.private == 1) { var private = true; } //var pORp = data.private;
+      var canedit = false; var owner = false;
       if (userid == data.userid) { var owner = true; }
       if (level == 9) { var canedit = true; } else if (level == 6) { var canedit = true; }
       else if (level == 5) { if (owner == true) { var canedit = true; } }
       moment.locale('en');
       var s1 = moment(data.created).fromNow(); var s2 = moment(data.created).format("D MMM YYYY"); created = s2 + ' (' + s1 + ')';
-      var t1 = moment(data.updated).fromNow(); var t2 = moment(data.updated).format("D MMM YYYY"); lastupdated = t2 + ' (' + t1 + ')';
-      return new Listing(data.title, data.description, data.userid, created, lastupdated, data.id, data.email, data.fullname, data.company, data.companyid, data.private, canedit, readonly, owner);
+      var t1 = moment(data.updated).fromNow(); var t2 = moment(data.updated).format("D MMM YYYY"); updated = t2 + ' (' + t1 + ')';
+      return new Listing(data.title, data.description, data.userid, created, updated, data.id, data.email, data.fullname, data.company, data.companyid, data.private, canedit, owner);
     }
     this.onFail = function (error) { alert(JSON.stringify(error)); }
     this.showInfo = function (survey) { survey.showInfo(!survey.showInfo()); }
@@ -494,23 +591,12 @@ echo "<p>$details</p>\n";
     else if ($_GET['c'] == "D") { echo "this.loadD();"; }
     else { echo "this.loadA();"; }
     ?>
-    // this.optionsValue = ko.observable("2");
   }
-  jQuery(document).ready(function () {
-    ko.applyBindings(new ViewModel());
-    ko.bindingHandlers.bsChecked = {
-      init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-        var value = valueAccessor();
-        var newValueAccessor = function () { return { change: function () { value(element.value); } } };
-        ko.bindingHandlers.event.init(element, newValueAccessor, allBindingsAccessor, viewModel, bindingContext);
-      },
-      update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-        if ($(element).val() == ko.unwrap(valueAccessor())) { setTimeout(function () { $(element).closest('.btn').button('toggle'); }, 1); }
-      }
-    }
-  });
-
+  jQuery(document).ready(function () { ko.applyBindings(new ViewModel()); });
 </script>
 
+<style media="screen">
+label.btn > input[type='radio'] { display: none; }
+</style>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
