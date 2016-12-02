@@ -1,5 +1,7 @@
 <?php
 
+$limit = 500;
+
 $me = "/admin/?w=respondents&s=".$_GET['s'];
 if ($_GET['p']) { $p = $_GET['p']; }
 if ($p == '') { $p = "1"; }
@@ -50,7 +52,10 @@ if ($_POST['uploading'] == 1) {
     try { $db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS, array(PDO::MYSQL_ATTR_LOCAL_INFILE => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)); }
     catch (PDOException $e) { die("database connection failed: ".$e->getMessage()); }
     $affectedRows = $db->exec("LOAD DATA LOCAL INFILE ".$db->quote($rewritefile)." INTO TABLE j_respondents_private FIELDS TERMINATED BY ".$db->quote($fieldseparator)." LINES TERMINATED BY ".$db->quote($lineseparator));
-    //echo "done";
+    $ql1 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." uploaded a name list of respondents for $project', '3')");
+    $ql1->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
+    $ql1->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
+    $ql1->execute();
   }
 }
 
@@ -64,19 +69,45 @@ echo "<p>Please note this page is mainly for managing respondents, if you want t
 echo "<hr>\n";
 echo "<h3>Project $project</h3>\n";
 
+if ($_GET['m'] == "fixerrors") {
+  $q2A = $db->prepare("DELETE FROM j_respondents_private WHERE surveyid = 0 OR surveyid = :surveyid AND status = 0");
+  $q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+  $q2A->execute();
+  $ql2 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." deleted respondent emails with errors for $project', '3')");
+  $ql2->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
+  $ql2->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
+  $ql2->execute();
+} else if ($_GET['m'] == "fixduplicates") {
+  $q2B = $db->prepare("DELETE e1 FROM j_respondents_private e1, j_respondents_private e2 WHERE e1.surveyid = :surveyid AND e1.email = e2.email AND e1.id > e2.id");
+  $q2B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+  $q2B->execute();
+  $ql3 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." deleted respondent duplicated emails for $project', '3')");
+  $ql3->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
+  $ql3->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
+  $ql3->execute();
+} else if ($_POST['m'] == "delthis") {
+  $ids = implode(",", $_POST['checkbox']);
+  $q2C = $db->prepare("DELETE FROM j_respondents_private WHERE id IN ($ids)");
+  $q2C->execute();
+  $ql4 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." manually deleted respondent emails for $project', '3')");
+  $ql4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
+  $ql4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
+  $ql4->execute();
+}
+
 if (empty($start)) { $start = 0; }
-if (empty($limit)) { $limit = 1000; }
+if (empty($limit)) { $limit = 500; }
 if ($p) { $start = ($p-1) * $limit; }
 $to_record = $start + $limit;
 $add = " LIMIT $start, $limit ";
 
 // Get status
-$q2 = $db->prepare("SELECT SUM(status='0') AS iB, SUM(status='1') AS iiB, SUM(status='2') AS iiiB, SUM(status='3') AS iiiiB FROM j_respondents_private WHERE surveyid = :surveyid");
+$q2 = $db->prepare("SELECT COUNT(*) as iA, SUM(status='0') AS iB, SUM(status='1') AS iC, SUM(status='2') AS iD, SUM(status='3') AS iE FROM j_respondents_private WHERE surveyid = 0 OR surveyid = :surveyid");
 $q2->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2->execute();
 while ($row = $q2->fetchObject()) {
-  $status0 = $row->iB; $status1 = $row->iiB;
-  $status2 = $row->iiiB; $status3 = $row->iiiiB;
+  $status0s = $row->iA; $status0 = $row->iB; $status1 = $row->iC;
+  $status2 = $row->iD; $status3 = $row->iE;
 }
 
 $email_error = "<div class=\"alert alert-warning alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\n";
@@ -86,12 +117,7 @@ $email_error .= "  <p>We display them in the table below with a <del>strike thro
 $email_error .= "  <a href=\"$me&m=fixerrors\" class=\"btn btn-warning\">Click here to remove them</a>\n";
 $email_error .= "</div>\n";
 
-// Get respondent listing
-$q3A = $db->prepare("SELECT * FROM j_respondents_private WHERE surveyid = :surveyid");
-$q3A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-$q3A->execute();
-
-$rows = $q3A->rowCount();
+$rows = $status0s;
 $total = ceil($rows/$limit);
 $offset = ($currentpage - 1) * $rowsperpage;
 
@@ -99,15 +125,17 @@ if ($to_record > $rows) { $to_record = $rows; }
 $from_record = $start + 1;
 
 // Check duplications
-$q4 = $db->prepare("SELECT COUNT(*) as duplicates, id, email FROM j_respondents_private WHERE surveyid = :surveyid GROUP BY email HAVING duplicates > 1");
+$q4 = $db->prepare("SELECT COUNT(*) as duplicates, id, email, invited1 FROM j_respondents_private WHERE surveyid = 0 OR surveyid = :surveyid GROUP BY email HAVING duplicates > 1");
 $q4->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q4->execute();
 $e = array(); $f = array(); $g = array();
 while ($r = $q4->fetchObject()) {
+  $invited1 = $r->invited1;
   array_push($e, $r->email);
   array_push($f, $r->duplicates);
   array_push($g, $r->id);
 }
+if ($invited1) { $disablecheckbox = " disabled"; } else { $disablecheckbox = ""; }
 $c = array_combine($e, $f);
 $duplicated_records = count($c);
 $email_duplicated = "<div class=\"alert alert-warning alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\n";
@@ -125,25 +153,6 @@ $email_duplicated .= "  <a href=\"$me&m=fixduplicates\" class=\"btn btn-warning\
 $email_duplicated .= "</div>\n";
 
 
-if ($_GET['m'] == "fixerrors") {
-  $q2A = $db->prepare("DELETE FROM j_respondents_private WHERE surveyid = :surveyid AND status = 0");
-  $q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-  $q2A->execute();
-} else if ($_GET['m'] == "fixduplicates") {
-  $q2B = $db->prepare("DELETE e1 FROM j_respondents_private e1, j_respondents_private e2 WHERE e1.surveyid = :surveyid AND e1.email = e2.email AND e1.id > e2.id");
-  $q2B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-  $q2B->execute();
-} else if ($_POST['m'] == "delthis") {
-  $qMarks = str_repeat('?,', count($g) - 1) . '?';
-  $q2C = $db->prepare("DELETE FROM j_respondents_private WHERE id IN ($qMarks)");
-  $q2C->execute($ids);
-  // $inQuery = implode(',', array_fill(0, count($ids), '?'));
-  // $q2C = $db->prepare("DELETE FROM j_respondents_private WHERE surveyid = :surveyid AND id IN('.$inQuery.')");
-  // $q2C->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-  // foreach ($ids as $k => $id) { $q2C->bindValue(($k+1), $id); }
-  // $q2C->execute($ids);
-}
-
 if ($total == 0) {
   echo "<p>Currently this project has <strong>no respondent</strong> stored in our database.</p>\n";
   echo "<p>Please upload with a Comma Separated Value (CSV) file that at least contains a list of emails in a column.</p>";
@@ -151,7 +160,6 @@ if ($total == 0) {
   echo "<p align=\"right\"><a class=\"btn btn-primary\" href=\"\" data-toggle=\"modal\" data-target=\"#uploading\"><i class=\"pe-upload pe-fw\"></i> Upload a name list</a></p>\n";
   echo "<br>\n";
   echo $help;
-  echo "<hr>\n";
 } else {
   echo "<p>Currently this project has <strong>$rows respondents</strong> stored in our database.</p>\n";
   if ($status0) { echo $email_error; }
@@ -175,7 +183,7 @@ if ($total == 0) {
   echo "  </ul>\n";
   echo "</nav>\n\n";
 
-  echo "<small class=\"blue\">Found <strong>$rows records</strong> in our database (showing results $from_record to $to_record)</small class=\"blue\">\n";
+  echo "<small class=\"blue\">Found <strong>$rows records</strong> in our database (showing results $from_record to $to_record)</small>\n";
 
 ?>
 
@@ -183,7 +191,7 @@ if ($total == 0) {
     <table class="table table-hover table-condensed small">
       <thead>
         <tr class="bg-primary">
-          <td width="5%"><input type="checkbox" name="all" id="all" value=""></td>
+          <td width="5%"></td>
           <td width="5%"><strong>No</strong></td>
           <td width="15%"><strong>Respondents</strong></td>
           <td width="15%" align="right"><strong>Uploaded</strong></td>
@@ -197,14 +205,14 @@ if ($total == 0) {
         <tr>
 <?php
 // Get respondent listing
-$q3B = $db->prepare("SELECT * FROM j_respondents_private WHERE surveyid = :surveyid".$add);
+$q3B = $db->prepare("SELECT * FROM j_respondents_private WHERE surveyid = 0 OR surveyid = :surveyid".$add);
 $q3B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q3B->execute();
 if ($from_record) { $i = $from_record; } else { $i = 1; }
 while ($row = $q3B->fetchObject()) {
   if ($row->status == 0) { $a1 = "<del>"; $a2 = "</del>"; $a3 = "<tr style='background-color:#eee'>"; } else { $a1 = ""; $a2 = ""; $a3 = "<tr>"; }
   echo "      $a3\n";
-  echo "        <td><input type=\"checkbox\" name=\"selected[]\" id=\"$i\" value=\"$i\"></td>\n";
+  echo "        <td><input type=\"checkbox\" name=\"checkbox[]\" id=\"$i\" value=\"$row->id\"$disablecheckbox></td>\n";
   echo "        <td>$a1$i$a2</td>\n";
   echo "        <td>$a1$row->email$a2</td>\n";
   if (!empty($row->created)) { $created = ago($row->created); echo "      <td align=\"right\">$a1$created$a2</td>\n"; } else { echo "      <td align=\"right\">-</td>\n"; }
@@ -220,9 +228,9 @@ while ($row = $q3B->fetchObject()) {
       </tbody>
     </table>
     <input type="hidden" name="m" value="delthis">
-    <input type="submit" class="btn-tiny btn-danger" value="Delete selected">
+    <p><small><input type="checkbox" name="all" id="all" value=""<?php echo $disablecheckbox; ?>> <i class="pe-level-up pe-flip-horizontal"></i> Select / deselect all</small></p>
+    <p><input type="submit" class="btn-tiny btn-danger" value="Delete selected"></p>
   </form>
-  <hr>
 
 <?php } ?>
 
@@ -265,19 +273,21 @@ while ($row = $q3B->fetchObject()) {
 
 <?php
 
-$me = "/admin/?w=respondents&s=".$_GET['s'];
-echo "<nav class=\"pagination-centered\">\n";
-echo "  <ul class=\"pagination\">\n";
-if ($p > 1) { $previous = $p-1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$previous."\">&laquo;</a></li>\n"; }
-else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&laquo;</a></li>\n"; }
-for ($i=1; $i<=$total; $i++) {
-  if ($i == $p) { echo "    <li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
-  else { echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
+if ($total != 0) {
+  $me = "/admin/?w=respondents&s=".$_GET['s'];
+  echo "<nav class=\"pagination-centered\">\n";
+  echo "  <ul class=\"pagination\">\n";
+  if ($p > 1) { $previous = $p-1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$previous."\">&laquo;</a></li>\n"; }
+  else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&laquo;</a></li>\n"; }
+  for ($i=1; $i<=$total; $i++) {
+    if ($i == $p) { echo "    <li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
+    else { echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
+  }
+  if ($p != $total) { $next = $p+1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$next."\">&raquo;</a></li>\n"; }
+  else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&raquo;</a></li>\n"; }
+  echo "  </ul>\n";
+  echo "</nav>\n\n";
 }
-if ($p != $total) { $next = $p+1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$next."\">&raquo;</a></li>\n"; }
-else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&raquo;</a></li>\n"; }
-echo "  </ul>\n";
-echo "</nav>\n\n";
 
 ?>
 
