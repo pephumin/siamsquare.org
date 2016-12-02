@@ -45,9 +45,8 @@ if ($login->passwordResetWasSuccessful() == true && $login->passwordResetLinkIsV
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
       <div class="input-group">
         <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
-        <input type="email" name="email" class="form-control" placeholder="<?php echo htmlspecialchars($_GET['email']); ?>" disabled>
+        <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($_GET['email']); ?>" readonly>
       </div>
-      <input type="hidden" name="email" value="<?php echo htmlspecialchars($_GET['email']); ?>">
       <input type="hidden" name="password_reset" value="<?php echo htmlspecialchars($_GET['verification_code']); ?>">
     </div>
   </div>

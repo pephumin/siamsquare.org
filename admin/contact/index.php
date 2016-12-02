@@ -59,8 +59,7 @@ echo "<br>\n";
 <?php if ($sent) { ?>
         <input type="text" class="form-control" name="name" placeholder="First &amp; Last Name" value="<?php echo htmlspecialchars($name); ?>" disabled>
 <?php } else if ($_SESSION["logged_in"] == 1) { ?>
-        <input type="text" class="form-control" name="name" placeholder="<?php echo $_SESSION["fullname"]; ?>" disabled>
-        <input type="hidden" name="name" value="<?php echo $_SESSION["fullname"]; ?>">
+        <input type="text" class="form-control" name="name" value="<?php echo $_SESSION["fullname"]; ?>" readonly>
 <?php } else { ?>
         <input type="text" class="form-control" name="name" placeholder="First &amp; Last Name" value="<?php echo htmlspecialchars($name); ?>">
 <?php } ?>
@@ -75,8 +74,7 @@ echo "<br>\n";
 <?php if ($sent) { ?>
         <input type="email" class="form-control" name="email" placeholder="email@company.com" value="<?php echo htmlspecialchars($email); ?>" disabled>
 <?php } else if ($_SESSION["logged_in"] == 1) { ?>
-        <input type="email" class="form-control" name="email" placeholder="<?php echo $_SESSION["email"]; ?>" disabled>
-        <input type="hidden" name="email" value="<?php echo $_SESSION["email"]; ?>">
+        <input type="email" class="form-control" name="email" value="<?php echo $_SESSION["email"]; ?>" readonly>
 <?php } else { ?>
         <input type="email" class="form-control" name="email" placeholder="email@company.com" value="<?php echo htmlspecialchars($email); ?>">
 <?php } ?>
@@ -89,7 +87,7 @@ echo "<br>\n";
       <div class="input-group">
         <span class="input-group-addon input-group-addon-top"><i class="pe-commenting pe-fw"></i></span>
 <?php if ($sent) { ?>
-        <textarea class="form-control" rows="7" name="message" placeholder="Your message can be as long as you need" disabled><?php echo htmlspecialchars($message);?></textarea>
+        <textarea class="form-control" rows="7" name="message" readonly><?php echo htmlspecialchars($message);?></textarea>
 <?php } else { ?>
         <textarea class="form-control" rows="7" name="message" placeholder="Your message can be as long as you need"><?php echo htmlspecialchars($message);?></textarea>
 <?php } ?>
