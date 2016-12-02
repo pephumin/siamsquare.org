@@ -115,8 +115,9 @@ function pageHeader($title) {
                   <!-- <li><a href="<?php echo(MYADMIN."?w=surveys&c=B"); ?>" title="Fieldwork"><i class="pe-hourglass-half pe-fw"></i> Fieldwork</a></li> -->
                   <!-- <li><a href="<?php echo(MYADMIN."?w=surveys&c=C"); ?>" title="Post-fieldwork"><i class="pe-hourglass-end pe-fw"></i> Post-fieldwork</a></li> -->
                   <!-- <li><a href="<?php echo(MYADMIN."?w=surveys&c=D"); ?>" title="Archive"><i class="pe-archive pe-fw"></i> Archive</a></li> -->
-                  <li><a href="<?php echo(MYADMIN."?w=respondents"); ?>" title="Respondents"><i class="pe-users pe-fw"></i> Respondents</a></li>
+                  <!-- <li><a href="<?php echo(MYADMIN."?w=respondents"); ?>" title="Respondents"><i class="pe-users pe-fw"></i> Respondents</a></li> -->
                   <li role="separator" class="divider"></li>
+                  <li><a href="<?php echo(MYADMIN."?w=board"); ?>" title="Message board"><i class="pe-wpforms pe-fw"></i> Message board</a></li>
                   <li><a href="<?php echo(MYADMIN."?w=data2table"); ?>" title="Data to table"><i class="pe-table pe-fw"></i> Data to table</a></li>
 <?php if ($_SESSION['level'] == "9") { ?>
                   <li role="separator" class="divider"></li>
@@ -132,8 +133,8 @@ function pageHeader($title) {
                   <li><a href="<?php echo(MYADMIN."?w=team"); ?>" title="My team"><i class="pe-graduation-cap pe-fw"></i> Team</a></li>
                   <li><a href="<?php echo(MYADMIN."?w=company"); ?>" title="The company"><i class="pe-building pe-fw"></i> Company</a></li>
                   <li role="separator" class="divider"></li>
-                  <li><a href="<?php echo(MYADMIN."?w=news"); ?>" title="Updated news"><i class="pe-bullhorn pe-fw"></i> Updated news</a></li>
                   <li><a href="<?php echo(MYADMIN."?w=activity"); ?>" title="Activity"><i class="pe-map-o pe-fw"></i> Activity</a></li>
+                  <li><a href="<?php echo(MYADMIN."contact/"); ?>" title="Contact us"><i class="pe-envelope pe-fw"></i> Contact us</a></li>
 <?php if ($_SESSION['level'] == "9") { ?>
                   <li><a href="<?php echo(MYADMIN."?w=todo"); ?>" title="Todo list"><i class="pe-tasks pe-fw"></i> Todo list</a></li>
 <?php } ?>
@@ -441,6 +442,12 @@ function iconize($data) {
   else if (preg_match("/requested a password reset/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/failed to reset password/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed to a new password/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed survey to public/i", $data)) { $insert = "<i class=\"pe-train pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed survey to private/i", $data)) { $insert = "<i class=\"pe-car pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/uploaded a name list of respondents/i", $data)) { $insert = "<i class=\"pe-upload pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/deleted respondent emails with errors/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/deleted respondent duplicated emails/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/manually deleted respondent emails/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
   else { $insert = ""; }
   if ($insert) { $data = $insert." ".$data; } else { $data = $data; }
   return $data;
