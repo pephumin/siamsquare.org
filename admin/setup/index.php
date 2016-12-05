@@ -4,6 +4,8 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/template.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.login.php';
 
+if ($_REQUEST['d']) { $d = $_REQUEST['d']; }
+
 if (empty($_SESSION["captcha"])) { $clength = 8; $rText = generateRandom($clength); session_start(); $_SESSION["captcha"] = $rText; }
 
 $login = new Login();
@@ -19,16 +21,15 @@ if ($login->passwordResetWasSuccessful() == true && $login->passwordResetLinkIsV
   echo "<p>Thank you for using our system. We are glad to have you with us here.</p>\n";
   echo "<p>You can <a href=\"$target\">click here</a> to login and start using our system.</p>\n";
   echo "<br>\n\n";
-  $notes = array (array("title" => "Password is reset", "text" => "You have successfully reset your password.", "image" => "assets/img/notification.svg"));
+  $notes = array (array("title" => "Password is reset", "text" => "You have successfully reset your password.", "image" => "/admin/assets/img/notification.svg"));
 
 } else if ($login->passwordResetLinkIsValid() == true) {
 
   $title = "Set a new password";
   pageHeader($title);
   echo "<h2>$title</h2>";
-  echo "<p>You have successfully verified your identity.</p>\n";
-  echo "<p>This is the the final step where you will set a new password. Please choose a new password that is not too easy to guess.</p>\n";
-  echo "<p>Should you find any problems, please do not hesitate to contact us directly.</p>\n";
+  echo "<p>You have successfully verified your identity. Therefore you can now set a new password.</p>\n";
+  echo "<p>Please choose a new password that is not too easy to guess. Should you find any problems, please do not hesitate to contact us directly.</p>\n";
 
   if (isset($login)) {
     if ($login->errors) { foreach ($login->errors as $error) { echo $error; } }
@@ -47,7 +48,7 @@ if ($login->passwordResetWasSuccessful() == true && $login->passwordResetLinkIsV
         <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
         <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($_GET['email']); ?>" readonly>
       </div>
-      <input type="hidden" name="password_reset" value="<?php echo htmlspecialchars($_GET['verification_code']); ?>">
+      <input type="hidden" name="password_reset" value="<?php echo htmlspecialchars($_GET['verification']); ?>">
     </div>
   </div>
   <hr>
@@ -71,7 +72,7 @@ if ($login->passwordResetWasSuccessful() == true && $login->passwordResetLinkIsV
   </div>
   <hr>
   <p class="text-center">
-    <button class="btn btn-warning" name="submit_new_password" type="submit">Reset my password <i class="pe-check-circle-o"></i></button>
+    <button class="btn btn-warning" name="submit_new_password" type="submit">Set my password <i class="pe-check-circle-o"></i></button>
     <button class="btn btn-default" name="Cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
 </form>
@@ -95,15 +96,17 @@ if ($login->passwordResetWasSuccessful() == true && $login->passwordResetLinkIsV
 
 } else {
 
-  if ($_GET["d"] == "activation") {
+  if ($_REQUEST['d'] == "activation") {
+    $d = "activation";
     $title = "Account activation";
     pageHeader($title);
     echo "<h2>$title</h2>";
-    echo "<p>We are glad to have you on board with us!</p>\n";
+    echo "<p>We are glad to have you on board with us</p>\n";
     echo "<p>In order to start using the system, you would need to activate your account which will verify to see if your email address is active, and then will allow you to set a new password.</p>\n";
     echo "<p>Please follow the provided instruction to complete this step. It will be very easy and straightforward.</p>\n";
     echo "<p>Should you find any problems, please do not hesitate to contact us directly.</p>\n";
   } else {
+    $d = "recovery";
     $title = "Password recovery";
     pageHeader($title);
     echo "<h2>$title</h2>";
@@ -146,6 +149,7 @@ if ($login->passwordResetWasSuccessful() == true && $login->passwordResetLinkIsV
   </div>
   <hr>
   <p class="text-center">
+    <input type="hidden" name="d" value="<?php echo $d; ?>">
     <button class="btn btn-warning" name="request_password_reset" type="submit">Send my request <i class="pe-check-circle-o"></i></button>
     <button class="btn btn-default" name="Cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
   </p>

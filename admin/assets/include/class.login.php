@@ -2,6 +2,7 @@
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.phpmailer.php';
+$domain = "siamsquare.org";
 $url = "/admin/setup/";
 
 class Login {
@@ -16,9 +17,10 @@ class Login {
   public $messages = array();
 
   public function __construct() {
+    global $domain;
     if (isset($_SERVER['HTTP_REFERER'])) {
-      if ($_SERVER['HTTP_REFERER'] == "http://www.siamsquare.org/admin/?w=login") { $ref = "http://www.siamsquare.org/admin/"; }
-      else if ($_SERVER['HTTP_REFERER'] == "http://www.siamsquare.org/admin/?w=logout") { $ref = "http://www.siamsquare.org/admin/"; }
+      if ($_SERVER['HTTP_REFERER'] == "http://www.".$domain."/admin/?w=login") { $ref = "http://www.".$domain."/admin/"; }
+      else if ($_SERVER['HTTP_REFERER'] == "http://www.".$domain."/admin/?w=logout") { $ref = "http://www.".$domain."/admin/"; }
       else { $ref = $_SERVER['HTTP_REFERER']; }
     }
     session_start();
@@ -31,8 +33,8 @@ class Login {
     }
     if ($_POST["w"] == "changepass") { $this->editUserPassword($_POST['oldpass'], $_POST['newpass1'], $_POST['newpass2']); }
     elseif ($_POST["w"] == "updateinfo") { $this->editUserInfo($_POST['fullname'], $_POST['mobile'], $_POST['avatar']); }
-    if (isset($_POST["request_password_reset"]) && isset($_POST['email'])) { $this->setPasswordResetDatabaseTokenAndSendMail($_POST['email']); }
-    elseif (isset($_GET["email"]) && isset($_GET["verification_code"])) { $this->checkIfEmailVerificationCodeIsValid($_GET["email"], $_GET["verification_code"]); }
+    if (isset($_POST["request_password_reset"]) && isset($_POST['email'])) { $this->setPasswordResetDatabaseTokenAndSendMail($_POST['email'], $_POST['d']); }
+    elseif (isset($_GET["email"]) && isset($_GET["verification"])) { $this->checkIfEmailVerificationCodeIsValid($_GET["email"], $_GET["verification"]); }
     elseif (isset($_POST["submit_new_password"])) { $this->editNewPassword($_POST['email'], $_POST['password_reset'], $_POST['newpass1'], $_POST['newpass2']); }
   }
 
@@ -56,6 +58,7 @@ class Login {
   }
 
   private function loginWithPostData($email, $password, $rememberme, $ref = null) {
+    global $url;
     $ip = getip();
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { $result_row = $this->getUserData(trim($email)); }
     else if ($this->dbconnect()) {
@@ -256,7 +259,7 @@ class Login {
     echo "<p>Thank you for using our system. And feel free to come back as often as you need.</p>\n";
     echo "<p>You can <a href=\"$target\">click here</a> if you choose not to wait in order to log back in to our system.</p>\n";
     echo "<br>\n\n";
-    $notes = array (array("title" => "Logged out", "text" => "You have been successfully logged out from our system.", "image" => "assets/img/notification.svg"));
+    $notes = array (array("title" => "Logged out", "text" => "You have been successfully logged out from our system.", "image" => "/admin/assets/img/notification.svg"));
     if ($notes) { pageFooter($notes); } else { pageFooter(); }
     exit;
   }
@@ -302,7 +305,7 @@ class Login {
           $query_update->execute();
           if ($query_update->rowCount()) {
             $this->messages[] = mksuccess("Your password has been changed successfully");
-            $notes = array (array("title" => "Password changed", "text" => "You have changed your password successfully.", "image" => "assets/img/notification.svg"));
+            $notes = array (array("title" => "Password changed", "text" => "You have changed your password successfully.", "image" => "/admin/assets/img/notification.svg"));
             $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." changed password', '3')");
             $q4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
             $q4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
@@ -343,7 +346,7 @@ class Login {
         }
         if ($query_update->rowCount()) {
           $this->messages[] = mksuccess("Your information has been updated successfully");
-          $notes = array (array("title" => "Info updated", "text" => "You have updated your information successfully.", "image" => "assets/img/notification.svg"));
+          $notes = array (array("title" => "Info updated", "text" => "You have updated your information successfully.", "image" => "/admin/assets/img/notification.svg"));
           $_SESSION['fullname'] = $fullname;
           $_SESSION['mobile'] = $mobile;
           if ($avatar) { $_SESSION['avatar'] = $avatar; }
@@ -356,7 +359,7 @@ class Login {
     }
   }
 
-  public function setPasswordResetDatabaseTokenAndSendMail($email) {
+  public function setPasswordResetDatabaseTokenAndSendMail($email, $d) {
     $ip = getip();
     $email = trim($email);
     if (empty($email)) { $this->errors[] = mkerror("You did not enter the email address"); }
@@ -372,8 +375,9 @@ class Login {
         $query_update->bindValue(':email', $email, PDO::PARAM_STR);
         $query_update->execute();
         if ($query_update->rowCount() == 1) {
-          $this->sendPasswordResetMail($result_row->fullname, $email, $password_reset);
-          $q6 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$email." requested a password reset', '3')");
+          $this->sendPasswordResetMail($result_row->fullname, $email, $password_reset, $d);
+          if ($d == "activation") { $q6 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$email." requested an account activation password', '3')"); }
+          else if ($d == "recovery") { $q6 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$email." requested a password reset', '3')"); }
           $q6->bindValue(':userid', $result_row->userid, PDO::PARAM_INT);
           $q6->bindValue(':ip', $ip, PDO::PARAM_STR);
           $q6->execute();
@@ -385,26 +389,28 @@ class Login {
     return false;
   }
 
-  public function sendPasswordResetMail($fullname, $email, $password_reset) {
+  public function sendPasswordResetMail($fullname, $email, $password_reset, $d) {
+    global $url; global $domain;
     $mail = new PHPMailer;
     $mail->IsMail();
     $mail->From = "no-reply@siamsquare.org";
     $mail->FromName = "no-reply@siamsquare.org";
     $mail->AddAddress($email);
-    $mail->Subject = "Password reset at siamsquare.org";
-    $link = "http://www.siamsquare.org".$url.'?email='.urlencode($email).'&verification_code='.urlencode($password_reset);
-    $mail->Body = "You have recently requested a password reset. If this is correct you can proceed by clicking this link:" . ' ' . $link;
-    if (!$mail->Send()) { $this->errors[] = mkerror("Password reset email was not sent. Error: " . $mail->ErrorInfo); return false; }
-    else { $this->messages[] = mksuccess("We have sent you the password reset code to your email. Please follow the instruction provided in the email. Also note that the code and the link will be valid for only 1 hour."); return true; }
+    if ($d == "activation") { $mail->Subject = "Account activation at ".$domain; }
+    else if ($d == "recovery") { $mail->Subject = "Password reset at ".$domain; }
+    $link = "http://www.".$domain.$url.'?email='.urlencode($email).'&verification='.urlencode($password_reset);
+    $mail->Body = "Dear $fullname,\n\nIt seems that you have requested for an access to ".$domain.".\n\nIf this is correct, you can proceed further by clicking the provided link below.\n\nLink: $link.\n\nPlease note this link will be valid for only 1 hour.\n\nRegards,\nStaff from ".$domain.".";
+    if (!$mail->Send()) { $this->errors[] = mkerror("Email was not sent. Error: " . $mail->ErrorInfo); return false; }
+    else { $this->messages[] = mksuccess("We have sent you a code to your email which you need to follow per instruction provided. <strong>Please note this code will be valid for only 1 hour</strong>."); return true; }
   }
 
-  public function checkIfEmailVerificationCodeIsValid($email, $verification_code) {
+  public function checkIfEmailVerificationCodeIsValid($email, $verification) {
     $ip = getip();
     $email = trim($email);
-    if (empty($email) || empty($verification_code)) { $this->errors[] = mkerror("Broken link, please make sure you copy and paste all of them"); }
+    if (empty($email) || empty($verification)) { $this->errors[] = mkerror("Broken link, please make sure you copy and paste all of them"); }
     else {
       $result_row = $this->getUserData($email);
-      if (isset($result_row->id) && $result_row->password_reset == $verification_code) {
+      if (isset($result_row->id) && $result_row->password_reset == $verification) {
         $timestamp_one_hour_ago = time() - 3600; // 3600 seconds are 1 hour
         if ($result_row->password_reset_timestamp > $timestamp_one_hour_ago) { $this->password_reset_invalidlink = true; }
         else {
