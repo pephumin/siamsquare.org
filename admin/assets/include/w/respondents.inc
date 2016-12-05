@@ -57,6 +57,42 @@ if ($_POST['uploading'] == 1) {
     $ql1->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
     $ql1->execute();
   }
+  header("location: $me");
+} else if ($_POST['m'] == "fixerrors") {
+  $q2A = $db->prepare("DELETE FROM j_respondents_private WHERE surveyid = 0 OR surveyid = :surveyid AND status = 0");
+  $q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+  $q2A->execute();
+  $ql2 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." deleted respondent emails with errors for $project', '3')");
+  $ql2->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
+  $ql2->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
+  $ql2->execute();
+  header("location: $me");
+} else if ($_POST['m'] == "fixduplicates") {
+  $q2B1 = $db->prepare("CREATE TABLE tmp SELECT * FROM j_respondents_private WHERE surveyid = :surveyid GROUP BY email");
+  // $q2B = $db->prepare("DELETE e1 FROM j_respondents_private e1, j_respondents_private e2 WHERE e1.surveyid = :surveyid AND e1.email = e2.email AND e1.id > e2.id");
+  $q2B1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+  $q2B1->execute();
+  $q2B2 = $db->prepare("DELETE FROM j_respondents_private WHERE surveyid = :surveyid");
+  $q2B2->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+  $q2B2->execute();
+  $q2B3 = $db->prepare("INSERT INTO j_respondents_private SELECT * FROM tmp");
+  $q2B3->execute();
+  $q2B4 = $db->prepare("DROP TABLE tmp");
+  $q2B4->execute();
+  $ql3 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." deleted respondent duplicated emails for $project', '3')");
+  $ql3->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
+  $ql3->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
+  $ql3->execute();
+  header("location: $me");
+} else if ($_POST['m'] == "delthis") {
+  $ids = implode(",", $_POST['checkbox']);
+  $q2C = $db->prepare("DELETE FROM j_respondents_private WHERE id IN ($ids)");
+  $q2C->execute();
+  $ql4 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." manually deleted respondent emails for $project', '3')");
+  $ql4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
+  $ql4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
+  $ql4->execute();
+  header("location: $me");
 }
 
 if (empty($_GET['s'])) { pageHeader("Error"); echo mkerror("Cannot proceed without a surveyid"); pageFooter(); exit; }
@@ -68,32 +104,6 @@ echo "<p>Given a nature of any private surveys where respondents are specific to
 echo "<p>Please note this page is mainly for managing respondents, if you want to check for participation rate, kindly use the project status instead.</p>\n";
 echo "<hr>\n";
 echo "<h3>Project $project</h3>\n";
-
-if ($_GET['m'] == "fixerrors") {
-  $q2A = $db->prepare("DELETE FROM j_respondents_private WHERE surveyid = 0 OR surveyid = :surveyid AND status = 0");
-  $q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-  $q2A->execute();
-  $ql2 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." deleted respondent emails with errors for $project', '3')");
-  $ql2->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
-  $ql2->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
-  $ql2->execute();
-} else if ($_GET['m'] == "fixduplicates") {
-  $q2B = $db->prepare("DELETE e1 FROM j_respondents_private e1, j_respondents_private e2 WHERE e1.surveyid = :surveyid AND e1.email = e2.email AND e1.id > e2.id");
-  $q2B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-  $q2B->execute();
-  $ql3 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." deleted respondent duplicated emails for $project', '3')");
-  $ql3->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
-  $ql3->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
-  $ql3->execute();
-} else if ($_POST['m'] == "delthis") {
-  $ids = implode(",", $_POST['checkbox']);
-  $q2C = $db->prepare("DELETE FROM j_respondents_private WHERE id IN ($ids)");
-  $q2C->execute();
-  $ql4 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." manually deleted respondent emails for $project', '3')");
-  $ql4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
-  $ql4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
-  $ql4->execute();
-}
 
 if (empty($start)) { $start = 0; }
 if (empty($limit)) { $limit = 500; }
@@ -112,9 +122,9 @@ while ($row = $q2->fetchObject()) {
 
 $email_error = "<div class=\"alert alert-warning alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\n";
 $email_error .= "  <h4><i class=\"pe-exclamation-triangle pe-fw pe-lg\"></i> Found respondents with invalid email format</h4>\n";
-$email_error .= "  <p>We detect <strong>$status0 respondents</strong> that appear to have an error in their email format, and hence cannot be used. Please correct their emails and upload them again.</p>";
-$email_error .= "  <p>We display them in the table below with a <del>strike through</del> format so you can spot them instantly.</p>";
-$email_error .= "  <a href=\"$me&m=fixerrors\" class=\"btn btn-warning\">Click here to remove them</a>\n";
+$email_error .= "  <p>We detect <strong>$status0 respondents</strong> that appear to have an error in their email format, and hence cannot be used. Please correct their emails and upload them again.</p>\n";
+$email_error .= "  <p>We display them in the table below with a <del>strike through</del> format so you can spot them instantly.</p>\n";
+$email_error .= "  <form action=\"$me\" method=\"post\"><button type=\"submit\" name=\"m\" value=\"fixerrors\" class=\"btn btn-warning\">Click here to remove errors</button></form>\n";
 $email_error .= "</div>\n";
 
 $rows = $status0s;
@@ -149,7 +159,7 @@ foreach ($d as $dd => $ddd) {
   // echo $ddd;
 }
 $email_duplicated .= "  </ul>\n";
-$email_duplicated .= "  <a href=\"$me&m=fixduplicates\" class=\"btn btn-warning\">Click to remove the duplicates</a>\n";
+$email_duplicated .= "  <form action=\"$me\" method=\"post\"><button type=\"submit\" name=\"m\" value=\"fixduplicates\" class=\"btn btn-warning\">Click here to remove duplicates</button></form>\n";
 $email_duplicated .= "</div>\n";
 
 
