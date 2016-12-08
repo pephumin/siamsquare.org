@@ -2,7 +2,7 @@
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.phpmailer.php';
-$domain = "siamsquare.org";
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/template.php';
 $url = "/admin/setup/";
 
 class Login {
@@ -17,10 +17,9 @@ class Login {
   public $messages = array();
 
   public function __construct() {
-    global $domain;
     if (isset($_SERVER['HTTP_REFERER'])) {
-      if ($_SERVER['HTTP_REFERER'] == "http://www.".$domain."/admin/?w=login") { $ref = "http://www.".$domain."/admin/"; }
-      else if ($_SERVER['HTTP_REFERER'] == "http://www.".$domain."/admin/?w=logout") { $ref = "http://www.".$domain."/admin/"; }
+      if ($_SERVER['HTTP_REFERER'] == MYHOME."/admin/?w=login") { $ref = MYHOME."/admin/"; }
+      else if ($_SERVER['HTTP_REFERER'] == MYHOME."/admin/?w=logout") { $ref = MYHOME."/admin/"; }
       else { $ref = $_SERVER['HTTP_REFERER']; }
     }
     session_start();
@@ -123,6 +122,7 @@ class Login {
       $_SESSION['ip'] = $ip;
       $_SESSION['lastip'] = $resulty->lastip;
       $_SESSION['lastip2'] = $resulty->lastip2;
+      $_SESSION['role'] = role($resulty->level);
       $this->logged_in = true;
       $this->userid = $resulty->id;
       $this->email = $result_row->email;
@@ -140,9 +140,7 @@ class Login {
       $this->ip = $ip;
       $this->lastip = $resulty->lastip;
       $this->lastip2 = $resulty->lastip2;
-      if ($resulty->level == 9) { $_SESSION['role'] = "Administrator"; $this->role = "Administrator"; }
-      else if ($resulty->level == 6) { $_SESSION['role'] = "Manager"; $this->role = "Manager"; }
-      else if ($resulty->level == 5) { $_SESSION['role'] = "User"; $this->role = "User"; }
+      $this->role = role($resulty->level);
       $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$result_row->email." logged in', '1')");
       $q4->bindValue(':userid', $resulty->id, PDO::PARAM_INT);
       $q4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
@@ -173,15 +171,14 @@ class Login {
             $_SESSION['company'] = $result->company;
             $_SESSION['status'] = $result->status;
             $_SESSION['level'] = $result->level;
+            $_SESSION['role'] = role($result->level);
             $this->logged_in = true;
             $this->email = $result->email;
             $this->companyid = $result->companyid;
             $this->company = $result->company;
             $this->status = $result->status;
             $this->level = $result->level;
-            if ($result->level == 9) { $_SESSION['role'] = "Administrator"; $this->role = "Administrator"; }
-            else if ($result->level == 6) { $_SESSION['role'] = "Manager"; $this->role = "Manager"; }
-            else if ($result->level == 5) { $_SESSION['role'] = "User"; $this->role = "User"; }
+            $this->role = role($result->level);
             $q1 = $this->db->prepare("UPDATE j_users SET lastlogin2 = lastlogin, lastip2 = lastip WHERE email = :email");
             $q1->bindValue(':email', $_SESSION['email'], PDO::PARAM_STR);
             $q1->execute();
@@ -306,7 +303,7 @@ class Login {
           if ($query_update->rowCount()) {
             $this->messages[] = mksuccess("Your password has been changed successfully");
             $notes = array (array("title" => "Password changed", "text" => "You have changed your password successfully.", "image" => "/admin/assets/img/notification.svg"));
-            $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." changed password', '3')");
+            $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." changed password successfully', '3')");
             $q4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
             $q4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
             $q4->execute();
@@ -324,9 +321,10 @@ class Login {
   }
 
   public function editUserInfo($fullname, $mobile, $avatar) {
-    if (empty($fullname) || empty($mobile)) { $this->errors[] = mkerror("You have not entered all required fields"); }
-    elseif (strlen($mobile) < 10) { $this->errors[] = mkerror("Your mobile number has to be 10 digits only"); }
-    elseif (ctype_digit($mobile) != true) { $this->errors[] = mkerror("Your mobile number cannot be non-numeric character"); }
+    // if (empty($fullname) || empty($mobile)) { $this->errors[] = mkerror("You have not entered all required fields"); }
+    if (empty($fullname)) { $this->errors[] = mkerror("You have not entered your name!"); }
+    // elseif (strlen($mobile) < 10) { $this->errors[] = mkerror("Your mobile number has to be 10 digits only"); }
+    // elseif (ctype_digit($mobile) != true) { $this->errors[] = mkerror("Your mobile number cannot be non-numeric character"); }
     elseif (($fullname == $_SESSION['fullname']) && ($mobile == $_SESSION['mobile']) && ($avatar == $_SESSION['avatar'])) { $this->errors[] = mkerror("Nothing has changed therefore we did not update anything"); }
     else {
       if ($this->dbconnect()) {
@@ -376,9 +374,9 @@ class Login {
         $query_update->execute();
         if ($query_update->rowCount() == 1) {
           $this->sendPasswordResetMail($result_row->fullname, $email, $password_reset, $d);
-          if ($d == "activation") { $q6 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$email." requested an account activation password', '3')"); }
+          if ($d == "activation") { $q6 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$email." requested an account activation', '3')"); }
           else if ($d == "recovery") { $q6 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$email." requested a password reset', '3')"); }
-          $q6->bindValue(':userid', $result_row->userid, PDO::PARAM_INT);
+          $q6->bindValue(':userid', $result_row->id, PDO::PARAM_INT);
           $q6->bindValue(':ip', $ip, PDO::PARAM_STR);
           $q6->execute();
           return true;
@@ -390,16 +388,16 @@ class Login {
   }
 
   public function sendPasswordResetMail($fullname, $email, $password_reset, $d) {
-    global $url; global $domain;
+    global $url;
     $mail = new PHPMailer;
     $mail->IsMail();
-    $mail->From = "no-reply@siamsquare.org";
-    $mail->FromName = "no-reply@siamsquare.org";
+    $mail->From = NOREPLY;
+    $mail->FromName = NOREPLY;
     $mail->AddAddress($email);
-    if ($d == "activation") { $mail->Subject = "Account activation at ".$domain; }
-    else if ($d == "recovery") { $mail->Subject = "Password reset at ".$domain; }
-    $link = "http://www.".$domain.$url.'?email='.urlencode($email).'&verification='.urlencode($password_reset);
-    $mail->Body = "Dear $fullname,\n\nIt seems that you have requested for an access to ".$domain.".\n\nIf this is correct, you can proceed further by clicking the provided link below.\n\nLink: $link.\n\nPlease note this link will be valid for only 1 hour.\n\nRegards,\nStaff from ".$domain.".";
+    if ($d == "activation") { $mail->Subject = "Account activation at ".MYDOMAIN; }
+    else if ($d == "recovery") { $mail->Subject = "Password reset at ".MYDOMAIN; }
+    $link = MYHOME.$url.'?email='.urlencode($email).'&verification='.urlencode($password_reset);
+    $mail->Body = "Dear ".$fullname.",\n\nIt seems that you have requested for an access to ".MYDOMAIN.".\n\nIf this is correct, you can proceed further by clicking the provided link below.\n\nLink: $link.\n\nPlease note this link will be valid for only 1 hour.\n\nRegards,\nStaff from ".MYDOMAIN.".";
     if (!$mail->Send()) { $this->errors[] = mkerror("Email was not sent. Error: " . $mail->ErrorInfo); return false; }
     else { $this->messages[] = mksuccess("We have sent you a code to your email which you need to follow per instruction provided. <strong>Please note this code will be valid for only 1 hour</strong>."); return true; }
   }
@@ -416,7 +414,7 @@ class Login {
         else {
           $this->errors[] = mkerror("The reset link has already expired (more than 1 hour). You need to start the recovery process again and make sure you complete the process within 1 hour.");
           $q7 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$email." failed to reset password due to an expired reset link', '3')");
-          $q7->bindValue(':userid', $result_row->userid, PDO::PARAM_INT);
+          $q7->bindValue(':userid', $result_row->id, PDO::PARAM_INT);
           $q7->bindValue(':ip', $ip, PDO::PARAM_STR);
           $q7->execute();
         }
@@ -447,7 +445,7 @@ class Login {
         $this->password_reset_successful = true;
         $this->messages[] = mksuccess("Your password has been changed successfully");
         $q8 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$email." changed to a new password successfully', '3')");
-        $q8->bindValue(':userid', $result_row->userid, PDO::PARAM_INT);
+        $q8->bindValue(':userid', $result_row->id, PDO::PARAM_INT);
         $q8->bindValue(':ip', $ip, PDO::PARAM_STR);
         $q8->execute();
       }
