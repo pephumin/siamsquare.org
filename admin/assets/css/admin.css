@@ -2221,50 +2221,46 @@ h1 {
   color: #FFFFFF; }
 
 h2 {
-  font-size: 1.9rem !important;
+  font-size: 1.9rem;
   letter-spacing: -0.03rem;
   color: #111111; }
 
 h3 {
-  font-size: 1.5rem !important;
+  font-size: 1.5rem;
   letter-spacing: -0.03rem;
   color: #111111; }
 
 h4 {
-  font-size: 1.2rem !important;
+  font-size: 1.2rem;
   letter-spacing: -0.03rem;
   color: #444444; }
 
 h4.avatar {
-  font-family: "ubuntu" !important;
+  font-family: "ubuntu";
   font-size: 17px !important;
   letter-spacing: -0.03rem;
   color: #111111; }
 
 h5 {
-  font-size: 1.05rem !important;
+  font-size: 1.05rem;
   letter-spacing: -0.03rem;
   color: #666666;
   text-transform: uppercase; }
 
 h6 {
-  font-size: 1rem !important;
+  font-size: 1rem;
   letter-spacing: -0.03rem;
   color: #1C6F22;
   font-weight: bold;
   text-transform: uppercase; }
 
-p {
-  font-size: 1rem !important;
-  padding: auto 10px; }
-
 p.lead {
-  font-size: 1.3rem !important;
+  font-size: 1.3rem;
   letter-spacing: -0.01rem;
   color: #666666; }
 
 blockquote {
-  font-size: 1.25rem !important;
+  font-size: 1.25rem;
   color: #444444;
   margin: 0px 5px 20px 5px; }
 
