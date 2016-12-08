@@ -43,12 +43,12 @@ while ($row = $q1B->fetchObject()) {
   $st3 = $row->aA; $st4 = $row->aB; $st5 = $row->aC; $st6 = $row->aD;
   $st7 = $row->aE; $st8 = $row->aF; $st9 = $row->aG;
 }
-$sttotal = $st3 + $st4 + $st5 + $st6 + $st7 + $st8 + $st9;
+$sttotal = $st3 + $st4 + $st5 + $st6;
 $pst3 = percent($st3/$sttotal); $pst4 = percent($st4/$sttotal); $pst5 = percent($st5/$sttotal); $pst6 = percent($st6/$sttotal);
 $pst7 = percent($st7/$sttotal); $pst8 = percent($st8/$sttotal); $pst9 = percent($st9/$sttotal);
 $levellist = "";
 // if ($st3) { $levellist .= "<strong>$st3 person(s)</strong> ($pst3), "; } else { $levellist .= ""; }
-// if ($st4) { $levellist .= "<strong>$st4 person(s)</strong> ($pst4), "; } else { $levellist .= ""; }
+if ($st4) { $levellist .= "<strong>$st4 Guest(s)</strong> ($pst4), "; } else { $levellist .= ""; }
 if ($st5) { $levellist .= "<strong>$st5 User(s)</strong> ($pst5) "; } else { $levellist .= ""; }
 if ($st6) { $levellist .= "and <strong>$st6 Manager(s)</strong> ($pst6)"; } else { $levellist .= ""; }
 // if ($st7) { $levellist .= "<strong>$st7 person(s)</strong> ($pst7), "; } else { $levellist .= ""; }
@@ -68,7 +68,7 @@ foreach ($rows as $row) {
   $title = $row['title'];
   $owner_fullname = $row['fullname'];
   $owner_email = $row['email'];
-  $owner_level = $row['level'];
+  // $owner_level = $row['level'];
   array_push($AA, $owner_fullname.':'.$owner_email.':'.$owner_level);
   if ($row['created']) { $L0 = date_parse_from_format("Y-m-d H:i:s", $row['created']); $L0['month'] = $L0['month']-1; $created = ago($row['created']); }
   if ($row['L1']) { $L1 = date_parse_from_format("Y-m-d H:i:s", $row['L1']); $L1['month'] = $L1['month']-1; $LL1 = ago($row['L1']); } else { $LL1 = "-"; }
@@ -78,38 +78,38 @@ foreach ($rows as $row) {
     $ss = "  <i class=\"pe-hourglass-start pe-fw\"></i> Set-up";
     $since = ago($row['created']);
     $status = "Set-up";
-    $timelinedata .= "[ 'Project ".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $timelinedata .= "[ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
   }
   else if ($row['status'] == 2) {
     $ss = "<i class=\"pe-hourglass-half pe-fw\"></i> Data-collection";
     $since = ago($row['L1']);
     $status = "Data-collection";
-    $timelinedata .= "[ 'Project ".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $timelinedata .= "[ 'Project ".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#00E600', ";
+    $timelinedata .= "[ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $timelinedata .= "[ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#00E600', ";
   }
   else if ($row['status'] == 3) {
     $ss = "<i class=\"pe-hourglass-end pe-fw\"></i> Completed";
     $since = ago($row['L2']);
     $status = "Completed";
-    $timelinedata .= "[ 'Project ".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $timelinedata .= "[ 'Project ".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
-    $timelinedata .= "[ 'Project ".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#009900', ";
+    $timelinedata .= "[ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $timelinedata .= "[ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
+    $timelinedata .= "[ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#009900', ";
   }
   else if ($row['status'] == 4) {
     $ss = "<i class=\"pe-archive pe-fw\"></i> Archived";
     $since = ago($row['L3']);
     $status = "Archived";
-    $timelinedata .= "[ 'Project ".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $timelinedata .= "[ 'Project ".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
-    $timelinedata .= "[ 'Project ".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day'].") ], \n"; $colordata .= "'#009900', ";
-    $timelinedata .= "[ 'Project ".$title."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
+    $timelinedata .= "[ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $timelinedata .= "[ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
+    $timelinedata .= "[ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day'].") ], \n"; $colordata .= "'#009900', ";
+    $timelinedata .= "[ '".$title."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
   }
   $updated = ago($row['updated']);
   $t2 = date_parse_from_format("Y-m-d H:i:s", $row['updated']); $t2['month'] = $t2['month']-2;
   if ($row['private'] == 1) { $private = "<span class=\"label label-success\">PRIVATE</span>"; } else { $private = ""; }
   if ($owner_email == $_SESSION['email']) { $owner = "<span class=\"label label-danger\">OWNER</span>"; $tabledata .= "    <tr>\n"; } else { $owner = ""; $tabledata .= "    <tr>\n";}
   if ($owner_email == $_SESSION['email']) { $tabledata .= "    <tr bgcolor='#F0F8FF'>\n"; } else { $tabledata .= "    <tr>\n";}
-  $tabledata .= "      <td>Project $title $owner $private</td>\n";
+  $tabledata .= "      <td>$title $owner $private</td>\n";
   $tabledata .= "      <td>$owner_fullname <small>($owner_email)</small></td>\n";
   $tabledata .= "      <td>$ss</td>\n";
   // $tabledata .= "      <td align=\"right\">$updated</td>\n";
@@ -120,15 +120,33 @@ $timelinedata .= " ]";
 $colordata = substr($colordata, 0, -2);
 $colordata .= " ]";
 $tabledata .= "";
-foreach (array_count_values($AA) as $k => $v) {
-  $w = percent($v / $sstotal);
-  list($fullname, $email, $level) = explode(":", $k);
-  if ($level == 9) { $role = "Administrator"; }
-  else if ($level == 6) { $role = "Manager"; }
-  else if ($level == 5) { $role = "User"; }
-  if ($email == $_SESSION['email']) { $orgdata .= "<tr bgcolor='#F0F8FF'><td>$fullname <small>($email)</small></td><td>$role</td><td align='right'>$v ($w)</td></tr>\n"; }
-  else { $orgdata .= "<tr><td>$fullname <small>($email)</small></td><td>$role</td><td align='right'>$v ($w)</td></tr>\n"; }
+
+// Pull data on user listing for this company
+$q3A = $db->prepare("SELECT U.*, COUNT(P.id) as projects FROM j_users U, j_projects P WHERE P.userid = U.id AND U.companyid = :companyid GROUP BY U.email ORDER BY U.level DESC");
+$q3A->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+$q3A->execute();
+$rr = $q3A->fetchAll(PDO::FETCH_ASSOC);
+foreach ($rr as $r) {
+  $ww = $r['projects'];
+  $w = percent($ww / $sstotal);
+  $fullname = $r['fullname'];
+  $email = $r['email'];
+  if ($r['lastlogin']) { $lastlogin = ago($r['lastlogin']); } else { $lastlogin = "Never"; }
+  $role = role($r['level']);
+  if ($r['level'] == 6) {
+    if ($r['email'] == $_SESSION['email']) { $orgdata .= "<tr bgcolor='#F0F8FF'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
+    else { $orgdata .= "<tr><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
+  }
+  else if ($r['level'] == 5) {
+    if ($r['email'] == $_SESSION['email']) { $orgdata .= "<tr bgcolor='#F0F8FF'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
+    else { $orgdata .= "<tr><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
+  }
+  else if ($r['level'] == 4) {
+    if ($r['email'] == $_SESSION['email']) { $orgdata .= "<tr bgcolor='#F0F8FF'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
+    else { $orgdata .= "<tr><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
+  }
 }
+
 ?>
 
 <h3>Company at a glance</h3>
@@ -136,21 +154,20 @@ foreach (array_count_values($AA) as $k => $v) {
 <div class="row">
   <div class="col-sm-6">
     <h4>Projects</h4>
-    <p><?php echo $companyname; ?> has <strong><?php echo $sstotal; ?> survey projects</strong> where <strong><?php echo $ssActive; ?> projects</strong> (<?php echo $percentActive; ?>) are active and <strong><?php echo $ssInactive; ?> projects</strong> (<?php echo $percentInactive; ?>) are inactive (archived).</p>
+    <p><?php echo $companyname; ?> has <strong><?php echo $sstotal; ?> survey project(s)</strong> where <strong><?php echo $ssActive; ?> project(s)</strong> (<?php echo $percentActive; ?>) are active and <strong><?php echo $ssInactive; ?> project(s)</strong> (<?php echo $percentInactive; ?>) are inactive (archived).</p>
     <div id="piechart" style="width:100%;height:300px"></div>
     <p align="right"><a href="/admin/?w=surveys" class="small">More...</a></p>
   </div>
   <div class="col-sm-6">
     <h4>Users</h4>
-    <p><?php echo $companyname; ?> has <strong><?php echo $sttotal; ?> users</strong> including <?php echo $levellist; ?>.</p>
-    <p>And table below shows the break down of no. projects handled by each of the team members (% project contribution).</p>
+    <p><?php echo $companyname; ?> has <strong><?php echo $sttotal; ?> user(s)</strong> including <?php echo $levellist; ?> as shown in the table below.</p>
     <br>
     <table class="table table-hover small">
       <thead>
         <tr class="bg-primary">
-          <td width="70%">Name (email)</td>
-          <td width="10%">Role</td>
-          <td width="20%" align="right">Projects</td>
+          <td width="50%"><strong><i class="pe-user pe-fw"></i> Name</strong></td>
+          <td width="25%"><strong><i class="pe-briefcase pe-fw"></i> Role</strong></td>
+          <td width="25%" align="right"><strong><i class="pe-cubes pe-fw"></i> Projects</strong></td>
         </tr>
       </thead>
       <tbody>
@@ -162,7 +179,7 @@ foreach (array_count_values($AA) as $k => $v) {
 </div>
 
 <h4>List of all projects</h4>
-<table class="table table-condensed table-hover small">
+<table class="table table-hover small">
   <thead>
     <tr class="bg-primary">
       <td width="30%"><strong><i class="pe-cubes pe-fw"></i> Project</strong></td>
@@ -185,10 +202,9 @@ foreach (array_count_values($AA) as $k => $v) {
 </style>
 
 <script type="text/javascript">
-  google.charts.load('current', {'packages': ['corechart', 'timeline', 'orgchart'] });
+  google.charts.load('current', {'packages': ['corechart', 'timeline'] });
   google.charts.setOnLoadCallback(drawPieChart);
   google.charts.setOnLoadCallback(drawTimelineChart);
-  google.charts.setOnLoadCallback(drawOrgChart);
   function drawPieChart() {
     var data = google.visualization.arrayToDataTable([
       ['Stage', 'No. of project'],
@@ -221,26 +237,6 @@ foreach (array_count_values($AA) as $k => $v) {
     };
     chart.draw(dataTable, options);
   }
-  function drawOrgChart() {
-    var data = new google.visualization.DataTable();
-    data.addColumn('string', 'Name');
-    data.addColumn('string', 'Manager');
-    data.addColumn('string', 'ToolTip');
-    // For each orgchart box, provide the name, manager, and tooltip to show.
-    data.addRows([
-      [{v:'Mike', f:'Mike<div style="color:red; font-style:italic">President</div>'}, '', 'The President'],
-      [{v:'Jim', f:'Jim<div style="color:red; font-style:italic">Vice President</div>'}, 'Mike', 'VP'],
-      ['Alice', 'Mike', ''],
-      ['Bob', 'Jim', 'Bob Sponge'],
-      ['Carol', 'Bob', '']
-    ]);
-
-    // Create the chart.
-    var chart = new google.visualization.OrgChart(document.getElementById('orgchart'));
-    // Draw the chart, setting the allowHtml option to true for the tooltips.
-    chart.draw(data, {allowHtml:true});
-  }
-
 </script>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>

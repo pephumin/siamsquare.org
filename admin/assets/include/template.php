@@ -59,7 +59,8 @@ function pageHeader($title) {
   <meta name="msapplication-TileImage" content="/admin/assets/icons/ms-icon-144x144.png">
   <meta name="theme-color" content="#FFFFFF">
   <script type="text/javascript" src="/admin/assets/js/jquery-2.1.4.min.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/bootstrap.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <!-- <script type="text/javascript" src="/admin/assets/js/bootstrap.js"></script> -->
   <script type="text/javascript" src="/admin/assets/js/jquery.steps.js"></script>
   <script type="text/javascript" src="/admin/assets/js/moment.js"></script>
   <script type="text/javascript" src="/admin/assets/js/jquery-csv.js"></script>
@@ -110,12 +111,6 @@ function pageHeader($title) {
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-cubes pe-fw"></i> My surveys <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a href="<?php echo(MYADMIN."?w=surveys"); ?>" title="All projects"><i class="pe-cubes pe-fw"></i> All projects</a></li>
-                  <!-- <li role="separator" class="divider"></li> -->
-                  <!-- <li><a href="<?php echo(MYADMIN."?w=surveys&c=A"); ?>" title="Pre-fieldwork"><i class="pe-hourglass-start pe-fw"></i> Pre-fieldwork</a></li> -->
-                  <!-- <li><a href="<?php echo(MYADMIN."?w=surveys&c=B"); ?>" title="Fieldwork"><i class="pe-hourglass-half pe-fw"></i> Fieldwork</a></li> -->
-                  <!-- <li><a href="<?php echo(MYADMIN."?w=surveys&c=C"); ?>" title="Post-fieldwork"><i class="pe-hourglass-end pe-fw"></i> Post-fieldwork</a></li> -->
-                  <!-- <li><a href="<?php echo(MYADMIN."?w=surveys&c=D"); ?>" title="Archive"><i class="pe-archive pe-fw"></i> Archive</a></li> -->
-                  <!-- <li><a href="<?php echo(MYADMIN."?w=respondents"); ?>" title="Respondents"><i class="pe-users pe-fw"></i> Respondents</a></li> -->
                   <li role="separator" class="divider"></li>
                   <li><a href="<?php echo(MYADMIN."?w=board"); ?>" title="Message board"><i class="pe-wpforms pe-fw"></i> Message board</a></li>
                   <li><a href="<?php echo(MYADMIN."?w=data2table"); ?>" title="Data to table"><i class="pe-table pe-fw"></i> Data to table</a></li>
@@ -127,7 +122,7 @@ function pageHeader($title) {
                 </ul>
               </li>
               <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-user pe-fw"></i> Profile <span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-street-view pe-fw"></i> Profile <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a href="<?php echo(MYADMIN."?w=profile"); ?>" title="My profile"><i class="pe-user pe-fw"></i> Myself</a></li>
                   <li><a href="<?php echo(MYADMIN."?w=team"); ?>" title="My team"><i class="pe-graduation-cap pe-fw"></i> Team</a></li>
@@ -199,7 +194,7 @@ function pageFooter($notes = null) {
   // if (document.captureEvents) document.captureEvents(Event.MOUSEDOWN);
 </script>
 <?php if ($notes) { notify($notes); } ?>
-<?php debugOutput(); ?>
+<?php //debugOutput(); ?>
 </body>
 </html>
 <?php
@@ -423,12 +418,12 @@ function iconize($data) {
   else if (preg_match("/restored a survey/i", $data)) { $insert = "<i class=\"pe-undo pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/deleted a survey/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/archived a survey/i", $data)) { $insert = "<i class=\"pe-archive pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/changed a survey name/i", $data)) { $insert = "<i class=\"pe-cube pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/renamed a survey/i", $data)) { $insert = "<i class=\"pe-cube pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed a description/i", $data)) { $insert = "<i class=\"pe-cube pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/tried accessing/i", $data)) { $insert = "<i class=\"pe-exclamation-triangle pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/tried editing/i", $data)) { $insert = "<i class=\"pe-exclamation-triangle pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/updated profile info/i", $data)) { $insert = "<i class=\"pe-cog pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/changed password/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed password successfully/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/created a new survey/i", $data)) { $insert = "<i class=\"pe-flask pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/created a new member/i", $data)) { $insert = "<i class=\"pe-user-plus pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/renamed a member/i", $data)) { $insert = "<i class=\"pe-cog pe-fw\"></i> &nbsp; "; }
@@ -437,10 +432,12 @@ function iconize($data) {
   else if (preg_match("/deleted a member/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/suspended a member/i", $data)) { $insert = "<i class=\"pe-pause-circle pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed level for/i", $data)) { $insert = "<i class=\"pe-level-up pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/wrong password/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/failed to log in due to a wrong password/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/failed to change password due to an incorrect current password/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/incorrect current password/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/requested a password reset/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
-  else if (preg_match("/failed to reset password/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/requested an account activation/i", $data)) { $insert = "<i class=\"pe-flag pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/requested a password reset/i", $data)) { $insert = "<i class=\"pe-life-ring pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/failed to reset password due to an expired reset link/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed to a new password/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed survey to public/i", $data)) { $insert = "<i class=\"pe-train pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed survey to private/i", $data)) { $insert = "<i class=\"pe-car pe-fw\"></i> &nbsp; "; }
@@ -448,6 +445,11 @@ function iconize($data) {
   else if (preg_match("/deleted respondent emails with errors/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/deleted respondent duplicated emails/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/manually deleted respondent emails/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/accessed a project that has no respondent section/i", $data)) { $insert = "<i class=\"pe-exclamation-triangle pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/accessed respondent for a project marked completion/i", $data)) { $insert = "<i class=\"pe-exclamation-triangle pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/deactivated due to 5 incorrect login attempts/i", $data)) { $insert = "<i class=\"pe-exclamation-triangle pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed survey owner/i", $data)) { $insert = "<i class=\"pe-cog pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/changed role for/i", $data)) { $insert = "<i class=\"pe-cog pe-fw\"></i> &nbsp; "; }
   else { $insert = ""; }
   if ($insert) { $data = $insert." ".$data; } else { $data = $data; }
   return $data;
@@ -456,4 +458,13 @@ function iconize($data) {
 function shortdate($timestamp) {
   return date('j M Y', strtotime($timestamp));
 }
+
+function role($level) {
+  if ($level == 9) { $role = "Administrator"; }
+  else if ($level == 6) { $role = "Manager"; }
+  else if ($level == 5) { $role = "User"; }
+  else if ($level == 4) { $role = "Guest"; }
+  return $role;
+}
+
 ?>

@@ -138,7 +138,7 @@ $from_record = $start + 1;
 $q4 = $db->prepare("SELECT COUNT(*) as duplicates, id, email, invited1 FROM j_respondents_private WHERE surveyid = 0 OR surveyid = :surveyid GROUP BY email HAVING duplicates > 1");
 $q4->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q4->execute();
-$e = array(); $f = array(); $g = array();
+$e = array(); $f = array(); $g = array(); //$h = array();
 while ($r = $q4->fetchObject()) {
   $invited1 = $r->invited1;
   array_push($e, $r->email);

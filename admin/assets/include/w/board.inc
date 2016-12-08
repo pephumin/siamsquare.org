@@ -61,7 +61,7 @@ $from_record = $start + 1;
   <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
     <form method="post" action="<?php echo $me; ?>">
       <div data-bind="visible: isNewPostCreating" class="panel panel-default">
-        <div class="panel-body small bg-info">
+        <div class="panel-body small bg-warning">
           <div class="input-group">
             <span class="input-group-addon"><i class="pe-wpforms pe-fw"></i></span>
             <input type="text" name="head" class="form-control" value="" placeholder="Message heading" onclick="this.select()">
@@ -123,10 +123,10 @@ echo "    </nav>\n";
   </div>
   <div class="col-sm-3">
     <div class="list-group">
-      <a class="list-group-item small list-group-item-info" data-bind="click: createNew, enable: !isNewPostCreating()" href=""><strong><i class="pe-edit pe-fw"></i> Post a new message</strong></a>
+      <a class="list-group-item small list-group-item-warning" data-bind="click: createNew, enable: !isNewPostCreating()" href=""><strong><i class="pe-edit pe-fw"></i> Post a new message</strong></a>
     </div>
     <div class="list-group">
-      <div class="list-group-item small list-group-item-warning"><strong><i class="pe-level-down pe-flip-horizontal pe-fw"></i> System annoucement</strong></div>
+      <div class="list-group-item small active"><strong><i class="pe-level-down pe-flip-horizontal pe-fw"></i> System annoucement</strong></div>
 <?php
 $q1B = $db->prepare("SELECT N.*, U.fullname, U.email, U.level FROM j_news N, j_users U WHERE N.status > 0 AND N.userid = U.id AND N.companyid = 0 ORDER BY N.created DESC".$add);
 $q1B->execute();
@@ -138,7 +138,7 @@ while ($row = $q1B->fetchObject()) {
   if ($_SESSION['level'] >= $row->level) { echo "      <a href=\"$me&amp;d=$postid\" class=\"pull-right red\" title=\"Delete this post\"><i class=\"pe-trash\"></i></a>\n"; }
   echo "        <div role=\"tab\" id=\"h$postid\"><i class=\"pe-bullhorn pe-fw\"></i> <a class=\"collapsed\" data-toggle=\"collapse\" href=\"#c$postid\" aria-expanded=\"false\" aria-controls=\"c$postid\">$row->head</a></div>\n";
   echo "        <div id=\"c$postid\" class=\"panel-collapse collapse\" role=\"tabpanel\" aria-labelledby=\"h$postid\">\n";
-  echo "          <br><p><small>$body</small></p>\n";
+  echo "          <br><p class=\"grey\"><small>$body</small></p>\n";
   echo "        </div>\n";
   echo "      </div>\n";
 }
@@ -152,31 +152,15 @@ while ($row = $q1B->fetchObject()) {
 <script type="text/javascript">
 
   var userid = <?php echo $_SESSION['userid']; ?>;
-  // var email = "<?php echo $_SESSION['email']; ?>";
-  // var fullname = "<?php echo $_SESSION['fullname']; ?>";
   var companyid = <?php echo $_SESSION['companyid']; ?>;
-  var ip = "<?php echo getip(); ?>";
-  var api = "http://www.siamsquare.org.uk";
   $('#showalert-create').html("<div class='alert alert-success'><i class='pe-save pe-fw'></i> A new user has been created</div>").hide();
   $('#showalert-delete').html("<div class='alert alert-danger'><i class='pe-trash pe-fw'></i> The user has been deleted</div>").hide();
   $('#showalert-edit').html("<div class='alert alert-success'><i class='pe-edit pe-fw'></i> The user information has been edited</div>").hide();
 
-  var Listing = function (id, userid, fullname, email, companyid, head, body, created) {
-    this.editingHead = ko.observable(head);
-    this.editingBody = ko.observable(body);
-    this.head = head;
-    this.body = body;
-    this.fullname = fullname;
-    this.email = email;
-    this.created = created;
-    this.isEditingHead = ko.observable(false);
-    this.isEditingBody = ko.observable(false);
-  }
-
   var ViewModel = function () {
     var self = this;
     this.messages = ko.observableArray([]);
-    this.url = api;
+    // this.url = api;
     this.isNewPostCreating = ko.observable(false);
     this.newPostHead = ko.observable("");
     this.newPostBody = ko.observable("");
@@ -185,139 +169,8 @@ while ($row = $q1B->fetchObject()) {
       self.newPostHead("New topic");
       self.newPostBody("Content of your new message");
     }
-    this.cancelNew = function () {
-      self.isNewPostCreating(false);
-    }
-    this.postNew = function () {
-      self.cancelNew();
-      $.ajax({
-        url: api + '/message/' + companyid + '/' + userid + '/new?head=' + self.newPostHead() + '&body=' + self.newPostBody(),
-        dataType: 'json',
-        type: 'get',
-        contentType: 'application/json; charset=utf-8',
-        success: function (data) {
-          self.messages.splice(0, 0, self.createPostObject(data));
-          $('#showalert-create').show();
-          window.setTimeout(function () { $("#showalert-create").slideUp(500, function () { $("#showalert-create").hide(); }); }, 5000);
-          $.ajax({
-            url: api + '/log',
-            dataType: 'json',
-            type: 'post',
-            contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' created a new message (' + self.newPostHead() + ')", "critical": "4" }',
-            success: function(data) { result = data; }
-          });
-        },
-        error: function (error) { self.onFail(error); }
-      });
-    }
-    this.loadData = function (i) {
-      $.ajax({
-        url: api + '/message/' + companyid,
-        dataType: 'json',
-        type: 'get',
-        contentType: 'application/json; charset=utf-8',
-        success: function (data) {
-          var list = [];
-          for (var i = 0; i < data.length; i++) { list.push(self.createPostObject(data[i])); }
-          self.messages(list);
-        },
-        error: function (error) { self.onFail(error); }
-      });
-    }
-    this.delete = function (message) {
-      $.ajax({
-        url: api + '/message/' + message.id + '/delete',
-        dataType: 'json',
-        type: 'put',
-        contentType: 'application/json; charset=utf-8',
-        data: '{ "status": "-1" }',
-        success: function (data) {
-          $('#showalert-delete').show();
-          window.setTimeout(function () { $("#showalert-delete").slideUp(500, function () { $("#showalert-delete").hide(); }); }, 5000);
-          self.removePost(message);
-          // $.ajax({
-          //   url: api + '/log',
-          //   dataType: 'json',
-          //   type: 'post',
-          //   contentType: 'application/json; charset=utf-8',
-          //   data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted a message (' + message.head() + ')", "critical": "4" }',
-          //   success: function(data) { result = data; }
-          // });
-        },
-        error: function (error) { self.onFail(error); }
-      });
-    }
-    this.removePost = function (message) {
-      var index = self.messages.indexOf(message);
-      if (index > -1) { self.messages.splice(index, 1); }
-    }
-    this.startEditHead = function (message) {
-      message.editingHead(message.head());
-      message.isEditingHead(true);
-    }
-    this.postEditHead = function (message) {
-      self.cancelEditHead(message);
-      $.ajax({
-        url: api + '/message/' + message.id + '/rehead',
-        dataType: 'json',
-        type: 'put',
-        contentType: 'application/json; charset=utf-8',
-        data: '{ "head": "' + message.editingHead() + '" }',
-        success: function (data) {
-          message.head(message.editingHead());
-          $('#showalert-edit').show();
-          window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 5000);
-          // $.ajax({
-          //   url: api + '/log',
-          //   dataType: 'json',
-          //   type: 'post',
-          //   contentType: 'application/json; charset=utf-8',
-          //   data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' renamed a message topic (' + message.head() + ')", "critical": "4" }',
-          //   success: function(data) { result = data; }
-          // });
-        },
-        error: function (error) { self.onFail(error); }
-      });
-    }
-    this.cancelEditHead = function (message) { message.isEditingHead(false); }
-    this.startEditBody = function (message) {
-      message.editingBody(message.body());
-      message.isEditingBody(true);
-    }
-    this.postEditBody = function (message) {
-      self.cancelEditBody(message);
-      $.ajax({
-        url: api + '/message/' + message.id + '/rebody',
-        dataType: 'json',
-        type: 'put',
-        contentType: 'application/json; charset=utf-8',
-        data: '{ "body": "' + message.editingBody() + '" }',
-        success: function (data) {
-          message.body(message.editingBody());
-          $('#showalert-edit').show();
-          window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 5000);
-          // $.ajax({
-          //   url: api + '/log',
-          //   dataType: 'json',
-          //   type: 'post',
-          //   contentType: 'application/json; charset=utf-8',
-          //   data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed a message body (' + message.body() + ')", "critical": "4" }',
-          //   success: function(data) { result = data; }
-          // });
-        },
-        error: function (error) { self.onFail(error); }
-      });
-    }
-    this.cancelEditBody = function (message) { message.isEditingBody(false); }
-    this.createPostObject = function (data) {
-      moment.locale('en');
-      if (data.created != null) { var sa1 = moment(data.created).fromNow(); var sa2 = moment(data.created).format("D MMM YYYY"); created = sa2 + ' (' + sa1 + ')'; } else { created = data.created; }
-      // if (data.level == 9) { role = "Administrator"; } else if (data.level == 6) { role = "Manager"; } else if (data.level == 5) { role = "User"; }
-      return new Listing (data.id, data.userid, data.fullname, data.email, companyid, data.head, data.body, created);
-    }
-    this.onFail = function (error) { alert(JSON.stringify(error)); }
-    this.loadData();
+    this.cancelNew = function () { self.isNewPostCreating(false); }
+    this.postNew = function () { self.cancelNew(); }
   }
   jQuery(document).ready(function () {
     ko.applyBindings(new ViewModel());

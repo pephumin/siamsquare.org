@@ -3,11 +3,21 @@
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 $db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
 
+// Get company information (e.g. logo, website, etc.)
+$q1 = $db->prepare("SELECT * FROM j_companies WHERE id = :companyid");
+$q1->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+$q1->execute();
+if ($q1->rowCount()) {
+  $r = $q1->fetchObject();
+  if ($r->logo) { $d1 = "<img src=\"$r->logo\" title=\"$r->company\">"; }
+  if ($r->website) { $d2 = "<a href=\"$r->website\" title=\"$r->company\" target=\"_blank\">$d1</a>"; } else { $d2 = $d1; }
+  $clientlogo = "<div class=\"pull-right\" style=\"margin-top:0px\">$d2</div>\n";
+  $companyname = $r->company;
+}
+
 $title = "Client's dashboard";
 pageHeader($title);
-echo "<div class=\"pull-right\" style=\"margin-top:5px\"><img src=\"";
-if ($_SESSION["avatar"]) { echo $_SESSION["avatar"]; } else { echo "assets/img/u/M6.svg"; }
-echo "\" class=\"img-circle members-photo\" alt=\"Avatar\"></div>\n";
+echo $clientlogo;
 echo "<h2>Welcome ".$_SESSION['fullname']."</h2>\n";
 echo "<p>This is the main dashboard where you can find the overview of the information regarding to youself.</p>\n";
 echo "<p>Although we build this website with an objective of being an easy for self-administration, we are still happy to support you in any cases. Should you need anything, please feel free to <a href=\"/admin/contact/\">contact us</a>.</p>\n";
@@ -27,14 +37,56 @@ while ($row = $q1->fetchObject()) {
   $status1 = $row->iB; $status2 = $row->iiB;
   $status3 = $row->iiiB; $status4 = $row->iiiiB;
 }
-$totalALL = $status1 + $status2 + $status3 + $status4;
+$totalALL = $status1 + $status2 + $status3 + $status4; $percentTotal = percent($totalALL / $totalALL);
 $totalActive = $status1 + $status2 + $status3; $totalInactive = $status4;
-$percentActive = percent($totalActive / $totalALL);
-$percentInactive = percent($totalInactive / $totalALL);
+$percentActive = percent($totalActive / $totalALL); $percentInactive = percent($totalInactive / $totalALL);
+$percentStatus1 = percent($status1 / $totalALL); $percentStatus2 = percent($status2 / $totalALL);
+$percentStatus3 = percent($status3 / $totalALL); $percentStatus4 = percent($status4 / $totalALL);
 ?>
 
 <h3>Your projects</h3>
-<p>You have <strong><?php echo $totalALL; ?> survey projects</strong> where <strong><?php echo $totalActive; ?> projects</strong> (<?php echo $percentActive; ?>) are active and <strong><?php echo $totalInactive; ?> projects</strong> (<?php echo $percentInactive; ?>) are inactive (archived).</p>
+
+<div class="row">
+  <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5">
+    <p>You have <strong><?php echo $totalALL; ?> survey projects</strong> which can be broken down into different stages as shown below.</p>
+    <table class="table table-hover small">
+      <thead>
+        <tr class="bg-primary">
+          <td><strong>Stage</strong></td>
+          <td align="right"><strong>Projects (%)</strong></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Set-up</td>
+          <td align="right"><?php echo $status1; ?> (<?php echo $percentStatus1; ?>)</td>
+        </tr>
+        <tr>
+          <td>Data-collection</td>
+          <td align="right"><?php echo $status2; ?> (<?php echo $percentStatus2; ?>)</td>
+        </tr>
+        <tr>
+          <td>Completed</td>
+          <td align="right"><?php echo $status3; ?> (<?php echo $percentStatus3; ?>)</td>
+        </tr>
+        <tr>
+          <td>Archived</td>
+          <td align="right"><?php echo $status4; ?> (<?php echo $percentStatus4; ?>)</td>
+        </tr>
+        <tr class="bg-info">
+          <td><strong>Total</strong></td>
+          <td align="right"><strong><?php echo $totalALL; ?> (<?php echo $percentTotal; ?>)</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+    <div id="piechart" style="width: auto; height: 300px;"></div>
+  </div>
+</div>
+
+<br>
+
 <?php
 $i = 0; $height = "70";
 $today['year'] = date("Y"); $today['month'] = date("m"); $today['day'] = date("d"); $today['month'] = $today['month']-1;
@@ -91,30 +143,48 @@ $colordata .= " ]";
 <p align="right"><a href="/admin/?w=surveys" class="small">More...</a></p>
 <hr>
 
+
+<?php if ($_SESSION["avatar"]) { echo "<div class=\"pull-right\" style=\"margin-top:5px\"><img src=\"".$_SESSION["avatar"]."\" class=\"img-circle members-photo\" alt=\"Avatar\"></div>\n"; } ?>
 <h3>Message board</h3>
 <div class="row">
   <div class="col-sm-8">
     <!-- <h4>Announcements</h4> -->
 <?php
-$q3 = $db->prepare("SELECT N.*, U.email, U.fullname FROM j_news N, j_users U WHERE N.userid = U.id AND N.status >= 1 AND N.companyid = :companyid ORDER BY N.created DESC LIMIT 10");
-$q3->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
-$q3->execute();
-while ($r = $q3->fetchObject()) {
+$q3A = $db->prepare("SELECT N.*, U.email, U.fullname FROM j_news N, j_users U WHERE N.userid = U.id AND N.status >= 1 AND N.companyid = 0 ORDER BY N.created DESC LIMIT 10");
+// $q3A->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+$q3A->execute();
+while ($r = $q3A->fetchObject()) {
   $postid = base64_encode($r->id);
   $t1 = shortdate($r->created); $t2 = ago($r->created);
   $body = nl2br($r->body);
-  echo "    <div class=\"panel panel-info\">\n";
-  echo "      <div class=\"panel-heading\" role=\"tab\" id=\"h$postid\"><i class=\"pe-wpforms pe-fw\"></i> <a class=\"collapsed\" data-toggle=\"collapse\" href=\"#c$postid\" aria-expanded=\"false\" aria-controls=\"c$postid\">$r->head</a></div>\n";
-  echo "      <div class=\"announcement-info\"><i class=\"pe-user pe-fw\"></i> $r->fullname ($r->email) &middot; <i class=\"pe-calendar pe-fw\"></i> $t1 ($t2)</div>\n";
+  echo "    <div class=\"panel panel-warning\">\n";
+  echo "      <div class=\"panel-heading\" role=\"tab\" id=\"h$postid\"><i class=\"pe-bullhorn pe-fw\"></i> <a class=\"collapsed\" data-toggle=\"collapse\" href=\"#c$postid\" aria-expanded=\"false\" aria-controls=\"c$postid\">$r->head</a></div>\n";
+  //echo "      <div class=\"announcement-info\"><i class=\"pe-user pe-fw\"></i> $r->fullname ($r->email) &middot; <i class=\"pe-calendar pe-fw\"></i> $t1 ($t2)</div>\n";
   echo "      <div id=\"c$postid\" class=\"panel-collapse collapse\" role=\"tabpanel\" aria-labelledby=\"h$postid\">\n";
   echo "        <div class=\"panel-body small\">$body</div>\n";
   echo "      </div>\n";
   echo "    </div>\n";
 }
+$q3B = $db->prepare("SELECT N.*, U.email, U.fullname FROM j_news N, j_users U WHERE N.userid = U.id AND N.status >= 1 AND N.companyid = :companyid ORDER BY N.created DESC LIMIT 10");
+$q3B->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+$q3B->execute();
+while ($r = $q3B->fetchObject()) {
+  $postid = base64_encode($r->id);
+  $t1 = shortdate($r->created); $t2 = ago($r->created);
+  $body = nl2br($r->body);
+  echo "    <div class=\"panel panel-info\">\n";
+  // echo "      <div class=\"panel-heading\" role=\"tab\" id=\"h$postid\"><i class=\"pe-wpforms pe-fw\"></i> <a class=\"collapsed\" data-toggle=\"collapse\" href=\"#c$postid\" aria-expanded=\"false\" aria-controls=\"c$postid\">$r->head</a></div>\n";
+  echo "      <div class=\"panel-heading\" role=\"tab\" id=\"h$postid\"><i class=\"pe-wpforms pe-fw\"></i> $r->head</div>\n";
+  echo "      <div class=\"announcement-info\"><i class=\"pe-user pe-fw\"></i> $r->fullname ($r->email) &middot; <i class=\"pe-calendar pe-fw\"></i> $t1 ($t2)</div>\n";
+  // echo "      <div id=\"c$postid\" class=\"panel-collapse collapse\" role=\"tabpanel\" aria-labelledby=\"h$postid\">\n";
+  echo "        <div class=\"panel-body small\">$body</div>\n";
+  // echo "      </div>\n";
+  echo "    </div>\n";
+}
 ?>
     <p align="right"><a href="/admin/?w=board" class="small">More...</a></p>
   </div>
-  <div class="col-sm-4 bg-info">
+  <div class="col-sm-4" style="padding:10px">
     <h4>Your recent activities</h4>
     <!-- <div class="panel-group">
       <div class="panel panel-primary">
@@ -146,8 +216,9 @@ while ($r = $q1->fetchObject()) {
 </style>
 
 <script type="text/javascript">
-  google.charts.load('current', {'packages': ['timeline'] });
+  google.charts.load('current', {'packages': ['corechart', 'timeline'] });
   google.charts.setOnLoadCallback(drawTimelineChart);
+  google.charts.setOnLoadCallback(drawPieChart);
   function drawTimelineChart() {
     var container = document.getElementById('timeline');
     var chart = new google.visualization.Timeline(container);
@@ -169,7 +240,18 @@ while ($r = $q1->fetchObject()) {
     };
     chart.draw(dataTable, options);
   }
-
+  function drawPieChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['Stage', 'No. of project'],
+      ['Set-up', <?php echo $status1; ?>],
+      ['Fieldwork', <?php echo $status2; ?>],
+      ['Completed', <?php echo $status3; ?>],
+      ['Archived', <?php echo $status4; ?>]
+    ]);
+    var options = { is3D: true, slices: { 0: { color: '#B3FFB3' }, 1: { color: '#00E600' }, 2: { color: '#009900' }, 3: { color: '#AAAAAA' } } };
+    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+    chart.draw(data, options);
+  }
 </script>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>

@@ -43,7 +43,7 @@ while ($row = $q->fetchObject()) {
 }
 $output .= "              </select>\n";
 
-$lastlogin = ago($_SESSION["lastlogin2"]);
+if ($_SESSION["lastlogin2"]) { $lastlogin = ago($_SESSION["lastlogin2"]); } else { $lastlogin = "Never"; }
 $registersince = ago($_SESSION["created"]);
 
 $title = "My profile";
@@ -203,7 +203,7 @@ foreach($pictures as $a => $b) {
               excluded: [':disabled'],
               fields: {
                 fullname: { validators: { notEmpty: { message: 'Please enter your first and last name' } } },
-                mobile: { validators: { notEmpty: { message: 'Please enter your mobie number' }, stringLength: { min: 10, message: 'It has to be 10 digits only' }, regexp: { regexp: /^[0-9]+$/, message: 'Only numbers are allowed' } } }
+                // mobile: { validators: { notEmpty: { message: 'Please enter your mobie number' }, stringLength: { min: 10, message: 'It has to be 10 digits only' }, regexp: { regexp: /^[0-9]+$/, message: 'Only numbers are allowed' } } }
               }
             })
             .on('err.field.fv', function(e, data) {
@@ -287,7 +287,7 @@ foreach($pictures as $a => $b) {
       </div>
     </div>
   </div>
-  <div class="col-xs-0 col-sm-3 col-md-3 col-lg-3 hidden-xs bg-info" style="margin:0px">
+  <div class="col-xs-0 col-sm-3 col-md-3 col-lg-3 hidden-xs bg-info" style="padding:10px">
     <h4>Others</h4>
     <div class="panel-group">
       <div class="panel panel-primary">

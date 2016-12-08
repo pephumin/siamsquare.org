@@ -4,6 +4,12 @@ $title = "My team";
 pageHeader($title);
 echo "<h2>$title</h2>";
 
+$rolelist = "";
+// $rolelist .= "new Role(\"Adminitrator\", 9), ";
+$rolelist .= "new Role(\"Manager\", 6), ";
+$rolelist .= "new Role(\"User\", 5), ";
+$rolelist .= "new Role(\"Guest\", 4), ";
+
 ?>
 
 <p>User with an account level of Manager will be able to manage your team members. This includes an ability to create new users, edit existing users, or even suspend or delete users where required.</p>
@@ -30,13 +36,12 @@ echo "<h2>$title</h2>";
       <div class="members-header-new"></div>
       <div class="members-body">
         <h4 class="white">Create a new member</h4>
-        <p><img src="assets/img/u/F6.svg" class="img-circle members-photo" alt="Avatar"></p>
-        <h5>Enter info below</h5>
-        <div class="input-group"><span class="input-group-addon"><small>Name:</small></span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberName" placeholder="Enter first and last name"></div>
-        <div class="input-group"><span class="input-group-addon"><small>Email</small>:</span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberEmail" placeholder="Enter email address"></div><br>
+        <p><img src="/admin/assets/img/u/M6.svg" class="img-circle members-photo" alt="Avatar"></p>
+        <div class="input-group"><span class="input-group-addon"><small>Name:</small></span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberName" onclick="this.select()" placeholder="Enter first and last name"></div>
+        <div class="input-group"><span class="input-group-addon"><small>Email</small>:</span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberEmail" onclick="this.select()" placeholder="Enter email address"></div><br>
         <a class="btn btn-primary btn-tiny" data-bind="click: postNew, enable: newMemberName() != '', enable: newMemberEmail() != ''" href=""><i class="pe-user-plus"></i> Create</a>
         <a class="btn btn-default btn-tiny" data-bind="click: cancelNew" href=""><i class="pe-times-circle-o"></i> Cancel</a><br><br>
-        <small class="red">Please make sure you input the correct email before creating a new user</small>
+        <small class="red">Please make sure you input the working/ correct email when creating a new user</small>
       </div>
     </div>
   </div>
@@ -53,9 +58,7 @@ echo "<h2>$title</h2>";
         <p>
           <small>
             Registered: <span data-bind="text: created"></span><br>
-            Last updated: <span data-bind="text: updated"></span><br>
-            Last login: <span data-bind="text: lastlogin2"></span><br>
-            Last ip: <span data-bind="text: lastip2"></span><br>
+            Last seen: <span data-bind="text: lastlogin2"></span><br>
           </small>
         </p>
 <?php if ($_SESSION['level'] >= "6") { ?>
@@ -110,11 +113,14 @@ echo "<h2>$title</h2>";
         </div>
         <div class="row" data-bind="visible: isEditingLevel()">
           <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Role <a href="" data-bind="click: $parent.cancelEditLevel"><i class="pe-times-circle-o"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px"><small>
-            <a class="btn btn-default btn-tiny" data-bind="click: $parent.L6" href="">Manager</a>
-            <a class="btn btn-default btn-tiny" data-bind="click: $parent.L5" href="">User</a>
-            <a class="btn btn-default btn-tiny" data-bind="click: $parent.cancelEditLevel" href="">Cancel <i class="pe-times-circle-o"></i></a>
-          </small></div>
+          <div class="col-sm-7" style="padding:2px 0px">
+            <select data-bind="options: allRoles, optionsText: 'role', optionValue: 'selectedRole', optionsCaption: 'Choose...', selectedOption: currentRole, value: selectedRole" class="form-control input-sm"></select>
+            <!-- <small>
+              <a class="btn btn-default btn-tiny" data-bind="click: $parent.L6" href="">Manager</a>
+              <a class="btn btn-default btn-tiny" data-bind="click: $parent.L5" href="">User</a>
+              <a class="btn btn-default btn-tiny" data-bind="click: $parent.cancelEditLevel" href="">Cancel <i class="pe-times-circle-o"></i></a>
+            </small> -->
+          </div>
         </div>
         <br>
       </div>
@@ -140,9 +146,7 @@ echo "<h2>$title</h2>";
   var created = "<?php echo $_SESSION['created']; ?>";
   var updated = "<?php echo $_SESSION['updated']; ?>";
   var lastlogin = "<?php echo $_SESSION['lastlogin']; ?>";
-  var lastip = "<?php echo $_SESSION['lastip']; ?>";
   var lastlogin2 = "<?php echo $_SESSION['lastlogin2']; ?>";
-  var lastip2 = "<?php echo $_SESSION['lastip2']; ?>";
   var ip = "<?php echo getip(); ?>";
   var api = "http://www.siamsquare.org.uk";
   var key = "aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8";
@@ -151,7 +155,7 @@ echo "<h2>$title</h2>";
   $('#showalert-edit').html("<div class='alert alert-success'><i class='pe-edit pe-fw'></i> The user information has been edited</div>").hide();
   $('#showalert-suspend').html("<div class='alert alert-warning'><i class='pe-archive pe-fw'></i> The user has been suspended</div>").hide();
 
-  var Listing = function (id, userid, email, fullname, mobile, avatar, companyid, status, role, level, created, updated, lastlogin, lastip, lastlogin2, lastip2, counts) {
+  var Listing = function (id, userid, email, fullname, mobile, avatar, companyid, status, role, level, created, updated, lastlogin, lastlogin2, counts) {
     this.id = id;
     this.userid = userid;
     this.email = ko.observable(email);
@@ -170,9 +174,7 @@ echo "<h2>$title</h2>";
     this.created = created;
     this.updated = updated;
     this.lastlogin = lastlogin;
-    this.lastip = lastip;
     this.lastlogin2 = lastlogin2;
-    this.lastip2 = lastip2;
     this.counts = ko.observable(counts);
     // this.isSuspended = ko.observable(false);
     this.showInfo = ko.observable(false);
@@ -182,8 +184,37 @@ echo "<h2>$title</h2>";
     this.isEditingStatus = ko.observable(false);
     this.isEditingRole = ko.observable(false);
     this.isEditingLevel = ko.observable(false);
+    this.allRoles = ko.observableArray([<?php echo $rolelist; ?>]);
+    // this.currentRole = ko.observableArray([]);
+    this.selectedRole = ko.observable(); // Nothing selected by default
+    this.selectedRole.subscribe(function(data) {
+      $.ajax({
+        url: api + '/member/' + id + '/changerole',
+        dataType: 'json',
+        type: 'put',
+        contentType: 'application/json; charset=utf-8',
+        data: '{ "level": ' + data.level() + ' }',
+        success: function (data) {
+          $('#showalert-changeowner').show();
+          window.setTimeout(function () { $("#showalert-changeowner").slideUp(500, function () { $("#showalert-changeowner").hide(); }); }, 5000);
+          $.ajax({
+            url: api + '/log',
+            dataType: 'json',
+            type: 'post',
+            contentType: 'application/json; charset=utf-8',
+            data: '{ "userid": "<?php echo $_SESSION['userid']; ?>", "ip": "' + ip + '", "data": "<?php echo $_SESSION['email']; ?> changed role for ' + fullname + ' (id=' + id + ')", "critical": "4" }',
+            success: function(data) { result = data; }
+          });
+          window.location.reload();
+        },
+        error: function (error) { self.onFail(error); }
+      });
+    });
   }
-
+  var Role = function(role, level) {
+    this.role = ko.observable(role);
+    this.level = ko.observable(level);
+  }
   var ViewModel = function () {
     var self = this;
     this.members = ko.observableArray([]);
@@ -489,14 +520,12 @@ echo "<h2>$title</h2>";
       moment.locale('en');
       if (data.created != null) { var sa1 = moment(data.created).fromNow(); var sa2 = moment(data.created).format("D MMM YYYY"); created = sa2 + ' (' + sa1 + ')'; } else { created = data.created; }
       if (data.updated != null) { var sb1 = moment(data.updated).fromNow(); var sb2 = moment(data.updated).format("D MMM YYYY"); updated = sb2 + ' (' + sb1 + ')'; } else { updated = data.updated; }
-      if (data.lastlogin != null) { var sc1 = moment(data.lastlogin).fromNow(); var sc2 = moment(data.lastlogin).format("D MMM YYYY"); lastlogin = sc2 + ' (' + sc1 + ')'; } else { lastlogin = "never login"; }
-      if (data.lastlogin2 != null) { var sd1 = moment(data.lastlogin2).fromNow(); var sd2 = moment(data.lastlogin2).format("D MMM YYYY"); lastlogin2 = sd2 + ' (' + sd1 + ')'; } else { lastlogin2 = "never login"; }
-      if (data.lastip == null) { data.lastip = "never login"; }
-      if (data.lastip2 == null) { data.lastip2 = "never login"; }
-      if (data.avatar != null) { avatar = data.avatar; } else { avatar = "assets/img/u/F6.svg"; }
-      if (data.level == 9) { role = "Administrator"; } else if (data.level == 6) { role = "Manager"; } else if (data.level == 5) { role = "User"; }
+      if (data.lastlogin != null) { var sc1 = moment(data.lastlogin).fromNow(); var sc2 = moment(data.lastlogin).format("D MMM YYYY"); lastlogin = sc2 + ' (' + sc1 + ')'; } else { lastlogin = "Never login"; }
+      if (data.lastlogin2 != null) { var sd1 = moment(data.lastlogin2).fromNow(); var sd2 = moment(data.lastlogin2).format("D MMM YYYY"); lastlogin2 = sd2 + ' (' + sd1 + ')'; } else { lastlogin2 = "Never login"; }
+      if (data.avatar != null) { avatar = data.avatar; } else { avatar = "/admin/assets/img/u/M6.svg"; }
+      if (data.level == 9) { role = "Administrator"; } else if (data.level == 6) { role = "Manager"; } else if (data.level == 5) { role = "User"; } else if (data.level == 4) { role = "Guest"; }
       //issuspended = false; if (data.status = "0") { issuspended = true; } else { issuspended = false; }
-      return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, avatar, companyid, data.status, role, data.level, created, updated, lastlogin, data.lastip, lastlogin2, data.lastip2, data.counts);
+      return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, avatar, companyid, data.status, role, data.level, created, updated, lastlogin, lastlogin2, data.counts);
     }
     this.onFail = function (error) { alert(JSON.stringify(error)); }
     this.showInfo = function (member) { member.showInfo(!member.showInfo()); }
@@ -523,6 +552,13 @@ echo "<h2>$title</h2>";
   </thead>
   <tbody>
     <tr>
+      <td>Manager</td>
+      <td>
+        <p>Manager is a user who can manage both surveys and team members. Manager can create, edit and delete any surveys and any team members (User) of the company.</p>
+        <p>There are also some functions that are only available to Manager such as editing the company information, choosing the survey template, etc.</p>
+      </td>
+    </tr>
+    <tr>
       <td>User</td>
       <td>
         <p>User account is a normal user who can create, edit, or delete surveys projects that are belonged only to this user (defined by projects that are either created by this user or are assigned to this user by a Manager).</p>
@@ -530,10 +566,10 @@ echo "<h2>$title</h2>";
       </td>
     </tr>
     <tr>
-      <td>Manager</td>
+      <td>Guest</td>
       <td>
-        <p>Manager is a user who can manage both surveys and team members. Manager can create, edit and delete any surveys and any team members (User) of the company.</p>
-        <p>There are also some functions that are only available to Manager such as editing the company information, choosing the survey template, etc.</p>
+        <p>Guest account is a readonly account and only specific to a survey project. This account type is different from respondent because Guest can still access the client section.</p>
+        <p>This account type is useful for providing some of the team members a temporary access (such as fieldwork, DP, or sometimes can be used for providing access only to view survey results).</p>
       </td>
     </tr>
   </tbody>
