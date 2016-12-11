@@ -2,7 +2,6 @@
 
 $email = $_SESSION["email"];
 $userid = $_SESSION['userid'];
-// $surveyid = base64_decode($_GET['s'])\
 $surveyid = $_GET['s'];
 
 if (isset($_GET['o']) || ($_GET['o'] == "CNT")) {
@@ -13,14 +12,41 @@ if (isset($_GET['o']) || ($_GET['o'] == "CNT")) {
   $email = "CNT@siamsquare.org";
 }
 
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
+$db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
+
+// Get company information (e.g. logo, website, etc.)
+$q1 = $db->prepare("SELECT * FROM j_companies WHERE id = :companyid");
+$q1->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+$q1->execute();
+if ($q1->rowCount()) {
+  $r = $q1->fetchObject();
+  if ($r->logo) { $d1 = "<img src=\"$r->logo\" title=\"$r->company\">"; }
+  if ($r->website) { $d2 = "<a href=\"$r->website\" title=\"$r->company\" target=\"_blank\">$d1</a>"; } else { $d2 = $d1; }
+  $clientlogo = "<div class=\"pull-right\" style=\"margin-top:0px\">$d2</div>\n";
+  $companyname = $r->company;
+}
+
+// Get projcet title
+$sql1 = "SELECT title FROM j_projects WHERE id = :surveyid";
+$q = $db->prepare($sql1);
+$q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q->execute();
+while ($row = $q->fetchObject()) { $project = $row->title; }
+
 $title = "ร่วมแสดงความคิดเห็น";
 pageHeader($title);
+echo $clientlogo;
 
 ?>
 
-<h3 class="text-right grey"><?php echo $title; ?> <i class="pe-plane"></i></h3>
+<h3><?php echo $title; ?> <i class="pe-plane"></i></h3>
 
-<p class="text-right grey">บัญชีของคุณคือ: <strong><?php echo $email; ?></strong></p>
+<p>บัญชีของคุณคือ: <strong><?php echo $email; ?></strong></p>
+
+<hr>
+
+<p class="text-right grey"><small>Project <?php echo $project; ?></small></p>
 
 <div id="showupload"></div><div id="showcompletion"></div>
 
@@ -32,32 +58,11 @@ pageHeader($title);
 
 <script type="text/javascript">
 
-  function get(name, url) {
-    if (!url) { url = window.location.href; }
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-    results = regex.exec(url); if (!results) return null; if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-  }
-
   function getip() {
     var rip;
     $.ajaxSetup({async: false});
     $.get('http://jsonip.com/', function(r){ rip = r.ip; });
     return rip;
-  }
-
-  function getsurveyinfo(id) {
-    var result = "";
-    $.ajax({
-      url: api + '/survey/' + id,
-      dataType: 'json',
-      type: 'get',
-      cache: false,
-      async: false,
-      success: function(data) { result = data; }
-    });
-    return result;
   }
 
   function getsurveydata(id) {
@@ -97,31 +102,19 @@ pageHeader($title);
     return result;
   }
 
-  function getsurveyresult(id, no) {
-    var result = "";
-    $.ajax({
-      url: api + '/' + id + '/' + no,
-      dataType: 'json',
-      type: 'get',
-      cache: false,
-      async: false,
-      success: function(data) { result = data; }
-    });
-    return result;
-  }
-
   // Start scripting by pe (phumin@sawasdee.org)
   var api = "http://www.siamsquare.org.uk";
   var surveyid = <?php echo $surveyid; ?>;
   var cid = "<?php echo $userid; ?>";
   var email = "<?php echo $email; ?>";
+  var title = "Project <?php echo $project; ?>";
   var ip = "<?php echo getip(); ?>";
   $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> เรากำลังอัพโหลดรูปไปยังระบบ <strong>และอีกสักครู่คุณจะได้รับข้อความจากระบบว่าดำเนินการสำเร็จ</strong> กรุณาอย่ารีเฟรชหรือกดส่งซ้ำ</div>").hide();
   $('#showcompletion').html("<div class='alert alert-success'><i class='pe-check-square-o pe-lg pe-fw'></i> เราได้ทำการจัดเก็บความคิดเห็นของคุณลงระบบเป็นที่เรียบร้อยแล้ว</div>").hide();
-  mm = getsurveyinfo(surveyid);
+  // mm = getsurveyinfo(surveyid);
   Survey.Survey.cssType = "bootstrap";
   var survey = new Survey.Survey (getsurveydata(surveyid), "runsurvey");
-  survey.onComplete.add(function (s) { postsurveydata(cid, ip, email, surveyid, survey.data, mm.title); });
+  survey.onComplete.add(function (s) { postsurveydata(cid, ip, email, surveyid, survey.data, title); });
   survey.onUploadFile.add(function (data) { $('#showupload').show(); });
   // survey.onComplete
   // survey.onCurrentPageChanged
