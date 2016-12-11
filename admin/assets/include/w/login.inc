@@ -36,19 +36,20 @@ if (isset($login)) {
   </div>
   <div class="form-group">
     <div class="col-xs-12 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 col-sm-7 col-md-7 col-lg-7">
-      <div class="checkbox checkbox-warning">
-        <input type="checkbox" name="rememberme" value="1" checked> <label for="remember">Keep me logged in for this device</label>
+      <div class="checkbox">
+        <label><input type="checkbox" name="rememberme" value="1" style="position:relative"> Keep me logged in for this device</label>
       </div>
     </div>
   </div>
   <br>
   <p class="text-center">
-    <button class="btn btn-warning" name="login" value="1" type="submit">Log in <i class="pe-check-circle-o"></i></button>
+    <button class="btn btn-warning" data-loading-text="Loggin you in..." name="login" value="1" type="submit">Log in <i class="pe-check-circle-o"></i></button>
     <button class="btn btn-default" name="cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
-  <p class="text-center"><strong>[</strong> <i class="pe-flag pe-fw"></i> <a href="/admin/setup/?d=activation">Account activation</a> <strong>:</strong> <i class="pe-life-ring pe-fw"></i> <a href="/admin/setup/">Forgot password?</a> <strong>]</strong></p>
+  <p class="text-center"><strong>[</strong> <i class="pe-flag pe-fw"></i> <a href="/admin/setup/?d=activation" title="Account activation">Account activation</a> <strong>:</strong> <i class="pe-life-ring pe-fw"></i> <a href="/admin/setup/" title="Reset password">Forgot password?</a> <strong>]</strong></p>
 </form>
-<script>
+
+<script type="text/javascript">
   $(document).ready(function() {
     $('#clientloginform').formValidation({
       framework: 'bootstrap',
@@ -60,8 +61,15 @@ if (isset($login)) {
         password: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 4, message: 'Password must be more than 6 characters long' }, different: { field: 'email', message: 'The password cannot be the same as the login' } } }
       }
     });
+    $(".btn").click(function(){
+      $(this).button('loading').delay(1000).submit(function() {
+        $(this).button('reset');
+        $(this).dequeue();
+      });
+    });
   });
 </script>
+
 <div class="alert alert-warning alert-dismissible" role="alert"><a class="close" data-dismiss="alert" aria-label="close">&times;</a>
   <h4><i class="pe-exclamation-triangle pe-fw pe-lg"></i> Unauthorised access to this system is prohibited by law</h4>
   <p>You are accessing a private computer network which includes: (1) this machine, (2) this computer network, (3) all computers/servers connected to this network, and (4) all devices and storage media attached to this network or to a computer on this network. This information system is provided for registered clients authorised use only. Unauthorized or improper use of this system may result in disciplinary action, as well as civil and criminal penalties.</p>

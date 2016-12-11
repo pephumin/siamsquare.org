@@ -47,13 +47,13 @@ $sttotal = $st3 + $st4 + $st5 + $st6;
 $pst3 = percent($st3/$sttotal); $pst4 = percent($st4/$sttotal); $pst5 = percent($st5/$sttotal); $pst6 = percent($st6/$sttotal);
 $pst7 = percent($st7/$sttotal); $pst8 = percent($st8/$sttotal); $pst9 = percent($st9/$sttotal);
 $levellist = "";
-// if ($st3) { $levellist .= "<strong>$st3 person(s)</strong> ($pst3), "; } else { $levellist .= ""; }
-if ($st4) { $levellist .= "<strong>$st4 Guest(s)</strong> ($pst4), "; } else { $levellist .= ""; }
+// if ($st9) { $levellist .= "<strong>$st9 Administrator</strong> ($pst9) "; } else { $levellist .= ""; }
+// if ($st8) { $levellist .= "<strong>$st8 person(s)</strong> ($pst8) "; } else { $levellist .= ""; }
+// if ($st7) { $levellist .= "<strong>$st7 person(s)</strong> ($pst7) "; } else { $levellist .= ""; }
+if ($st6) { $levellist .= "<strong>$st6 Manager(s)</strong> ($pst6) "; } else { $levellist .= ""; }
 if ($st5) { $levellist .= "<strong>$st5 User(s)</strong> ($pst5) "; } else { $levellist .= ""; }
-if ($st6) { $levellist .= "and <strong>$st6 Manager(s)</strong> ($pst6)"; } else { $levellist .= ""; }
-// if ($st7) { $levellist .= "<strong>$st7 person(s)</strong> ($pst7), "; } else { $levellist .= ""; }
-// if ($st8) { $levellist .= "<strong>$st8 person(s)</strong> ($pst8), "; } else { $levellist .= ""; }
-// if ($st9) { $levellist .= "and <strong>$st9 Administrator</strong> ($pst9)"; } else { $levellist .= ""; }
+if ($st4) { $levellist .= "<strong>$st4 Guest(s)</strong> ($pst4) "; } else { $levellist .= ""; }
+// if ($st3) { $levellist .= "<strong>$st3 person(s)</strong> ($pst3) "; } else { $levellist .= ""; }
 
 $i = 0; $height = "70";
 $today['year'] = date("Y"); $today['month'] = date("m"); $today['day'] = date("d"); $today['month'] = $today['month']-1;
@@ -120,9 +120,8 @@ $timelinedata .= " ]";
 $colordata = substr($colordata, 0, -2);
 $colordata .= " ]";
 $tabledata .= "";
-
 // Pull data on user listing for this company
-$q3A = $db->prepare("SELECT U.*, COUNT(P.id) as projects FROM j_users U, j_projects P WHERE P.userid = U.id AND U.companyid = :companyid GROUP BY U.email ORDER BY U.level DESC");
+$q3A = $db->prepare("SELECT U.*, COUNT(P.id) as projects FROM j_users U, j_projects P WHERE P.userid = U.id AND U.companyid = :companyid AND P.status >= 1 GROUP BY U.email ORDER BY U.level DESC");
 $q3A->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
 $q3A->execute();
 $rr = $q3A->fetchAll(PDO::FETCH_ASSOC);
@@ -133,7 +132,11 @@ foreach ($rr as $r) {
   $email = $r['email'];
   if ($r['lastlogin']) { $lastlogin = ago($r['lastlogin']); } else { $lastlogin = "Never"; }
   $role = role($r['level']);
-  if ($r['level'] == 6) {
+  if ($r['level'] == 9) {
+    if ($r['email'] == $_SESSION['email']) { $orgdata .= "<tr bgcolor='#F0F8FF'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
+    else { $orgdata .= "<tr><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
+  }
+  else if ($r['level'] == 6) {
     if ($r['email'] == $_SESSION['email']) { $orgdata .= "<tr bgcolor='#F0F8FF'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
     else { $orgdata .= "<tr><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
   }
@@ -165,9 +168,9 @@ foreach ($rr as $r) {
     <table class="table table-hover small">
       <thead>
         <tr class="bg-primary">
-          <td width="50%"><strong><i class="pe-user pe-fw"></i> Name</strong></td>
-          <td width="25%"><strong><i class="pe-briefcase pe-fw"></i> Role</strong></td>
-          <td width="25%" align="right"><strong><i class="pe-cubes pe-fw"></i> Projects</strong></td>
+          <th width="50%"><i class="pe-user pe-fw"></i> Name</th>
+          <th width="25%"><i class="pe-briefcase pe-fw"></i> Role</th>
+          <th width="25%" align="right"><i class="pe-cubes pe-fw"></i> Projects</th>
         </tr>
       </thead>
       <tbody>
@@ -182,9 +185,9 @@ foreach ($rr as $r) {
 <table class="table table-hover small">
   <thead>
     <tr class="bg-primary">
-      <td width="30%"><strong><i class="pe-cubes pe-fw"></i> Project</strong></td>
-      <td width="50%"><strong><i class="pe-user pe-fw"></i> Owner</strong></td>
-      <td width="20%"><strong><i class="pe-flag pe-fw"></i> Status</strong></td>
+      <th width="30%"><i class="pe-cubes pe-fw"></i> Project</th>
+      <th width="50%"><i class="pe-user pe-fw"></i> Owner</th>
+      <th width="20%"><i class="pe-flag pe-fw"></i> Status</th>
     </tr>
   </thead>
   <tbody>

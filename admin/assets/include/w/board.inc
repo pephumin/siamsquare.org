@@ -11,17 +11,19 @@ $db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8',
 
 if ($_POST['newpost'] == 1) {
   if (($_POST['head']) || ($_POST['body'])) {
-    $q0A = $db->prepare("INSERT INTO j_news (head, body, userid, companyid) VALUES (:head, :body, :userid, :companyid)");
+    $q0A = $db->prepare("INSERT INTO j_board (head, body, userid, companyid) VALUES (:head, :body, :userid, :companyid)");
     $q0A->bindValue(':head', $_POST['head'], PDO::PARAM_STR);
     $q0A->bindValue(':body', $_POST['body'], PDO::PARAM_STR);
     $q0A->bindValue(':userid', $_POST['userid'], PDO::PARAM_INT);
     $q0A->bindValue(':companyid', $_POST['companyid'], PDO::PARAM_INT);
     $q0A->execute();
   }
+  header("location: $me");
 } else if ($_GET['d']) {
-  $q0B = $db->prepare("UPDATE j_news SET status = 0 WHERE id = :id");
+  $q0B = $db->prepare("UPDATE j_board SET status = 0 WHERE id = :id");
   $q0B->bindValue(':id', base64_decode($_GET["d"]), PDO::PARAM_INT);
   $q0B->execute();
+  header("location: $me");
 }
 
 $title = "Message board";
@@ -37,7 +39,7 @@ $to_record = $start + $limit;
 $add = " LIMIT $start, $limit ";
 
 // Get stats
-$q1A = $db->prepare("SELECT COUNT(*) AS iA, SUM(companyid='0') AS iB, SUM(companyid=:companyid) AS iC FROM j_news WHERE status > 0 AND (companyid = 0 OR companyid = :companyid)");
+$q1A = $db->prepare("SELECT COUNT(*) AS iA, SUM(companyid = '0') AS iB, SUM(companyid = :companyid) AS iC FROM j_board WHERE status > 0 AND (companyid = 0 OR companyid = :companyid)");
 $q1A->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
 $q1A->execute();
 // $rows = $q1A->rowCount();
@@ -56,7 +58,7 @@ $from_record = $start + 1;
 
 <!-- <div id="showalert-create"></div><div id="showalert-delete"></div><div id="showalert-edit"></div> -->
 
-<p>Found <strong><?php echo $rows; ?> posts</strong> in our database (showing results <?php echo $from_record; ?> to <?php echo $to_record; ?>)</p>
+<p>Found <strong><?php echo $rows; ?> posts</strong> in our database (showing results <?php echo $from_record; ?> to <?php echo $to_record; ?>) plus another <strong><?php echo $totalglobal; ?> posts</strong> by system announcement</p>
 <div class="row">
   <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
     <form method="post" action="<?php echo $me; ?>">
@@ -91,7 +93,7 @@ $from_record = $start + 1;
       </div>
     </form>
 <?php
-$q1C = $db->prepare("SELECT N.*, U.fullname, U.email, U.level FROM j_news N, j_users U WHERE N.status > 0 AND N.userid = U.id AND N.companyid = :companyid ORDER BY N.created DESC".$add);
+$q1C = $db->prepare("SELECT B.*, U.fullname, U.email, U.level, U.avatar FROM j_board B, j_users U WHERE B.status > 0 AND B.userid = U.id AND B.companyid = :companyid ORDER BY B.created DESC".$add);
 $q1C->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
 $q1C->execute();
 while ($row = $q1C->fetchObject()) {
@@ -103,6 +105,7 @@ while ($row = $q1C->fetchObject()) {
   //echo "    <a href=\"$me&amp;d=$postid\" class=\"pull-right\" style=\"margin-top:10px;margin-right:5px\" title=\"Mark completed\"><i class=\"pe-check-square\"></i></a>\n";
   echo "      <div class=\"panel-heading\"><i class=\"pe-wpforms pe-fw\"></i> $row->head</div>\n";
   echo "      <div class=\"announcement-info\"><i class=\"pe-user pe-fw\"></i> $row->fullname ($row->email) &middot; <i class=\"pe-calendar pe-fw\"></i> $t1 ($t2)</div>\n";
+  if ($row->avatar) { echo "      <p class=\"pull-right\" style=\"margin:10px\"><img src=\"".$row->avatar."\" class=\"img-circle members-photo-small\" alt=\"Avatar\"></p>\n"; }
   echo "      <div class=\"panel-body small\">$body</div>\n";
   echo "    </div>\n";
 }
@@ -128,7 +131,7 @@ echo "    </nav>\n";
     <div class="list-group">
       <div class="list-group-item small active"><strong><i class="pe-level-down pe-flip-horizontal pe-fw"></i> System annoucement</strong></div>
 <?php
-$q1B = $db->prepare("SELECT N.*, U.fullname, U.email, U.level FROM j_news N, j_users U WHERE N.status > 0 AND N.userid = U.id AND N.companyid = 0 ORDER BY N.created DESC".$add);
+$q1B = $db->prepare("SELECT B.*, U.fullname, U.email, U.level FROM j_board B, j_users U WHERE B.status > 0 AND B.userid = U.id AND B.companyid = 0 ORDER BY B.created DESC".$add);
 $q1B->execute();
 while ($row = $q1B->fetchObject()) {
   $postid = base64_encode($row->id);

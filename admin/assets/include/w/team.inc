@@ -51,16 +51,18 @@ $rolelist .= "new Role(\"Guest\", 4), ";
     <div class="members">
       <div class="members-header"></div>
       <div class="members-body">
-        <h4 data-bind="text: fullname" class="white"></h4>
-        <p><img data-bind="attr: {src: avatar}" class="img-circle members-photo" alt="Avatar"></p>
+        <h4 data-bind="text: fullname" class="white" style="margin-bottom:5px !important"></h4>
+        <div class="white small" style="margin-bottom:1.2rem">(<span data-bind="text: email" class="white"></span>)</div>
+        <div><img data-bind="attr: {src: avatar}" class="img-circle members-photo" alt="Avatar"></div>
         <h5 data-bind="text: role"></h5>
-        <small><strong>No. of projects handled: <span data-bind="text: counts"></span></strong></small>
-        <p>
-          <small>
-            Registered: <span data-bind="text: created"></span><br>
-            Last seen: <span data-bind="text: lastlogin2"></span><br>
-          </small>
+        <p class="small">
+          <strong>No. of projects handled: <span data-bind="text: counts"></span></strong><br>
         </p>
+        <p class="small">
+          Registered: <span data-bind="text: created"></span><br>
+          Last seen: <span data-bind="text: lastlogin2"></span><br>
+        </p>
+
 <?php if ($_SESSION['level'] >= "6") { ?>
         <p>
           <a class="btn btn-default btn-tiny" data-bind="click: $parent.showInfo"><i class="pe-cogs"></i> Edit <i class="" data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a>
@@ -543,11 +545,11 @@ $rolelist .= "new Role(\"Guest\", 4), ";
 
 <p>While we have several account types, we currently provide two account types to our clients which are an <strong>user</strong> and a <strong>manager</strong>.</p>
 
-<table class="table table-hover">
+<table class="table table-hover small">
   <thead>
     <tr class="bg-primary">
-      <td width="20%"><strong>User type</strong></td>
-      <td><strong>Description</strong></td>
+      <th width="20%">Type</th>
+      <th>Description</th>
     </tr>
   </thead>
   <tbody>

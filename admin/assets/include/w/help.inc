@@ -827,9 +827,9 @@ survey.onGetResult
 <table class="table table-hover">
   <thead>
     <tr class="bg-primary">
-      <td>User</td>
-      <td>Level</td>
-      <td>Detail</td>
+      <th>User</th>
+      <th>Level</th>
+      <th>Detail</th>
     </tr>
   </thead>
   <tbody>
@@ -869,9 +869,9 @@ survey.onGetResult
 <table class="table table-hover">
   <thead>
     <tr class="bg-primary">
-      <td>User</td>
-      <td>Level</td>
-      <td>Detail</td>
+      <th>User</th>
+      <th>Level</th>
+      <th>Detail</th>
     </tr>
   </thead>
   <tbody>

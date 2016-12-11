@@ -52,8 +52,8 @@ $percentStatus3 = percent($status3 / $totalALL); $percentStatus4 = percent($stat
     <table class="table table-hover small">
       <thead>
         <tr class="bg-primary">
-          <td><strong>Stage</strong></td>
-          <td align="right"><strong>Projects (%)</strong></td>
+          <th>Stage</th>
+          <th style="text-align:right">Projects (%)</th>
         </tr>
       </thead>
       <tbody>
@@ -107,28 +107,28 @@ foreach ($rows as $row) {
   if ($row['status'] == 1) {
     $ss = "  <i class=\"pe-hourglass-start pe-fw\"></i> Set-up (since: ".ago($row['created']).")";
     $status = "Set-up";
-    $timelinedata .= "[ 'Project ".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $timelinedata .= "[ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
   }
   else if ($row['status'] == 2) {
     $ss = "<i class=\"pe-hourglass-half pe-fw\"></i> Data-collection (since: ".ago($row['L1']).")";
     $status = "Data-collection";
-    $timelinedata .= "[ 'Project ".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $timelinedata .= "[ 'Project ".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#00E600', ";
+    $timelinedata .= "[ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $timelinedata .= "[ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#00E600', ";
   }
   else if ($row['status'] == 3) {
     $ss = "<i class=\"pe-hourglass-end pe-fw\"></i> Completed (since: ".ago($row['L2']).")";
     $status = "Completed";
-    $timelinedata .= "[ 'Project ".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $timelinedata .= "[ 'Project ".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
-    $timelinedata .= "[ 'Project ".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#009900', ";
+    $timelinedata .= "[ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $timelinedata .= "[ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
+    $timelinedata .= "[ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#009900', ";
   }
   else if ($row['status'] == 4) {
     $ss = "<i class=\"pe-archive pe-fw\"></i> Archived (since: ".ago($row['L3']).")";
     $status = "Archived";
-    $timelinedata .= "[ 'Project ".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $timelinedata .= "[ 'Project ".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
-    $timelinedata .= "[ 'Project ".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day'].") ], \n"; $colordata .= "'#009900', ";
-    $timelinedata .= "[ 'Project ".$title."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
+    $timelinedata .= "[ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $timelinedata .= "[ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
+    $timelinedata .= "[ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day'].") ], \n"; $colordata .= "'#009900', ";
+    $timelinedata .= "[ '".$title."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
   }
   $updated = ago($row['updated']);
   if ($row['private'] == 1) { $private = "<span class=\"label label-success\">PRIVATE</span>"; } else { $private = ""; }
@@ -150,7 +150,7 @@ $colordata .= " ]";
   <div class="col-sm-8">
     <!-- <h4>Announcements</h4> -->
 <?php
-$q3A = $db->prepare("SELECT N.*, U.email, U.fullname FROM j_news N, j_users U WHERE N.userid = U.id AND N.status >= 1 AND N.companyid = 0 ORDER BY N.created DESC LIMIT 10");
+$q3A = $db->prepare("SELECT B.*, U.email, U.fullname FROM j_board B, j_users U WHERE B.userid = U.id AND B.status >= 1 AND B.companyid = 0 ORDER BY B.created DESC LIMIT 5");
 // $q3A->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
 $q3A->execute();
 while ($r = $q3A->fetchObject()) {
@@ -165,7 +165,7 @@ while ($r = $q3A->fetchObject()) {
   echo "      </div>\n";
   echo "    </div>\n";
 }
-$q3B = $db->prepare("SELECT N.*, U.email, U.fullname FROM j_news N, j_users U WHERE N.userid = U.id AND N.status >= 1 AND N.companyid = :companyid ORDER BY N.created DESC LIMIT 10");
+$q3B = $db->prepare("SELECT B.*, U.email, U.fullname, U.avatar FROM j_board B, j_users U WHERE B.userid = U.id AND B.status >= 1 AND B.companyid = :companyid ORDER BY B.created DESC LIMIT 10");
 $q3B->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
 $q3B->execute();
 while ($r = $q3B->fetchObject()) {
@@ -176,6 +176,7 @@ while ($r = $q3B->fetchObject()) {
   // echo "      <div class=\"panel-heading\" role=\"tab\" id=\"h$postid\"><i class=\"pe-wpforms pe-fw\"></i> <a class=\"collapsed\" data-toggle=\"collapse\" href=\"#c$postid\" aria-expanded=\"false\" aria-controls=\"c$postid\">$r->head</a></div>\n";
   echo "      <div class=\"panel-heading\" role=\"tab\" id=\"h$postid\"><i class=\"pe-wpforms pe-fw\"></i> $r->head</div>\n";
   echo "      <div class=\"announcement-info\"><i class=\"pe-user pe-fw\"></i> $r->fullname ($r->email) &middot; <i class=\"pe-calendar pe-fw\"></i> $t1 ($t2)</div>\n";
+  if ($r->avatar) { echo "        <p class=\"pull-right\" style=\"margin:10px\"><img src=\"".$r->avatar."\" class=\"img-circle members-photo-small\" alt=\"Avatar\"></p>\n"; }
   // echo "      <div id=\"c$postid\" class=\"panel-collapse collapse\" role=\"tabpanel\" aria-labelledby=\"h$postid\">\n";
   echo "        <div class=\"panel-body small\">$body</div>\n";
   // echo "      </div>\n";

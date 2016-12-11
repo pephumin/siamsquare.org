@@ -1,12 +1,6 @@
 <?php
 
-$title = "Activity";
-pageHeader($title);
-echo "<h2>$title</h2>";
-echo "<p>This page shows the activities sorted by time where the most recent activity is on the top of the list. While the default is set to have each user only sees his/her own activity, users with a higher access permission will also see the activity of other members within the same group.</p>\n";
-echo "<p>Feel free to contact us if you find any problems using our site. Any other suggestions are also more than welcome.</p>\n";
-echo "<br>\n";
-
+$me = "/admin/?w=activity";
 if ($_GET['p']) { $p = $_GET['p']; }
 if ($p == '') { $p = "1"; }
 
@@ -21,8 +15,10 @@ if ($_GET['d']) {
     $q->execute();
     if ($q->rowCount()) { echo mksuccess("This record has been deleted."); $notes = array (array("title" => "A recored has been deleted", "text" => "You have just deleted a log record from the system.", "image" => "assets/img/notification.svg")); }
     else { echo mkerror("Something wrong, this record has not been deleted."); }
-  }
-  else { echo mkerror("Your level is not high enough to delete this data from the system."); }
+    if ($_GET['c']) { $ex2 = "&c=".$_GET['c']; } else { $ex2 = ""; }
+    if ($_GET['p']) { $ex1 = "&p=".$_GET['p']; } else { $ex1 = ""; }
+    header("location: $me$ex1$ex2");
+  } else { echo mkerror("Your level is not high enough to delete this data from the system."); }
 }
 
 if (empty($_GET['c'])) { $critical = ""; }
@@ -80,10 +76,14 @@ if ($_SESSION['level'] == "9") {
 if ($to_record > $rows) { $to_record = $rows; }
 $from_record = $start + 1;
 
+$title = "Activity";
+pageHeader($title);
+echo "<h2>$title</h2>";
+echo "<p>This page shows the activities sorted by time where the most recent activity is on the top of the list. While the default is set to have each user only sees his/her own activity, users with a higher access permission will also see the activity of other members within the same group.</p>\n";
+echo "<p>Feel free to contact us if you find any problems using our site. Any other suggestions are also more than welcome.</p>\n";
+echo "<br>\n";
 echo "<h4>Found a total of $rows records in our database (showing results $from_record to $to_record)</h4>\n";
 
-$me = "/admin/?w=activity";
-// if ($_GET['p']) { $me = $me."&p=".$_GET['p']; }
 if (empty($_GET['c'])) { echo "<div class=\"pull-right\">Select critical level [ <strong>All</strong> : <a href=\"".htmlspecialchars($me."&c=1")."\">1</a> : <a href=\"".htmlspecialchars($me."&c=2")."\">2</a> : <a href=\"".htmlspecialchars($me."&c=3")."\">3</a> : <a href=\"".htmlspecialchars($me."&c=4")."\">4</a> : <a href=\"".htmlspecialchars($me."&c=5")."\">5</a> ]</div>\n"; }
 else if ($_GET['c'] == 1) { echo "<div class=\"pull-right\">Select critical level [ <a href=\"".htmlspecialchars($me)."\">All</a> : <strong>1</strong> : <a href=\"".htmlspecialchars($me."&c=2")."\">2</a> : <a href=\"".htmlspecialchars($me."&c=3")."\">3</a> : <a href=\"".htmlspecialchars($me."&c=4")."\">4</a> : <a href=\"".htmlspecialchars($me."&c=5")."\">5</a> ]</div>\n"; }
 else if ($_GET['c'] == 2) { echo "<div class=\"pull-right\">Select critical level [ <a href=\"".htmlspecialchars($me)."\">All</a> : <a href=\"".htmlspecialchars($me."&c=1")."\">1</a> : <strong>2</strong> : <a href=\"".htmlspecialchars($me."&c=3")."\">3</a> : <a href=\"".htmlspecialchars($me."&c=4")."\">4</a> : <a href=\"".htmlspecialchars($me."&c=5")."\">5</a> ]</div>\n"; }

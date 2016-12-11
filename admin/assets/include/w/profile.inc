@@ -38,7 +38,6 @@ while ($row = $q->fetchObject()) {
   $id = $row->id;
   $title = $row->title;
   $created = ago($row->created);
-  // $output .= "                <option>Project $title (created: $created)</option>\n";
   $output .= "                <option>Project $title</option>\n";
 }
 $output .= "              </select>\n";
@@ -118,16 +117,6 @@ echo "<br>\n";
               </div>
             </td>
           </tr>
-          <!-- <tr>
-            <td width="25%" style="text-align:right">Last updated</td>
-            <td width="5%"></td>
-            <td width="70%">
-              <div class="input-group">
-                <span class="input-group-addon"><i class="pe-clock-o pe-fw"></i></span>
-                <input type="text" name="updated" class="form-control" value="<?php echo ago($_SESSION["updated"]); ?>" onclick="this.select()" readonly>
-              </div>
-            </td>
-          </tr> -->
           <tr>
             <td width="25%" style="text-align:right">Projects handled<br><small>(Total of <?php echo $counts; ?> projects)</small></td>
             <td width="5%"></td>

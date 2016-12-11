@@ -66,23 +66,23 @@ class Login {
       $query_user->execute();
       $result_row = $query_user->fetchObject();
       if (($result_row->fails == 3) && ($result_row->fails_last > (time() - 3600))) { $this->errors[] = mkwarn("You have entered too many incorrect passwords. You have 2 more chances before we lock your account."); }
-      else if (($result_row->fails == 4) && ($result_row->fails_last > (time() - 3600))) { $this->errors[] = mkwarn("You have entered too many incorrect passwords. You have 1 more chance before we lock your account. Alternatively you can use the <a href=$url>Password recovery tool</a> to reset your password."); }
+      else if (($result_row->fails == 4) && ($result_row->fails_last > (time() - 3600))) { $this->errors[] = mkwarn("You have entered too many incorrect passwords. You have 1 more chance before we lock your account. Alternatively you can use the <a href=$url class='alert-link'>Password recovery tool</a> to reset your password."); }
       else if (($result_row->fails == 5) && ($result_row->fails_last > (time() - 3600))) {
         $q0 = $this->db->prepare("UPDATE j_users SET status = 0 WHERE email = :email");
         $q0->bindValue(':email', $result_row->email, PDO::PARAM_STR);
         $q0->execute();
-        $this->errors[] = mkwarn("You have entered too many incorrect passwords. Your account has been locked for security reason. Please use the <a href=$url>Password recovery tool</a> to unlock and activate your account again.");
+        $this->errors[] = mkwarn("You have entered too many incorrect passwords. Your account has been locked for security reason. Please use the <a href=$url class='alert-link'>Password recovery tool</a> to unlock and activate your account again.");
         $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$result_row->email." is deactivated due to 5 incorrect login attempts', '5')");
         $q4->bindValue(':userid', $result_row->id, PDO::PARAM_INT);
         $q4->bindValue(':ip', $ip, PDO::PARAM_STR);
         $q4->execute();
       }
     }
-    if (!isset($result_row->id)) { $this->errors[] = mkerror("This user does not exist in our system. New client please <a href='/admin/request.php'>click here</a> to request for an access."); }
+    if (!isset($result_row->id)) { $this->errors[] = mkerror("This user does not exist in our system. New client please <a href='/admin/request/' class='alert-link'>click here</a> to request for an access."); }
     else if ($result_row->status == 0) {
       $since = date("j F Y h:i:s A", $result_row->fails_last);
       $logip = $result_row->fails_ip; //echo $logip;
-      $this->errors[] = mkerror("This user account has been locked due to too many attempts with incorrect password (detected on $since from $logip). In order to unlock and reactivate your account, please use the <a href=$url>Password recovery tool</a>.");
+      $this->errors[] = mkerror("This user account has been locked due to too many attempts with incorrect password (detected on $since from $logip). In order to unlock and reactivate your account, please use the <a href=$url class='alert-link'>Password recovery tool</a>.");
     }
     else if (!password_verify($password, $result_row->password)) {
       $sth = $this->db->prepare('UPDATE j_users SET fails = fails+1, fails_last = :fails_last, fails_ip = :fails_ip WHERE email = :email');
@@ -254,7 +254,7 @@ class Login {
     echo "<h2>$title</h2>\n";
     echo mksuccess("You have been successfully logged out. We will redirect you to the front page in a moment.");
     echo "<p>Thank you for using our system. And feel free to come back as often as you need.</p>\n";
-    echo "<p>You can <a href=\"$target\">click here</a> if you choose not to wait in order to log back in to our system.</p>\n";
+    echo "<p>You can <a href=\"$target\" class='alert-link'>click here</a> if you choose not to wait in order to log back in to our system.</p>\n";
     echo "<br>\n\n";
     $notes = array (array("title" => "Logged out", "text" => "You have been successfully logged out from our system.", "image" => "/admin/assets/img/notification.svg"));
     if ($notes) { pageFooter($notes); } else { pageFooter(); }
@@ -391,13 +391,13 @@ class Login {
     global $url;
     $mail = new PHPMailer;
     $mail->IsMail();
-    $mail->From = NOREPLY;
-    $mail->FromName = NOREPLY;
+    $mail->From = EMAILSUPPORT;
+    $mail->FromName = EMAILSUPPORT;
     $mail->AddAddress($email);
     if ($d == "activation") { $mail->Subject = "Account activation at ".MYDOMAIN; }
     else if ($d == "recovery") { $mail->Subject = "Password reset at ".MYDOMAIN; }
     $link = MYHOME.$url.'?email='.urlencode($email).'&verification='.urlencode($password_reset);
-    $mail->Body = "Dear ".$fullname.",\n\nIt seems that you have requested for an access to ".MYDOMAIN.".\n\nIf this is correct, you can proceed further by clicking the provided link below.\n\nLink: $link.\n\nPlease note this link will be valid for only 1 hour.\n\nRegards,\nStaff from ".MYDOMAIN.".";
+    $mail->Body = "Dear ".$fullname.",\n\nIt appears that you have requested for an access to ".MYDOMAIN.".\n\nIf this is correct, you can proceed further by clicking the provided link below.\n\nLink: $link.\n\nPlease note this link will be valid for only 1 hour.\n\nYou can ignore this email if you have not made this request.\n\nRegards,\n".MYTITLE." - ".SLOGANEN.".";
     if (!$mail->Send()) { $this->errors[] = mkerror("Email was not sent. Error: " . $mail->ErrorInfo); return false; }
     else { $this->messages[] = mksuccess("We have sent you a code to your email which you need to follow per instruction provided. <strong>Please note this code will be valid for only 1 hour</strong>."); return true; }
   }

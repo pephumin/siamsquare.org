@@ -26,14 +26,15 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 $db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
 
 // Get user list
-$q1 = $db->prepare("SELECT id, email, fullname, level FROM j_users WHERE companyid = :companyid AND status >= 0 ORDER BY level DESC");
+$q1 = $db->prepare("SELECT U.id, U.email, U.fullname, U.level, C.company FROM j_users U, j_companies C WHERE U.companyid = :companyid AND U.status >= 0 ORDER BY U.level DESC");
 $q1->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
 $q1->execute();
 $userlist = "";
 // $rows = $q1->rowCount();
 while ($row = $q1->fetchObject()) {
   $role = role($row->level);
-  $userlist .= "new User(\"$row->fullname ($row->email), $role\", $row->id), ";
+  if ($_SESSION['level'] == "9") { $userlist .= "new User(\"$row->fullname ($row->email), $role\", $row->id), "; }
+  else { $userlist .= "new User(\"$row->fullname ($row->email), $role\", $row->id), "; }
 }
 
 ?>
@@ -73,14 +74,13 @@ while ($row = $q1->fetchObject()) {
   <thead>
     <tr class="bg-primary">
 <?php if ($_SESSION['level'] == "9") { ?>
-      <th width="25%"><i class="pe-cube pe-fw"></i> Project</th>
-      <th width="20%"><i class="pe-building pe-fw"></i> Company</th>
-      <th width="25%"><i class="pe-calendar pe-fw"></i> Date/time</th>
-      <th width="30%"></th>
+      <th width="23%"><i class="pe-cube pe-fw"></i> Project</th>
+      <th width="45%"><i class="pe-building pe-fw"></i> Owner (email) - company</th>
+      <th width="32%"></th>
 <?php } else { ?>
-      <th width="30%"><i class="pe-cube pe-fw"></i> Project</th>
-      <th width="30%"><i class="pe-calendar pe-fw"></i> Date/time</th>
-      <th width="40%"></th>
+      <th width="23%"><i class="pe-cube pe-fw"></i> Project</th>
+      <th width="45%"><i class="pe-calendar pe-fw"></i> Owner (email)</th>
+      <th width="32%"></th>
 <?php } ?>
     </tr>
   </thead>
@@ -97,15 +97,14 @@ while ($row = $q1->fetchObject()) {
     <!-- ko foreach: surveys -->
     <tr>
       <td>
-        <a href="" data-bind="click: $parent.showInfo" title="More Info..."><i data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a>&nbsp;
+        <a data-bind="click: $parent.showInfo" title="More Info..."><i data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a>&nbsp;
         <span data-bind="text: title"></span> <span data-bind="if: owner" class="label label-danger">OWNER</span> <span data-bind="if: private" class="label label-success">PRIVATE</span>
       </td>
 <?php if ($_SESSION['level'] == "9") { ?>
-      <td><span data-bind="text: company"></span></td>
+      <td><strong data-bind="text: fullname"></strong> (<span data-bind="text: email"></span>) - <span data-bind="text: company"></span></td>
+<?php } else { ?>
+      <td><strong data-bind="text: fullname"></strong> (<span data-bind="text: email"></span>)</td>
 <?php } ?>
-      <td>
-        Created: <span data-bind="text: created"></span><br>Updated: <span data-bind="text: updated"></span>
-      </td>
       <td align="right">
         <div data-bind="if: canedit">
           <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=edit&amp;s=' + id }, visible: $parent.showActive() == 'A'">Design <i class="pe-edit"></i></a>
@@ -134,31 +133,27 @@ while ($row = $q1->fetchObject()) {
       </td>
     </tr>
     <tr data-bind="style: { 'background-color': showInfo() ? 'whitesmoke' : 'none' }, visible: showInfo">
-<?php if ($_SESSION['level'] == "9") { ?>
-      <td colspan="5" class="grey">
-<?php } else { ?>
-      <td colspan="4" class="grey">
-<?php } ?>
+      <td colspan="4">
         <div class="row" data-bind="visible: !isEditingOwner()">
-          <div class="col-sm-3" style="padding:10px 20px">Project owner <a href="" data-bind="if: canedit, click: $parent.startEditOwner, visible: $parent.showActive() == 'A'" title="Change project owner"> <i class="pe-edit"></i></a></div>
+          <div class="col-sm-3" style="padding:10px 20px">Project owner <a data-bind="if: canedit, click: $parent.startEditOwner, visible: $parent.showActive() == 'A'" title="Change project owner"> <i class="pe-edit"></i></a></div>
           <div class="col-sm-9" style="padding:10px 20px">
             <div class="col-sm-6" style="padding:0px"><strong><span data-bind="text: fullname"></span></strong> (<span data-bind="text: email"></span>)</div>
           </div>
         </div>
         <div class="row" data-bind="visible: isEditingOwner()">
-          <div class="col-sm-3" style="padding:10px 20px">Project owner <a href="" data-bind="click: $parent.cancelEditOwner"><i class="pe-times-circle-o"></i></a></div>
+          <div class="col-sm-3" style="padding:10px 20px">Project owner <a data-bind="click: $parent.cancelEditOwner"><i class="pe-times-circle-o"></i></a></div>
           <div class="col-sm-9" style="padding:10px 20px">
             <div class="col-sm-6" style="padding:0px"><select data-bind="options: availableUsers, optionsText: 'fullname', optionValue: 'selectedUser', optionsCaption: 'Choose...', selectedOption: currentUser, value: selectedUser" class="form-control input-sm"></select></div>
           </div>
         </div>
         <div class="row" data-bind="visible: !isEditing()">
-          <div class="col-sm-3" style="padding:10px 20px">Project name <a href="" data-bind="if: canedit, click: $parent.startEdit, visible: $parent.showActive() == 'A'" title="Change project name"> <i class="pe-edit"></i></a></div>
+          <div class="col-sm-3" style="padding:10px 20px">Project name <a data-bind="if: canedit, click: $parent.startEdit, visible: $parent.showActive() == 'A'" title="Change project name"> <i class="pe-edit"></i></a></div>
           <div class="col-sm-9" style="padding:10px 20px">
             <div class="col-sm-6" style="padding:0px"><span data-bind="text: title"></span> (surveyid = <span data-bind="text: id"></span>)</div>
           </div>
         </div>
         <div class="row" data-bind="visible: isEditing()">
-          <div class="col-sm-3" style="padding:10px 20px">Project name <a href="" data-bind="click: $parent.cancelEdit"><i class="pe-times-circle-o"></i></a></div>
+          <div class="col-sm-3" style="padding:10px 20px">Project name <a data-bind="click: $parent.cancelEdit"><i class="pe-times-circle-o"></i></a></div>
           <div class="col-sm-9" style="padding:10px 20px">
             <div class="col-sm-6" style="padding:0px">
               <input data-bind="textInput: editingName" onclick="this.select()" class="form-control input-sm"><br>
@@ -168,11 +163,11 @@ while ($row = $q1->fetchObject()) {
           </div>
         </div>
         <div class="row" data-bind="visible: !isEditingDescription()">
-          <div class="col-sm-3" style="padding:10px 20px">Description <a href="" data-bind="if: canedit, click: $parent.startEditDescription, visible: $parent.showActive() == 'A'" title="Change project description"> <i class="pe-edit"></i></a></div>
+          <div class="col-sm-3" style="padding:10px 20px">Description <a data-bind="if: canedit, click: $parent.startEditDescription, visible: $parent.showActive() == 'A'" title="Change project description"> <i class="pe-edit"></i></a></div>
           <div class="col-sm-9" style="padding:10px 20px"><span data-bind="text: description"></span></div>
         </div>
         <div class="row" data-bind="visible: isEditingDescription()">
-          <div class="col-sm-3" style="padding:10px 20px">Description <a href="" data-bind="click: $parent.cancelEditDescription"><i class="pe-times-circle-o"></i></a></div>
+          <div class="col-sm-3" style="padding:10px 20px">Description <a data-bind="click: $parent.cancelEditDescription"><i class="pe-times-circle-o"></i></a></div>
           <div class="col-sm-9" style="padding:10px 20px">
             <textarea data-bind="textInput: editingDescription, visible: isEditingDescription()" onclick="this.select()" class="form-control input-sm" rows="5"></textarea><br>
             <a class="btn btn-sm" data-bind="click: $parent.postEditDescription, enable: description() != ''" href="">Update <i class="pe-check-circle-o"></i></a>
@@ -180,24 +175,24 @@ while ($row = $q1->fetchObject()) {
           </div>
         </div>
         <div class="row" data-bind="visible: !isEditingPP()">
-          <div class="col-sm-3" style="padding:10px 20px">Type of survey <a href="" data-bind="if: canedit, click: $parent.startEditPP, visible: $parent.showActive() == 'A'" title="Change type of survey"> <i class="pe-edit"></i></a></div>
+          <div class="col-sm-3" style="padding:10px 20px">Type of survey <a data-bind="if: canedit, click: $parent.startEditPP, visible: $parent.showActive() == 'A'" title="Change type of survey"> <i class="pe-edit"></i></a></div>
           <div class="col-sm-9" style="padding:10px 20px">
-            <div class="col-sm-4" style="padding:0px"><strong><span data-bind="text: pp"></span></strong></div>
-            <div class="col-sm-4" style="padding:0px" data-bind="if: canedit"><a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=respondents&amp;s=' + id }, visible: pp == 'Private', css: { 'btn-info': rD() > 0 }">Total of <span data-bind="text: rD"></span> respondent(s) <i class="pe-users"></i></a></div>
+            <div class="col-sm-4" style="padding:0px"><strong><span data-bind="text: pp"></span></strong> <i class="pe-folder" data-bind="visible: pp == 'Private'"></i><i class="pe-folder-open" data-bind="visible: pp == 'Public'"></i></div>
+            <div class="col-sm-4" style="padding:0px" data-bind="if: canedit"><a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=respondents&amp;s=' + id }, visible: pp == 'Private', css: { 'btn-warning': rD() > 0 }">Total of <span data-bind="text: rD"></span> respondent(s) <i class="pe-users"></i></a></div>
             <div class="col-sm-4" style="padding:0px" data-bind="if: canedit"><a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=template&amp;s=' + id }, visible: pp == 'Private'">Edit survey &amp; email template <i class="pe-wpforms"></i></a></div>
           </div>
         </div>
         <div class="row" data-bind="visible: isEditingPP()">
-          <div class="col-sm-3" style="padding:10px 20px">Type of survey <a href="" data-bind="click: $parent.cancelEditPP"><i class="pe-times-circle-o"></i></a></div>
+          <div class="col-sm-3" style="padding:10px 20px">Type of survey <a data-bind="click: $parent.cancelEditPP"><i class="pe-times-circle-o"></i></a></div>
           <div class="col-sm-9" style="padding:10px 20px">
             <div class="col-sm-12" style="padding:0px">
               <div data-bind="if: private">
                 <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPublic, visible: $parent.showActive() == 'A'" href="">Make it Public <i class="pe-folder-open-o"></i></a>
-                <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPrivate, visible: $parent.showActive() == 'A'" href="" disabled>Make it Private <i class="pe-folder-o"></i></a>
+                <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPrivate, visible: $parent.showActive() == 'A'" disabled>Make it Private <i class="pe-folder-o"></i></a>
                 <a class="btn btn-default btn-tiny" data-bind="click: $parent.cancelEditPP, visible: $parent.showActive() == 'A'" href="">Cancel <i class="pe-times-circle-o"></i></a>
               </div>
               <div data-bind="ifnot: private">
-                <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPublic, visible: $parent.showActive() == 'A'" href="" disabled>Make it Public <i class="pe-folder-open-o"></i></a>
+                <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPublic, visible: $parent.showActive() == 'A'" disabled>Make it Public <i class="pe-folder-open-o"></i></a>
                 <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPrivate, visible: $parent.showActive() == 'A'" href="">Make it Private <i class="pe-folder-o"></i></a>
                 <a class="btn btn-default btn-tiny" data-bind="click: $parent.cancelEditPP, visible: $parent.showActive() == 'A'" href="">Cancel <i class="pe-times-circle-o"></i></a>
               </div>
@@ -205,8 +200,16 @@ while ($row = $q1->fetchObject()) {
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-12" style="padding:10px 20px" data-bind="if: canedit">
-            <a class="btn btn-danger btn-xs pull-right" href="" style="white-space:normal;width:100px;word-wrap:break-word"><i class="pe-flag-checkered pe-fw"></i> Ready for fieldwork</a>
+          <div class="col-sm-3" style="padding:10px 20px">Created</div>
+          <div class="col-sm-9" style="padding:10px 20px"><span data-bind="text: created"></span></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3" style="padding:10px 20px">Updated</div>
+          <div class="col-sm-9" style="padding:10px 20px"><span data-bind="text: updated"></span></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12" style="padding:10px 20px" data-bind="if: canedit, visible: $parent.showActive() == 'A'">
+            <a class="btn btn-danger btn-tiny pull-right" style="white-space:normal;width:100px;word-wrap:break-word"><i class="pe-flag-checkered pe-fw"></i> Ready for data-collection</a>
             Once you are sure this project is ready for fieldwork, please submit your request using this button and we will proceed for you as soon as possible. <strong>It is important to understand that once the project is moved to the Data-collection stage, you <em>will not</em> be able to make any changes in the questionaire at all</strong>.
           </div>
         </div>
@@ -215,8 +218,6 @@ while ($row = $q1->fetchObject()) {
     <!-- /ko -->
   </tbody>
 </table>
-
-
 
 
 <script type="text/javascript">
@@ -234,14 +235,16 @@ while ($row = $q1->fetchObject()) {
   $('#showalert-changeowner').html("<div class='alert alert-info'><i class='pe-users pe-fw'></i> The project has been changed in its owner</div>").hide();
   $('#showalert-move').html("<div class='alert alert-info'><i class='pe-exchange pe-fw'></i> The project has been moved to a different stage</div>").hide();
   $('#showalert-pp').html("<div class='alert alert-info'><i class='pe-exchange pe-fw'></i> The project scope has been changed between Public vs. Private</div>").hide();
-
   Date.prototype.toMysqlFormat = function () {
     function pad(n) { return n < 10 ? '0' + n : n }
     return this.getFullYear() + "-" + pad(1 + this.getMonth()) + "-" + pad(this.getDate()) + " " + pad(this.getHours()) + ":" + pad(this.getMinutes()) + ":" + pad(this.getSeconds());
   };
   var TimeNow = new Date().toMysqlFormat();
-
-  var Listing = function (title, description, userid, created, updated, id, email, fullname, company, companyid, private, canedit, owner, rD) {
+  var User = function(fullname, userid) {
+    this.fullname = ko.observable(fullname);
+    this.userid = ko.observable(userid);
+  }
+  var Listing = function (title, description, userid, created, updated, id, email, fullname, company, companyid, private, canedit, owner, rD, userlist) {
     this.title = ko.observable(title);
     this.editingOwner = ko.observable(userid);
     this.editingName = ko.observable(title);
@@ -293,11 +296,6 @@ while ($row = $q1->fetchObject()) {
       });
     });
   }
-  var User = function(fullname, userid) {
-    this.fullname = ko.observable(fullname);
-    this.userid = ko.observable(userid);
-  }
-  // ViewModel.availableUsers.push(userid);
   var ViewModel = function () {
     var self = this;
     this.surveys = ko.observableArray([]);
@@ -309,11 +307,18 @@ while ($row = $q1->fetchObject()) {
       self.showActive(i);
       if (level == 9) { var url = "/all/" + i; }
       else { var url = "/company/" + companyid + "/" + i; }
-      $.getJSON(self.url + url, function (data) {
-        var list = [];
-        for (var i = 0; i < data.length; i++) { list.push(self.createSurveyObject(data[i])); }
-        self.surveys(list);
-      }).fail(function (error) { self.onFail(error); });
+      $.ajax({
+        url: api + url,
+        dataType: 'json',
+        type: 'get',
+        contentType: 'application/json; charset=utf-8',
+        success: function (data) {
+          var list = [];
+          for (var i = 0; i < data.length; i++) { list.push(self.createSurveyObject(data[i])); }
+          self.surveys(list);
+        },
+        error: function (error) { self.onFail(error); }
+      });
     }
     this.loadA = function () { self.loadData("A"); }
     this.loadB = function () { self.loadData("B"); }
@@ -643,26 +648,6 @@ while ($row = $q1->fetchObject()) {
     }
     this.postEditPP = function (survey) {
       self.cancelEditPP(survey);
-      // console.log(survey.editingPP());
-      // $.ajax({
-      //   url: api + '/survey/' + survey.id + '/repp',
-      //   dataType: 'json',
-      //   type: 'put',
-      //   contentType: 'application/json; charset=utf-8',
-      //   data: '{ "private": "' + survey.editingPP() + '" }',
-      //   success: function (data) {
-      //     survey.private(survey.editingPP());
-      //     // $.ajax({
-      //     //   url: api + '/log/' + userid + '/' + survey.id,
-      //     //   dataType: 'json',
-      //     //   type: 'post',
-      //     //   contentType: 'application/json; charset=utf-8',
-      //     //   data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed a description for ' + survey.title() + ' (id=' + survey.id + ')", "critical": "3" }',
-      //     //   success: function(data) { result = data; }
-      //     // });
-      //   },
-      //   error: function (error) { self.onFail(error); }
-      // });
     }
     this.cancelEditPP = function (survey) { survey.isEditingPP(false); }
     this.createSurveyObject = function (data) {
@@ -670,7 +655,6 @@ while ($row = $q1->fetchObject()) {
       if (userid == data.userid) { var owner = true; }
       if (level == 9) { var canedit = true; } else if (level == 6) { var canedit = true; }
       else if (level == 5) { if (owner == true) { var canedit = true; } }
-      if (data.rD > 0) { var coloured = true; } else { var coloured = false; }
       moment.locale('en');
       var s1 = moment(data.created).fromNow(); var s2 = moment(data.created).format("D MMM YYYY"); created = s2 + ' (' + s1 + ')';
       var t1 = moment(data.updated).fromNow(); var t2 = moment(data.updated).format("D MMM YYYY"); updated = t2 + ' (' + t1 + ')';
@@ -689,8 +673,6 @@ while ($row = $q1->fetchObject()) {
   jQuery(document).ready(function () { ko.applyBindings(new ViewModel()); });
 </script>
 
-<style media="screen">
-label.btn > input[type='radio'] { display: none; }
-</style>
+
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>

@@ -15,7 +15,7 @@ function peblogo() {
 function pageHeader($title) {
   $user = $_SESSION['email']; $avatar = $_SESSION['avatar'];
   if (isset($avatar)) { $show = "<img src=\"/admin/$avatar\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
-  $v1 = MYADMIN."?w=login"; $v2 = MYADMIN."?w=logout"; $v3 = "http://www.pebinary.net/en/clients/";
+  $v1 = ADMIN."?w=login"; $v2 = ADMIN."?w=logout"; $v3 = "http://www.pebinary.net/en/clients/";
   if ($_SESSION['logged_in']) {
     $signed = "<a href=\"$v2\" class=\"btn btn-warning btn-xs\" title=\"Log out\"><i class=\"pe-sign-out pe-fw\"></i> Log out</a> <a href=\"$v3\" class=\"btn btn-danger btn-xs\"><i class=\"pe-university pe-fw\"></i> Help</a>\n";
     $ww = "Logged in as $show";
@@ -36,7 +36,7 @@ function pageHeader($title) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <title>SiamSquare: <?php echo $title; ?></title>
+  <title><?php echo MYTITLE.": ".$title; ?></title>
   <link rel="stylesheet" type="text/css" href="/admin/assets/css/admin.css">
   <link rel="stylesheet" type="text/css" href="/admin/assets/css/csv.css">
 <?php if (($_REQUEST["w"]) == "edit") { echo "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/survey.css\">"; } ?>
@@ -59,8 +59,7 @@ function pageHeader($title) {
   <meta name="msapplication-TileImage" content="/admin/assets/icons/ms-icon-144x144.png">
   <meta name="theme-color" content="#FFFFFF">
   <script type="text/javascript" src="/admin/assets/js/jquery-2.1.4.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  <!-- <script type="text/javascript" src="/admin/assets/js/bootstrap.js"></script> -->
+  <script type="text/javascript" src="/admin/assets/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="/admin/assets/js/jquery.steps.js"></script>
   <script type="text/javascript" src="/admin/assets/js/moment.js"></script>
   <script type="text/javascript" src="/admin/assets/js/jquery-csv.js"></script>
@@ -87,8 +86,8 @@ function pageHeader($title) {
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-2">
       <div class="container">
-        <h1><a href="<?php echo MYADMIN; ?>" title="<?php echo MYDESC; ?>"><?php logo(); ?></a></h1>
-        <p class="description">A survey society where your opinions are highly valued</p>
+        <h1><a href="<?php echo ADMIN; ?>" title="<?php echo MYDESC; ?>"><?php logo(); ?></a></h1>
+        <p class="description"><?php echo SLOGANEN; ?></p>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-3">
@@ -106,39 +105,38 @@ function pageHeader($title) {
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
 <?php if ($_SESSION['logged_in'] == 1) { ?>
-              <li><a href="<?php echo(MYADMIN); ?>" title="Home"><i class="pe-home pe-fw"></i> Home</a></i>
+              <li><a href="<?php echo(ADMIN); ?>" title="Home"><i class="pe-home pe-fw"></i> Home</a></i>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-cubes pe-fw"></i> My surveys <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="<?php echo(MYADMIN."?w=surveys"); ?>" title="All projects"><i class="pe-cubes pe-fw"></i> All projects</a></li>
+                  <li><a href="<?php echo(ADMIN."?w=surveys"); ?>" title="All projects"><i class="pe-cubes pe-fw"></i> All projects</a></li>
                   <li role="separator" class="divider"></li>
-                  <li><a href="<?php echo(MYADMIN."?w=board"); ?>" title="Message board"><i class="pe-wpforms pe-fw"></i> Message board</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=data2table"); ?>" title="Data to table"><i class="pe-table pe-fw"></i> Data to table</a></li>
+                  <li><a href="<?php echo(ADMIN."?w=board"); ?>" title="Message board"><i class="pe-wpforms pe-fw"></i> Message board</a></li>
+                  <li><a href="<?php echo(ADMIN."?w=data2table"); ?>" title="Data to table"><i class="pe-table pe-fw"></i> Data to table</a></li>
 <?php if ($_SESSION['level'] == "9") { ?>
                   <li role="separator" class="divider"></li>
-                  <li><a href="<?php echo(MYADMIN."?w=help"); ?>" title="Help"><i class="pe-question-circle pe-fw"></i> Help</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=api"); ?>" title="API commands"><i class="pe-code pe-fw"></i> API commands</a></li>
+                  <li><a href="<?php echo(ADMIN."?w=help"); ?>" title="Help"><i class="pe-question-circle pe-fw"></i> Help</a></li>
+                  <li><a href="<?php echo(ADMIN."?w=api"); ?>" title="API commands"><i class="pe-code pe-fw"></i> API commands</a></li>
 <?php } ?>
                 </ul>
               </li>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-street-view pe-fw"></i> Profile <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="<?php echo(MYADMIN."?w=profile"); ?>" title="My profile"><i class="pe-user pe-fw"></i> Myself</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=team"); ?>" title="My team"><i class="pe-graduation-cap pe-fw"></i> Team</a></li>
-                  <li><a href="<?php echo(MYADMIN."?w=company"); ?>" title="The company"><i class="pe-building pe-fw"></i> Company</a></li>
+                  <li><a href="<?php echo(ADMIN."?w=profile"); ?>" title="My profile"><i class="pe-user pe-fw"></i> Myself</a></li>
+                  <li><a href="<?php echo(ADMIN."?w=team"); ?>" title="My team"><i class="pe-graduation-cap pe-fw"></i> Team</a></li>
+                  <li><a href="<?php echo(ADMIN."?w=company"); ?>" title="The company"><i class="pe-building pe-fw"></i> Company</a></li>
                   <li role="separator" class="divider"></li>
-                  <li><a href="<?php echo(MYADMIN."?w=activity"); ?>" title="Activity"><i class="pe-map-o pe-fw"></i> Activity</a></li>
-                  <li><a href="<?php echo(MYADMIN."contact/"); ?>" title="Contact us"><i class="pe-envelope pe-fw"></i> Contact us</a></li>
+                  <li><a href="<?php echo(ADMIN."?w=activity"); ?>" title="Activity"><i class="pe-map-o pe-fw"></i> Activity</a></li>
+                  <li><a href="<?php echo(ADMIN."contact/"); ?>" title="Contact us"><i class="pe-envelope pe-fw"></i> Contact us</a></li>
 <?php if ($_SESSION['level'] == "9") { ?>
-                  <li><a href="<?php echo(MYADMIN."?w=todo"); ?>" title="Todo list"><i class="pe-tasks pe-fw"></i> Todo list</a></li>
+                  <li><a href="<?php echo(ADMIN."?w=todo"); ?>" title="Todo list"><i class="pe-tasks pe-fw"></i> Todo list</a></li>
 <?php } ?>
                 </ul>
               </li>
 <?php } else { ?>
-              <li><a href="<?php echo MYADMIN; ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> Home</a></i>
-              <li><a href="<?php echo(MYADMIN."request/"); ?>" title="Request for an access"><i class="pe-credit-card pe-fw"></i> Request for an access</a></li>
-              <!-- <li><a href="<?php echo(MYADMIN."setup/?d=activation"); ?>" title="Account activation"><i class="pe-flag pe-fw"></i> Account activation</a></li> -->
+              <li><a href="<?php echo ADMIN; ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> Home</a></i>
+              <li><a href="<?php echo(ADMIN."request/"); ?>" title="Request for an access"><i class="pe-credit-card pe-fw"></i> Request for an access</a></li>
 <?php } ?>
             </ul>
           </div>
@@ -182,17 +180,7 @@ function pageFooter($notes = null) {
   </div>
 </footer>
 <div class="scroll-to-top"><i class="pe-arrow-up pe-lg white"></i></div>
-<script type="text/javascript" src="/admin/assets/js/notification.js"></script>
 <script type="text/javascript" src="/admin/assets/js/etc.js"></script>
-<script type="text/javascript">
-  // function catch_click(e) {
-  //   if (!e) var e = window.event;
-  //   var right_click = (e.which ? (e.which == 3) : (e.button == 2));
-  //   if (right_click) { alert('Right clicking on this page is not allowed.'); return false; }
-  // }
-  // document.onmousedown = catch_click;
-  // if (document.captureEvents) document.captureEvents(Event.MOUSEDOWN);
-</script>
 <?php if ($notes) { notify($notes); } ?>
 <?php //debugOutput(); ?>
 </body>
@@ -269,7 +257,7 @@ function w($w = null) {
   if (empty($w)) { $w = 'index'; }
   $where = strtolower(preg_replace('/ +/','_',$w));
   if (!preg_match('/^[A-Za-z0-9_]+$/',$w)) { $w = 'index'; }
-  $filecheck = $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/w/'.$w.'.inc';
+  $filecheck = DOCROOT.'/admin/assets/include/w/'.$w.'.inc';
   if (!file_exists($filecheck)) { $w = 'index'; }
   // echo $filecheck;
   if (!file_exists($filecheck)) { echo('Unable to open include file. Check INI settings. Aborting.'); exit; }

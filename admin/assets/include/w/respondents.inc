@@ -3,7 +3,7 @@
 $limit = 500;
 
 $me = "/admin/?w=respondents&s=".$_GET['s'];
-if ($_GET['p']) { $p = $_GET['p']; }
+if ($_GET['p']) { $p = $_GET['p']; $me = $me."&p=".$_GET['p'];}
 if ($p == '') { $p = "1"; }
 
 $help = "<div class=\"alert alert-info alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\n";
@@ -112,7 +112,7 @@ $to_record = $start + $limit;
 $add = " LIMIT $start, $limit ";
 
 // Get status
-$q2 = $db->prepare("SELECT COUNT(*) as iA, SUM(status='0') AS iB, SUM(status='1') AS iC, SUM(status='2') AS iD, SUM(status='3') AS iE FROM j_respondents_private WHERE surveyid = 0 OR surveyid = :surveyid");
+$q2 = $db->prepare("SELECT COUNT(*) as iA, SUM(status='0') AS iB, SUM(status='1') AS iC, SUM(status='2') AS iD, SUM(status='3') AS iE FROM j_respondents_private WHERE surveyid = :surveyid");
 $q2->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2->execute();
 while ($row = $q2->fetchObject()) {
@@ -120,10 +120,19 @@ while ($row = $q2->fetchObject()) {
   $status2 = $row->iD; $status3 = $row->iE;
 }
 
+// Get respondent error list
+$q3A = $db->prepare("SELECT * FROM j_respondents_private WHERE surveyid = :surveyid AND status = 0");
+$q3A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q3A->execute();
+while ($row = $q3A->fetchObject()) { $errorlist[] = $row->email; }
 $email_error = "<div class=\"alert alert-warning alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\n";
 $email_error .= "  <h4><i class=\"pe-exclamation-triangle pe-fw pe-lg\"></i> Found respondents with invalid email format</h4>\n";
 $email_error .= "  <p>We detect <strong>$status0 respondents</strong> that appear to have an error in their email format, and hence cannot be used. Please correct their emails and upload them again.</p>\n";
 $email_error .= "  <p>We display them in the table below with a <del>strike through</del> format so you can spot them instantly.</p>\n";
+$email_error .= "  <p>Alternatively you can also <a data-toggle=\"collapse\" href=\"#showerrors\" aria-expanded=\"false\" class=\"alert-link\">click here</a> in order to see them all in one big list (click again to close).</p>\n";
+$email_error .= "  <div class=\"collapse\" id=\"showerrors\"><div class=\"well small\">";
+for($x = 0; $x < count($errorlist); $x++) { $email_error .= $errorlist[$x].", "; }
+$email_error .= "</div></div>\n";
 $email_error .= "  <form action=\"$me\" method=\"post\"><button type=\"submit\" name=\"m\" value=\"fixerrors\" class=\"btn btn-warning\">Click here to remove errors</button></form>\n";
 $email_error .= "</div>\n";
 
@@ -134,12 +143,35 @@ $offset = ($currentpage - 1) * $rowsperpage;
 if ($to_record > $rows) { $to_record = $rows; }
 $from_record = $start + 1;
 
+// Get respondent listing
+$tablelist = "";
+$q3B = $db->prepare("SELECT * FROM j_respondents_private WHERE surveyid = :surveyid".$add);
+$q3B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q3B->execute();
+if ($from_record) { $i = $from_record; } else { $i = 1; }
+while ($row = $q3B->fetchObject()) {
+  if ($row->status == 0) { $a1 = "<del>"; $a2 = "</del>"; $a3 = "<tr style='background-color:#eee'>"; } else { $a1 = ""; $a2 = ""; $a3 = "<tr>"; }
+  $tablelist .= "      $a3\n";
+  $tablelist .= "        <td><input type=\"checkbox\" name=\"checkbox[]\" id=\"$i\" value=\"$row->id\"$disablecheckbox></td>\n";
+  $tablelist .= "        <td>$a1$i$a2</td>\n";
+  $tablelist .= "        <td>$a1$row->email$a2</td>\n";
+  if (!empty($row->created)) { $created = ago($row->created); $tablelist .= "      <td style=\"text-align:right\">$a1$created$a2</td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\">-</td>\n"; }
+  if (!empty($row->$invited1)) { $invited1 = ago($row->$invited1); $tablelist .= "      <td style=\"text-align:right\">$invited1</td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\">-</td>\n"; }
+  if (!empty($row->$invited2)) { $invited2 = ago($row->$invited2); $tablelist .= "      <td style=\"text-align:right\">$invited2</td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\">-</td>\n"; }
+  if (!empty($row->$viewed)) { $viewed = ago($row->$viewed); $tablelist .= "      <td style=\"text-align:right\">$viewed</td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\">-</td>\n"; }
+  if (!empty($row->$completed)) { $completed = ago($row->$completed); $tablelist .= "      <td style=\"text-align:right\">$completed</td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\">-</td>\n"; }
+  $i++;
+  $tablelist .= "      </tr>\n";
+}
+
+
 // Check duplications
-$q4 = $db->prepare("SELECT COUNT(*) as duplicates, id, email, invited1 FROM j_respondents_private WHERE surveyid = 0 OR surveyid = :surveyid GROUP BY email HAVING duplicates > 1");
+$q4 = $db->prepare("SELECT COUNT(*) as duplicates, id, email, invited1 FROM j_respondents_private WHERE surveyid = :surveyid GROUP BY email HAVING duplicates > 1");
 $q4->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q4->execute();
 $e = array(); $f = array(); $g = array(); //$h = array();
 while ($r = $q4->fetchObject()) {
+  $duplist[] = $r->email;
   $invited1 = $r->invited1;
   array_push($e, $r->email);
   array_push($f, $r->duplicates);
@@ -159,6 +191,10 @@ foreach ($d as $dd => $ddd) {
   // echo $ddd;
 }
 $email_duplicated .= "  </ul>\n";
+$email_duplicated .= "  <p>You can <a data-toggle=\"collapse\" href=\"#showduplicates\" aria-expanded=\"false\" class=\"alert-link\">click here</a> in order to see them all in one big list (click again to close).</p>\n";
+$email_duplicated .= "  <div class=\"collapse\" id=\"showduplicates\"><div class=\"well small\">";
+for($x = 0; $x < count($duplist); $x++) { $email_duplicated .= $duplist[$x].", "; }
+$email_duplicated .= "</div></div>\n";
 $email_duplicated .= "  <form action=\"$me\" method=\"post\"><button type=\"submit\" name=\"m\" value=\"fixduplicates\" class=\"btn btn-warning\">Click here to remove duplicates</button></form>\n";
 $email_duplicated .= "</div>\n";
 
@@ -201,45 +237,25 @@ if ($total == 0) {
     <table class="table table-hover table-condensed small">
       <thead>
         <tr class="bg-primary">
-          <td width="5%"></td>
-          <td width="5%"><strong>No</strong></td>
-          <td width="15%"><strong>Respondents</strong></td>
-          <td width="15%" align="right"><strong>Uploaded</strong></td>
-          <td width="15%" align="right"><strong>Invite sent?</strong></td>
-          <td width="15%" align="right"><strong>Invite resent?</strong></td>
-          <td width="15%" align="right"><strong>Participated?</strong></td>
-          <td width="15%" align="right"><strong>Completed?</strong></td>
+          <th width="5%"></th>
+          <th width="5%">No</th>
+          <th width="25%">Respondents</th>
+          <th width="13%" style="text-align:right">Uploaded</th>
+          <th width="13%" style="text-align:right">Invite sent?</th>
+          <th width="13%" style="text-align:right">Invite resent?</th>
+          <th width="13%" style="text-align:right">Participated?</th>
+          <th width="13%" style="text-align:right">Completed?</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-<?php
-// Get respondent listing
-$q3B = $db->prepare("SELECT * FROM j_respondents_private WHERE surveyid = 0 OR surveyid = :surveyid".$add);
-$q3B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-$q3B->execute();
-if ($from_record) { $i = $from_record; } else { $i = 1; }
-while ($row = $q3B->fetchObject()) {
-  if ($row->status == 0) { $a1 = "<del>"; $a2 = "</del>"; $a3 = "<tr style='background-color:#eee'>"; } else { $a1 = ""; $a2 = ""; $a3 = "<tr>"; }
-  echo "      $a3\n";
-  echo "        <td><input type=\"checkbox\" name=\"checkbox[]\" id=\"$i\" value=\"$row->id\"$disablecheckbox></td>\n";
-  echo "        <td>$a1$i$a2</td>\n";
-  echo "        <td>$a1$row->email$a2</td>\n";
-  if (!empty($row->created)) { $created = ago($row->created); echo "      <td align=\"right\">$a1$created$a2</td>\n"; } else { echo "      <td align=\"right\">-</td>\n"; }
-  if (!empty($row->$invited1)) { $invited1 = ago($row->$invited1); echo "      <td align=\"right\">$invited1</td>\n"; } else { echo "      <td align=\"right\">-</td>\n"; }
-  if (!empty($row->$invited2)) { $invited2 = ago($row->$invited2); echo "      <td align=\"right\">$invited2</td>\n"; } else { echo "      <td align=\"right\">-</td>\n"; }
-  if (!empty($row->$viewed)) { $viewed = ago($row->$viewed); echo "      <td align=\"right\">$viewed</td>\n"; } else { echo "      <td align=\"right\">-</td>\n"; }
-  if (!empty($row->$completed)) { $completed = ago($row->$completed); echo "      <td align=\"right\">$completed</td>\n"; } else { echo "      <td align=\"right\">-</td>\n"; }
-  $i++;
-  echo "      </tr>\n";
-}
-?>
+<?php echo $tablelist; ?>
         </tr>
       </tbody>
     </table>
     <input type="hidden" name="m" value="delthis">
     <p><small><input type="checkbox" name="all" id="all" value=""<?php echo $disablecheckbox; ?>> <i class="pe-level-up pe-flip-horizontal"></i> Select / deselect all</small></p>
-    <p><input type="submit" class="btn-tiny btn-danger" value="Delete selected"></p>
+    <p><input type="submit" class="btn-tiny btn-danger" value="Delete selected" ></p>
   </form>
 
 <?php } ?>
@@ -302,6 +318,11 @@ if ($total != 0) {
 ?>
 
 
+<script type="text/javascript">
+  $('#confirm-delete').on('show.bs.modal', function(e) {
+    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+  });
+</script>
 <script type="text/javascript">
   $(document).ready(function(){
     $('#all').click( function () {
