@@ -43,7 +43,7 @@ if (isset($login)) {
   </div>
   <br>
   <p class="text-center">
-    <button class="btn btn-warning" data-loading-text="Loggin you in..." name="login" value="1" type="submit">Log in <i class="pe-check-circle-o"></i></button>
+    <button class="btn btn-warning" id="btn-login" data-loading-text="Loggin in..." name="login" value="1" type="submit">Log in <i class="pe-check-circle-o"></i></button>
     <button class="btn btn-default" name="cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
   <p class="text-center"><strong>[</strong> <i class="pe-flag pe-fw"></i> <a href="/admin/setup/?d=activation" title="Account activation">Account activation</a> <strong>:</strong> <i class="pe-life-ring pe-fw"></i> <a href="/admin/setup/" title="Reset password">Forgot password?</a> <strong>]</strong></p>
@@ -61,11 +61,11 @@ if (isset($login)) {
         password: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 4, message: 'Password must be more than 6 characters long' }, different: { field: 'email', message: 'The password cannot be the same as the login' } } }
       }
     });
-    $(".btn").click(function(){
-      $(this).button('loading').delay(1000).submit(function() {
-        $(this).button('reset');
-        $(this).dequeue();
-      });
+    $('#btn-login').on('click', function() {
+      var $this = $(this);
+      $this.button('loading');
+      setTimeout(function() { $this.button('reset'); }, 1000);
+      setTimeout(function() { $('#clientloginform').submit(); }, 1200);
     });
   });
 </script>

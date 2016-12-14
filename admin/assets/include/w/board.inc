@@ -100,7 +100,8 @@ while ($row = $q1C->fetchObject()) {
   $postid = base64_encode($row->id);
   $body = nl2br($row->body);
   $t1 = shortdate($row->created); $t2 = ago($row->created);
-  echo "    <div class=\"panel panel-info\">\n";
+  if ($_SESSION['email'] == $row->email) { echo "    <div class=\"panel panel-info\" style=\"border:2px solid navy\">\n"; }
+  else { echo "    <div class=\"panel panel-info\">\n"; }
   if ($_SESSION['level'] >= $row->level) { echo "    <a href=\"$me&amp;d=$postid\" class=\"pull-right red\" style=\"margin-top:10px;margin-right:10px\" title=\"Delete this post\"><i class=\"pe-trash\"></i></a>\n"; }
   //echo "    <a href=\"$me&amp;d=$postid\" class=\"pull-right\" style=\"margin-top:10px;margin-right:5px\" title=\"Mark completed\"><i class=\"pe-check-square\"></i></a>\n";
   echo "      <div class=\"panel-heading\"><i class=\"pe-wpforms pe-fw\"></i> $row->head</div>\n";
@@ -131,7 +132,7 @@ echo "    </nav>\n";
     <div class="list-group">
       <div class="list-group-item small active"><strong><i class="pe-level-down pe-flip-horizontal pe-fw"></i> System annoucement</strong></div>
 <?php
-$q1B = $db->prepare("SELECT B.*, U.fullname, U.email, U.level FROM j_board B, j_users U WHERE B.status > 0 AND B.userid = U.id AND B.companyid = 0 ORDER BY B.created DESC".$add);
+$q1B = $db->prepare("SELECT B.*, U.fullname, U.email, U.level FROM j_board B, j_users U WHERE B.status > 0 AND B.userid = U.id AND B.companyid = 0 ORDER BY B.created DESC");
 $q1B->execute();
 while ($row = $q1B->fetchObject()) {
   $postid = base64_encode($row->id);
@@ -146,6 +147,21 @@ while ($row = $q1B->fetchObject()) {
   echo "      </div>\n";
 }
 ?>
+    </div>
+    <div class="panel-group">
+      <div class="panel panel-default small">
+        <div class="panel-heading"><strong><i class="pe-clock-o pe-fw"></i> Last seen</strong></div>
+<?php
+$q1C = $db->prepare("SELECT * FROM j_users WHERE companyid = :companyid AND email != :email ORDER BY lastlogin DESC");
+$q1C->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+$q1C->bindValue(':email', $_SESSION["email"], PDO::PARAM_STR);
+$q1C->execute();
+while ($row = $q1C->fetchObject()) {
+  $lastlogin = ago($row->lastlogin);
+  echo "        <div class=\"panel-body grey\" style=\"padding:8px 10px 5px 10px\"><small><strong>$row->fullname</strong>: $lastlogin</small></div>\n";
+}
+?>
+      </div>
     </div>
   </div>
 </div>

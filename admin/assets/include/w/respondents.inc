@@ -23,10 +23,42 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 $db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
 
 // Get projcet title
-$q1 = $db->prepare("SELECT title FROM j_projects WHERE id = :surveyid");
+$q1 = $db->prepare("SELECT title, status FROM j_projects WHERE id = :surveyid");
 $q1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q1->execute();
-while ($row = $q1->fetchObject()) { $project = $row->title; }
+if ($q1->rowCount() == 0) {
+  $title = "An error has been found";
+  pageHeader($title);
+  echo "<h2>We could not find a match for ID for this project</h2>\n";
+  echo "<p>There has been an error locating the project you are looking for. This is caused by two reasons which are either there is a false in our system (which is very unlikely) or you use our system incorrectly.</p>";
+  echo "<p>If you have tried entering the project ID manually, we strongly suggest you should stop doing this. You should instead use the client dashboard which will never lead you to a wrong link or any errors like this at all.</p>";
+  echo mkerror("In fact we typically consider such action as violent.");
+  echo "<p>Our system has already recorded this error including your identity and timestamp.</p>";
+  pageFooter();
+  $q = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " tried accessing a non-existing project', '5')");
+  $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+  $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
+  $q->execute();
+  exit;
+}
+while ($row = $q1->fetchObject()) { $project = $row->title; $status = $row->status; }
+if ($_SESSION['level'] != "9") {
+  if ($status != 1) {
+    $title = "An error has been found";
+    pageHeader($title);
+    echo "<h2>This project is no longer editable</h2>\n";
+    echo "<p>You only can make change on this with projects that have not started the data-collection. This prevents having any unexpected errors at the analysis stage such as a conflict based on a mismatch information between pre and post data-collection.</p>";
+    echo "<p>If you have tried entering the project ID manually, we strongly suggest you should stop doing this. You should instead use the client dashboard which will never lead you to a wrong link or any errors like this at all.</p>";
+    echo mkerror("In fact we typically consider such action as violent.");
+    echo "<p>Our system has already recorded this error including your identity and timestamp.</p>";
+    pageFooter();
+    $q = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " tried editing a non-editable project', '5')");
+    $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+    $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
+    $q->execute();
+    exit;
+  }
+}
 
 if ($_POST['uploading'] == 1) {
   if (empty($_POST['surveyid'])) { echo "Cannot proceed without a surveyid"; }

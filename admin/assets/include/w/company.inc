@@ -108,7 +108,7 @@ foreach ($rows as $row) {
   $t2 = date_parse_from_format("Y-m-d H:i:s", $row['updated']); $t2['month'] = $t2['month']-2;
   if ($row['private'] == 1) { $private = "<span class=\"label label-success\">PRIVATE</span>"; } else { $private = ""; }
   if ($owner_email == $_SESSION['email']) { $owner = "<span class=\"label label-danger\">OWNER</span>"; $tabledata .= "    <tr>\n"; } else { $owner = ""; $tabledata .= "    <tr>\n";}
-  if ($owner_email == $_SESSION['email']) { $tabledata .= "    <tr bgcolor='#F0F8FF'>\n"; } else { $tabledata .= "    <tr>\n";}
+  if ($owner_email == $_SESSION['email']) { $tabledata .= "    <tr bgcolor='#D7EFFD'>\n"; } else { $tabledata .= "    <tr>\n";}
   $tabledata .= "      <td>$title $owner $private</td>\n";
   $tabledata .= "      <td>$owner_fullname <small>($owner_email)</small></td>\n";
   $tabledata .= "      <td>$ss</td>\n";
@@ -133,19 +133,19 @@ foreach ($rr as $r) {
   if ($r['lastlogin']) { $lastlogin = ago($r['lastlogin']); } else { $lastlogin = "Never"; }
   $role = role($r['level']);
   if ($r['level'] == 9) {
-    if ($r['email'] == $_SESSION['email']) { $orgdata .= "<tr bgcolor='#F0F8FF'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
+    if ($r['email'] == $_SESSION['email']) { $orgdata .= "<tr bgcolor='#D7EFFD'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
     else { $orgdata .= "<tr><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
   }
   else if ($r['level'] == 6) {
-    if ($r['email'] == $_SESSION['email']) { $orgdata .= "<tr bgcolor='#F0F8FF'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
+    if ($r['email'] == $_SESSION['email']) { $orgdata .= "<tr bgcolor='#D7EFFD'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
     else { $orgdata .= "<tr><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
   }
   else if ($r['level'] == 5) {
-    if ($r['email'] == $_SESSION['email']) { $orgdata .= "<tr bgcolor='#F0F8FF'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
+    if ($r['email'] == $_SESSION['email']) { $orgdata .= "<tr bgcolor='#D7EFFD'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
     else { $orgdata .= "<tr><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
   }
   else if ($r['level'] == 4) {
-    if ($r['email'] == $_SESSION['email']) { $orgdata .= "<tr bgcolor='#F0F8FF'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
+    if ($r['email'] == $_SESSION['email']) { $orgdata .= "<tr bgcolor='#D7EFFD'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
     else { $orgdata .= "<tr><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww ($w)</td></tr>\n"; }
   }
 }

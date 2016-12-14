@@ -22,25 +22,28 @@ if ($_GET['d']) {
 }
 
 if (empty($_GET['c'])) { $critical = ""; }
-else if ($_GET['c'] == 1) { $critical = "WHERE critical = '1'"; }
-else if ($_GET['c'] == 2) { $critical = "WHERE critical = '2'"; }
-else if ($_GET['c'] == 3) { $critical = "WHERE critical = '3'"; }
-else if ($_GET['c'] == 4) { $critical = "WHERE critical = '4'"; }
-else if ($_GET['c'] == 5) { $critical = "WHERE critical = '5'"; }
+else if ($_GET['c'] == 1) { $critical = "critical = '1'"; }
+else if ($_GET['c'] == 2) { $critical = "critical = '2'"; }
+else if ($_GET['c'] == 3) { $critical = "critical = '3'"; }
+else if ($_GET['c'] == 4) { $critical = "critical = '4'"; }
+else if ($_GET['c'] == 5) { $critical = "critical = '5'"; }
 
 if ($_SESSION['level'] == "9") {
-  $q1A = $db->prepare("SELECT * FROM j_users_logs ".$critical." ORDER BY recorded DESC");
+  $c1A = "WHERE ".$critical;
+  $q1A = $db->prepare("SELECT * FROM j_users_logs ".$c1A." ORDER BY recorded DESC");
   $q1A->execute();
 } elseif ($_SESSION['level'] == "6") {
+  if ($critical) { $c1A = "AND ".$critical; }
   $q1 = $db->prepare("SELECT id FROM j_users WHERE companyid = :companyid");
   $q1->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
   $q1->execute();
   while ($rr = $q1->fetchObject()) { $tt[] = $rr->id; }
-  $q1A = $db->prepare("SELECT * FROM j_users_logs WHERE userid IN (".implode(',', $tt).") ORDER BY recorded DESC");
+  $q1A = $db->prepare("SELECT * FROM j_users_logs WHERE userid IN (".implode(',', $tt).") ".$c1A." ORDER BY recorded DESC");
   $q1A->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
   $q1A->execute();
 } else {
-  $q1A = $db->prepare("SELECT * FROM j_users_logs WHERE userid = :userid ORDER BY recorded DESC");
+  if ($critical) { $c1A = "AND ".$critical; }
+  $q1A = $db->prepare("SELECT * FROM j_users_logs WHERE userid = :userid ".$c1A." ORDER BY recorded DESC");
   $q1A->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
   $q1A->execute();
 }
@@ -57,18 +60,21 @@ $offset = ($currentpage - 1) * $rowsperpage;
 // if ($p > $total) { $p = $total; }
 
 if ($_SESSION['level'] == "9") {
-  $q1B = $db->prepare("SELECT * FROM j_users_logs ".$critical." ORDER BY recorded DESC ".$add." ");
+  $c1B = "WHERE ".$critical;
+  $q1B = $db->prepare("SELECT * FROM j_users_logs ".$c1B." ORDER BY recorded DESC ".$add." ");
   $q1B->execute();
 } elseif ($_SESSION['level'] == "6") {
+  if ($critical) { $c1B = "AND ".$critical; }
   $q1 = $db->prepare("SELECT id FROM j_users WHERE companyid = :companyid");
   $q1->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
   $q1->execute();
   while ($rr = $q1->fetchObject()) { $tt[] = $rr->id; }
-  $q1B = $db->prepare("SELECT * FROM j_users_logs WHERE userid IN (".implode(',', $tt).") ORDER BY recorded DESC ".$add." ");
+  $q1B = $db->prepare("SELECT * FROM j_users_logs WHERE userid IN (".implode(',', $tt).") ".$c1B." ORDER BY recorded DESC ".$add." ");
   $q1B->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
   $q1B->execute();
 } else {
-  $q1B = $db->prepare("SELECT * FROM j_users_logs WHERE userid = :userid ORDER BY recorded DESC ".$add." ");
+  if ($critical) { $c1B = "AND ".$critical; }
+  $q1B = $db->prepare("SELECT * FROM j_users_logs WHERE userid = :userid ".$c1B." ORDER BY recorded DESC ".$add." ");
   $q1B->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
   $q1B->execute();
 }
@@ -110,7 +116,7 @@ while ($r = $q1B->fetchObject()) {
   $t = ago($r->recorded);
   if ($_GET['p']) { $ex1 = "&p=".$_GET['p']; } else { $ex1 = ""; }
   if ($_GET['c']) { $ex2 = "&c=".$_GET['c']; } else { $ex2 = ""; }
-  $delete = MYADMIN."?w=activity&d=".base64_encode($r->id).$ex1.$ex2;
+  $delete = ADMIN."?w=activity&d=".base64_encode($r->id).$ex1.$ex2;
   $r->data = iconize($r->data);
   if (empty($_GET['c'])) {
     if ($r->critical == 4) { $color = "#F0F8FF"; }
@@ -157,13 +163,13 @@ while ($r = $q1B->fetchObject()) {
 
 echo "<nav class=\"pagination-centered\">\n";
 echo "  <ul class=\"pagination\">\n";
-if ($p > 1) { $previous = $p-1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".MYADMIN."?w=activity&c=".$_GET['c']."&p=".$previous."\">&laquo;</a></li>\n"; }
+if ($p > 1) { $previous = $p-1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".ADMIN."?w=activity&c=".$_GET['c']."&p=".$previous."\">&laquo;</a></li>\n"; }
 else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&laquo;</a></li>\n"; }
 for ($i=1; $i<=$total; $i++) {
-  if ($i == $p) { echo "    <li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".MYADMIN."?w=activity&c=".$_GET['c']."&p=".$i."\">".$i."</a></li>\n"; }
-  else { echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".MYADMIN."?w=activity&c=".$_GET['c']."&p=".$i."\">".$i."</a></li>\n"; }
+  if ($i == $p) { echo "    <li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".ADMIN."?w=activity&c=".$_GET['c']."&p=".$i."\">".$i."</a></li>\n"; }
+  else { echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".ADMIN."?w=activity&c=".$_GET['c']."&p=".$i."\">".$i."</a></li>\n"; }
 }
-if ($p != $total) { $next = $p+1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".MYADMIN."?w=activity&c=".$_GET['c']."&p=".$next."\">&raquo;</a></li>\n"; }
+if ($p != $total) { $next = $p+1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".ADMIN."?w=activity&c=".$_GET['c']."&p=".$next."\">&raquo;</a></li>\n"; }
 else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&raquo;</a></li>\n"; }
 echo "  </ul>\n";
 echo "</nav>\n\n";

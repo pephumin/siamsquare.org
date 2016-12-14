@@ -73,10 +73,10 @@ $percentStatus3 = percent($status3 / $totalALL); $percentStatus4 = percent($stat
           <td>Archived</td>
           <td align="right"><?php echo $status4; ?> (<?php echo $percentStatus4; ?>)</td>
         </tr>
-        <tr class="bg-info">
+        <!-- <tr class="bg-info">
           <td><strong>Total</strong></td>
           <td align="right"><strong><?php echo $totalALL; ?> (<?php echo $percentTotal; ?>)</strong></td>
-        </tr>
+        </tr> -->
       </tbody>
     </table>
   </div>
@@ -147,7 +147,7 @@ $colordata .= " ]";
 <?php if ($_SESSION["avatar"]) { echo "<div class=\"pull-right\" style=\"margin-top:5px\"><img src=\"".$_SESSION["avatar"]."\" class=\"img-circle members-photo\" alt=\"Avatar\"></div>\n"; } ?>
 <h3>Message board</h3>
 <div class="row">
-  <div class="col-sm-8">
+  <div class="col-sm-9">
     <!-- <h4>Announcements</h4> -->
 <?php
 $q3A = $db->prepare("SELECT B.*, U.email, U.fullname FROM j_board B, j_users U WHERE B.userid = U.id AND B.status >= 1 AND B.companyid = 0 ORDER BY B.created DESC LIMIT 5");
@@ -172,7 +172,8 @@ while ($r = $q3B->fetchObject()) {
   $postid = base64_encode($r->id);
   $t1 = shortdate($r->created); $t2 = ago($r->created);
   $body = nl2br($r->body);
-  echo "    <div class=\"panel panel-info\">\n";
+  if ($_SESSION['email'] == $r->email) { echo "    <div class=\"panel panel-info\" style=\"border:2px solid navy\">\n"; }
+  else { echo "    <div class=\"panel panel-info\">\n"; }
   // echo "      <div class=\"panel-heading\" role=\"tab\" id=\"h$postid\"><i class=\"pe-wpforms pe-fw\"></i> <a class=\"collapsed\" data-toggle=\"collapse\" href=\"#c$postid\" aria-expanded=\"false\" aria-controls=\"c$postid\">$r->head</a></div>\n";
   echo "      <div class=\"panel-heading\" role=\"tab\" id=\"h$postid\"><i class=\"pe-wpforms pe-fw\"></i> $r->head</div>\n";
   echo "      <div class=\"announcement-info\"><i class=\"pe-user pe-fw\"></i> $r->fullname ($r->email) &middot; <i class=\"pe-calendar pe-fw\"></i> $t1 ($t2)</div>\n";
@@ -185,13 +186,8 @@ while ($r = $q3B->fetchObject()) {
 ?>
     <p align="right"><a href="/admin/?w=board" class="small">More...</a></p>
   </div>
-  <div class="col-sm-4" style="padding:10px">
+  <div class="col-sm-3" style="padding:10px">
     <h4>Your recent activities</h4>
-    <!-- <div class="panel-group">
-      <div class="panel panel-primary">
-        <div class="panel-body"><small>Registered: <strong><?php echo shortdate($_SESSION["created"]); ?></strong> (<?php echo ago($_SESSION["created"]); ?>)</small></div>
-      </div>
-    </div> -->
     <div class="list-group">
 <?php
 $q1 = $db->prepare("SELECT * FROM j_users_logs WHERE userid = :userid AND critical BETWEEN 2 AND 4 ORDER BY recorded DESC LIMIT 5");
@@ -201,7 +197,7 @@ while ($r = $q1->fetchObject()) {
   $t = ago($r->recorded);
   $r->data = iconize($r->data);
   $r->data = preg_replace("/[\w-]+@([\w-]+\.)+[\w-]+/", "You", $r->data);
-  echo "      <button type=\"button\" class=\"list-group-item small\">$r->data ($t)</button>\n";
+  echo "      <button type=\"button\" class=\"list-group-item small\"><small>$r->data ($t)</small></button>\n";
 }
 ?>
     </div>
