@@ -73,6 +73,7 @@ function pageHeader($title) {
   <script type="text/javascript" src="/admin/assets/js/survey/ace/mode-json.js"></script>
   <script type="text/javascript" src="/admin/assets/js/survey/survey.ko.js"></script>
   <script type="text/javascript" src="/admin/assets/js/survey/surveyeditor.js"></script>
+<?php if (($_REQUEST["w"]) == "template") { echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/tinymce/tinymce.min.js\"></script>"; } ?>
   <script type="text/javascript" src="https://www.gstatic.com/firebasejs/3.4.1/firebase.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
