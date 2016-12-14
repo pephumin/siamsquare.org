@@ -111,26 +111,24 @@ function pageHeader($title) {
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-cubes pe-fw"></i> My surveys <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a href="<?php echo(ADMIN."?w=surveys"); ?>" title="All projects"><i class="pe-cubes pe-fw"></i> All projects</a></li>
-                  <li role="separator" class="divider"></li>
+                  <li><a href="<?php echo(ADMIN."?w=company"); ?>" title="The company"><i class="pe-building pe-fw"></i> Company</a></li>
                   <li><a href="<?php echo(ADMIN."?w=board"); ?>" title="Message board"><i class="pe-wpforms pe-fw"></i> Message board</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="<?php echo(ADMIN."?w=activity"); ?>" title="Activity"><i class="pe-map-o pe-fw"></i> Activity</a></li>
                   <li><a href="<?php echo(ADMIN."?w=data2table"); ?>" title="Data to table"><i class="pe-table pe-fw"></i> Data to table</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-cogs pe-fw"></i> Setting <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="<?php echo(ADMIN."?w=profile"); ?>" title="My profile"><i class="pe-user pe-fw"></i> My profile</a></li>
+                  <li><a href="<?php echo(ADMIN."?w=team"); ?>" title="Team"><i class="pe-graduation-cap pe-fw"></i> Team</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="<?php echo(ADMIN."contact/"); ?>" title="Contact us"><i class="pe-envelope-o pe-fw"></i> Contact us</a></li>
 <?php if ($_SESSION['level'] == "9") { ?>
                   <li role="separator" class="divider"></li>
                   <li><a href="<?php echo(ADMIN."?w=help"); ?>" title="Help"><i class="pe-question-circle pe-fw"></i> Help</a></li>
                   <li><a href="<?php echo(ADMIN."?w=api"); ?>" title="API commands"><i class="pe-code pe-fw"></i> API commands</a></li>
-<?php } ?>
-                </ul>
-              </li>
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-street-view pe-fw"></i> Profile <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li><a href="<?php echo(ADMIN."?w=profile"); ?>" title="My profile"><i class="pe-user pe-fw"></i> Myself</a></li>
-                  <li><a href="<?php echo(ADMIN."?w=team"); ?>" title="My team"><i class="pe-graduation-cap pe-fw"></i> Team</a></li>
-                  <li><a href="<?php echo(ADMIN."?w=company"); ?>" title="The company"><i class="pe-building pe-fw"></i> Company</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li><a href="<?php echo(ADMIN."?w=activity"); ?>" title="Activity"><i class="pe-map-o pe-fw"></i> Activity</a></li>
-                  <li><a href="<?php echo(ADMIN."contact/"); ?>" title="Contact us"><i class="pe-envelope pe-fw"></i> Contact us</a></li>
-<?php if ($_SESSION['level'] == "9") { ?>
                   <li><a href="<?php echo(ADMIN."?w=todo"); ?>" title="Todo list"><i class="pe-tasks pe-fw"></i> Todo list</a></li>
 <?php } ?>
                 </ul>
@@ -439,6 +437,8 @@ function iconize($data) {
   else if (preg_match("/deactivated due to 5 incorrect login attempts/i", $data)) { $insert = "<i class=\"pe-exclamation-triangle pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed survey owner/i", $data)) { $insert = "<i class=\"pe-cog pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed role for/i", $data)) { $insert = "<i class=\"pe-cog pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/edited email invitation template/i", $data)) { $insert = "<i class=\"pe-wpforms pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/edited email reminder template/i", $data)) { $insert = "<i class=\"pe-wpforms pe-fw\"></i> &nbsp; "; }
   else { $insert = ""; }
   if ($insert) { $data = $insert." ".$data; } else { $data = $data; }
   return $data;
