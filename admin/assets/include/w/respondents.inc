@@ -1,7 +1,5 @@
 <?php
 
-$limit = 500;
-
 $me = "/admin/?w=respondents&s=".$_GET['s'];
 if ($_GET['p']) { $p = $_GET['p']; $me = $me."&p=".$_GET['p'];}
 if ($p == '') { $p = "1"; }
@@ -65,7 +63,9 @@ if ($_POST['uploading'] == 1) {
   else if (is_uploaded_file($_FILES['csvfilename']['tmp_name'])) {
     $fieldseparator = ",";
     $lineseparator = "\n";
-    $uploaddir = "/www/default/siamsquare.org/admin/assets/upload/";
+    $uploaddir = "/www/default/siamsquare.org/admin/assets/upload/".$_POST['surveyid']."/";
+    if(!is_dir($uploaddir)){ mkdir($uploaddir); }
+    // $uploaddir = "/www/default/siamsquare.org/admin/assets/upload/";
     $uploadfile = $uploaddir.basename($_FILES['csvfilename']['name']);
     $rewritefile = $uploaddir."N-".basename($_FILES['csvfilename']['name']);
     move_uploaded_file($_FILES['csvfilename']['tmp_name'], $uploadfile);
@@ -75,8 +75,9 @@ if ($_POST['uploading'] == 1) {
       $data[$e0] = trim(strtolower($data[$e0]));
       $data[$e0] = str_replace(' ', '', $data[$e0]);
       $e2 = generateRandomString(13);
-      if (filter_var($data[$e0], FILTER_VALIDATE_EMAIL)) { $newdata = "".$fieldseparator.$data[$e0].$fieldseparator.$e2.$fieldseparator."1".$fieldseparator.$e1.$fieldseparator.$lineseparator; }
-      else { $newdata = "".$fieldseparator.$data[$e0].$fieldseparator.$e2.$fieldseparator."0".$fieldseparator.$e1.$fieldseparator.$lineseparator; }
+      $e3 = $_SESSION['userid'];
+      if (filter_var($data[$e0], FILTER_VALIDATE_EMAIL)) { $newdata = "".$fieldseparator.$data[$e0].$fieldseparator.$e2.$fieldseparator."1".$fieldseparator.$e1.$fieldseparator.$e3.$fieldseparator.$lineseparator; }
+      else { $newdata = "".$fieldseparator.$data[$e0].$fieldseparator.$e2.$fieldseparator."0".$fieldseparator.$e1.$fieldseparator.$e3.$fieldseparator.$lineseparator; }
       fwrite($output, $newdata);
     }
     fclose($input);
@@ -137,11 +138,6 @@ echo "<p>Please note this page is mainly for managing respondents, if you want t
 echo "<hr>\n";
 echo "<h3>Project $project</h3>\n";
 
-if (empty($start)) { $start = 0; }
-if (empty($limit)) { $limit = 500; }
-if ($p) { $start = ($p-1) * $limit; }
-$to_record = $start + $limit;
-$add = " LIMIT $start, $limit ";
 
 // Get status
 $q2 = $db->prepare("SELECT COUNT(*) as iA, SUM(status='0') AS iB, SUM(status='1') AS iC, SUM(status='2') AS iD, SUM(status='3') AS iE FROM j_respondents_private WHERE surveyid = :surveyid");
@@ -152,6 +148,29 @@ while ($row = $q2->fetchObject()) {
   $status2 = $row->iD; $status3 = $row->iE;
 }
 
+$rows = $status0s;
+
+if ($_REQUEST['size']) { $limit = $_REQUEST['size']; $me = $me."&size=".$_REQUEST['size']; }
+else {
+  if ($rows <= 250) { $limit = 50; }
+  if ($rows > 250 && $rows <= 500) { $limit = 100; }
+  if ($rows > 500 && $rows <= 1500) { $limit = 300; }
+  if ($rows > 1500 && $rows <= 2500) { $limit = 500; }
+  if ($rows > 2500) { $limit = 1000; }
+}
+
+if (empty($start)) { $start = 0; }
+if (empty($limit)) { $limit = 500; }
+if ($p) { $start = ($p-1) * $limit; }
+$to_record = $start + $limit;
+$add = " LIMIT $start, $limit ";
+
+$total = ceil($rows/$limit);
+$offset = ($currentpage - 1) * $rowsperpage;
+
+if ($to_record > $rows) { $to_record = $rows; }
+$from_record = $start + 1;
+
 // Get respondent error list
 $q3A = $db->prepare("SELECT * FROM j_respondents_private WHERE surveyid = :surveyid AND status = 0");
 $q3A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
@@ -161,19 +180,13 @@ $email_error = "<div class=\"alert alert-warning alert-dismissible\" role=\"aler
 $email_error .= "  <h4><i class=\"pe-exclamation-triangle pe-fw pe-lg\"></i> Found respondents with invalid email format</h4>\n";
 $email_error .= "  <p>We detect <strong>$status0 respondents</strong> that appear to have an error in their email format, and hence cannot be used. Please correct their emails and upload them again.</p>\n";
 $email_error .= "  <p>We display them in the table below with a <del>strike through</del> format so you can spot them instantly.</p>\n";
-$email_error .= "  <p>Alternatively you can also <a data-toggle=\"collapse\" href=\"#showerrors\" aria-expanded=\"false\" class=\"alert-link\">click here</a> in order to see them all in one big list (click again to close).</p>\n";
+$email_error .= "  <p>Alternatively you can also <a data-toggle=\"collapse\" href=\"#showerrors\" aria-expanded=\"false\" class=\"alert-link\">click here <i class=\"pe-arrow-circle-down pe-fw\"></i></a> to see them all in one big list (click again to close).</p>\n";
 $email_error .= "  <div class=\"collapse\" id=\"showerrors\"><div class=\"well small\">";
 for($x = 0; $x < count($errorlist); $x++) { $email_error .= $errorlist[$x].", "; }
 $email_error .= "</div></div>\n";
 $email_error .= "  <form action=\"$me\" method=\"post\"><button type=\"submit\" name=\"m\" value=\"fixerrors\" class=\"btn btn-warning\">Click here to remove errors</button></form>\n";
 $email_error .= "</div>\n";
 
-$rows = $status0s;
-$total = ceil($rows/$limit);
-$offset = ($currentpage - 1) * $rowsperpage;
-
-if ($to_record > $rows) { $to_record = $rows; }
-$from_record = $start + 1;
 
 // Get respondent listing
 $tablelist = "";
@@ -223,7 +236,7 @@ foreach ($d as $dd => $ddd) {
   // echo $ddd;
 }
 $email_duplicated .= "  </ul>\n";
-$email_duplicated .= "  <p>You can <a data-toggle=\"collapse\" href=\"#showduplicates\" aria-expanded=\"false\" class=\"alert-link\">click here</a> in order to see them all in one big list (click again to close).</p>\n";
+$email_duplicated .= "  <p>You can <a data-toggle=\"collapse\" href=\"#showduplicates\" aria-expanded=\"false\" class=\"alert-link\">click here <i class=\"pe-arrow-circle-down pe-fw\"></i></a> to see them all in one big list (click again to close).</p>\n";
 $email_duplicated .= "  <div class=\"collapse\" id=\"showduplicates\"><div class=\"well small\">";
 for($x = 0; $x < count($duplist); $x++) { $email_duplicated .= $duplist[$x].", "; }
 $email_duplicated .= "</div></div>\n";
@@ -261,7 +274,21 @@ if ($total == 0) {
   echo "  </ul>\n";
   echo "</nav>\n\n";
 
-  echo "<small class=\"blue\">Found <strong>$rows records</strong> in our database (showing results $from_record to $to_record)</small>\n";
+  echo "<div class=\"row\">\n";
+  echo "  <div class=\"col-sm-9\">\n";
+  echo "    <span class=\"blue\">Found <strong>$rows records</strong> in our database<br><small>(showing results $from_record to $to_record)</small></span>\n";
+  echo "  </div>\n";
+  echo "  <div class=\"col-sm-3\" style=\"text-align:right\"><form method=\"post\" class=\"form-inline\" action=\"$me\">\n";
+  echo "    <small >Select display size:</small>\n";
+  echo "    <select class=\"form-control input-sm\" name=\"size\" onchange=\"this.form.submit()\">\n";
+  if ($limit == "50") { echo "      <option selected>50</option>\n"; } else { echo "      <option>50</option>\n"; }
+  if ($limit == "100") { echo "      <option selected>100</option>\n"; } else { echo "      <option>100</option>\n"; }
+  if ($limit == "300") { echo "      <option selected>300</option>\n"; } else { echo "      <option>300</option>\n"; }
+  if ($limit == "500") { echo "      <option selected>500</option>\n"; } else { echo "      <option>500</option>\n"; }
+  if ($limit == "1000") { echo "      <option selected>1000</option>\n"; } else { echo "      <option>1000</option>\n"; }
+  echo "    </select>\n";
+  echo "  </form></div>\n";
+  echo "</div><br>\n";
 
 ?>
 
