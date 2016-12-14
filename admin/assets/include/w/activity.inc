@@ -29,7 +29,7 @@ else if ($_GET['c'] == 4) { $critical = "critical = '4'"; }
 else if ($_GET['c'] == 5) { $critical = "critical = '5'"; }
 
 if ($_SESSION['level'] == "9") {
-  $c1A = "WHERE ".$critical;
+  if ($critical != "") { $c1A = "WHERE ".$critical; } else { $c1A = ""; }
   $q1A = $db->prepare("SELECT * FROM j_users_logs ".$c1A." ORDER BY recorded DESC");
   $q1A->execute();
 } elseif ($_SESSION['level'] == "6") {
@@ -60,7 +60,7 @@ $offset = ($currentpage - 1) * $rowsperpage;
 // if ($p > $total) { $p = $total; }
 
 if ($_SESSION['level'] == "9") {
-  $c1B = "WHERE ".$critical;
+  if ($critical != "") { $c1B = "WHERE ".$critical; } else { $c1B = ""; }
   $q1B = $db->prepare("SELECT * FROM j_users_logs ".$c1B." ORDER BY recorded DESC ".$add." ");
   $q1B->execute();
 } elseif ($_SESSION['level'] == "6") {
