@@ -6,7 +6,7 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 $db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
 
 // Get projcet title
-$q = $db->prepare("SELECT title, status, email_i, email_i_content, email_r, email_r_content FROM j_projects WHERE id = :surveyid");
+$q = $db->prepare("SELECT title, status, email_i, email_i_content, email_r, email_r_content FROM j_projects WHERE private = 1 AND id = :surveyid");
 $q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q->execute();
 if ($q->rowCount() == 0) {
@@ -60,7 +60,7 @@ if ($_POST['saveme'] == 1) {
   $q2A->bindValue(':email_i_content', $email_i_content, PDO::PARAM_STR);
   $q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
   $q2A->execute();
-  $ql2A = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." edited email invitation template for $project', '3')");
+  $ql2A = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." edited email invitation template for $project (id=".$_GET['s'].")', '2')");
   $ql2A->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
   $ql2A->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql2A->execute();
@@ -74,7 +74,7 @@ if ($_POST['saveme'] == 1) {
   $q2B->bindValue(':email_r_content', $email_r_content, PDO::PARAM_STR);
   $q2B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
   $q2B->execute();
-  $ql2B = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." edited email reminder template for $project', '3')");
+  $ql2B = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." edited email reminder template for $project (id=".$_GET['s'].")', '2')");
   $ql2B->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
   $ql2B->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql2B->execute();
@@ -84,8 +84,34 @@ if ($_POST['saveme'] == 1) {
 $title = "Customise the templates";
 pageHeader($title);
 echo "<h2>$title</h2>";
+echo "<p class=\"blue\"><strong>This feature is only available for <em>Private survey</em> (e.g. the list of respondent's names is uploaded and provided by you).</strong></p>";
 echo "<p>This page allows you to customise some of the messages, contents, plus the look & feel of the actual interface to respondents. This will make sure you have some controls over on the communication between us and your respondents.</p>\n";
 echo "<hr>\n";
+
+$default_i .= "Dear employees,\n\n";
+$default_i .= "We are rolling out the employee survey which you are expected to participate. It is the only tool that provides the management team a clear picture on what needs to be done.\n\n";
+$default_i .= "I strongly encourage you to participate and provide your honest opinions. The survey link is provided below in this email.\n\n";
+$default_i .= "[LINK]\n\n";
+$default_i .= "The survey period starts from today and will be ended by the end of this month. I hope to receiving a high participation rate from all of you.\n\n";
+$default_i .= "Regards,\n";
+$default_i .= "John Doe (CEO)";
+
+$default_r = "Hi there,\n\n";
+$default_r .= "This is a reminder for those who have not participated with our employee survey, please complete it as soon as possible. The survey will be ended by the end of this month.\n\n";
+$default_r .= "For those who fail to participate this survey will be required to report to your boss with concrete reasons. And it will be added to a consideration to your next year's KPI performance review.\n\n";
+$default_r .= "And here is the link to survey again.\n\n";
+$default_r .= "[LINK]\n\n";
+$default_r .= "Regards,\n";
+$default_r .= "John Doe (CEO)";
+
+$link = MYHOME.$me;
+$messagecontent = "&lt;p&gt;Hi there,&lt;/p&gt;\n";
+$messagecontent .= "&lt;p&gt;&lt;strong&gt;".$_SESSION['fullname']."&lt;/strong&gt; would like to share a survey with you.&lt;/p&gt;\n";
+$messagecontent .= "&lt;p&gt;If you wish to participate this survey, please click the link provided below.&lt;/p&gt;\n";
+$messagecontent .= "&lt;p&gt;Link: ".$link."&lt;/p&gt;\n";
+$messagecontent .= "&lt;p&gt;Thanks - ".MYTITLE."&lt;/p&gt;\n";
+$messagecontent .= "&lt;p&gt;(Email automatically sent on behalf of ".$_SESSION['fullname'].")&lt;/p&gt;\n";
+
 ?>
 
 <h3>Edit the email messages</h3>
@@ -107,8 +133,24 @@ echo "<hr>\n";
         <div class="reveal-if-active"><input type="email" name="email_iB" onclick="this.select()" class="form-control input-sm require-if-active" data-require-pair="#choice-customised1" placeholder="Enter a working email"<?php if (isset($email_i) && ($email_i != $defaultemail)) { echo " value=\"$email_i\""; } ?>></div>
       </div>
       <br>
-      <script type="text/javascript">tinymce.init({ selector:'#firstemail', height: 300, menubar: false, resize: false, statusbar: false, plugins: "textcolor", toolbar: 'removeformat | styleselect | bold italic | bullist numlist | forecolor backcolor | undo redo' });</script>
-      <textarea id="firstemail" name="email_i_content"><?php echo $email_i_content; ?></textarea>
+      <script type="text/javascript">tinymce.init({ selector:'#firstemail',
+        height: 300, menubar: false, resize: false, statusbar: false,
+        plugins: "textcolor, placeholder",
+        placeholder_attrs: {
+          style: {
+            position: 'absolute',
+            top:'5px',
+            left:0,
+            color: '#888',
+            padding: '1%',
+            width:'98%',
+            overflow: 'hidden',
+            'white-space': 'pre-wrap'
+          }
+        },
+        toolbar: 'removeformat | styleselect | bold italic | bullist numlist | forecolor backcolor | undo redo'
+      });</script>
+      <textarea id="firstemail" name="email_i_content" placeholder="<?php echo $default_i; ?>"><?php echo $email_i_content; ?></textarea>
       <br>
       <p align="right">
         <input type="hidden" name="saveme" value="1">
@@ -132,8 +174,24 @@ echo "<hr>\n";
         <div class="reveal-if-active"><input type="email" name="email_rB" onclick="this.select()" class="form-control input-sm require-if-active" data-require-pair="#choice-customised2" placeholder="Enter a working email"<?php if (isset($email_r) && ($email_r != $defaultemail)) { echo " value=\"$email_r\""; } ?>></div>
       </div>
       <br>
-      <script type="text/javascript">tinymce.init({ selector:'#secondemail', height: 300, menubar: false, resize: false, statusbar: false, plugins: "textcolor", toolbar: 'removeformat | styleselect | bold italic | bullist numlist | forecolor backcolor | undo redo' });</script>
-      <textarea id="secondemail" name="email_r_content"><?php echo $email_r_content; ?></textarea>
+      <script type="text/javascript">tinymce.init({ selector:'#secondemail',
+        height: 300, menubar: false, resize: false, statusbar: false,
+        plugins: "textcolor, placeholder",
+        placeholder_attrs: {
+          style: {
+            position: 'absolute',
+            top:'5px',
+            left:0,
+            color: '#888',
+            padding: '1%',
+            width:'98%',
+            overflow: 'hidden',
+            'white-space': 'pre-wrap',
+          }
+        },
+        toolbar: 'removeformat | styleselect | bold italic | bullist numlist | forecolor backcolor | undo redo'
+      });</script>
+      <textarea id="secondemail" name="email_r_content" placeholder="<?php echo $default_r; ?>"><?php echo $email_r_content; ?></textarea>
       <br>
       <p align="right">
         <input type="hidden" name="saveme" value="2">
@@ -150,7 +208,7 @@ echo "<hr>\n";
 <p>You can, of course, promote this survey by yourself too. And below are some useful tools that can instantly help you promoting this particular survey with the persons you know.</p>
 <br>
 
-<div class="row">
+<div class="row" style="padding:20px">
   <div class="col-sm-12">
     <nav>
       <ul class="nav nav-tabs">
@@ -178,15 +236,8 @@ echo "<hr>\n";
         </div>
         <br>
         <label>Message (optional):</label>
-        <textarea class="form-control" style="height:200px">Hi there,
-
-<?php echo $_SESSION['fullname']; ?> would like to share a survey with you.
-
-To participate with this survey, you can just simply click the link provided below.
-
-Link: <?php echo MYHOME.$me; ?>.
-
-Thanks (automatic email sent from <?php echo MYTITLE; ?> on behalf of <?php echo $_SESSION['fullname']; ?>).</textarea>
+        <script type="text/javascript">tinymce.init({ selector:'#messageemail', height: 200, menubar: false, resize: false, statusbar: false, plugins: "textcolor", toolbar: 'removeformat | styleselect | bold italic | bullist numlist | forecolor backcolor | undo redo' });</script>
+        <textarea id="messageemail" class="form-control"><?php echo $messagecontent; ?></textarea>
         <br>
         <p class="text-center">
           <button class="btn btn-warning" type="submit">Send <i class="pe-paper-plane"></i></button>
@@ -196,10 +247,12 @@ Thanks (automatic email sent from <?php echo MYTITLE; ?> on behalf of <?php echo
       <div id="3" class="tab-pane fade" style="padding:20px 10px">
         <h4>Embed the survey link to your website</h4>
         <label>The code:</label>
-        <input type="url" class="form-control" value='<iframe width="600" height="400" src="<?php echo MYHOME.$me; ?>" frameborder="0" allowfullscreen></iframe>' onclick="this.select()" readonly>
+        <input type="url" class="form-control" value='<iframe width="600" height="400" src="<?php echo MEMBERS."?w=run&s=".$_GET['s']; ?>" frameborder="0" allowfullscreen></iframe>' onclick="this.select()" readonly>
         <br>
         <p>By copying this code and pasting it onto one of your webpages (or multiple pages), you will have the survey inserted into your website right away.</p>
         <p>Optionally you can also customise how the survey is inserted to your website by adjusting <em>width</em> and <em>height</em> which is currenyly set at a default of <em>600px</em> and <em>400px</em> respectively.</p>
+        <p>Please see below the example of your survey after included into a webpage.</p>
+        <iframe width="600" height="400" src="<?php echo MEMBERS."?w=run&s=".$_GET['s']; ?>" frameborder="0" allowfullscreen></iframe>
         <p>Please do not hesitate to <a href="/admin/contact/">contact us</a> if you need any technical supports on this.</p>
       </div>
     </div>
@@ -208,17 +261,6 @@ Thanks (automatic email sent from <?php echo MYTITLE; ?> on behalf of <?php echo
 
 <br>
 
-<!-- <h4>Edit web template</h4> -->
-<!-- <p>You can also customise some of the contents that will be shown to respondents when they participate with your survey.</p> -->
-
-<!-- <ul class="pe-ul">
-  <li><i class="pe-li pe-check-square"></i> <p>Ability to insert logo and choose the right spot</p></li>
-  <li><i class="pe-li pe-check-square"></i> <p>Ability to add a welcome message</p></li>
-  <li><i class="pe-li pe-check-square"></i> <p>Ability to customise the thank you message</p></li>
-  <li><i class="pe-li pe-check-square"></i> <p>Ability to use client's domain for the survey link</p></li>
-</ul> -->
-
-<br>
 
 <script type="text/javascript">
   $('#btn-save1').on('click', function() {
@@ -250,7 +292,9 @@ Thanks (automatic email sent from <?php echo MYTITLE; ?> on behalf of <?php echo
     }
   };
   FormStuff.init();
+
 </script>
+
 <style media="screen">
   .reveal-if-active {
     opacity: 0;
