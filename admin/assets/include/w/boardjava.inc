@@ -101,7 +101,7 @@ echo "<hr>\n";
         success: function (data) {
           self.messages.splice(0, 0, self.createPostObject(data));
           $('#showalert-create').show();
-          window.setTimeout(function () { $("#showalert-create").slideUp(500, function () { $("#showalert-create").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-create").slideUp(500, function () { $("#showalert-create").hide(); }); }, 3000);
           $.ajax({
             url: api + '/log',
             dataType: 'json',
@@ -137,7 +137,7 @@ echo "<hr>\n";
         data: '{ "status": "-1" }',
         success: function (data) {
           $('#showalert-delete').show();
-          window.setTimeout(function () { $("#showalert-delete").slideUp(500, function () { $("#showalert-delete").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-delete").slideUp(500, function () { $("#showalert-delete").hide(); }); }, 3000);
           self.removePost(message);
           // $.ajax({
           //   url: api + '/log',
@@ -170,7 +170,7 @@ echo "<hr>\n";
         success: function (data) {
           message.head(message.editingHead());
           $('#showalert-edit').show();
-          window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 3000);
           // $.ajax({
           //   url: api + '/log',
           //   dataType: 'json',
@@ -199,7 +199,7 @@ echo "<hr>\n";
         success: function (data) {
           message.body(message.editingBody());
           $('#showalert-edit').show();
-          window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 3000);
           // $.ajax({
           //   url: api + '/log',
           //   dataType: 'json',

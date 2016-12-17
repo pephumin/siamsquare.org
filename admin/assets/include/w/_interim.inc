@@ -97,6 +97,8 @@ echo "<p>We hereby take no responsibility on any damages happened from the usage
 echo "<hr>\n";
 echo "<h3>Project $project</h3>\n";
 echo $stat;
+echo "<pre>$datafortable</pre>";
+
 ?>
 
 <hr>

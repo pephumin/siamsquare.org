@@ -1,14 +1,70 @@
 <?php
 
+$target_c = 300;
+
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 $db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
 
+$today['year'] = date("Y");
+$today['month'] = date("m");
+$today['day'] = date("d");
+$today['month'] = $today['month']-1;
+
+$timelinedata = "[ \n"; $colordata = "[ ";
+
 // Get projcet title
-$sql1 = "SELECT title FROM j_projects WHERE id = :surveyid";
+$sql1 = "SELECT * FROM j_projects WHERE id = :surveyid";
 $q = $db->prepare($sql1);
 $q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q->execute();
-while ($row = $q->fetchObject()) { $project = $row->title; }
+while ($row = $q->fetchObject()) {
+  $project = $row->title;
+  if ($row->userid == $_SESSION['userid']) { $owner = 1; } else { $owner = 0; }
+  if ($row->created) {
+    $L0 = date_parse_from_format("Y-m-d H:i:s", $row->created);
+    $L0['month'] = $L0['month']-1;
+    $created = ago($row->created);
+  }
+  if ($row->L1) {
+    $L1 = date_parse_from_format("Y-m-d H:i:s", $row->L1);
+    $L1['month'] = $L1['month']-1;
+    $LL1 = ago($row->L1); } else { $LL1 = "-";
+  }
+  if ($row->L2) {
+    $L2 = date_parse_from_format("Y-m-d H:i:s", $row->L2);
+    $L2['month'] = $L2['month']-1;
+    $LL2 = ago($row->L2); } else { $LL2 = "-";
+  }
+  if ($row->L3) {
+    $L3 = date_parse_from_format("Y-m-d H:i:s", $row->L3);
+    $L3['month'] = $L3['month']-1;
+    $LL3 = ago($row->L3); } else { $LL3 = "-";
+  }
+  if ($row->status == 1) {
+    // $ss = "  <i class=\"pe-hourglass-start pe-fw\"></i> Set-up (since: ".ago($row['created']).")";
+    // $status = "Set-up";
+    $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+  } else if ($row->status == 2) {
+    // $ss = "<i class=\"pe-hourglass-half pe-fw\"></i> Data-collection (since: ".ago($row['L1']).")";
+    // $status = "Data-collection";
+    $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $timelinedata .= "[ '".$project."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#00E600', ";
+  } else if ($row->status == 3) {
+    // $ss = "<i class=\"pe-hourglass-end pe-fw\"></i> Completed (since: ".ago($row['L2']).")";
+    // $status = "Completed";
+    $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $timelinedata .= "[ '".$project."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
+    $timelinedata .= "[ '".$project."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#009900', ";
+  } else if ($row->status == 4) {
+    // $ss = "<i class=\"pe-archive pe-fw\"></i> Archived (since: ".ago($row['L3']).")";
+    // $status = "Archived";
+    $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $timelinedata .= "[ '".$project."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
+    $timelinedata .= "[ '".$project."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day'].") ], \n"; $colordata .= "'#009900', ";
+    $timelinedata .= "[ '".$project."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
+  }
+}
+$timelinedata .= " ]";
 
 // Get counts
 $sql2 = "SELECT SUM(IF(status = :S1, 1, 0)) AS S1, SUM(IF(status = :S2, 1, 0)) AS S2, SUM(IF(status = :S3, 1, 0)) AS S3 FROM j_results WHERE surveyid = :surveyid ";
@@ -19,64 +75,127 @@ $q->bindValue(':S2', '0', PDO::PARAM_INT);
 $q->bindValue(':S3', '-1', PDO::PARAM_INT);
 $q->execute();
 while ($row = $q->fetchObject()) {
-  $responses_good = $row->S1;
-  $responses_test = $row->S2;
-  $responses_deleted = $row->S3;
-  $responses_total = $responses_good + $responses_test + $responses_deleted;
+  $responses_good_c = $row->S1;
+  $responses_test_c = $row->S2;
+  $responses_deleted_c = $row->S3;
+  $responses_total_c = $responses_good_c + $responses_test_c + $responses_deleted_c;
 }
+$responses_total_p = percent($responses_total_c / $target_c);
 
-$stat = "<dl class=\"dl-horizontal\">\n";
-$stat .= "  <dt>Total response:</dt>\n";
-$stat .= "  <dd>$responses_total</dd>\n";
+$stat = "<table class=\"table table-hover small\">\n";
+$stat .= "  <thead>\n";
+$stat .= "    <tr class=\"bg-primary\">\n";
+$stat .= "      <th width=\"30%\"><i class=\"pe-dashboard pe-fw\"></i> Details</th>\n";
+$stat .= "      <th width=\"15%\"><i class=\"pe-braille pe-fw\"></i> Count</th>\n";
+$stat .= "      <th width=\"55%\"><i class=\"pe-percent pe-fw\"></i> Percentage</th>\n";
+$stat .= "    </tr>\n";
+$stat .= "  </thead>\n";
+$stat .= "  <tbody>\n";
+$stat .= "    <tr>\n";
+$stat .= "      <td>Universe</td>\n";
+$stat .= "      <td>2,500</td>\n";
+$stat .= "      <td>Total target (Public) or Total name list (Private)</td>\n";
+$stat .= "    </tr>\n";
+$stat .= "    <tr>\n";
+$stat .= "      <td>Invitation sent</td>\n";
+$stat .= "      <td>1,350</td>\n";
+$stat .= "      <td>54% (of Universe)</td>\n";
+$stat .= "    </tr>\n";
+$stat .= "    <tr>\n";
+$stat .= "      <td>Reminder sent</td>\n";
+$stat .= "      <td>725</td>\n";
+$stat .= "      <td>54% (of all invites)</td>\n";
+$stat .= "    </tr>\n";
+$stat .= "    <tr class=\"bg-warning\">\n";
+$stat .= "      <td><strong>Target sample</strong></td>\n";
+$stat .= "      <td><strong>$target_c</strong></td>\n";
+$stat .= "      <td>54% (of all invites)</td>\n";
+$stat .= "    </tr>\n";
+$stat .= "    <tr>\n";
+$stat .= "      <td>Participation to date</td>\n";
+$stat .= "      <td>$responses_total_c</td>\n";
+$stat .= "      <td>$responses_total_p (of all invites)</td>\n";
+$stat .= "    </tr>\n";
 
-if ($responses_good > 0) {
-  $percentage_good = percent($responses_good / $responses_total);
-  // Get result stats (first & last)
-  $sql3 = "SELECT * FROM j_results WHERE id IN ((SELECT min(id) FROM j_results WHERE surveyid = :surveyid AND status = 1), (SELECT max(id) FROM j_results WHERE surveyid = :surveyid AND status = 1)) ";
+if ($responses_good_c > 0) {
+  $responses_good_p = percent($responses_good_c / $responses_total_c);
+  $sql3 = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 1 ORDER BY submitted DESC";
   $q = $db->prepare($sql3);
   $q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
   $q->execute(); // print_r($q->rowCount());
+  $first = 0; $last = ($q->rowCount()-1);
   while ($row = $q->fetchAll(PDO::FETCH_ASSOC)) {
-    $first_id = $row[0]['id;'];
-    $first_email = $row[0]['email'];
-    $first_ip = $row[0]['ip'];
-    $t1 = date_parse_from_format("Y-m-d H:i:s", $row[0]['submitted']); $t1['month'] = $t1['month']-1;
-    // $t1['year']; $t1['month']; $t1['day'];
-    $first_submitted = ago($row[0]['submitted']);
-    $last_id = $row[1]['id'];
-    $last_email = $row[1]['email'];
-    $last_ip = $row[1]['ip'];
-    $t2 = date_parse_from_format("Y-m-d H:i:s", $row[1]['submitted']); $t2['month'] = $t2['month']-1;
-    // $t2['year']; $t2['month']; $t2['day'];
-    $last_submitted = ago($row[1]['submitted']);
+    $ee = $row;
+    for ($i=0;$i<count($ee);$i++) {
+      $removeKeys = array('rd', 'email', 'ip', 'surveyid', 'status');
+      foreach($removeKeys as $key) {
+        unset($ee[$i][$key]);
+      }
+      $ee[$i]['data'] = json_decode($ee[$i]['data'], true);
+      $ee[$i]['submitted'] = ago($ee[$i]['submitted']);
+    }
+    $first_id = $row[$first]['id;'];
+    $first_email = $row[$first]['email'];
+    $first_ip = $row[$first]['ip'];
+    $t1 = date_parse_from_format("Y-m-d H:i:s", $row[$first]['submitted']); $t1['month'] = $t1['month']-1;
+    $first_submitted = ago($row[$first]['submitted']);
+    $last_id = $row[$last]['id'];
+    $last_email = $row[$last]['email'];
+    $last_ip = $row[$last]['ip'];
+    $t2 = date_parse_from_format("Y-m-d H:i:s", $row[$last]['submitted']); $t2['month'] = $t2['month']-1;
+    $last_submitted = ago($row[$last]['submitted']);
   }
-  if ($responses_good == 1) {
-    $stat .= "  <dt>Valid response:</dt>\n";
-    $stat .= "  <dd>$responses_good ($percentage_good)</dd>\n";
-    $stat .= "  <dt>First response:</dt>\n";
-    $stat .= "  <dd>$first_submitted by $first_email <small>(from $first_ip)</small></dd>\n";
-    $stat .= "  <dt>Last response:</dt>\n";
-    $stat .= "  <dd><em>NONE</em></dd>\n";
+  $datafortable = json_encode($ee);
+  if ($responses_good_c == 1) {
+    $stat .= "    <tr class=\"bg-success\">\n";
+    $stat .= "      <td style=\"font-size:120%\">Valid completions</td>\n";
+    $stat .= "      <td style=\"font-size:120%\">$responses_good_c</td>\n";
+    $stat .= "      <td>$responses_good_p (of all participations)</td>\n";
+    $stat .= "    </tr>\n";
+    $stat .= "    <tr>\n";
+    $stat .= "      <td class=\"grey\">First response</td>\n";
+    $stat .= "      <td class=\"grey\" colspan=\"2\">$first_submitted by $first_email <small>(from $first_ip)</small></td>\n";
+    $stat .= "    </tr>\n";
+    $stat .= "    <tr>\n";
+    $stat .= "      <td class=\"grey\">Latest response</td>\n";
+    $stat .= "      <td class=\"grey\" colspan=\"2\"><em>NONE</em></td>\n";
+    $stat .= "    </tr>\n";
   } else {
-    $stat .= "  <dt>Valid response:</dt>\n";
-    $stat .= "  <dd>$responses_good ($percentage_good)</dd>\n";
-    $stat .= "  <dt>First response:</dt>\n";
-    $stat .= "  <dd>$first_submitted by $first_email <small>(from $first_ip)</small></dd>\n";
-    $stat .= "  <dt>Last response:</dt>\n";
-    $stat .= "  <dd>$last_submitted by $last_email <small>(from $last_ip)</small></dd>\n";
+    $stat .= "    <tr class=\"bg-success\">\n";
+    $stat .= "      <td style=\"font-size:120%\">Valid completions</td>\n";
+    $stat .= "      <td style=\"font-size:120%\">$responses_good_c</td>\n";
+    $stat .= "      <td>$responses_good_p (of all participations)</td>\n";
+    $stat .= "    </tr>\n";
+    $stat .= "    <tr>\n";
+    $stat .= "      <td class=\"grey\">First response</td>\n";
+    $stat .= "      <td class=\"grey\" colspan=\"2\">$first_submitted by <u>$first_email</u> <small>(from $first_ip)</small></td>\n";
+    $stat .= "    </tr>\n";
+    $stat .= "    <tr>\n";
+    $stat .= "      <td class=\"grey\">Latest response</td>\n";
+    $stat .= "      <td class=\"grey\" colspan=\"2\">$last_submitted by <u>$last_email</u> <small>(from $last_ip)</small></td>\n";
+    $stat .= "    </tr>\n";
   }
 } else {
-  $stat .= "  <dt>Valid response:</dt>\n";
-  $stat .= "  <dd><em>NONE</em></dd>\n";
-  $stat .= "  <dt>First response:</dt>\n";
-  $stat .= "  <dd><em>NONE</em></dd>\n";
-  $stat .= "  <dt>Last response:</dt>\n";
-  $stat .= "  <dd><em>NONE</em></dd>\n";
+  $stat .= "    <tr class=\"bg-success\">\n";
+  $stat .= "      <td style=\"font-size:120%\">Valid completions</td>\n";
+  $stat .= "      <td style=\"font-size:120%\"><em>NONE</em></td>\n";
+  $stat .= "      <td><em>NONE</em></td>\n";
+  $stat .= "    </tr>\n";
+  $stat .= "    <tr>\n";
+  $stat .= "      <td class=\"grey\">First response</td>\n";
+  $stat .= "      <td class=\"grey\" colspan=\"2\"><em>NONE</em></td>\n";
+  $stat .= "    </tr>\n";
+  $stat .= "    <tr>\n";
+  $stat .= "      <td class=\"grey\">Latest response</td>\n";
+  $stat .= "      <td class=\"grey\" colspan=\"2\"><em>NONE</em></td>\n";
+  $stat .= "    </tr>\n";
 }
-$stat .= "</dl>\n";
+$stat .= "  </tbody>\n";
+$stat .= "</table>\n";
 
+$achievement = ($responses_good_c / $target_c)*100;
 
-$title = "Job progress";
+$title = "Job monitoring";
 pageHeader($title);
 echo "<h2>$title</h2>";
 echo "<p>This page gives a real time update on the project especially on the progress of data collection.</p>";
@@ -84,48 +203,199 @@ echo "<p>Ideally one would want to have the progress reaching to 100%, however i
 echo "<p>The target set in this page is either an estimation of industry average or an indication has been agreed prior to starting the data collection.</p>";
 echo "<hr>\n";
 echo "<h3>Project $project</h3>\n";
-
+// echo "<pre>$datafortable</pre>";
 ?>
 
-<h4>Original project timeline</h4>
-<?php echo $stat; ?>
-
-<div id="timeline"></div>
-
-<h4>Update project status</h4>
-
-<hr>
-
+<h4>Progress summary</h4>
 <div class="row">
-  <div class="col-sm-6">
-    <h4>If public survey</h4>
-    <li>How many respondents this survey can target?
-    <li>How many respondents have been emailed? (email when?)
-    <li>How many respondents have conducted the survey? (starting from when until now - how many days?)
-    <li>How many more do we still need? (when will the survey plan to end - how many days left?) decision for email reminder or more list needed?
+  <div class="col-sm-9">
+    <?php echo $stat; ?>
   </div>
-  <div class="col-sm-6">
-    <h4>If private survey</h4>
-    <li>How many respondents in the upload list in total? (upload when?)
-    <li>How many respondents have been emailed? (email when?)
-    <li>How many respondents have conducted the survey? (starting from when until now - how many days?)
-    <li>How many more do we still need? (when will the survey plan to end - how many days left?) decision for email reminder or more list needed?
+  <div class="col-sm-3" align="center">
+    <div id="gaugechart"></div>
   </div>
 </div>
 
+<h4>Actual timeline</h4>
+<div id="timeline"></div>
 
-
-<h4>For syndicate and tracking study</h4>
-
-<div id="calendar"></div>
-
+<!-- <h4>For syndicate and tracking study</h4> -->
+<!-- <div id="calendar"></div> -->
 <hr>
+
+<h3>Interim data</h3>
+<p>The interim result must be used with cautions because it is not necesary a true reflection of the final result. The final result could possibly end up in a totally different direction (depending on the sample size and other factors).</p>
+<p>Therefore, it is imperative that business decision must not be made based on the interim result. We strongly suggest using the final result for a better decision since the data would have been verified to ensure the highest integrity.</p>
+<p>We hereby take no responsibility on any damages happened from the usage of interim result. You must use it at your own risk.</p>
+
+<div id="showalert-delete"></div>
+
+<div class="csv">
+  <h4>Showing data ordered by the most recent (total of <span class="rows count"></span> records)</h4>
+  <p>In order to view all responses, you would need to either <a download="result.csv" href="" class="download"><i class="pe-download pe-fw"></i> download the data file</a> or <a href="" class="raw"><i class="pe-desktop pe-fw"></i> view the data file online</a>.</p>
+  <textarea class="editing form-control" readonly></textarea>
+  <div class="table rendered"><table class="table"></table></div>
+  <span class="tablenotice">You may need to scroll right if there are many columns <i class="pe-hand-o-right"></i></span>
+</div>
 
 
 <script type="text/javascript">
-  google.charts.load('current', {'packages': ['calendar', ['timeline']] });
-  google.charts.setOnLoadCallback(drawCalendarChart);
+
+  var userid = <?php echo $_SESSION['userid']; ?>;
+  var surveyid = <?php echo $_GET['s']; ?>;
+  var companyid = <?php echo $_SESSION['companyid']; ?>;
+  var level = <?php echo $_SESSION['level']; ?>;
+  var email = "<?php echo $_SESSION['email']; ?>";
+  var ip = "<?php echo getip(); ?>";
+  var api = 'http://www.siamsquare.org.uk';
+  $('#showalert-delete').html("<div class='alert alert-warning'><i class='pe-trash pe-fw'></i> A result record has been deleted</div>").hide();
+
+  function showRow(e, rowIndex) {
+    showhideRow(rowIndex, true);
+    e.preventDefault();
+    return false;
+  }
+  function hideRow(e, rowIndex) {
+    showhideRow(rowIndex, false);
+    e.preventDefault();
+    return false;
+  }
+  function showhideRow(rowIndex, show) {
+    document.getElementById("row" + rowIndex).style.display = show ? "" : "none";
+    document.getElementById("rowhide" + rowIndex).style.display = show ? "" : "none";
+    document.getElementById("rowshow" + rowIndex).style.display =  show ? "none" : "";
+  }
+  function getColumn(anArray, columnNumber) {
+    return anArray.map(function(row) {
+      return row[columnNumber];
+    });
+  }
+  function deleteSurveyResult(id) {
+    $.ajax({
+      url: api + '/delete/result/' + surveyid + '/' + id,
+      dataType: 'json',
+      type: 'put',
+      cache: false,
+      contentType: 'application/json; charset=utf-8',
+      success: function (data) {
+        $('#showalert-delete').show();
+        window.setTimeout(function () { $("#showalert-delete").slideUp(500, function () { $("#showalert-delete").hide(); }); }, 3000);
+        $.ajax({
+          url: api + '/log',
+          dataType: 'json',
+          type: 'post',
+          contentType: 'application/json; charset=utf-8',
+          data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted an interim result for <?php echo $project; ?> (id=' + surveyid + ')", "critical": "4" }',
+          success: function(data) { result = data; }
+        });
+      },
+      error: function (error) { alert(error); }
+    });
+    window.setTimeout(function () { window.location.reload(); }, 3300);
+  }
+  function showCSV(rendered) {
+    if (rendered) { if ($(".csv table").html()) { $(".csv .rendered").show(); $(".csv .editing").hide(); } }
+    else { $(".csv .rendered").hide(); $(".csv .editing").show().focus(); }
+  }
+  function renderCSV(objects) {
+    var rows = $.csv.fromObjects(objects, {justArrays: true}); //console.log(rows);
+    if (rows.length < 1) return;
+
+    var table = $(".csv table")[0];
+    $(table).html("").attr("id", "interimtable").addClass("table table-condensed");
+
+    var thead = document.createElement("thead");
+    var tr = document.createElement("tr");
+    var header = rows[0];
+      for (field in header) {
+        var th = document.createElement("th");
+        $(th).html(header[field]).addClass("bg-primary");
+        tr.appendChild(th);
+      }
+    thead.appendChild(tr);
+    $(thead).find('th:first-child').css("background", "#555"); $(thead).find('th:nth-child(2)').css("background", "#555");
+
+    var tbody = document.createElement("tbody");
+    for (var i=1; i<rows.length; i++) {
+      resultid = getColumn(rows,0)
+      tr = document.createElement("tr");
+      var a1 = document.createElement('a'); a1.innerHTML = ' <i class="pe-chevron-down"></i>'; a1.setAttribute('id', 'rowshow' + i); a1.setAttribute('href', ''); a1.setAttribute('onclick', 'return showRow(event, ' + i + ')');
+      var a2 = document.createElement('a'); a2.innerHTML = ' <i class="pe-chevron-up"></i>'; a2.setAttribute('id', 'rowhide' + i); a2.setAttribute('href', ''); a2.setAttribute('onclick', 'return hideRow(event, ' + i + ')'); a2.setAttribute('style', 'display:none');
+<?php if (($_SESSION["level"] >= "6") || ($owner == 1)) { ?>
+      var bb1 = document.createElement('button'); bb1.innerHTML = 'Delete <i class="pe-trash"></i>'; bb1.setAttribute('class', 'btn btn-danger btn-tiny'); bb1.setAttribute('onclick', "deleteSurveyResult('" + resultid[i] + "')");
+      var bb2 = document.createElement('button'); bb2.innerHTML = 'Undelete <i class="pe-undo"></i>'; bb2.setAttribute('class', 'btn btn-warning btn-tiny'); bb2.setAttribute('onclick', "undeleteSurveyResult('" + resultid[i] + "')");
+<?php } ?>
+      var td2 = document.createElement("td"); td2.setAttribute('colspan', '2'); td2.setAttribute('style', 'border-top-style:none');
+      var tr2 = document.createElement("tr"); tr2.setAttribute('id', 'row' + i); tr2.setAttribute('style', 'display:none');
+      for (field in rows[i]) {
+        var td = document.createElement("td");
+        $(td).html(rows[i][field]);
+        // if (td.contains("upload")) { alert("String Found"); }
+        tr.appendChild(td);
+        $(tr).find('td:first-child').append(a1).append(a2);
+      }
+      tbody.appendChild(tr);
+<?php if (($_SESSION["level"] >= "6") || ($owner == 1)) { ?>
+      td2.appendChild(bb1);
+      td2.append(" ");
+      // td2.appendChild(bb2);
+<?php } ?>
+      tr2.appendChild(td2);
+      tbody.appendChild(tr2);
+      $(tbody).find('td:first-child').css("background", "#eee"); $(tbody).find('td:nth-child(2)').css("background", "#eee");
+    }
+    table.appendChild(thead);
+    table.appendChild(tbody);
+  }
+
+  String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+  };
+
+  $(document).ready(function () {
+    var excerptRows = 50;
+    var ttt = <?php echo $datafortable; ?>;
+    var ttt = JSON.stringify(ttt);
+    ttt = ttt.replaceAll("data", ""); ttt = ttt.replaceAll("upload/", "");
+    // ttt = ttt.replaceAll("upload/", "http://www.siamsquare.org/members/assets/upload/");
+    var inArray = JSON.parse(ttt);
+    var outArray = [];
+    for (var row in inArray) { outArray[outArray.length] = parse_object(inArray[row]); }
+    $("span.rows.count").text("" + outArray.length);
+    var csv = $.csv.fromObjects(outArray);
+    renderCSV(outArray.slice(0, excerptRows), this.id);
+    showCSV(true);
+    $(".csv textarea").val(csv);
+    var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+    $(".csv a.download").attr("href", uri);
+    $(".csv textarea").blur(function() {showCSV(true);})
+    $(".csv .raw").click(function() {
+      showCSV(false);
+      $(".csv textarea").focus().select();
+      return false;
+    })
+    $(".csv a.download").click(function() {
+      var data = $(".csv textarea").val();
+      if (data) { Events.download(data.length); return true; }
+      else { return false; }
+    });
+    $(".csv textarea").click(function() {$(this).focus().select();});
+  });
+
+</script>
+
+
+<style media="screen">
+  svg g:first-of-type path { stroke: #e6e6e6; }
+  svg g:first-of-type rect:not(:last-child) { fill: #ffffff; }
+</style>
+
+<script type="text/javascript">
+  google.charts.load('current', {'packages': ['calendar', 'timeline', 'gauge'] });
+  // google.charts.setOnLoadCallback(drawCalendarChart);
   google.charts.setOnLoadCallback(drawTimelineChart);
+  google.charts.setOnLoadCallback(drawGaugeChart);
 
   function drawCalendarChart() {
     var dataTable = new google.visualization.DataTable();
@@ -170,35 +440,39 @@ echo "<h3>Project $project</h3>\n";
     var container = document.getElementById('timeline');
     var chart = new google.visualization.Timeline(container);
     var dataTable = new google.visualization.DataTable();
-    dataTable.addColumn({ type: 'string', id: 'Term' });
-    dataTable.addColumn({ type: 'string', id: 'Name' });
+    dataTable.addColumn({ type: 'string', id: 'Project' });
+    dataTable.addColumn({ type: 'string', id: 'Status' });
     dataTable.addColumn({ type: 'date', id: 'Start' });
     dataTable.addColumn({ type: 'date', id: 'End' });
-    dataTable.addRows([
-      [ '1', 'Project setup',   new Date(2016, 10, 13), new Date(2016, 10, 17) ],
-      [ '2', 'Data collection', new Date(2016, 10, 16), new Date(2016, 10, 18) ],
-      [ '3', 'Data collection (actual)', new Date(<?php echo $t1['year']; ?>, <?php echo $t1['month']; ?>, <?php echo $t1['day']; ?>), new Date(<?php echo $t2['year']; ?>, <?php echo $t2['month']; ?>, <?php echo $t2['day']; ?>) ],
-      [ '4', 'Result delivery', new Date(2016, 10, 18), new Date(2016, 10, 19) ],
-    ]);
+    dataTable.addRows(<?php echo $timelinedata; ?>);
     var options = {
-      height: 220, // 100, 140, 180, 220, 260 ,300
-      // colors: ['#cbb69d', '#603913', '#c69c6e'],
-      // backgroundColor: '#eee  ',
-      // avoidOverlappingGridLines: false,
+      // height: <?php echo $height; ?>,
+      colors: [ '#B3FFB3', '#00E600', '#009900', '#AAAAAA' ],
+      backgroundColor: { fill: 'transparent' },
+      avoidOverlappingGridLines: false,
       timeline: {
-        // showRowLabels: false,
-        // groupByRowLabel: false,
-        // colorByRowLabel: true,
-        // singleColor: '#8d8',
-        // rowLabelStyle: { fontName: 'Helvetica', fontSize: 24, color: '#603913' },
-        // barLabelStyle: { fontName: 'museo', fontSize: 15 },
+        groupByRowLabel: false,
+        colorByRow: true,
+        showRowLabels: true,
       }
     };
     chart.draw(dataTable, options);
   }
 
-</script>
+  function drawGaugeChart() {
+    var container = document.getElementById('gaugechart');
+    var chart = new google.visualization.Gauge(container);
+    var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn('number', '% Strike rate');
+    dataTable.addColumn('number', '% Achievement');
+    dataTable.addRows(2);
+    dataTable.setCell(0, 0, 120);
+    dataTable.setCell(0, 1, <?php echo $achievement; ?>);
+    var options = { width: 150, height: 400, redFrom: 0, redTo: 10, yellowFrom:10, yellowTo: 30, greenFrom:30, greenTo: 100, minorTicks: 5 };
+    chart.draw(dataTable, options);
+  }
 
+</script>
 
 <br>
 

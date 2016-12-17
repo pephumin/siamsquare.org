@@ -79,8 +79,17 @@ echo "<p>While you can edit your questionnaire as often as you want, it is impor
     return rip;
   }
   // Start scripting by pe (phumin@sawasdee.org)
-  var options = { questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "matrixdynamic", "html"] };
-  // var options = {};
+  // var options = {
+  //   questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "matrixdynamic", "html"],
+  //   showJSONEditorTab: false,
+  //   showEmbededSurveyTab: false
+  // };
+  // var options = {
+  //   questionTypes: ["html", "radiogroup", "dropdown", "checkbox", "text", "comment", "file", "matrix", "matrixdropdown"],
+  //   showJSONEditorTab: false,
+  //   showEmbededSurveyTab: false
+  // };
+  var options = {};
   options.generateValidJSON = true;
   Survey.Survey.cssType = "bootstrap";
   var editor = new SurveyEditor.SurveyEditor("editor", options);
@@ -110,9 +119,9 @@ echo "<p>While you can edit your questionnaire as often as you want, it is impor
       data: '{ "data": ' + JSON.stringify(editor.text) + ' }',
       success: function(data) {
         // $('#showsaving').show();
-        // window.setTimeout(function () { $("#showsaving").slideUp(500, function () { $("#showsaving").hide(); }); }, 5000);
+        // window.setTimeout(function () { $("#showsaving").slideUp(500, function () { $("#showsaving").hide(); }); }, 3000);
         // $('#showsavesuccess').show();
-        // window.setTimeout(function () { $("#showsavesuccess").slideUp(500, function () { $("#showsavesuccess").hide(); }); }, 5000);
+        // window.setTimeout(function () { $("#showsavesuccess").slideUp(500, function () { $("#showsavesuccess").hide(); }); }, 3000);
         $.ajax({
           url: api + '/log/' + userid + '/' + surveyid,
           dataType: 'json',
@@ -136,11 +145,11 @@ echo "<p>While you can edit your questionnaire as often as you want, it is impor
     var $this = $(this);
     $this.button('loading');
     $('#showsaving').show();
-    window.setTimeout(function () { $("#showsaving").slideUp(500, function () { $("#showsaving").hide(); }); }, 5000);
+    window.setTimeout(function () { $("#showsaving").slideUp(500, function () { $("#showsaving").hide(); }); }, 3000);
     setTimeout(function() {
       $this.button('reset');
       $('#showsavesuccess').show();
-      window.setTimeout(function () { $("#showsavesuccess").slideUp(500, function () { $("#showsavesuccess").hide(); }); }, 5000);
+      window.setTimeout(function () { $("#showsavesuccess").slideUp(500, function () { $("#showsavesuccess").hide(); }); }, 3000);
     }, 5000);
   });
 

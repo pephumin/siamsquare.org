@@ -109,7 +109,7 @@ echo $clientlogo;
   var email = "<?php echo $email; ?>";
   var title = "Project <?php echo $project; ?>";
   var ip = "<?php echo getip(); ?>";
-  $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> เรากำลังอัพโหลดรูปไปยังระบบ <strong>และอีกสักครู่คุณจะได้รับข้อความจากระบบว่าดำเนินการสำเร็จ</strong> กรุณาอย่ารีเฟรชหรือกดส่งซ้ำ</div>").hide();
+  $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> กดยืนยันเพื่อส่ง แล้วรอจนข้อความเปลี่ยนเป็นว่า <strong>ยืนยันระบบดำเนินการสำเร็จ</strong> กรุณาอย่ารีเฟรชหรือกดส่งซ้ำในระหว่างรออัพโหลด</div>").hide();
   $('#showcompletion').html("<div class='alert alert-success'><i class='pe-check-square-o pe-lg pe-fw'></i> เราได้ทำการจัดเก็บความคิดเห็นของคุณลงระบบเป็นที่เรียบร้อยแล้ว</div>").hide();
   // mm = getsurveyinfo(surveyid);
   Survey.Survey.cssType = "bootstrap";
@@ -155,8 +155,8 @@ echo $clientlogo;
       urlRequestError: "เกิดข้อผิดผลาดสำหรับ {0} {1}",
       urlGetChoicesError: "ไม่มีข้อมูลหรือการตั้งค่าไม่ถูกต้อง",
       exceedMaxSize: "ไฟล์จะต้องมีขนาดไม่เกิน {0}",
-      otherRequiredError: "กรุณาใส่ค่าอื่นแทน",
-      uploadingFile: "กำลังอัพโหลดไฟล์อยู่ กรุณารอสักครู่แล้วลองใหม่อีกครั้ง",
+      otherRequiredError: "กรุณาระบุว่าอื่นๆคืออะไร",
+      uploadingFile: "กำลังอัพโหลดไฟล์อยู่ กรุณารอสักครู่",
       addRow: "เพิ่มแถว",
       removeRow: "ลบแถว"
     };

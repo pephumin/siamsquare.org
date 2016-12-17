@@ -75,7 +75,7 @@ echo "<hr>\n";
       data: '{"rd": "' + cid + '", "ip": "' + cip + '", "email": "' + email + '",  "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ', "status": "0" }',
       success: function(data) {
         $('#showalert').show();
-        window.setTimeout(function () { $("#showalert").slideUp(500, function () { $("#showalert").hide(); }); }, 5000);
+        window.setTimeout(function () { $("#showalert").slideUp(500, function () { $("#showalert").hide(); }); }, 3000);
         $.ajax({
           url: api + '/log/' + cid + '/' + id,
           dataType: 'json',

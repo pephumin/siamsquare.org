@@ -4,11 +4,11 @@ $title = "My team";
 pageHeader($title);
 echo "<h2>$title</h2>";
 
-$rolelist = "";
-// $rolelist .= "new Role(\"Adminitrator\", 9), ";
-$rolelist .= "new Role(\"Manager\", 6), ";
-$rolelist .= "new Role(\"User\", 5), ";
-$rolelist .= "new Role(\"Guest\", 4), ";
+$rolelist = "[ ";
+$rolelist .= "new RoleListing(6, \"Manager\"), ";
+$rolelist .= "new RoleListing(5, \"User\"), ";
+$rolelist .= "new RoleListing(4, \"Guest\"), ";
+$rolelist .= " ]";
 
 ?>
 
@@ -24,7 +24,7 @@ $rolelist .= "new Role(\"Guest\", 4), ";
     <p class="pull-right"><a class="btn btn-primary" data-bind="click: createNew, enable: !isNewMemberCreating()" href=""><i class="pe-user-plus pe-fw"></i> New member</a></p>
   </div>
   <div class="col-sm-12">
-    <div id="showalert-create"></div><div id="showalert-delete"></div><div id="showalert-edit"></div><div id="showalert-suspend"></div>
+    <div id="showalert-create"></div><div id="showalert-delete"></div><div id="showalert-edit"></div><div id="showalert-suspend"></div><div id="showalert-changerole"></div>
   </div>
 </div>
 <?php } ?>
@@ -35,13 +35,14 @@ $rolelist .= "new Role(\"Guest\", 4), ";
     <div class="members">
       <div class="members-header-new"></div>
       <div class="members-body">
-        <h4 class="white">Create a new member</h4>
+        <h4 class="white" style="margin-bottom:5px !important">Create a new member</h4>
+        <div class="white small" style="margin-bottom:1.2rem">(Using the below avatar as a default)</div>
         <p><img src="/admin/assets/img/u/M6.svg" class="img-circle members-photo" alt="Avatar"></p>
-        <div class="input-group"><span class="input-group-addon"><small>Name:</small></span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberName" onclick="this.select()" placeholder="Enter first and last name"></div>
+        <div class="input-group"><span class="input-group-addon"><small>Name:</small></span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberName" onclick="this.select()" placeholder="Enter first and last name"></div><br>
         <div class="input-group"><span class="input-group-addon"><small>Email</small>:</span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberEmail" onclick="this.select()" placeholder="Enter email address"></div><br>
         <a class="btn btn-primary btn-tiny" data-bind="click: postNew, enable: newMemberName() != '', enable: newMemberEmail() != ''" href=""><i class="pe-user-plus"></i> Create</a>
         <a class="btn btn-default btn-tiny" data-bind="click: cancelNew" href=""><i class="pe-times-circle-o"></i> Cancel</a><br><br>
-        <small class="red">Please make sure you input the working/ correct email when creating a new user</small>
+        <small class="red">Only create using a working email</small>
       </div>
     </div>
   </div>
@@ -116,12 +117,7 @@ $rolelist .= "new Role(\"Guest\", 4), ";
         <div class="row" data-bind="visible: isEditingLevel()">
           <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Role <a href="" data-bind="click: $parent.cancelEditLevel"><i class="pe-times-circle-o"></i></a></small></div>
           <div class="col-sm-7" style="padding:2px 0px">
-            <select data-bind="options: allRoles, optionsText: 'role', optionValue: 'selectedRole', optionsCaption: 'Choose...', selectedOption: currentRole, value: selectedRole" class="form-control input-sm"></select>
-            <!-- <small>
-              <a class="btn btn-default btn-tiny" data-bind="click: $parent.L6" href="">Manager</a>
-              <a class="btn btn-default btn-tiny" data-bind="click: $parent.L5" href="">User</a>
-              <a class="btn btn-default btn-tiny" data-bind="click: $parent.cancelEditLevel" href="">Cancel <i class="pe-times-circle-o"></i></a>
-            </small> -->
+            <select data-bind="options: rlist, optionsText: 'role', optionsValue: 'level', value: selectedRole, event: { change: $parent.changinglevel }" class="form-control input-sm"></select>
           </div>
         </div>
         <br>
@@ -156,8 +152,13 @@ $rolelist .= "new Role(\"Guest\", 4), ";
   $('#showalert-delete').html("<div class='alert alert-danger'><i class='pe-trash pe-fw'></i> The user has been deleted</div>").hide();
   $('#showalert-edit').html("<div class='alert alert-success'><i class='pe-edit pe-fw'></i> The user information has been edited</div>").hide();
   $('#showalert-suspend').html("<div class='alert alert-warning'><i class='pe-archive pe-fw'></i> The user has been suspended</div>").hide();
-
-  var Listing = function (id, userid, email, fullname, mobile, avatar, companyid, status, role, level, created, updated, lastlogin, lastlogin2, counts) {
+  $('#showalert-changerole').html("<div class='alert alert-info'><i class='pe-cog pe-fw'></i> You have successfully changed this user's role</div>").hide();
+  var RoleListing = function(level, role) {
+    this.level = ko.observable(level);
+    this.role = ko.observable(role);
+    this.list = ko.computed(function() { return this.role() + " (" + this.level() + ")"; }, this);
+  }
+  var Listing = function (id, userid, email, fullname, mobile, avatar, companyid, status, role, level, created, updated, lastlogin, lastlogin2, counts, RoleListing) {
     this.id = id;
     this.userid = userid;
     this.email = ko.observable(email);
@@ -186,36 +187,9 @@ $rolelist .= "new Role(\"Guest\", 4), ";
     this.isEditingStatus = ko.observable(false);
     this.isEditingRole = ko.observable(false);
     this.isEditingLevel = ko.observable(false);
-    this.allRoles = ko.observableArray([<?php echo $rolelist; ?>]);
-    // this.currentRole = ko.observableArray([]);
-    this.selectedRole = ko.observable(); // Nothing selected by default
-    this.selectedRole.subscribe(function(data) {
-      $.ajax({
-        url: api + '/member/' + id + '/changerole',
-        dataType: 'json',
-        type: 'put',
-        contentType: 'application/json; charset=utf-8',
-        data: '{ "level": ' + data.level() + ' }',
-        success: function (data) {
-          $('#showalert-changeowner').show();
-          window.setTimeout(function () { $("#showalert-changeowner").slideUp(500, function () { $("#showalert-changeowner").hide(); }); }, 5000);
-          $.ajax({
-            url: api + '/log',
-            dataType: 'json',
-            type: 'post',
-            contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "<?php echo $_SESSION['userid']; ?>", "ip": "' + ip + '", "data": "<?php echo $_SESSION['email']; ?> changed role for ' + fullname + ' (id=' + id + ')", "critical": "4" }',
-            success: function(data) { result = data; }
-          });
-          window.location.reload();
-        },
-        error: function (error) { self.onFail(error); }
-      });
-    });
-  }
-  var Role = function(role, level) {
-    this.role = ko.observable(role);
-    this.level = ko.observable(level);
+    options = <?php echo $rolelist; ?>;
+    this.rlist = ko.observableArray(options);
+    this.selectedRole = ko.observable(level);
   }
   var ViewModel = function () {
     var self = this;
@@ -247,7 +221,7 @@ $rolelist .= "new Role(\"Guest\", 4), ";
         data: '{ "status": "0" }',
         success: function (data) {
           $('#showalert-suspend').show();
-          window.setTimeout(function () { $("#showalert-suspend").slideUp(500, function () { $("#showalert-suspend").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-suspend").slideUp(500, function () { $("#showalert-suspend").hide(); }); }, 3000);
           self.removeMember(member);
           $.ajax({
             url: api + '/log',
@@ -270,7 +244,7 @@ $rolelist .= "new Role(\"Guest\", 4), ";
         data: '{ "status": "-1" }',
         success: function (data) {
           $('#showalert-delete').show();
-          window.setTimeout(function () { $("#showalert-delete").slideUp(500, function () { $("#showalert-delete").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-delete").slideUp(500, function () { $("#showalert-delete").hide(); }); }, 3000);
           self.removeMember(member);
           $.ajax({
             url: api + '/log',
@@ -284,101 +258,124 @@ $rolelist .= "new Role(\"Guest\", 4), ";
         error: function (error) { self.onFail(error); }
       });
     }
-    this.L6 = function (member) {
-      $.ajax({
-        url: api + '/member/' + member.id + '/L6',
-        dataType: 'json',
-        type: 'put',
-        contentType: 'application/json; charset=utf-8',
-        data: '{ "level": "6" }',
-        success: function (data) {
-          $('#showalert-edit').show();
-          window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 5000);
-          // self.removeMember(member);
-          $.ajax({
-            url: api + '/log',
-            dataType: 'json',
-            type: 'post',
-            contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be Manager", "critical": "4" }',
-            success: function(data) { result = data; }
-          });
-          window.location.reload();
-        },
-        error: function (error) { self.onFail(error); }
-      });
-    }
-    this.L5 = function (member) {
-      $.ajax({
-        url: api + '/member/' + member.id + '/L5',
-        dataType: 'json',
-        type: 'put',
-        contentType: 'application/json; charset=utf-8',
-        data: '{ "level": "5" }',
-        success: function (data) {
-          $('#showalert-edit').show();
-          window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 5000);
-          // self.removeMember(member);
-          $.ajax({
-            url: api + '/log',
-            dataType: 'json',
-            type: 'post',
-            contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be User", "critical": "4" }',
-            success: function(data) { result = data; }
-          });
-          window.location.reload();
-        },
-        error: function (error) { self.onFail(error); }
-      });
-    }
-    this.L4 = function (member) {
-      $.ajax({
-        url: api + '/member/' + member.id + '/L4',
-        dataType: 'json',
-        type: 'put',
-        contentType: 'application/json; charset=utf-8',
-        data: '{ "level": "4" }',
-        success: function (data) {
-          $('#showalert-edit').show();
-          window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 5000);
-          // self.removeMember(member);
-          $.ajax({
-            url: api + '/log',
-            dataType: 'json',
-            type: 'post',
-            contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be Data Processing", "critical": "4" }',
-            success: function(data) { result = data; }
-          });
-          window.location.reload();
-        },
-        error: function (error) { self.onFail(error); }
-      });
-    }
-    this.L3 = function (member) {
+    // this.L6 = function (member) {
+    //   $.ajax({
+    //     url: api + '/member/' + member.id + '/L6',
+    //     dataType: 'json',
+    //     type: 'put',
+    //     contentType: 'application/json; charset=utf-8',
+    //     data: '{ "level": "6" }',
+    //     success: function (data) {
+    //       $('#showalert-edit').show();
+    //       window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 3000);
+    //       // self.removeMember(member);
+    //       $.ajax({
+    //         url: api + '/log',
+    //         dataType: 'json',
+    //         type: 'post',
+    //         contentType: 'application/json; charset=utf-8',
+    //         data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be Manager", "critical": "4" }',
+    //         success: function(data) { result = data; }
+    //       });
+    //       window.location.reload();
+    //     },
+    //     error: function (error) { self.onFail(error); }
+    //   });
+    // }
+    // this.L5 = function (member) {
+    //   $.ajax({
+    //     url: api + '/member/' + member.id + '/L5',
+    //     dataType: 'json',
+    //     type: 'put',
+    //     contentType: 'application/json; charset=utf-8',
+    //     data: '{ "level": "5" }',
+    //     success: function (data) {
+    //       $('#showalert-edit').show();
+    //       window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 3000);
+    //       // self.removeMember(member);
+    //       $.ajax({
+    //         url: api + '/log',
+    //         dataType: 'json',
+    //         type: 'post',
+    //         contentType: 'application/json; charset=utf-8',
+    //         data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be User", "critical": "4" }',
+    //         success: function(data) { result = data; }
+    //       });
+    //       window.location.reload();
+    //     },
+    //     error: function (error) { self.onFail(error); }
+    //   });
+    // }
+    // this.L4 = function (member) {
+    //   $.ajax({
+    //     url: api + '/member/' + member.id + '/L4',
+    //     dataType: 'json',
+    //     type: 'put',
+    //     contentType: 'application/json; charset=utf-8',
+    //     data: '{ "level": "4" }',
+    //     success: function (data) {
+    //       $('#showalert-edit').show();
+    //       window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 3000);
+    //       // self.removeMember(member);
+    //       $.ajax({
+    //         url: api + '/log',
+    //         dataType: 'json',
+    //         type: 'post',
+    //         contentType: 'application/json; charset=utf-8',
+    //         data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be Data Processing", "critical": "4" }',
+    //         success: function(data) { result = data; }
+    //       });
+    //       window.location.reload();
+    //     },
+    //     error: function (error) { self.onFail(error); }
+    //   });
+    // }
+    // this.L3 = function (member) {
+    //   $.ajax({
+    //     url: api + '/member/' + member.id + '/L3',
+    //     dataType: 'json',
+    //     type: 'put',
+    //     contentType: 'application/json; charset=utf-8',
+    //     data: '{ "level": "3" }',
+    //     success: function (data) {
+    //       $('#showalert-edit').show();
+    //       window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 3000);
+    //       // self.removeMember(member);
+    //       $.ajax({
+    //         url: api + '/log',
+    //         dataType: 'json',
+    //         type: 'post',
+    //         contentType: 'application/json; charset=utf-8',
+    //         data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be Fieldwork", "critical": "4" }',
+    //         success: function(data) { result = data; }
+    //       });
+    //       window.location.reload();
+    //     },
+    //     error: function (error) { self.onFail(error); }
+    //   });
+    // }
+    this.changinglevel = function(member) {
       $.ajax({
         url: api + '/member/' + member.id + '/L3',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "level": "3" }',
+        data: '{ "level": ' + member.selectedRole() + ' }',
         success: function (data) {
-          $('#showalert-edit').show();
-          window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 5000);
-          // self.removeMember(member);
+          $('#showalert-changerole').show();
+          window.setTimeout(function () { $("#showalert-changerole").slideUp(500, function () { $("#showalert-changerole").hide(); }); }, 3000);
           $.ajax({
             url: api + '/log',
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be Fieldwork", "critical": "4" }',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed role for ' + member.fullname() + ' (' + member.email() + ')", "critical": "4" }',
             success: function(data) { result = data; }
           });
-          window.location.reload();
         },
         error: function (error) { self.onFail(error); }
       });
+      window.setTimeout(function () { window.location.reload(); }, 3300);
     }
     this.removeMember = function (member) {
       var index = self.members.indexOf(member);
@@ -402,7 +399,7 @@ $rolelist .= "new Role(\"Guest\", 4), ";
         success: function (data) {
           self.members.splice(0, 0, self.createMemberObject(data));
           $('#showalert-create').show();
-          window.setTimeout(function () { $("#showalert-create").slideUp(500, function () { $("#showalert-create").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-create").slideUp(500, function () { $("#showalert-create").hide(); }); }, 3000);
           $.ajax({
             url: api + '/log',
             dataType: 'json',
@@ -430,7 +427,7 @@ $rolelist .= "new Role(\"Guest\", 4), ";
         success: function (data) {
           member.fullname(member.editingFullName());
           $('#showalert-edit').show();
-          window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 3000);
           $.ajax({
             url: api + '/log',
             dataType: 'json',
@@ -459,7 +456,7 @@ $rolelist .= "new Role(\"Guest\", 4), ";
         success: function (data) {
           member.email(member.editingEmail());
           $('#showalert-edit').show();
-          window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 3000);
           $.ajax({
             url: api + '/log',
             dataType: 'json',
@@ -488,7 +485,7 @@ $rolelist .= "new Role(\"Guest\", 4), ";
         success: function (data) {
           member.mobile(member.editingMobile());
           $('#showalert-edit').show();
-          window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 3000);
           $.ajax({
             url: api + '/log',
             dataType: 'json',
@@ -527,7 +524,7 @@ $rolelist .= "new Role(\"Guest\", 4), ";
       if (data.avatar != null) { avatar = data.avatar; } else { avatar = "/admin/assets/img/u/M6.svg"; }
       if (data.level == 9) { role = "Administrator"; } else if (data.level == 6) { role = "Manager"; } else if (data.level == 5) { role = "User"; } else if (data.level == 4) { role = "Guest"; }
       //issuspended = false; if (data.status = "0") { issuspended = true; } else { issuspended = false; }
-      return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, avatar, companyid, data.status, role, data.level, created, updated, lastlogin, lastlogin2, data.counts);
+      return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, avatar, companyid, data.status, role, data.level, created, updated, lastlogin, lastlogin2, data.counts, RoleListing);
     }
     this.onFail = function (error) { alert(JSON.stringify(error)); }
     this.showInfo = function (member) { member.showInfo(!member.showInfo()); }

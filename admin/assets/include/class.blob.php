@@ -14,10 +14,10 @@
 
 class blobMe {
 
-  const DB_HOST = 'magenta.thaiweb.net';
-  const DB_NAME = 'siamsquare';
-  const DB_USER = 'sinbad';
-  const DB_PASSWORD = '2bbadd';
+  const DB_HOST = '';
+  const DB_NAME = '';
+  const DB_USER = '';
+  const DB_PASSWORD = '';
 
   private $pdo = null;
 

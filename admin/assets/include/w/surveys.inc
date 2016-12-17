@@ -26,8 +26,12 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 $db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
 
 // Get user list
-if ($_SESSION['level'] == 9) { $q1 = $db->prepare("SELECT U.id, U.email, U.fullname, U.level, U.companyid, C.company FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.status >= 0 ORDER BY C.company ASC, U.level DESC"); }
-else { $q1 = $db->prepare("SELECT U.id, U.email, U.fullname, U.level, C.company FROM j_users U, j_companies C WHERE U.companyid = :companyid AND U.status >= 0 ORDER BY U.level DESC"); }
+if ($_SESSION['level'] == 9) {
+  $q1 = $db->prepare("SELECT U.id, U.email, U.fullname, U.level, U.companyid, C.company FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.status >= 0 ORDER BY C.company ASC, U.level DESC");
+} else {
+  $q1 = $db->prepare("SELECT U.id, U.email, U.fullname, U.level, U.companyid, C.company FROM j_users U, j_companies C WHERE U.companyid = :companyid AND U.companyid = C.id AND U.status >= 0 ORDER BY U.level DESC");
+  $q1->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+}
 $q1->execute();
 $userlist = "[ \n";
 while ($row = $q1->fetchObject()) { $userlist .= 'new UserListing('.$row->id.', "'.$row->fullname.'", "'.$row->email.'", "'.$row->company.'", '.$row->companyid.'), '."\n"; }
@@ -96,12 +100,12 @@ $userlist .= " ]";
 <?php } ?>
       <td align="right">
         <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=edit&amp;s=' + id }, visible: $parent.showActive() == 'A'">Questionnaire <i class="pe-edit"></i></a>
-        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=pilot&amp;s=' + id }, visible: $parent.showActive() == 'A'">Pilot test <i class="pe-paper-plane"></i></a>
+        <a class="btn btn-info btn-tiny" data-bind="attr: { href: '/r.php?w=pilot&amp;s=' + id }, visible: $parent.showActive() == 'A'" target="_blank">Pilot test <i class="pe-paper-plane"></i></a>
         <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the next step" data-bind="click: $parent.one2two, visible: $parent.showActive() == 'A'" href=""><i class="pe-arrow-circle-right pe-lg"></i></a><?php } ?>
         <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the previous step" data-bind="click: $parent.two2one, visible: $parent.showActive() == 'B'" href=""><i class="pe-arrow-circle-left pe-lg"></i></a><?php } ?>
         <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=progress&amp;s=' + id }, visible: $parent.showActive() == 'B'">Progress <i class="pe-flask"></i></a>
-        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=interim&amp;s=' + id }, visible: $parent.showActive() == 'B'">Interim <i class="pe-binoculars"></i></a>
-        <a class="btn btn-primary btn-tiny" data-bind="attr: { href: '/members/?w=run&amp;by=pass&amp;s=' + id }, visible: $parent.showActive() == 'B'" target="_blank">Live <i class="pe-plane"></i></a>
+        <!-- <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=interim&amp;s=' + id }, visible: $parent.showActive() == 'B'">Interim <i class="pe-binoculars"></i></a> -->
+        <a class="btn btn-primary btn-tiny" data-bind="attr: { href: '/r.php?s=' + id }, visible: $parent.showActive() == 'B'" target="_blank">Live <i class="pe-plane"></i></a>
         <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the next step" data-bind="click: $parent.two2three, visible: $parent.showActive() == 'B'" href=""><i class="pe-arrow-circle-right pe-lg"></i></a><?php } ?>
         <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the previous step" data-bind="click: $parent.three2two, visible: $parent.showActive() == 'C'" href=""><i class="pe-arrow-circle-left pe-lg"></i></a><?php } ?>
         <!-- <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=data&amp;s=' + id }, visible: $parent.showActive() == 'C'">Data <i class="pe-table"></i></a> -->
@@ -120,7 +124,7 @@ $userlist .= " ]";
       <td style="border-top: none">Project owner <a data-bind="if: canedit, click: $parent.startEditOwner, visible: $parent.showActive() == 'A' && !isEditingOwner()" title="Change project owner"> <i class="pe-edit"></i></a><a data-bind="click: $parent.cancelEditOwner, visible: isEditingOwner()"><i class="pe-times-circle-o"></i></a></td>
       <td style="border-top: none" colspan="2">
         <span data-bind="visible: !isEditingOwner()"><strong><span data-bind="text: fullname"></span></strong> (<span data-bind="text: email, visible: !isEditingOwner()"></span>)</span>
-        <span data-bind="visible: isEditingOwner()"><div class="col-sm-6" style="padding:0px"><select data-bind="options: ulist, optionsText: '<?php if ($_SESSION['level'] == "9") { ?>list1<?php } else { ?>list2<?php }?>', optionsValue: 'userid', value: selectedUser" class="form-control input-sm"></select></div></span>
+        <span data-bind="visible: isEditingOwner()"><div class="col-sm-6" style="padding:0px"><select data-bind="options: ulist, optionsText: '<?php if ($_SESSION['level'] == "9") { ?>list1<?php } else { ?>list2<?php }?>', optionsValue: 'userid', value: selectedUser, event: { change: $parent.changingowner }" class="form-control input-sm"></select></div></span>
       </td>
     </tr>
     <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-yellow': showInfo() }">
@@ -146,12 +150,10 @@ $userlist .= " ]";
         <div data-bind="if: private, visible: isEditingPP()">
           <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPublic, visible: $parent.showActive() == 'A'" href="">Make it Public <i class="pe-folder-open-o"></i></a>
           <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPrivate, visible: $parent.showActive() == 'A'" disabled>Make it Private <i class="pe-folder-o"></i></a>
-          <!-- <a class="btn btn-default btn-tiny" data-bind="click: $parent.cancelEditPP, visible: $parent.showActive() == 'A'" href="">Cancel <i class="pe-times-circle-o"></i></a> -->
         </div>
         <div data-bind="ifnot: private, visible: isEditingPP()">
           <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPublic, visible: $parent.showActive() == 'A'" disabled>Make it Public <i class="pe-folder-open-o"></i></a>
           <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPrivate, visible: $parent.showActive() == 'A'" href="">Make it Private <i class="pe-folder-o"></i></a>
-          <!-- <a class="btn btn-default btn-tiny" data-bind="click: $parent.cancelEditPP, visible: $parent.showActive() == 'A'" href="">Cancel <i class="pe-times-circle-o"></i></a> -->
         </div>
       </td>
       <td style="border-top: none">
@@ -170,7 +172,7 @@ $userlist .= " ]";
       <td style="border-top: none" colspan="2"><span data-bind="text: updated"></span></td>
     </tr>
     <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-yellow': showInfo() }">
-      <td style="border-top: none" colspan="3" data-bind="if: canedit, visible: $parent.showActive() == 'A'"><a class="btn btn-danger btn-tiny pull-right" style="white-space:normal;width:100px;word-wrap:break-word"><i class="pe-flag-checkered pe-fw"></i> Ready for data-collection</a><p>Once you are sure this project is ready for fieldwork, please submit your request using this button and we will proceed for you as soon as possible. <strong>It is important to understand that once the project is moved to the Data-collection stage, you <em>will not</em> be able to make any changes in the questionaire.</strong></p></td>
+      <td style="border-top: none" colspan="3" data-bind="if: canedit, visible: $parent.showActive() == 'A'"><a class="btn btn-danger btn-tiny pull-right" style="white-space:normal;width:100px;word-wrap:break-word"><i class="pe-flag-checkered pe-fw"></i> Ready for data-collection</a><div>Once you are sure this project is ready for fieldwork, please submit your request using this button and we will proceed for you as soon as possible. <strong>It is important to understand that once the project is moved to the Data-collection stage, you <em>will not</em> be able to make any changes in the questionaire.</strong></div></td>
     </tr>
     <!-- /ko -->
   </tbody>
@@ -239,30 +241,6 @@ $userlist .= " ]";
     options = <?php echo $userlist; ?>;
     this.ulist = ko.observableArray(options);
     this.selectedUser = ko.observable(userid);
-    this.selectedUser.subscribe(function(data) {
-      $.ajax({
-        url: api + '/survey/' + id + '/changeowner',
-        dataType: 'json',
-        type: 'put',
-        contentType: 'application/json; charset=utf-8',
-        data: '{ "userid": ' + data + ' }',
-        success: function (data) {
-          $('#showalert-changeowner').show();
-          window.setTimeout(function () { $("#showalert-changeowner").slideUp(500, function () { $("#showalert-changeowner").hide(); }); }, 5000);
-          console.log(data);
-          $.ajax({
-            url: api + '/log',
-            dataType: 'json',
-            type: 'post',
-            contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed survey owner for ' + title + ' (id=' + id + ')", "critical": "4" }',
-            success: function(data) { result = data; }
-          });
-          window.location.reload();
-        },
-        error: function (error) { self.onFail(error); }
-      });
-    }, this);
   }
   var ViewModel = function () {
     var self = this;
@@ -301,7 +279,7 @@ $userlist .= " ]";
         data: '{ "status": 4 }',
         success: function (data) {
           $('#showalert-archive').show();
-          window.setTimeout(function () { $("#showalert-archive").slideUp(500, function () { $("#showalert-archive").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-archive").slideUp(500, function () { $("#showalert-archive").hide(); }); }, 3000);
           self.removeSurvey(survey);
           $.ajax({
             url: api + '/log/' + userid + '/' + survey.id,
@@ -324,7 +302,7 @@ $userlist .= " ]";
         data: '{ "status": 3 }',
         success: function (data) {
           $('#showalert-restore').show();
-          window.setTimeout(function () { $("#showalert-restore").slideUp(500, function () { $("#showalert-restore").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-restore").slideUp(500, function () { $("#showalert-restore").hide(); }); }, 3000);
           self.removeSurvey(survey);
           $.ajax({
             url: api + '/log/' + userid + '/' + survey.id,
@@ -347,7 +325,7 @@ $userlist .= " ]";
         data: '{ "status": -1 }',
         success: function (data) {
           $('#showalert-delete').show();
-          window.setTimeout(function () { $("#showalert-delete").slideUp(500, function () { $("#showalert-delete").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-delete").slideUp(500, function () { $("#showalert-delete").hide(); }); }, 3000);
           self.removeSurvey(survey);
           $.ajax({
             url: api + '/log/' + userid + '/' + survey.id,
@@ -370,7 +348,7 @@ $userlist .= " ]";
         data: '{ "status": 2, "L1": "' + TimeNow + '" }',
         success: function (data) {
           $('#showalert-move').show();
-          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
           self.removeSurvey(survey);
         },
         error: function (error) { self.onFail(error); }
@@ -385,7 +363,7 @@ $userlist .= " ]";
         data: '{ "status": 3, "L2": "' + TimeNow + '" }',
         success: function (data) {
           $('#showalert-move').show();
-          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
           self.removeSurvey(survey);
         },
         error: function (error) { self.onFail(error); }
@@ -400,7 +378,7 @@ $userlist .= " ]";
         data: '{ "status": 1 }',
         success: function (data) {
           $('#showalert-move').show();
-          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
           self.removeSurvey(survey);
         },
         error: function (error) { self.onFail(error); }
@@ -415,7 +393,7 @@ $userlist .= " ]";
         data: '{ "status": 4, "L3": "' + TimeNow + '" }',
         success: function (data) {
           $('#showalert-move').show();
-          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
           self.removeSurvey(survey);
         },
         error: function (error) { self.onFail(error); }
@@ -430,7 +408,7 @@ $userlist .= " ]";
         data: '{ "status": 2 }',
         success: function (data) {
           $('#showalert-move').show();
-          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
           self.removeSurvey(survey);
         },
         error: function (error) { self.onFail(error); }
@@ -445,7 +423,7 @@ $userlist .= " ]";
         data: '{ "status": 3 }',
         success: function (data) {
           $('#showalert-move').show();
-          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
           self.removeSurvey(survey);
         },
         error: function (error) { self.onFail(error); }
@@ -460,7 +438,7 @@ $userlist .= " ]";
         data: '{ "private": 0 }',
         success: function (data) {
           $('#showalert-pp').show();
-          window.setTimeout(function () { $("#showalert-pp").slideUp(500, function () { $("#showalert-pp").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-pp").slideUp(500, function () { $("#showalert-pp").hide(); }); }, 3000);
           $.ajax({
             url: api + '/log',
             dataType: 'json',
@@ -469,10 +447,10 @@ $userlist .= " ]";
             data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed survey to public for ' + survey.title() + ' (id=' + survey.id + ')", "critical": "3" }',
             success: function(data) { result = data; }
           });
-          window.location.reload();
         },
         error: function (error) { self.onFail(error); }
       });
+      window.setTimeout(function () { window.location.reload(); }, 3300);
     }
     this.toPrivate = function (survey) {
       $.ajax({
@@ -483,7 +461,7 @@ $userlist .= " ]";
         data: '{ "private": 1 }',
         success: function (data) {
           $('#showalert-pp').show();
-          window.setTimeout(function () { $("#showalert-pp").slideUp(500, function () { $("#showalert-pp").hide(); }); }, 5000);
+          window.setTimeout(function () { $("#showalert-pp").slideUp(500, function () { $("#showalert-pp").hide(); }); }, 3000);
           $.ajax({
             url: api + '/log',
             dataType: 'json',
@@ -492,10 +470,10 @@ $userlist .= " ]";
             data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed survey to private for ' + survey.title() + ' (id=' + survey.id + ')", "critical": "3" }',
             success: function(data) { result = data; }
           });
-          window.location.reload();
         },
         error: function (error) { self.onFail(error); }
       });
+      window.setTimeout(function () { window.location.reload(); }, 3300);
     }
     this.removeSurvey = function (survey) {
       var index = self.surveys.indexOf(survey);
@@ -599,6 +577,29 @@ $userlist .= " ]";
       self.cancelEditPP(survey);
     }
     this.cancelEditPP = function (survey) { survey.isEditingPP(false); }
+    this.changingowner = function(survey) {
+      $.ajax({
+        url: api + '/survey/' + survey.id + '/changeowner',
+        dataType: 'json',
+        type: 'put',
+        contentType: 'application/json; charset=utf-8',
+        data: '{ "userid": ' + survey.selectedUser() + ' }',
+        success: function (data) {
+          $('#showalert-changeowner').show();
+          window.setTimeout(function () { $("#showalert-changeowner").slideUp(500, function () { $("#showalert-changeowner").hide(); }); }, 3000);
+          $.ajax({
+            url: api + '/log',
+            dataType: 'json',
+            type: 'post',
+            contentType: 'application/json; charset=utf-8',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed survey owner for ' + survey.title() + ' (id=' + survey.id + ')", "critical": "4" }',
+            success: function(data) { result = data; }
+          });
+        },
+        error: function (error) { self.onFail(error); }
+      });
+      window.setTimeout(function () { window.location.reload(); }, 3300);
+    }
     this.createSurveyObject = function (data) {
       var canedit = false; var owner = false;
       if (userid == data.userid) { var owner = true; }

@@ -7,9 +7,15 @@
   width: 100%;
   margin: 30px 0px;
   padding: 0px; }
+  #surveyjs h5 {
+    font-family: "boon";
+    font-size: 17.6px; }
 
 #surveyjsTest, #surveyjsExample, #surveyjsExampleResults {
   margin: 10px; }
+  #surveyjsTest h5, #surveyjsExample h5, #surveyjsExampleResults h5 {
+    font-family: "boon";
+    font-size: 17.6px; }
 
 .input-sm {
   height: 25px;
@@ -71,7 +77,7 @@ li.editor-topnav-right > button, li.editor-topnav-right > div > button {
   color: #777; }
 
 .alert {
-  font-size: 0.9rem !important;
+  font-size: 1rem;
   padding: 10px;
   margin: 15px 0px; }
 
@@ -82,7 +88,7 @@ i.pe-exclamation-circle {
   margin-top: 10px;
   margin-bottom: 40px; }
 
-h5.pageTitle {
+.pTitle {
   font-style: italic;
   color: #777;
   text-align: right;
@@ -90,6 +96,9 @@ h5.pageTitle {
 
 .btn-bold {
   font-weight: bold; }
+
+div.modal-body.svd_notopbottompaddings > textarea {
+  font-size: 1.2rem; }
 
 @media (max-width: 991px) {
   .svd_container .svd_content .svd_editors {

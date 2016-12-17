@@ -7,9 +7,15 @@
   width: 100%;
   margin: 30px 0px;
   padding: 0px; }
+  #surveyjs h5 {
+    font-family: "boon";
+    font-size: 17.6px; }
 
 #surveyjsTest, #surveyjsExample, #surveyjsExampleResults {
   margin: 10px; }
+  #surveyjsTest h5, #surveyjsExample h5, #surveyjsExampleResults h5 {
+    font-family: "boon";
+    font-size: 17.6px; }
 
 .input-sm {
   height: 25px;
@@ -71,7 +77,7 @@ li.editor-topnav-right > button, li.editor-topnav-right > div > button {
   color: #777; }
 
 .alert {
-  font-size: 0.9rem !important;
+  font-size: 1rem;
   padding: 10px;
   margin: 15px 0px; }
 
@@ -82,7 +88,7 @@ i.pe-exclamation-circle {
   margin-top: 10px;
   margin-bottom: 40px; }
 
-h5.pageTitle {
+.pTitle {
   font-style: italic;
   color: #777;
   text-align: right;
@@ -90,6 +96,14 @@ h5.pageTitle {
 
 .btn-bold {
   font-weight: bold; }
+
+div.modal-body.svd_notopbottompaddings > textarea {
+  font-size: 1.2rem; }
+
+div.commentText {
+  font-family: "boon";
+  font-size: 0.9rem;
+  padding-top: 15px; }
 
 @media (max-width: 991px) {
   .svd_container .svd_content .svd_editors {
@@ -165,7 +179,7 @@ h5.pageTitle {
         font-size: 11px;
         vertical-align: middle; }
         .svd_container .svd_content .svd_survey_designer .svd_toolbox .btn-group-vertical .btn:hover, .svd_container .svd_content .svd_survey_designer .svd_toolbox .btn-group-vertical .btn:focus {
-          background-color: #FFFFFF; }
+          background-color: #fff; }
         .svd_container .svd_content .svd_survey_designer .svd_toolbox .btn-group-vertical .btn [class^="icon-"], .svd_container .svd_content .svd_survey_designer .svd_toolbox .btn-group-vertical .btn [class*=" icon-"] {
           font-size: 12px;
           position: absolute;
@@ -258,7 +272,7 @@ h5.pageTitle {
           .svd_container .svd_content .svd_survey_designer .svd_properties .panel-heading .btn:hover {
             background-color: transparent; }
       .svd_container .svd_content .svd_survey_designer .svd_properties .input-group-btn .btn {
-        margin-left: 5px 10px;
+        margin: 5px 10px;
         border: none;
         background: transparent; }
         .svd_container .svd_content .svd_survey_designer .svd_properties .input-group-btn .btn:active {
@@ -271,7 +285,7 @@ h5.pageTitle {
           border-left: 1px solid #fff; }
         .svd_container .svd_content .svd_survey_designer .svd_properties .table td {
           border: none;
-          height: 30px;
+          height: 40px;
           padding: 0 10px;
           vertical-align: middle; }
           .svd_container .svd_content .svd_survey_designer .svd_properties .table td:nth-child(2) {
@@ -283,7 +297,6 @@ h5.pageTitle {
     -khtml-user-select: none;
     -webkit-user-select: none;
     user-select: none;
-    /* Required to make elements draggable in old WebKit */
     -khtml-user-drag: element;
     -webkit-user-drag: element; }
   .svd_container .svd_table-nowrap {
@@ -292,6 +305,8 @@ h5.pageTitle {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis; }
+  .svd_container .svd_q_selected {
+    border: 3px solid #1ab394; }
   .svd_container .svd_q_design {
     pointer-events: none; }
   .svd_container .svd_q_design_border {

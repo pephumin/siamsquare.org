@@ -1,9 +1,10 @@
 <?php
 
+$limit = 20;
+
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.imgresize.php';
 $db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
-
 
 // ------- Show question --------------------------------------------------------------------------
 
@@ -123,16 +124,16 @@ for ($i = 0; $i < count($questions); $i++) {
       $qout .= "<th width=\"20%\"></th>\n";
       $a = 0;
       foreach ($questions[$i]["columns"] as $k8 => $p8) {
-        $column_text = $p8['text'];
-        $column_code = $p8['value'];
+        $column_text = $p8['text']; $column_text_link[] = $p8['text'];
+        $column_code = $p8['value']; $column_code_link[] = $p8['value'];
         $qout .= "<th style=\"text-align:right\">$column_text ($column_code)</th>\n";
         $a++;
       }
       $qout .= "</tr></thead>\n";
       $qout .= "<tbody><tr>\n";
       foreach ($questions[$i]["rows"] as $k9 => $p9) {
-        $row_text = $p9['text'];
-        $row_code = $p9['value'];
+        $row_text = $p9['text']; $row_text_link[] = $p9['text'];
+        $row_code = $p9['value']; $row_code_link[] = $p9['value'];
         $qout .= "<td align=\"right\">$row_text ($row_code)</td>\n";
         for ($b=0; $b < $a; $b++) { $qout .= "<td align=\"right\"><div class=\"radio\"><input type=\"radio\" name=\"$row_code\" style=\"position:relative;margin:0px\" disabled></div></td>\n"; }
         $qout .= "</tr>";
@@ -177,7 +178,6 @@ for ($i = 0; $i < count($questions); $i++) {
 
 // ------- Questionnaire navigator --------------------------------------------------------------------------
 
-$limit = 5;
 $sid = $_GET["s"]; $qid = $_GET["q"];
 $questionlisting = "<ul class=\"progress-tracker progress-tracker--text progress-tracker--center\">\n";
 $numberofquestions = count($questions);
@@ -253,89 +253,143 @@ else if ($cd == "comment") {
     array_push($k, $j[$qq]);
   }
   $out .= " ]";
-  $cece = array_count_values($k); arsort($cece); //print_r($cece);
+  $cece = array_count_values($k); arsort($cece);
   $totalresponses = array_sum($cece);
-  // print_r($out);
 }
 else if ($cd == "file") {
-  $k = array();
-  for ($i=0; $i < count($r); $i++) {
-    $j = $r[$i]["data"];
-    $j = json_decode($j, true);
-    array_push($k, $j[$qq]);
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  if ($_GET['p']) { $p = $_GET['p']; }
+  if ($p == '') { $p = "1"; }
+  if (empty($start)) { $start = 0; }
+  if (empty($limit)) { $limit = 20; }
+  if ($p) { $start = ($p-1) * $limit; }
+  $rows = count($r);
+
+  $k = array(); $k2 = array();
+  for ($i = 0; $i < $rows; $i++) {
+    $j2 = $r[$i]["data"];
+    $j2 = json_decode($j2, true);
+    array_push($k2, $j2[$qq]);
   }
   $c = array_count_values($k); arsort($c);
-  $totalresponses = array_sum($c);
+  //$totalresponses = array_sum($c);
+  $totalresponses = count(array_filter($k2));
+  $total = ceil($totalresponses/$limit);
+
+  $to_record = $start + $limit;
+  if ($to_record > $totalresponses) { $to_record = $totalresponses; }
+  $from_record = $start + 1;
+
+  for ($i = 0; $i < $rows; $i++) {
+    if ($i >= $start && $i < $to_record) {
+      $j = $r[$i]["data"];
+      $j = json_decode($j, true);
+      array_push($k, $j[$qq]);
+    }
+  }
 
   // ############# Output for file upload ############# //
 
-  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  $pagination = "<nav class=\"pagination-centered\">\n";
+  $pagination .= "  <ul class=\"pagination\">\n";
+  if ($p > 1) { $previous = $p-1; $pagination .= "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$previous."\">&laquo;</a></li>\n"; }
+  else { $pagination .= "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&laquo;</a></li>\n"; }
+  for ($i=1; $i<=$total; $i++) {
+    if ($i == $p) { $pagination .= "    <li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
+    else { $pagination .= "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
+  }
+  if ($p != $total) { $next = $p+1; $pagination .= "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$next."\">&raquo;</a></li>\n"; }
+  else { $pagination .= "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&raquo;</a></li>\n"; }
+  $pagination .= "  </ul>\n";
+  $pagination .= "</nav>\n\n";
+
+  $basedir = "../members/assets/upload/".$_GET['s']."/";
+  $urldir = "/members/assets/upload/".$_GET['s']."/";
   if (empty($_GET['size']) || ($_GET['size'] == "S")) {
-    $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <u>small</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=M")."\">medium</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=L")."\">large</a> <strong>]</strong></p><br>\n";
+    $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <u>small</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=M")."\">medium</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=L")."\">large</a> <strong>]</strong></p>\n";
     $bb = 0;
+    $outdirect .= $pagination."<br>";
+    $outdirect .= "<p>Found a total of $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
     $outdirect .= "  <table>\n";
     $outdirect .= "    <tr>\n";
     foreach ($k as $A => $B) {
       if ($B) {
-        $R = new resize('../members/assets/upload/full/'.$B);
-        $R->resizeImage(180, 180, 'auto');
-        $R->saveImage('../members/assets/upload/resized_S/'.$B, 80);
-        // $outdirect .= "      <td style=\"text-align:center\"><img src=\"/members/assets/upload/resized_S/$B\" class=\"thumbnail img-responsive hover-shadow cursor\" onclick=\"openModal();currentSlide(1)\"></td>\n";
-        // $AA[] = "<img src=\"/members/assets/upload/full/$B\"";
-        $outdirect .= "      <td style=\"text-align:center\"><a href=\"/members/assets/upload/full/$B\" target=\"_blank\" title=\"Click to open a full size image in a new window\"><img src=\"/members/assets/upload/resized_S/$B\" class=\"thumbnail img-responsive\"></a></td>\n";
-        // $outdirect .= "      <td style=\"text-align:center\"><a href=\"#\" id=\"$B\" class=\"preview\" title=\"Click to open a larger image\"><img src=\"/members/assets/upload/resized_S/$B\" class=\"thumbnail img-responsive\"></a></td>\n";
+        if (file_exists($basedir.'full/'.$B)) {
+          $mydir = $basedir.'resized_S/';
+          if(!is_dir($mydir)) { mkdir($mydir); }
+          if (!file_exists($mydir.$B)) {
+            $R = new resize($basedir.'full/'.$B);
+            $R->resizeImage(180, 180, 'auto');
+            $R->saveImage($mydir.$B, 80);
+          }
+        }
+        list($surveyid, $rid, $date, $random) = explode("_", $B);
+        $year = substr($date, 0, 4); $month = substr($date, 4, 2); $day = substr($date, 6, 2);
+        $footer = "Posted since ".$day."/".$month."/".$year;
+        $outdirect .= "      <td style=\"text-align:center\"><a href=\"".$urldir."full/".$B."\" title=\"Click to open a full size image in a new window\" data-gallery=\"".$_GET['s']."\" data-toggle=\"lightbox\" data-title=\"Image upload for $project\" data-footer=\"$footer\"><img src=\"".$urldir."resized_S/".$B."\" class=\"thumbnail img-responsive\"></a></td>\n";
         $bb++;
         if (($bb % 5 == 0) && ($bb > 0)) { $outdirect .= "    </tr><tr>\n"; }
       }
     }
     $outdirect .= "    </tr>\n";
     $outdirect .= "  </table>\n";
-    // $modal = "<div id=\"myModal\" class=\"modal\">\n";
-    // $modal .= "  <span class=\"close cursor\" onclick=\"closeModal()\">&times;</span>\n";
-    // $modal .= "  <div class=\"modal-content\">\n";
-    // for ($i=0; $i<$AAA; $i++) { $modal .= "    <div class=\"mySlides\"><div class=\"numbertext\">$i / $AAA</div>$AA[$i]></div>\n"; }
-    // $modal .= "    <a class=\"prev\" onclick=\"plusSlides(-1)\">&#10094;</a>\n";
-    // $modal .= "    <a class=\"next\" onclick=\"plusSlides(1)\">&#10095;</a>\n";
-    // $modal .= "    <div class=\"caption-container\"><p id=\"caption\"></p></div>\n";
-    // for ($j=1; $j<$AAA; $j++) { $modal .= "    <div class=\"column\">$AA[$j] class=\"demo cursor\" onclick=\"currentSlide($j)\" alt=\"\"></div>\n"; }
-    // $modal .= "  </div>\n";
-    // $modal .= "</div>\n";
+    $outdirect .= $pagination."<br>";
   } else if ($_GET['size'] == "M") {
     $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <a href=\"".htmlspecialchars($me."&size=S")."\">small</a> <strong>:</strong> <u>medium</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=L")."\">large</a> <strong>]</strong></p><br>\n";
     $bb = 0;
+    $outdirect .= "<p>Found a total of $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
     $outdirect .= "  <table>\n";
     $outdirect .= "    <tr>\n";
     foreach ($k as $A => $B) {
       if ($B) {
-        $R = new resize('../members/assets/upload/full/'.$B);
-        $R->resizeImage(300, 300, 'auto');
-        $R->saveImage('../members/assets/upload/resized_M/'.$B, 80);
-        $outdirect .= "      <td style=\"text-align:center\"><a href=\"/members/assets/upload/full/$B\" target=\"_blank\" title=\"Click to open a full size image in a new window\"><img src=\"/members/assets/upload/resized_M/$B\" class=\"thumbnail img-responsive\"></a></td>\n";
-        // $outdirect .= "      <td style=\"text-align:center\"><a href=\"\" id=\"$B\" class=\"preview\" title=\"Click to open a larger image\"><img src=\"/members/assets/upload/resized_M/$B\" class=\"thumbnail img-responsive\"></a></td>\n";
+        if (file_exists($basedir.'full/'.$B)) {
+          $mydir = $basedir.'resized_M/';
+          if(!is_dir($mydir)) { mkdir($mydir); }
+          if (!file_exists($mydir.$B)) {
+            $R = new resize($basedir.'full/'.$B);
+            $R->resizeImage(300, 300, 'auto');
+            $R->saveImage($mydir.$B, 80);
+          }
+        }
+        list($surveyid, $rid, $date, $random) = explode("_", $B);
+        $year = substr($date, 0, 4); $month = substr($date, 4, 2); $day = substr($date, 6, 2);
+        $footer = "Posted since ".$day."/".$month."/".$year;
+        $outdirect .= "      <td style=\"text-align:center\"><a href=\"".$urldir."full/".$B."\" title=\"Click to open a full size image in a new window\" data-gallery=\"".$_GET['s']."\" data-toggle=\"lightbox\" data-title=\"Image upload for $project\" data-footer=\"$footer\"><img src=\"".$urldir."resized_M/".$B."\" class=\"thumbnail img-responsive\"></a></td>\n";
         $bb++;
         if (($bb % 3 == 0) && ($bb > 0)) { $outdirect .= "    </tr><tr>\n"; }
       }
     }
     $outdirect .= "    </tr>\n";
     $outdirect .= "  </table>\n";
+    $outdirect .= $pagination."<br>";
   } else if ($_GET['size'] == "L") {
     $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <a href=\"".htmlspecialchars($me."&size=S")."\">small</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=M")."\">medium</a> <strong>:</strong> <u>large</u> <strong>]</strong></p><br>\n";
     $bb = 0;
+    $outdirect .= "<p>Found a total of $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
     $outdirect .= "  <table>\n";
     $outdirect .= "    <tr>\n";
     foreach ($k as $A => $B) {
       if ($B) {
-        $R = new resize('../members/assets/upload/full/'.$B);
-        $R->resizeImage(450, 450, 'auto');
-        $R->saveImage('../members/assets/upload/resized_L/'.$B, 80);
-        $outdirect .= "      <td style=\"text-align:center\"><a href=\"/members/assets/upload/full/$B\" target=\"_blank\" title=\"Click to open a full size image in a new window\"><img src=\"/members/assets/upload/resized_L/$B\" class=\"thumbnail img-responsive\"></a></td>\n";
-        // $outdirect .= "      <td style=\"text-align:center\"><a href=\"\" id=\"$B\" class=\"preview\" title=\"Click to open a larger image\"><img src=\"/members/assets/upload/resized_L/$B\" class=\"thumbnail img-responsive\"></a></td>\n";
+        if (file_exists($basedir.'full/'.$B)) {
+          $mydir = $basedir.'resized_L/';
+          if(!is_dir($mydir)) { mkdir($mydir); }
+          if (!file_exists($mydir.$B)) {
+            $R = new resize($basedir.'full/'.$B);
+            $R->resizeImage(450, 450, 'auto');
+            $R->saveImage($mydir.$B, 80);
+          }
+        }
+        list($surveyid, $rid, $date, $random) = explode("_", $B);
+        $year = substr($date, 0, 4); $month = substr($date, 4, 2); $day = substr($date, 6, 2);
+        $footer = "Posted since ".$day."/".$month."/".$year;
+        $outdirect .= "      <td style=\"text-align:center\"><a href=\"".$urldir."full/".$B."\" title=\"Click to open a full size image in a new window\" data-gallery=\"".$_GET['s']."\" data-toggle=\"lightbox\" data-title=\"Image upload for $project\" data-footer=\"$footer\"><img src=\"".$urldir."resized_L/".$B."\" class=\"thumbnail img-responsive\"></a></td>\n";
         $bb++;
         if (($bb % 2 == 0) && ($bb > 0)) { $outdirect .= "    </tr><tr>\n"; }
       }
     }
     $outdirect .= "    </tr>\n";
     $outdirect .= "  </table>\n";
+    $outdirect .= $pagination."<br>";
   }
 }
 else if (($cd == "radiogroup") || ($cd == "dropdown") || ($cd == "rating")) {
@@ -372,6 +426,94 @@ else if (($cd == "radiogroup") || ($cd == "dropdown") || ($cd == "rating")) {
   else if ($_GET['type'] == "bar-H") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
   else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
 }
+else if ($cd == "matrix") {
+  $k = array();
+  for ($i=0; $i < count($r); $i++) {
+    $j = $r[$i]["data"];
+    $j = json_decode($j, true);
+    foreach ($j[$qq] as $m => $v) {
+      $new[$m][] = $v;
+    }
+  }
+  $db = array();
+  foreach ($new as $kk => $vv) {
+    array_push($db, $kk);
+    $yy = array_count_values($vv); krsort($yy);
+    $dc[] = $yy;
+  }
+  $c1 = array_combine($db, $dc); //print_r($c1);
+  foreach ($row_code_link as $val) {
+    $da[] = $val;
+    $rrr = count($new[$val]);
+    $average[] = array_sum($new[$val]) / $rrr;
+    $db = $new[$da];
+  }
+  $c2 = array_combine($da, $average); //print_r($c2);
+  foreach ($column_code_link as $val) {
+    $da[] = $val;
+    $rrr = count($new[$val]);
+    $average[] = array_sum($new[$val]) / $rrr;
+    $db = $new[$da];
+  }
+
+
+  // $c = array_count_values($k); //print_r($c);
+  // // arsort($c);
+
+  $totalresponses = $rrr; //print_r($totalresponses);
+  // if (json_decode(str_replace($column_code_link, $column_text_link, json_encode($c1)), true)) { $c1 = json_decode(str_replace($column_code_link, $column_text_link, json_encode($c1)), true); }
+  // if (json_decode(str_replace($column_code_link, $column_text_link, json_encode(array_values($c1))), true)) { $c1 = json_decode(str_replace($column_code_link, $column_text_link, json_encode(array_values($c1))), true); }
+  if (json_decode(str_replace($row_code_link, $row_text_link, json_encode($c1)), true)) { $c1 = json_decode(str_replace($row_code_link, $row_text_link, json_encode($c1)), true); }
+  // print_r($c1);
+
+  foreach ($c1 as $u => $uu) {
+    foreach ($uu as $mi => $mii) {
+      echo $uu[$mi];
+    }
+    // $out .= "['$u', $uu[$mi], 24, 20, 32, 18, 5, ''],\n";
+    print_r($Rdata);
+    // if (json_decode(str_replace($row_code_link, $row_text_link, json_encode($u)), true)) { $u = json_decode(str_replace($row_code_link, $row_text_link, json_encode($u)), true); }
+    // print_r($u); //print_r($column_text_link);
+    // if (json_decode(str_replace($column_code_link, $column_text_link, json_encode($uu)), true)) { $uu = json_decode(str_replace($column_code_link, $column_text_link, json_encode($uu)), true); }
+    // print_r($uu); //print_r($column_text_link);
+  }
+  // print_r($out);
+  // for ($i=0; $i<$rrr; $i++) {
+  //
+  // }
+  // $A = array_keys($c1); $B = array_values($c1); //print_r($B);
+  //
+  // $C = count($c);
+  // $out = "";
+  // $out .= "      data.addRows($C);\n";
+  // for ($m=0; $m < count($c); $m++) {
+  //   // if ($A[$m] == $choice_code[$m]) { $A[$m] == $choice_text[$m]; }
+  //   $BB[$m] = number_format(($B[$m]/$totalrecords)*100, 2);
+  //   $m1 = $m+1; $m2 = $m1+1;
+  //   $out .= "      data.setCell($m, 0, '$A[$m]');\n";
+  //   $out .= "      data.setCell($m, 1, $B[$m]);\n";
+  //   $out .= "      data.setCell($m, 2, $BB[$m]);\n";
+  // }
+  // $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  // if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
+  // else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
+}
+
+// var data = google.visualization.arrayToDataTable([
+//         ['Genre', 'Fantasy & Sci Fi', 'Romance', 'Mystery/Crime', 'General',
+//          'Western', 'Literature', { role: 'annotation' } ],
+//         ['2010', 10, 24, 20, 32, 18, 5, ''],
+//         ['2020', 16, 22, 23, 30, 16, 9, ''],
+//         ['2030', 28, 19, 29, 30, 12, 13, '']
+//       ]);
+//
+//       var options = {
+//         width: 600,
+//         height: 400,
+//         legend: { position: 'top', maxLines: 3 },
+//         bar: { groupWidth: '75%' },
+//         isStacked: true,
+//       };
 
 // echo $cd;
 // ------- Output --------------------------------------------------------------------------
@@ -664,50 +806,57 @@ $openendquery .= "</div>\n";
     }
   </script>
 
+<?php } else if ($cd == "matrix") { ?>
+
+  <script type="text/javascript">
+    google.charts.load('current', {'packages': ['table', 'corechart']});
+    google.charts.setOnLoadCallback(drawSort);
+    function drawSort() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Answer');
+      data.addColumn('number', 'Count');
+      data.addColumn('number', 'Percentage');
+<?php echo $out; ?>
+      var viewTable = new google.visualization.DataView(data);
+      viewTable.setColumns([0, 1, 2]);
+      var viewChart = new google.visualization.DataView(data);
+      viewChart.setColumns([0, 2]);
+      var formatter = new google.visualization.NumberFormat({suffix: '%'});
+      formatter.format(data, 2);
+      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: {groupWidth: '95%' }, legend: {position: 'none' } };
+      var chart = new google.visualization.BarChart(document.getElementById('chart'));
+      chart.draw(viewChart, options);
+      var table = new google.visualization.Table(document.getElementById('table'));
+      table.draw(viewTable, {width: '100%', height: '100%'});
+      google.visualization.events.addListener(table, 'sort',
+        function(event) {
+          data.sort([{column: event.column, desc: !event.ascending}]);
+          chart.draw(viewChart);
+        });
+    }
+  </script>
+
 <?php } else if ($cd == "file") { ?>
 
   <?php echo $modal; ?>
   <style media="screen">
-    /*.row > .column { padding: 0 8px; }
-    .row:after { content: ""; display: table; clear: both; }
-    .column { float: left; width: 25%; }*/
-    .modal { display: none; position: fixed; z-index: 1; padding-top: 100px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: black; }
-    .modal-content { position: relative; background-color: #fefefe; margin: auto; padding: 0; width: 90%; max-width: 1200px; }
-    .close { color: white; position: absolute; top: 10px; right: 25px; font-size: 35px; font-weight: bold; }
-    .close:hover, .close:focus { color: #999; text-decoration: none; cursor: pointer; }
-    .mySlides { display: none; }
-    .cursor { cursor: pointer }
-    .prev, .next { cursor: pointer; position: absolute; top: 50%; width: auto; padding: 16px; margin-top: -50px; color: white; font-weight: bold; font-size: 20px; transition: 0.6s ease; border-radius: 0 3px 3px 0; user-select: none; -webkit-user-select: none; }
-    .next { right: 0; border-radius: 3px 0 0 3px; }
-    .prev:hover, .next:hover { background-color: rgba(0, 0, 0, 0.8); }
-    .numbertext { color: #f2f2f2; font-size: 12px; padding: 8px 12px; position: absolute; top: 0; }
-    img { margin-bottom: -4px; }
-    .caption-container { text-align: center; background-color: black; padding: 2px 16px; color: white; }
-    .demo { opacity: 0.6; }
-    .active, .demo:hover { opacity: 1; }
-    img.hover-shadow { transition: 0.3s }
-    .hover-shadow:hover { box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) }
+    .ekko-lightbox-container { position: relative; }
+    .ekko-lightbox-nav-overlay { position: absolute; top: 0; left: 0; z-index: 100; width: 100%; height: 100%; }
+    .ekko-lightbox-nav-overlay a { z-index: 100; display: block; width: 49%; height: 100%; font-size: 30px; color: #fff; text-shadow: 2px 2px 4px #000; opacity: 0; filter: dropshadow(color=#000000, offx=2, offy=2); -webkit-transition: opacity 0.5s; -moz-transition: opacity 0.5s; -o-transition: opacity 0.5s; transition: opacity 0.5s; }
+    .ekko-lightbox-nav-overlay a:empty { width: 49%; }
+    .ekko-lightbox a:hover { text-decoration: none; opacity: 1; }
+    .ekko-lightbox .glyphicon-chevron-left { left: 0; float: left; padding-left: 15px; text-align: left; }
+    .ekko-lightbox .glyphicon-chevron-right { right: 0; float: right; padding-right: 15px; text-align: right; }
+    .ekko-lightbox .modal-footer { text-align: right; }
+    .modal-backdrop { background-color: #003E08 !important; }
+    .modal-backdrop.in { opacity: 0.875 }
   </style>
+
   <script type="text/javascript">
-    function openModal() { document.getElementById('myModal').style.display = "block"; }
-    function closeModal() { document.getElementById('myModal').style.display = "none"; }
-    var slideIndex = 1;
-    showSlides(slideIndex);
-    function plusSlides(n) { showSlides(slideIndex += n); }
-    function currentSlide(n) { showSlides(slideIndex = n); }
-    function showSlides(n) {
-      var i;
-      var slides = document.getElementsByClassName("mySlides");
-      var dots = document.getElementsByClassName("demo");
-      var captionText = document.getElementById("caption");
-      if (n > slides.length) {slideIndex = 1}
-      if (n < 1) {slideIndex = slides.length}
-      for (i = 0; i < slides.length; i++) { slides[i].style.display = "none"; }
-      for (i = 0; i < dots.length; i++) { dots[i].className = dots[i].className.replace(" active", ""); }
-      slides[slideIndex-1].style.display = "block";
-      dots[slideIndex-1].className += " active";
-      captionText.innerHTML = dots[slideIndex-1].alt;
-    }
+    $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+      event.preventDefault();
+      $(this).ekkoLightbox();
+    });
   </script>
 
 <?php } ?>

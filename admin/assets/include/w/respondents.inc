@@ -1,7 +1,7 @@
 <?php
 
-$me = "/admin/?w=respondents&s=".$_GET['s'];
-if ($_GET['p']) { $p = $_GET['p']; $me = $me."&p=".$_GET['p'];}
+$base = "/admin/?w=respondents&s=".$_GET['s'];
+if ($_GET['p']) { $p = $_GET['p']; $me = $base."&p=".$_GET['p']; }
 if ($p == '') { $p = "1"; }
 
 $help = "<div class=\"alert alert-info alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\n";
@@ -90,7 +90,7 @@ if ($_POST['uploading'] == 1) {
     $ql1->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
     $ql1->execute();
   }
-  header("location: $me");
+  header("location: $base");
 } else if ($_POST['m'] == "fixerrors") {
   $q2A = $db->prepare("DELETE FROM j_respondents_private WHERE surveyid = 0 OR surveyid = :surveyid AND status = 0");
   $q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
@@ -99,7 +99,7 @@ if ($_POST['uploading'] == 1) {
   $ql2->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
   $ql2->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql2->execute();
-  header("location: $me");
+  header("location: $base");
 } else if ($_POST['m'] == "fixduplicates") {
   $q2B1 = $db->prepare("CREATE TABLE tmp SELECT * FROM j_respondents_private WHERE surveyid = :surveyid GROUP BY email");
   // $q2B = $db->prepare("DELETE e1 FROM j_respondents_private e1, j_respondents_private e2 WHERE e1.surveyid = :surveyid AND e1.email = e2.email AND e1.id > e2.id");
@@ -116,7 +116,7 @@ if ($_POST['uploading'] == 1) {
   $ql3->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
   $ql3->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql3->execute();
-  header("location: $me");
+  header("location: $base");
 } else if ($_POST['m'] == "delthis") {
   $ids = implode(",", $_POST['checkbox']);
   $q2C = $db->prepare("DELETE FROM j_respondents_private WHERE id IN ($ids)");
@@ -125,7 +125,7 @@ if ($_POST['uploading'] == 1) {
   $ql4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
   $ql4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql4->execute();
-  header("location: $me");
+  header("location: $base");
 }
 
 if (empty($_GET['s'])) { pageHeader("Error"); echo mkerror("Cannot proceed without a surveyid"); pageFooter(); exit; }
@@ -150,23 +150,24 @@ while ($row = $q2->fetchObject()) {
 
 $rows = $status0s;
 
-if ($_REQUEST['size']) { $limit = $_REQUEST['size']; $me = $me."&size=".$_REQUEST['size']; }
-else {
-  if ($rows <= 250) { $limit = 50; }
-  if ($rows > 250 && $rows <= 500) { $limit = 100; }
-  if ($rows > 500 && $rows <= 1500) { $limit = 300; }
-  if ($rows > 1500 && $rows <= 2500) { $limit = 500; }
-  if ($rows > 2500) { $limit = 1000; }
+if ($_REQUEST['size']) {
+  $limit = $_REQUEST['size'];
+  if ($_GET['p']) { $me = $base."&size=".$_REQUEST['size']; }
+  else { $me = $base."&p=".$_GET['p']."&size=".$_REQUEST['size']; }
+} else {
+  if ($rows <= 100) { $limit = 20; }
+  else if ($rows > 100 && $rows <= 250) { $limit = 50; }
+  else if ($rows > 250 && $rows <= 500) { $limit = 100; }
+  else if ($rows > 500 && $rows <= 1000) { $limit = 200; }
+  else if ($rows > 1000) { $limit = 500; }
 }
 
 if (empty($start)) { $start = 0; }
 if (empty($limit)) { $limit = 500; }
 if ($p) { $start = ($p-1) * $limit; }
 $to_record = $start + $limit;
-$add = " LIMIT $start, $limit ";
-
 $total = ceil($rows/$limit);
-$offset = ($currentpage - 1) * $rowsperpage;
+$add = " LIMIT $start, $limit ";
 
 if ($to_record > $rows) { $to_record = $rows; }
 $from_record = $start + 1;
@@ -184,7 +185,7 @@ $email_error .= "  <p>Alternatively you can also <a data-toggle=\"collapse\" hre
 $email_error .= "  <div class=\"collapse\" id=\"showerrors\"><div class=\"well small\">";
 for($x = 0; $x < count($errorlist); $x++) { $email_error .= $errorlist[$x].", "; }
 $email_error .= "</div></div>\n";
-$email_error .= "  <form action=\"$me\" method=\"post\"><button type=\"submit\" name=\"m\" value=\"fixerrors\" class=\"btn btn-warning\">Click here to remove errors</button></form>\n";
+$email_error .= "  <form action=\"$base\" method=\"post\"><button type=\"submit\" name=\"m\" value=\"fixerrors\" class=\"btn btn-warning\">Click here to remove errors</button></form>\n";
 $email_error .= "</div>\n";
 
 
@@ -208,7 +209,6 @@ while ($row = $q3B->fetchObject()) {
   $i++;
   $tablelist .= "      </tr>\n";
 }
-
 
 // Check duplications
 $q4 = $db->prepare("SELECT COUNT(*) as duplicates, id, email, invited1 FROM j_respondents_private WHERE surveyid = :surveyid GROUP BY email HAVING duplicates > 1");
@@ -240,7 +240,7 @@ $email_duplicated .= "  <p>You can <a data-toggle=\"collapse\" href=\"#showdupli
 $email_duplicated .= "  <div class=\"collapse\" id=\"showduplicates\"><div class=\"well small\">";
 for($x = 0; $x < count($duplist); $x++) { $email_duplicated .= $duplist[$x].", "; }
 $email_duplicated .= "</div></div>\n";
-$email_duplicated .= "  <form action=\"$me\" method=\"post\"><button type=\"submit\" name=\"m\" value=\"fixduplicates\" class=\"btn btn-warning\">Click here to remove duplicates</button></form>\n";
+$email_duplicated .= "  <form action=\"$base\" method=\"post\"><button type=\"submit\" name=\"m\" value=\"fixduplicates\" class=\"btn btn-warning\">Click here to remove duplicates</button></form>\n";
 $email_duplicated .= "</div>\n";
 
 
@@ -257,10 +257,22 @@ if ($total == 0) {
   if ($duplicated_records) { echo $email_duplicated; }
   // echo "<br>";
   echo "<p>Please see table below for more information about these respodnents. And of course, you can always use the upload function to add more respondents to the project if need.</p>\n";
-  echo "<p></p>\n";
-  echo "<p></p>\n";
-  echo "<p align=\"right\"><a class=\"btn btn-primary\" href=\"\" data-toggle=\"modal\" data-target=\"#uploading\"><i class=\"pe-upload pe-fw\"></i> Upload a name list</a></p>\n";
+  // echo "<p></p>\n";
+  // echo "<p></p>\n";
+  // echo "<p align=\"right\"><a class=\"btn btn-primary\" href=\"\" data-toggle=\"modal\" data-target=\"#uploading\"><i class=\"pe-upload pe-fw\"></i> Upload a name list</a></p>\n";
 
+  echo "<div class=\"row\" style=\"margin-top:30px\">\n";
+  echo "  <div class=\"col-sm-6 form-group has-feedback\">\n";
+  echo "    <form action=\"$base\" method=\"post\">\n";
+  echo "      <input type=\"text\" id=\"countries\" name=\"RDsearch\" class=\"form-control\"><i class=\"pe-search form-control-feedback\" aria-hidden=\"true\"></i>\n";
+  echo "    </form>\n";
+  echo "  </div>\n";
+  echo "  <div class=\"col-sm-6\" style=\"text-align:right\">\n";
+  echo "    <a class=\"btn btn-primary\" href=\"\" data-toggle=\"modal\" data-target=\"#uploading\"><i class=\"pe-upload pe-fw\"></i> Upload a name list</a>\n";
+  echo "  </div>\n";
+  echo "</div>\n";
+
+  $me = $base."&size=".$_REQUEST['size'];
   echo "<nav class=\"pagination-centered\">\n";
   echo "  <ul class=\"pagination\">\n";
   if ($p > 1) { $previous = $p-1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$previous."\">&laquo;</a></li>\n"; }
@@ -275,10 +287,10 @@ if ($total == 0) {
   echo "</nav>\n\n";
 
   echo "<div class=\"row\">\n";
-  echo "  <div class=\"col-sm-9\">\n";
-  echo "    <span class=\"blue\">Found <strong>$rows records</strong> in our database<br><small>(showing results $from_record to $to_record)</small></span>\n";
+  echo "  <div class=\"col-sm-6\">\n";
+  echo "    <span class=\"blue\">Found <strong>$rows records</strong><br><small>(showing results $from_record to $to_record)</small></span>\n";
   echo "  </div>\n";
-  echo "  <div class=\"col-sm-3\" style=\"text-align:right\"><form method=\"post\" class=\"form-inline\" action=\"$me\">\n";
+  echo "  <div class=\"col-sm-6\" style=\"text-align:right\"><form method=\"post\" class=\"form-inline\" action=\"$me\">\n";
   echo "    <small >Select display size:</small>\n";
   echo "    <select class=\"form-control input-sm\" name=\"size\" onchange=\"this.form.submit()\">\n";
   if ($limit == "50") { echo "      <option selected>50</option>\n"; } else { echo "      <option>50</option>\n"; }
@@ -289,7 +301,6 @@ if ($total == 0) {
   echo "    </select>\n";
   echo "  </form></div>\n";
   echo "</div><br>\n";
-
 ?>
 
   <form method="post" action="<?php echo $me; ?>">
@@ -376,12 +387,126 @@ if ($total != 0) {
 
 ?>
 
+<style media="screen">
+  .pe-search { position: absolute; top: 0; right: 15px; z-index: 5; color: #aaaaaa; }
+  .easy-autocomplete { position: relative; z-index: 5}
+  .easy-autocomplete input { border-color: #ccc; border-radius: 4px; border-style: solid; border-width: 1px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset; color: #555; float: none; padding: 6px 12px; }
+  .easy-autocomplete input:hover, .easy-autocomplete input:focus { box-shadow: none; }
+  .easy-autocomplete a { display: block; }
+  .easy-autocomplete.eac-blue-light input:hover, .easy-autocomplete.eac-blue-light input:focus { border-color: #66afe9; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6); }
+  .easy-autocomplete.eac-blue-light ul { border-color: #66afe9; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6); }
+  .easy-autocomplete.eac-blue-light ul li, .easy-autocomplete.eac-blue-light ul .eac-category { border-color: #66afe9; }
+  .easy-autocomplete.eac-blue-light ul li.selected, .easy-autocomplete.eac-blue-light ul .eac-category.selected { background-color: #ecf5fc; }
+  .easy-autocomplete.eac-green-light input:hover, .easy-autocomplete.eac-green-light input:focus { border-color: #41DB00; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(146, 237, 107, 0.6); }
+  .easy-autocomplete.eac-green-light ul { border-color: #41DB00; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(146, 237, 107, 0.6); }
+  .easy-autocomplete.eac-green-light ul li, .easy-autocomplete.eac-green-light ul .eac-category { border-color: #41DB00; }
+  .easy-autocomplete.eac-green-light ul li.selected, .easy-autocomplete.eac-green-light ul .eac-category.selected { background-color: #9eff75; }
+  .easy-autocomplete.eac-red-light input:hover, .easy-autocomplete.eac-red-light input:focus { border-color: #ff5b5b; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(255, 90, 90, 0.6); }
+  .easy-autocomplete.eac-red-light ul { border-color: #ff5b5b; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(255, 90, 90, 0.6); }
+  .easy-autocomplete.eac-red-light ul li, .easy-autocomplete.eac-red-light ul .eac-category { border-color: #ff5b5b; }
+  .easy-autocomplete.eac-red-light ul li.selected, .easy-autocomplete.eac-red-light ul .eac-category.selected { background-color: #ff8e8e; }
+  .easy-autocomplete.eac-yellow-light input:hover, .easy-autocomplete.eac-yellow-light input:focus { border-color: #ffdb00; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(255, 231, 84, 0.6); }
+  .easy-autocomplete.eac-yellow-light ul { border-color: #ffdb00; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(255, 231, 84, 0.6); }
+  .easy-autocomplete.eac-yellow-light ul li, .easy-autocomplete.eac-yellow-light ul .eac-category { border-color: #ffdb00; }
+  .easy-autocomplete.eac-yellow-light ul li.selected, .easy-autocomplete.eac-yellow-light ul .eac-category.selected { background-color: #ffe233; }
+  .easy-autocomplete.eac-dark-light input:hover, .easy-autocomplete.eac-dark-light input:focus { border-color: #333; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(55, 55, 55, 0.6); }
+  .easy-autocomplete.eac-dark-light ul { border-color: #333; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(55, 55, 55, 0.6); }
+  .easy-autocomplete.eac-dark-light ul li, .easy-autocomplete.eac-dark-light ul .eac-category { border-color: #333; }
+  .easy-autocomplete.eac-dark-light ul li.selected, .easy-autocomplete.eac-dark-light ul .eac-category.selected { background-color: #4d4d4d; color: #fff; }
+  .easy-autocomplete.eac-dark { color: #fff; }
+  .easy-autocomplete.eac-dark input { background-color: #404040; border-radius: 4px; box-shadow: 0; color: #f6f6f6; }
+  .easy-autocomplete.eac-dark input:hover, .easy-autocomplete.eac-dark input:focus { border-color: #333; box-shadow: 0; }
+  .easy-autocomplete.eac-dark ul { border-color: #333; }
+  .easy-autocomplete.eac-dark ul li, .easy-autocomplete.eac-dark ul .eac-category { background-color: #404040; border-color: #333; }
+  .easy-autocomplete.eac-dark ul li.selected, .easy-autocomplete.eac-dark ul .eac-category.selected { background-color: #737373; color: #f6f6f6; }
+  .easy-autocomplete.eac-dark-glass { color: #fff; }
+  .easy-autocomplete.eac-dark-glass input { background-color: rgba(0, 0, 0, 0.8); border-radius: 4px; box-shadow: 0; color: #f6f6f6; }
+  .easy-autocomplete.eac-dark-glass input:hover, .easy-autocomplete.eac-dark-glass input:focus { border-color: rgba(0, 0, 0, 0.8); box-shadow: 0; }
+  .easy-autocomplete.eac-dark-glass ul { border-color: rgba(0, 0, 0, 0.8); }
+  .easy-autocomplete.eac-dark-glass ul li, .easy-autocomplete.eac-dark-glass ul .eac-category { background-color: rgba(0, 0, 0, 0.8); border-color: rgba(0, 0, 0, 0.8); }
+  .easy-autocomplete.eac-dark-glass ul li.selected, .easy-autocomplete.eac-dark-glass ul .eac-category.selected { background-color: rgba(64, 64, 64, 0.8); color: #f6f6f6; }
+  .easy-autocomplete.eac-dark-glass ul li:last-child, .easy-autocomplete.eac-dark-glass ul .eac-category:last-child { border-radius: 0 0 4px 4px; }
+  .easy-autocomplete.eac-blue { color: #fff; }
+  .easy-autocomplete.eac-blue input { background-color: #6d9ed1; border-radius: 4px; box-shadow: 0; color: #f6f6f6; }
+  .easy-autocomplete.eac-blue input::-webkit-input-placeholder { color: #f6f6f6; }
+  .easy-autocomplete.eac-blue input:-moz-placeholder { color: #f6f6f6; }
+  .easy-autocomplete.eac-blue input::-moz-placeholder { color: #f6f6f6; }
+  .easy-autocomplete.eac-blue input:-ms-input-placeholder { color: #f6f6f6; }
+  .easy-autocomplete.eac-blue input:hover, .easy-autocomplete.eac-blue input:focus { border-color: #5A91CB; box-shadow: 0; }
+  .easy-autocomplete.eac-blue ul { border-color: #5A91CB; }
+  .easy-autocomplete.eac-blue ul li, .easy-autocomplete.eac-blue ul .eac-category { background-color: #6d9ed1; border-color: #5A91CB; }
+  .easy-autocomplete.eac-blue ul li.selected, .easy-autocomplete.eac-blue ul .eac-category.selected { background-color: #94b8dd; color: #f6f6f6; }
+  .easy-autocomplete.eac-yellow { color: #333; }
+  .easy-autocomplete.eac-yellow input { background-color: #ffdb7e; border-color: #333; border-radius: 4px; box-shadow: 0; color: #333; }
+  .easy-autocomplete.eac-yellow input:hover, .easy-autocomplete.eac-yellow input:focus { border-color: #333; box-shadow: 0; }
+  .easy-autocomplete.eac-yellow ul { border-color: #333; }
+  .easy-autocomplete.eac-yellow ul li, .easy-autocomplete.eac-yellow ul .eac-category { background-color: #ffdb7e; border-color: #333; }
+  .easy-autocomplete.eac-yellow ul li.selected, .easy-autocomplete.eac-yellow ul .eac-category.selected { background-color: #ffe9b1; color: #333; }
+  .easy-autocomplete.eac-purple { color: #333; }
+  .easy-autocomplete.eac-purple input { background-color: #d6d1e7; border-color: #b8afd5; box-shadow: 0; color: #333; }
+  .easy-autocomplete.eac-purple input:hover, .easy-autocomplete.eac-purple input:focus { border-color: #333; box-shadow: 0; }
+  .easy-autocomplete.eac-purple ul { border-color: #333; }
+  .easy-autocomplete.eac-purple ul li, .easy-autocomplete.eac-purple ul .eac-category { background-color: #d6d1e7; border-color: #333; }
+  .easy-autocomplete.eac-purple ul li.selected, .easy-autocomplete.eac-purple ul .eac-category.selected { background-color: #ebe8f3; color: #333; }
+  .easy-autocomplete.eac-bootstrap input { border-color: #ccc; border-radius: 4px; border-style: solid; border-width: 1px; color: #555; padding: 6px 12px; }
+  .easy-autocomplete-container { left: 0; position: absolute; width: 100%; z-index: 2; }
+  .easy-autocomplete-container ul { background: none repeat scroll 0 0 #ffffff; border-top: 1px dotted #ccc; display: none; margin-top: 0; padding-bottom: 0; padding-left: 0; position: relative; top: -1px; }
+  .easy-autocomplete-container ul li, .easy-autocomplete-container ul .eac-category { background: inherit; border-color: #ccc; border-image: none; border-style: solid; border-width: 0 1px; display: block; font-size: 14px; font-weight: normal; padding: 4px 12px; }
+  .easy-autocomplete-container ul li:last-child { border-radius: 0 0 2px 2px; border-width: 0 1px 1px; }
+  .easy-autocomplete-container ul li.selected { background: none repeat scroll 0 0 #ebebeb; cursor: pointer; }
+  .easy-autocomplete-container ul li.selected div { font-weight: normal; }
+  .easy-autocomplete-container ul li div { display: block; font-weight: normal; word-break: break-all; }
+  .easy-autocomplete-container ul li b { font-weight: bold; }
+  .easy-autocomplete-container ul .eac-category { font-color: #aaa; font-style: italic; }
+  .eac-description .eac-item span { color: #aaa; font-style: italic; font-size: 0.9em; }
+  .eac-icon-left .eac-item img { margin-right: 4px; max-height: 30px; }
+  .eac-icon-right .eac-item { margin-top: 8px; min-height: 24px; position: relative; }
+  .eac-icon-right .eac-item img { margin-left: 4px; max-height: 30px; position: absolute; right: -4px; top: -8px; }
+</style>
+
 
 <script type="text/javascript">
+  var surveyid = <?php echo $_GET['s']; ?>;
   $('#confirm-delete').on('show.bs.modal', function(e) {
     $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
   });
+  var options = {
+    url: "http://www.siamsquare.org.uk/respondent/" + surveyid,
+    getValue: "email",
+    // template: {
+    //   type: "description",
+    //   fields: {
+    //     description: "created"
+    //   }
+    // },
+    list: {
+      maxNumberOfElements: 10,
+      // onLoadEvent: function() {
+      //   moment.locale('en');
+      //   var s1 = moment(created).fromNow();
+      //   var s2 = moment(created).format("D MMM YYYY");
+      //   created = s2 + ' (' + s1 + ')';
+      // },
+      match: {
+        enabled: true
+      },
+      showAnimation: {
+        type: "fade", //normal|slide|fade
+        time: 400,
+        callback: function() {}
+      },
+      hideAnimation: {
+        type: "slide", //normal|slide|fade
+        time: 400,
+        callback: function() {}
+      }
+    },
+    theme: "bootstrap",
+    placeholder: "Search for an email in our database"
+  };
+  $("#countries").easyAutocomplete(options);
 </script>
+
 <script type="text/javascript">
   $(document).ready(function(){
     $('#all').click( function () {
