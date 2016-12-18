@@ -27,6 +27,9 @@
 input.btn {
   font-family: "ubuntu"; }
 
+.btn-bold {
+  font-weight: bold; }
+
 .navbar-brand {
   margin-top: 3px; }
 
@@ -38,37 +41,8 @@ input.btn {
   font-family: "boon";
   font-size: 14px; }
 
-li.editor-topnav-left > a {
-  color: #666 !important;
-  padding: 10px 15px;
-  font-family: "roboto";
-  font-size: 14px; }
-  li.editor-topnav-left > a:hover {
-    color: #fff !important;
-    background-color: #5cb85c !important; }
-
-.editor-topnav-left > a:focus {
-  color: #fff !important;
-  background-color: #5cb85c !important; }
-
-li.editor-topnav-right > button, li.editor-topnav-right > div > button {
-  font-family: "roboto";
-  font-size: 12px;
-  margin: 3px;
-  font-weight: bold; }
-
 .panel-heading-embed {
   font-weight: bold; }
-
-#left-menu-head, #left-menu-button > .btn {
-  font-family: "roboto";
-  font-size: 12px;
-  font-weight: normal; }
-
-#right-menu-button > table > tbody > tr > td {
-  font-family: "roboto";
-  font-size: 11px;
-  font-weight: normal; }
 
 .credit {
   font-family: "ubuntu";
@@ -92,9 +66,6 @@ i.pe-exclamation-circle {
   font-style: italic;
   color: #777;
   text-align: right;
-  font-weight: bold; }
-
-.btn-bold {
   font-weight: bold; }
 
 div.modal-body.svd_notopbottompaddings > textarea {
@@ -126,8 +97,9 @@ div.commentText {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box; }
   .svd_container .svd_menu {
+    font-family: "roboto";
+    font-size: 12px;
     background-color: #fff;
-    border-top: 1px solid #e7eaec;
     border-bottom: 1px solid #e7eaec;
     padding: 19px 15px 0 15px; }
     .svd_container .svd_menu > li > a {
@@ -285,7 +257,7 @@ div.commentText {
           border-left: 1px solid #fff; }
         .svd_container .svd_content .svd_survey_designer .svd_properties .table td {
           border: none;
-          height: 40px;
+          height: 30px;
           padding: 0 10px;
           vertical-align: middle; }
           .svd_container .svd_content .svd_survey_designer .svd_properties .table td:nth-child(2) {
