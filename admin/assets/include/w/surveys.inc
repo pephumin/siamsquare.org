@@ -22,9 +22,6 @@ pageHeader($title);
 echo "<h2>$title</h2>\n";
 echo "<p>$details</p>\n";
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-$db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
-
 // Get user list
 if ($_SESSION['level'] == 9) {
   $q1 = $db->prepare("SELECT U.id, U.email, U.fullname, U.level, U.companyid, C.company FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.status >= 0 ORDER BY C.company ASC, U.level DESC");

@@ -1,8 +1,5 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-$db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
-
 // Get company information (e.g. logo, website, etc.)
 $q1 = $db->prepare("SELECT * FROM j_companies WHERE id = :companyid");
 $q1->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);

@@ -61,21 +61,6 @@ if (isset($login)) {
         password: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 4, message: 'Password must be more than 6 characters long' }, different: { field: 'email', message: 'The password cannot be the same as the login' } } }
       }
     });
-
-    // $('#clientloginform').on('submit', function(e) {
-    //   e.preventDefault();
-    //   $('#btn-login').button('loading');
-    //   setTimeout(function() { $('#btn-login').button('reset'); }, 1000);
-    //   this.submit(); //now submit the form
-    // });
-
-    // $('#clientloginform').submit(function() {
-    //   $('#btn-login').on('click', function() {
-    //     var $this = $(this);
-    //     $this.button('loading');
-    //     setTimeout(function() { $this.button('reset'); }, 1000);
-    //   });
-    // });
   });
 </script>
 

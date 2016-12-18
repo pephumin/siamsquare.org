@@ -6,9 +6,6 @@ $me = "/admin/?w=board";
 if ($_GET['p']) { $p = $_GET['p']; }
 if ($p == '') { $p = "1"; }
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-$db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
-
 if ($_POST['newpost'] == 1) {
   if (($_POST['head']) || ($_POST['body'])) {
     $q0A = $db->prepare("INSERT INTO j_board (head, body, userid, companyid) VALUES (:head, :body, :userid, :companyid)");

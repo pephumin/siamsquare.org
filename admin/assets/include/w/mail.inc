@@ -1,9 +1,5 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/clas.phpmailer.php';
-$db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
-
 // Get projcet title
 $q1 = $db->prepare("SELECT title, status FROM j_projects WHERE id = :surveyid");
 $q1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);

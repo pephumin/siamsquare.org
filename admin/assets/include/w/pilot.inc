@@ -24,21 +24,12 @@ echo "<hr>\n";
 
 <script type="text/javascript">
 
-  // function get(name, url) {
-  //   if (!url) { url = window.location.href; }
-  //   name = name.replace(/[\[\]]/g, "\\$&");
-  //   var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-  //   results = regex.exec(url); if (!results) return null; if (!results[2]) return '';
-  //   return decodeURIComponent(results[2].replace(/\+/g, " "));
-  // }
-
   function getip() {
     var rip;
     $.ajaxSetup({async: false});
     $.get('http://jsonip.com/', function(r){ rip = r.ip; });
     return rip;
   }
-
   function getsurveyinfo(id) {
     var result = "";
     $.ajax({
@@ -51,7 +42,6 @@ echo "<hr>\n";
     });
     return result;
   }
-
   function getsurveydata(id) {
     var result = "";
     $.ajax({
@@ -64,7 +54,6 @@ echo "<hr>\n";
     });
     return result;
   }
-
   function postsurveydata(cid, cip, email, id, data, etitle) {
     var result = "";
     $.ajax({
@@ -88,22 +77,19 @@ echo "<hr>\n";
     });
     return result;
   }
-
-  function getsurveyresult(id, no) {
-    var result = "";
-    $.ajax({
-      url: api + '/' + id + '/' + no,
-      dataType: 'json',
-      type: 'get',
-      cache: false,
-      async: false,
-      success: function(data) { result = data; }
-    });
-    return result;
-  }
-
+  // function getsurveyresult(id, no) {
+  //   var result = "";
+  //   $.ajax({
+  //     url: api + '/' + id + '/' + no,
+  //     dataType: 'json',
+  //     type: 'get',
+  //     cache: false,
+  //     async: false,
+  //     success: function(data) { result = data; }
+  //   });
+  //   return result;
+  // }
   function reRunSurvey() { survey.clear(); survey.render("pilotsurvey"); }
-
   function renderSurvey() {
     if (typeof survey == 'undefined') return;
     survey.onComplete.add(function (s) {

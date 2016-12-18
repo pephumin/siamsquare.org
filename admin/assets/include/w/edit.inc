@@ -1,8 +1,5 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-$db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
-
 // Get projcet title
 $q = $db->prepare("SELECT title, status FROM j_projects WHERE id = :surveyid");
 $q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
@@ -52,9 +49,7 @@ echo "<p>While you can edit your questionnaire as often as you want, it is impor
 
 <div id="showreadonly"></div><div id="showsaving"></div><div id="showsavesuccess"></div>
 
-<br>
-<h4 id="projectname"></h4>
-<br>
+<h3 id="projectname"></h3>
 
 <div id="editor"></div>
 
@@ -79,17 +74,17 @@ echo "<p>While you can edit your questionnaire as often as you want, it is impor
     return rip;
   }
   // Start scripting by pe (phumin@sawasdee.org)
-  // var options = {
-  //   questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "matrixdynamic", "html"],
-  //   showJSONEditorTab: false,
-  //   showEmbededSurveyTab: false
-  // };
+  var options = {
+    questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "matrixdynamic", "html"],
+    showJSONEditorTab: false,
+    showEmbededSurveyTab: false
+  };
   // var options = {
   //   questionTypes: ["html", "radiogroup", "dropdown", "checkbox", "text", "comment", "file", "matrix", "matrixdropdown"],
   //   showJSONEditorTab: false,
   //   showEmbededSurveyTab: false
   // };
-  var options = {};
+  // var options = {};
   options.generateValidJSON = true;
   Survey.Survey.cssType = "bootstrap";
   var editor = new SurveyEditor.SurveyEditor("editor", options);
@@ -145,14 +140,13 @@ echo "<p>While you can edit your questionnaire as often as you want, it is impor
     var $this = $(this);
     $this.button('loading');
     $('#showsaving').show();
-    window.setTimeout(function () { $("#showsaving").slideUp(500, function () { $("#showsaving").hide(); }); }, 3000);
+    window.setTimeout(function () { $("#showsaving").slideUp(500, function () { $("#showsaving").hide(); }); }, 2000);
     setTimeout(function() {
-      $this.button('reset');
+      $this.button('saved');
       $('#showsavesuccess').show();
-      window.setTimeout(function () { $("#showsavesuccess").slideUp(500, function () { $("#showsavesuccess").hide(); }); }, 3000);
-    }, 5000);
+      window.setTimeout(function () { $("#showsavesuccess").slideUp(500, function () { $("#showsavesuccess").hide( function () { $this.button('reset'); }); }); }, 2000);
+    }, 3000);
   });
-
 
 </script>
 

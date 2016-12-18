@@ -1,10 +1,7 @@
 <?php
 
 $limit = 20;
-
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.imgresize.php';
-$db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
+$show = $_GET["q"];
 
 // ------- Show question --------------------------------------------------------------------------
 
@@ -22,15 +19,10 @@ $created = $rows[0]["created"];
 $updated = $rows[0]["updated"];
 $userid = $rows[0]["userid"];
 
-$show = $_GET["q"];
-// $start = substr($show, -1) - 1;
-// $end = $start + 1;
-
 $a = json_decode($rows[0]["data"], true);
 foreach ($a["pages"] as $k1 => $p1) { foreach ($p1 as $k2 => $p2) { foreach ($p2 as $k3 => $p3) { $questions[] = $p3; } } }
 // print_r($questions);
 $qout = "";
-// for ($i = $start; $i < $end; $i++) {
 for ($i = 0; $i < count($questions); $i++) {
   $qname = $questions[$i]["name"]; $pname[] = $questions[$i]["name"];
   if ($questions[$i]["html"]) { $qtitle = "HTML"; $ptitle[] = $questions[$i]["title"]; $html = $questions[$i]["html"]; }
@@ -124,16 +116,18 @@ for ($i = 0; $i < count($questions); $i++) {
       $qout .= "<th width=\"20%\"></th>\n";
       $a = 0;
       foreach ($questions[$i]["columns"] as $k8 => $p8) {
-        $column_text = $p8['text']; $column_text_link[] = $p8['text'];
-        $column_code = $p8['value']; $column_code_link[] = $p8['value'];
+        $column_text = $p8['text']; $c_text[] = $p8['text'];
+        $column_code = $p8['value']; $c_code[] = $p8['value'];
+        $column_link[] = $p8['text']." (".$p8['value'].")";
         $qout .= "<th style=\"text-align:right\">$column_text ($column_code)</th>\n";
         $a++;
       }
       $qout .= "</tr></thead>\n";
       $qout .= "<tbody><tr>\n";
       foreach ($questions[$i]["rows"] as $k9 => $p9) {
-        $row_text = $p9['text']; $row_text_link[] = $p9['text'];
-        $row_code = $p9['value']; $row_code_link[] = $p9['value'];
+        $row_text = $p9['text']; $r_text[] = $p9['text'];
+        $row_code = $p9['value']; $r_code[] = $p9['value'];
+        $row_link[] = $p9['text']." (".$p9['value'].")";
         $qout .= "<td align=\"right\">$row_text ($row_code)</td>\n";
         for ($b=0; $b < $a; $b++) { $qout .= "<td align=\"right\"><div class=\"radio\"><input type=\"radio\" name=\"$row_code\" style=\"position:relative;margin:0px\" disabled></div></td>\n"; }
         $qout .= "</tr>";
@@ -218,9 +212,7 @@ if ($cd == "checkbox") {
   for ($i=0; $i < count($r); $i++) {
     $j = $r[$i]["data"];
     $j = json_decode($j, true);
-    foreach ($j[$qq] as $m => $v) {
-      array_push($k, $v);
-    }
+    foreach ($j[$qq] as $m => $v) { array_push($k, $v); }
   }
   $c = array_count_values($k); //print_r($c);
   if (json_decode(str_replace($c_code, $c_text, json_encode($c)), true)) { $c = json_decode(str_replace($c_code, $c_text, json_encode($c)), true); }
@@ -394,26 +386,20 @@ else if ($cd == "file") {
 }
 else if (($cd == "radiogroup") || ($cd == "dropdown") || ($cd == "rating")) {
   $x = "[";
-  for ($i=0; $i < count($r); $i++) {
-    if ($i != (count($r)-1)) { $x .= $r[$i]["data"].","; } else { $x .= $r[$i]["data"]; }
-  }
+  for ($i=0; $i < count($r); $i++) { if ($i != (count($r)-1)) { $x .= $r[$i]["data"].","; } else { $x .= $r[$i]["data"]; } }
   $x .= "]";
-
-  $j = json_decode($x, true); //print_r($j);
+  $j = json_decode($x, true);
   foreach ($j as $k1 => $p1) { $jj[] = $p1; }
-  for ($i=0; $i < count($jj); $i++) {
-    $k[] = $jj[$i][$qq];
-  }
+  for ($i=0; $i < count($jj); $i++) { $k[] = $jj[$i][$qq]; }
   $c = array_count_values($k);
   if (json_decode(str_replace($c_code, $c_text, json_encode($c)), true)) { $c = json_decode(str_replace($c_code, $c_text, json_encode($c)), true); }
   // arsort($c);
   $totalresponses = array_sum($c);
-  $A = array_keys($c); $B = array_values($c); //print_r($c);
+  $A = array_keys($c); $B = array_values($c);
   $C = count($c);
   $out = "";
   $out .= "      data.addRows($C);\n";
   for ($m=0; $m < count($c); $m++) {
-    // if ($A[$m] == $choice_code[$m]) { $A[$m] == $choice_text[$m]; }
     $BB[$m] = number_format(($B[$m]/$totalrecords)*100, 2);
     $m1 = $m+1; $m2 = $m1+1;
     $out .= "      data.setCell($m, 0, '$A[$m]');\n";
@@ -427,13 +413,10 @@ else if (($cd == "radiogroup") || ($cd == "dropdown") || ($cd == "rating")) {
   else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
 }
 else if ($cd == "matrix") {
-  $k = array();
   for ($i=0; $i < count($r); $i++) {
     $j = $r[$i]["data"];
     $j = json_decode($j, true);
-    foreach ($j[$qq] as $m => $v) {
-      $new[$m][] = $v;
-    }
+    foreach ($j[$qq] as $m => $v) { $new[$m][] = $v; }
   }
   $db = array();
   foreach ($new as $kk => $vv) {
@@ -441,79 +424,18 @@ else if ($cd == "matrix") {
     $yy = array_count_values($vv); krsort($yy);
     $dc[] = $yy;
   }
-  $c1 = array_combine($db, $dc); //print_r($c1);
-  foreach ($row_code_link as $val) {
-    $da[] = $val;
-    $rrr = count($new[$val]);
-    $average[] = array_sum($new[$val]) / $rrr;
-    $db = $new[$da];
+  foreach ($dc as $q => $r) { $dd[] = percentile($dc[$q]); }
+  $c1 = array_combine($db, $dd);
+  $out = "[ 'Attribute', ";
+  foreach ($column_link as $a) { $out .= "'".$a."', "; }
+  $out .= " ],\n";
+  foreach ($r_code as $b) {
+    if (json_decode(str_replace($r_code, $r_text, json_encode($b)), true)) { $bb = json_decode(str_replace($r_code, $r_text, json_encode($b)), true); }
+    $out .= "[ '".$bb."', ";
+    foreach ($c_code as $c) { $out .= $c1[$b][$c].", "; }
+    $out .= " ],\n";
   }
-  $c2 = array_combine($da, $average); //print_r($c2);
-  foreach ($column_code_link as $val) {
-    $da[] = $val;
-    $rrr = count($new[$val]);
-    $average[] = array_sum($new[$val]) / $rrr;
-    $db = $new[$da];
-  }
-
-
-  // $c = array_count_values($k); //print_r($c);
-  // // arsort($c);
-
-  $totalresponses = $rrr; //print_r($totalresponses);
-  // if (json_decode(str_replace($column_code_link, $column_text_link, json_encode($c1)), true)) { $c1 = json_decode(str_replace($column_code_link, $column_text_link, json_encode($c1)), true); }
-  // if (json_decode(str_replace($column_code_link, $column_text_link, json_encode(array_values($c1))), true)) { $c1 = json_decode(str_replace($column_code_link, $column_text_link, json_encode(array_values($c1))), true); }
-  if (json_decode(str_replace($row_code_link, $row_text_link, json_encode($c1)), true)) { $c1 = json_decode(str_replace($row_code_link, $row_text_link, json_encode($c1)), true); }
-  // print_r($c1);
-
-  foreach ($c1 as $u => $uu) {
-    foreach ($uu as $mi => $mii) {
-      echo $uu[$mi];
-    }
-    // $out .= "['$u', $uu[$mi], 24, 20, 32, 18, 5, ''],\n";
-    print_r($Rdata);
-    // if (json_decode(str_replace($row_code_link, $row_text_link, json_encode($u)), true)) { $u = json_decode(str_replace($row_code_link, $row_text_link, json_encode($u)), true); }
-    // print_r($u); //print_r($column_text_link);
-    // if (json_decode(str_replace($column_code_link, $column_text_link, json_encode($uu)), true)) { $uu = json_decode(str_replace($column_code_link, $column_text_link, json_encode($uu)), true); }
-    // print_r($uu); //print_r($column_text_link);
-  }
-  // print_r($out);
-  // for ($i=0; $i<$rrr; $i++) {
-  //
-  // }
-  // $A = array_keys($c1); $B = array_values($c1); //print_r($B);
-  //
-  // $C = count($c);
-  // $out = "";
-  // $out .= "      data.addRows($C);\n";
-  // for ($m=0; $m < count($c); $m++) {
-  //   // if ($A[$m] == $choice_code[$m]) { $A[$m] == $choice_text[$m]; }
-  //   $BB[$m] = number_format(($B[$m]/$totalrecords)*100, 2);
-  //   $m1 = $m+1; $m2 = $m1+1;
-  //   $out .= "      data.setCell($m, 0, '$A[$m]');\n";
-  //   $out .= "      data.setCell($m, 1, $B[$m]);\n";
-  //   $out .= "      data.setCell($m, 2, $BB[$m]);\n";
-  // }
-  // $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
-  // if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
-  // else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
 }
-
-// var data = google.visualization.arrayToDataTable([
-//         ['Genre', 'Fantasy & Sci Fi', 'Romance', 'Mystery/Crime', 'General',
-//          'Western', 'Literature', { role: 'annotation' } ],
-//         ['2010', 10, 24, 20, 32, 18, 5, ''],
-//         ['2020', 16, 22, 23, 30, 16, 9, ''],
-//         ['2030', 28, 19, 29, 30, 12, 13, '']
-//       ]);
-//
-//       var options = {
-//         width: 600,
-//         height: 400,
-//         legend: { position: 'top', maxLines: 3 },
-//         bar: { groupWidth: '75%' },
-//         isStacked: true,
-//       };
 
 // echo $cd;
 // ------- Output --------------------------------------------------------------------------
@@ -809,30 +731,14 @@ $openendquery .= "</div>\n";
 <?php } else if ($cd == "matrix") { ?>
 
   <script type="text/javascript">
-    google.charts.load('current', {'packages': ['table', 'corechart']});
-    google.charts.setOnLoadCallback(drawSort);
-    function drawSort() {
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Answer');
-      data.addColumn('number', 'Count');
-      data.addColumn('number', 'Percentage');
-<?php echo $out; ?>
-      var viewTable = new google.visualization.DataView(data);
-      viewTable.setColumns([0, 1, 2]);
-      var viewChart = new google.visualization.DataView(data);
-      viewChart.setColumns([0, 2]);
-      var formatter = new google.visualization.NumberFormat({suffix: '%'});
-      formatter.format(data, 2);
-      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: {groupWidth: '95%' }, legend: {position: 'none' } };
-      var chart = new google.visualization.BarChart(document.getElementById('chart'));
-      chart.draw(viewChart, options);
-      var table = new google.visualization.Table(document.getElementById('table'));
-      table.draw(viewTable, {width: '100%', height: '100%'});
-      google.visualization.events.addListener(table, 'sort',
-        function(event) {
-          data.sort([{column: event.column, desc: !event.ascending}]);
-          chart.draw(viewChart);
-        });
+    google.charts.load("current", {packages:['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable([<?php print_r($out); ?>]);
+      var view = new google.visualization.DataView(data);
+      var options = { width: '100%', height: '400', bar: {groupWidth: '95%' }, legend: {position: 'right' }, isStacked: 'percent' };
+      var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
+      chart.draw(view, options);
     }
   </script>
 

@@ -195,4 +195,10 @@ function role($level) {
   return $role;
 }
 
+function percentile($array) {
+  $total = array_sum($array);
+  $names = array_map(function($number) use ($total) { return number_format($number / $total * 100, 1); }, $array);
+  return $names;
+}
+
 ?>

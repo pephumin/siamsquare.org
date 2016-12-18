@@ -2,9 +2,6 @@
 
 $defaultemail = EMAILNOREPLY; // "noreply@siamsquare.org";
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-$db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
-
 // Get projcet title
 $q = $db->prepare("SELECT title, status, email_i, email_i_content, email_r, email_r_content FROM j_projects WHERE private = 1 AND id = :surveyid");
 $q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);

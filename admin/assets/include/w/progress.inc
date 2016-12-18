@@ -2,9 +2,6 @@
 
 $target_c = 300;
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-$db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
-
 $today['year'] = date("Y");
 $today['month'] = date("m");
 $today['day'] = date("d");
@@ -13,11 +10,10 @@ $today['month'] = $today['month']-1;
 $timelinedata = "[ \n"; $colordata = "[ ";
 
 // Get projcet title
-$sql1 = "SELECT * FROM j_projects WHERE id = :surveyid";
-$q = $db->prepare($sql1);
-$q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-$q->execute();
-while ($row = $q->fetchObject()) {
+$q1 = $db->prepare("SELECT * FROM j_projects WHERE id = :surveyid");
+$q1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q1->execute();
+while ($row = $q1->fetchObject()) {
   $project = $row->title;
   if ($row->userid == $_SESSION['userid']) { $owner = 1; } else { $owner = 0; }
   if ($row->created) {
@@ -67,14 +63,23 @@ while ($row = $q->fetchObject()) {
 $timelinedata .= " ]";
 
 // Get counts
-$sql2 = "SELECT SUM(IF(status = :S1, 1, 0)) AS S1, SUM(IF(status = :S2, 1, 0)) AS S2, SUM(IF(status = :S3, 1, 0)) AS S3 FROM j_results WHERE surveyid = :surveyid ";
-$q = $db->prepare($sql2);
-$q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-$q->bindValue(':S1', '1', PDO::PARAM_INT);
-$q->bindValue(':S2', '0', PDO::PARAM_INT);
-$q->bindValue(':S3', '-1', PDO::PARAM_INT);
-$q->execute();
-while ($row = $q->fetchObject()) {
+$q2A = $db->prepare("SELECT COUNT(created) AS created, COUNT(invited1) AS invited1, COUNT(invited2) AS invited2, COUNT(viewed) AS viewed, COUNT(completed) AS completed FROM j_respondents_private WHERE surveyid = :surveyid ");
+$q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q2A->execute();
+while ($row = $q2A->fetchObject()) {
+  $created = $row->created;
+  $invited1 = $row->invited1;
+  $invited2 = $row->invited2;
+  $viewed = $row->viewed;
+  $completed = $row->completed;
+}
+$q2B = $db->prepare("SELECT SUM(IF(status = :S1, 1, 0)) AS S1, SUM(IF(status = :S2, 1, 0)) AS S2, SUM(IF(status = :S3, 1, 0)) AS S3 FROM j_results WHERE surveyid = :surveyid ");
+$q2B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q2B->bindValue(':S1', '1', PDO::PARAM_INT);
+$q2B->bindValue(':S2', '0', PDO::PARAM_INT);
+$q2B->bindValue(':S3', '-1', PDO::PARAM_INT);
+$q2B->execute();
+while ($row = $q2B->fetchObject()) {
   $responses_good_c = $row->S1;
   $responses_test_c = $row->S2;
   $responses_deleted_c = $row->S3;
@@ -93,17 +98,17 @@ $stat .= "  </thead>\n";
 $stat .= "  <tbody>\n";
 $stat .= "    <tr>\n";
 $stat .= "      <td>Universe</td>\n";
-$stat .= "      <td>2,500</td>\n";
+$stat .= "      <td>$created</td>\n";
 $stat .= "      <td>Total target (Public) or Total name list (Private)</td>\n";
 $stat .= "    </tr>\n";
 $stat .= "    <tr>\n";
 $stat .= "      <td>Invitation sent</td>\n";
-$stat .= "      <td>1,350</td>\n";
+$stat .= "      <td>$invited1</td>\n";
 $stat .= "      <td>54% (of Universe)</td>\n";
 $stat .= "    </tr>\n";
 $stat .= "    <tr>\n";
 $stat .= "      <td>Reminder sent</td>\n";
-$stat .= "      <td>725</td>\n";
+$stat .= "      <td>$invited2</td>\n";
 $stat .= "      <td>54% (of all invites)</td>\n";
 $stat .= "    </tr>\n";
 $stat .= "    <tr class=\"bg-warning\">\n";

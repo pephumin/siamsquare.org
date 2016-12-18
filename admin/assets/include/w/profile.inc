@@ -25,8 +25,6 @@ pageHeader($title);
 <?php } else { ?>
 
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-$db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
 $sql = "SELECT id, title, created FROM j_projects WHERE userid = :userid AND companyid = :companyid AND status >= 0 ORDER BY id DESC";
 $q = $db->prepare($sql);
 $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);

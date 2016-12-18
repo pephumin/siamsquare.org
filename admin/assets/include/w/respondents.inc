@@ -17,9 +17,6 @@ $help .= "    <li><i class=\"pe-li pe-check-square\"></i> Save the file by choos
 $help .= "  </ul>\n";
 $help .= "</div>\n";
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-$db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
-
 // Get projcet title
 $q1 = $db->prepare("SELECT title, status FROM j_projects WHERE id = :surveyid");
 $q1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
@@ -324,8 +321,8 @@ if ($total == 0) {
       </tbody>
     </table>
     <input type="hidden" name="m" value="delthis">
-    <p><small><input type="checkbox" name="all" id="all" value=""<?php echo $disablecheckbox; ?>> <i class="pe-level-up pe-flip-horizontal"></i> Select / deselect all</small></p>
-    <p><input type="submit" class="btn-tiny btn-danger" value="Delete selected" ></p>
+    <div><small><input type="checkbox" name="all" id="all" value=""<?php echo $disablecheckbox; ?>> <i class="pe-level-up pe-flip-horizontal"></i> Select / deselect all</small></div>
+    <button type="submit" class="btn-xs btn-danger"><i class="pe-trash pe-fw"></i> Delete selected</button>
   </form>
 
 <?php } ?>
