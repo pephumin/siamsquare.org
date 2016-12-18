@@ -10,10 +10,6 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.phpmailer.ph
 
 $db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
 
-$login = new Login();
-if ($login->isUserLoggedIn() == true) { $email = $_SESSION["email"]; $userid = $_SESSION['userid']; }
-else { $email = "anonymous@siamsquare.org"; $userid = 0; }
-
 if (empty($_GET['s'])) {
   $target = "/";
   header("refresh: 10; url=$target");
@@ -28,6 +24,61 @@ if (empty($_GET['s'])) {
   exit;
 } else { $surveyid = $_GET['s']; }
 
+$login = new Login();
+if ($login->isUserLoggedIn() == true) { $email = $_SESSION["email"]; $userid = $_SESSION['userid']; }
+else {
+  $ip = getip();
+  $email = "anonymous@siamsquare.org"; $userid = 0;
+  // $email = $_GET["email"];
+  // $surveyid = $_GET["s"];
+  // $q1 = $db->prepare("SELECT password FROM j_respondents_private WHERE email = :email AND surveyid = :surveyid");
+  // $q1->bindValue(':email', $email, PDO::PARAM_INT);
+  // $q1->bindValue(':surveyid', $surveyid, PDO::PARAM_INT);
+  // $q1->execute();
+  // while ($row = $q1->fetchObject()) { $password = $row->password; }
+  // if ($password != $_GET["token"]) {
+  //   $q2 = $db->prepare('UPDATE j_respondents_private SET fails = fails+1, fails_last = :fails_last, fails_ip = :fails_ip WHERE email = :email');
+  //   $q2->execute(array(':email' => $email, ':fails_last' => time(), ':fails_ip' => $ip));
+  //   $q3 = $db->prepare("INSERT INTO j_respondents_private_logs (email, ip, data, critical) VALUE (:email, :ip, '".$email." failed to log in due to a wrong token', '4')");
+  //   $q3->bindValue(':email', $email, PDO::PARAM_INT);
+  //   $q3->bindValue(':ip', $ip, PDO::PARAM_STR);
+  //   $q3->execute();
+  //   $errors[] = mkerror("Wrong access token");
+  // } else {
+  //   $q4 = $db->prepare("UPDATE j_respondents_private SET lastlogin2 = lastlogin, lastip2 = lastip WHERE email = :email AND surveyid = :surveyid");
+  //   $q4->bindValue(':email', $email, PDO::PARAM_STR);
+  //   $q4->bindValue(':surveyid', $surveyid, PDO::PARAM_INT);
+  //   $q4->execute();
+  //   $q5 = $db->prepare("UPDATE j_respondents_private SET lastlogin = NOW(), lastip = :ip WHERE email = :email AND surveyid = :surveyid");
+  //   $q5->bindValue(':ip', $ip, PDO::PARAM_STR);
+  //   $q5->bindValue(':email', $email, PDO::PARAM_STR);
+  //   $q5->bindValue(':surveyid', $surveyid, PDO::PARAM_INT);
+  //   $q5->execute();
+  //   $q6 = $db->prepare("SELECT * FROM j_respondents_private WHERE email = :email AND surveyid = :surveyid");
+  //   $q6->bindValue(':email', $result_row->email, PDO::PARAM_STR);
+  //   $q6->bindValue(':surveyid', $surveyid, PDO::PARAM_INT);
+  //   $q6->execute();
+  //   $resulty = $q6->fetchObject();
+  //   $_SESSION['logged_in'] = 1;                     $this->logged_in = true;
+  //   $_SESSION['email'] = $result_row->email;        $this->email = $result_row->email;
+  //   $_SESSION['created'] = $resulty->created;       $this->created = $resulty->created;
+  //   $_SESSION['updated'] = $resulty->updated;       $this->updated = $resulty->updated;
+  //   $_SESSION['lastlogin'] = $resulty->lastlogin;   $this->lastlogin = $resulty->lastlogin;
+  //   $_SESSION['lastlogin2'] = $resulty->lastlogin2; $this->lastlogin2 = $resulty->lastlogin2;
+  //   $_SESSION['ip'] = $ip;                          $this->ip = $ip;
+  //   $_SESSION['lastip'] = $resulty->lastip;         $this->lastip = $resulty->lastip;
+  //   $_SESSION['lastip2'] = $resulty->lastip2;       $this->lastip2 = $resulty->lastip2;
+  //   $q7 = $db->prepare("INSERT INTO j_respondents_private_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$result_row->email." logged in', '1')");
+  //   $q7->bindValue(':userid', $resulty->id, PDO::PARAM_INT);
+  //   $q7->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
+  //   $q7->execute();
+  //   $q8 = $db->prepare('UPDATE j_respondents_private SET fails = 0, fails_last = NULL WHERE email = :email AND fails != 0');
+  //   $q8->execute(array(':email' => $email));
+  //   if (isset($rememberme)) { $this->newRememberMeCookie(); }
+  //   else { $this->deleteRememberMeCookie(); }
+  //   if ($ref) { header("location: $ref"); }
+  // }
+}
 
 // if (isset($_GET['o']) || ($_GET['o'] == "CNT")) {
 //   $auth = $_GET['o'];
