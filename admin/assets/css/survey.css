@@ -113,36 +113,36 @@ div.commentText {
       font-size: 13px;
       cursor: pointer; }
       .svd_container .svd_menu > li > a:hover, .svd_container .svd_menu > li > a:focus {
-        background-color: #f3f3f4;
-        border-bottom: 1px solid #f3f3f4; }
+        background-color: #f5f6f7;
+        border-bottom: 1px solid #f5f6f7; }
     .svd_container .svd_menu > li.active > a {
       color: #1ab394;
-      background-color: #f3f3f4;
+      background-color: #f5f6f7;
       border: 1px solid #e7eaec;
-      border-bottom-color: #f3f3f4; }
+      border-bottom-color: #f5f6f7; }
       .svd_container .svd_menu > li.active > a:hover, .svd_container .svd_menu > li.active > a:focus {
         color: #1ab394;
-        background-color: #f3f3f4; }
+        background-color: #f5f6f7; }
   .svd_container .svd_actions {
     font-family: "ubuntu";
     font-size: 12px; }
     .svd_container .svd_actions .btn {
       margin-left: 5px; }
   .svd_container .svd_content {
-    background-color: #f3f3f4;
+    background-color: #f5f6f7;
     padding: 10px 30px 30px 30px;
     margin: 0; }
     .svd_container .svd_content .svd_survey_designer .svd_toolbox {
-      background-color: #f3f3f4;
+      background-color: #f5f6f7;
       border: none; }
       .svd_container .svd_content .svd_survey_designer .svd_toolbox .panel-heading {
-        background-color: #f3f3f4;
+        background-color: #f5f6f7;
         color: #676a6c;
         border: none;
         padding: 0 0 30px 0;
         font-size: 15px; }
       .svd_container .svd_content .svd_survey_designer .svd_toolbox .btn-group-vertical .btn {
-        background-color: #f3f3f4;
+        background-color: #f5f6f7;
         border: none;
         padding: 8px 0;
         border-bottom: 1px solid #e7eaec;
@@ -173,9 +173,9 @@ div.commentText {
           cursor: pointer; }
           .svd_container .svd_content .svd_survey_designer .svd_editors .svd_pages_editor .nav-tabs li.active .svd_page_nav {
             color: #1ab394;
-            background-color: #f3f3f4;
+            background-color: #f5f6f7;
             border: 1px solid #e7eaec;
-            border-bottom-color: #f3f3f4; }
+            border-bottom-color: #f5f6f7; }
           .svd_container .svd_content .svd_survey_designer .svd_editors .svd_pages_editor .nav-tabs li .svd_page_nav {
             color: #676a6c;
             padding: 7px 10px 7px 12px; }

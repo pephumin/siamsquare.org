@@ -1,7 +1,8 @@
 @charset "UTF-8";
 :root {
   font-size: 14px;
-  line-height: 1.42857; }
+  line-height: 1.42857;
+  font-family: "Lucida Grande"; }
 
 @font-face {
   font-family: "neon";
