@@ -81,7 +81,7 @@ if ($_POST['uploading'] == 1) {
     fclose($output);
     try { $db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS, array(PDO::MYSQL_ATTR_LOCAL_INFILE => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)); }
     catch (PDOException $e) { die("database connection failed: ".$e->getMessage()); }
-    $affectedRows = $db->exec("LOAD DATA LOCAL INFILE ".$db->quote($rewritefile)." INTO TABLE j_respondents_private FIELDS TERMINATED BY ".$db->quote($fieldseparator)." LINES TERMINATED BY ".$db->quote($lineseparator));
+    $affectedRows = $db->exec("LOAD DATA LOCAL INFILE ".$db->quote($rewritefile)." INTO TABLE j_respondents FIELDS TERMINATED BY ".$db->quote($fieldseparator)." LINES TERMINATED BY ".$db->quote($lineseparator));
     $ql1 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." uploaded a name list of respondents for $project', '3')");
     $ql1->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
     $ql1->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
@@ -89,7 +89,7 @@ if ($_POST['uploading'] == 1) {
   }
   header("location: $base");
 } else if ($_POST['m'] == "fixerrors") {
-  $q2A = $db->prepare("DELETE FROM j_respondents_private WHERE surveyid = 0 OR surveyid = :surveyid AND status = 0");
+  $q2A = $db->prepare("DELETE FROM j_respondents WHERE surveyid = 0 OR surveyid = :surveyid AND status = 0");
   $q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
   $q2A->execute();
   $ql2 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." deleted respondent emails with errors for $project', '3')");
@@ -98,14 +98,13 @@ if ($_POST['uploading'] == 1) {
   $ql2->execute();
   header("location: $base");
 } else if ($_POST['m'] == "fixduplicates") {
-  $q2B1 = $db->prepare("CREATE TABLE tmp SELECT * FROM j_respondents_private WHERE surveyid = :surveyid GROUP BY email");
-  // $q2B = $db->prepare("DELETE e1 FROM j_respondents_private e1, j_respondents_private e2 WHERE e1.surveyid = :surveyid AND e1.email = e2.email AND e1.id > e2.id");
+  $q2B1 = $db->prepare("CREATE TABLE tmp SELECT * FROM j_respondents WHERE surveyid = :surveyid GROUP BY email");
   $q2B1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
   $q2B1->execute();
-  $q2B2 = $db->prepare("DELETE FROM j_respondents_private WHERE surveyid = :surveyid");
+  $q2B2 = $db->prepare("DELETE FROM j_respondents WHERE surveyid = :surveyid");
   $q2B2->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
   $q2B2->execute();
-  $q2B3 = $db->prepare("INSERT INTO j_respondents_private SELECT * FROM tmp");
+  $q2B3 = $db->prepare("INSERT INTO j_respondents SELECT * FROM tmp");
   $q2B3->execute();
   $q2B4 = $db->prepare("DROP TABLE tmp");
   $q2B4->execute();
@@ -116,7 +115,7 @@ if ($_POST['uploading'] == 1) {
   header("location: $base");
 } else if ($_POST['m'] == "delthis") {
   $ids = implode(",", $_POST['checkbox']);
-  $q2C = $db->prepare("DELETE FROM j_respondents_private WHERE id IN ($ids)");
+  $q2C = $db->prepare("DELETE FROM j_respondents WHERE id IN ($ids)");
   $q2C->execute();
   $ql4 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." manually deleted respondent emails for $project', '3')");
   $ql4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
@@ -137,7 +136,7 @@ echo "<h3>Project $project</h3>\n";
 
 
 // Get status
-$q2 = $db->prepare("SELECT COUNT(*) as iA, SUM(status='0') AS iB, SUM(status='1') AS iC, SUM(status='2') AS iD, SUM(status='3') AS iE FROM j_respondents_private WHERE surveyid = :surveyid");
+$q2 = $db->prepare("SELECT COUNT(*) as iA, SUM(status='0') AS iB, SUM(status='1') AS iC, SUM(status='2') AS iD, SUM(status='3') AS iE FROM j_respondents WHERE surveyid = :surveyid");
 $q2->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2->execute();
 while ($row = $q2->fetchObject()) {
@@ -170,7 +169,7 @@ if ($to_record > $rows) { $to_record = $rows; }
 $from_record = $start + 1;
 
 // Get respondent error list
-$q3A = $db->prepare("SELECT * FROM j_respondents_private WHERE surveyid = :surveyid AND status = 0");
+$q3A = $db->prepare("SELECT * FROM j_respondents WHERE surveyid = :surveyid AND status = 0");
 $q3A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q3A->execute();
 while ($row = $q3A->fetchObject()) { $errorlist[] = $row->email; }
@@ -188,7 +187,7 @@ $email_error .= "</div>\n";
 
 // Get respondent listing
 $tablelist = "";
-$q3B = $db->prepare("SELECT * FROM j_respondents_private WHERE surveyid = :surveyid".$add);
+$q3B = $db->prepare("SELECT * FROM j_respondents WHERE surveyid = :surveyid".$add);
 $q3B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q3B->execute();
 if ($from_record) { $i = $from_record; } else { $i = 1; }
@@ -208,7 +207,7 @@ while ($row = $q3B->fetchObject()) {
 }
 
 // Check duplications
-$q4 = $db->prepare("SELECT COUNT(*) as duplicates, id, email, invited1 FROM j_respondents_private WHERE surveyid = :surveyid GROUP BY email HAVING duplicates > 1");
+$q4 = $db->prepare("SELECT COUNT(*) as duplicates, id, email, invited1 FROM j_respondents WHERE surveyid = :surveyid GROUP BY email HAVING duplicates > 1");
 $q4->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q4->execute();
 $e = array(); $f = array(); $g = array(); //$h = array();
