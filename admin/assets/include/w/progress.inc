@@ -1,6 +1,6 @@
 <?php
 
-$target_c = 300;
+$c_target = 300;
 
 $today['year'] = date("Y");
 $today['month'] = date("m");
@@ -9,7 +9,7 @@ $today['month'] = $today['month']-1;
 
 $timelinedata = "[ \n"; $colordata = "[ ";
 
-// Get projcet title
+// Get projcet info
 $q1 = $db->prepare("SELECT * FROM j_projects WHERE id = :surveyid");
 $q1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q1->execute();
@@ -63,15 +63,34 @@ while ($row = $q1->fetchObject()) {
 $timelinedata .= " ]";
 
 // Get counts
-$q2A = $db->prepare("SELECT COUNT(created) AS created, COUNT(invited1) AS invited1, COUNT(invited2) AS invited2, COUNT(viewed) AS viewed, COUNT(completed) AS completed FROM j_respondents_private WHERE surveyid = :surveyid ");
+$q2A = $db->prepare("SELECT COUNT(created) AS created, COUNT(invited1) AS invited1, COUNT(invited2) AS invited2, COUNT(viewed) AS viewed, COUNT(completed) AS completed FROM j_respondents WHERE surveyid = :surveyid ");
 $q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2A->execute();
 while ($row = $q2A->fetchObject()) {
-  $created = $row->created;
-  $invited1 = $row->invited1;
-  $invited2 = $row->invited2;
-  $viewed = $row->viewed;
-  $completed = $row->completed;
+  $row->invited1 = 520;
+  $row->invited2 = 450;
+  $c_created = $row->created; $created = number_format($c_created);
+  $c_invited1 = $row->invited1; $invited1 = number_format($c_invited1);
+  $c_invited2 = $row->invited2; $invited2 = number_format($c_invited2);
+  $c_invited_all = $c_invited1 + $c_invited2; $invited_all = number_format($c_invited_all);
+  if ($c_invited1) {
+    $p_invited1 = percent($c_invited1 / $c_created);
+    $p_invited1C = percent($c_invited1 / $c_invited_all);
+  }
+  else {
+    $c_invited1 = 0; $p_invited1 = 0;
+  }
+  if ($c_invited2) {
+    $p_invited2A = percent($c_invited2 / $c_created);
+    $p_invited2B = percent($c_invited2 / $c_invited1);
+    $p_invited2C = percent($c_invited2 / $c_invited_all);
+  }
+  else {
+    $c_invited2 = 0; $p_invited2A = 0; $p_invited2B = 0;
+  }
+  if ($c_invited_all) { $p_invited_all = percent($c_invited_all / $c_created); } else { $c_invited_all = 0; $p_invited_all = 0; }
+  $c_viewed = $row->viewed;
+  $c_completed = $row->completed;
 }
 $q2B = $db->prepare("SELECT SUM(IF(status = :S1, 1, 0)) AS S1, SUM(IF(status = :S2, 1, 0)) AS S2, SUM(IF(status = :S3, 1, 0)) AS S3 FROM j_results WHERE surveyid = :surveyid ");
 $q2B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
@@ -80,55 +99,62 @@ $q2B->bindValue(':S2', '0', PDO::PARAM_INT);
 $q2B->bindValue(':S3', '-1', PDO::PARAM_INT);
 $q2B->execute();
 while ($row = $q2B->fetchObject()) {
-  $responses_good_c = $row->S1;
-  $responses_test_c = $row->S2;
-  $responses_deleted_c = $row->S3;
-  $responses_total_c = $responses_good_c + $responses_test_c + $responses_deleted_c;
+  $c_responses_good = $row->S1;
+  $c_responses_tested = $row->S2;
+  $c_responses_deleted = $row->S3;
+  $c_responses_total = $c_responses_good + $c_responses_tested + $c_responses_deleted;
 }
-$responses_total_p = percent($responses_total_c / $target_c);
+$p_responses_total = percent($c_responses_total / $c_target);
+$p_targetA = percent($c_target / $c_created);
+$p_targetB = percent($c_target / $c_invited_all);
 
 $stat = "<table class=\"table table-hover small\">\n";
 $stat .= "  <thead>\n";
 $stat .= "    <tr class=\"bg-primary\">\n";
-$stat .= "      <th width=\"30%\"><i class=\"pe-dashboard pe-fw\"></i> Details</th>\n";
-$stat .= "      <th width=\"15%\"><i class=\"pe-braille pe-fw\"></i> Count</th>\n";
-$stat .= "      <th width=\"55%\"><i class=\"pe-percent pe-fw\"></i> Percentage</th>\n";
+$stat .= "      <th width=\"25%\"><i class=\"pe-dashboard pe-fw\"></i> Details</th>\n";
+$stat .= "      <th width=\"15%\" style=\"text-align:center\"><i class=\"pe-braille pe-fw\"></i> Count</th>\n";
+$stat .= "      <th width=\"60%\"><i class=\"pe-percent pe-fw\"></i> Percentage</th>\n";
 $stat .= "    </tr>\n";
 $stat .= "  </thead>\n";
 $stat .= "  <tbody>\n";
 $stat .= "    <tr>\n";
 $stat .= "      <td>Universe</td>\n";
-$stat .= "      <td>$created</td>\n";
+$stat .= "      <td align=\"center\">$c_created</td>\n";
 $stat .= "      <td>Total target (Public) or Total name list (Private)</td>\n";
 $stat .= "    </tr>\n";
-$stat .= "    <tr>\n";
-$stat .= "      <td>Invitation sent</td>\n";
-$stat .= "      <td>$invited1</td>\n";
-$stat .= "      <td>54% (of Universe)</td>\n";
-$stat .= "    </tr>\n";
-$stat .= "    <tr>\n";
-$stat .= "      <td>Reminder sent</td>\n";
-$stat .= "      <td>$invited2</td>\n";
-$stat .= "      <td>54% (of all invites)</td>\n";
+$stat .= "    <tr class=\"bg-warning\">\n";
+$stat .= "      <td><small>First invitation</small></td>\n";
+$stat .= "      <td align=\"center\"><small>$invited1</small></td>\n";
+if ($p_invited1) { $stat .= "      <td><small>$p_invited1 of Universe</small></td>\n"; } else { $stat .= "      <td></td>\n"; }
 $stat .= "    </tr>\n";
 $stat .= "    <tr class=\"bg-warning\">\n";
-$stat .= "      <td><strong>Target sample</strong></td>\n";
-$stat .= "      <td><strong>$target_c</strong></td>\n";
-$stat .= "      <td>54% (of all invites)</td>\n";
+$stat .= "      <td><small>Reminder</small></td>\n";
+$stat .= "      <td align=\"center\"><small>$invited2</small></td>\n";
+if ($p_invited2A) { $stat .= "      <td><small>$p_invited2A of Universe ($p_invited2B of first invites)</small></td>\n"; } else { $stat .= "      <td></td>\n"; }
+$stat .= "    </tr>\n";
+$stat .= "    <tr class=\"bg-warning\">\n";
+$stat .= "      <td>Total invitation</td>\n";
+$stat .= "      <td align=\"center\">$invited_all</td>\n";
+if ($p_invited_all) { $stat .= "      <td>$p_invited_all of Universe ($p_invited1C first invites vs. $p_invited2C reminders)</td>\n"; } else { $stat .= "      <td></td>\n"; }
+$stat .= "    </tr>\n";
+$stat .= "    <tr>\n";
+$stat .= "      <td><strong>Target sample size</strong></td>\n";
+$stat .= "      <td align=\"center\"><strong>$c_target</strong></td>\n";
+if ($c_target) { $stat .= "      <td><strong>$p_targetB of all invites</strong> ($p_targetA of Universe)</td>\n"; } else { $stat .= "      <td></td>\n"; }
 $stat .= "    </tr>\n";
 $stat .= "    <tr>\n";
 $stat .= "      <td>Participation to date</td>\n";
-$stat .= "      <td>$responses_total_c</td>\n";
-$stat .= "      <td>$responses_total_p (of all invites)</td>\n";
+$stat .= "      <td align=\"center\">$c_responses_total</td>\n";
+$stat .= "      <td>$p_responses_total (of all invites)</td>\n";
 $stat .= "    </tr>\n";
 
-if ($responses_good_c > 0) {
-  $responses_good_p = percent($responses_good_c / $responses_total_c);
+if ($c_responses_good > 0) {
+  $p_responses_good = percent($c_responses_good / $c_responses_total);
   $sql3 = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 1 ORDER BY submitted DESC";
   $q = $db->prepare($sql3);
   $q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
   $q->execute(); // print_r($q->rowCount());
-  $first = 0; $last = ($q->rowCount()-1);
+  $last = 0; $first = ($q->rowCount()-1);
   while ($row = $q->fetchAll(PDO::FETCH_ASSOC)) {
     $ee = $row;
     for ($i=0;$i<count($ee);$i++) {
@@ -137,9 +163,10 @@ if ($responses_good_c > 0) {
         unset($ee[$i][$key]);
       }
       $ee[$i]['data'] = json_decode($ee[$i]['data'], true);
-      $ee[$i]['submitted'] = ago($ee[$i]['submitted']);
+      // $ee[$i]['submitted'] = ago($ee[$i]['submitted']);
+      $ee[$i]['submitted'] = $ee[$i]['submitted'];
     }
-    $first_id = $row[$first]['id;'];
+    $first_id = $row[$first]['id'];
     $first_email = $row[$first]['email'];
     $first_ip = $row[$first]['ip'];
     $t1 = date_parse_from_format("Y-m-d H:i:s", $row[$first]['submitted']); $t1['month'] = $t1['month']-1;
@@ -151,11 +178,11 @@ if ($responses_good_c > 0) {
     $last_submitted = ago($row[$last]['submitted']);
   }
   $datafortable = json_encode($ee);
-  if ($responses_good_c == 1) {
+  if ($c_responses_good == 1) {
     $stat .= "    <tr class=\"bg-success\">\n";
     $stat .= "      <td style=\"font-size:120%\">Valid completions</td>\n";
-    $stat .= "      <td style=\"font-size:120%\">$responses_good_c</td>\n";
-    $stat .= "      <td>$responses_good_p (of all participations)</td>\n";
+    $stat .= "      <td style=\"font-size:120%\" align=\"center\">$c_responses_good</td>\n";
+    $stat .= "      <td>$p_responses_good (of all participations)</td>\n";
     $stat .= "    </tr>\n";
     $stat .= "    <tr>\n";
     $stat .= "      <td class=\"grey\">First response</td>\n";
@@ -168,8 +195,8 @@ if ($responses_good_c > 0) {
   } else {
     $stat .= "    <tr class=\"bg-success\">\n";
     $stat .= "      <td style=\"font-size:120%\">Valid completions</td>\n";
-    $stat .= "      <td style=\"font-size:120%\">$responses_good_c</td>\n";
-    $stat .= "      <td>$responses_good_p (of all participations)</td>\n";
+    $stat .= "      <td style=\"font-size:120%\" align=\"center\">$c_responses_good</td>\n";
+    $stat .= "      <td>$p_responses_good (of all participations)</td>\n";
     $stat .= "    </tr>\n";
     $stat .= "    <tr>\n";
     $stat .= "      <td class=\"grey\">First response</td>\n";
@@ -183,7 +210,7 @@ if ($responses_good_c > 0) {
 } else {
   $stat .= "    <tr class=\"bg-success\">\n";
   $stat .= "      <td style=\"font-size:120%\">Valid completions</td>\n";
-  $stat .= "      <td style=\"font-size:120%\"><em>NONE</em></td>\n";
+  $stat .= "      <td style=\"font-size:120%\" align=\"center\"><em>NONE</em></td>\n";
   $stat .= "      <td><em>NONE</em></td>\n";
   $stat .= "    </tr>\n";
   $stat .= "    <tr>\n";
@@ -198,7 +225,7 @@ if ($responses_good_c > 0) {
 $stat .= "  </tbody>\n";
 $stat .= "</table>\n";
 
-$achievement = ($responses_good_c / $target_c)*100;
+$achievement = ($c_responses_good / $c_target)*100;
 
 $title = "Job monitoring";
 pageHeader($title);
@@ -212,6 +239,47 @@ echo "<h3>Project $project</h3>\n";
 ?>
 
 <h4>Progress summary</h4>
+
+<div class="row">
+  <div align="center" class="col-sm-3">
+    <h4>Universe</h4>
+    <p><?php echo $created; ?></p>
+    <p>Total target (Public) or Total name list (Private)</p>
+  </div>
+  <div align="center" class="col-sm-1"><i class="pe-arrow-right pe-2x"></i></div>
+  <div align="center" class="col-sm-3">
+    <h4>Invitation</h4>
+    <p><?php echo $invited1; ?></p>
+    <p><small><?php echo $p_invited1; ?> of Universe</small></p>
+    <table class="table table-condensed table-hover small">
+      <thead>
+        <tr class="bg-primary">
+          <th width="65%">Type</th>
+          <th width="35%">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Invitation</td>
+          <td><?php echo $invited1; ?></td>
+        </tr>
+        <tr>
+          <td>Reminder</td>
+          <td><?php echo $invited2; ?></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div align="center" class="col-sm-1"><i class="pe-arrow-right pe-2x"></i></div>
+  <div align="center" class="col-sm-3">
+    <h4>Participation</h4>
+    <p><?php echo $c_responses_good; ?></p>
+    <p><small><?php echo $p_invited_all; ?> of Universe<br><?php echo $p_invited_all; ?> of all invites</small></p>
+  </div>
+</div>
+
+<br>
+
 <div class="row">
   <div class="col-sm-9">
     <?php echo $stat; ?>
@@ -236,7 +304,7 @@ echo "<h3>Project $project</h3>\n";
 <div id="showalert-delete"></div>
 
 <div class="csv">
-  <h4>Showing data ordered by the most recent (total of <span class="rows count"></span> records)</h4>
+  <h4>Showing data ordered by the most recent response (total of <span class="rows count"></span> records)</h4>
   <p>In order to view all responses, you would need to either <a download="result.csv" href="" class="download"><i class="pe-download pe-fw"></i> download the data file</a> or <a href="" class="raw"><i class="pe-desktop pe-fw"></i> view the data file online</a>.</p>
   <textarea class="editing form-control" readonly></textarea>
   <div class="table rendered"><table class="table"></table></div>
@@ -360,19 +428,32 @@ echo "<h3>Project $project</h3>\n";
 
   $(document).ready(function () {
     var excerptRows = 50;
+    var tt = <?php echo $datafortable; ?>;
     var ttt = <?php echo $datafortable; ?>;
-    var ttt = JSON.stringify(ttt);
+    for(var k in tt) {
+      var o = tt[k];
+      moment.locale('en');
+      var s1 = moment(o.submitted).fromNow();
+      var s2 = moment(o.submitted).format("D MMM YYYY");
+      newsubmitted = s1; //newsubmitted = s2 + ' (' + s1 + ')';
+      o.submitted = newsubmitted;
+    }
+    var tt = JSON.stringify(tt); var ttt = JSON.stringify(ttt);
+    tt = tt.replaceAll("data", ""); tt = tt.replaceAll("upload/", "");
     ttt = ttt.replaceAll("data", ""); ttt = ttt.replaceAll("upload/", "");
+    // tt = tt.replaceAll("upload/", "http://www.siamsquare.org/members/assets/upload/");
     // ttt = ttt.replaceAll("upload/", "http://www.siamsquare.org/members/assets/upload/");
-    var inArray = JSON.parse(ttt);
-    var outArray = [];
-    for (var row in inArray) { outArray[outArray.length] = parse_object(inArray[row]); }
-    $("span.rows.count").text("" + outArray.length);
-    var csv = $.csv.fromObjects(outArray);
-    renderCSV(outArray.slice(0, excerptRows), this.id);
+    var inArray1 = JSON.parse(tt); var inArray2 = JSON.parse(ttt);
+    var outArray1 = []; var outArray2 = [];
+    for (var row in inArray1) { outArray1[outArray1.length] = parse_object(inArray1[row]); }
+    for (var row in inArray2) { outArray2[outArray2.length] = parse_object(inArray2[row]); }
+    $("span.rows.count").text("" + outArray1.length);
+    $("span.rows.count").text("" + outArray2.length);
+    var csv1 = $.csv.fromObjects(outArray1); var csv2 = $.csv.fromObjects(outArray2);
+    renderCSV(outArray1.slice(0, excerptRows), this.id);
     showCSV(true);
-    $(".csv textarea").val(csv);
-    var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+    $(".csv textarea").val(csv2);
+    var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(csv2);
     $(".csv a.download").attr("href", uri);
     $(".csv textarea").blur(function() {showCSV(true);})
     $(".csv .raw").click(function() {
