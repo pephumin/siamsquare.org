@@ -53,6 +53,96 @@ echo "<p>While you can edit your questionnaire as often as you want, it is impor
 
 <div id="editor"></div>
 
+<br><br>
+
+<hr>
+
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+
+<h4>Some useful notes</h4>
+<div class="row">
+  <div class="col-sm-12" style="margin-bottom:20px">
+    <p>Visibleif</p>
+    <pre class="verysmall"><code class="prettyprint">
+visibleIf: "{haveKids}='Yes'"
+visibleIf: "{haveKids}='Yes' and {kids} >= 1"
+    </code></pre>
+  </div>
+  <div class="col-sm-12" style="margin-bottom:20px">
+    <p>Visible trigger</p>
+    <p class="small">The visible trigger is called if the question value name is changed.</p>
+    <p class="small">The visible trigger makes the list of 'questions' and/or 'pages' visibles if the ('question' value 'operator' 'value') returns true. Otherwise the list of 'questions' and/or 'pages' becomes invisible.</p>
+    <p class="small">The following operator values are available: "empty", "notempty", "equal", "notequal", "greater", "less", "greaterorequal", "lessorequal", "contains" and "notcontains". The default value is "equal".</p>
+    <pre class="verysmall"><code class="prettyprint">
+triggers: [
+  { type: "visible", name: "type", operator: "equal", value: "Hot hatch", questions: ["Hot hatch"] },
+  { type: "visible", name: "type", value: "sedan", questions: ["Sedan"] },
+  { type: "visible", name: "type", value: "sports", questions: ["Sports"] },
+  { type: "visible", name: "type", value: "Grand tourer", questions: ["Grand tourer"] },
+  { type: "visible", name: "type", value: "SuperCar", questions: ["Supercar"] },
+  { type: "visible", name: "type", value: "Muscle car", questions: ["Muscle car"] },
+  { type: "visible", name: "type", value: "Pony car", questions: ["Pony car"] },
+  { type: "visible", name: "type", value: "Convertible", questions: ["Convertible"] },
+  { type: "visible", name: "type", value: "other", questions: ["otherType"] }
+],
+    </code></pre>
+  </div>
+  <div class="col-sm-12" style="margin-bottom:20px">
+    <p>Complete trigger</p>
+    <p class="small">The complete trigger is called on the next page action.</p>
+    <p class="small">The complete trigger completes the survey if the ('question' value 'operator' 'value') returns true.</p>
+    <pre class="verysmall"><code class="prettyprint">
+visibleIf: "{haveKids}='Yes'"
+visibleIf: "{haveKids}='Yes' and {kids} >= 1"
+    </code></pre>
+  </div>
+  <div class="col-sm-12" style="margin-bottom:20px">
+    <p>SetValue trigger</p>
+    <pre class="verysmall"><code class="prettyprint">
+triggers: [
+  { type: "setvalue", name: "copy", operator: "equal", value: "Yes", setToName: "name", setValue: "Jon Snow" },
+  { type: "setvalue", name: "copy", operator: "equal", value: "Yes", setToName: "email", setValue: "jon.snow@nightwatch.com" },
+  { type: "setvalue", name: "copy", operator: "equal", value: "Yes", setToName: "tempvar", isVariable: true, setValue: "You have decided to use your current information." },
+  { type: "setvalue", name: "copy", operator: "equal", value: "No", setToName: "name", setValue: "" },
+  { type: "setvalue", name: "copy", operator: "equal", value: "No", setToName: "email", setValue: "" },
+  { type: "setvalue", name: "copy", operator: "equal", value: "No", setToName: "tempvar", isVariable: true, setValue: "You have decided not to use your current information." }
+],
+    </code></pre>
+  </div>
+  <div class="col-sm-12" style="margin-bottom:20px">
+    <p>Send partial result</p>
+    <p class="small">Send the survey results before moving on the next Page:  default is false.</p>
+    <p class="small">If you have a long survey, many your users may not finish the survey and enter the data on few pagers on only the first one. If you still want to save the information from incompleted surveys, set this property to true. The clientId property should bet set correctly, otherwise the data of others users may be ovewritten.</p>
+    <pre class="verysmall"><code class="prettyprint">
+Survey.Survey.cssType = "bootstrap";
+function onIsSurveyCompleted(success, result, response) {
+  if (!success) return;
+  if (result == 'completed') { alert('You have already run the survey!'); }
+  else { runSurvey(); }
+}
+function runSurveyCheck() {
+  var clientId = document.getElementById('clientId').value;
+  new Survey.dxSurveyService().isCompleted('47e699f7-d523-4476-8fcd-be601c91d119', clientId, onIsSurveyCompleted);
+}
+
+function runSurvey() {
+  var survey = new Survey.Survey({ surveyId: 'e7866476-e901-4ab7-9f38-574416387f73', surveyPostId: 'df2a04fb-ce9b-44a6-a6a7-6183ac555a68' }, "surveyContainer");
+  survey.clientId = document.getElementById('clientId').value;
+  survey.sendResultOnPageNext = document.getElementById('sendResultOnPageNext').checked;
+  survey.onComplete.add(function (s) {
+    document.getElementById('surveyContainer').innerHTML = "";
+    document.getElementById("clientIdContainer").style.display = "inline";
+  });
+  survey.onSendResult.add(function (survey) {
+    var text = "clientId:" + survey.clientId + ". The results are:" + JSON.stringify(survey.data)  + String.fromCharCode(13, 10);
+    var memo = document.getElementById('sentResults');
+    memo.value = memo.value + text;
+  });
+  document.getElementById("clientIdContainer").style.display = "none";
+}
+    </code></pre>
+  </div></div>
+
 <script type="text/javascript">
 
   function getsurveydata(id) {
