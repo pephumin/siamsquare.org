@@ -106,21 +106,21 @@ foreach ($rows as $row) {
     $ss = "<i class=\"pe-hourglass-half pe-fw\"></i> Data-collection (since: ".ago($row['L1']).")";
     $status = "Data-collection";
     $timelinedata .= "[ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $timelinedata .= "[ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#00E600', ";
+    $timelinedata .= "[ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#00C851', ";
   }
   else if ($row['status'] == 3) {
     $ss = "<i class=\"pe-hourglass-end pe-fw\"></i> Completed (since: ".ago($row['L2']).")";
     $status = "Completed";
     $timelinedata .= "[ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $timelinedata .= "[ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
-    $timelinedata .= "[ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#009900', ";
+    $timelinedata .= "[ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00C851', ";
+    $timelinedata .= "[ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#007E33', ";
   }
   else if ($row['status'] == 4) {
     $ss = "<i class=\"pe-archive pe-fw\"></i> Archived (since: ".ago($row['L3']).")";
     $status = "Archived";
     $timelinedata .= "[ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $timelinedata .= "[ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
-    $timelinedata .= "[ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day'].") ], \n"; $colordata .= "'#009900', ";
+    $timelinedata .= "[ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00C851', ";
+    $timelinedata .= "[ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day'].") ], \n"; $colordata .= "'#007E33', ";
     $timelinedata .= "[ '".$title."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
   }
   $updated = ago($row['updated']);
@@ -220,7 +220,7 @@ while ($r = $q1->fetchObject()) {
     dataTable.addRows(<?php echo $timelinedata; ?>);
     var options = {
       height: <?php echo $height; ?>,
-      colors: [ '#B3FFB3', '#00E600', '#009900', '#AAAAAA' ],
+      colors: [ '#B3FFB3', '#00C851', '#007E33', '#AAAAAA' ],
       backgroundColor: { fill: 'transparent' },
       avoidOverlappingGridLines: false,
       timeline: {
@@ -238,7 +238,7 @@ while ($r = $q1->fetchObject()) {
       ['Completed', <?php echo $status3; ?>],
       ['Archived', <?php echo $status4; ?>]
     ]);
-    var options = { is3D: true, slices: { 0: { color: '#B3FFB3' }, 1: { color: '#00E600' }, 2: { color: '#009900' }, 3: { color: '#AAAAAA' } } };
+    var options = { is3D: true, slices: { 0: { color: '#B3FFB3' }, 1: { color: '#00C851' }, 2: { color: '#007E33' }, 3: { color: '#AAAAAA' } } };
     var chart = new google.visualization.PieChart(document.getElementById('piechart'));
     chart.draw(data, options);
   }
