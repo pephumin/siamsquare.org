@@ -28,6 +28,7 @@ for ($i = 0; $i < count($questions); $i++) {
   if ($questions[$i]["html"]) { $qtitle = "HTML"; $ptitle[] = $questions[$i]["title"]; $html = $questions[$i]["html"]; }
   else { $qtitle = $questions[$i]["title"]; $ptitle[] = $questions[$i]["title"]; }
   $qtype = $questions[$i]["type"]; $ptype[] = $questions[$i]["type"];
+  $qvisibleIf = $questions[$i]["visibleIf"]; $pvisibleIf[] = $questions[$i]["visibleIf"];
   $qrequired = $questions[$i]["isRequired"];
   $choices = $questions[$i]["choices"];
   if ($questions[$i]["choicesByUrl"]) { $choicesByUrl = $questions[$i]["choicesByUrl"]; }
@@ -38,6 +39,7 @@ for ($i = 0; $i < count($questions); $i++) {
 
   if ($qname == $show) {
     $qout .= "<h4 style=\"font-family:boon;font-size:140%\">".$qname.$add.": ".$qtitle." <small>[".$qtype."]</small></h4>\n";
+    if ($qvisibleIf) { $qout .= "<p class=\"grey small\"><em>Only ask when <u>".$qvisibleIf."</u></em></p>\n"; } else { $qout .= "<p class=\"grey small\"><em>Ask all respondents</em></p>\n"; }
     if ($qtype == "radiogroup") {
       $qout .= "<ul>\n";
       foreach ($choices as $k4 => $p4) {
@@ -418,6 +420,12 @@ else if ($cd == "matrix") {
     $j = json_decode($j, true);
     foreach ($j[$qq] as $m => $v) { $new[$m][] = $v; }
   }
+  foreach ($r_code as $val) {
+    $da[] = $val;
+    $rrr = count($new[$val]);
+    $average[] = array_sum($new[$val]) / $rrr;
+    $db = $new[$da];
+  }
   $db = array();
   foreach ($new as $kk => $vv) {
     array_push($db, $kk);
@@ -426,18 +434,26 @@ else if ($cd == "matrix") {
   }
   foreach ($dc as $q => $r) { $dd[] = percentile($dc[$q]); }
   $c1 = array_combine($db, $dd);
+  $c2 = array_combine($db, $average);
   $out = "[ 'Attribute', ";
-  foreach ($column_link as $a) { $out .= "'".$a."', "; }
-  $out .= " ],\n";
+  foreach ($column_link as $a) { $out .= "'".$a."', "; } // label
+  if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H") || ($_GET['type'] == "bar-V")) { $out .= " ],\n"; }
+  else if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $out .= " 'Mean' ],\n"; }
   foreach ($r_code as $b) {
     if (json_decode(str_replace($r_code, $r_text, json_encode($b)), true)) { $bb = json_decode(str_replace($r_code, $r_text, json_encode($b)), true); }
     $out .= "[ '".$bb."', ";
-    foreach ($c_code as $c) { $out .= $c1[$b][$c].", "; }
-    $out .= " ],\n";
+    foreach ($c_code as $c) { $out .= $c1[$b][$c].", "; } // data for each scale
+    // $c3 = $c2[$b]+1;
+    if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H") || ($_GET['type'] == "bar-V")) { $out .= " ],\n"; }
+    else if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $out .= " $c2[$b] ],\n"; }
   }
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H-mean")."\">Bar Horizontal with Mean</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V-mean")."\">Bar Vertical with Mean</a> <strong>]</strong></p><br>\n"; }
+  else if ($_GET['type'] == "bar-H-mean") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Horizontal with Mean</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V-mean")."\">Bar Vertical with Mean</a> <strong>]</strong></p><br>\n"; }
+  else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H-mean")."\">Bar Horizontal with Mean</a> <strong>:</strong> <u>Bar Vertical</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V-mean")."\">Bar Vertical with Mean</a> <strong>]</strong></p><br>\n"; }
+  else if ($_GET['type'] == "bar-V-mean") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H-mean")."\">Bar Horizontal with Mean</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>:</strong> <u>Bar Vertical with Mean</u> <strong>]</strong></p><br>\n"; }
 }
 
-// echo $cd;
 // ------- Output --------------------------------------------------------------------------
 
 $title = "Survey result";
@@ -469,7 +485,7 @@ $answers = "<p><em>A total of $totalresponses responses answered by $totalrecord
 $openendquery = "<div style=\"text-align:right\">\n";
 $openendquery .= "<p>Custom key words centering tool</p>\n";
 $openendquery .= "<input id=\"root\" value=\"\" placeholder=\"Enter key words\">\n";
-$openendquery .= "<input type=\"button\" id=\"go\" value=\"Generate\">\n";
+$openendquery .= "<input type=\"button\" id=\"go\" value=\"Re-center\" class=\"btn btn-info btn-xs\">\n";
 $openendquery .= "</div>\n";
 
 ?>
@@ -484,7 +500,7 @@ $openendquery .= "</div>\n";
   <div class="col-sm-12">
 <?php if ($cd == "file") { echo $outdirect; } else { ?>
     <?php if ($cd == "comment") { echo $openendquery; } else { echo $menu; } ?>
-    <p><small class="blue">You can sort the results by clicking the table's headers</small></p>
+    <?php if (($cd != "matrix") && ($cd != "comment")) { echo "<p><small class=\"blue\">You can sort the results by clicking the table's headers</small></p>\n"; } ?>
     <div id="table" style="width:300px"></div>
     <div id="chart"></div>
 <?php } ?>
@@ -523,6 +539,7 @@ $openendquery .= "</div>\n";
           chart.draw(view);
         });
     }
+    $(window).resize(function() { drawSort(); });
   </script>
 
 <?php } else if ($_GET['type'] == "donut") { ?>
@@ -551,6 +568,7 @@ $openendquery .= "</div>\n";
           chart.draw(view);
         });
     }
+    $(window).resize(function() { drawSort(); });
   </script>
 
 <?php } else if ($_GET['type'] == "bar-H") { ?>
@@ -570,7 +588,7 @@ $openendquery .= "</div>\n";
       viewChart.setColumns([0, 2]);
       var formatter = new google.visualization.NumberFormat({suffix: '%'});
       formatter.format(data, 2);
-      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth:  '95%' }, legend: { position: 'none' } };
+      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth:  '60%' }, legend: { position: 'none' } };
       var chart = new google.visualization.BarChart(document.getElementById('chart'));
       chart.draw(viewChart, options);
       var table = new google.visualization.Table(document.getElementById('table'));
@@ -581,6 +599,7 @@ $openendquery .= "</div>\n";
           chart.draw(viewChart);
         });
     }
+    $(window).resize(function() { drawSort(); });
   </script>
 
 <?php } else if ($_GET['type'] == "bar-V") { ?>
@@ -600,7 +619,7 @@ $openendquery .= "</div>\n";
       viewChart.setColumns([0, 2]);
       var formatter = new google.visualization.NumberFormat({suffix: '%'});
       formatter.format(data, 2);
-      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth:  '95%' }, legend: { position: 'none' } };
+      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth:  '60%' }, legend: { position: 'none' } };
       var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
       chart.draw(viewChart, options);
       var table = new google.visualization.Table(document.getElementById('table'));
@@ -611,6 +630,7 @@ $openendquery .= "</div>\n";
           chart.draw(viewChart);
         });
     }
+    $(window).resize(function() { drawSort(); });
   </script>
 
 <?php } ?>
@@ -635,7 +655,7 @@ $openendquery .= "</div>\n";
       viewChart.setColumns([0, 2]);
       var formatter = new google.visualization.NumberFormat({suffix: '%'});
       formatter.format(data, 2);
-      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: {groupWidth: '95%' }, legend: {position: 'none' } };
+      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: {groupWidth: '60%' }, legend: {position: 'none' } };
       var chart = new google.visualization.BarChart(document.getElementById('chart'));
       chart.draw(viewChart, options);
       var table = new google.visualization.Table(document.getElementById('table'));
@@ -646,6 +666,7 @@ $openendquery .= "</div>\n";
           chart.draw(viewChart);
         });
     }
+    $(window).resize(function() { drawSort(); });
   </script>
 
 <?php } else if ($_GET['type'] == "newbar-H") { ?>
@@ -666,7 +687,7 @@ $openendquery .= "</div>\n";
       // view.setColumns([0, 1, { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation" }, 2]);
       var formatter = new google.visualization.NumberFormat({suffix: '%'});
       formatter.format(data, 2);
-      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth: '95%' }, legend: { position: 'none' }, bars: 'horizontal' };
+      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth: '60%' }, legend: { position: 'none' }, bars: 'horizontal' };
       var chart = new google.charts.Bar(document.getElementById('chart'));
       chart.draw(viewChart, options);
       var table = new google.visualization.Table(document.getElementById('table'));
@@ -677,6 +698,7 @@ $openendquery .= "</div>\n";
           chart.draw(viewChart);
         });
     }
+    $(window).resize(function() { drawSort(); });
   </script>
 
 <?php } else if ($_GET['type'] == "bar-V") { ?>
@@ -696,7 +718,7 @@ $openendquery .= "</div>\n";
       viewChart.setColumns([0, 2]);
       var formatter = new google.visualization.NumberFormat({suffix: '%'});
       formatter.format(data, 2);
-      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth:  '95%' }, legend: { position: 'none' } };
+      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth:  '60%' }, legend: { position: 'none' } };
       var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
       chart.draw(viewChart, options);
       var table = new google.visualization.Table(document.getElementById('table'));
@@ -707,6 +729,7 @@ $openendquery .= "</div>\n";
           chart.draw(viewChart);
         });
     }
+    $(window).resize(function() { drawSort(); });
   </script>
 
 <?php } ?>
@@ -726,9 +749,12 @@ $openendquery .= "</div>\n";
       chart.draw(data, options);
       document.getElementById('go').onclick = drawChart;
     }
+    $(window).resize(function() { drawChart(); });
   </script>
 
 <?php } else if ($cd == "matrix") { ?>
+
+<?php if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { ?>
 
   <script type="text/javascript">
     google.charts.load("current", {packages:['corechart']});
@@ -736,11 +762,112 @@ $openendquery .= "</div>\n";
     function drawChart() {
       var data = google.visualization.arrayToDataTable([<?php print_r($out); ?>]);
       var view = new google.visualization.DataView(data);
-      var options = { width: '100%', height: '400', bar: {groupWidth: '95%' }, legend: {position: 'right' }, isStacked: 'percent' };
+      var options = {
+        width: '100%',
+        height: '400',
+        bar: { groupWidth: '60%' },
+        legend: { position: 'top', textStyle: { color: '#000', fontSize: 10 } },
+        isStacked: true,
+        colors: ['#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33'],
+        seriesType: 'bars',
+        series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 } },
+        hAxes: {
+          0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
+          //1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
+        }
+      };
+      var chart = new google.visualization.BarChart(document.getElementById('chart'));
+      chart.draw(view, options);
+    }
+    $(window).resize(function() { drawChart(); });
+  </script>
+
+<?php } else if ($_GET['type'] == "bar-H-mean") { ?>
+
+  <script type="text/javascript">
+    google.charts.load("current", {packages:['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable([<?php print_r($out); ?>]);
+      var view = new google.visualization.DataView(data);
+      var options = {
+        width: '100%',
+        height: '400',
+        bar: { groupWidth: '60%' },
+        legend: { position: 'top', textStyle: { color: '#000', fontSize: 10 } },
+        isStacked: true,
+        colors: ['#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', '#000000'],
+        seriesType: 'bars',
+        series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 1, type: 'line' } },
+        hAxes: {
+          0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
+          1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
+        }
+      };
+      var chart = new google.visualization.BarChart(document.getElementById('chart'));
+      chart.draw(view, options);
+    }
+    $(window).resize(function() { drawChart(); });
+  </script>
+
+<?php } else if ($_GET['type'] == "bar-V") { ?>
+
+  <script type="text/javascript">
+    google.charts.load("current", {packages:['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable([<?php print_r($out); ?>]);
+      var view = new google.visualization.DataView(data);
+      var options = {
+        width: '100%',
+        height: '400',
+        bar: { groupWidth: '60%' },
+        legend: { position: 'right', textStyle: { color: '#000', fontSize: 10 } },
+        isStacked: true,
+        colors: ['#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', '#000000'],
+        seriesType: 'bars',
+        series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 } },
+        vAxes: {
+          0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
+          //1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
+        }
+      };
       var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
       chart.draw(view, options);
     }
+    $(window).resize(function() { drawChart(); });
   </script>
+
+<?php } else if ($_GET['type'] == "bar-V-mean") { ?>
+
+  <script type="text/javascript">
+    google.charts.load("current", {packages:['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable([<?php print_r($out); ?>]);
+      var view = new google.visualization.DataView(data);
+      var options = {
+        width: '100%',
+        height: '400',
+        bar: { groupWidth: '60%' },
+        legend: { position: 'top', textStyle: { color: '#000', fontSize: 10 } },
+        isStacked: true,
+        colors: ['#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', '#000000'],
+        seriesType: 'bars',
+        series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 1, type: 'line' } },
+        vAxes: {
+          0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
+          1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
+        }
+      };
+      var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
+      chart.draw(view, options);
+    }
+    $(window).resize(function() { drawChart(); });
+  </script>
+
+<?php } ?>
+
 
 <?php } else if ($cd == "file") { ?>
 
@@ -766,7 +893,6 @@ $openendquery .= "</div>\n";
   </script>
 
 <?php } ?>
-
 
 <br>
 
