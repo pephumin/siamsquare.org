@@ -117,7 +117,7 @@ $messagecontent .= "&lt;p&gt;(Email automatically sent on behalf of ".$_SESSION[
 <div class="row">
   <div class="col-sm-6">
     <h4><i class="pe-envelope-o pe-fw"></i> Invitation email</h4>
-    <p>The very first email which will be sent to all target respondents to invite them to participate with your survey.</p>
+    <p><small>This message will be displayed in the invitation email which will be sent to all target respondents.</small></p>
     <form id="target1" method="post" action="<?php echo $me; ?>">
       <div>
         <input type="radio" name="choice-email1" value="system" id="choice-default1"<?php if (isset($email_i) && ($email_i == $defaultemail)) { echo " checked"; } ?>>
@@ -130,35 +130,58 @@ $messagecontent .= "&lt;p&gt;(Email automatically sent on behalf of ".$_SESSION[
         <div class="reveal-if-active"><input type="email" name="email_iB" onclick="this.select()" class="form-control input-sm require-if-active" data-require-pair="#choice-customised1" placeholder="Enter a working email"<?php if (isset($email_i) && ($email_i != $defaultemail)) { echo " value=\"$email_i\""; } ?>></div>
       </div>
       <br>
-      <script type="text/javascript">tinymce.init({ selector:'#firstemail',
-        height: 300, menubar: false, resize: false, statusbar: false,
-        plugins: "textcolor, placeholder",
-        placeholder_attrs: {
-          style: {
-            position: 'absolute',
-            top:'5px',
-            left:0,
-            color: '#888',
-            padding: '1%',
-            width:'98%',
-            overflow: 'hidden',
-            'white-space': 'pre-wrap'
-          }
-        },
-        toolbar: 'removeformat | styleselect | bold italic | bullist numlist | forecolor backcolor | undo redo'
-      });</script>
-      <textarea id="firstemail" name="email_i_content" placeholder="<?php echo $default_i; ?>"><?php echo $email_i_content; ?></textarea>
+      <script type="text/javascript">
+        tinymce.init({ selector:'#firstemail',
+          height: 300, menubar: false, resize: false, statusbar: false,
+          plugins: "textcolor, placeholder",
+          placeholder_attrs: {
+            style: {
+              position: 'absolute',
+              top:'5px',
+              left:0,
+              color: '#888',
+              padding: '1%',
+              width:'98%',
+              overflow: 'hidden',
+              'white-space': 'pre-wrap'
+            }
+          },
+          toolbar: 'removeformat | styleselect | bold italic | bullist numlist | forecolor backcolor | undo redo'
+        });
+        // onchange_callback : function(ed){
+        //   var tinymce_placeholder = $('#' + ed.id).attr("placeholder");
+        //   setTimeout(function () {
+        //     var content = ed.getContent().replace(/<p>|<\/p>/g, '');
+        //     if (content == '') { ed.setContent(tinymce_placeholder); }
+        //   }, 200);
+        // },
+        // setup: function (ed) {
+        //   var tinymce_placeholder = $('#' + ed.id);
+        //   if (tinymce_placeholder.length) {
+        //     ed.onInit.add(function (ed) {
+        //       var cont = ed.getContent();
+        //       if (cont.length == 0) { ed.setContent(tinymce_placeholder.attr("placeholder")); }
+        //     });
+        //     ed.onMouseDown.add(function (ed, e) {
+        //       var content = ed.getContent().replace(/<p>|<\/p>/g, '');
+        //       if (content == tinymce_placeholder.attr("placeholder")) { ed.setContent(''); }
+        //     });
+        //   }
+        // }
+      </script>
+      <!-- <textarea id="firstemail" name="email_i_content" placeholder="<?php echo $default_i; ?>"><?php echo $email_i_content; ?></textarea> -->
+      <textarea id="firstemail" name="email_i_content"><?php echo $email_i_content; ?></textarea>
       <br>
       <p align="right">
         <input type="hidden" name="saveme" value="1">
-        <button id="btn-save1" type="button" class="btn btn-success" data-loading-text="<i class='pe-circle-o-notch pe-spin'></i> Saving..." data-reset-text="<i class='pe-save'></i> Saved <i class='pe-check-circle-o'></i>">Save <i class="pe-check-circle-o"></i></button>
-        <button type="reset" class="btn btn-default">Cancel <i class="pe-times-circle-o"></i></button>
+        <button id="btn-save1" type="button" class="btn btn-sm btn-warning" data-loading-text="<i class='pe-circle-o-notch pe-spin'></i> Saving..." data-reset-text="<i class='pe-save'></i> Saved <i class='pe-check-circle-o'></i>">Save <i class="pe-check-circle-o"></i></button>
+        <button type="reset" class="btn btn-sm btn-default">Cancel <i class="pe-times-circle-o"></i></button>
       </p>
     </form>
   </div>
   <div class="col-sm-6">
     <h4><i class="pe-envelope-o pe-fw"></i> Reminder email</h4>
-    <p><small>A follow-up email which will be sent <em>only</em> to those who have not participated you survey within a certain period of time.</small></p>
+    <p><small>This is a content for the following-up email which will be sent <em>only</em> to those who still have not participated the survey from the first invitation.</small></p>
     <form id="target2" method="post" action="<?php echo $me; ?>">
       <div>
         <input type="radio" name="choice-email2" value="system" id="choice-default2"<?php if (isset($email_r) && ($email_r == $defaultemail)) { echo " checked"; } ?>>
@@ -171,29 +194,113 @@ $messagecontent .= "&lt;p&gt;(Email automatically sent on behalf of ".$_SESSION[
         <div class="reveal-if-active"><input type="email" name="email_rB" onclick="this.select()" class="form-control input-sm require-if-active" data-require-pair="#choice-customised2" placeholder="Enter a working email"<?php if (isset($email_r) && ($email_r != $defaultemail)) { echo " value=\"$email_r\""; } ?>></div>
       </div>
       <br>
-      <script type="text/javascript">tinymce.init({ selector:'#secondemail',
-        height: 300, menubar: false, resize: false, statusbar: false,
-        plugins: "textcolor, placeholder",
-        placeholder_attrs: {
-          style: {
-            position: 'absolute',
-            top:'5px',
-            left:0,
-            color: '#888',
-            padding: '1%',
-            width:'98%',
-            overflow: 'hidden',
-            'white-space': 'pre-wrap',
-          }
-        },
-        toolbar: 'removeformat | styleselect | bold italic | bullist numlist | forecolor backcolor | undo redo'
-      });</script>
-      <textarea id="secondemail" name="email_r_content" placeholder="<?php echo $default_r; ?>"><?php echo $email_r_content; ?></textarea>
+      <script type="text/javascript">
+        tinymce.init({ selector:'#secondemail',
+          height: 300, menubar: false, resize: false, statusbar: false,
+          plugins: "textcolor, placeholder",
+          placeholder_attrs: {
+            style: {
+              position: 'absolute',
+              top:'5px',
+              left:0,
+              color: '#888',
+              padding: '1%',
+              width:'98%',
+              overflow: 'hidden',
+              'white-space': 'pre-wrap',
+            }
+          },
+          toolbar: 'removeformat | styleselect | bold italic | bullist numlist | forecolor backcolor | undo redo'
+        });
+      </script>
+      <!-- <textarea id="secondemail" name="email_r_content" placeholder="<?php echo $default_r; ?>"><?php echo $email_r_content; ?></textarea> -->
+      <textarea id="secondemail" name="email_r_content"><?php echo $email_r_content; ?></textarea>
       <br>
       <p align="right">
         <input type="hidden" name="saveme" value="2">
-        <button id="btn-save2" type="button" class="btn btn-success" data-loading-text="<i class='pe-circle-o-notch pe-spin'></i> Saving..." data-reset-text="<i class='pe-save'></i> Saved <i class='pe-check-circle-o'></i>">Save <i class="pe-check-circle-o"></i></button>
-        <button type="reset" class="btn btn-default">Cancel <i class="pe-times-circle-o"></i></button>
+        <button id="btn-save2" type="button" class="btn btn-sm btn-warning" data-loading-text="<i class='pe-circle-o-notch pe-spin'></i> Saving..." data-reset-text="<i class='pe-save'></i> Saved <i class='pe-check-circle-o'></i>">Save <i class="pe-check-circle-o"></i></button>
+        <button type="reset" class="btn btn-sm btn-default">Cancel <i class="pe-times-circle-o"></i></button>
+      </p>
+    </form>
+  </div>
+</div>
+
+<hr>
+
+<h3>Edit the survey messages</h3>
+<p>There are two <em>optional</em> messages you can choose to include in the survey. <span class="red">Only use them when there is really an important message to include because a longer survey would typically mean a lower participation rate.</span></p>
+
+<div class="row">
+  <div class="col-sm-6">
+    <h4><i class="pe-bullhorn pe-fw"></i> Welcome message</h4>
+    <p><small>This message will be displayed at the beginning of the survey before starting the actual survey.</small></p>
+    <form id="target3" method="post" action="<?php echo $me; ?>">
+      <div><label for="choice-customised1" class="small"><input type="checkbox" id="welcome-message"> Enable this option</label></div>
+      <br>
+      <script type="text/javascript">
+        tinymce.init({ selector:'#firstsurvey',
+          height: 300, menubar: false, resize: false, statusbar: false,
+          plugins: "textcolor, placeholder",
+          placeholder_attrs: {
+            style: {
+              position: 'absolute',
+              top:'5px',
+              left:0,
+              color: '#888',
+              padding: '1%',
+              width:'98%',
+              overflow: 'hidden',
+              'white-space': 'pre-wrap'
+            }
+          },
+          toolbar: 'removeformat | styleselect | bold italic | bullist numlist | forecolor backcolor | undo redo'
+        });
+      </script>
+      <!-- <textarea id="firstsurvey" name="email_i_content" placeholder="<?php echo $default_i; ?>"><?php echo $email_i_content; ?></textarea> -->
+      <textarea id="firstsurvey" name="email_i_content"><?php echo $email_i_content; ?></textarea>
+      <br>
+      <p align="right">
+        <input type="hidden" name="saveme" value="1">
+        <button id="btn-save3" type="button" class="btn btn-sm btn-warning" data-loading-text="<i class='pe-circle-o-notch pe-spin'></i> Saving..." data-reset-text="<i class='pe-save'></i> Saved <i class='pe-check-circle-o'></i>">Save <i class="pe-check-circle-o"></i></button>
+        <button type="reset" class="btn btn-sm btn-default">Cancel <i class="pe-times-circle-o"></i></button>
+      </p>
+    </form>
+  </div>
+  <div class="col-sm-6">
+    <h4><i class="pe-bullhorn pe-fw"></i> End (thank you) message</h4>
+    <p><small>This message will be displayed at the end <em>only</em> when a respondent has completed the survey successfully.</small></p>
+    <form id="target4" method="post" action="<?php echo $me; ?>">
+      <div>
+        <input type="checkbox" name="end-message" value="custom" id="choice-customised2"<?php if (isset($email_r) && ($email_r != $defaultemail)) { echo " checked"; } ?>>
+        <label for="choice-customised2" class="small">Enable this option</label>
+      </div>
+      <br>
+      <script type="text/javascript">
+        tinymce.init({ selector:'#secondsurvey',
+          height: 300, menubar: false, resize: false, statusbar: false,
+          plugins: "textcolor, placeholder",
+          placeholder_attrs: {
+            style: {
+              position: 'absolute',
+              top:'5px',
+              left:0,
+              color: '#888',
+              padding: '1%',
+              width:'98%',
+              overflow: 'hidden',
+              'white-space': 'pre-wrap',
+            }
+          },
+          toolbar: 'removeformat | styleselect | bold italic | bullist numlist | forecolor backcolor | undo redo'
+        });
+      </script>
+      <!-- <textarea id="secondsurvey" name="email_r_content" placeholder="<?php echo $default_r; ?>"><?php echo $email_r_content; ?></textarea> -->
+      <textarea id="secondsurvey" name="email_r_content"><?php echo $email_r_content; ?></textarea>
+      <br>
+      <p align="right">
+        <input type="hidden" name="saveme" value="2">
+        <button id="btn-save4" type="button" class="btn btn-sm btn-warning" data-loading-text="<i class='pe-circle-o-notch pe-spin'></i> Saving..." data-reset-text="<i class='pe-save'></i> Saved <i class='pe-check-circle-o'></i>">Save <i class="pe-check-circle-o"></i></button>
+        <button type="reset" class="btn btn-sm btn-default">Cancel <i class="pe-times-circle-o"></i></button>
       </p>
     </form>
   </div>
@@ -258,7 +365,6 @@ $messagecontent .= "&lt;p&gt;(Email automatically sent on behalf of ".$_SESSION[
 
 <br>
 
-
 <script type="text/javascript">
   $('#btn-save1').on('click', function() {
     var $this = $(this);
@@ -289,35 +395,13 @@ $messagecontent .= "&lt;p&gt;(Email automatically sent on behalf of ".$_SESSION[
     }
   };
   FormStuff.init();
-
 </script>
 
 <style media="screen">
-  .reveal-if-active {
-    opacity: 0;
-    max-height: 0;
-    overflow: hidden;
-    font-size: 16px;
-    transform: scale(0.8);
-    transition: 0.5s;
-    -webkit-transform: scale(0.8);
-    -webkit-transition: 0.5s;
-  }
-  .reveal-if-active label {
-    display: block;
-    margin: 0 0 3px 0;
-  }
-  .reveal-if-active input[type=text] {
-    width: 100%;
-  }
-  input[type="radio"]:checked ~ .reveal-if-active, input[type="checkbox"]:checked ~ .reveal-if-active {
-    opacity: 1;
-    max-height: 100px;
-    padding: 10px 20px;
-    transform: scale(1);
-    -webkit-transform: scale(1);
-    overflow: visible;
-  }
+  .reveal-if-active { opacity: 0; max-height: 0; overflow: hidden; font-size: 16px; transform: scale(0.8); transition: 0.5s; -webkit-transform: scale(0.8); -webkit-transition: 0.5s; }
+  .reveal-if-active label { display: block; margin: 0 0 3px 0; }
+  .reveal-if-active input[type=text] { width: 100%; }
+  input[type="radio"]:checked ~ .reveal-if-active, input[type="checkbox"]:checked ~ .reveal-if-active { opacity: 1; max-height: 100px; padding: 10px 20px; transform: scale(1); -webkit-transform: scale(1); overflow: visible; }
 </style>
 
 <br>
