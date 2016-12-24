@@ -74,7 +74,7 @@ $percentStatus3 = percent($status3 / $totalALL); $percentStatus4 = percent($stat
     </table>
   </div>
   <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-    <div id="piechart" style="width: auto; height: 300px;"></div>
+    <div id="piechart"></div>
   </div>
 </div>
 
@@ -207,8 +207,26 @@ while ($r = $q1->fetchObject()) {
 
 <script type="text/javascript">
   google.charts.load('current', {'packages': ['corechart', 'timeline'] });
-  google.charts.setOnLoadCallback(drawTimelineChart);
   google.charts.setOnLoadCallback(drawPieChart);
+  google.charts.setOnLoadCallback(drawTimelineChart);
+  function drawPieChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['Stage', 'No. of project'],
+      ['Set-up', <?php echo $status1; ?>],
+      ['Fieldwork', <?php echo $status2; ?>],
+      ['Completed', <?php echo $status3; ?>],
+      ['Archived', <?php echo $status4; ?>]
+    ]);
+    var options = {
+      is3D: true,
+      slices: { 0: { color: '#B3FFB3' }, 1: { color: '#00C851' }, 2: { color: '#007E33' }, 3: { color: '#AAAAAA' } },
+      width: '100%',
+      height: '300',
+      chartArea:{ left: 20, top: 20, width: '100%', height: '300', },
+    };
+    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+    chart.draw(data, options);
+  }
   function drawTimelineChart() {
     var container = document.getElementById('timeline');
     var chart = new google.visualization.Timeline(container);
@@ -221,26 +239,10 @@ while ($r = $q1->fetchObject()) {
     var options = {
       height: <?php echo $height; ?>,
       colors: [ '#B3FFB3', '#00C851', '#007E33', '#AAAAAA' ],
-      backgroundColor: { fill: 'transparent' },
       avoidOverlappingGridLines: false,
-      timeline: {
-        groupByRowLabel: true,
-        colorByRow: true,
-      }
+      timeline: { groupByRowLabel: true, colorByRow: true, }
     };
     chart.draw(dataTable, options);
-  }
-  function drawPieChart() {
-    var data = google.visualization.arrayToDataTable([
-      ['Stage', 'No. of project'],
-      ['Set-up', <?php echo $status1; ?>],
-      ['Fieldwork', <?php echo $status2; ?>],
-      ['Completed', <?php echo $status3; ?>],
-      ['Archived', <?php echo $status4; ?>]
-    ]);
-    var options = { is3D: true, slices: { 0: { color: '#B3FFB3' }, 1: { color: '#00C851' }, 2: { color: '#007E33' }, 3: { color: '#AAAAAA' } } };
-    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-    chart.draw(data, options);
   }
 </script>
 

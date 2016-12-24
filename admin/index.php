@@ -4,6 +4,7 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/template.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/functions.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.login.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.json2csv.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.imgresize.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.phpmailer.php';
 

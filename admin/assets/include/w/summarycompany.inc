@@ -75,31 +75,31 @@ foreach ($rows as $row) {
     $ss = "  <i class=\"pe-hourglass-start pe-fw\"></i> Set-up";
     $since = ago($row['created']);
     $status = "Set-up";
-    $timelinedata .= "[ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $timelinedata .= "[ 'Project ".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
   }
   else if ($row['status'] == 2) {
     $ss = "<i class=\"pe-hourglass-half pe-fw\"></i> Data-collection";
     $since = ago($row['L1']);
     $status = "Data-collection";
-    $timelinedata .= "[ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $timelinedata .= "[ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#00C851', ";
+    $timelinedata .= "[ 'Project ".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $timelinedata .= "[ 'Project ".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#00C851', ";
   }
   else if ($row['status'] == 3) {
     $ss = "<i class=\"pe-hourglass-end pe-fw\"></i> Completed";
     $since = ago($row['L2']);
     $status = "Completed";
-    $timelinedata .= "[ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $timelinedata .= "[ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00C851', ";
-    $timelinedata .= "[ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#007E33', ";
+    $timelinedata .= "[ 'Project ".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $timelinedata .= "[ 'Project ".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00C851', ";
+    $timelinedata .= "[ 'Project ".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#007E33', ";
   }
   else if ($row['status'] == 4) {
     $ss = "<i class=\"pe-archive pe-fw\"></i> Archived";
     $since = ago($row['L3']);
     $status = "Archived";
-    $timelinedata .= "[ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $timelinedata .= "[ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00C851', ";
-    $timelinedata .= "[ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day'].") ], \n"; $colordata .= "'#007E33', ";
-    $timelinedata .= "[ '".$title."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
+    $timelinedata .= "[ 'Project ".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $timelinedata .= "[ 'Project ".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00C851', ";
+    $timelinedata .= "[ 'Project ".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day'].") ], \n"; $colordata .= "'#007E33', ";
+    $timelinedata .= "[ 'Project ".$title."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
   }
   $updated = ago($row['updated']);
   $t2 = date_parse_from_format("Y-m-d H:i:s", $row['updated']); $t2['month'] = $t2['month']-2;
@@ -155,7 +155,7 @@ foreach ($rr as $r) {
   <div class="col-sm-6">
     <h4>Projects</h4>
     <p><?php echo $companyname; ?> has <strong><?php echo $sstotal; ?> survey project(s)</strong> where <strong><?php echo $ssActive; ?> project(s)</strong> (<?php echo $percentActive; ?>) are active and <strong><?php echo $ssInactive; ?> project(s)</strong> (<?php echo $percentInactive; ?>) are inactive (archived).</p>
-    <div id="piechart" style="width:100%;height:300px"></div>
+    <div id="piechart"></div>
     <p align="right"><a href="/admin/?w=surveys" class="small">More...</a></p>
   </div>
   <div class="col-sm-6">
@@ -199,6 +199,9 @@ foreach ($rr as $r) {
 <style media="screen">
   svg g:first-of-type path { stroke: #e6e6e6; }
   svg g:first-of-type rect:not(:last-child) { fill: #ffffff; }
+  div.google-visualization-tooltip { width: 250px; height:auto; vertical-align: middle; }
+  ul.google-visualization-tooltip-item-list > li > span { font-size: 14px !important; }
+  ul.google-visualization-tooltip-action-list > li > span { font-size: 11px !important; }
 </style>
 
 <script type="text/javascript">
@@ -213,7 +216,13 @@ foreach ($rr as $r) {
       ['Completed', <?php echo $ss3; ?>],
       ['Archived', <?php echo $ss4; ?>]
     ]);
-    var options = { pieHole: 0.4, slices: { 0: { color: '#B3FFB3' }, 1: { color: '#00C851' }, 2: { color: '#007E33' }, 3: { color: '#AAAAAA' } } };
+    var options = {
+      pieHole: 0.4,
+      slices: { 0: { color: '#B3FFB3' }, 1: { color: '#00C851' }, 2: { color: '#007E33' }, 3: { color: '#AAAAAA' } },
+      width: '100%',
+      height: '350',
+      chartArea:{ left: 5, top: 20, width: '100%', height: '350', },
+    };
     var chart = new google.visualization.PieChart(document.getElementById('piechart'));
     chart.draw(data, options);
   }
@@ -230,10 +239,7 @@ foreach ($rr as $r) {
       height: <?php echo $height; ?>,
       colors: [ '#B3FFB3', '#00C851', '#007E33', '#AAAAAA' ],
       avoidOverlappingGridLines: false,
-      timeline: {
-        groupByRowLabel: true,
-        colorByRow: true,
-      }
+      timeline: { groupByRowLabel: true, colorByRow: true, }
     };
     chart.draw(dataTable, options);
   }
