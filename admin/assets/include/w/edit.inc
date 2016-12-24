@@ -109,39 +109,7 @@ triggers: [
 ],
     </code></pre>
   </div>
-  <div class="col-sm-12" style="margin-bottom:20px">
-    <p>Send partial result</p>
-    <p class="small">Send the survey results before moving on the next Page:  default is false.</p>
-    <p class="small">If you have a long survey, many your users may not finish the survey and enter the data on few pagers on only the first one. If you still want to save the information from incompleted surveys, set this property to true. The clientId property should bet set correctly, otherwise the data of others users may be ovewritten.</p>
-    <pre class="verysmall"><code class="prettyprint">
-Survey.Survey.cssType = "bootstrap";
-function onIsSurveyCompleted(success, result, response) {
-  if (!success) return;
-  if (result == 'completed') { alert('You have already run the survey!'); }
-  else { runSurvey(); }
-}
-function runSurveyCheck() {
-  var clientId = document.getElementById('clientId').value;
-  new Survey.dxSurveyService().isCompleted('47e699f7-d523-4476-8fcd-be601c91d119', clientId, onIsSurveyCompleted);
-}
-
-function runSurvey() {
-  var survey = new Survey.Survey({ surveyId: 'e7866476-e901-4ab7-9f38-574416387f73', surveyPostId: 'df2a04fb-ce9b-44a6-a6a7-6183ac555a68' }, "surveyContainer");
-  survey.clientId = document.getElementById('clientId').value;
-  survey.sendResultOnPageNext = document.getElementById('sendResultOnPageNext').checked;
-  survey.onComplete.add(function (s) {
-    document.getElementById('surveyContainer').innerHTML = "";
-    document.getElementById("clientIdContainer").style.display = "inline";
-  });
-  survey.onSendResult.add(function (survey) {
-    var text = "clientId:" + survey.clientId + ". The results are:" + JSON.stringify(survey.data)  + String.fromCharCode(13, 10);
-    var memo = document.getElementById('sentResults');
-    memo.value = memo.value + text;
-  });
-  document.getElementById("clientIdContainer").style.display = "none";
-}
-    </code></pre>
-  </div></div>
+</div>
 
 <script type="text/javascript">
 
@@ -157,12 +125,57 @@ function runSurvey() {
     });
     return result;
   }
-  function getip() {
-    var rip;
-    $.ajaxSetup({async: false});
-    $.get('http://jsonip.com/', function(r){ rip = r.ip; });
-    return rip;
-  }
+  // function getip() {
+  //   var rip;
+  //   $.ajaxSetup({async: false});
+  //   $.get('http://jsonip.com/', function(r){ rip = r.ip; });
+  //   return rip;
+  // }
+  // function getsavesurveydata(surveyid, email) {
+  //   var result = "";
+  //   $.ajax({
+  //     url: api + '/getsaved/' + surveyid + '/' + email,
+  //     dataType: 'json',
+  //     type: 'get',
+  //     cache: false,
+  //     async: false,
+  //     success: function(data) { result = data; }
+  //   });
+  //   return result;
+  // }
+  // function clearsavesurveydata(resultid, cip, email, id, etitle) {
+  //   var result = "";
+  //   $.ajax({
+  //     url: api + '/clearsave/' + resultid,
+  //     dataType: 'json',
+  //     type: 'delete',
+  //     contentType: 'application/json; charset=utf-8',
+  //     success: function(data) {
+  //       $.ajax({
+  //         url: api + '/rlog/' + cid + '/' + id,
+  //         dataType: 'json',
+  //         type: 'post',
+  //         contentType: 'application/json; charset=utf-8',
+  //         data: '{ "surveyid": "' + id + '","email": "' + email + '", "ip": "' + cip + '", "data": "' + email + ' clear saved survey results for ' + etitle + ' (id=' + id + ')", "critical": "2" }',
+  //         success: function(data) { result = data; }
+  //       });
+  //     }
+  //   });
+  //   window.setTimeout(function () { window.location.reload(); }, 1500);
+  //   return result;
+  // }
+  // function autosavesurveydata(cid, cip, email, id, data, etitle) {
+  //   var result = "";
+  //   $.ajax({
+  //     url: api + '/autosave/',
+  //     dataType: 'json',
+  //     type: 'post',
+  //     contentType: 'application/json; charset=utf-8',
+  //     data: '{"rd": "' + cid + '", "ip": "' + cip + '", "email": "' + email + '", "surveyid": "' + id + '", "type": "response", "status": "1", "data": ' + JSON.stringify(JSON.stringify(data)) + ' }',
+  //     success: function(data) { result = data; }
+  //   });
+  //   return result;
+  // }
   // Start scripting by pe (phumin@sawasdee.org)
   var options = {
     questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "matrixdynamic", "html"],
@@ -189,7 +202,7 @@ function runSurvey() {
   $('#showreadonly').html("<div class='alert alert-warning'><i class='pe-exclamation-triangle pe-fw'></i> Because you are not the owner of this survey, the system puts you into the <strong>read-only mode</strong></div>").hide();
   mm = getsurveydata(surveyid);
   var blank = JSON.stringify({ "completeText": "ยืนยันและส่งความคิดเห็น", "completedHtml": "<h2><i class='pe-flag-checkered pe-fw'></i> คุณได้ตอบแบบสอบถามเสร็จสมบูรณ์แล้ว</h2>\n\n<p>ความคิดเห็นของคุณได้ถูกบันทึกและจัดเก็บเข้าสู่ระบบของเราเป็นที่เรียบร้อยแล้ว ซึ่งเราจะนำความคิดเห็นของคุณและของผู้ที่ร่วมตอบคำถามท่านอื่นๆมารวมกันก่อนจะ ดำเนินการต่อไปในขั้นตอนการประมวลผลและการวิเคราะห์ผล</p>\n\n<p>เราขอย้ำกับคุณอีกครั้งว่า ระบบของเราได้รับการออกแบบและสร้างโดยมุ่งเน้นในเรื่องความลับของข้อมูลและผู้ให้ข้อมูล ด้วยเหตุผลนี้คุณจะสามารถมั่นใจได้ว่าข้อมุลของคุณจะถูกใช้อย่างเหมาะสมและไม่มีการเปิดเผยรายละเอียดเป็นรายบุคคลอย่างเด็ดขาด</p>\n\n<p>สุดท้ายนี้ ในนามของบริษัทฯ เราขอขอบพระคุณที่สละเวลาแสดงความคิดเห็นที่แท้จริงให้กับเรา ทุกๆความคิดเห็นของคุณนั้นมีค่ายิ่งสำหรับเรา เพราะข้อมูลเหล่านี้จะถูกนำไปใช้เพื่อพัฒนาผลิตภัณฑ์​หรือบริการต่างๆให้ดียิ่งขึ้นเพื่อให้เกิดการพัฒนาก้าวหน้าต่อไปในอนาคต</p>", "pageNextText": "หน้าถัดไป", "pagePrevText": "หน้าที่แล้ว", "pages": [{ "name": "page1" }], "questionTitleTemplate": "{no}. {title} {require}" });
-  if (mm.data) { editor.text = mm.data; } else { editor.text = blank; }
+  if (mm.data) { editor.text = mm.data; } else if (localStorage.getItem("editdata." + surveyid)) { editor.text = localStorage.getItem("editdata." + surveyid); } else { editor.text = blank; }
   if (userid == mm.userid) { var owner = true; } else { var owner = false; }
   if (level == 9) { var cansave = true; } else if (level == 6) { var cansave = true; }
   else if (level == 5) { if (owner == true) { var cansave = true; } }
@@ -227,6 +240,8 @@ function runSurvey() {
   document.getElementById('h2pageTitle').innerHTML = title;
   document.getElementById('projectname').innerHTML = pname;
   $('#btn-save').on('click', function() {
+    if (typeof(Storage) !== "undefined") { localStorage.setItem("editdata." + surveyid, JSON.stringify(editor.text)); }
+    // document.getElementById("result").innerHTML = localStorage.getItem("editdata." + surveyid);
     var $this = $(this);
     $this.button('loading');
     $('#showsaving').show();
@@ -237,6 +252,13 @@ function runSurvey() {
       window.setTimeout(function () { $("#showsavesuccess").slideUp(500, function () { $("#showsavesuccess").hide( function () { $this.button('reset'); }); }); }, 2000);
     }, 3000);
   });
+  // localStorage
+  for (var i = 0; i < localStorage.length; i++) {
+    var name = localStorage.key( i );
+    var value = localStorage.getItem( name );
+    console.log( name + " is set to " + value );
+  }
+  // localStorage.clear();
 
 </script>
 
