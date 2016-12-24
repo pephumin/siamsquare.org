@@ -179,7 +179,7 @@ function pageFooter($notes = null) {
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3">
       <div class="container">
-        <h4 class="avatar">&#9836; &#9819; &#9962; &#9969; &#9748; &#10000; &#9820; &#9822; &#9973; &#8485; &#8488; &#8523; &#8492; &#9961;</h4>
+        <h4 class="avatar">&#9836; &#9819; &#9962; &#10000; &#9820; &#9822; &#9973; &#9961;</h4>
       </div>
     </div>
   </div>
