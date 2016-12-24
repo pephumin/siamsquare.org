@@ -194,6 +194,7 @@ for ($i = 0; $i < $numberofquestions; $i++) {
 $questionlisting .= "</ul>\n";
 
 
+
 // ------- Show data --------------------------------------------------------------------------
 
 $sql = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status > 0 ORDER BY submitted DESC";
@@ -205,9 +206,34 @@ $r = $q->fetchAll(PDO::FETCH_ASSOC);
 
 $qq = $_GET['q'];
 $cc = array_combine($pname, $ptype);
-$cd = $cc[$qq]; //echo $cd;
+$cd = $cc[$qq]; //print_r($cd);
 $bx = array_combine($pname, $ptitle);
 $bdx = $bx[$qq];
+
+$alldata = "[ ";
+for ($f=0; $f < count($r); $f++) {
+  if ($f == (count($r)-1)) { $alldata .= $r[$f]["data"]; }
+  else { $alldata .= $r[$f]["data"].", \n"; }
+}
+$alldata .= " ]\n";
+// print_r($alldata);
+
+// Generate CSV file automatically
+if ($_GET["download"] == "csv") {
+  $out = new JSON2CSVutil;
+  $csvout = "data_".$project."_".date('Y-m-d').".csv";
+  // $jsonDecoded = json_decode($alldata, true);
+  // header("Content-Type: text/csv; charset=utf-8");
+  // header("Content-Disposition: attachment; filename=$csvout");
+  // $output = fopen("php://output", "w");
+  // foreach ($jsonDecoded as $items) {
+  //   fputcsv($output, $items);
+  // }
+  $out->readJSON($alldata);
+  $out->flattenDL($csvout);
+  exit;
+}
+
 
 if ($cd == "checkbox") {
   $k = array();
@@ -251,7 +277,7 @@ else if ($cd == "comment") {
   $totalresponses = array_sum($cece);
 }
 else if ($cd == "file") {
-  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q']."&size=".$_GET['size'];
   if ($_GET['p']) { $p = $_GET['p']; }
   if ($p == '') { $p = "1"; }
   if (empty($start)) { $start = 0; }
@@ -303,7 +329,8 @@ else if ($cd == "file") {
     $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <u>small</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=M")."\">medium</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=L")."\">large</a> <strong>]</strong></p>\n";
     $bb = 0;
     $outdirect .= $pagination."<br>";
-    $outdirect .= "<p>Found a total of $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
+    $outdirect .= "<div class=\"pull-right small grey\"><small>Note: Some pictures may appear to be up-side-down - this is<br>driven by a different rotation setting on respondent's device</small></div>\n";
+    $outdirect .= "<p>Found $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
     $outdirect .= "  <table>\n";
     $outdirect .= "    <tr>\n";
     foreach ($k as $A => $B) {
@@ -331,7 +358,8 @@ else if ($cd == "file") {
   } else if ($_GET['size'] == "M") {
     $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <a href=\"".htmlspecialchars($me."&size=S")."\">small</a> <strong>:</strong> <u>medium</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=L")."\">large</a> <strong>]</strong></p><br>\n";
     $bb = 0;
-    $outdirect .= "<p>Found a total of $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
+    $outdirect .= $pagination."<br>";
+    $outdirect .= "<p>Found $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
     $outdirect .= "  <table>\n";
     $outdirect .= "    <tr>\n";
     foreach ($k as $A => $B) {
@@ -359,7 +387,8 @@ else if ($cd == "file") {
   } else if ($_GET['size'] == "L") {
     $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <a href=\"".htmlspecialchars($me."&size=S")."\">small</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=M")."\">medium</a> <strong>:</strong> <u>large</u> <strong>]</strong></p><br>\n";
     $bb = 0;
-    $outdirect .= "<p>Found a total of $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
+    $outdirect .= $pagination."<br>";
+    $outdirect .= "<p>Found $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
     $outdirect .= "  <table>\n";
     $outdirect .= "    <tr>\n";
     foreach ($k as $A => $B) {
@@ -432,31 +461,43 @@ else if ($cd == "matrix") {
     $yy = array_count_values($vv); krsort($yy);
     $dc[] = $yy;
   }
-  foreach ($dc as $q => $r) { $dd[] = percentile($dc[$q]); }
+  // print_r(($dc));
+
+  foreach ($dc as $q => $r) { $dd[] = percentile($dc[$q]); $de[] = array_sum($r); }
+  $totalresponses = array_sum($de);
   $c1 = array_combine($db, $dd);
   $c2 = array_combine($db, $average);
+  // print_r(($c1));
+  if (count($dc[$q]) == 3) { $color = "colors: ['#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 1, type: 'line' } },\n"; }
+  else if (count($dc[$q]) == 4) { $color = "colors: ['#CC0000', '#FF4444', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 1, type: 'line' } },\n"; }
+  else if (count($dc[$q]) == 5) { $color = "colors: ['#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 1, type: 'line' } },\n"; }
   $out = "[ 'Attribute', ";
   foreach ($column_link as $a) { $out .= "'".$a."', "; } // label
-  if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H") || ($_GET['type'] == "bar-V")) { $out .= " ],\n"; }
-  else if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $out .= " 'Mean' ],\n"; }
+  if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $out .= " 'Mean' ],\n"; $color .= "'#000000' ],\n"; } else { $out .= " ],\n"; $color .= " ],\n"; }
   foreach ($r_code as $b) {
     if (json_decode(str_replace($r_code, $r_text, json_encode($b)), true)) { $bb = json_decode(str_replace($r_code, $r_text, json_encode($b)), true); }
-    $out .= "[ '".$bb."', ";
+    $out .= "[ '".($bb)."', ";
     foreach ($c_code as $c) { $out .= $c1[$b][$c].", "; } // data for each scale
     // $c3 = $c2[$b]+1;
-    if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H") || ($_GET['type'] == "bar-V")) { $out .= " ],\n"; }
-    else if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $out .= " $c2[$b] ],\n"; }
+    if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $out .= " $c2[$b] ],\n"; } else { $out .= " ],\n"; }
   }
   $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
-  if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H-mean")."\">Bar Horizontal with Mean</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V-mean")."\">Bar Vertical with Mean</a> <strong>]</strong></p><br>\n"; }
-  else if ($_GET['type'] == "bar-H-mean") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Horizontal with Mean</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V-mean")."\">Bar Vertical with Mean</a> <strong>]</strong></p><br>\n"; }
-  else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H-mean")."\">Bar Horizontal with Mean</a> <strong>:</strong> <u>Bar Vertical</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V-mean")."\">Bar Vertical with Mean</a> <strong>]</strong></p><br>\n"; }
-  else if ($_GET['type'] == "bar-V-mean") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H-mean")."\">Bar Horizontal with Mean</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>:</strong> <u>Bar Vertical with Mean</u> <strong>]</strong></p><br>\n"; }
+  if (count($dc[$q]) == 5) {
+    if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H-mean")."\">Bar Horizontal with Mean</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V-mean")."\">Bar Vertical with Mean</a> <strong>]</strong></p><br>\n"; }
+    else if ($_GET['type'] == "bar-H-mean") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Horizontal with Mean</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V-mean")."\">Bar Vertical with Mean</a> <strong>]</strong></p><br>\n"; }
+    else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H-mean")."\">Bar Horizontal with Mean</a> <strong>:</strong> <u>Bar Vertical</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V-mean")."\">Bar Vertical with Mean</a> <strong>]</strong></p><br>\n"; }
+    else if ($_GET['type'] == "bar-V-mean") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H-mean")."\">Bar Horizontal with Mean</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>:</strong> <u>Bar Vertical with Mean</u> <strong>]</strong></p><br>\n"; }
+  } else {
+    if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
+    else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
+  }
 }
 
 // ------- Output --------------------------------------------------------------------------
 
 $title = "Survey result";
+$getcsv = "/admin/?w=result&s=".$_GET['s']."&download=csv";
+// $getcsv = "/a.php?s=".$_GET['s'];
 pageHeader($title);
 echo "<h2>$title</h2>\n";
 echo "<p>This is a tool that helps you view the survey result by demand. Result is generated by pulling the data from our server in <em>real time</em>.</p>\n";
@@ -471,7 +512,7 @@ echo "  </div>\n";
 echo "  <div class=\"col-sm-3\" style=\"padding:10px\">\n";
 echo "    <div class=\"list-group small\">\n";
 echo "      <li class=\"list-group-item list-group-item-info\"><strong><i class=\"pe-download pe-fw\"></i> Download</strong></li>\n";
-echo "      <a href=\"\" class=\"list-group-item\"><i class=\"pe-file-excel-o pe-fw\"></i> Get CSV data</a>\n";
+echo "      <a href=\"$getcsv\" class=\"list-group-item\"><i class=\"pe-file-excel-o pe-fw\"></i> All data in CSV format</a>\n";
 echo "      <a href=\"\" class=\"list-group-item\"><i class=\"pe-table pe-fw\"></i> Get XLS tabulation</a>\n";
 echo "      <a href=\"\" class=\"list-group-item\"><i class=\"pe-file-pdf-o pe-fw\"></i> Get PDF</a>\n";
 echo "    </div>\n";
@@ -528,7 +569,7 @@ $openendquery .= "</div>\n";
       view.setColumns([0, 1, 2]);
       var formatter = new google.visualization.NumberFormat({suffix: '%'});
       formatter.format(data, 2);
-      var options = { title: '<?php echo $bdx; ?>', is3D: true, width: '100%', height: '400'};
+      var options = { title: '<?php echo $bdx; ?>', is3D: true, width: '100%', height: '400' };
       var chart = new google.visualization.PieChart(document.getElementById('chart'));
       chart.draw(view, options);
       var table = new google.visualization.Table(document.getElementById('table'));
@@ -557,7 +598,7 @@ $openendquery .= "</div>\n";
       view.setColumns([0, 1, 2]);
       var formatter = new google.visualization.NumberFormat({suffix: '%'});
       formatter.format(data, 2);
-      var options = { title: '<?php echo $bdx; ?>', pieHole: 0.4, width: '100%', height: '400'};
+      var options = { title: '<?php echo $bdx; ?>', pieHole: 0.4, width: '100%', height: '400' };
       var chart = new google.visualization.PieChart(document.getElementById('chart'));
       chart.draw(view, options);
       var table = new google.visualization.Table(document.getElementById('table'));
@@ -768,9 +809,9 @@ $openendquery .= "</div>\n";
         bar: { groupWidth: '60%' },
         legend: { position: 'top', textStyle: { color: '#000', fontSize: 10 } },
         isStacked: true,
-        colors: ['#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33'],
+        <?php echo $color; ?>
         seriesType: 'bars',
-        series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 } },
+        <?php // echo $series; ?>
         hAxes: {
           0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
           //1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
@@ -796,9 +837,9 @@ $openendquery .= "</div>\n";
         bar: { groupWidth: '60%' },
         legend: { position: 'top', textStyle: { color: '#000', fontSize: 10 } },
         isStacked: true,
-        colors: ['#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', '#000000'],
+        <?php echo $color; ?>
         seriesType: 'bars',
-        series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 1, type: 'line' } },
+        <?php // echo $series; ?>
         hAxes: {
           0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
           1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
@@ -824,9 +865,9 @@ $openendquery .= "</div>\n";
         bar: { groupWidth: '60%' },
         legend: { position: 'right', textStyle: { color: '#000', fontSize: 10 } },
         isStacked: true,
-        colors: ['#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', '#000000'],
+        <?php echo $color; ?>
         seriesType: 'bars',
-        series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 } },
+        <?php // echo $series; ?>
         vAxes: {
           0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
           //1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
@@ -852,9 +893,9 @@ $openendquery .= "</div>\n";
         bar: { groupWidth: '60%' },
         legend: { position: 'top', textStyle: { color: '#000', fontSize: 10 } },
         isStacked: true,
-        colors: ['#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', '#000000'],
+        <?php echo $color; ?>
         seriesType: 'bars',
-        series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 1, type: 'line' } },
+        <?php // echo $series; ?>
         vAxes: {
           0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
           1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
