@@ -76,6 +76,10 @@ div.commentText {
   font-size: 0.9rem;
   padding-top: 15px; }
 
+textarea {
+  font-family: "boon";
+  font-size: 1rem; }
+
 @media (max-width: 991px) {
   .svd_container .svd_content .svd_editors {
     padding: 0; } }
