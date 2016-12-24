@@ -24,7 +24,7 @@ define('MYHOME',       "http://www.siamsquare.org");
 define('ADMIN',        MYHOME."/admin/");
 define('MEMBERS',      MYHOME."/members/");
 define('EMAILADMIN',   "phumin@sawasdee.org");
-define('EMAILSYSTEM',  "system@siamsquare.org");
+define('EMAILSYSTEM',  "survey@siamsquare.org");
 define('EMAILSUPPORT', "support@siamsquare.org");
 define('EMAILNOREPLY', "noreply@siamsquare.org");
 define('ME',           $_SERVER['SCRIPT_NAME']);
