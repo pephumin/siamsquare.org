@@ -1,8 +1,6 @@
 <?php
 
 $defaultemail = EMAILNOREPLY; // "noreply@siamsquare.org";
-$me = "/admin/?w=template&s=".$_GET['s'];
-$run = "/r.php?s=".$_GET['s'];
 
 // Get projcet title
 $q = $db->prepare("SELECT title, status, email_i, email_i_content, email_r, email_r_content FROM j_projects WHERE private = 1 AND id = :surveyid");
@@ -49,6 +47,7 @@ if ($_SESSION['level'] != "9") {
   }
 }
 
+$me = "/admin/?w=template&s=".$_GET['s'];
 if ($_POST['saveme'] == 1) {
   if ($_POST["choice-email1"] == "system") { $email_i = $_POST["email_iA"]; }
   else if ($_POST["choice-email1"] == "custom") { $email_i = $_POST["email_iB"]; }
@@ -102,13 +101,13 @@ $default_r .= "[LINK]\n\n";
 $default_r .= "Regards,\n";
 $default_r .= "John Doe (CEO)";
 
-$link = htmlspecialchars("<u>".MYHOME.$run."</u>");
+$link = MYHOME.$me;
 $messagecontent = "&lt;p&gt;Hi there,&lt;/p&gt;\n";
 $messagecontent .= "&lt;p&gt;&lt;strong&gt;".$_SESSION['fullname']."&lt;/strong&gt; would like to share a survey with you.&lt;/p&gt;\n";
 $messagecontent .= "&lt;p&gt;If you wish to participate this survey, please click the link provided below.&lt;/p&gt;\n";
 $messagecontent .= "&lt;p&gt;Link: ".$link."&lt;/p&gt;\n";
-$messagecontent .= "&lt;p&gt;Thanks&lt;/p&gt;\n";
-$messagecontent .= "&lt;p&gt;Email automatically sent by ".MYHOME."&lt;/p&gt;\n";
+$messagecontent .= "&lt;p&gt;Thanks - ".MYTITLE."&lt;/p&gt;\n";
+$messagecontent .= "&lt;p&gt;(Email automatically sent on behalf of ".$_SESSION['fullname'].")&lt;/p&gt;\n";
 
 ?>
 
@@ -328,7 +327,7 @@ $messagecontent .= "&lt;p&gt;Email automatically sent by ".MYHOME."&lt;/p&gt;\n"
         <label>The code:</label>
         <div class="input-group">
           <span class="input-group-addon">URL:</span>
-          <input type="url" class="form-control" value="<?php echo MYHOME.$run; ?>" onclick="this.select()" readonly>
+          <input type="url" class="form-control" value="<?php echo MYHOME.$me; ?>" onclick="this.select()" readonly>
         </div>
         <br>
         <p>You can copy and paste this URL and send it to anyone you would like them to participate with your survey.</p>
@@ -352,12 +351,12 @@ $messagecontent .= "&lt;p&gt;Email automatically sent by ".MYHOME."&lt;/p&gt;\n"
       <div id="3" class="tab-pane fade" style="padding:20px 10px">
         <h4>Embed the survey link to your website</h4>
         <label>The code:</label>
-        <input type="url" class="form-control" value='<iframe width="600" height="400" src="<?php echo MYHOME.$run; ?>" frameborder="0" allowfullscreen></iframe>' onclick="this.select()" readonly>
+        <input type="url" class="form-control" value='<iframe width="600" height="400" src="<?php echo MEMBERS."?w=run&s=".$_GET['s']; ?>" frameborder="0" allowfullscreen></iframe>' onclick="this.select()" readonly>
         <br>
         <p>By copying this code and pasting it onto one of your webpages (or multiple pages), you will have the survey inserted into your website right away.</p>
         <p>Optionally you can also customise how the survey is inserted to your website by adjusting <em>width</em> and <em>height</em> which is currenyly set at a default of <em>600px</em> and <em>400px</em> respectively.</p>
         <p>Please see below the example of your survey after included into a webpage.</p>
-        <iframe width="600" height="400" src="<?php echo MYHOME.$run; ?>" frameborder="0" allowfullscreen></iframe>
+        <iframe width="600" height="400" src="<?php echo MEMBERS."?w=run&s=".$_GET['s']; ?>" frameborder="0" allowfullscreen></iframe>
         <p>Please do not hesitate to <a href="/admin/contact/">contact us</a> if you need any technical supports on this.</p>
       </div>
     </div>
