@@ -69,7 +69,7 @@ echo "<br>\n";
     <br>
     <div class="tab-content">
       <div id="one" class="tab-pane in active fade">
-        <p class="pull-right"><img src="<?php if ($_SESSION["avatar"]) { echo $_SESSION["avatar"]; } else { echo "assets/img/u/M6.svg"; } ?>" id="avatar1" class="img-circle members-photo" alt="Avatar"></p>
+        <p class="pull-right"><img src="<?php if ($_SESSION["avatar"]) { echo $_SESSION["avatar"]; } else { echo "assets/img/u/M10.svg"; } ?>" id="avatar1" class="img-circle members-photo" alt="Avatar"></p>
         <h4>Welcome to your profile page</h4>
         <p>Below shows the summary of your profile in a <em>read-only</em> mode.</p>
         <br>
@@ -125,7 +125,7 @@ echo "<br>\n";
         </table>
       </div>
       <div id="two" class="tab-pane fade">
-        <p class="pull-right"><img src="<?php if ($_SESSION["avatar"]) { echo $_SESSION["avatar"]; } else { echo "assets/img/u/M6.svg"; } ?>" id="avatar2" class="img-circle members-photo" alt="Avatar"></p>
+        <p class="pull-right"><img src="<?php if ($_SESSION["avatar"]) { echo $_SESSION["avatar"]; } else { echo "assets/img/u/M10.svg"; } ?>" id="avatar2" class="img-circle members-photo" alt="Avatar"></p>
         <h4>Update your profile</h4>
         <p>You can easily update your profile from the text boxes below.</p>
         <br>
@@ -162,8 +162,11 @@ echo "<br>\n";
 <?php
 $pictures = array("Male #1" => "assets/img/u/M1.svg", "Male #2" => "assets/img/u/M2.svg", "Male #3" => "assets/img/u/M3.svg",
                   "Male #4" => "assets/img/u/M4.svg", "Male #5" => "assets/img/u/M5.svg", "Male #6" => "assets/img/u/M6.svg",
-                  "Female #1" => "assets/img/u/F1.svg", "Female #2" => "assets/img/u/F2.svg", "Female #3" => "assets/img/u/F3.svg",
-                  "Female #4" => "assets/img/u/F4.svg", "Female #5" => "assets/img/u/F5.svg", "Female #6" => "assets/img/u/F6.svg");
+                  "Male #7" => "assets/img/u/M7.svg", "Male #8" => "assets/img/u/M8.svg", "Male #9" => "assets/img/u/M9.svg",
+                  "Male #10" => "assets/img/u/M10.svg", "Female #1" => "assets/img/u/F1.svg", "Female #2" => "assets/img/u/F2.svg",
+                  "Female #3" => "assets/img/u/F3.svg", "Female #4" => "assets/img/u/F4.svg", "Female #5" => "assets/img/u/F5.svg",
+                  "Female #6" => "assets/img/u/F6.svg", "Female #7" => "assets/img/u/F7.svg", "Female #8" => "assets/img/u/F8.svg",
+                  "Female #9" => "assets/img/u/F9.svg", "Female #10" => "assets/img/u/F10.svg");
 foreach($pictures as $a => $b) {
   if ($b == $_SESSION["avatar"]) { echo "                    <option value=\"$b\" selected>$a</option>\n"; }
   else { echo "                    <option value=\"$b\">$a</option>\n"; }
