@@ -243,6 +243,10 @@ foreach ($rr as $r) {
     };
     chart.draw(dataTable, options);
   }
+  $(window).resize(function() {
+    drawPieChart();
+    drawTimelineChart();
+  });
 </script>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
