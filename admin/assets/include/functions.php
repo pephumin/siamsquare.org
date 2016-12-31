@@ -1,18 +1,18 @@
 <?php
 
-function mksuccess ($msg) {
+function mksuccess($msg) {
   return("<div class=\"alert alert-success alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"pe-check-square-o\"></i>&nbsp; ${msg}</div>\n");
 }
 
-function mkinfo ($msg) {
+function mkinfo($msg) {
   return("<div class=\"alert alert-info alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"pe-info-circle\"></i>&nbsp; ${msg}</div>\n");
 }
 
-function mkwarn ($msg) {
+function mkwarn($msg) {
   return("<div class=\"alert alert-warning alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"pe-bullhorn\"></i>&nbsp; ${msg}</div>\n");
 }
 
-function mkerror ($msg) {
+function mkerror($msg) {
   return("<div class=\"alert alert-danger alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"pe-exclamation-circle\"></i>&nbsp; ${msg}</div>\n");
 }
 
@@ -158,6 +158,7 @@ function iconize($data) {
   else if (preg_match("/logged out/i", $data)) { $insert = "<i class=\"pe-sign-out pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/restored a survey/i", $data)) { $insert = "<i class=\"pe-undo pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/deleted a survey/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/undeleted a survey/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/archived a survey/i", $data)) { $insert = "<i class=\"pe-archive pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/renamed a survey/i", $data)) { $insert = "<i class=\"pe-cube pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed a description/i", $data)) { $insert = "<i class=\"pe-cube pe-fw\"></i> &nbsp; "; }
@@ -186,6 +187,7 @@ function iconize($data) {
   else if (preg_match("/deleted respondent emails with errors/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/deleted respondent duplicated emails/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/manually deleted respondent emails/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/manually added respondent emails/i", $data)) { $insert = "<i class=\"pe-user-plus pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/accessed a project that has no respondent section/i", $data)) { $insert = "<i class=\"pe-exclamation-triangle pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/accessed respondent for a project marked completion/i", $data)) { $insert = "<i class=\"pe-exclamation-triangle pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/deactivated due to 5 incorrect login attempts/i", $data)) { $insert = "<i class=\"pe-exclamation-triangle pe-fw\"></i> &nbsp; "; }
@@ -218,4 +220,81 @@ function percentile($array) {
   return $names;
 }
 
+function isJSON($string) {
+  return is_string($string) && is_array(json_decode($string, true)) ? true : false;
+}
+
+function fullmonth($month, $format = "long") {
+  if ($format == "short") {
+    if ($month == 1) { $month = "Jan"; }
+    if ($month == 2) { $month = "Feb"; }
+    if ($month == 3) { $month = "Mar"; }
+    if ($month == 4) { $month = "Apr"; }
+    if ($month == 5) { $month = "May"; }
+    if ($month == 6) { $month = "Jun"; }
+    if ($month == 7) { $month = "Jul"; }
+    if ($month == 8) { $month = "Aug"; }
+    if ($month == 9) { $month = "Sept"; }
+    if ($month == 10) { $month = "Oct"; }
+    if ($month == 11) { $month = "Nov"; }
+    if ($month == 12) { $month = "Dec"; }
+  } else {
+    if ($month == 1) { $month = "January"; }
+    if ($month == 2) { $month = "February"; }
+    if ($month == 3) { $month = "March"; }
+    if ($month == 4) { $month = "April"; }
+    if ($month == 5) { $month = "May"; }
+    if ($month == 6) { $month = "June"; }
+    if ($month == 7) { $month = "July"; }
+    if ($month == 8) { $month = "August"; }
+    if ($month == 9) { $month = "September"; }
+    if ($month == 10) { $month = "October"; }
+    if ($month == 11) { $month = "November"; }
+    if ($month == 12) { $month = "December"; }
+  }
+  return $month;
+}
+
+function sendMail($surveyid, &$emails) {
+  $mail = new PHPMailer;
+  $mail->isSMTP();
+  $mail->SMTPDebug = 3;
+  $mail->SMTPKeepAlive = true;
+  // $mail->SMTPAuth = true;
+  $mail->Host = 'localhost';
+  // $mail->Port = 587;
+  // $mail->Username = 'sysop';
+  // $mail->Password = '';
+  // $mail->SMTPSecure = 'tls';
+  $mail->isHTML(true);
+  $mail->addAddress(EMAILSYSTEM);
+  $mail->CharSet = "UTF-8";
+  if ($type == "invite") {
+    if ($row->email_i) { $mail->setFrom($row->email_i); } else { $mail->setFrom(EMAILNOREPLY); }
+    $mail->Subject = "ขอเชิญร่วมแสดงความคิดเห็น / Survey invitation";
+    $mail->Body = $row->email_i_content;
+    $mail->AltBody = strip_tags($row->email_i_content);
+  }
+  else if ($type == "remind") {
+    if ($row->email_r) { $mail->setFrom($row->email_r); } else { $mail->setFrom(EMAILNOREPLY); }
+    $mail->Subject = "ช่วยเตือนว่าคุณยังไม่ได้แสดงความคิดเห็น / Survey reminder";
+    $mail->Body = $row->email_r_content;
+    $mail->AltBody = strip_tags($row->email_r_content);
+  }
+  $q2 = $db->prepare("SELECT * FROM j_respondents WHERE surveyid = :surveyid AND status = 1 AND invite1 IS NULL");
+  $q2->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+  $q2->execute();
+  foreach ($q2->fetchObject() as $row) {
+    $mail->addBCC($row->email);
+    // if (!$mail->send()) { echo "Mailer Error (" . str_replace("@", "&#64;", $row->email) . ') ' . $mail->ErrorInfo . '<br>'; break; }
+    // else {
+    //   echo "Message sent to :" . $row->email . ' (' . str_replace("@", "&#64;", $row->email) . ')<br>';
+    //   $q3 = $db->prepare("UPDATE j_respondents SET invite1 = NOW() WHERE email = :email AND surveyid = :surveyid");
+    //   $q3->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+    //   $q3->bindValue(':email', $row->email, PDO::PARAM_INT);
+    //   $q3->execute();
+    // }
+    $mail->clearAddresses();
+  }
+}
 ?>

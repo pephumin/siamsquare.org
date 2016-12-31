@@ -10664,11 +10664,11 @@ button.close {
     font-size: 1rem !important;
     font-weight: bold; }
   .alert > p, .alert-pe > p, .alert-eng > p, .alert-th > p, .nav-rd > p {
-    font-size: .95rem; }
+    font-size: 0.95rem; }
   .alert > ul.pe-ul > li, .alert-pe > ul.pe-ul > li, .alert-eng > ul.pe-ul > li, .alert-th > ul.pe-ul > li, .nav-rd > ul.pe-ul > li {
-    font-size: .8rem;
+    font-size: 0.8rem;
     line-height: 1.5;
-    margin-bottom: .8rem; }
+    margin-bottom: 0.8rem; }
 
 .alert-pe {
   color: #111111;
@@ -10677,25 +10677,25 @@ button.close {
     font-size: 1rem !important;
     font-weight: bold; }
   .alert-pe > p {
-    font-size: .95rem; }
+    font-size: 0.95rem; }
   .alert-pe > ul.pe-ul > li {
-    font-size: .8rem;
+    font-size: 0.8rem;
     line-height: 1.5;
-    margin-bottom: .8rem; }
+    margin-bottom: 0.8rem; }
 
 .alert-eng > h4 {
   font-family: "ubuntu" !important;
-  font-size: .85rem !important;
+  font-size: 0.85rem !important;
   font-weight: bold; }
 .alert-eng > p {
   font-family: "ubuntu" !important;
-  font-size: .85rem !important;
+  font-size: 0.85rem !important;
   margin-bottom: 1.2rem !important; }
 .alert-eng > ul.pe-ul > li {
   font-family: "ubuntu" !important;
-  font-size: .7rem !important;
+  font-size: 0.7rem !important;
   line-height: 1.5;
-  margin-bottom: .9rem; }
+  margin-bottom: 0.9rem; }
 
 .alert-th {
   font-family: "boon" !important;
@@ -10710,27 +10710,27 @@ button.close {
     margin-bottom: 1.2rem !important; }
   .alert-th > ul.pe-ul > li {
     font-family: "boon" !important;
-    font-size: .9rem !important;
+    font-size: 0.9rem !important;
     line-height: 1.5;
-    margin-bottom: .9rem; }
+    margin-bottom: 0.9rem; }
 
 .nav-rd {
   background-color: #d9edf7; }
   .nav-rd .nav-rd-head {
-    font-size: .8rem !important;
+    font-size: 0.8rem !important;
     font-weight: bold;
     color: inherit;
     line-height: 1.5;
     margin-bottom: 1rem !important; }
   .nav-rd .nav-rd-body {
-    font-size: .8rem !important;
+    font-size: 0.8rem !important;
     color: inherit;
     line-height: 1.5;
-    margin-bottom: .3rem !important; }
+    margin-bottom: 0.3rem !important; }
 
 i.pe-heart {
   color: #FF0000;
-  animation: beat .8s infinite alternate;
+  animation: beat 0.8s infinite alternate;
   -webkit-transform-origin: center;
   -moz-transform-origin: center;
   -o-transform-origin: center;
@@ -10739,17 +10739,17 @@ i.pe-heart {
 
 @keyframes beat {
   0% {
-    -webkit-transform: scale(.8);
-    -moz-transform: scale(.8);
-    -o-transform: scale(.8);
-    -ms-transform: scale(.8);
-    transform: scale(.8); }
+    -webkit-transform: scale(0.8);
+    -moz-transform: scale(0.8);
+    -o-transform: scale(0.8);
+    -ms-transform: scale(0.8);
+    transform: scale(0.8); }
   30% {
-    -webkit-transform: scale(.9);
-    -moz-transform: scale(.9);
-    -o-transform: scale(.9);
-    -ms-transform: scale(.9);
-    transform: scale(.9); }
+    -webkit-transform: scale(0.9);
+    -moz-transform: scale(0.9);
+    -o-transform: scale(0.9);
+    -ms-transform: scale(0.9);
+    transform: scale(0.9); }
   40% {
     -webkit-transform: scale(1.05);
     -moz-transform: scale(1.05);
@@ -10757,17 +10757,17 @@ i.pe-heart {
     -ms-transform: scale(1.05);
     transform: scale(1.05); }
   60% {
-    -webkit-transform: scale(.7);
-    -moz-transform: scale(.7);
-    -o-transform: scale(.7);
-    -ms-transform: scale(.7);
-    transform: scale(.7); }
+    -webkit-transform: scale(0.7);
+    -moz-transform: scale(0.7);
+    -o-transform: scale(0.7);
+    -ms-transform: scale(0.7);
+    transform: scale(0.7); }
   70% {
-    -webkit-transform: scale(.8);
-    -moz-transform: scale(.8);
-    -o-transform: scale(.8);
-    -ms-transform: scale(.8);
-    transform: scale(.8); }
+    -webkit-transform: scale(0.8);
+    -moz-transform: scale(0.8);
+    -o-transform: scale(0.8);
+    -ms-transform: scale(0.8);
+    transform: scale(0.8); }
   80% {
     -webkit-transform: scale(1.06);
     -moz-transform: scale(1.06);
@@ -10775,11 +10775,11 @@ i.pe-heart {
     -ms-transform: scale(1.06);
     transform: scale(1.06); }
   100% {
-    -webkit-transform: scale(.9);
-    -moz-transform: scale(.9);
-    -o-transform: scale(.9);
-    -ms-transform: scale(.9);
-    transform: scale(.9); } }
+    -webkit-transform: scale(0.9);
+    -moz-transform: scale(0.9);
+    -o-transform: scale(0.9);
+    -ms-transform: scale(0.9);
+    transform: scale(0.9); } }
 .badge {
   display: inline;
   min-width: 10px;
@@ -10898,11 +10898,11 @@ i.pe-heart {
     cursor: default; }
 .wizard > .steps .done a {
   background: #9dc8e2;
-  opacity: .65;
+  opacity: 0.65;
   color: #FFFFFF; }
   .wizard > .steps .done a:hover, .wizard > .steps .done a:active {
     background: #76b2d6;
-    opacity: .65; }
+    opacity: 0.65; }
 .wizard > .steps .error a {
   background: #FF0000;
   color: #FFFFFF; }

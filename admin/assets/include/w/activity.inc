@@ -152,7 +152,7 @@ echo "</div>\n";
     <br>
     <table class="table table-condensed table-hover" id="showme">
       <thead>
-        <tr class="bg-primary">
+        <tr class="bg-success">
           <th width="15%"><small><i class="pe-clock-o pe-fw"></i> Time</small></th>
           <th width="75%"><small><i class="pe-map-o pe-fw"></i> Activity</small></th>
         </tr>

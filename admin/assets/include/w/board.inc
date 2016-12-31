@@ -15,12 +15,14 @@ if ($_POST['newpost'] == 1) {
     $q0A->bindValue(':companyid', $_POST['companyid'], PDO::PARAM_INT);
     $q0A->execute();
   }
-  header("location: $me");
+  $redirect = $me."&m=1";
+  header("location: $redirect");
 } else if ($_GET['d']) {
   $q0B = $db->prepare("UPDATE j_board SET status = 0 WHERE id = :id");
   $q0B->bindValue(':id', base64_decode($_GET["d"]), PDO::PARAM_INT);
   $q0B->execute();
-  header("location: $me");
+  $redirect = $me."&m=2";
+  header("location: $redirect");
 }
 
 $title = "Message board";
@@ -50,6 +52,10 @@ $offset = ($currentpage - 1) * $rowsperpage;
 
 if ($to_record > $rows) { $to_record = $rows; }
 $from_record = $start + 1;
+
+if ($_GET['m'] == "1") { $message = mksuccess("You have successfully created a new message."); echo "<p>$message</p>\n"; }
+else if ($_GET['m'] == "2") { $message = mkwarn("The selected message have been deleted."); echo "<p>$message</p>\n"; }
+else { echo "<p></p>\n"; }
 
 ?>
 
@@ -103,7 +109,7 @@ while ($row = $q1C->fetchObject()) {
   //echo "    <a href=\"$me&amp;d=$postid\" class=\"pull-right\" style=\"margin-top:10px;margin-right:5px\" title=\"Mark completed\"><i class=\"pe-check-square\"></i></a>\n";
   echo "      <div class=\"panel-heading\"><i class=\"pe-wpforms pe-fw\"></i> $row->head</div>\n";
   echo "      <div class=\"announcement-info\"><i class=\"pe-user pe-fw\"></i> $row->fullname ($row->email) &middot; <i class=\"pe-calendar pe-fw\"></i> $t1 ($t2)</div>\n";
-  if ($row->avatar) { echo "      <p class=\"pull-right\" style=\"margin:10px\"><img src=\"".$row->avatar."\" class=\"img-circle members-photo-small\" alt=\"Avatar\"></p>\n"; }
+  if ($row->avatar) { echo "      <p class=\"pull-right\" style=\"margin:10px\"><img src=\"/admin/assets/img/u/".$row->avatar.".svg\" class=\"img-circle members-photo-small\" alt=\"Avatar\"></p>\n"; }
   echo "      <div class=\"panel-body small\">$body</div>\n";
   echo "    </div>\n";
 }

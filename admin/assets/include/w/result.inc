@@ -39,7 +39,7 @@ for ($i = 0; $i < count($questions); $i++) {
 
   if ($qname == $show) {
     $qout .= "<h4 style=\"font-family:boon;font-size:140%\">".$qname.$add.": ".$qtitle." <small>[".$qtype."]</small></h4>\n";
-    if ($qvisibleIf) { $qout .= "<p class=\"grey small\"><em>Only ask when <u>".$qvisibleIf."</u></em></p>\n"; } else { $qout .= "<p class=\"grey small\"><em>Ask all respondents</em></p>\n"; }
+    if ($qvisibleIf) { $qout .= "    <p class=\"grey small\"><em>Only ask when <u>".$qvisibleIf."</u></em></p>\n"; } else { $qout .= "    <p class=\"grey small\"><em>Ask all respondents</em></p>\n"; }
     if ($qtype == "radiogroup") {
       $qout .= "<ul>\n";
       foreach ($choices as $k4 => $p4) {
@@ -167,7 +167,7 @@ for ($i = 0; $i < count($questions); $i++) {
       $qout .= "</tbody>\n";
       $qout .= "</table>\n";
     }
-    $qout .= "<br>\n";
+    $qout .= "    <br>\n";
   }
 }
 
@@ -182,16 +182,16 @@ for ($i = 0; $i < $numberofquestions; $i++) {
   if ($questions[$i]["html"]) { $qtitle1 = "HTML"; }
   else { $qtitle1 = $questions[$i]["title"]; }
   $qtype1 = $questions[$i]["type"];
-  if ($qname1 == $_GET['q']) { $questionlisting .= "<li class=\"progress-step is-active\">\n"; }
-  else { $questionlisting .= "<li class=\"progress-step\">\n"; }
-  $questionlisting .= "  <span class=\"progress-marker\"></span>\n";
-  $questionlisting .= "  <a href=\"/admin/?w=result&s=$sid&q=$qname1\"><span class=\"progress-text\">\n";
-  $questionlisting .= "    <span class=\"progress-title\">$qname1 <small>($qtype1)</small></span>\n";
-  $questionlisting .= "    <p style=\"font-family:boon;font-size:140%;margin-top:10px\">$qtitle1</p>\n";
-  $questionlisting .= "  </span></a>\n";
-  $questionlisting .= "</li>\n";
+  if ($qname1 == $_GET['q']) { $questionlisting .= "  <li class=\"progress-step is-active\">\n"; }
+  else { $questionlisting .= "  <li class=\"progress-step\">\n"; }
+  $questionlisting .= "    <span class=\"progress-marker\"></span>\n";
+  $questionlisting .= "    <a href=\"/admin/?w=result&s=$sid&q=$qname1\"><span class=\"progress-text\">\n";
+  $questionlisting .= "      <span class=\"progress-title\">$qname1 <small>($qtype1)</small></span>\n";
+  $questionlisting .= "      <p style=\"font-family:boon;font-size:140%;margin-top:10px\">$qtitle1</p>\n";
+  $questionlisting .= "    </span></a>\n";
+  $questionlisting .= "  </li>\n";
 }
-$questionlisting .= "</ul>\n";
+$questionlisting .= "</ul>";
 
 
 
@@ -219,7 +219,14 @@ $alldata .= " ]\n";
 // print_r($alldata);
 
 // Generate CSV file automatically
-if ($_GET["download"] == "csv") {
+if ($_GET["download"] == "json") {
+  $csvout = "data_".$project."_".date('Y-m-d').".json";
+  // $jsonDecoded = json_decode($alldata, true);
+  header("Content-Disposition: attachment; filename=$csvout");
+  header('Content-type: application/json');
+  echo $alldata;
+  exit;
+} else if ($_GET["download"] == "csv") {
   $out = new JSON2CSVutil;
   $csvout = "data_".$project."_".date('Y-m-d').".csv";
   // $jsonDecoded = json_decode($alldata, true);
@@ -260,8 +267,8 @@ if ($cd == "checkbox") {
     $out .= "      data.setCell($m, 2, $BB[$m]);\n";
   }
   $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
-  if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
-  else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
+  if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
+  else if ($_GET['type'] == "bar-V") { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
 }
 else if ($cd == "comment") {
   $k = array();
@@ -310,29 +317,29 @@ else if ($cd == "file") {
 
   // ############# Output for file upload ############# //
 
-  $pagination = "<nav class=\"pagination-centered\">\n";
-  $pagination .= "  <ul class=\"pagination\">\n";
-  if ($p > 1) { $previous = $p-1; $pagination .= "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$previous."\">&laquo;</a></li>\n"; }
-  else { $pagination .= "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&laquo;</a></li>\n"; }
+  $pagination = "    <nav class=\"pagination-centered\">\n";
+  $pagination .= "      <ul class=\"pagination\">\n";
+  if ($p > 1) { $previous = $p-1; $pagination .= "        <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$previous."\">&laquo;</a></li>\n"; }
+  else { $pagination .= "        <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&laquo;</a></li>\n"; }
   for ($i=1; $i<=$total; $i++) {
-    if ($i == $p) { $pagination .= "    <li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
-    else { $pagination .= "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
+    if ($i == $p) { $pagination .= "        <li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
+    else { $pagination .= "        <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
   }
-  if ($p != $total) { $next = $p+1; $pagination .= "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$next."\">&raquo;</a></li>\n"; }
-  else { $pagination .= "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&raquo;</a></li>\n"; }
-  $pagination .= "  </ul>\n";
-  $pagination .= "</nav>\n\n";
+  if ($p != $total) { $next = $p+1; $pagination .= "        <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$next."\">&raquo;</a></li>\n"; }
+  else { $pagination .= "        <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&raquo;</a></li>\n"; }
+  $pagination .= "      </ul>\n";
+  $pagination .= "    </nav>\n";
 
   $basedir = "../members/assets/upload/".$_GET['s']."/";
   $urldir = "/members/assets/upload/".$_GET['s']."/";
   if (empty($_GET['size']) || ($_GET['size'] == "S")) {
-    $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <u>small</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=M")."\">medium</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=L")."\">large</a> <strong>]</strong></p>\n";
+    $outdirect = "    <p class=\"text-center\"><strong>Choose the preview size [</strong> <u>small</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=M")."\">medium</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=L")."\">large</a> <strong>]</strong></p>\n";
     $bb = 0;
-    $outdirect .= $pagination."<br>";
-    $outdirect .= "<div class=\"pull-right small grey\"><small>Note: Some pictures may appear to be up-side-down - this is<br>driven by a different rotation setting on respondent's device</small></div>\n";
-    $outdirect .= "<p>Found $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
-    $outdirect .= "  <table>\n";
-    $outdirect .= "    <tr>\n";
+    $outdirect .= $pagination."    <br>\n";
+    $outdirect .= "    <div class=\"pull-right small grey\"><small>Note: Some pictures may appear to be up-side-down - this is<br>driven by a different rotation setting on respondent's device</small></div>\n";
+    $outdirect .= "    <p>Found $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
+    $outdirect .= "    <table>\n";
+    $outdirect .= "      <tr>\n";
     foreach ($k as $A => $B) {
       if ($B) {
         if (file_exists($basedir.'full/'.$B)) {
@@ -345,23 +352,23 @@ else if ($cd == "file") {
           }
         }
         list($surveyid, $rid, $date, $random) = explode("_", $B);
-        $year = substr($date, 0, 4); $month = substr($date, 4, 2); $day = substr($date, 6, 2);
-        $footer = "Posted since ".$day."/".$month."/".$year;
-        $outdirect .= "      <td style=\"text-align:center\"><a href=\"".$urldir."full/".$B."\" title=\"Click to open a full size image in a new window\" data-gallery=\"".$_GET['s']."\" data-toggle=\"lightbox\" data-title=\"Image upload for $project\" data-footer=\"$footer\"><img src=\"".$urldir."resized_S/".$B."\" class=\"thumbnail img-responsive\"></a></td>\n";
+        $year = substr($date, 0, 4); $month = substr($date, 4, 2); $month = fullmonth($month); $day = substr($date, 6, 2);
+        $footer = "Posted since ".$day." ".$month." ".$year;
+        $outdirect .= "        <td style=\"text-align:center\"><a href=\"".$urldir."full/".$B."\" title=\"Click to open a full size image in a new window\" data-gallery=\"".$_GET['s']."\" data-toggle=\"lightbox\" data-title=\"Image upload for $project\" data-footer=\"$footer\"><img src=\"".$urldir."resized_S/".$B."\" class=\"thumbnail img-responsive\"></a></td>\n";
         $bb++;
-        if (($bb % 5 == 0) && ($bb > 0)) { $outdirect .= "    </tr><tr>\n"; }
+        if (($bb % 5 == 0) && ($bb > 0)) { $outdirect .= "      </tr>\n      <tr>\n"; }
       }
     }
-    $outdirect .= "    </tr>\n";
-    $outdirect .= "  </table>\n";
-    $outdirect .= $pagination."<br>";
+    $outdirect .= "      </tr>\n";
+    $outdirect .= "    </table>\n";
+    $outdirect .= $pagination."\n<br>\n";
   } else if ($_GET['size'] == "M") {
-    $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <a href=\"".htmlspecialchars($me."&size=S")."\">small</a> <strong>:</strong> <u>medium</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=L")."\">large</a> <strong>]</strong></p><br>\n";
+    $outdirect = "    <p class=\"text-center\"><strong>Choose the preview size [</strong> <a href=\"".htmlspecialchars($me."&size=S")."\">small</a> <strong>:</strong> <u>medium</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=L")."\">large</a> <strong>]</strong></p><br>\n";
     $bb = 0;
-    $outdirect .= $pagination."<br>";
-    $outdirect .= "<p>Found $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
-    $outdirect .= "  <table>\n";
-    $outdirect .= "    <tr>\n";
+    $outdirect .= $pagination."    <br>";
+    $outdirect .= "    <p>Found $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
+    $outdirect .= "    <table>\n";
+    $outdirect .= "      <tr>\n";
     foreach ($k as $A => $B) {
       if ($B) {
         if (file_exists($basedir.'full/'.$B)) {
@@ -376,21 +383,21 @@ else if ($cd == "file") {
         list($surveyid, $rid, $date, $random) = explode("_", $B);
         $year = substr($date, 0, 4); $month = substr($date, 4, 2); $day = substr($date, 6, 2);
         $footer = "Posted since ".$day."/".$month."/".$year;
-        $outdirect .= "      <td style=\"text-align:center\"><a href=\"".$urldir."full/".$B."\" title=\"Click to open a full size image in a new window\" data-gallery=\"".$_GET['s']."\" data-toggle=\"lightbox\" data-title=\"Image upload for $project\" data-footer=\"$footer\"><img src=\"".$urldir."resized_M/".$B."\" class=\"thumbnail img-responsive\"></a></td>\n";
+        $outdirect .= "        <td style=\"text-align:center\"><a href=\"".$urldir."full/".$B."\" title=\"Click to open a full size image in a new window\" data-gallery=\"".$_GET['s']."\" data-toggle=\"lightbox\" data-title=\"Image upload for $project\" data-footer=\"$footer\"><img src=\"".$urldir."resized_M/".$B."\" class=\"thumbnail img-responsive\"></a></td>\n";
         $bb++;
-        if (($bb % 3 == 0) && ($bb > 0)) { $outdirect .= "    </tr><tr>\n"; }
+        if (($bb % 3 == 0) && ($bb > 0)) { $outdirect .= "    </tr>\n      <tr>\n"; }
       }
     }
-    $outdirect .= "    </tr>\n";
-    $outdirect .= "  </table>\n";
-    $outdirect .= $pagination."<br>";
+    $outdirect .= "      </tr>\n";
+    $outdirect .= "    </table>\n";
+    $outdirect .= $pagination."    <br>\n";
   } else if ($_GET['size'] == "L") {
-    $outdirect = "<p class=\"text-center\"><strong>Choose the preview size [</strong> <a href=\"".htmlspecialchars($me."&size=S")."\">small</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=M")."\">medium</a> <strong>:</strong> <u>large</u> <strong>]</strong></p><br>\n";
+    $outdirect = "    <p class=\"text-center\"><strong>Choose the preview size [</strong> <a href=\"".htmlspecialchars($me."&size=S")."\">small</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&size=M")."\">medium</a> <strong>:</strong> <u>large</u> <strong>]</strong></p><br>\n";
     $bb = 0;
-    $outdirect .= $pagination."<br>";
-    $outdirect .= "<p>Found $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
-    $outdirect .= "  <table>\n";
-    $outdirect .= "    <tr>\n";
+    $outdirect .= $pagination."\n<br>\n";
+    $outdirect .= "    <p>Found $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
+    $outdirect .= "    <table>\n";
+    $outdirect .= "      <tr>\n";
     foreach ($k as $A => $B) {
       if ($B) {
         if (file_exists($basedir.'full/'.$B)) {
@@ -405,14 +412,14 @@ else if ($cd == "file") {
         list($surveyid, $rid, $date, $random) = explode("_", $B);
         $year = substr($date, 0, 4); $month = substr($date, 4, 2); $day = substr($date, 6, 2);
         $footer = "Posted since ".$day."/".$month."/".$year;
-        $outdirect .= "      <td style=\"text-align:center\"><a href=\"".$urldir."full/".$B."\" title=\"Click to open a full size image in a new window\" data-gallery=\"".$_GET['s']."\" data-toggle=\"lightbox\" data-title=\"Image upload for $project\" data-footer=\"$footer\"><img src=\"".$urldir."resized_L/".$B."\" class=\"thumbnail img-responsive\"></a></td>\n";
+        $outdirect .= "        <td style=\"text-align:center\"><a href=\"".$urldir."full/".$B."\" title=\"Click to open a full size image in a new window\" data-gallery=\"".$_GET['s']."\" data-toggle=\"lightbox\" data-title=\"Image upload for $project\" data-footer=\"$footer\"><img src=\"".$urldir."resized_L/".$B."\" class=\"thumbnail img-responsive\"></a></td>\n";
         $bb++;
-        if (($bb % 2 == 0) && ($bb > 0)) { $outdirect .= "    </tr><tr>\n"; }
+        if (($bb % 2 == 0) && ($bb > 0)) { $outdirect .= "    </tr>\n      <tr>\n"; }
       }
     }
-    $outdirect .= "    </tr>\n";
-    $outdirect .= "  </table>\n";
-    $outdirect .= $pagination."<br>";
+    $outdirect .= "      </tr>\n";
+    $outdirect .= "    </table>\n";
+    $outdirect .= $pagination."\n<br>\n";
   }
 }
 else if (($cd == "radiogroup") || ($cd == "dropdown") || ($cd == "rating")) {
@@ -497,6 +504,7 @@ else if ($cd == "matrix") {
 
 $title = "Survey result";
 $getcsv = "/admin/?w=result&s=".$_GET['s']."&download=csv";
+$getjson = "/admin/?w=result&s=".$_GET['s']."&download=json";
 // $getcsv = "/a.php?s=".$_GET['s'];
 pageHeader($title);
 echo "<h2>$title</h2>\n";
@@ -513,6 +521,7 @@ echo "  <div class=\"col-sm-3\" style=\"padding:10px\">\n";
 echo "    <div class=\"list-group small\">\n";
 echo "      <li class=\"list-group-item list-group-item-info\"><strong><i class=\"pe-download pe-fw\"></i> Download</strong></li>\n";
 echo "      <a href=\"$getcsv\" class=\"list-group-item\"><i class=\"pe-file-excel-o pe-fw\"></i> All data in CSV format</a>\n";
+echo "      <a href=\"$getjson\" class=\"list-group-item\"><i class=\"pe-file-excel-o pe-fw\"></i> All data in JSON format</a>\n";
 echo "      <a href=\"\" class=\"list-group-item\"><i class=\"pe-table pe-fw\"></i> Get XLS tabulation</a>\n";
 echo "      <a href=\"\" class=\"list-group-item\"><i class=\"pe-file-pdf-o pe-fw\"></i> Get PDF</a>\n";
 echo "    </div>\n";
@@ -911,20 +920,6 @@ $openendquery .= "</div>\n";
 
 
 <?php } else if ($cd == "file") { ?>
-
-  <?php echo $modal; ?>
-  <style media="screen">
-    .ekko-lightbox-container { position: relative; }
-    .ekko-lightbox-nav-overlay { position: absolute; top: 0; left: 0; z-index: 100; width: 100%; height: 100%; }
-    .ekko-lightbox-nav-overlay a { z-index: 100; display: block; width: 49%; height: 100%; font-size: 30px; color: #fff; text-shadow: 2px 2px 4px #000; opacity: 0; filter: dropshadow(color=#000000, offx=2, offy=2); -webkit-transition: opacity 0.5s; -moz-transition: opacity 0.5s; -o-transition: opacity 0.5s; transition: opacity 0.5s; }
-    .ekko-lightbox-nav-overlay a:empty { width: 49%; }
-    .ekko-lightbox a:hover { text-decoration: none; opacity: 1; }
-    .ekko-lightbox .glyphicon-chevron-left { left: 0; float: left; padding-left: 15px; text-align: left; }
-    .ekko-lightbox .glyphicon-chevron-right { right: 0; float: right; padding-right: 15px; text-align: right; }
-    .ekko-lightbox .modal-footer { text-align: right; }
-    .modal-backdrop { background-color: #003E08 !important; }
-    .modal-backdrop.in { opacity: 0.875 }
-  </style>
 
   <script type="text/javascript">
     $(document).on('click', '[data-toggle="lightbox"]', function(event) {

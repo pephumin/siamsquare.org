@@ -1,7 +1,7 @@
 <?php
 
 $user = $_SESSION['email']; $avatar = $_SESSION['avatar'];
-// if (isset($avatar)) { $show = "<img src=\"/admin/$avatar\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
+// if (isset($avatar)) { $show = "<img src=\"/admin/assets/img/u/$avatar.svg\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
 $v1 = ADMIN."?w=login"; $v2 = ADMIN."?w=logout"; $v3 = "http://www.pebinary.net/en/clients/";
 $v1 = MEMBERS."?w=login"; $v2 = MEMBERS."?w=logout"; $v3 = "http://www.pebinary.net/th/members/";
 if ($_SESSION['logged_in']) {
@@ -228,22 +228,8 @@ function pageFooter($notes = null) {
 function notify($messages) {
 ?>
 <script type="text/javascript">
-  function notifyBox(title, text, image) {
-    Notification({
-      title: title,
-      text: text,
-      image: image,
-      inAnimation: "bounce",
-      outAnimation: "zoomOut",
-      position: 2
-    });
-  }
-  function delayNext(title, text, image) {
-    $(this).delay(2000).queue(function() {
-      notifyBox(title, text, image);
-      $(this).dequeue();
-    });
-  }
+  function notifyBox(title, text, image) { Notification({ title: title, text: text, image: image, inAnimation: "bounce", outAnimation: "zoomOut", position: 2 }); }
+  function delayNext(title, text, image) { $(this).delay(2000).queue(function() { notifyBox(title, text, image); $(this).dequeue(); }); }
   $(document).ready(function() {
     var obj = JSON.parse ('<?php echo json_encode($messages) ?>');
      for (var i=0; i<obj.length; i++) {
@@ -260,29 +246,29 @@ function debugOutput() {
   echo "  <div class=\"row\">\n";
   echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
   echo "      <strong>GET</strong>\n";
-  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
+  echo "      <pre><code class=\"r\">\n";
   print_r($_GET);
   echo "      </code></pre>\n";
   echo "      <strong>POST</strong>\n";
-  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
+  echo "      <pre><code class=\"r\">\n";
   print_r($_POST);
   echo "      </code></pre>\n";
   echo "      <strong>REQUEST</strong>\n";
-  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
+  echo "      <pre><code class=\"r\">\n";
   print_r($_REQUEST);
   echo "      </code></pre>\n";
   echo "      <strong>COOKIE</strong>\n";
-  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
+  echo "      <pre><code class=\"r\">\n";
   print_r($_COOKIE);
   echo "      </code></pre>\n";
   echo "    </div>\n";
   echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
   echo "      <strong>SID = ".session_id()."</strong>\n";
-  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
+  echo "      <pre><code class=\"r\">\n";
   print_r($_SESSION);
   echo "      </code></pre>\n";
   echo "      <strong>FILES</strong>\n";
-  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
+  echo "      <pre><code class=\"r\">\n";
   print_r($_FILES);
   echo "      </code></pre>\n";
   echo "    </div>\n";

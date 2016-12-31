@@ -123,7 +123,7 @@ $messagecontent .= "&lt;p&gt;Email automatically sent by ".MYHOME."&lt;/p&gt;\n"
       <div>
         <input type="radio" name="choice-email1" value="system" id="choice-default1"<?php if (isset($email_i) && ($email_i == $defaultemail)) { echo " checked"; } ?>>
         <label for="choice-default1" class="small">Email to be sent by System default</label>
-        <div class="reveal-if-active"><input type="email" name="email_iA" value="noreply@siamsquare.org" onclick="this.select()" class="form-control input-sm require-if-active" data-require-pair="#choice-default1" readonly></div>
+        <div class="reveal-if-active"><input type="email" name="email_iA" value="<?php echo $defaultemail; ?>" onclick="this.select()" class="form-control input-sm require-if-active" data-require-pair="#choice-default1" readonly></div>
       </div>
       <div>
         <input type="radio" name="choice-email1" value="custom" id="choice-customised1"<?php if (isset($email_i) && ($email_i != $defaultemail)) { echo " checked"; } ?>>
@@ -187,7 +187,7 @@ $messagecontent .= "&lt;p&gt;Email automatically sent by ".MYHOME."&lt;/p&gt;\n"
       <div>
         <input type="radio" name="choice-email2" value="system" id="choice-default2"<?php if (isset($email_r) && ($email_r == $defaultemail)) { echo " checked"; } ?>>
         <label for="choice-default2" class="small">Email to be sent by System default</label>
-        <div class="reveal-if-active"><input type="email" name="email_rA" value="noreply@siamsquare.org" onclick="this.select()" class="form-control input-sm require-if-active" data-require-pair="#choice-default2" readonly></div>
+        <div class="reveal-if-active"><input type="email" name="email_rA" value="<?php echo $defaultemail; ?>" onclick="this.select()" class="form-control input-sm require-if-active" data-require-pair="#choice-default2" readonly></div>
       </div>
       <div>
         <input type="radio" name="choice-email2" value="custom" id="choice-customised2"<?php if (isset($email_r) && ($email_r != $defaultemail)) { echo " checked"; } ?>>
@@ -397,13 +397,6 @@ $messagecontent .= "&lt;p&gt;Email automatically sent by ".MYHOME."&lt;/p&gt;\n"
   };
   FormStuff.init();
 </script>
-
-<style media="screen">
-  .reveal-if-active { opacity: 0; max-height: 0; overflow: hidden; font-size: 16px; transform: scale(0.8); transition: 0.5s; -webkit-transform: scale(0.8); -webkit-transition: 0.5s; }
-  .reveal-if-active label { display: block; margin: 0 0 3px 0; }
-  .reveal-if-active input[type=text] { width: 100%; }
-  input[type="radio"]:checked ~ .reveal-if-active, input[type="checkbox"]:checked ~ .reveal-if-active { opacity: 1; max-height: 100px; padding: 10px 20px; transform: scale(1); -webkit-transform: scale(1); overflow: visible; }
-</style>
 
 <br>
 

@@ -469,15 +469,6 @@ echo "<h3>Project $project</h3>\n";
     $(".csv textarea").click(function() {$(this).focus().select();});
   });
 
-</script>
-
-
-<style media="screen">
-  svg g:first-of-type path { stroke: #e6e6e6; }
-  svg g:first-of-type rect:not(:last-child) { fill: #ffffff; }
-</style>
-
-<script type="text/javascript">
   google.charts.load('current', {'packages': ['calendar', 'timeline', 'gauge'] });
   // google.charts.setOnLoadCallback(drawCalendarChart);
   google.charts.setOnLoadCallback(drawTimelineChart);

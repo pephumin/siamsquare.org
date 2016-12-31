@@ -355,8 +355,8 @@ class Login {
     global $url;
     $mail = new PHPMailer;
     $mail->IsMail();
-    $mail->From = EMAILSUPPORT;
-    $mail->FromName = EMAILSUPPORT;
+    $mail->From = EMAILNOREPLY;
+    $mail->FromName = EMAILNOREPLY;
     $mail->AddAddress($email);
     if ($d == "activation") { $mail->Subject = "Account activation at ".MYDOMAIN; }
     else if ($d == "recovery") { $mail->Subject = "Password reset at ".MYDOMAIN; }

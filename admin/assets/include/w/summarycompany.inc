@@ -103,10 +103,9 @@ foreach ($rows as $row) {
   }
   $updated = ago($row['updated']);
   $t2 = date_parse_from_format("Y-m-d H:i:s", $row['updated']); $t2['month'] = $t2['month']-2;
-  if ($row['private'] == 1) { $private = "<span class=\"label label-success\">PRIVATE</span>"; } else { $private = ""; }
-  if ($owner_email == $_SESSION['email']) { $owner = "<span class=\"label label-danger\">OWNER</span>"; $tabledata .= "    <tr>\n"; } else { $owner = ""; $tabledata .= "    <tr>\n";}
+  if ($row['private'] == 1) { $private = "<span class=\"pull-right\"><i class=\"pe-folder-o\" title=\"It indicates this is a Private survey\"></i></span>"; } else { $private = "<span class=\"pull-right\"><i class=\"pe-folder-open-o\" title=\"It indicates this is a Public survey\"></i></span>"; }
   if ($owner_email == $_SESSION['email']) { $tabledata .= "    <tr bgcolor='#D7EFFD'>\n"; } else { $tabledata .= "    <tr>\n";}
-  $tabledata .= "      <td>$title $owner $private</td>\n";
+  $tabledata .= "      <td>$title $private</td>\n";
   $tabledata .= "      <td>$owner_fullname <small>($owner_email)</small></td>\n";
   $tabledata .= "      <td>$ss</td>\n";
   // $tabledata .= "      <td align=\"right\">$updated</td>\n";
@@ -196,12 +195,9 @@ foreach ($rr as $r) {
 <p align="right"><a href="/admin/?w=surveys" class="small">More...</a></p>
 <br>
 
-<style media="screen">
-  svg g:first-of-type path { stroke: #e6e6e6; }
-  svg g:first-of-type rect:not(:last-child) { fill: #ffffff; }
-  div.google-visualization-tooltip { width: 250px; height:auto; vertical-align: middle; }
-  ul.google-visualization-tooltip-item-list > li > span { font-size: 14px !important; }
-  ul.google-visualization-tooltip-action-list > li > span { font-size: 11px !important; }
+<style>
+  svg g:first-of-type path { stroke: #E6E6E6; }
+  svg g:first-of-type rect:not(:last-child) { fill: #FFFFFF; }
 </style>
 
 <script type="text/javascript">

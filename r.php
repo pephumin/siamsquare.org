@@ -1,7 +1,8 @@
 <?php
 
 // $navbar = "standard";
-$navbar = "custom";
+// $navbar = "custom";
+$navbar = "none";
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/themes.php';
@@ -181,7 +182,7 @@ pageHeader($title);
       contentType: 'application/json; charset=utf-8',
       data: '{"rd": "' + cid + '", "ip": "' + cip + '", "email": "' + email + '", "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ', "status": "1" }',
       success: function(data) {
-        $('#showupload').hide(); $('#showcompletion').show();
+        $('#showcompletion').show();
         $.ajax({
           url: api + '/log/' + cid + '/' + id,
           dataType: 'json',
@@ -258,11 +259,11 @@ pageHeader($title);
     $('#notification').html("<div class='alert alert-info'><strong><i class='pe-save pe-lg pe-fw'></i> พบข้อมูลเก่าของคุณ</strong><br>ระบบพบข้อมูลเก่าบางส่วนที่คุณเคยทำไว้ตั้งแต่ " + since + " และคุณสามารถใช้ข้อมูลนี้ต่อได้ทันที หากคุณต้องการเริ่มใหม่ คุณสามารถทำได้โดยกด <button type=\"button\" id=\"resetsave\" class=\"btn btn-xs btn-primary\">Reset</button></div>").hide();
     $('#notification').show(); // setTimeout(function () { $("#notification").slideUp(500, function () { $("#notification").hide(); }); }, 12000);
   }
-  $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> กดยืนยันเพื่อส่ง แล้วรอจนข้อความเปลี่ยนเป็นว่า <strong>ยืนยันระบบดำเนินการสำเร็จ</strong> กรุณาอย่ารีเฟรชหรือกดส่งซ้ำในระหว่างรออัพโหลด</div>").hide();
+  $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> ระบบกำลังอัพโหลดรูปของคุณ ระหว่างนี้คุณสามารถทำรายการต่อได้ทันที และอีกสักครู่เมื่อระบบทำงานในส่วนนี้เสร็จ ข้อความนี้จะหายไปเอง</div>").hide();
   $('#showcompletion').html("<div class='alert alert-success'><i class='pe-check-square-o pe-lg pe-fw'></i> เราได้ทำการจัดเก็บความคิดเห็นของคุณลงระบบเป็นที่เรียบร้อยแล้ว</div>").hide();
   $('#resetsave').on('click', function() { clearsavesurveydata(resultid, ip, email, surveyid, title); });
   survey.onComplete.add(function (s) { postsurveydata(cid, ip, email, surveyid, survey.data, title); });
-  survey.onUploadFile.add(function (data) { $('#showupload').show(); });
+  survey.onUploadFile.add(function (data) { $('#showupload').show(); setTimeout(function () { $("#showupload").slideUp(500, function () { $("#showupload").hide(); }); }, 6000); });
   survey.onCurrentPageChanged.add(function (data) { autosavesurveydata(cid, ip, email, surveyid, survey.data, title); });
   // survey.onComplete
   // survey.onCurrentPageChanged

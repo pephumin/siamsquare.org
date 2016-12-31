@@ -14,7 +14,7 @@ function peblogo() {
 
 function pageHeader($title) {
   $user = $_SESSION['email']; $avatar = $_SESSION['avatar'];
-  if (isset($avatar)) { $show = "<img src=\"/admin/$avatar\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
+  if (isset($avatar)) { $show = "<img src=\"/admin/assets/img/u/$avatar.svg\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
   $v1 = ADMIN."?w=login"; $v2 = ADMIN."?w=logout"; $v3 = "http://www.pebinary.net/en/clients/";
   if ($_SESSION['logged_in']) {
     $signed = "<a href=\"$v2\" class=\"btn btn-warning btn-xs\" title=\"Log out\"><i class=\"pe-sign-out pe-fw\"></i> Log out</a> <a href=\"$v3\" class=\"btn btn-danger btn-xs\"><i class=\"pe-university pe-fw\"></i> Help</a>\n";
@@ -39,6 +39,7 @@ function pageHeader($title) {
   <title><?php echo MYTITLE.": ".$title; ?></title>
   <link rel="stylesheet" type="text/css" href="/admin/assets/css/admin.css">
   <link rel="stylesheet" type="text/css" href="/admin/assets/css/csv.css">
+  <!-- <link rel="stylesheet" type="text/css" href="/admin/assets/css/dataTables/dataTables.bootstrap.css"> -->
 <?php if (($_REQUEST["w"]) == "edit") { echo "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/survey.css\">"; } ?>
   <link rel="shortcut icon" type="image/x-icon" href="/admin/assets/icons/favicon.ico">
   <link rel="apple-touch-icon" sizes="57x57" href="/admin/assets/icons/apple-icon-57x57.png">
@@ -66,8 +67,9 @@ function pageHeader($title) {
   <script type="text/javascript" src="/admin/assets/js/csv.js"></script>
   <script type="text/javascript" src="/admin/assets/js/highlight.js"></script>
   <script type="text/javascript" src="/admin/assets/js/lightbox.js"></script>
-  <!-- <script type="text/javascript" src="/admin/assets/js/jquery.auto-complete.js"></script> -->
-  <script type="text/javascript" src="/admin/assets/js/jquery.easy-autocomplete.js"></script>
+  <script type="text/javascript" src="/admin/assets/js/jquery.easyautocomplete.js"></script>
+  <!-- <script type="text/javascript" src="/admin/assets/js/dataTables/jquery.dataTables.js"></script>
+  <script type="text/javascript" src="/admin/assets/js/dataTables/dataTables.bootstrap.js"></script> -->
   <script type="text/javascript" src="/admin/assets/js/fv/formValidation.min.js"></script>
   <script type="text/javascript" src="/admin/assets/js/fv/bootstrap.min.js"></script>
   <script type="text/javascript" src="/admin/assets/js/survey/knockout.js"></script>
@@ -196,22 +198,8 @@ function pageFooter($notes = null) {
 function notify($messages) {
 ?>
 <script type="text/javascript">
-  function notifyBox(title, text, image) {
-    Notification({
-      title: title,
-      text: text,
-      image: image,
-      inAnimation: "bounce",
-      outAnimation: "zoomOut",
-      position: 2
-    });
-  }
-  function delayNext(title, text, image) {
-    $(this).delay(2000).queue(function() {
-      notifyBox(title, text, image);
-      $(this).dequeue();
-    });
-  }
+  function notifyBox(title, text, image) { Notification({ title: title, text: text, image: image, inAnimation: "bounce", outAnimation: "zoomOut", position: 2 }); }
+  function delayNext(title, text, image) { $(this).delay(2000).queue(function() { notifyBox(title, text, image); $(this).dequeue(); }); }
   $(document).ready(function() {
     var obj = JSON.parse ('<?php echo json_encode($messages) ?>');
      for (var i=0; i<obj.length; i++) {
@@ -228,29 +216,29 @@ function debugOutput() {
   echo "  <div class=\"row\">\n";
   echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
   echo "      <strong>GET</strong>\n";
-  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
+  echo "      <pre><code class=\"r\">\n";
   print_r($_GET);
   echo "      </code></pre>\n";
   echo "      <strong>POST</strong>\n";
-  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
+  echo "      <pre><code class=\"r\">\n";
   print_r($_POST);
   echo "      </code></pre>\n";
   echo "      <strong>REQUEST</strong>\n";
-  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
+  echo "      <pre><code class=\"r\">\n";
   print_r($_REQUEST);
   echo "      </code></pre>\n";
   echo "      <strong>COOKIE</strong>\n";
-  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
+  echo "      <pre><code class=\"r\">\n";
   print_r($_COOKIE);
   echo "      </code></pre>\n";
   echo "    </div>\n";
   echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
   echo "      <strong>SID = ".session_id()."</strong>\n";
-  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
+  echo "      <pre><code class=\"r\">\n";
   print_r($_SESSION);
   echo "      </code></pre>\n";
   echo "      <strong>FILES</strong>\n";
-  echo "      <pre class=\"verysmall\"><code class=\"prettyprint\">\n";
+  echo "      <pre><code class=\"r\">\n";
   print_r($_FILES);
   echo "      </code></pre>\n";
   echo "    </div>\n";

@@ -87,7 +87,26 @@ if ($_POST['uploading'] == 1) {
     $ql1->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
     $ql1->execute();
   }
-  header("location: $base");
+  $redirect = $base."&m=1";
+  header("location: $redirect");
+} else if ($_POST['adding'] == 1) {
+  if (empty($_POST['addemail'])) { echo "Cannot proceed without any emails"; }
+  for ($i=0; $i<count($_POST['addemail']); $i++) {
+    if (!empty($_POST['addemail'][$i])) {
+      $e4 = generateRandomString(13);
+      $q2D = $db->prepare("INSERT INTO j_respondents (email, password, status, surveyid) VALUE (:email, :password, 1, :surveyid)");
+      $q2D->bindValue(':email', $_POST['addemail'][$i], PDO::PARAM_STR);
+      $q2D->bindValue(':password', $e4, PDO::PARAM_STR);
+      $q2D->bindValue(':surveyid', $_POST['surveyid'], PDO::PARAM_INT);
+      $q2D->execute();
+    }
+  }
+  $ql5 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." manually added respondent emails for $project', '3')");
+  $ql5->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
+  $ql5->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
+  $ql5->execute();
+  $redirect = $base."&m=2";
+  header("location: $redirect");
 } else if ($_POST['m'] == "fixerrors") {
   $q2A = $db->prepare("DELETE FROM j_respondents WHERE surveyid = 0 OR surveyid = :surveyid AND status = 0");
   $q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
@@ -96,7 +115,8 @@ if ($_POST['uploading'] == 1) {
   $ql2->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
   $ql2->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql2->execute();
-  header("location: $base");
+  $redirect = $base."&m=3";
+  header("location: $redirect");
 } else if ($_POST['m'] == "fixduplicates") {
   $q2B1 = $db->prepare("CREATE TABLE tmp SELECT * FROM j_respondents WHERE surveyid = :surveyid GROUP BY email");
   $q2B1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
@@ -112,7 +132,8 @@ if ($_POST['uploading'] == 1) {
   $ql3->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
   $ql3->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql3->execute();
-  header("location: $base");
+  $redirect = $base."&m=4";
+  header("location: $redirect");
 } else if ($_POST['m'] == "delthis") {
   $ids = implode(",", $_POST['checkbox']);
   $q2C = $db->prepare("DELETE FROM j_respondents WHERE id IN ($ids)");
@@ -121,7 +142,8 @@ if ($_POST['uploading'] == 1) {
   $ql4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
   $ql4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql4->execute();
-  header("location: $base");
+  $redirect = $base."&m=5";
+  header("location: $redirect");
 }
 
 if (empty($_GET['s'])) { pageHeader("Error"); echo mkerror("Cannot proceed without a surveyid"); pageFooter(); exit; }
@@ -163,7 +185,6 @@ if (empty($limit)) { $limit = 500; }
 if ($p) { $start = ($p-1) * $limit; }
 $to_record = $start + $limit;
 $total = ceil($rows/$limit);
-$add = " LIMIT $start, $limit ";
 
 if ($to_record > $rows) { $to_record = $rows; }
 $from_record = $start + 1;
@@ -172,7 +193,7 @@ $from_record = $start + 1;
 $q3A = $db->prepare("SELECT * FROM j_respondents WHERE surveyid = :surveyid AND status = 0");
 $q3A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q3A->execute();
-while ($row = $q3A->fetchObject()) { $errorlist[] = $row->email; }
+while ($row = $q3A->fetchObject()) { $errorlist[] = $row->email; $ss = "invalid"; }
 $email_error = "<div class=\"alert alert-warning alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\n";
 $email_error .= "  <h4><i class=\"pe-exclamation-triangle pe-fw pe-lg\"></i> Found respondents with invalid email format</h4>\n";
 $email_error .= "  <p>We detect <strong>$status0 respondents</strong> that appear to have an error in their email format, and hence cannot be used. Please correct their emails and upload them again.</p>\n";
@@ -184,27 +205,21 @@ $email_error .= "</div></div>\n";
 $email_error .= "  <form action=\"$base\" method=\"post\"><button type=\"submit\" name=\"m\" value=\"fixerrors\" class=\"btn btn-warning\">Click here to remove errors</button></form>\n";
 $email_error .= "</div>\n";
 
+if (isset($_POST['showbyemail'])) { $add = " AND email = :email"; }
+else if ($ss == "invalid") { $add = " ORDER BY status ASC, id DESC LIMIT $start, $limit"; }
+else { $add = " ORDER BY id DESC LIMIT $start, $limit"; }
 
-// Get respondent listing
-$tablelist = "";
-$q3B = $db->prepare("SELECT * FROM j_respondents WHERE surveyid = :surveyid".$add);
-$q3B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-$q3B->execute();
-if ($from_record) { $i = $from_record; } else { $i = 1; }
-while ($row = $q3B->fetchObject()) {
-  if ($row->status == 0) { $a1 = "<del>"; $a2 = "</del>"; $a3 = "<tr style='background-color:#eee'>"; } else { $a1 = ""; $a2 = ""; $a3 = "<tr>"; }
-  $tablelist .= "      $a3\n";
-  $tablelist .= "        <td><input type=\"checkbox\" name=\"checkbox[]\" id=\"$i\" value=\"$row->id\"$disablecheckbox></td>\n";
-  $tablelist .= "        <td>$a1$i$a2</td>\n";
-  $tablelist .= "        <td>$a1$row->email$a2</td>\n";
-  if (!empty($row->created)) { $created = ago($row->created); $tablelist .= "      <td style=\"text-align:right\">$a1$created$a2</td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\">-</td>\n"; }
-  if (!empty($row->$invited1)) { $invited1 = ago($row->$invited1); $tablelist .= "      <td style=\"text-align:right\">$invited1</td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\">-</td>\n"; }
-  if (!empty($row->$invited2)) { $invited2 = ago($row->$invited2); $tablelist .= "      <td style=\"text-align:right\">$invited2</td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\">-</td>\n"; }
-  if (!empty($row->$viewed)) { $viewed = ago($row->$viewed); $tablelist .= "      <td style=\"text-align:right\">$viewed</td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\">-</td>\n"; }
-  if (!empty($row->$completed)) { $completed = ago($row->$completed); $tablelist .= "      <td style=\"text-align:right\">$completed</td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\">-</td>\n"; }
-  $i++;
-  $tablelist .= "      </tr>\n";
+// Query all for auto complete search box
+$dd = array();
+$q3C = $db->prepare("SELECT * FROM j_respondents WHERE surveyid = :surveyid");
+$q3C->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q3C->execute();
+while ($rr = $q3C->fetchObject()) {
+  $data["email"] = $rr->email;
+  $data["created"] = $rr->created;
+  array_push($dd, $data);
 }
+$dd = json_encode($dd, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
 // Check duplications
 $q4 = $db->prepare("SELECT COUNT(*) as duplicates, id, email, invited1 FROM j_respondents WHERE surveyid = :surveyid GROUP BY email HAVING duplicates > 1");
@@ -224,6 +239,7 @@ $duplicated_records = count($c);
 $email_duplicated = "<div class=\"alert alert-warning alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\n";
 $email_duplicated .= "  <h4><i class=\"pe-exclamation-triangle pe-fw pe-lg\"></i> Found respondents with duplicated emails</h4>\n";
 $email_duplicated .= "  <p>We also detected <strong>$duplicated_records respondents</strong> that have duplicated emails as shown below.</p>";
+$email_duplicated .= "  <p>We display these duplicates in the table below with <span class=\"label label-danger\">duplicated</span> so you can spot them instantly.</p>\n";
 $email_duplicated .= "  <ul class=\"pe-ul\">\n";
 $d = array_count_values($c);
 arsort($d);
@@ -232,6 +248,7 @@ foreach ($d as $dd => $ddd) {
   // echo $ddd;
 }
 $email_duplicated .= "  </ul>\n";
+$email_duplicated .= "  <br>\n";
 $email_duplicated .= "  <p>You can <a data-toggle=\"collapse\" href=\"#showduplicates\" aria-expanded=\"false\" class=\"alert-link\">click here <i class=\"pe-arrow-circle-down pe-fw\"></i></a> to see them all in one big list (click again to close).</p>\n";
 $email_duplicated .= "  <div class=\"collapse\" id=\"showduplicates\"><div class=\"well small\">";
 for($x = 0; $x < count($duplist); $x++) { $email_duplicated .= $duplist[$x].", "; }
@@ -239,56 +256,83 @@ $email_duplicated .= "</div></div>\n";
 $email_duplicated .= "  <form action=\"$base\" method=\"post\"><button type=\"submit\" name=\"m\" value=\"fixduplicates\" class=\"btn btn-warning\">Click here to remove duplicates</button></form>\n";
 $email_duplicated .= "</div>\n";
 
+// Get respondent listing
+$tablelist = "";
+$q3B = $db->prepare("SELECT * FROM j_respondents WHERE surveyid = :surveyid".$add);
+$q3B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+if (isset($_POST['showbyemail'])) { $q3B->bindValue(':email', $_POST["showbyemail"], PDO::PARAM_STR); }
+// print_r($q3B);
+$q3B->execute();
+if ($from_record) { $i = $from_record; } else { $i = 1; }
+while ($row = $q3B->fetchObject()) {
+  $email = $row->email;
+  if ($row->status == 0) { $a1 = "<del>"; $a2 = "</del>"; $a3 = "<tr style='background-color:#eee'>"; } else { $a1 = ""; $a2 = ""; $a3 = "<tr>"; }
+  if (in_array($email, $duplist)) { $a4 = "<span class=\"label label-danger\">duplicated</span>"; } else { $a4 = ""; }
+  $tablelist .= "      $a3\n";
+  $tablelist .= "        <td><div class=\"checbox\"><input type=\"checkbox\" name=\"checkbox[]\" id=\"$i\" value=\"$row->id\"$disablecheckbox></div></td>\n";
+  $tablelist .= "        <td>$a1$i$a2</td>\n";
+  $tablelist .= "        <td>$a1$email$a2 $a4</td>\n";
+  if (!empty($row->created)) { $created = ago($row->created); $tablelist .= "      <td style=\"text-align:right\">$a1$created$a2</td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\">-</td>\n"; }
+  if (!empty($row->$invited1)) { $invited1 = ago($row->$invited1); $tablelist .= "      <td style=\"text-align:right\">$invited1</td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\">-</td>\n"; }
+  if (!empty($row->$invited2)) { $invited2 = ago($row->$invited2); $tablelist .= "      <td style=\"text-align:right\">$invited2</td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\">-</td>\n"; }
+  if (!empty($row->$viewed)) { $viewed = ago($row->$viewed); $tablelist .= "      <td style=\"text-align:right\">$viewed</td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\">-</td>\n"; }
+  if (!empty($row->$completed)) { $completed = ago($row->$completed); $tablelist .= "      <td style=\"text-align:right\">$completed</td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\">-</td>\n"; }
+  $i++;
+  $tablelist .= "      </tr>\n";
+}
 
 if ($total == 0) {
   echo "<p>Currently this project has <strong>no respondent</strong> stored in our database.</p>\n";
   echo "<p>Please upload with a Comma Separated Value (CSV) file that at least contains a list of emails in a column.</p>";
   echo "<p></p>\n";
-  echo "<p align=\"right\"><a class=\"btn btn-primary\" href=\"\" data-toggle=\"modal\" data-target=\"#uploading\"><i class=\"pe-upload pe-fw\"></i> Upload a name list</a></p>\n";
+  echo "<div align=\"right\"><a class=\"btn btn-info\" href=\"\" data-toggle=\"modal\" data-target=\"#uploading\"><i class=\"pe-upload pe-fw\"></i> Upload a new name list</a> <a class=\"btn btn-info\" href=\"\" data-toggle=\"modal\" data-target=\"#manuallyadd\"><i class=\"pe-user-plus pe-fw\"></i> Manually add new respondents</a></div>\n";
   echo "<br>\n";
   echo $help;
 } else {
   echo "<p>Currently this project has <strong>$rows respondents</strong> stored in our database.</p>\n";
   if ($status0) { echo $email_error; }
   if ($duplicated_records) { echo $email_duplicated; }
-  // echo "<br>";
   echo "<p>Please see table below for more information about these respodnents. And of course, you can always use the upload function to add more respondents to the project if need.</p>\n";
-  // echo "<p></p>\n";
-  // echo "<p></p>\n";
-  // echo "<p align=\"right\"><a class=\"btn btn-primary\" href=\"\" data-toggle=\"modal\" data-target=\"#uploading\"><i class=\"pe-upload pe-fw\"></i> Upload a name list</a></p>\n";
+  echo "<div align=\"right\"><a class=\"btn btn-info\" href=\"\" data-toggle=\"modal\" data-target=\"#uploading\"><i class=\"pe-upload pe-fw\"></i> Upload a new name list</a> <a class=\"btn btn-info\" href=\"\" data-toggle=\"modal\" data-target=\"#manuallyadd\"><i class=\"pe-user-plus pe-fw\"></i> Manually add new respondents</a></div>\n";
 
-  echo "<div class=\"row\" style=\"margin-top:30px\">\n";
-  echo "  <div class=\"col-sm-6 form-group has-feedback\">\n";
-  echo "    <form action=\"$base\" method=\"post\">\n";
-  echo "      <input type=\"text\" id=\"countries\" name=\"RDsearch\" class=\"form-control\"><i class=\"pe-search form-control-feedback\" aria-hidden=\"true\"></i>\n";
-  echo "    </form>\n";
-  echo "  </div>\n";
-  echo "  <div class=\"col-sm-6\" style=\"text-align:right\">\n";
-  echo "    <a class=\"btn btn-primary\" href=\"\" data-toggle=\"modal\" data-target=\"#uploading\"><i class=\"pe-upload pe-fw\"></i> Upload a name list</a>\n";
-  echo "  </div>\n";
-  echo "</div>\n";
+  if ($_GET['m'] == "1") { $message = mksuccess("You have successfully uploaded and added respondents(s) to the database."); echo "<p>$message</p>\n"; }
+  else if ($_GET['m'] == "2") { $message = mksuccess("You have successfully added respondents(s) to the database."); echo "<p>$message</p>\n"; }
+  else if ($_GET['m'] == "3") { $message = mksuccess("All respondents(s) with invalid emails have been removed."); echo "<p>$message</p>\n"; }
+  else if ($_GET['m'] == "4") { $message = mksuccess("All duplicated emails have been removed while system still keeps the original ones."); echo "<p>$message</p>\n"; }
+  else if ($_GET['m'] == "5") { $message = mkwarn("Selected respondents(s) has/have been deleted."); echo "<p>$message</p>\n"; }
+  else { echo "<p></p>\n"; }
 
   $me = $base."&size=".$_REQUEST['size'];
-  echo "<nav class=\"pagination-centered\">\n";
-  echo "  <ul class=\"pagination\">\n";
-  if ($p > 1) { $previous = $p-1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$previous."\">&laquo;</a></li>\n"; }
-  else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&laquo;</a></li>\n"; }
-  for ($i=1; $i<=$total; $i++) {
-    if ($i == $p) { echo "    <li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
-    else { echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
+  $pagination = "<nav class=\"pagination-centered\">\n";
+  $pagination .= "  <ul class=\"pagination\">\n";
+  if ($p > 1) { $previous = $p-1; $pagination .= "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$previous."\">&laquo;</a></li>\n"; }
+  else { $pagination .= "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&laquo;</a></li>\n"; }
+  for ($i=1; $i <= $total; $i++) {
+    if ($i == $p) { $pagination .= "    <li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
+    else { $pagination .= "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
   }
-  if ($p != $total) { $next = $p+1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$next."\">&raquo;</a></li>\n"; }
-  else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&raquo;</a></li>\n"; }
-  echo "  </ul>\n";
-  echo "</nav>\n\n";
+  if ($p != $total) { $next = $p+1; $pagination .= "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$next."\">&raquo;</a></li>\n"; }
+  else { $pagination .= "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&raquo;</a></li>\n"; }
+  $pagination .= "  </ul>\n";
+  $pagination .= "</nav>\n\n";
 
   echo "<div class=\"row\">\n";
-  echo "  <div class=\"col-sm-6\">\n";
-  echo "    <span class=\"blue\">Found <strong>$rows records</strong><br><small>(showing results $from_record to $to_record)</small></span>\n";
+  echo "  <div class=\"col-sm-4\">\n";
+  if (!isset($_POST['showbyemail'])) { echo "    <span class=\"blue\">Found <strong>$rows records</strong><br><small>(showing results $from_record to $to_record)</small></span>\n"; }
+  else { echo "    <i class=\"pe-times-circle-o\"></i> <a href=\"$base\"><span class=\"grey\"><strong>Remove this filter</strong></a><br><small>(back to show all)</small></span>\n"; }
   echo "  </div>\n";
-  echo "  <div class=\"col-sm-6\" style=\"text-align:right\"><form method=\"post\" class=\"form-inline\" action=\"$me\">\n";
+  echo "  <div class=\"col-sm-4\">\n";
+  echo "    <form action=\"$base\" method=\"post\">\n";
+  echo "      <div class=\"form-group has-feedback\">\n";
+  echo "        <input type=\"text\" id=\"RDsearchbox\" name=\"showbyemail\" class=\"form-control input-sm\"><i class=\"pe-search form-control-feedback\" aria-hidden=\"true\"></i>\n";
+  echo "      </div>\n";
+  // echo "      <div class=\"small grey\" id=\"hitenter\"></div><input type=\"hidden\" id=\"value-holder\">\n";
+  echo "    </form>\n";
+  echo "  </div>\n";
+  echo "  <div class=\"col-sm-4\" style=\"text-align:right\"><form method=\"post\" class=\"form-inline\" action=\"$me\">\n";
   echo "    <small >Select display size:</small>\n";
-  echo "    <select class=\"form-control input-sm\" name=\"size\" onchange=\"this.form.submit()\">\n";
+  if (!isset($_POST['showbyemail'])) { echo "    <select class=\"form-control input-sm\" name=\"size\" onchange=\"this.form.submit()\">\n"; }
+  else { echo "    <select class=\"form-control input-sm\" name=\"size\" onchange=\"this.form.submit()\" disabled>\n"; }
   if ($limit == "50") { echo "      <option selected>50</option>\n"; } else { echo "      <option>50</option>\n"; }
   if ($limit == "100") { echo "      <option selected>100</option>\n"; } else { echo "      <option>100</option>\n"; }
   if ($limit == "300") { echo "      <option selected>300</option>\n"; } else { echo "      <option>300</option>\n"; }
@@ -307,10 +351,10 @@ if ($total == 0) {
           <th width="5%">No</th>
           <th width="25%">Respondents</th>
           <th width="13%" style="text-align:right">Uploaded</th>
-          <th width="13%" style="text-align:right">Invite sent?</th>
-          <th width="13%" style="text-align:right">Invite resent?</th>
-          <th width="13%" style="text-align:right">Participated?</th>
-          <th width="13%" style="text-align:right">Completed?</th>
+          <th width="13%" style="text-align:right">Invite sent</th>
+          <th width="13%" style="text-align:right">Reminder sent</th>
+          <th width="13%" style="text-align:right">Participated</th>
+          <th width="13%" style="text-align:right">Completed</th>
         </tr>
       </thead>
       <tbody>
@@ -361,149 +405,57 @@ if ($total == 0) {
   </div>
 </div>
 
+<div class="modal fade" id="manuallyadd" tabindex="-1" role="dialog" aria-labelledby="manuallyadd">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form class="" action="<?php echo $base; ?>" method="post">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Manually add new respondents</h4>
+        </div>
+        <div class="modal-body">
+          <p>Project owners also can add new respondents by manually inserting their email(s) using the provided boxes below. You can insert up to 5 emails at once.</p>
+          <div class="input-group"><span class="input-group-addon"><i class="pe-envelope pe-fw"></i> New email (#1):</span><input type="text" class="form-control" placeholder="Please insert only valid email" name="addemail[]"></div><br>
+          <div class="input-group"><span class="input-group-addon"><i class="pe-envelope pe-fw"></i> New email (#2):</span><input type="text" class="form-control" placeholder="Please insert only valid email" name="addemail[]"></div><br>
+          <div class="input-group"><span class="input-group-addon"><i class="pe-envelope pe-fw"></i> New email (#3):</span><input type="text" class="form-control" placeholder="Please insert only valid email" name="addemail[]"></div><br>
+          <div class="input-group"><span class="input-group-addon"><i class="pe-envelope pe-fw"></i> New email (#4):</span><input type="text" class="form-control" placeholder="Please insert only valid email" name="addemail[]"></div><br>
+          <div class="input-group"><span class="input-group-addon"><i class="pe-envelope pe-fw"></i> New email (#5):</span><input type="text" class="form-control" placeholder="Please insert only valid email" name="addemail[]"></div><br>
+        </div>
+        <div class="modal-footer">
+          <input type="hidden" name="surveyid" value="<?php echo $_GET['s']; ?>">
+          <button type="submit" class="btn btn-warning" name="adding" value="1">Add <i class="pe-check-circle-o"></i></button>
+          <button type="reset" class="btn btn-default" data-dismiss="modal">Cancel <i class="pe-times-circle-o"></i></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <br>
 
-<?php
-
-if ($total != 0) {
-  $me = "/admin/?w=respondents&s=".$_GET['s'];
-  echo "<nav class=\"pagination-centered\">\n";
-  echo "  <ul class=\"pagination\">\n";
-  if ($p > 1) { $previous = $p-1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$previous."\">&laquo;</a></li>\n"; }
-  else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&laquo;</a></li>\n"; }
-  for ($i=1; $i<=$total; $i++) {
-    if ($i == $p) { echo "    <li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
-    else { echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
-  }
-  if ($p != $total) { $next = $p+1; echo "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$next."\">&raquo;</a></li>\n"; }
-  else { echo "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&raquo;</a></li>\n"; }
-  echo "  </ul>\n";
-  echo "</nav>\n\n";
-}
-
-?>
-
-<style media="screen">
-  .pe-search { position: absolute; top: 0; right: 15px; z-index: 5; color: #aaaaaa; }
-  .easy-autocomplete { position: relative; z-index: 5}
-  .easy-autocomplete input { border-color: #ccc; border-radius: 4px; border-style: solid; border-width: 1px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset; color: #555; float: none; padding: 6px 12px; }
-  .easy-autocomplete input:hover, .easy-autocomplete input:focus { box-shadow: none; }
-  .easy-autocomplete a { display: block; }
-  .easy-autocomplete.eac-blue-light input:hover, .easy-autocomplete.eac-blue-light input:focus { border-color: #66afe9; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6); }
-  .easy-autocomplete.eac-blue-light ul { border-color: #66afe9; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6); }
-  .easy-autocomplete.eac-blue-light ul li, .easy-autocomplete.eac-blue-light ul .eac-category { border-color: #66afe9; }
-  .easy-autocomplete.eac-blue-light ul li.selected, .easy-autocomplete.eac-blue-light ul .eac-category.selected { background-color: #ecf5fc; }
-  .easy-autocomplete.eac-green-light input:hover, .easy-autocomplete.eac-green-light input:focus { border-color: #41DB00; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(146, 237, 107, 0.6); }
-  .easy-autocomplete.eac-green-light ul { border-color: #41DB00; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(146, 237, 107, 0.6); }
-  .easy-autocomplete.eac-green-light ul li, .easy-autocomplete.eac-green-light ul .eac-category { border-color: #41DB00; }
-  .easy-autocomplete.eac-green-light ul li.selected, .easy-autocomplete.eac-green-light ul .eac-category.selected { background-color: #9eff75; }
-  .easy-autocomplete.eac-red-light input:hover, .easy-autocomplete.eac-red-light input:focus { border-color: #ff5b5b; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(255, 90, 90, 0.6); }
-  .easy-autocomplete.eac-red-light ul { border-color: #ff5b5b; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(255, 90, 90, 0.6); }
-  .easy-autocomplete.eac-red-light ul li, .easy-autocomplete.eac-red-light ul .eac-category { border-color: #ff5b5b; }
-  .easy-autocomplete.eac-red-light ul li.selected, .easy-autocomplete.eac-red-light ul .eac-category.selected { background-color: #ff8e8e; }
-  .easy-autocomplete.eac-yellow-light input:hover, .easy-autocomplete.eac-yellow-light input:focus { border-color: #ffdb00; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(255, 231, 84, 0.6); }
-  .easy-autocomplete.eac-yellow-light ul { border-color: #ffdb00; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(255, 231, 84, 0.6); }
-  .easy-autocomplete.eac-yellow-light ul li, .easy-autocomplete.eac-yellow-light ul .eac-category { border-color: #ffdb00; }
-  .easy-autocomplete.eac-yellow-light ul li.selected, .easy-autocomplete.eac-yellow-light ul .eac-category.selected { background-color: #ffe233; }
-  .easy-autocomplete.eac-dark-light input:hover, .easy-autocomplete.eac-dark-light input:focus { border-color: #333; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(55, 55, 55, 0.6); }
-  .easy-autocomplete.eac-dark-light ul { border-color: #333; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(55, 55, 55, 0.6); }
-  .easy-autocomplete.eac-dark-light ul li, .easy-autocomplete.eac-dark-light ul .eac-category { border-color: #333; }
-  .easy-autocomplete.eac-dark-light ul li.selected, .easy-autocomplete.eac-dark-light ul .eac-category.selected { background-color: #4d4d4d; color: #fff; }
-  .easy-autocomplete.eac-dark { color: #fff; }
-  .easy-autocomplete.eac-dark input { background-color: #404040; border-radius: 4px; box-shadow: 0; color: #f6f6f6; }
-  .easy-autocomplete.eac-dark input:hover, .easy-autocomplete.eac-dark input:focus { border-color: #333; box-shadow: 0; }
-  .easy-autocomplete.eac-dark ul { border-color: #333; }
-  .easy-autocomplete.eac-dark ul li, .easy-autocomplete.eac-dark ul .eac-category { background-color: #404040; border-color: #333; }
-  .easy-autocomplete.eac-dark ul li.selected, .easy-autocomplete.eac-dark ul .eac-category.selected { background-color: #737373; color: #f6f6f6; }
-  .easy-autocomplete.eac-dark-glass { color: #fff; }
-  .easy-autocomplete.eac-dark-glass input { background-color: rgba(0, 0, 0, 0.8); border-radius: 4px; box-shadow: 0; color: #f6f6f6; }
-  .easy-autocomplete.eac-dark-glass input:hover, .easy-autocomplete.eac-dark-glass input:focus { border-color: rgba(0, 0, 0, 0.8); box-shadow: 0; }
-  .easy-autocomplete.eac-dark-glass ul { border-color: rgba(0, 0, 0, 0.8); }
-  .easy-autocomplete.eac-dark-glass ul li, .easy-autocomplete.eac-dark-glass ul .eac-category { background-color: rgba(0, 0, 0, 0.8); border-color: rgba(0, 0, 0, 0.8); }
-  .easy-autocomplete.eac-dark-glass ul li.selected, .easy-autocomplete.eac-dark-glass ul .eac-category.selected { background-color: rgba(64, 64, 64, 0.8); color: #f6f6f6; }
-  .easy-autocomplete.eac-dark-glass ul li:last-child, .easy-autocomplete.eac-dark-glass ul .eac-category:last-child { border-radius: 0 0 4px 4px; }
-  .easy-autocomplete.eac-blue { color: #fff; }
-  .easy-autocomplete.eac-blue input { background-color: #6d9ed1; border-radius: 4px; box-shadow: 0; color: #f6f6f6; }
-  .easy-autocomplete.eac-blue input::-webkit-input-placeholder { color: #f6f6f6; }
-  .easy-autocomplete.eac-blue input:-moz-placeholder { color: #f6f6f6; }
-  .easy-autocomplete.eac-blue input::-moz-placeholder { color: #f6f6f6; }
-  .easy-autocomplete.eac-blue input:-ms-input-placeholder { color: #f6f6f6; }
-  .easy-autocomplete.eac-blue input:hover, .easy-autocomplete.eac-blue input:focus { border-color: #5A91CB; box-shadow: 0; }
-  .easy-autocomplete.eac-blue ul { border-color: #5A91CB; }
-  .easy-autocomplete.eac-blue ul li, .easy-autocomplete.eac-blue ul .eac-category { background-color: #6d9ed1; border-color: #5A91CB; }
-  .easy-autocomplete.eac-blue ul li.selected, .easy-autocomplete.eac-blue ul .eac-category.selected { background-color: #94b8dd; color: #f6f6f6; }
-  .easy-autocomplete.eac-yellow { color: #333; }
-  .easy-autocomplete.eac-yellow input { background-color: #ffdb7e; border-color: #333; border-radius: 4px; box-shadow: 0; color: #333; }
-  .easy-autocomplete.eac-yellow input:hover, .easy-autocomplete.eac-yellow input:focus { border-color: #333; box-shadow: 0; }
-  .easy-autocomplete.eac-yellow ul { border-color: #333; }
-  .easy-autocomplete.eac-yellow ul li, .easy-autocomplete.eac-yellow ul .eac-category { background-color: #ffdb7e; border-color: #333; }
-  .easy-autocomplete.eac-yellow ul li.selected, .easy-autocomplete.eac-yellow ul .eac-category.selected { background-color: #ffe9b1; color: #333; }
-  .easy-autocomplete.eac-purple { color: #333; }
-  .easy-autocomplete.eac-purple input { background-color: #d6d1e7; border-color: #b8afd5; box-shadow: 0; color: #333; }
-  .easy-autocomplete.eac-purple input:hover, .easy-autocomplete.eac-purple input:focus { border-color: #333; box-shadow: 0; }
-  .easy-autocomplete.eac-purple ul { border-color: #333; }
-  .easy-autocomplete.eac-purple ul li, .easy-autocomplete.eac-purple ul .eac-category { background-color: #d6d1e7; border-color: #333; }
-  .easy-autocomplete.eac-purple ul li.selected, .easy-autocomplete.eac-purple ul .eac-category.selected { background-color: #ebe8f3; color: #333; }
-  .easy-autocomplete.eac-bootstrap input { border-color: #ccc; border-radius: 4px; border-style: solid; border-width: 1px; color: #555; padding: 6px 12px; }
-  .easy-autocomplete-container { left: 0; position: absolute; width: 100%; z-index: 2; }
-  .easy-autocomplete-container ul { background: none repeat scroll 0 0 #ffffff; border-top: 1px dotted #ccc; display: none; margin-top: 0; padding-bottom: 0; padding-left: 0; position: relative; top: -1px; }
-  .easy-autocomplete-container ul li, .easy-autocomplete-container ul .eac-category { background: inherit; border-color: #ccc; border-image: none; border-style: solid; border-width: 0 1px; display: block; font-size: 14px; font-weight: normal; padding: 4px 12px; }
-  .easy-autocomplete-container ul li:last-child { border-radius: 0 0 2px 2px; border-width: 0 1px 1px; }
-  .easy-autocomplete-container ul li.selected { background: none repeat scroll 0 0 #ebebeb; cursor: pointer; }
-  .easy-autocomplete-container ul li.selected div { font-weight: normal; }
-  .easy-autocomplete-container ul li div { display: block; font-weight: normal; word-break: break-all; }
-  .easy-autocomplete-container ul li b { font-weight: bold; }
-  .easy-autocomplete-container ul .eac-category { font-color: #aaa; font-style: italic; }
-  .eac-description .eac-item span { color: #aaa; font-style: italic; font-size: 0.9em; }
-  .eac-icon-left .eac-item img { margin-right: 4px; max-height: 30px; }
-  .eac-icon-right .eac-item { margin-top: 8px; min-height: 24px; position: relative; }
-  .eac-icon-right .eac-item img { margin-left: 4px; max-height: 30px; position: absolute; right: -4px; top: -8px; }
-</style>
-
+<?php if (($total != 0) && (!isset($_POST['showbyemail']))) { echo $pagination; } ?>
 
 <script type="text/javascript">
   var surveyid = <?php echo $_GET['s']; ?>;
   $('#confirm-delete').on('show.bs.modal', function(e) {
     $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
   });
-  var options = {
-    url: "http://www.siamsquare.org.uk/respondent/" + surveyid,
+  $("#RDsearchbox").easyAutocomplete({
+    <?php if (isJSON($dd)) { echo "data: $dd,\n"; } else { echo "url: \"http://www.siamsquare.org.uk/respondent/\" + surveyid,\n"; } ?>
     getValue: "email",
-    // template: {
-    //   type: "description",
-    //   fields: {
-    //     description: "created"
-    //   }
-    // },
     list: {
       maxNumberOfElements: 10,
-      // onLoadEvent: function() {
-      //   moment.locale('en');
-      //   var s1 = moment(created).fromNow();
-      //   var s2 = moment(created).format("D MMM YYYY");
-      //   created = s2 + ' (' + s1 + ')';
-      // },
-      match: {
-        enabled: true
+      match: { enabled: true },
+      showAnimation: { type: "fade", time: 400, callback: function() {} },
+      hideAnimation: { type: "slide",  time: 400, callback: function() {} },
+      onSelectItemEvent: function() {
+        var value = $("#RDsearchbox").getSelectedItemData().email;
+        $("#value-holder").val(value).trigger("change");
       },
-      showAnimation: {
-        type: "fade", //normal|slide|fade
-        time: 400,
-        callback: function() {}
-      },
-      hideAnimation: {
-        type: "slide", //normal|slide|fade
-        time: 400,
-        callback: function() {}
-      }
     },
     theme: "bootstrap",
     placeholder: "Search for an email in our database"
-  };
-  $("#countries").easyAutocomplete(options);
-</script>
-
-<script type="text/javascript">
+  });
   $(document).ready(function(){
     $('#all').click( function () {
       $('input[type="checkbox"]').prop('checked', this.checked)

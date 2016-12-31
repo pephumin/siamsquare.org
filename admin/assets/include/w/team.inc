@@ -37,7 +37,7 @@ $rolelist .= " ]";
       <div class="members-body">
         <h4 class="white" style="margin-bottom:5px !important">Create a new member</h4>
         <div class="white small" style="margin-bottom:1.2rem">(Using the below avatar as a default)</div>
-        <p><img src="/admin/assets/img/u/M6.svg" class="img-circle members-photo" alt="Avatar"></p>
+        <p><img src="/admin/assets/img/u/M10.svg" class="img-circle members-photo" alt="Avatar"></p>
         <div class="input-group"><span class="input-group-addon"><small>Name:</small></span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberName" onclick="this.select()" placeholder="Enter first and last name"></div><br>
         <div class="input-group"><span class="input-group-addon"><small>Email</small>:</span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberEmail" onclick="this.select()" placeholder="Enter email address"></div><br>
         <a class="btn btn-primary btn-tiny" data-bind="click: postNew, enable: newMemberName() != '', enable: newMemberEmail() != ''" href=""><i class="pe-user-plus"></i> Create</a>
@@ -135,7 +135,7 @@ $rolelist .= " ]";
   var email = "<?php echo $_SESSION['email']; ?>";
   var fullname = "<?php echo $_SESSION['fullname']; ?>";
   var mobile = "<?php echo $_SESSION['mobile']; ?>";
-  var avatar = "<?php echo $_SESSION['avatar']; ?>";
+  var avatar = "/admin/assets/img/u/<?php echo $_SESSION['avatar']; ?>.svg";
   var companyid = <?php echo $_SESSION['companyid']; ?>;
   var company = "<?php echo $_SESSION['company']; ?>";
   var status = <?php echo $_SESSION['status']; ?>;
@@ -521,7 +521,7 @@ $rolelist .= " ]";
       if (data.updated != null) { var sb1 = moment(data.updated).fromNow(); var sb2 = moment(data.updated).format("D MMM YYYY"); updated = sb2 + ' (' + sb1 + ')'; } else { updated = data.updated; }
       if (data.lastlogin != null) { var sc1 = moment(data.lastlogin).fromNow(); var sc2 = moment(data.lastlogin).format("D MMM YYYY"); lastlogin = sc2 + ' (' + sc1 + ')'; } else { lastlogin = "Never login"; }
       if (data.lastlogin2 != null) { var sd1 = moment(data.lastlogin2).fromNow(); var sd2 = moment(data.lastlogin2).format("D MMM YYYY"); lastlogin2 = sd2 + ' (' + sd1 + ')'; } else { lastlogin2 = "Never login"; }
-      if (data.avatar != null) { avatar = data.avatar; } else { avatar = "/admin/assets/img/u/M6.svg"; }
+      if (data.avatar != null) { avatar = "/admin/assets/img/u/" + data.avatar + ".svg"; } else { avatar = "/admin/assets/img/u/M10.svg"; }
       if (data.level == 9) { role = "Administrator"; } else if (data.level == 6) { role = "Manager"; } else if (data.level == 5) { role = "User"; } else if (data.level == 4) { role = "Guest"; }
       //issuspended = false; if (data.status = "0") { issuspended = true; } else { issuspended = false; }
       return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, avatar, companyid, data.status, role, data.level, created, updated, lastlogin, lastlogin2, data.counts, RoleListing);

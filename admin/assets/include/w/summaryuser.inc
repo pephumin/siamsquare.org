@@ -136,9 +136,9 @@ $colordata .= " ]";
 <p align="right"><a href="/admin/?w=surveys" class="small">More...</a></p>
 <hr>
 
-<style media="screen">
-  svg g:first-of-type path { stroke: #e6e6e6; }
-  svg g:first-of-type rect:not(:last-child) { fill: #ffffff; }
+<style>
+  svg g:first-of-type path { stroke: #E6E6E6; }
+  svg g:first-of-type rect:not(:last-child) { fill: #FFFFFF; }
 </style>
 
 <script type="text/javascript">
@@ -220,7 +220,7 @@ while ($r = $q3B->fetchObject()) {
   // echo "      <div class=\"panel-heading\" role=\"tab\" id=\"h$postid\"><i class=\"pe-wpforms pe-fw\"></i> <a class=\"collapsed\" data-toggle=\"collapse\" href=\"#c$postid\" aria-expanded=\"false\" aria-controls=\"c$postid\">$r->head</a></div>\n";
   echo "      <div class=\"panel-heading\" role=\"tab\" id=\"h$postid\"><i class=\"pe-wpforms pe-fw\"></i> $r->head</div>\n";
   echo "      <div class=\"announcement-info\"><i class=\"pe-user pe-fw\"></i> $r->fullname ($r->email) &middot; <i class=\"pe-calendar pe-fw\"></i> $t1 ($t2)</div>\n";
-  if ($r->avatar) { echo "        <p class=\"pull-right\" style=\"margin:10px\"><img src=\"".$r->avatar."\" class=\"img-circle members-photo-small\" alt=\"Avatar\"></p>\n"; }
+  if ($r->avatar) { echo "        <p class=\"pull-right\" style=\"margin:10px\"><img src=\"/admin/assets/img/u/".$r->avatar.".svg\" class=\"img-circle members-photo-small\" alt=\"Avatar\"></p>\n"; }
   // echo "      <div id=\"c$postid\" class=\"panel-collapse collapse\" role=\"tabpanel\" aria-labelledby=\"h$postid\">\n";
   echo "        <div class=\"panel-body small\">$body</div>\n";
   // echo "      </div>\n";

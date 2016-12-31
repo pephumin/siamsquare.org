@@ -5,17 +5,20 @@ $titleA = "Set up";
 $titleB = "Data-collection";
 $titleC = "Completed";
 $titleD = "Archived";
+$titleE = "Deleted";
 
 $details = "All surveys that are belonged to either youself or the company. All of them are categorised into 4 groups based on their life-stage starting from Set-up, Data-collection, Completed and Archived.";
 $detailsA = "Surveys in the Set-up section are still under the development of questionnaire which incudes questionnaire design, questionnaire translation, and pilot interview to ensure the right flow is in place.";
 $detailsB = "Surveys in the Data-collection section are currently on fieldwork. We do not allow any changes to be made to the questionnaire at this stage anymore in order to prevent a mismatch between designed question and collected data at the analysis stage.";
 $detailsC = "Surveys in the Completed section are ready for analysis as their fildwork period has ended. We provide online tools for the real-time result analysis with an option to download the data file for a more in-depth data manipulation.";
 $detailsD = "Surveys in the Archived section are inactive. These surveys can be moved to be active again should you need to. We suggest leaving them in this section rather than delete them from the system completely.";
+$detailsE = "Surveys that were deleted by users are kept here in this section. It is in fact a recovery function as there may be a situation where a user would like to undelete a mistaken-deleted-survey.";
 
 if ($_GET['c'] == "A") { $title = $titleA; $details = $detailsA; }
 else if ($_GET['c'] == "B") { $title = $titleB; $details = $detailsB; }
 else if ($_GET['c'] == "C") { $title = $titleC; $details = $detailsC; }
-else if ($_GET['c'] == "D") { $title = $titleD; $details = $detailsD; }
+else if ($_GET['d'] == "D") { $title = $titleD; $details = $detailsD; }
+else if ($_GET['e'] == "E") { $title = $titleE; $details = $detailsE; }
 else { $title = $title; $details = $details; }
 
 pageHeader($title);
@@ -46,6 +49,7 @@ $userlist .= " ]";
         <li data-bind="css: {active: showActive() == 'B'}"><a data-bind="click: loadB" href=""><i class="pe-hourglass-half pe-fw"></i> <?php echo $titleB; ?></a></li>
         <li data-bind="css: {active: showActive() == 'C'}"><a data-bind="click: loadC" href=""><i class="pe-hourglass-end pe-fw"></i> <?php echo $titleC; ?></a></li>
         <li data-bind="css: {active: showActive() == 'D'}"><a data-bind="click: loadD" href=""><i class="pe-archive pe-fw"></i> <?php echo $titleD; ?></a></li>
+        <li data-bind="css: {active: showActive() == 'E'}"><a data-bind="click: loadE" href=""><i class="pe-trash pe-fw"></i> <?php echo $titleE; ?></a></li>
       </ul>
     </nav>
   </div>
@@ -54,6 +58,7 @@ $userlist .= " ]";
     <p data-bind="visible: showActive() == 'B'" class="text-muted"><?php echo $detailsB; ?></p>
     <p data-bind="visible: showActive() == 'C'" class="text-muted"><?php echo $detailsC; ?></p>
     <p data-bind="visible: showActive() == 'D'" class="text-muted"><?php echo $detailsD; ?></p>
+    <p data-bind="visible: showActive() == 'E'" class="text-muted"><?php echo $detailsE; ?></p>
   </div>
   <?php if ($_SESSION['level'] >= "5") { ?>
   <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -88,12 +93,12 @@ $userlist .= " ]";
     <tr data-bind="css: { 'bg-blue': owner , 'bg-yellow': showInfo() }">
       <td>
         <a data-bind="click: $parent.showInfo" title="More Info..."><i data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a>&nbsp;
-        <span data-bind="text: title"></span> <span data-bind="if: owner" class="label label-danger">OWNER</span> <span data-bind="if: private" class="label label-success">PRIVATE</span>
+        <span data-bind="text: title"></span> <span class="pull-right"><i class="pe-folder-o" data-bind="visible: pp == 'Private'" title="It indicates this is a Private survey"></i><i class="pe-folder-open-o" data-bind="visible: pp == 'Public'" title="It indicates this is a Public survey"></i></span>
       </td>
 <?php if ($_SESSION['level'] == "9") { ?>
-      <td><strong data-bind="text: fullname"></strong> (<span data-bind="text: email"></span>) <span data-bind="text: company" class="pull-right"></span></td>
+      <td><span data-bind="text: fullname"></span> (<small data-bind="text: email"></small>) <span data-bind="text: company" class="pull-right"></span></td>
 <?php } else { ?>
-      <td><strong data-bind="text: fullname"></strong> (<span data-bind="text: email"></span>)</td>
+      <td><span data-bind="text: fullname"></span> (<small data-bind="text: email"></small>)</td>
 <?php } ?>
       <td align="right">
         <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=edit&amp;s=' + id }, visible: $parent.showActive() == 'A'">Questionnaire <i class="pe-edit"></i></a>
@@ -112,6 +117,9 @@ $userlist .= " ]";
         <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the previous step" data-bind="click: $parent.four2three, visible: $parent.showActive() == 'D'" href=""><i class="pe-arrow-circle-left pe-lg"></i></a><?php } ?>
         <a class="btn btn-warning btn-tiny" data-bind="click: $parent.restore, visible: $parent.showActive() == 'D'" href="">Restore <i class="pe-undo"></i></a>
         <a class="btn btn-danger btn-tiny" data-bind="click: $parent.delete, visible: $parent.showActive() == 'D'" href="">Delete <i class="pe-trash"></i></a>
+        <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the next step" data-bind="click: $parent.four2zero, visible: $parent.showActive() == 'D'" href=""><i class="pe-arrow-circle-right pe-lg"></i></a><?php } ?>
+        <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the previous step" data-bind="click: $parent.zero2four, visible: $parent.showActive() == 'E'" href=""><i class="pe-arrow-circle-left pe-lg"></i></a><?php } ?>
+        <a class="btn btn-danger btn-tiny" data-bind="click: $parent.undelete, visible: $parent.showActive() == 'E'" href="">Undelete <i class="pe-undo"></i></a>
       </td>
     </tr>
     <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-yellow': showInfo() }">
@@ -174,11 +182,6 @@ $userlist .= " ]";
     <!-- /ko -->
   </tbody>
 </table>
-
-<style media="screen">
-  .bg-blue { background-color: #D7EFFD; }
-  .bg-yellow { background-color: #FFF6CB; }
-</style>
 
 <script type="text/javascript">
 
@@ -267,6 +270,7 @@ $userlist .= " ]";
     this.loadB = function () { self.loadData("B"); }
     this.loadC = function () { self.loadData("C"); }
     this.loadD = function () { self.loadData("D"); }
+    this.loadE = function () { self.loadData("E"); }
     this.archive = function (survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/archive',
@@ -319,7 +323,7 @@ $userlist .= " ]";
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "status": -1 }',
+        data: '{ "status": 0 }',
         success: function (data) {
           $('#showalert-delete').show();
           window.setTimeout(function () { $("#showalert-delete").slideUp(500, function () { $("#showalert-delete").hide(); }); }, 3000);
@@ -330,6 +334,29 @@ $userlist .= " ]";
             type: 'post',
             contentType: 'application/json; charset=utf-8',
             data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted a survey named ' + survey.title() + ' (id=' + survey.id + ')", "critical": "5" }',
+            success: function(data) { result = data; }
+          });
+        },
+        error: function (error) { self.onFail(error); }
+      });
+    }
+    this.undelete = function (survey) {
+      $.ajax({
+        url: api + '/survey/' + survey.id + '/undelete',
+        dataType: 'json',
+        type: 'put',
+        contentType: 'application/json; charset=utf-8',
+        data: '{ "status": 4 }',
+        success: function (data) {
+          $('#showalert-restore').show();
+          window.setTimeout(function () { $("#showalert-restore").slideUp(500, function () { $("#showalert-restore").hide(); }); }, 3000);
+          self.removeSurvey(survey);
+          $.ajax({
+            url: api + '/log/' + userid + '/' + survey.id,
+            dataType: 'json',
+            type: 'post',
+            contentType: 'application/json; charset=utf-8',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' undeleted a survey named ' + survey.title() + ' (id=' + survey.id + ')", "critical": "5" }',
             success: function(data) { result = data; }
           });
         },
@@ -411,6 +438,21 @@ $userlist .= " ]";
         error: function (error) { self.onFail(error); }
       });
     }
+    this.four2zero = function (survey) {
+      $.ajax({
+        url: api + '/survey/' + survey.id + '/four2zero',
+        dataType: 'json',
+        type: 'put',
+        contentType: 'application/json; charset=utf-8',
+        data: '{ "status": 0 }',
+        success: function (data) {
+          $('#showalert-move').show();
+          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
+          self.removeSurvey(survey);
+        },
+        error: function (error) { self.onFail(error); }
+      });
+    }
     this.four2three = function (survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/four2three',
@@ -421,6 +463,21 @@ $userlist .= " ]";
         success: function (data) {
           $('#showalert-move').show();
           window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
+          self.removeSurvey(survey);
+        },
+        error: function (error) { self.onFail(error); }
+      });
+    }
+    this.zero2four = function (survey) {
+      $.ajax({
+        url: api + '/survey/' + survey.id + '/zero2four',
+        dataType: 'json',
+        type: 'put',
+        contentType: 'application/json; charset=utf-8',
+        data: '{ "status": 4 }',
+        success: function (data) {
+          $('#showalert-restore').show();
+          window.setTimeout(function () { $("#showalert-restore").slideUp(500, function () { $("#showalert-restore").hide(); }); }, 3000);
           self.removeSurvey(survey);
         },
         error: function (error) { self.onFail(error); }
@@ -614,6 +671,7 @@ $userlist .= " ]";
     else if ($_GET['c'] == "B") { echo "this.loadB();"; }
     else if ($_GET['c'] == "C") { echo "this.loadC();"; }
     else if ($_GET['c'] == "D") { echo "this.loadD();"; }
+    else if ($_GET['c'] == "E") { echo "this.loadE();"; }
     else { echo "this.loadA();"; }
     ?>
   }

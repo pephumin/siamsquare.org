@@ -40,7 +40,7 @@ echo "<hr>\n";
 <div class="csv">
   <h4>Table generated automatically from your data</h4>
   <p>The table below has been generated automatically from the data you pasted in the box above. It began with the conversion from your raw data to Comma Separate Value (CSV) format and then it converted the CSV format into this table as shown below.</p>
-  <p>However, for performance purpose, we limit this page to only visualise up to 50 records. Should you need to view it beyond such limit, you can either <a download="result.csv" href="" class="download"><i class="pe-download pe-fw"></i> download the converted data file</a> which includes all of your records or <a href="" class="raw"><i class="pe-desktop pe-fw"></i> view the converted data file online</a> before copy and paste all records to your preferred data processing program such as Microsoft Excel or SPSS.</p>
+  <p>However, for performance purpose, we limit this page to only visualise up to 50 records. Should you need to view it beyond such limit, you can either <a id="realtime"><i class="pe-download pe-fw"></i> download the converted data file</a> which includes all of your records or <a href="" class="raw"><i class="pe-desktop pe-fw"></i> view the converted data file online</a> before copy and paste all records to your preferred data processing program such as Microsoft Excel or SPSS.</p>
   <textarea class="editing form-control" readonly></textarea>
   <div class="table rendered"><table class="table"></table></div>
   <span class="tablenotice">You may need to scroll right if there are many columns <i class="pe-hand-o-right"></i></span>
@@ -106,7 +106,7 @@ echo "<hr>\n";
       tr.appendChild(th);
     }
     thead.appendChild(tr);
-    $(thead).find('th:first-child').css("background", "#555");
+    // $(thead).find('th:first-child').css("background", "#555");
     var tbody = document.createElement("tbody");
     for (var i=1; i<rows.length; i++) {
       tr = document.createElement("tr");
@@ -117,7 +117,7 @@ echo "<hr>\n";
         tr.appendChild(td);
       }
       tbody.appendChild(tr);
-      $(tbody).find('td:first-child').css("background", "#eee");
+      // $(tbody).find('td:first-child').css("background", "#eee");
     }
     table.appendChild(thead);
     table.appendChild(tbody);
@@ -132,9 +132,10 @@ echo "<hr>\n";
     renderCSV(outArray.slice(0, excerptRows));
     showCSV(true);
     $(".csv textarea").val(csv);
-    var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
-    // var uri =  window.location.href + "&d=true&data=data:text/csv;charset=utf-8," + encodeURIComponent(csv);
-    $(".csv a.download").attr("href", uri);
+    var uri = "data:application/csv;charset=utf-8," + encodeURIComponent(csv);
+    var link = document.getElementById("realtime");
+    link.setAttribute("href", uri);
+    link.setAttribute("download", "converted.csv");
   }
 
   $(function() {
