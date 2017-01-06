@@ -53,7 +53,8 @@ if ($st4) { $levellist .= "<strong>$st4 Guest(s)</strong> ($pst4) "; } else { $l
 // if ($st3) { $levellist .= "<strong>$st3 person(s)</strong> ($pst3) "; } else { $levellist .= ""; }
 
 $i = 0; $height = "70";
-$today['year'] = date("Y"); $today['month'] = date("m"); $today['day'] = date("d"); $today['month'] = $today['month']-1;
+$today['year'] = date("Y"); $today['month'] = date("m"); $today['day'] = date("d");
+if ($today['month'] == "01") { $today['month'] = "12"; $today['year'] = $today['year']-1; } else { $today['month'] = $today['month']-1; }
 $timelinedata = "[ \n"; $colordata = "[ "; $tabledata = ""; $AA = array();
 // Pull survey information for this company
 $q2 = $db->prepare("SELECT P.*, U.fullname, U.email, U.level FROM j_projects P, j_users U WHERE P.userid = U.id AND P.companyid = :companyid AND P.status >= 1 ORDER BY P.status ASC, P.created DESC");
@@ -67,10 +68,10 @@ foreach ($rows as $row) {
   $owner_email = $row['email'];
   // $owner_level = $row['level'];
   array_push($AA, $owner_fullname.':'.$owner_email.':'.$owner_level);
-  if ($row['created']) { $L0 = date_parse_from_format("Y-m-d H:i:s", $row['created']); $L0['month'] = $L0['month']-1; $created = ago($row['created']); }
-  if ($row['L1']) { $L1 = date_parse_from_format("Y-m-d H:i:s", $row['L1']); $L1['month'] = $L1['month']-1; $LL1 = ago($row['L1']); } else { $LL1 = "-"; }
-  if ($row['L2']) { $L2 = date_parse_from_format("Y-m-d H:i:s", $row['L2']); $L2['month'] = $L2['month']-1; $LL2 = ago($row['L2']); } else { $LL2 = "-"; }
-  if ($row['L3']) { $L3 = date_parse_from_format("Y-m-d H:i:s", $row['L3']); $L3['month'] = $L3['month']-1; $LL3 = ago($row['L3']); } else { $LL3 = "-"; }
+  if ($row['created']) { $L0 = date_parse_from_format("Y-m-d H:i:s", $row['created']); if ($L0['month'] == "01") { $L0['month'] = "12"; $L0['year'] = $L0['year']-1; } else { $L0['month'] = $L0['month']-1; } $created = ago($row['created']); }
+  if ($row['L1']) { $L1 = date_parse_from_format("Y-m-d H:i:s", $row['L1']); if ($L1['month'] == "01") { $L1['month'] = "12"; $L1['year'] = $L1['year']-1; } else { $L1['month'] = $L1['month']-1; } $LL1 = ago($row['L1']); } else { $LL1 = "-"; }
+  if ($row['L2']) { $L2 = date_parse_from_format("Y-m-d H:i:s", $row['L2']); if ($L2['month'] == "01") { $L2['month'] = "12"; $L2['year'] = $L2['year']-1; } else { $L2['month'] = $L2['month']-1; } $LL2 = ago($row['L2']); } else { $LL2 = "-"; }
+  if ($row['L3']) { $L3 = date_parse_from_format("Y-m-d H:i:s", $row['L3']); if ($L3['month'] == "01") { $L3['month'] = "12"; $L3['year'] = $L3['year']-1; } else { $L3['month'] = $L3['month']-1; } $LL3 = ago($row['L3']); } else { $LL3 = "-"; }
   if ($row['status'] == 1) {
     $ss = "  <i class=\"pe-hourglass-start pe-fw\"></i> Set-up";
     $since = ago($row['created']);
@@ -102,7 +103,8 @@ foreach ($rows as $row) {
     $timelinedata .= "[ 'Project ".$title."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
   }
   $updated = ago($row['updated']);
-  $t2 = date_parse_from_format("Y-m-d H:i:s", $row['updated']); $t2['month'] = $t2['month']-2;
+  $t2 = date_parse_from_format("Y-m-d H:i:s", $row['updated']);
+  if ($t2['month'] == "01") { $t2['month'] = "12"; $t2['year'] = $t2['year']-1; } else { $t2['month'] = $t2['month']-1; }
   if ($row['private'] == 1) { $private = "<span class=\"pull-right\"><i class=\"pe-folder-o\" title=\"It indicates this is a Private survey\"></i></span>"; } else { $private = "<span class=\"pull-right\"><i class=\"pe-folder-open-o\" title=\"It indicates this is a Public survey\"></i></span>"; }
   if ($owner_email == $_SESSION['email']) { $tabledata .= "    <tr bgcolor='#D7EFFD'>\n"; } else { $tabledata .= "    <tr>\n";}
   $tabledata .= "      <td>$title $private</td>\n";

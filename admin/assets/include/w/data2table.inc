@@ -1,18 +1,12 @@
 <?php
 
-function downloadcsv($results, $name = NULL) {
-  if (!$name) { $name = md5(uniqid() . microtime(TRUE) . mt_rand()). '.csv'; }
-  header('Content-Type: text/csv');
-  header('Content-Disposition: attachment; filename='. $name);
-  header('Pragma: no-cache');
-  header("Expires: 0");
-  $outstream = fopen("php://output", "w");
-  foreach($results as $result) { fputcsv($outstream, $result); }
-  fclose($outstream);
-}
-
 if ($_GET["d"] == "true") {
-  downloadcsv($_GET["data"], 'result.csv');
+  $name = "result.csv";
+  header("Content-Type: application/csv; charset=utf-8");
+  header("Content-Disposition: attachment; filename=$name");
+  $outstream = fopen("php://output", "w");
+  foreach($_GET["data"] as $result) { fputcsv($outstream, $result); }
+  fclose($outstream);
 }
 
 $title = "Convert data to table";
@@ -29,7 +23,7 @@ echo "<hr>\n";
   <h4>Paste your data into the box below</h4>
   <p>You can get a quick view of your data by pasting it into this box below. The program will automatically generate a nice table below which you can then use it for a quick view tool of your data.</p>
   <textarea class="editing form-control"></textarea>
-  <pre class="rendered"><code></code></pre>
+  <pre class="rendered"><code class="r"></code></pre>
   <div class="drop">DROP JSON HERE</div>
   <span class="tablenotice warning">Extremely large files may cause trouble as this conversion is done inside your browser</span>
   <span class="tablenotice error">There was an error parsing this JSON data. Please make sure it is a JSON format.</span>
@@ -42,7 +36,7 @@ echo "<hr>\n";
   <p>The table below has been generated automatically from the data you pasted in the box above. It began with the conversion from your raw data to Comma Separate Value (CSV) format and then it converted the CSV format into this table as shown below.</p>
   <p>However, for performance purpose, we limit this page to only visualise up to 50 records. Should you need to view it beyond such limit, you can either <a id="realtime"><i class="pe-download pe-fw"></i> download the converted data file</a> which includes all of your records or <a href="" class="raw"><i class="pe-desktop pe-fw"></i> view the converted data file online</a> before copy and paste all records to your preferred data processing program such as Microsoft Excel or SPSS.</p>
   <textarea class="editing form-control" readonly></textarea>
-  <div class="table rendered"><table class="table"></table></div>
+  <div class="table rendered"><table class="table table-condensed"></table></div>
   <span class="tablenotice">You may need to scroll right if there are many columns <i class="pe-hand-o-right"></i></span>
 </div>
 

@@ -15,7 +15,8 @@ if ($_GET['d']) {
     if ($_GET['c']) { $ex2 = "&c=".$_GET['c']; } else { $ex2 = ""; }
     if ($_GET['p']) { $ex1 = "&p=".$_GET['p']; } else { $ex1 = ""; }
     if ($_GET['size']) { $ex3 = "&p=".$_GET['size']; } else { $ex3 = ""; }
-    header("location: $base$ex1$ex2$ex3");
+    $redirect = $base.$ex1.$ex2.$ex3."&m=2";
+    header("location: $redirect");
   } else { echo mkerror("Your level is not high enough to delete this data from the system."); }
 }
 
@@ -111,7 +112,11 @@ pageHeader($title);
 echo "<h2>$title</h2>";
 echo "<p>This page shows the activities sorted by time where the most recent activity is on the top of the list. While the default is set to have each user only sees his/her own activity, users with a higher access permission will also see the activity of other members within the same group.</p>\n";
 echo "<p>Feel free to contact us if you find any problems using our site. Any other suggestions are also more than welcome.</p>\n";
-echo "<br>\n";
+// echo "<br>\n";
+
+if ($_GET['m'] == "2") { $message = mkwarn("The selected activity has been deleted."); echo "<p>$message</p>\n"; }
+else { echo "<p></p>\n"; }
+
 echo "<div class=\"row\">\n";
 // echo "  <div class=\"col-sm-6 form-group has-feedback\">\n";
 // echo "    <form action=\"$base\" method=\"post\">\n";
@@ -206,6 +211,10 @@ while ($r = $q1B->fetchObject()) {
 
   $('#confirm-delete').on('show.bs.modal', function(e) {
     $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+  });
+
+  $(document).on('keypress', function (e) {
+    if ($('#confirm-delete').is(':visible')) { if (e.which == 13) { window.location= $("#confirm-delete .btn-ok", this).attr("href"); } }
   });
 
   // $(document).ready(function() {

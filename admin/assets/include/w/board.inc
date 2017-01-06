@@ -21,6 +21,10 @@ if ($_POST['newpost'] == 1) {
   $q0B = $db->prepare("UPDATE j_board SET status = 0 WHERE id = :id");
   $q0B->bindValue(':id', base64_decode($_GET["d"]), PDO::PARAM_INT);
   $q0B->execute();
+  $q0C = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " deleted a post in " . $_SESSION["company"] . " board', '3')");
+  $q0C->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+  $q0C->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
+  $q0C->execute();
   $redirect = $me."&m=2";
   header("location: $redirect");
 }
@@ -87,7 +91,7 @@ else { echo "<p></p>\n"; }
               <select class="form-control input-sm" name="">
                 <option value="">-- select --</option>
                 <option value="">Global</option>
-                <option value="">This company</option>
+                <option value="" selected>This company</option>
               </select>
             </div>
 <?php } ?>
@@ -105,8 +109,7 @@ while ($row = $q1C->fetchObject()) {
   $t1 = shortdate($row->created); $t2 = ago($row->created);
   if ($_SESSION['email'] == $row->email) { echo "    <div class=\"panel panel-info\" style=\"border:2px solid navy\">\n"; }
   else { echo "    <div class=\"panel panel-info\">\n"; }
-  if ($_SESSION['level'] >= $row->level) { echo "    <a href=\"$me&amp;d=$postid\" class=\"pull-right red\" style=\"margin-top:10px;margin-right:10px\" title=\"Delete this post\"><i class=\"pe-trash\"></i></a>\n"; }
-  //echo "    <a href=\"$me&amp;d=$postid\" class=\"pull-right\" style=\"margin-top:10px;margin-right:5px\" title=\"Mark completed\"><i class=\"pe-check-square\"></i></a>\n";
+  if ($_SESSION['level'] >= $row->level) { echo "    <a href=\"\" data-href=\"$me&amp;d=$postid\" data-toggle=\"modal\" data-target=\"#confirm-delete\" class=\"pull-right red\" style=\"margin-top:10px;margin-right:10px\" title=\"Delete this post\"><i class=\"pe-trash\"></i></a>\n"; }
   echo "      <div class=\"panel-heading\"><i class=\"pe-wpforms pe-fw\"></i> $row->head</div>\n";
   echo "      <div class=\"announcement-info\"><i class=\"pe-user pe-fw\"></i> $row->fullname ($row->email) &middot; <i class=\"pe-calendar pe-fw\"></i> $t1 ($t2)</div>\n";
   if ($row->avatar) { echo "      <p class=\"pull-right\" style=\"margin:10px\"><img src=\"/admin/assets/img/u/".$row->avatar.".svg\" class=\"img-circle members-photo-small\" alt=\"Avatar\"></p>\n"; }
@@ -137,17 +140,19 @@ echo "    </nav>\n";
 <?php
 $q1B = $db->prepare("SELECT B.*, U.fullname, U.email, U.level FROM j_board B, j_users U WHERE B.status > 0 AND B.userid = U.id AND B.companyid = 0 ORDER BY B.created DESC");
 $q1B->execute();
+$i = 0;
 while ($row = $q1B->fetchObject()) {
   $postid = base64_encode($row->id);
   $body = nl2br($row->body);
   $t1 = shortdate($row->created); $t2 = ago($row->created);
   echo "      <div class=\"list-group-item small\">\n";
-  if ($_SESSION['level'] >= $row->level) { echo "      <a href=\"$me&amp;d=$postid\" class=\"pull-right red\" title=\"Delete this post\"><i class=\"pe-trash\"></i></a>\n"; }
-  echo "        <div role=\"tab\" id=\"h$postid\"><i class=\"pe-bullhorn pe-fw\"></i> <a class=\"collapsed\" data-toggle=\"collapse\" href=\"#c$postid\" aria-expanded=\"false\" aria-controls=\"c$postid\">$row->head</a></div>\n";
-  echo "        <div id=\"c$postid\" class=\"panel-collapse collapse\" role=\"tabpanel\" aria-labelledby=\"h$postid\">\n";
+  if ($_SESSION['level'] >= $row->level) { echo "        <a href=\"\" data-href=\"$me&amp;d=$postid\" data-toggle=\"modal\" data-target=\"#confirm-delete\" class=\"pull-right red\" title=\"Delete this post\"><i class=\"pe-trash\"></i></a>\n"; }
+  echo "        <i class=\"pe-bullhorn pe-fw\"></i> <a class=\"collapsed\" data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#c$postid\">$row->head</a>\n";
+  if ($i == 0) { echo "        <div id=\"c$postid\" class=\"global collapse in\">\n"; } else { echo "        <div id=\"c$postid\" class=\"global collapse\">\n"; }
   echo "          <br><p class=\"grey\"><small>$body</small></p>\n";
   echo "        </div>\n";
   echo "      </div>\n";
+  $i++;
 }
 ?>
     </div>
@@ -170,6 +175,23 @@ while ($row = $q1C->fetchObject()) {
 </div>
 
 <br>
+
+<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h4>Confirm delete?</h4>
+        <p>
+          Are you sure that you want to delete this post permanently?
+        </p>
+        <p>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <a href="" class="btn btn-danger btn-ok">Delete <i class="pe-trash-o"></i></a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script type="text/javascript">
 
@@ -194,9 +216,22 @@ while ($row = $q1C->fetchObject()) {
     this.cancelNew = function () { self.isNewPostCreating(false); }
     this.postNew = function () { self.cancelNew(); }
   }
-  jQuery(document).ready(function () {
-    ko.applyBindings(new ViewModel());
+  $(function () { ko.applyBindings(new ViewModel()); });
+
+  $('#confirm-delete').on('show.bs.modal', function(e) {
+    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
   });
+
+  $(document).on('keypress', function (e) {
+    if ($('#confirm-delete').is(':visible')) { if (e.which == 13) { window.location= $("#confirm-delete .btn-ok", this).attr("href"); } }
+  });
+
+  $('.global.collapse').on('show.bs.collapse', function (e) {
+    var all = $(document).find('.global.collapse');
+    var actives = $(document).find('.global.collapse.in');
+    all.each(function (index, element) { $(element).collapse('hide'); })
+    actives.each(function (index, element) { $(element).collapse('show'); })
+  })
 
 </script>
 

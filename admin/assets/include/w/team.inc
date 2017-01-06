@@ -67,8 +67,9 @@ $rolelist .= " ]";
 <?php if ($_SESSION['level'] >= "6") { ?>
         <p>
           <a class="btn btn-default btn-tiny" data-bind="click: $parent.showInfo"><i class="pe-cogs"></i> Edit <i class="" data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a>
-          <a class="btn btn-warning btn-tiny" data-bind="click: $parent.suspend" href=""><i class="pe-pause-circle"></i> Suspend</a>
+          <!-- <a class="btn btn-warning btn-tiny" data-bind="click: $parent.suspend" href=""><i class="pe-pause-circle"></i> Suspend</a> -->
           <a class="btn btn-danger btn-tiny" data-bind="click: $parent.delete" href=""><i class="pe-trash"></i> Delete</a>
+          <!-- <a class="btn btn-danger btn-tiny" href="" data-toggle="modal" data-target="#confirm-delete" title="Delete this user"><i class="pe-trash"></i> Delete</a> -->
         </p>
 <?php } ?>
       </div>
@@ -125,9 +126,27 @@ $rolelist .= " ]";
 <?php } ?>
     </div>
   </div>
+  <div data-bind="template: { name: 'confirm-delete-modal' }"></div>
   <!-- /ko -->
 </div>
 
+<script type="text/html" id="confirm-delete-modal">
+  <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <h4>Confirm delete?</h4>
+          <p>Are you sure that you want to delete this member permanently?</p>
+          <p>
+            <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-close">Cancel</button>
+            <!-- <button type="button" class="btn btn-danger">Delete <i class="pe-trash-o"></i></button> -->
+            <a href="" class="btn btn-danger btn-ok" data-bind="click: $parent.delete">Delete <i class="pe-trash-o"></i></a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
 
 <script type="text/javascript">
 
@@ -159,8 +178,8 @@ $rolelist .= " ]";
     this.list = ko.computed(function() { return this.role() + " (" + this.level() + ")"; }, this);
   }
   var Listing = function (id, userid, email, fullname, mobile, avatar, companyid, status, role, level, created, updated, lastlogin, lastlogin2, counts, RoleListing) {
-    this.id = id;
-    this.userid = userid;
+    this.id = ko.observable(id);
+    this.userid = ko.observable(userid);
     this.email = ko.observable(email);
     this.editingEmail = ko.observable(email);
     this.fullname = ko.observable(fullname);
@@ -190,9 +209,15 @@ $rolelist .= " ]";
     options = <?php echo $rolelist; ?>;
     this.rlist = ko.observableArray(options);
     this.selectedRole = ko.observable(level);
+    this.deleting = ko.observable("");
   }
   var ViewModel = function () {
     var self = this;
+    // this.showModal = function (member) {
+    //   this.deleting(member.id());
+    //   // console.log(member.id());
+    //   $('#confirm-delete').modal('show');
+    // };
     this.members = ko.observableArray([]);
     this.url = api;
     this.isNewMemberCreating = ko.observable(false);
@@ -214,11 +239,11 @@ $rolelist .= " ]";
     }
     this.suspend = function (member) {
       $.ajax({
-        url: api + '/member/' + member.id + '/suspend',
+        url: api + '/member/' + member.id() + '/suspend',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "status": "0" }',
+        data: '{ "status": "-1" }',
         success: function (data) {
           $('#showalert-suspend').show();
           window.setTimeout(function () { $("#showalert-suspend").slideUp(500, function () { $("#showalert-suspend").hide(); }); }, 3000);
@@ -231,17 +256,21 @@ $rolelist .= " ]";
             data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' suspended a member named ' + member.fullname() + ' (' + member.email() + ')", "critical": "5" }',
             success: function(data) { result = data; }
           });
+          // $('.modal-backdrop').hide();
+          // $('body').removeClass('modal-open');
+          // $('#confirm-delete').hide();
         },
         error: function (error) { self.onFail(error); }
       });
     }
     this.delete = function (member) {
+      // console.log(member);
       $.ajax({
-        url: api + '/member/' + member.id + '/delete',
+        url: api + '/member/' + member.id() + '/delete',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "status": "-1" }',
+        data: '{ "status": "-2" }',
         success: function (data) {
           $('#showalert-delete').show();
           window.setTimeout(function () { $("#showalert-delete").slideUp(500, function () { $("#showalert-delete").hide(); }); }, 3000);
@@ -254,106 +283,13 @@ $rolelist .= " ]";
             data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted a member named ' + member.fullname() + ' (' + member.email() + ')", "critical": "5" }',
             success: function(data) { result = data; }
           });
+          // $('.modal-backdrop').hide();
+          // $('body').removeClass('modal-open');
+          // $('#confirm-delete').hide();
         },
         error: function (error) { self.onFail(error); }
       });
     }
-    // this.L6 = function (member) {
-    //   $.ajax({
-    //     url: api + '/member/' + member.id + '/L6',
-    //     dataType: 'json',
-    //     type: 'put',
-    //     contentType: 'application/json; charset=utf-8',
-    //     data: '{ "level": "6" }',
-    //     success: function (data) {
-    //       $('#showalert-edit').show();
-    //       window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 3000);
-    //       // self.removeMember(member);
-    //       $.ajax({
-    //         url: api + '/log',
-    //         dataType: 'json',
-    //         type: 'post',
-    //         contentType: 'application/json; charset=utf-8',
-    //         data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be Manager", "critical": "4" }',
-    //         success: function(data) { result = data; }
-    //       });
-    //       window.location.reload();
-    //     },
-    //     error: function (error) { self.onFail(error); }
-    //   });
-    // }
-    // this.L5 = function (member) {
-    //   $.ajax({
-    //     url: api + '/member/' + member.id + '/L5',
-    //     dataType: 'json',
-    //     type: 'put',
-    //     contentType: 'application/json; charset=utf-8',
-    //     data: '{ "level": "5" }',
-    //     success: function (data) {
-    //       $('#showalert-edit').show();
-    //       window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 3000);
-    //       // self.removeMember(member);
-    //       $.ajax({
-    //         url: api + '/log',
-    //         dataType: 'json',
-    //         type: 'post',
-    //         contentType: 'application/json; charset=utf-8',
-    //         data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be User", "critical": "4" }',
-    //         success: function(data) { result = data; }
-    //       });
-    //       window.location.reload();
-    //     },
-    //     error: function (error) { self.onFail(error); }
-    //   });
-    // }
-    // this.L4 = function (member) {
-    //   $.ajax({
-    //     url: api + '/member/' + member.id + '/L4',
-    //     dataType: 'json',
-    //     type: 'put',
-    //     contentType: 'application/json; charset=utf-8',
-    //     data: '{ "level": "4" }',
-    //     success: function (data) {
-    //       $('#showalert-edit').show();
-    //       window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 3000);
-    //       // self.removeMember(member);
-    //       $.ajax({
-    //         url: api + '/log',
-    //         dataType: 'json',
-    //         type: 'post',
-    //         contentType: 'application/json; charset=utf-8',
-    //         data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be Data Processing", "critical": "4" }',
-    //         success: function(data) { result = data; }
-    //       });
-    //       window.location.reload();
-    //     },
-    //     error: function (error) { self.onFail(error); }
-    //   });
-    // }
-    // this.L3 = function (member) {
-    //   $.ajax({
-    //     url: api + '/member/' + member.id + '/L3',
-    //     dataType: 'json',
-    //     type: 'put',
-    //     contentType: 'application/json; charset=utf-8',
-    //     data: '{ "level": "3" }',
-    //     success: function (data) {
-    //       $('#showalert-edit').show();
-    //       window.setTimeout(function () { $("#showalert-edit").slideUp(500, function () { $("#showalert-edit").hide(); }); }, 3000);
-    //       // self.removeMember(member);
-    //       $.ajax({
-    //         url: api + '/log',
-    //         dataType: 'json',
-    //         type: 'post',
-    //         contentType: 'application/json; charset=utf-8',
-    //         data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed level for ' + member.fullname() + ' (' + member.email() + ') to be Fieldwork", "critical": "4" }',
-    //         success: function(data) { result = data; }
-    //       });
-    //       window.location.reload();
-    //     },
-    //     error: function (error) { self.onFail(error); }
-    //   });
-    // }
     this.changinglevel = function(member) {
       $.ajax({
         url: api + '/member/' + member.id + '/L3',
@@ -530,8 +466,14 @@ $rolelist .= " ]";
     this.showInfo = function (member) { member.showInfo(!member.showInfo()); }
     this.loadData();
   }
-  jQuery(document).ready(function () {
-    ko.applyBindings(new ViewModel());
+  jQuery(document).ready(function () { ko.applyBindings(new ViewModel()); });
+
+  // $('#confirm-delete').on('show.bs.modal', function(e) {
+  //   $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+  // });
+
+  $(document).on('keypress', function (e) {
+    if ($('#confirm-delete').is(':visible')) { if (e.which == 13) { window.location= $("#confirm-delete .btn-ok", this).attr("href"); } }
   });
 
 </script>

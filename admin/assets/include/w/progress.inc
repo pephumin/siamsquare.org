@@ -2,11 +2,8 @@
 
 $c_target = 300;
 
-$today['year'] = date("Y");
-$today['month'] = date("m");
-$today['day'] = date("d");
-$today['month'] = $today['month']-1;
-
+$today['year'] = date("Y"); $today['month'] = date("m"); $today['day'] = date("d");
+if ($today['month'] == "01") { $today['month'] = "12"; $today['year'] = $today['year']-1; } else { $today['month'] = $today['month']-1; }
 $timelinedata = "[ \n"; $colordata = "[ ";
 
 // Get projcet info
@@ -16,26 +13,10 @@ $q1->execute();
 while ($row = $q1->fetchObject()) {
   $project = $row->title;
   if ($row->userid == $_SESSION['userid']) { $owner = 1; } else { $owner = 0; }
-  if ($row->created) {
-    $L0 = date_parse_from_format("Y-m-d H:i:s", $row->created);
-    $L0['month'] = $L0['month']-1;
-    $created = ago($row->created);
-  }
-  if ($row->L1) {
-    $L1 = date_parse_from_format("Y-m-d H:i:s", $row->L1);
-    $L1['month'] = $L1['month']-1;
-    $LL1 = ago($row->L1); } else { $LL1 = "-";
-  }
-  if ($row->L2) {
-    $L2 = date_parse_from_format("Y-m-d H:i:s", $row->L2);
-    $L2['month'] = $L2['month']-1;
-    $LL2 = ago($row->L2); } else { $LL2 = "-";
-  }
-  if ($row->L3) {
-    $L3 = date_parse_from_format("Y-m-d H:i:s", $row->L3);
-    $L3['month'] = $L3['month']-1;
-    $LL3 = ago($row->L3); } else { $LL3 = "-";
-  }
+  if ($row->created) { $L0 = date_parse_from_format("Y-m-d H:i:s", $row->created); if ($L0['month'] == "01") { $L0['month'] = "12"; $L0['year'] = $L0['year']-1; } else { $L0['month'] = $L0['month']-1; } $created = ago($row->created); }
+  if ($row->L1) { $L1 = date_parse_from_format("Y-m-d H:i:s", $row->L1); if ($L1['month'] == "01") { $L1['month'] = "12"; $L1['year'] = $L1['year']-1; } else { $L1['month'] = $L1['month']-1; } $LL1 = ago($row->L1); } else { $LL1 = "-"; }
+  if ($row->L2) { $L2 = date_parse_from_format("Y-m-d H:i:s", $row->L2); if ($L2['month'] == "01") { $L2['month'] = "12"; $L2['year'] = $L2['year']-1; } else { $L2['month'] = $L2['month']-1; } $LL2 = ago($row->L2); } else { $LL2 = "-"; }
+  if ($row->L3) { $L3 = date_parse_from_format("Y-m-d H:i:s", $row->L3); if ($L3['month'] == "01") { $L3['month'] = "12"; $L3['year'] = $L3['year']-1; } else { $L3['month'] = $L3['month']-1; } $LL3 = ago($row->L3); } else { $LL3 = "-"; }
   if ($row->status == 1) {
     // $ss = "  <i class=\"pe-hourglass-start pe-fw\"></i> Set-up (since: ".ago($row['created']).")";
     // $status = "Set-up";
@@ -169,12 +150,14 @@ if ($c_responses_good > 0) {
     $first_id = $row[$first]['id'];
     $first_email = $row[$first]['email'];
     $first_ip = $row[$first]['ip'];
-    $t1 = date_parse_from_format("Y-m-d H:i:s", $row[$first]['submitted']); $t1['month'] = $t1['month']-1;
+    $t1 = date_parse_from_format("Y-m-d H:i:s", $row[$first]['submitted']);
+    if ($t1['month'] == "01") { $t1['month'] = "12"; $t1['year'] = $t1['year']-1; } else { $t1['month'] = $t1['month']-1; }
     $first_submitted = ago($row[$first]['submitted']);
     $last_id = $row[$last]['id'];
     $last_email = $row[$last]['email'];
     $last_ip = $row[$last]['ip'];
-    $t2 = date_parse_from_format("Y-m-d H:i:s", $row[$last]['submitted']); $t2['month'] = $t2['month']-1;
+    $t2 = date_parse_from_format("Y-m-d H:i:s", $row[$last]['submitted']);
+    if ($t2['month'] == "01") { $t2['month'] = "12"; $t2['year'] = $t2['year']-1; } else { $t2['month'] = $t2['month']-1; }
     $last_submitted = ago($row[$last]['submitted']);
   }
   $datafortable = json_encode($ee);

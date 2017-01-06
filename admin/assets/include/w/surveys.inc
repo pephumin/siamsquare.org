@@ -277,7 +277,7 @@ $userlist .= " ]";
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "status": 4 }',
+        data: '{ "status": 4, "L3": "' + TimeNow + '" }',
         success: function (data) {
           $('#showalert-archive').show();
           window.setTimeout(function () { $("#showalert-archive").slideUp(500, function () { $("#showalert-archive").hide(); }); }, 3000);
@@ -300,7 +300,7 @@ $userlist .= " ]";
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "status": 3 }',
+        data: '{ "status": 3, "L3": NULL }',
         success: function (data) {
           $('#showalert-restore').show();
           window.setTimeout(function () { $("#showalert-restore").slideUp(500, function () { $("#showalert-restore").hide(); }); }, 3000);
@@ -399,7 +399,7 @@ $userlist .= " ]";
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "status": 1 }',
+        data: '{ "status": 1, "L1": NULL }',
         success: function (data) {
           $('#showalert-move').show();
           window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
@@ -429,7 +429,7 @@ $userlist .= " ]";
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "status": 2 }',
+        data: '{ "status": 2, "L2": NULL }',
         success: function (data) {
           $('#showalert-move').show();
           window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
@@ -459,7 +459,7 @@ $userlist .= " ]";
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "status": 3 }',
+        data: '{ "status": 3, "L3": NULL }',
         success: function (data) {
           $('#showalert-move').show();
           window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);

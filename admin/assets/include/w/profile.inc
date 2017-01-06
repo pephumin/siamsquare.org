@@ -1,8 +1,9 @@
-<?php if ($_GET["m"] == "tips") { ?>
-
 <?php
-$title = "Choosing a strong password";
-pageHeader($title);
+
+if ($_GET["m"] == "tips") {
+
+  $title = "Choosing a strong password";
+  pageHeader($title);
 ?>
 
 <h2><i class="pe-lightbulb-o pe-fw pe-lg"></i> Tips for choosing a strong password</h2>
@@ -22,39 +23,39 @@ pageHeader($title);
 
 <a href="/admin/?w=profile" class="btn btn-danger btn-sm pull-right" style="margin-top:50px; margin-bottom: 20px"><i class="pe-chevron-circle-left pe-fw"></i> Back to my profile page</a>
 
-<?php } else { ?>
-
 <?php
-$sql = "SELECT id, title, created FROM j_projects WHERE userid = :userid AND companyid = :companyid AND status >= 0 ORDER BY id DESC";
-$q = $db->prepare($sql);
-$q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
-$q->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
-$q->execute();
-$counts = $q->rowCount();
-$output = "              <select id=\"projectlist\" multiple class=\"form-control\" readonly>\n";
-while ($row = $q->fetchObject()) {
-  $id = $row->id;
-  $title = $row->title;
-  $created = ago($row->created);
-  $output .= "                <option>Project $title</option>\n";
-}
-$output .= "              </select>\n";
+} else {
 
-if ($_SESSION["lastlogin2"]) { $lastlogin = ago($_SESSION["lastlogin2"]); } else { $lastlogin = "Never"; }
-$registersince = ago($_SESSION["created"]);
+  $sql = "SELECT id, title, created FROM j_projects WHERE userid = :userid AND companyid = :companyid AND status >= 0 ORDER BY id DESC";
+  $q = $db->prepare($sql);
+  $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+  $q->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+  $q->execute();
+  $counts = $q->rowCount();
+  $output = "              <select id=\"projectlist\" multiple class=\"form-control\" readonly>\n";
+  while ($row = $q->fetchObject()) {
+    $id = $row->id;
+    $title = $row->title;
+    $created = ago($row->created);
+    $output .= "                <option>Project $title</option>\n";
+  }
+  $output .= "              </select>\n";
 
-$title = "My profile";
-pageHeader($title);
-echo "<h2>$title</h2>\n";
-echo "<p>This is a user-dashboard where all users including yourself can manage your own information here which includes editing and updating your profile and more importantly keeping your account secure by changing your password whenever you need to.</p>\n";
-echo "<br>\n";
+  if ($_SESSION["lastlogin2"]) { $lastlogin = ago($_SESSION["lastlogin2"]); } else { $lastlogin = "Never"; }
+  $registersince = ago($_SESSION["created"]);
 
-if (isset($login)) {
-  if ($login->errors) { foreach ($login->errors as $error) { echo $error; } }
-  if ($login->messages) { foreach ($login->messages as $message) { echo $message; } }
-}
+  $title = "My profile";
+  pageHeader($title);
+  echo "<h2>$title</h2>\n";
+  echo "<p>This is a user-dashboard where all users including yourself can manage your own information here which includes editing and updating your profile and more importantly keeping your account secure by changing your password whenever you need to.</p>\n";
+  echo "<br>\n";
 
-echo "<br>\n";
+  if (isset($login)) {
+    if ($login->errors) { foreach ($login->errors as $error) { echo $error; } }
+    if ($login->messages) { foreach ($login->messages as $message) { echo $message; } }
+  }
+
+  echo "<br>\n";
 ?>
 
 <div class="row">
@@ -69,7 +70,7 @@ echo "<br>\n";
     <br>
     <div class="tab-content">
       <div id="one" class="tab-pane in active fade">
-        <p class="pull-right"><img src="<?php if ($_SESSION["avatar"]) { echo $_SESSION["avatar"]; } else { echo "assets/img/u/M10.svg"; } ?>" id="avatar1" class="img-circle members-photo" alt="Avatar"></p>
+        <p class="pull-right"><img src="assets/img/u/<?php if ($_SESSION["avatar"]) { echo $_SESSION["avatar"]; } else { echo "M10"; } ?>.svg" id="avatar1" class="img-circle members-photo" alt="Avatar"></p>
         <h4>Welcome to your profile page</h4>
         <p>Below shows the summary of your profile in a <em>read-only</em> mode.</p>
         <br>
@@ -82,7 +83,6 @@ echo "<br>\n";
                 <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
                 <input type="email" name="email" class="form-control" value="<?php echo $_SESSION["email"]; ?>" onclick="this.select()" readonly>
               </div>
-              <input type="hidden" name="email" value="phumin@sawasdee.org">
             </td>
           </tr>
           <tr>
@@ -125,7 +125,7 @@ echo "<br>\n";
         </table>
       </div>
       <div id="two" class="tab-pane fade">
-        <p class="pull-right"><img src="<?php if ($_SESSION["avatar"]) { echo $_SESSION["avatar"]; } else { echo "assets/img/u/M10.svg"; } ?>" id="avatar2" class="img-circle members-photo" alt="Avatar"></p>
+        <p class="pull-right"><img src="assets/img/u/<?php if ($_SESSION["avatar"]) { echo $_SESSION["avatar"]; } else { echo "M10"; } ?>.svg" id="avatar2" class="img-circle members-photo" alt="Avatar"></p>
         <h4>Update your profile</h4>
         <p>You can easily update your profile from the text boxes below.</p>
         <br>
@@ -160,17 +160,14 @@ echo "<br>\n";
                   <select id="select-avatar" name="avatar" class="form-control">
                     <option value="">-- select --</option>
 <?php
-$pictures = array("Male #1" => "assets/img/u/M1.svg", "Male #2" => "assets/img/u/M2.svg", "Male #3" => "assets/img/u/M3.svg",
-                  "Male #4" => "assets/img/u/M4.svg", "Male #5" => "assets/img/u/M5.svg", "Male #6" => "assets/img/u/M6.svg",
-                  "Male #7" => "assets/img/u/M7.svg", "Male #8" => "assets/img/u/M8.svg", "Male #9" => "assets/img/u/M9.svg",
-                  "Male #10" => "assets/img/u/M10.svg", "Female #1" => "assets/img/u/F1.svg", "Female #2" => "assets/img/u/F2.svg",
-                  "Female #3" => "assets/img/u/F3.svg", "Female #4" => "assets/img/u/F4.svg", "Female #5" => "assets/img/u/F5.svg",
-                  "Female #6" => "assets/img/u/F6.svg", "Female #7" => "assets/img/u/F7.svg", "Female #8" => "assets/img/u/F8.svg",
-                  "Female #9" => "assets/img/u/F9.svg", "Female #10" => "assets/img/u/F10.svg");
-foreach($pictures as $a => $b) {
-  if ($b == $_SESSION["avatar"]) { echo "                    <option value=\"$b\" selected>$a</option>\n"; }
-  else { echo "                    <option value=\"$b\">$a</option>\n"; }
-}
+  $pictures = array("Male #1" => "M1", "Male #2" => "M2", "Male #3" => "M3", "Male #4" => "M4", "Male #5" => "M5",
+                    "Male #6" => "M6", "Male #7" => "M7", "Male #8" => "M8", "Male #9" => "M9", "Male #10" => "M10",
+                    "Female #1" => "F1", "Female #2" => "F2", "Female #3" => "F3", "Female #4" => "F4", "Female #5" => "F5",
+                    "Female #6" => "F6", "Female #7" => "F7", "Female #8" => "F8", "Female #9" => "F9", "Female #10" => "F10");
+  foreach($pictures as $a => $b) {
+    if ($b == $_SESSION["avatar"]) { echo "                    <option value=\"$b\" selected>$a</option>\n"; }
+    else { echo "                    <option value=\"$b\">$a</option>\n"; }
+  }
 ?>
                   </select>
                 </div>
@@ -301,8 +298,8 @@ foreach($pictures as $a => $b) {
 <script type="text/javascript">
   $(document).ready(function() {
     $("#select-avatar").change(function() {
-      $("#avatar1").attr("src",$(this).val());
-      $("#avatar2").attr("src",$(this).val());
+      $("#avatar1").attr("src", "assets/img/u/" + $(this).val() + ".svg");
+      $("#avatar2").attr("src", "assets/img/u/" + $(this).val() + ".svg");
     });
   });
   $(function () {

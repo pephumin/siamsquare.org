@@ -22,7 +22,7 @@ class Login {
     session_start();
     if ($_GET["w"] == "logout") { $this->doLogout(); }
     elseif (!empty($_SESSION['email']) && ($_SESSION['logged_in'] == 1)) { $this->loginWithSessionData(); }
-    elseif (isset($_COOKIE['siamsquare'])) { $this->newloginWithCookieData(); }
+    elseif (isset($_COOKIE['siamsquare'])) { $this->loginWithCookieData(); }
     elseif (isset($_POST["login"])) {
       if (!isset($_POST['rememberme'])) { $_POST['rememberme'] = null; }
       $this->loginWithPostData($_POST['email'], $_POST['password'], $_POST['rememberme'], $ref);
@@ -75,12 +75,14 @@ class Login {
         $q4->execute();
       }
     }
-    if (!isset($result_row->id)) { $this->errors[] = mkerror("This user does not exist in our system. New client please <a href='/admin/request/' class='alert-link'>click here</a> to request for an access."); }
+    if (!isset($result_row->id)) { $this->errors[] = mkerror("This account does not exist in our system. If you are one of our clients, please <a href='/admin/request/' class='alert-link'>click here</a> to request for a free access."); }
     else if ($result_row->status == 0) {
       $since = date("j F Y h:i:s A", $result_row->fails_last);
       $logip = $result_row->fails_ip; //echo $logip;
       $this->errors[] = mkerror("This user account has been locked due to too many attempts with incorrect password (detected on $since from $logip). In order to unlock and reactivate your account, please use the <a href=$url class='alert-link'>Password recovery tool</a>.");
     }
+    else if ($result_row->status == "-1") { $this->errors[] = mkerror("This account has been suspended, please contact your Manager for more information."); }
+    else if ($result_row->status == "-2") { $this->errors[] = mkerror("This account has been deleted, please contact your Manager for more information."); }
     else if (!password_verify($password, $result_row->password)) {
       $sth = $this->db->prepare('UPDATE j_users SET fails = fails+1, fails_last = :fails_last, fails_ip = :fails_ip WHERE email = :email');
       $sth->execute(array(':email' => $email, ':fails_last' => time(), ':fails_ip' => $ip));
@@ -133,18 +135,22 @@ class Login {
     }
   }
 
-  private function newloginWithCookieData() {
+  private function loginWithCookieData() {
     $ip = getip();
     if (isset($_COOKIE['siamsquare'])) {
       list ($userid, $token, $hash) = explode(':', $_COOKIE['siamsquare']);
-      if ($hash == hash('sha256', $userid . ':' . $token . COOKIE_SECRET_KEY) && !empty($token)) {
+      if ($hash == hash('sha256', $userid . ':' . $token . COOKIE_KEY) && !empty($token)) {
         if ($this->dbconnect()) {
-          $q0 = $this->db->prepare("SELECT U.email, U.companyid, C.company, U.status, U.level FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.id = :userid AND U.token = :token AND U.token IS NOT NULL");
+          $q0 = $this->db->prepare("SELECT U.id, U.email, U.companyid, C.company, U.status, U.level FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.id = :userid AND U.token = :token AND U.token IS NOT NULL");
           $q0->bindValue(':userid', $userid, PDO::PARAM_INT);
           $q0->bindValue(':token', $token, PDO::PARAM_STR);
           $q0->execute();
           $result = $q0->fetchObject();
-          if (isset($result->email)) {
+          if (!isset($result->id)) { $this->errors[] = mkerror("This account does not exist in our system. If you are one of our clients, please <a href='/admin/request/' class='alert-link'>click here</a> to request for a free access."); }
+          else if ($result->status == 0) { $this->errors[] = mkerror("This user account has been locked due to too many attempts with incorrect password (detected on $since from $logip). In order to unlock and reactivate your account, please use the <a href=$url class='alert-link'>Password recovery tool</a>."); }
+          else if ($result->status == "-1") { $this->errors[] = mkerror("This account has been suspended, please contact your Manager for more information."); }
+          else if ($result->status == "-2") { $this->errors[] = mkerror("This account has been deleted, please contact your Manager for more information."); }
+          else if (isset($result->email)) {
             $_SESSION['logged_in'] = 1;                  $this->logged_in = true;
             $_SESSION['email'] = $result->email;         $this->email = $result->email;
             $_SESSION['companyid'] = $result->companyid; $this->companyid = $result->companyid;
@@ -236,7 +242,7 @@ class Login {
       $sth = $this->db->prepare("UPDATE j_users SET token = :token WHERE id = :userid");
       $sth->execute(array(':token' => $random_token_string, ':userid' => $_SESSION['userid']));
       $cookie_string_first_part = $_SESSION['userid'] . ':' . $random_token_string;
-      $cookie_string_hash = hash('sha256', $cookie_string_first_part . COOKIE_SECRET_KEY);
+      $cookie_string_hash = hash('sha256', $cookie_string_first_part . COOKIE_KEY);
       $cookie_string = $cookie_string_first_part . ':' . $cookie_string_hash;
       setcookie('siamsquare', $cookie_string, time() + COOKIE_RUNTIME, "/", COOKIE_DOMAIN);
     }

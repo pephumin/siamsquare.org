@@ -112,33 +112,28 @@ function pageHeader($title) {
             <ul class="nav navbar-nav navbar-right">
 <?php if ($_SESSION['logged_in'] == 1) { ?>
               <li><a href="<?php echo(ADMIN); ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> Home</a></i>
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-cubes pe-fw"></i> My surveys <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li><a href="<?php echo(ADMIN."?w=surveys"); ?>" title="All projects"><i class="pe-cubes pe-fw"></i> Manage projects</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li class="dropdown-header">Summary</li>
-                  <li><a href="<?php echo(ADMIN."?w=summaryuser"); ?>" title="The company"><i class="pe-users pe-fw"></i> Your projects</a></li>
-                  <li><a href="<?php echo(ADMIN."?w=summarycompany"); ?>" title="The company"><i class="pe-building pe-fw"></i> Company's projects</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li><a href="<?php echo(ADMIN."?w=board"); ?>" title="Message board"><i class="pe-wpforms pe-fw"></i> Message board</a></li>
-                  <li><a href="<?php echo(ADMIN."?w=activity"); ?>" title="Activity"><i class="pe-map-o pe-fw"></i> Activity</a></li>
-                  <li><a href="<?php echo(ADMIN."?w=data2table"); ?>" title="Data to table"><i class="pe-table pe-fw"></i> Data to table</a></li>
-                </ul>
-              </li>
+              <li><a href="<?php echo(ADMIN."?w=surveys"); ?>" title="Research projects"><i class="pe-cubes pe-fw"></i> Projects</a></i>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-cogs pe-fw"></i> Setting <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="<?php echo(ADMIN."?w=profile"); ?>" title="My profile"><i class="pe-user pe-fw"></i> My profile</a></li>
+                  <li><a href="<?php echo(ADMIN."?w=profile"); ?>" title="Profile"><i class="pe-user pe-fw"></i> Profile</a></li>
                   <li><a href="<?php echo(ADMIN."?w=team"); ?>" title="Team"><i class="pe-graduation-cap pe-fw"></i> Team</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-wrench pe-fw"></i> Tools <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="<?php echo(ADMIN."?w=board"); ?>" title="Message board"><i class="pe-wpforms pe-fw"></i> Message board</a></li>
+                  <li><a href="<?php echo(ADMIN."?w=activity"); ?>" title="Activity"><i class="pe-map-o pe-fw"></i> Activity</a></li>
+                  <li><a href="<?php echo(ADMIN."?w=data2table"); ?>" title="Data to table"><i class="pe-table pe-fw"></i> Data to table</a></li>
                   <li role="separator" class="divider"></li>
                   <li><a href="<?php echo(ADMIN."contact/"); ?>" title="Contact us"><i class="pe-envelope-o pe-fw"></i> Contact us</a></li>
-<?php if ($_SESSION['level'] == "9") { ?>
-                  <li role="separator" class="divider"></li>
-                  <li><a href="<?php echo(ADMIN."?w=help"); ?>" title="Help"><i class="pe-question-circle pe-fw"></i> Help</a></li>
-                  <li><a href="<?php echo(ADMIN."?w=api"); ?>" title="API commands"><i class="pe-code pe-fw"></i> API commands</a></li>
-                  <li><a href="<?php echo(ADMIN."?w=todo"); ?>" title="Todo list"><i class="pe-tasks pe-fw"></i> Todo list</a></li>
-<?php } ?>
+<?php //if ($_SESSION['level'] == "9") { ?>
+                  <!-- <li role="separator" class="divider"></li> -->
+                  <!-- <li><a href="<?php echo(ADMIN."?w=help"); ?>" title="Help"><i class="pe-question-circle pe-fw"></i> Help</a></li> -->
+                  <!-- <li><a href="<?php echo(ADMIN."?w=api"); ?>" title="API commands"><i class="pe-code pe-fw"></i> API commands</a></li> -->
+                  <!-- <li><a href="<?php echo(ADMIN."?w=todo"); ?>" title="Todo list"><i class="pe-tasks pe-fw"></i> Todo list</a></li> -->
+<?php //} ?>
                 </ul>
               </li>
 <?php } else { ?>
@@ -189,7 +184,7 @@ function pageFooter($notes = null) {
 <div class="scroll-to-top"><i class="pe-arrow-up pe-lg white"></i></div>
 <script type="text/javascript" src="/admin/assets/js/etc.js"></script>
 <?php if ($notes) { notify($notes); } ?>
-<?php debugOutput(); ?>
+<?php //debugOutput(); ?>
 </body>
 </html>
 <?php

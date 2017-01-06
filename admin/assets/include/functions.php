@@ -196,6 +196,7 @@ function iconize($data) {
   else if (preg_match("/edited email invitation template/i", $data)) { $insert = "<i class=\"pe-wpforms pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/edited email reminder template/i", $data)) { $insert = "<i class=\"pe-wpforms pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/deleted an interim result/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/deleted a post in/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
   else { $insert = ""; }
   if ($insert) { $data = $insert." ".$data; } else { $data = $data; }
   return $data;
