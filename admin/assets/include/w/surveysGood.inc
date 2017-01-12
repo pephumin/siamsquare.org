@@ -66,7 +66,7 @@ $userlist .= " ]";
 <div class="rows">
   <?php if ($_SESSION['level'] >= "5") { ?>
   <div class="col-sm-12" style="text-align:right">
-    <p class="pull-right"><a href="" class="btn btn-success" data-bind="click: createNew, visible: showActive() == 'A', enable: !isNewSurveyCreating()"><i class="pe-cube pe-fw"></i> New project</a></p>
+    <p class="pull-right"><a class="btn btn-success" data-bind="click: createNew, visible: showActive() == 'A', enable: !isNewSurveyCreating()" href=""><i class="pe-cube pe-fw"></i> New project</a></p>
   </div>
   <?php } ?>
   <div class="col-sm-12">
@@ -75,120 +75,118 @@ $userlist .= " ]";
 </div>
 
 
-<div class="row">
-<?php if ($_SESSION['level'] >= "5") { ?>
-  <div data-bind="visible: isNewSurveyCreating() && showActive() == 'A'" class="col-xs-12 col-sm-6 col-md-6 col-lg-6" style="margin-bottom:20px">
-    <div class="projects">
-      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projects-header-new">
-        <div class="adminmovewrap"><i class="pe-cube pe-lg"></i></div>
-        <h4>Create a new project</h4>
-      </div>
-      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projects-subhead-new">
-        Enter a new project name and system will create it with default options
-      </div>
-      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projects-body-new">
-        <br>
-        <div class="input-group"><span class="input-group-addon"><small>Name:</small></span><input type="text" class="form-control input-sm" data-bind="textInput: newSurveyName" onclick="this.select()" placeholder="Enter the new project name"></div>
-        <br>
-        <div class="text-center">
-          <a class="btn btn-success btn-tiny" data-bind="click: postNew, enable: newSurveyName() != ''" href=""><i class="pe-plus"></i> Create <i class="pe-check-circle-o"></i></a>
-          <a class="btn btn-default btn-tiny" data-bind="click: cancelNew" href="">Cancel <i class="pe-times-circle-o"></i></a>
-        </div>
-      </div>
-    </div>
-  </div>
+<table class="table table-hover small">
+  <thead>
+    <tr class="bg-success">
+      <th width="23%"><i class="pe-cube pe-fw"></i> Project</th>
+      <th width="50%"><i class="pe-building pe-fw"></i> Owner (email)</th>
+      <th width="27%"></th>
+    </tr>
+  </thead>
+  <tbody>
+  <?php if ($_SESSION['level'] >= "5") { ?>
+    <tr data-bind="visible: isNewSurveyCreating" class="bg-info">
+      <td colspan="2"><input type="text" class="form-control input-sm" data-bind="textInput: newSurveyName" placeholder="Enter a new project name" onclick="this.select()"></td>
+      <td>
+        <a class="btn btn-tiny" data-bind="click: postNew, enable: newSurveyName() != ''" href="">Create <i class="pe-check-circle-o"></i></a>
+        <a class="btn btn-tiny" data-bind="click: cancelNew" href="">Cancel <i class="pe-times-circle-o"></i></a>
+      </td>
+    </tr>
+  <?php } ?>
+    <!-- ko foreach: surveys -->
+    <tr data-bind="css: { 'bg-blue': owner , 'bg-yellow': showInfo() }">
+      <td>
+        <a data-bind="click: $parent.showInfo" title="More Info..."><i data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a>&nbsp;
+        <span data-bind="text: title"></span> <span class="pull-right"><i class="pe-folder-o" data-bind="visible: pp == 'Private'" title="It indicates this is a Private survey"></i><i class="pe-folder-open-o" data-bind="visible: pp == 'Public'" title="It indicates this is a Public survey"></i></span>
+      </td>
+<?php if ($_SESSION['level'] == "9") { ?>
+      <td><span data-bind="text: fullname"></span> (<small data-bind="text: email"></small>) <span data-bind="text: company" class="pull-right"></span></td>
+<?php } else { ?>
+      <td><span data-bind="text: fullname"></span> (<small data-bind="text: email"></small>)</td>
 <?php } ?>
-  <!-- ko foreach: surveys -->
-  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" style="margin-bottom:20px">
-    <div class="projects">
-      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projects-header">
-        <?php if ($_SESSION['level'] == "9") { ?>
-          <div class="adminmovewrap">
-            <a href="" class="adminmove" title="Move to the next step" data-bind="click: $parent.one2two, visible: $parent.showActive() == 'A'"><i class="pe-arrow-circle-right pe-lg"></i></a>
-            <a href="" class="adminmove" title="Move to the previous step" data-bind="click: $parent.two2one, visible: $parent.showActive() == 'B'"><i class="pe-arrow-circle-left pe-lg"></i></a>
-            <a href="" class="adminmove" title="Move to the next step" data-bind="click: $parent.two2three, visible: $parent.showActive() == 'B'"><i class="pe-arrow-circle-right pe-lg"></i></a>
-            <a href="" class="adminmove" title="Move to the previous step" data-bind="click: $parent.three2two, visible: $parent.showActive() == 'C'"><i class="pe-arrow-circle-left pe-lg"></i></a>
-            <a href="" class="adminmove" title="Move to the next step" data-bind="click: $parent.three2four, visible: $parent.showActive() == 'C'"><i class="pe-arrow-circle-right pe-lg"></i></a>
-            <a href="" class="adminmove" title="Move to the previous step" data-bind="click: $parent.four2three, visible: $parent.showActive() == 'D'"><i class="pe-arrow-circle-left pe-lg"></i></a>
-            <a href="" class="adminmove" title="Move to the next step" data-bind="click: $parent.four2zero, visible: $parent.showActive() == 'D'"><i class="pe-arrow-circle-right pe-lg"></i></a>
-            <a href="" class="adminmove" title="Move to the previous step" data-bind="click: $parent.zero2four, visible: $parent.showActive() == 'E'"><i class="pe-arrow-circle-left pe-lg"></i></a>
-          </div>
-        <?php } ?>
-        <h4>Project <span data-bind="text: title"></span>  <span data-bind="if: owner" class="label-red" style="font-size:0.6rem">owner</span></h4>
-      </div>
-      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projects-subhead">
-        <i class="pe-user pe-fw"></i> <strong data-bind="text: fullname"></strong> (<span data-bind="text: email"></span>) <i class="pe-building pe-fw"></i> <span data-bind="text: company"></span>
-      </div>
-      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projects-body">
-        <div data-bind="if: canedit"><a class="btn btn-info btn-tiny pull-right" data-bind="click: $parent.showInfo"><i class="pe-cogs"></i> Info <i class="" data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a></div>
-        <div class="projectinfo">
-          <strong>Created:</strong> <span data-bind="text: created"></span><br>
-          <strong>Updated:</strong> <span data-bind="text: updated"></span><br>
-          <strong>Type:</strong> <span><span data-bind="text: pp"></span> <i class="pe-folder-o" data-bind="visible: pp == 'Private'"></i><i class="pe-folder-open-o" data-bind="visible: pp == 'Public'"></i></span>
-          <a class="btn btn-default btn-tiny pull-right" data-bind="attr: { href: '/admin/?w=respondents&amp;s=' + id }, visible: pp == 'Private', css: { 'btn-primary': rD() > 0, 'disabled': $parent.showActive() == 'C' || $parent.showActive() == 'D' || $parent.showActive() == 'E' }"><span data-bind="text: rDFormatted(rD)"></span> respondent(s) <i class="pe-users"></i></a>
-        </div>
+      <td align="right">
         <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=edit&amp;s=' + id }, visible: $parent.showActive() == 'A'">Questionnaire <i class="pe-edit"></i></a>
-        <span data-bind="if: canedit"><a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=template&amp;s=' + id }, visible: (pp == 'Private' && $parent.showActive() == 'A') || (pp == 'Private' && $parent.showActive() == 'B')">Template <i class="pe-envelope"></i></a></span>
-        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/r.php?w=pilot&amp;s=' + id }, visible: $parent.showActive() == 'A'" target="_blank">Pilot test <i class="pe-paper-plane"></i></a>
-        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=progress&amp;s=' + id }, visible: $parent.showActive() == 'B' || $parent.showActive() == 'C'">Progress <i class="pe-flask"></i></a>
+        <a class="btn btn-info btn-tiny" data-bind="attr: { href: '/r.php?w=pilot&amp;s=' + id }, visible: $parent.showActive() == 'A'" target="_blank">Pilot test <i class="pe-paper-plane"></i></a>
+        <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the next step" data-bind="click: $parent.one2two, visible: $parent.showActive() == 'A'" href=""><i class="pe-arrow-circle-right pe-lg"></i></a><?php } ?>
+        <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the previous step" data-bind="click: $parent.two2one, visible: $parent.showActive() == 'B'" href=""><i class="pe-arrow-circle-left pe-lg"></i></a><?php } ?>
+        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=progress&amp;s=' + id }, visible: $parent.showActive() == 'B'">Progress <i class="pe-flask"></i></a>
+        <!-- <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=interim&amp;s=' + id }, visible: $parent.showActive() == 'B'">Interim <i class="pe-binoculars"></i></a> -->
         <a class="btn btn-success btn-tiny" data-bind="attr: { href: '/r.php?s=' + id }, visible: $parent.showActive() == 'B'" target="_blank">Live <i class="pe-plane"></i></a>
-        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=result&amp;s=' + id }, visible: $parent.showActive() == 'C' || $parent.showActive() == 'D'">Result <i class="pe-line-chart"></i></a>
+        <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the next step" data-bind="click: $parent.two2three, visible: $parent.showActive() == 'B'" href=""><i class="pe-arrow-circle-right pe-lg"></i></a><?php } ?>
+        <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the previous step" data-bind="click: $parent.three2two, visible: $parent.showActive() == 'C'" href=""><i class="pe-arrow-circle-left pe-lg"></i></a><?php } ?>
+        <!-- <a class="btn btn-default btn-xs" data-bind="attr: { href: '/admin/?w=data&amp;s=' + id }, visible: $parent.showActive() == 'C'">Data <i class="pe-table"></i></a> -->
+        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=result&amp;s=' + id }, visible: $parent.showActive() == 'C'">Result <i class="pe-line-chart"></i></a>
         <a class="btn btn-warning btn-tiny" data-bind="click: $parent.archive, visible: $parent.showActive() == 'C'" href="">Archive <i class="pe-archive"></i></a>
+        <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the next step" data-bind="click: $parent.three2four, visible: $parent.showActive() == 'C'" href=""><i class="pe-arrow-circle-right pe-lg"></i></a><?php } ?>
+        <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the previous step" data-bind="click: $parent.four2three, visible: $parent.showActive() == 'D'" href=""><i class="pe-arrow-circle-left pe-lg"></i></a><?php } ?>
         <a class="btn btn-warning btn-tiny" data-bind="click: $parent.restore, visible: $parent.showActive() == 'D'" href="">Restore <i class="pe-undo"></i></a>
         <a class="btn btn-danger btn-tiny" data-bind="click: $parent.delete, visible: $parent.showActive() == 'D'" href="">Delete <i class="pe-trash"></i></a>
+        <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the next step" data-bind="click: $parent.four2zero, visible: $parent.showActive() == 'D'" href=""><i class="pe-arrow-circle-right pe-lg"></i></a><?php } ?>
+        <?php if ($_SESSION['level'] == "9") { ?><a class="orange" title="Move to the previous step" data-bind="click: $parent.zero2four, visible: $parent.showActive() == 'E'" href=""><i class="pe-arrow-circle-left pe-lg"></i></a><?php } ?>
         <a class="btn btn-danger btn-tiny" data-bind="click: $parent.undelete, visible: $parent.showActive() == 'E'" href="">Undelete <i class="pe-undo"></i></a>
-      </div>
+      </td>
+    </tr>
+    <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-yellow': showInfo() }">
+      <td style="border-top: none;" colspan="3"><strong><span data-bind="if: owner">Editing</span><span data-bind="ifnot: owner">Showing</span> the project information</strong></td>
+    </tr>
+    <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-yellow': showInfo() }">
+      <td style="border-top: none">Project owner <a data-bind="if: canedit, click: $parent.startEditOwner, visible: $parent.showActive() == 'A' && !isEditingOwner()" title="Change project owner"> <i class="pe-edit"></i></a><a data-bind="click: $parent.cancelEditOwner, visible: isEditingOwner()"><i class="pe-times-circle-o"></i></a></td>
+      <td style="border-top: none" colspan="2">
+        <span data-bind="visible: !isEditingOwner()"><strong><span data-bind="text: fullname"></span></strong> (<span data-bind="text: email, visible: !isEditingOwner()"></span>)</span>
+        <span data-bind="visible: isEditingOwner()"><div class="col-sm-6" style="padding:0px"><select data-bind="options: ulist, optionsText: '<?php if ($_SESSION['level'] == "9") { ?>list1<?php } else { ?>list2<?php }?>', optionsValue: 'userid', value: selectedUser, event: { change: $parent.changingowner }" class="form-control input-sm"></select></div></span>
+      </td>
+    </tr>
+    <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-yellow': showInfo() }">
+      <td style="border-top: none">Project name <a data-bind="if: canedit, click: $parent.startEdit, visible: $parent.showActive() == 'A' && !isEditing()" title="Change project name"> <i class="pe-edit"></i></a><a data-bind="click: $parent.cancelEdit, visible: isEditing()"><i class="pe-times-circle-o"></i></a></td>
+      <td style="border-top: none" colspan="2">
+        <span data-bind="visible: !isEditing()"><strong><span data-bind="text: title"></span></strong><?php if ($_SESSION['level'] == "9") { ?> (surveyid = <span data-bind="text: id"></span>)<?php } ?></span>
+        <span data-bind="visible: isEditing()"><div class="col-sm-6" style="padding:0px"><input data-bind="textInput: editingName" onclick="this.select()" class="form-control input-sm"><br><a class="btn btn-sm" data-bind="click: $parent.postEdit, enable: title() != ''" href="">Rename <i class="pe-check-circle-o"></i></a><a class="btn btn-sm" data-bind="click: $parent.cancelEdit" href="">Cancel <i class="pe-times-circle-o"></i></a></div></span>
+      </td>
+    </tr>
+    <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-yellow': showInfo() }">
+      <td style="border-top: none">Description <a data-bind="if: canedit, click: $parent.startEditDescription, visible: $parent.showActive() == 'A' && !isEditingDescription()" title="Change project description"> <i class="pe-edit"></i></a><a data-bind="click: $parent.cancelEditDescription, visible: isEditingDescription()"><i class="pe-times-circle-o"></i></a></td>
+      <td style="border-top: none" colspan="2">
+        <span data-bind="visible: !isEditingDescription(), text: description"></span>
+        <span data-bind="visible: isEditingDescription()"><textarea data-bind="textInput: editingDescription, visible: isEditingDescription()" onclick="this.select()" class="form-control input-sm" rows="5"></textarea><br><a class="btn btn-sm" data-bind="click: $parent.postEditDescription, enable: description() != ''" href="">Update <i class="pe-check-circle-o"></i></a><a class="btn btn-sm" data-bind="click: $parent.cancelEditDescription" href="">Cancel <i class="pe-times-circle-o"></i></a></span>
+      </td>
+    </tr>
+    <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-yellow': showInfo() }">
+      <td style="border-top: none">Type of survey <a data-bind="if: canedit, click: $parent.startEditPP, visible: $parent.showActive() == 'A' && !isEditingPP()" title="Change type of survey"> <i class="pe-edit"></i></a><a data-bind="click: $parent.cancelEditPP, visible: isEditingPP()"><i class="pe-times-circle-o"></i></a></td>
+      <td style="border-top: none">
+        <div data-bind="visible: !isEditingPP()">
+          <strong><span data-bind="text: pp"></span> <i class="pe-folder-o" data-bind="visible: pp == 'Private'"></i><i class="pe-folder-open-o" data-bind="visible: pp == 'Public'"></i></strong>
+        </div>
+        <div data-bind="if: private, visible: isEditingPP()">
+          <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPublic, visible: $parent.showActive() == 'A'" href="">Make it Public <i class="pe-folder-open-o"></i></a>
+          <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPrivate, visible: $parent.showActive() == 'A'" disabled>Make it Private <i class="pe-folder-o"></i></a>
+        </div>
+        <div data-bind="ifnot: private, visible: isEditingPP()">
+          <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPublic, visible: $parent.showActive() == 'A'" disabled>Make it Public <i class="pe-folder-open-o"></i></a>
+          <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPrivate, visible: $parent.showActive() == 'A'" href="">Make it Private <i class="pe-folder-o"></i></a>
+        </div>
+      </td>
+      <td style="border-top: none">
+        <div data-bind="visible: !isEditingPP(), if: canedit">
+          <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=respondents&amp;s=' + id }, visible: pp == 'Private', css: { 'btn-warning': rD() > 0 }"><span data-bind="text: rD"></span> respondent(s) <i class="pe-users"></i></a>
+          <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=template&amp;s=' + id }, visible: pp == 'Private'">Templates <i class="pe-wpforms"></i></a>
+        </div>
+      </td>
+    </tr>
+    <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-yellow': showInfo() }">
+      <td style="border-top: none">Created</td>
+      <td style="border-top: none" colspan="2"><span data-bind="text: created"></span></td>
+    </tr>
+    <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-yellow': showInfo() }">
+      <td style="border-top: none">Updated</td>
+      <td style="border-top: none" colspan="2"><span data-bind="text: updated"></span></td>
+    </tr>
+    <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-yellow': showInfo() }">
+      <td style="border-top: none" colspan="3" data-bind="if: canedit, visible: $parent.showActive() == 'A'"><a class="btn btn-danger btn-tiny pull-right" style="white-space:normal;width:100px;word-wrap:break-word"><i class="pe-flag-checkered pe-fw"></i> Ready for data-collection</a><div>Once you are sure this project is ready for fieldwork, please submit your request using this button and we will proceed for you as soon as possible. <strong>It is important to understand that once the project is moved to the Data-collection stage, you <em>will not</em> be able to make any changes in the questionaire.</strong></div></td>
+    </tr>
+    <!-- /ko -->
+  </tbody>
+</table>
 
-<?php if ($_SESSION['level'] >= "5") { ?>
-      <div class="projects-footer" data-bind="visible: showInfo()">
-        <table class="table">
-          <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-showinfo': showInfo() }">
-            <td width="25%" style="border-top: none">Name <a data-bind="if: canedit, click: $parent.startEdit, visible: $parent.showActive() == 'A' && !isEditing()" title="Change project name"> <i class="pe-edit"></i></a><a data-bind="click: $parent.cancelEdit, visible: isEditing()"><i class="pe-times-circle-o"></i></a></td>
-            <td width="75%" style="border-top: none" colspan="2">
-              <span data-bind="visible: !isEditing()"><strong><span data-bind="text: title"></span></strong><?php if ($_SESSION['level'] == "9") { ?> (surveyid = <span data-bind="text: id"></span>)<?php } ?></span>
-              <span data-bind="visible: isEditing()"><input data-bind="textInput: editingName" onclick="this.select()" class="form-control input-sm"><a class="btn btn-sm" data-bind="click: $parent.postEdit, enable: title() != ''" href="">Rename <i class="pe-check-circle-o"></i></a><a class="btn btn-sm" data-bind="click: $parent.cancelEdit" href="">Cancel <i class="pe-times-circle-o"></i></a></span>
-            </td>
-          </tr>
-          <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-showinfo': showInfo() }">
-            <td style="border-top: none">Description <a data-bind="if: canedit, click: $parent.startEditDescription, visible: $parent.showActive() == 'A' && !isEditingDescription()" title="Change project description"> <i class="pe-edit"></i></a><a data-bind="click: $parent.cancelEditDescription, visible: isEditingDescription()"><i class="pe-times-circle-o"></i></a></td>
-            <td style="border-top: none" colspan="2">
-              <span data-bind="visible: !isEditingDescription(), text: description"></span>
-              <span data-bind="visible: isEditingDescription()"><textarea data-bind="textInput: editingDescription, visible: isEditingDescription()" onclick="this.select()" class="form-control input-sm" rows="5"></textarea><a class="btn btn-sm" data-bind="click: $parent.postEditDescription, enable: description() != ''" href="">Update <i class="pe-check-circle-o"></i></a><a class="btn btn-sm" data-bind="click: $parent.cancelEditDescription" href="">Cancel <i class="pe-times-circle-o"></i></a></span>
-            </td>
-          </tr>
-          <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-showinfo': showInfo() }">
-            <td style="border-top: none">Owner <a data-bind="if: canedit, click: $parent.startEditOwner, visible: $parent.showActive() == 'A' && !isEditingOwner()" title="Change project owner"> <i class="pe-edit"></i></a><a data-bind="click: $parent.cancelEditOwner, visible: isEditingOwner()"><i class="pe-times-circle-o"></i></a></td>
-            <td style="border-top: none" colspan="2">
-              <span data-bind="visible: !isEditingOwner()"><strong><span data-bind="text: fullname"></span></strong> (<span data-bind="text: email, visible: !isEditingOwner()"></span>)</span>
-              <span data-bind="visible: isEditingOwner()"><div class="col-sm-6" style="padding:0px"><select data-bind="options: ulist, optionsText: '<?php if ($_SESSION['level'] == "9") { ?>list1<?php } else { ?>list2<?php }?>', optionsValue: 'userid', value: selectedUser, event: { change: $parent.changingowner }" class="form-control input-sm"></select></div></span>
-            </td>
-          </tr>
-          <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-showinfo': showInfo() }">
-            <td style="border-top: none">Type <a data-bind="if: canedit, click: $parent.startEditPP, visible: $parent.showActive() == 'A' && !isEditingPP()" title="Change type of survey"> <i class="pe-edit"></i></a><a data-bind="click: $parent.cancelEditPP, visible: isEditingPP()"><i class="pe-times-circle-o"></i></a></td>
-            <td style="border-top: none">
-              <div data-bind="visible: !isEditingPP()">
-                <strong><span data-bind="text: pp"></span> <i class="pe-folder-o" data-bind="visible: pp == 'Private'"></i><i class="pe-folder-open-o" data-bind="visible: pp == 'Public'"></i></strong>
-              </div>
-              <div data-bind="if: private, visible: isEditingPP()">
-                <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPublic, visible: $parent.showActive() == 'A'" href="">Make it Public <i class="pe-folder-open-o"></i></a>
-                <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPrivate, visible: $parent.showActive() == 'A'" disabled>Make it Private <i class="pe-folder-o"></i></a>
-              </div>
-              <div data-bind="ifnot: private, visible: isEditingPP()">
-                <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPublic, visible: $parent.showActive() == 'A'" disabled>Make it Public <i class="pe-folder-open-o"></i></a>
-                <a class="btn btn-default btn-tiny" data-bind="click: $parent.toPrivate, visible: $parent.showActive() == 'A'" href="">Make it Private <i class="pe-folder-o"></i></a>
-              </div>
-            </td>
-          </tr>
-          <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-showinfo': showInfo() }">
-            <td style="border-top: none" colspan="3" data-bind="if: canedit, visible: $parent.showActive() == 'A'"><a class="btn btn-danger btn-tiny pull-right" style="white-space:normal;width:100px;word-wrap:break-word"><i class="pe-flag-checkered pe-fw"></i> Ready for data-collection</a><div>Once you are sure this project is ready for fieldwork, please submit your request using this button and we will proceed for you as soon as possible. <strong>It is important to understand that once the project is moved to the Data-collection stage, you <em>will not</em> be able to make any changes in the questionaire.</strong></div></td>
-          </tr>
-        </table>
-      </div>
-<?php } ?>
-    </div>
-  </div>
-  <!-- /ko -->
-</div>
 
 <script type="text/javascript">
 
@@ -231,7 +229,6 @@ $userlist .= " ]";
     this.updated = updated;
     this.id = id;
     this.rD = ko.observable(rD);
-    this.rDFormatted = function (obs) { if (typeof (obs) === 'function') return obs().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
     this.email = email;
     this.fullname = fullname;
     this.company = company;
@@ -245,17 +242,13 @@ $userlist .= " ]";
     this.isEditingPP = ko.observable(false);
     this.canedit = canedit;
     this.owner = owner;
-    // this.canedit = ko.observable(false);
-    // this.owner = ko.observable(false);
     if (private) { this.pp = "Private"; } else { this.pp = "Public"; }
     options = <?php echo $userlist; ?>;
     this.ulist = ko.observableArray(options);
     this.selectedUser = ko.observable(userid);
-    this.canclick = ko.observable();
   }
   var ViewModel = function () {
     var self = this;
-    // this.canclick = ko.observable(false);
     this.surveys = ko.observableArray([]);
     this.url = api;
     this.showActive = ko.observable(true);
@@ -667,10 +660,10 @@ $userlist .= " ]";
       window.setTimeout(function () { window.location.reload(); }, 3300);
     }
     this.createSurveyObject = function (data) {
-      var canedit = false; var owner = false; var admin = false;
+      var canedit = false; var owner = false;
       if (userid == data.userid) { var owner = true; }
-      if (level == 9) { var canedit = true; var admin = true; } else if (level == 6) { var canedit = true; }
-      else if (level == 5) { if (owner == true) { var canedit = true; } } else if (level == 4) { var canedit = false; }
+      if (level == 9) { var canedit = true; } else if (level == 6) { var canedit = true; }
+      else if (level == 5) { if (owner == true) { var canedit = true; } }
       moment.locale('en');
       var s1 = moment(data.created).fromNow(); var s2 = moment(data.created).format("D MMM YYYY"); created = s2 + ' (' + s1 + ')';
       var t1 = moment(data.updated).fromNow(); var t2 = moment(data.updated).format("D MMM YYYY"); updated = t2 + ' (' + t1 + ')';
