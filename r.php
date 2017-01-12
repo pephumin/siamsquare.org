@@ -1,8 +1,9 @@
 <?php
 
-// $navbar = "standard";
-// $navbar = "custom";
-$navbar = "none";
+$tophead = false;
+$navbar = "none"; // standard / custom / none
+$showlogo = true;
+$showdetail = true;
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/themes.php';
@@ -11,7 +12,6 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.login.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.imgresize.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.phpmailer.php';
 
-$db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
 
 if (empty($_GET['s'])) {
   $target = "/";
@@ -124,9 +124,9 @@ while ($r = $q1->fetchObject()) {
   $status = $r->status;
   if ($r->logo) { $d1 = "<img src=\"$r->logo\" title=\"$r->company\">"; }
   if ($r->website) { $d2 = "<a href=\"$r->website\" title=\"$r->company\" target=\"_blank\">$d1</a>"; } else { $d2 = $d1; }
-  $clientlogo = "<div class=\"pull-right\" style=\"margin-top:0px\">$d2</div>\n";
+  if ($showlink == true) { $clientlogo = $d2; } else { $clientlogo = $d1; }
   $companyname = $r->company;
-  $description = $r->description;
+  $description = nl2br($r->description);
 }
 
 $title = "ร่วมแสดงความคิดเห็น";
@@ -137,21 +137,16 @@ pageHeader($title);
 ?>
 
 <div class="row">
-  <div class="col-sm-4">
-    <h3 style="margin-top:0"><?php echo $title; ?> <i class="pe-comments-o"></i></h3>
-    <p><small>บัญชีของคุณคือ: <strong><?php echo $email; ?></strong></small></p>
-  </div>
-  <div class="col-sm-8">
-    <?php echo $clientlogo; ?>
-    <br>
-    <div class="well" style="margin-top:15px;padding:15px">
-      <p>Project <?php echo $project; ?></p>
-      <p class="small"><?php echo $description; ?></p>
+  <div class="container">
+    <?php if ($showdetail == true) { ?>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projectdetail">
+      <?php if ($showlogo == true) { echo "<div class=\"pull-right companylogo\">$clientlogo</div>\n"; } ?>
+      <h5 class="projectdetailhead">รายละเอียดงานวิจัย</h5>
+      <p class="projectdescription"><?php echo $description; ?></p>
     </div>
+    <?php } else if ($showlogo == true) { echo "<div class=\"companylogo\">$clientlogo</div>\n"; } ?>
   </div>
 </div>
-
-<hr>
 
 <div id="showupload"></div><div id="showcompletion"></div>
 <br>
@@ -313,5 +308,7 @@ pageHeader($title);
   }) (Survey || (Survey = {}));
 
 </script>
+
+<span class="pull-right small grey">Project <?php echo $project; echo " - "; echo date("M Y"); ?></span>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>

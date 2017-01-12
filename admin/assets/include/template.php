@@ -78,7 +78,7 @@ function pageHeader($title) {
   <script type="text/javascript" src="/admin/assets/js/survey/ace/mode-json.js"></script>
   <script type="text/javascript" src="/admin/assets/js/survey/survey.ko.js"></script>
   <script type="text/javascript" src="/admin/assets/js/survey/surveyeditor.js"></script>
-<?php if (($_REQUEST["w"]) == "template") { echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/tinymce/tinymce.min.js\"></script>"; } ?>
+<?php if (($_REQUEST["w"] == "template") || ($_REQUEST["w"] == "promote")) { echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/tinymce/tinymce.min.js\"></script>"; } ?>
   <script type="text/javascript" src="https://www.gstatic.com/firebasejs/3.4.1/firebase.js"></script>
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
@@ -125,7 +125,7 @@ function pageHeader($title) {
                 <ul class="dropdown-menu">
                   <li><a href="<?php echo(ADMIN."?w=board"); ?>" title="Message board"><i class="pe-wpforms pe-fw"></i> Message board</a></li>
                   <li><a href="<?php echo(ADMIN."?w=activity"); ?>" title="Activity"><i class="pe-map-o pe-fw"></i> Activity</a></li>
-                  <li><a href="<?php echo(ADMIN."?w=data2table"); ?>" title="Data to table"><i class="pe-table pe-fw"></i> Data to table</a></li>
+                  <!-- <li><a href="<?php echo(ADMIN."?w=data2table"); ?>" title="Data to table"><i class="pe-table pe-fw"></i> Data to table</a></li> -->
                   <li role="separator" class="divider"></li>
                   <li><a href="<?php echo(ADMIN."contact/"); ?>" title="Contact us"><i class="pe-envelope-o pe-fw"></i> Contact us</a></li>
 <?php //if ($_SESSION['level'] == "9") { ?>

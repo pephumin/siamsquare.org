@@ -1,16 +1,6 @@
 <?php
 
 $user = $_SESSION['email']; $avatar = $_SESSION['avatar'];
-// if (isset($avatar)) { $show = "<img src=\"/admin/assets/img/u/$avatar.svg\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
-$v1 = ADMIN."?w=login"; $v2 = ADMIN."?w=logout"; $v3 = "http://www.pebinary.net/en/clients/";
-$v1 = MEMBERS."?w=login"; $v2 = MEMBERS."?w=logout"; $v3 = "http://www.pebinary.net/th/members/";
-if ($_SESSION['logged_in']) {
-  $signed = "<a href=\"$v2\" class=\"btn btn-info btn-xs\" title=\"ออกจากระบบ\"><i class=\"pe-sign-out pe-fw\"></i> ออกจากระบบ</a> <a href=\"$v3\" class=\"btn btn-primary btn-xs\"><i class=\"pe-university pe-fw\"></i> ช่วยเหลือ</a>";
-  $ww = "ยินดีต้อนรับ $show";
-} else {
-  $signed = "<a href=\"$v1\" class=\"btn btn-info btn-xs\" title=\"เข้าสู่ระบบ\"><i class=\"pe-power-off pe-fw\"></i> เข้าสู่ระบบ</a> <a href=\"$v3\" class=\"btn btn-primary btn-xs\"><i class=\"pe-university pe-fw\"></i> ช่วยเหลือ</a>";
-  $ww = "<i class=\"pe-info-circle pe-fw\"></i> สำหรับสมาชิกที่ลงทะเบียนไว้แล้วเท่านั้น";
-}
 
 function logo() {
   echo "<img src=\"/admin/assets/img/ssq-horizontal.svg\" alt=\"SiamSquare Survey Engine by PE BINARY CO., LTD.\">";
@@ -25,7 +15,7 @@ function peblogo() {
 }
 
 function pageHeader($title) {
-  global $navbar;
+  global $tophead, $navbar;
   header("Content-language: en");
   header("Content-type: text/html; charset=utf-8");
 ?>
@@ -79,17 +69,15 @@ function pageHeader($title) {
 </head>
 <body>
 <header>
-  <div class="row">
-<?php //topheader(); ?>
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-2">
-      <div class="container">
-        <h1><a href="<?php echo MEMBERS; ?>" title="<?php echo MYDESC; ?>"><?php logo(); ?></a></h1>
-        <!-- <p class="description"><?php echo SLOGANTH; ?></p> -->
-      </div>
+  <?php if ($tophead == true) { topheader(); } ?>
+  <div class="row header-2">
+    <div class="container">
+      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6"><h1><a href="<?php echo MEMBERS; ?>" title="<?php echo MYDESC; ?>"><?php logo(); ?></a></h1></div>
+      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6"><h4 class="pull-right">ร่วมแสดงความคิดเห็น <i class="pe-comments-o"></i></h4></div>
     </div>
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-3">
-<?php if ($navbar == "standard") { navbarA(); } else if ($navbar == "custom") { navbarB(); } else if ($navbar == "none") {  } ?>
-    </div>
+  </div>
+  <div class="row header-3">
+<?php if ($navbar == "standard") { navbarA(); } else if ($navbar == "custom") { navbarB(); } else if ($navbar == "none") { navbarC(); } ?>
   </div>
 </header>
 <main class="container">
@@ -97,18 +85,26 @@ function pageHeader($title) {
 }
 
 function topheader() {
-  global $signed;
+  $v1 = ADMIN."?w=login"; $v2 = ADMIN."?w=logout"; $v3 = "http://www.pebinary.net/en/clients/";
+  $v1 = MEMBERS."?w=login"; $v2 = MEMBERS."?w=logout"; $v3 = "http://www.pebinary.net/th/members/";
+  if ($_SESSION['logged_in'] == 1) { $signed = "<a href=\"$v2\" class=\"btn btn-info btn-tiny\" title=\"ออกจากระบบ\"><i class=\"pe-sign-out pe-fw\"></i> ออกจากระบบ</a> <a href=\"$v3\" class=\"btn btn-primary btn-tiny\"><i class=\"pe-university pe-fw\"></i> ช่วยเหลือ</a>"; }
+  else { $signed = "<a href=\"$v1\" class=\"btn btn-info btn-tiny\" title=\"เข้าสู่ระบบ\"><i class=\"pe-power-off pe-fw\"></i> เข้าสู่ระบบ</a> <a href=\"$v3\" class=\"btn btn-primary btn-tiny\"><i class=\"pe-university pe-fw\"></i> ช่วยเหลือ</a>"; }
 ?>
-  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-1">
-    <div class="container">
-      <?php echo $signed; ?>
+  <div class="row header-1">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <div class="container">
+        <?php echo $signed; ?>
+      </div>
     </div>
   </div>
 <?php
 }
 
 function navbarA() {
-  global $ww;
+  $user = $_SESSION['email']; $avatar = $_SESSION['avatar'];
+  if (isset($avatar)) { $show = "<img src=\"/admin/assets/img/u/$avatar.svg\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
+  if ($_SESSION['logged_in'] == 1) { $ww = "บัญชีของคุณคือ $show"; }
+  else { $ww = "<span class=\"deepgreen\"><i class=\"pe-info-circle pe-fw\"></i> สำหรับผู้ที่เป็นสมาชิกเท่านั้น</span>"; }
 ?>
       <nav class="navbar navbar-default navbar-static-top">
         <div class="container">
@@ -168,7 +164,10 @@ function navbarA() {
 }
 
 function navbarB() {
-  global $ww;
+  $user = $_SESSION['email']; $avatar = $_SESSION['avatar'];
+  if (isset($avatar)) { $show = "<img src=\"/admin/assets/img/u/$avatar.svg\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
+  if ($_SESSION['logged_in'] == 1) { $ww = "บัญชีของคุณคือ $show"; }
+  else { $ww = "<span class=\"deepgreen\"><i class=\"pe-info-circle pe-fw\"></i> สำหรับผู้ที่เป็นสมาชิกเท่านั้น</span>"; }
 ?>
       <nav class="navbar navbar-default navbar-static-top">
         <div class="container">
@@ -191,6 +190,14 @@ function navbarB() {
         </div>
       </nav>
 <?php
+}
+
+function navbarC() {
+  $user = $_SESSION['email']; $avatar = $_SESSION['avatar'];
+  if (isset($avatar)) { $show = "<img src=\"/admin/assets/img/u/$avatar.svg\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
+  if ($_SESSION['logged_in'] == 1) { $ww = "บัญชีของคุณคือ $show"; }
+  else { $ww = "<span class=\"deepgreen\"><i class=\"pe-info-circle pe-fw\"></i> สำหรับผู้ที่เป็นสมาชิกเท่านั้น</span>"; }
+  echo "      <div class=\"container\" style=\"text-align:right; margin: 10px auto\"><span>$ww</span></div>\n";
 }
 
 function pageFooter($notes = null) {
