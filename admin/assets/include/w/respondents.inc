@@ -38,7 +38,7 @@ if ($q1->rowCount() == 0) {
 }
 while ($row = $q1->fetchObject()) { $project = $row->title; $status = $row->status; }
 if ($_SESSION['level'] != "9") {
-  if ($status != 1) {
+  if ($status < 1 || $status > 2) {
     $title = "An error has been found";
     pageHeader($title);
     echo "<h2>This project is no longer editable</h2>\n";

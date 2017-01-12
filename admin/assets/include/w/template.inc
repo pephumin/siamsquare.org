@@ -257,7 +257,6 @@ $messagecontent .= "&lt;p&gt;Email automatically sent by ".MYHOME."&lt;/p&gt;\n"
           toolbar: 'removeformat | styleselect | bold italic | bullist numlist | forecolor backcolor | undo redo'
         });
       </script>
-      <!-- <textarea id="firstsurvey" name="email_i_content" placeholder="<?php echo $default_i; ?>"><?php echo $email_i_content; ?></textarea> -->
       <textarea id="firstsurvey" name="email_i_content"><?php echo $email_i_content; ?></textarea>
       <br>
       <p align="right">
@@ -295,7 +294,6 @@ $messagecontent .= "&lt;p&gt;Email automatically sent by ".MYHOME."&lt;/p&gt;\n"
           toolbar: 'removeformat | styleselect | bold italic | bullist numlist | forecolor backcolor | undo redo'
         });
       </script>
-      <!-- <textarea id="secondsurvey" name="email_r_content" placeholder="<?php echo $default_r; ?>"><?php echo $email_r_content; ?></textarea> -->
       <textarea id="secondsurvey" name="email_r_content"><?php echo $email_r_content; ?></textarea>
       <br>
       <p align="right">
@@ -307,64 +305,6 @@ $messagecontent .= "&lt;p&gt;Email automatically sent by ".MYHOME."&lt;/p&gt;\n"
   </div>
 </div>
 
-<hr>
-
-<h3>Promote this survey</h3>
-<p>You can, of course, promote this survey by yourself too. And below are some useful tools that can instantly help you promoting this particular survey with the persons you know.</p>
-<br>
-
-<div class="row" style="padding:20px">
-  <div class="col-sm-12">
-    <nav>
-      <ul class="nav nav-tabs">
-        <li class="active"><a href="#1" data-toggle="tab"><i class="pe-link pe-fw"></i> Direct link</a></li>
-        <li><a href="#2" data-toggle="tab"><i class="pe-share-alt pe-fw"></i> Email this link</a></li>
-        <li><a href="#3" data-toggle="tab"><i class="pe-code pe-fw"></i> Embed to your website</a></li>
-      </ul>
-    </nav>
-    <div class="tab-content" style="border:1px #ddd solid;border-top-color: transparent;">
-      <div id="1" class="tab-pane fade in active" style="padding:20px 10px">
-        <h4>Direct link to your survey</h4>
-        <label>The code:</label>
-        <div class="input-group">
-          <span class="input-group-addon">URL:</span>
-          <input type="url" class="form-control" value="<?php echo MYHOME.$run; ?>" onclick="this.select()" readonly>
-        </div>
-        <br>
-        <p>You can copy and paste this URL and send it to anyone you would like them to participate with your survey.</p>
-      </div>
-      <div id="2" class="tab-pane fade" style="padding:20px 10px">
-        <h4>Email the survey link</h4>
-        <div class="input-group">
-          <span class="input-group-addon">To:</span>
-          <input type="email" class="form-control" name="sendto" placeholder="Enter a valid email">
-        </div>
-        <br>
-        <label>Message (optional):</label>
-        <script type="text/javascript">tinymce.init({ selector:'#messageemail', height: 200, menubar: false, resize: false, statusbar: false, plugins: "textcolor", toolbar: 'removeformat | styleselect | bold italic | bullist numlist | forecolor backcolor | undo redo' });</script>
-        <textarea id="messageemail" class="form-control"><?php echo $messagecontent; ?></textarea>
-        <br>
-        <p class="text-center">
-          <button class="btn btn-warning" type="submit">Send <i class="pe-paper-plane"></i></button>
-          <button class="btn btn-default" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
-        </p>
-      </div>
-      <div id="3" class="tab-pane fade" style="padding:20px 10px">
-        <h4>Embed the survey link to your website</h4>
-        <label>The code:</label>
-        <input type="url" class="form-control" value='<iframe width="600" height="400" src="<?php echo MYHOME.$run; ?>" frameborder="0" allowfullscreen></iframe>' onclick="this.select()" readonly>
-        <br>
-        <p>By copying this code and pasting it onto one of your webpages (or multiple pages), you will have the survey inserted into your website right away.</p>
-        <p>Optionally you can also customise how the survey is inserted to your website by adjusting <em>width</em> and <em>height</em> which is currenyly set at a default of <em>600px</em> and <em>400px</em> respectively.</p>
-        <p>Please see below the example of your survey after included into a webpage.</p>
-        <iframe width="600" height="400" src="<?php echo MYHOME.$run; ?>" frameborder="0" allowfullscreen></iframe>
-        <p>Please do not hesitate to <a href="/admin/contact/">contact us</a> if you need any technical supports on this.</p>
-      </div>
-    </div>
-  </div>
-</div>
-
-<br>
 
 <script type="text/javascript">
   $('#btn-save1').on('click', function() {

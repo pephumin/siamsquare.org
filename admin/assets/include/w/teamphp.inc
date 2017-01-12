@@ -5,7 +5,7 @@ pageHeader($title);
 echo "<h2>$title</h2>";
 echo "<p>User with an account level of Manager will be able to manage your team members. This includes an ability to create new users, edit existing users, or even suspend or delete users where required.</p>\n";
 echo "<p><strong>It is important to note that once a new member has been created, the new account has to be activated before it can be used</strong> (<a href=\"http://www.siamsquare.org/admin/setup/?d=activation\" title=\"Account Activation\">http://www.siamsquare.org/admin/setup/?d=activation</a>).</p>\n";
-echo "<p></p><br>\n";
+echo "<hr>\n";
 
 $rolelist = "[ ";
 $rolelist .= "new RoleListing(6, \"Manager\"), ";
@@ -15,16 +15,16 @@ $rolelist .= " ]";
 
 ?>
 
+<?php if ($_SESSION['level'] >= "6") { ?>
 <div class="rows">
-  <?php if ($_SESSION['level'] >= "6") { ?>
   <div class="col-sm-12" style="text-align:right">
-    <p class="pull-right"><a class="btn btn-success" data-bind="click: createNew, enable: !isNewMemberCreating()" href=""><i class="pe-user-plus pe-fw"></i> New member</a></p>
+    <p class="pull-right"><a class="btn btn-primary" data-bind="click: createNew, enable: !isNewMemberCreating()" href=""><i class="pe-user-plus pe-fw"></i> New member</a></p>
   </div>
-  <?php } ?>
   <div class="col-sm-12">
     <div id="showalert-create"></div><div id="showalert-delete"></div><div id="showalert-edit"></div><div id="showalert-suspend"></div><div id="showalert-changerole"></div>
   </div>
 </div>
+<?php } ?>
 
 <div class="row">
 <?php if ($_SESSION['level'] >= "6") { ?>
@@ -44,87 +44,106 @@ $rolelist .= " ]";
     </div>
   </div>
 <?php } ?>
-  <!-- ko foreach: members -->
-  <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4" style="margin-bottom:20px">
-    <div class="members">
-      <div class="members-header"></div>
-      <div class="members-body">
-        <h4 data-bind="text: fullname" class="white" style="margin-bottom:5px !important"></h4>
-        <div class="white small" style="margin-bottom:1.2rem">(<span data-bind="text: email" class="white"></span>)</div>
-        <div><img data-bind="attr: {src: avatar}" class="img-circle members-photo" alt="Avatar"></div>
-        <h5 data-bind="text: role"></h5>
-        <p class="small">
-          <strong>No. of projects handled: <span data-bind="text: counts"></span></strong><br>
-        </p>
-        <p class="small">
-          Registered: <span data-bind="text: created"></span><br>
-          Last seen: <span data-bind="text: lastlogin2"></span><br>
-        </p>
 
-<?php if ($_SESSION['level'] >= "6") { ?>
-        <p>
-          <a class="btn btn-default btn-tiny" data-bind="click: $parent.showInfo"><i class="pe-cogs"></i> Edit <i class="" data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a>
-          <!-- <a class="btn btn-warning btn-tiny" data-bind="click: $parent.suspend" href=""><i class="pe-pause-circle"></i> Suspend</a> -->
-          <a class="btn btn-danger btn-tiny" data-bind="click: $parent.delete" href=""><i class="pe-trash"></i> Delete</a>
-          <!-- <a class="btn btn-danger btn-tiny" href="" data-toggle="modal" data-target="#confirm-delete" title="Delete this user"><i class="pe-trash"></i> Delete</a> -->
-        </p>
-<?php } ?>
-      </div>
-<?php if ($_SESSION['level'] >= "6") { ?>
-      <div class="members-footer" data-bind="visible: showInfo()">
-        <div class="row" data-bind="visible: !isEditingFullName()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Name <a href="" data-bind="click: $parent.startEditFullName" title="Edit fullname"><i class="pe-edit"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: fullname"></small><br></div>
-        </div>
-        <div class="row" data-bind="visible: isEditingFullName()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Name <a href="" data-bind="click: $parent.cancelEditFullName"><i class="pe-times-circle-o"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px"><small>
-            <input data-bind="textInput: editingFullName, visible: isEditingFullName()" onclick="this.select()" placeholder="First and last name" class="form-control input-sm">
-            <a class="btn btn-tiny" data-bind="click: $parent.postEditFullName, enable: fullname() != ''" href="">Change <i class="pe-check-circle-o"></i></a>
-            <a class="btn btn-tiny" data-bind="click: $parent.cancelEditFullName" href="">Cancel <i class="pe-times-circle-o"></i></a>
-          </small></div>
-        </div>
-        <div class="row" data-bind="visible: !isEditingEmail()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Email <a href="" data-bind="click: $parent.startEditEmail" title="Edit email"><i class="pe-edit"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: email"></small><br></div>
-        </div>
-        <div class="row" data-bind="visible: isEditingEmail()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Email <a href="" data-bind="click: $parent.cancelEditEmail"><i class="pe-times-circle-o"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px"><small>
-            <input data-bind="textInput: editingEmail, visible: isEditingEmail()" onclick="this.select()" placeholder="email@company.com" class="form-control input-sm">
-            <a class="btn btn-tiny" data-bind="click: $parent.postEditEmail, enable: email() != ''" href="">Change <i class="pe-check-circle-o"></i></a>
-            <a class="btn btn-tiny" data-bind="click: $parent.cancelEditEmail" href="">Cancel <i class="pe-times-circle-o"></i></a>
-          </small></div>
-        </div>
-        <div class="row" data-bind="visible: !isEditingMobile()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Mobile <a href="" data-bind="click: $parent.startEditMobile" title="Edit mobile no."><i class="pe-edit"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: mobile"></small><br></div>
-        </div>
-        <div class="row" data-bind="visible: isEditingMobile()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Mobile <a href="" data-bind="click: $parent.cancelEditMobile"><i class="pe-times-circle-o"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px"><small>
-            <input data-bind="textInput: editingMobile, visible: isEditingMobile()" onclick="this.select()" placeholder="0813333333" class="form-control input-sm">
-            <a class="btn btn-tiny" data-bind="click: $parent.postEditMobile, enable: mobile() != ''" href="">Change <i class="pe-check-circle-o"></i></a>
-            <a class="btn btn-tiny" data-bind="click: $parent.cancelEditMobile" href="">Cancel <i class="pe-times-circle-o"></i></a>
-          </small></div>
-        </div>
-        <div class="row" data-bind="visible: !isEditingLevel()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Role <a href="" data-bind="click: $parent.startEditLevel" title="Edit user level"><i class="pe-edit"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: role"></small><br></div>
-        </div>
-        <div class="row" data-bind="visible: isEditingLevel()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Role <a href="" data-bind="click: $parent.cancelEditLevel"><i class="pe-times-circle-o"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px">
-            <select data-bind="options: rlist, optionsText: 'role', optionsValue: 'level', value: selectedRole, event: { change: $parent.changinglevel }" class="form-control input-sm"></select>
-          </div>
-        </div>
-        <br>
-      </div>
-<?php } ?>
-    </div>
-  </div>
-  <div data-bind="template: { name: 'confirm-delete-modal' }"></div>
-  <!-- /ko -->
+
+<?php
+
+$q = $db->prepare("SELECT U.id, U.email, U.fullname, U.mobile, U.avatar, U.companyid, C.company, U.status, U.level, U.created, U.updated, U.lastlogin, U.lastlogin2, U.lastip, U.lastip2, (SELECT COUNT(id) FROM j_projects WHERE userid = U.id AND companyid = U.companyid AND status >=0) AS counts FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.companyid = :companyid AND U.status >= 0 ORDER BY U.level DESC");
+$q->bindValue(':companyid', $_SESSION['companyid'], PDO::PARAM_INT);
+$q->execute();
+if ($q->rowCount() > 0) {
+  $rr = 1;
+  while ($r = $q->fetchObject()) {
+    $id = $r->id;                      $email = $r->email;          $fullname = $r->fullname;    $mobile = $r->mobile;
+    $avatar = $r->avatar;              $companyid = $r->companyid;  $company = $r->company;      $status = $r->status;
+    $level = $r->level;                $created = ago($r->created); $updated = ago($r->updated); $lastlogin = ago($r->lastlogin);
+    $lastlogin2 = ago($r->lastlogin2); $lastip = $r->lastip;        $lastip2 = $r->lastip2;      $counts = $r->counts;
+    $role = role($level);
+    echo "  <!-- ko foreach: members -->\n";
+    echo "  <div class=\"col-xs-6 col-sm-4 col-md-4 col-lg-4\" style=\"margin-bottom:20px\">\n";
+    echo "    <div class=\"members\">\n";
+    echo "      <div class=\"members-header\"></div>\n";
+    echo "      <div class=\"members-body\">\n";
+    echo "        <h4 class=\"white\" style=\"margin-bottom:5px !important\">$fullname</h4>\n";
+    echo "        <div class=\"white small\" style=\"margin-bottom:1.2rem\">(<span class=\"white\">$email</span>)</div>\n";
+    echo "        <div><img src=\"/admin/assets/img/u/$avatar.svg\" class=\"img-circle members-photo\" alt=\"Avatar\"></div>\n";
+    echo "        <h5>$role</h5>\n";
+    echo "        <p class=\"small\"><strong>No. of projects handled: $counts</strong><br></p>\n";
+    echo "        <p class=\"small\">\n";
+    echo "          Registered: $created<br>\n";
+    echo "          Last seen: $lastlogin2<br>\n";
+    echo "        </p>\n";
+    if ($_SESSION['level'] >= "6") {
+      echo "        <p>\n";
+      echo "          <a id=\"rowshow$rr\" href=\"\" onclick=\"return showRow(event, $rr)\" class=\"btn btn-default btn-tiny\"><i class=\"pe-cogs\"></i> Edit <i class=\"pe-chevron-down\"></i></a>\n";
+      echo "          <a id=\"rowhide$rr\" href=\"\" onclick=\"return hideRow(event, $rr)\" class=\"btn btn-default btn-tiny\" style=\"display:none\"><i class=\"pe-cogs\"></i> Edit <i class=\"pe-chevron-up\"></i></a>\n";
+      // echo "          <a class=\"btn btn-warning btn-tiny\" data-bind=\"click: $parent.suspend\" href=\"\"><i class=\"pe-pause-circle\"></i> Suspend</a>\n";
+      echo "          <a class=\"btn btn-danger btn-tiny\" href=\"\" data-toggle=\"modal\" data-target=\"#confirm-delete\" title=\"Delete this user\"><i class=\"pe-trash\"></i> Delete</a>\n";
+      echo "        </p>\n";
+    }
+    echo "      </div>\n";
+    if ($_SESSION['level'] >= "6") {
+      echo "      <div id=\"row$rr\" class=\"members-footer\" style=\"display:none\">\n";
+      echo "        <div id=\"E1A$rr\" class=\"row\">\n";
+      echo "          <div class=\"col-sm-offset-1 col-sm-3\" style=\"padding:2px 0px\"><small>Name <a href=\"\" onclick=\"return E1C(event, $rr)\" title=\"Edit fullname\"><i class=\"pe-edit\"></i></a></small></div>\n";
+      echo "          <div class=\"col-sm-7\" style=\"padding:2px 0px\"><small>$fullname</small><br></div>\n";
+      echo "        </div>\n";
+      echo "        <div id=\"E1B$rr\" class=\"row\" style=\"display:none\">\n";
+      echo "          <div class=\"col-sm-offset-1 col-sm-3\" style=\"padding:2px 0px\"><small>Name <a href=\"\" onclick=\"return E1D(event, $rr)\"><i class=\"pe-times-circle-o\"></i></a></small></div>\n";
+      echo "          <div class=\"col-sm-7\" style=\"padding:2px 0px\"><small>\n";
+      echo "            <input onclick=\"this.select()\" placeholder=\"First and last name\" class=\"form-control input-sm\" value=\"$fullname\">\n";
+      echo "            <a class=\"btn btn-tiny\" href=\"\">Change <i class=\"pe-check-circle-o\"></i></a>\n";
+      echo "            <a class=\"btn btn-tiny\" href=\"\" onclick=\"return E1D(event, $rr)\">Cancel <i class=\"pe-times-circle-o\"></i></a>\n";
+      echo "          </small></div>\n";
+      echo "        </div>\n";
+      echo "        <div id=\"E2A$rr\" class=\"row\">\n";
+      echo "          <div class=\"col-sm-offset-1 col-sm-3\" style=\"padding:2px 0px\"><small>Email <a href=\"\" onclick=\"return E2C(event, $rr)\" title=\"Edit email\"><i class=\"pe-edit\"></i></a></small></div>\n";
+      echo "          <div class=\"col-sm-7\" style=\"padding:2px 0px\"><small>$email</small><br></div>\n";
+      echo "        </div>\n";
+      echo "        <div id=\"E2B$rr\" class=\"row\" style=\"display:none\">\n";
+      echo "          <div class=\"col-sm-offset-1 col-sm-3\" style=\"padding:2px 0px\"><small>Email <a href=\"\" onclick=\"return E2D(event, $rr)\"><i class=\"pe-times-circle-o\"></i></a></small></div>\n";
+      echo "          <div class=\"col-sm-7\" style=\"padding:2px 0px\"><small>\n";
+      echo "            <input data-bind=\"textInput: editingEmail, visible: isEditingEmail()\" onclick=\"this.select()\" placeholder=\"email@company.com\" class=\"form-control input-sm\">\n";
+      echo "            <a class=\"btn btn-tiny\" href=\"\">Change <i class=\"pe-check-circle-o\"></i></a>\n";
+      echo "            <a class=\"btn btn-tiny\" href=\"\" onclick=\"return E2D(event, $rr)\">Cancel <i class=\"pe-times-circle-o\"></i></a>\n";
+      echo "          </small></div>\n";
+      echo "        </div>\n";
+      echo "        <div id=\"E3A$rr\" class=\"row\">\n";
+      echo "          <div class=\"col-sm-offset-1 col-sm-3\" style=\"padding:2px 0px\"><small>Mobile <a href=\"\" onclick=\"return E3C(event, $rr)\" title=\"Edit mobile no.\"><i class=\"pe-edit\"></i></a></small></div>\n";
+      echo "          <div class=\"col-sm-7\" style=\"padding:2px 0px\"><small>$mobile</small><br></div>\n";
+      echo "        </div>\n";
+      echo "        <div id=\"E3B$rr\" class=\"row\" style=\"display:none\">\n";
+      echo "          <div class=\"col-sm-offset-1 col-sm-3\" style=\"padding:2px 0px\"><small>Mobile <a href=\"\" onclick=\"return E3D(event, $rr)\"><i class=\"pe-times-circle-o\"></i></a></small></div>\n";
+      echo "          <div class=\"col-sm-7\" style=\"padding:2px 0px\"><small>\n";
+      echo "            <input data-bind=\"textInput: editingMobile, visible: isEditingMobile()\" onclick=\"this.select()\" placeholder=\"0813333333\" class=\"form-control input-sm\">\n";
+      echo "            <a class=\"btn btn-tiny\" href=\"\">Change <i class=\"pe-check-circle-o\"></i></a>\n";
+      echo "            <a class=\"btn btn-tiny\" href=\"\" onclick=\"return E3D(event, $rr)\">Cancel <i class=\"pe-times-circle-o\"></i></a>\n";
+      echo "          </small></div>\n";
+      echo "        </div>\n";
+      echo "        <div id=\"E4A$rr\" class=\"row\">\n";
+      echo "          <div class=\"col-sm-offset-1 col-sm-3\" style=\"padding:2px 0px\"><small>Role <a href=\"\" onclick=\"return E4C(event, $rr)\" title=\"Edit user level\"><i class=\"pe-edit\"></i></a></small></div>\n";
+      echo "          <div class=\"col-sm-7\" style=\"padding:2px 0px\"><small>$role</small><br></div>\n";
+      echo "        </div>\n";
+      echo "        <div id=\"E4B$rr\" class=\"row\" style=\"display:none\">\n";
+      echo "          <div class=\"col-sm-offset-1 col-sm-3\" style=\"padding:2px 0px\"><small>Role <a href=\"\" onclick=\"return E4D(event, $rr)\"><i class=\"pe-times-circle-o\"></i></a></small></div>\n";
+      echo "          <div class=\"col-sm-7\" style=\"padding:2px 0px\">\n";
+      echo "            <select data-bind=\"options: rlist, optionsText: 'role', optionsValue: 'level', value: selectedRole, event: { change: $parent.changinglevel }\" class=\"form-control input-sm\"></select>\n";
+      echo "          </div>\n";
+      echo "        </div>\n";
+      echo "        <br>\n";
+      echo "      </div>\n";
+    }
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "  <!-- /ko -->\n";
+    $rr++;
+  }
+}
+
+
+?>
+
+
 </div>
 
 <script type="text/html" id="confirm-delete-modal">
@@ -169,6 +188,37 @@ $rolelist .= " ]";
   $('#showalert-edit').html("<div class='alert alert-success'><i class='pe-edit pe-fw'></i> The user information has been edited</div>").hide();
   $('#showalert-suspend').html("<div class='alert alert-warning'><i class='pe-archive pe-fw'></i> The user has been suspended</div>").hide();
   $('#showalert-changerole').html("<div class='alert alert-info'><i class='pe-cog pe-fw'></i> You have successfully changed this user's role</div>").hide();
+  function showRow(e, rowIndex) { showhideRow(rowIndex, true); e.preventDefault(); return false; }
+  function hideRow(e, rowIndex) { showhideRow(rowIndex, false); e.preventDefault(); return false; }
+  function showhideRow(rowIndex, show) {
+    document.getElementById("row" + rowIndex).style.display = show ? "" : "none";
+    document.getElementById("rowhide" + rowIndex).style.display = show ? "" : "none";
+    document.getElementById("rowshow" + rowIndex).style.display =  show ? "none" : "";
+  }
+  function E1C(e, rowIndex) { E1(rowIndex, true); e.preventDefault(); return false; }
+  function E1D(e, rowIndex) { E1(rowIndex, false); e.preventDefault(); return false; }
+  function E1(rowIndex, show) {
+    document.getElementById("E1A" + rowIndex).style.display = show ? "none" : "";
+    document.getElementById("E1B" + rowIndex).style.display = show ? "" : "none";
+  }
+  function E2C(e, rowIndex) { E2(rowIndex, true); e.preventDefault(); return false; }
+  function E2D(e, rowIndex) { E2(rowIndex, false); e.preventDefault(); return false; }
+  function E2(rowIndex, show) {
+    document.getElementById("E2A" + rowIndex).style.display = show ? "none" : "";
+    document.getElementById("E2B" + rowIndex).style.display = show ? "" : "none";
+  }
+  function E3C(e, rowIndex) { E3(rowIndex, true); e.preventDefault(); return false; }
+  function E3D(e, rowIndex) { E3(rowIndex, false); e.preventDefault(); return false; }
+  function E3(rowIndex, show) {
+    document.getElementById("E3A" + rowIndex).style.display = show ? "none" : "";
+    document.getElementById("E3B" + rowIndex).style.display = show ? "" : "none";
+  }
+  function E4C(e, rowIndex) { E4(rowIndex, true); e.preventDefault(); return false; }
+  function E4D(e, rowIndex) { E4(rowIndex, false); e.preventDefault(); return false; }
+  function E4(rowIndex, show) {
+    document.getElementById("E4A" + rowIndex).style.display = show ? "none" : "";
+    document.getElementById("E4B" + rowIndex).style.display = show ? "" : "none";
+  }
   var RoleListing = function(level, role) {
     this.level = ko.observable(level);
     this.role = ko.observable(role);

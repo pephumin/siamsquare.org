@@ -70,10 +70,10 @@ else { echo "<p></p>\n"; }
   <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
     <form method="post" action="<?php echo $me; ?>">
       <div data-bind="visible: isNewPostCreating" class="panel panel-default">
-        <div class="panel-body small bg-warning">
+        <div class="panel-body small bg-success">
           <div class="input-group">
             <span class="input-group-addon"><i class="pe-wpforms pe-fw"></i></span>
-            <input type="text" name="head" class="form-control" value="" placeholder="Message heading" onclick="this.select()">
+            <input type="text" name="head" class="form-control" value="" placeholder="Topic of the message" onclick="this.select()">
           </div>
           <br>
           <textarea name="body" rows="5" class="form-control" placeholder="Message content"></textarea><br>
@@ -82,7 +82,7 @@ else { echo "<p></p>\n"; }
               <p class="text-center">
                 <input type="hidden" name="userid" value="<?php echo $_SESSION['userid']; ?>">
                 <input type="hidden" name="companyid" value="<?php echo $_SESSION['companyid']; ?>">
-                <button class="btn btn-sm btn-warning" name="newpost" value="1" type="submit">Post <i class="pe-check-circle-o"></i></button>
+                <button class="btn btn-sm btn-success" name="newpost" value="1" type="submit">Post <i class="pe-check-circle-o"></i></button>
                 <a class="btn btn-sm btn-default" data-bind="click: cancelNew" href="">Cancel <i class="pe-times-circle-o"></i></a>
               </p>
             </div>
@@ -133,7 +133,7 @@ echo "    </nav>\n";
   </div>
   <div class="col-sm-3">
     <div class="list-group">
-      <a class="list-group-item small list-group-item-warning" data-bind="click: createNew, enable: !isNewPostCreating()" href=""><strong><i class="pe-edit pe-fw"></i> Post a new message</strong></a>
+      <a class="list-group-item small list-group-item-success" data-bind="click: createNew, enable: !isNewPostCreating()" href=""><strong><i class="pe-edit pe-fw"></i> Post a new message</strong></a>
     </div>
     <div class="list-group">
       <div class="list-group-item small active"><strong><i class="pe-level-down pe-flip-horizontal pe-fw"></i> System annoucement</strong></div>
