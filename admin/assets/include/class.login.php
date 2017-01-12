@@ -75,7 +75,7 @@ class Login {
         $q4->execute();
       }
     }
-    if (!isset($result_row->id)) { $this->errors[] = mkerror("This account does not exist in our system. If you are one of our clients, please <a href='/admin/request/' class='alert-link'>click here</a> to request for a free access."); }
+    if (!isset($result_row->id)) { $this->errors[] = mkerror("This account does not exist in our system. If you are one of our clients, please <a href='/admin/request/' class='alert-link'>click here</a> to request for an access."); }
     else if ($result_row->status == 0) {
       $since = date("j F Y h:i:s A", $result_row->fails_last);
       $logip = $result_row->fails_ip; //echo $logip;

@@ -7,12 +7,12 @@ $titleC = "Completed";
 $titleD = "Archived";
 $titleE = "Deleted";
 
-$details = "All surveys that are belonged to either youself or the company. All of them are categorised into 4 groups based on their life-stage starting from Set-up, Data-collection, Completed and Archived.";
-$detailsA = "Surveys in the Set-up section are still under the development of questionnaire which incudes questionnaire design, questionnaire translation, and pilot interview to ensure the right flow is in place.";
-$detailsB = "Surveys in the Data-collection section are currently on fieldwork. We do not allow any changes to be made to the questionnaire at this stage anymore in order to prevent a mismatch between designed question and collected data at the analysis stage.";
-$detailsC = "Surveys in the Completed section are ready for analysis as their fildwork period has ended. We provide online tools for the real-time result analysis with an option to download the data file for a more in-depth data manipulation.";
-$detailsD = "Surveys in the Archived section are inactive. These surveys can be moved to be active again should you need to. We suggest leaving them in this section rather than delete them from the system completely.";
-$detailsE = "Surveys that were deleted by users are kept here in this section. It is in fact a recovery function as there may be a situation where a user would like to undelete a mistaken-deleted-survey.";
+$details = "All surveys that are belonged to either youself or the company. All of them are categorised into different stages from set up to completion.";
+$detailsA = "Surveys in this stage are the ones under a development including questionnaire design &amp; translation, respondents uploading, template editing or even a pilot testing.";
+$detailsB = "Surveys in this stageection are currently on fieldwork. We do not allow any changes to be made to the questionnaire at this stage anymore in order to prevent a mismatch between designed question and collected data at the analysis stage.";
+$detailsC = "Surveys in this stage are ready for analysis as their fildwork period has ended. We provide online tools for the real-time result analysis with an option to download the data file for a more in-depth data manipulation.";
+$detailsD = "All inactive surveys are kept in this stage which can be reactivated again when needed. They will be used as a reference to current surveys.";
+$detailsE = "Surveys that have been deleted are shown in this section as a backup/recovery. This section will only be seen by managers and admin.";
 
 if ($_GET['c'] == "A") { $title = $titleA; $details = $detailsA; }
 else if ($_GET['c'] == "B") { $title = $titleB; $details = $detailsB; }
@@ -49,7 +49,9 @@ $userlist .= " ]";
         <li data-bind="css: {active: showActive() == 'B'}"><a data-bind="click: loadB" href=""><i class="pe-hourglass-half pe-fw"></i> <?php echo $titleB; ?></a></li>
         <li data-bind="css: {active: showActive() == 'C'}"><a data-bind="click: loadC" href=""><i class="pe-hourglass-end pe-fw"></i> <?php echo $titleC; ?></a></li>
         <li data-bind="css: {active: showActive() == 'D'}"><a data-bind="click: loadD" href=""><i class="pe-archive pe-fw"></i> <?php echo $titleD; ?></a></li>
+<?php if ($_SESSION['level'] > 5) { ?>
         <li data-bind="css: {active: showActive() == 'E'}"><a data-bind="click: loadE" href=""><i class="pe-trash pe-fw"></i> <?php echo $titleE; ?></a></li>
+<?php } ?>
       </ul>
     </nav>
   </div>
@@ -58,7 +60,9 @@ $userlist .= " ]";
     <p data-bind="visible: showActive() == 'B'" class="text-muted"><?php echo $detailsB; ?></p>
     <p data-bind="visible: showActive() == 'C'" class="text-muted"><?php echo $detailsC; ?></p>
     <p data-bind="visible: showActive() == 'D'" class="text-muted"><?php echo $detailsD; ?></p>
+<?php if ($_SESSION['level'] > 5) { ?>
     <p data-bind="visible: showActive() == 'E'" class="text-muted"><?php echo $detailsE; ?></p>
+<?php } ?>
   </div>
 </div>
 <?php } ?>
