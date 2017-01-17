@@ -80,6 +80,21 @@ textarea {
   font-family: "boon";
   font-size: 1rem; }
 
+.projectdetail {
+  padding: 20px;
+  border: 1px dotted #666; }
+  .projectdetail div.companylogo {
+    border: none; }
+  .projectdetail h5.projectdetailhead {
+    font-family: "boon";
+    margin-top: 0px !important;
+    line-height: 1; }
+  .projectdetail p.projectdescription {
+    font-family: "boon";
+    margin: 0px !important;
+    line-height: 1;
+    font-size: 0.95rem; }
+
 @media (max-width: 991px) {
   .svd_container .svd_content .svd_editors {
     padding: 0; } }
