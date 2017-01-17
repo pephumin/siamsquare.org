@@ -296,6 +296,7 @@ echo "<h3>Project $project</h3>\n";
   var email = "<?php echo $_SESSION['email']; ?>";
   var ip = "<?php echo getip(); ?>";
   var api = 'http://www.siamsquare.org.uk';
+  $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
   $('#showalert-delete').html("<div class='alert alert-warning'><i class='pe-trash pe-fw'></i> A result record has been deleted</div>").hide();
 
   function showRow(e, rowIndex) {
