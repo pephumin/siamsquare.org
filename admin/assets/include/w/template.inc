@@ -228,7 +228,7 @@ $messagecontent .= "&lt;p&gt;Email automatically sent by ".MYHOME."&lt;/p&gt;\n"
 
 <hr>
 
-<h3>Edit the survey messages</h3>
+<!-- <h3>Edit the survey messages</h3>
 <p>There are two <em>optional</em> messages you can choose to include in the survey. <span class="red">Only use them when there is really an important message to include because a longer survey would typically mean a lower participation rate.</span></p>
 
 <div class="row">
@@ -303,7 +303,7 @@ $messagecontent .= "&lt;p&gt;Email automatically sent by ".MYHOME."&lt;/p&gt;\n"
       </p>
     </form>
   </div>
-</div>
+</div> -->
 
 
 <script type="text/javascript">
