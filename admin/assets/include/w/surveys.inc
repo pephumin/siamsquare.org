@@ -133,7 +133,7 @@ $userlist .= " ]";
         </div>
         <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=edit&amp;s=' + id }, visible: $parent.showActive() == 'A'">Questionnaire <i class="pe-edit"></i></a>
         <span data-bind="if: canedit"><a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=template&amp;s=' + id }, visible: (pp == 'Private' && $parent.showActive() == 'A') || (pp == 'Private' && $parent.showActive() == 'B')">Template <i class="pe-envelope"></i></a></span>
-        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/r.php?w=pilot&amp;s=' + id }, visible: $parent.showActive() == 'A'" target="_blank">Pilot test <i class="pe-paper-plane"></i></a>
+        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/r.php?pilot=1&amp;s=' + id }, visible: $parent.showActive() == 'A'" target="_blank">Pilot test <i class="pe-paper-plane"></i></a>
         <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=progress&amp;s=' + id }, visible: $parent.showActive() == 'B' || $parent.showActive() == 'C'">Progress <i class="pe-flask"></i></a>
         <a class="btn btn-success btn-tiny" data-bind="attr: { href: '/r.php?s=' + id }, visible: $parent.showActive() == 'B'" target="_blank">Live <i class="pe-plane"></i></a>
         <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=result&amp;s=' + id }, visible: $parent.showActive() == 'C' || $parent.showActive() == 'D'">Result <i class="pe-line-chart"></i></a>
@@ -202,7 +202,7 @@ $userlist .= " ]";
   var email = "<?php echo $_SESSION['email']; ?>";
   var ip = "<?php echo getip(); ?>";
   var api = "http://www.siamsquare.org.uk";
-  var key = "aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8";
+  $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
   $('#showalert-delete').html("<div class='alert alert-warning'><i class='pe-trash pe-fw'></i> The project has been deleted</div>").hide();
   $('#showalert-restore').html("<div class='alert alert-warning'><i class='pe-undo pe-fw'></i> The project has been restored</div>").hide();
   $('#showalert-archive').html("<div class='alert alert-warning'><i class='pe-archive pe-fw'></i> The project has been moved to your archive</div>").hide();
@@ -271,8 +271,8 @@ $userlist .= " ]";
       else { var url = "/company/" + companyid + "/" + i; }
       $.ajax({
         url: api + url,
-        dataType: 'json',
         type: 'get',
+        dataType: 'json',
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
           var list = [];
