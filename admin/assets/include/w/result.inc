@@ -38,7 +38,9 @@ for ($i = 0; $i < count($questions); $i++) {
   if ($qrequired) { $add = " <sup>(*)</sup>\n"; } else { $add = ""; }
 
   if ($qname == $show) {
-    $qout .= "<h4 style=\"font-family:boon;font-size:140%\">".$qname.$add.": ".$qtitle." <small>[".$qtype."]</small></h4>\n";
+    $qe = iconize($qtype);
+    $qout .= "<small class='pull-right' style='padding:10px 5px'>".$qe."</small>\n";
+    $qout .= "<h4 style=\"font-family:boon;font-size:140%\">".$qname.$add.": ".$qtitle."</h4>\n";
     if ($qvisibleIf) { $qout .= "    <p class=\"grey small\"><em>Only ask when <u>".$qvisibleIf."</u></em></p>\n"; } else { $qout .= "    <p class=\"grey small\"><em>Ask all respondents</em></p>\n"; }
     if ($qtype == "radiogroup") {
       $qout .= "<ul>\n";
@@ -186,7 +188,7 @@ for ($i = 0; $i < $numberofquestions; $i++) {
   else { $questionlisting .= "  <li class=\"progress-step\">\n"; }
   $questionlisting .= "    <span class=\"progress-marker\"></span>\n";
   $questionlisting .= "    <a href=\"/admin/?w=result&s=$sid&q=$qname1\"><span class=\"progress-text\">\n";
-  $questionlisting .= "      <span class=\"progress-title\">$qname1 <small>($qtype1)</small></span>\n";
+  $questionlisting .= "      <span class=\"progress-title\">$qname1 <small style='font-weight:normal'>[$qtype1]</small></span>\n";
   $questionlisting .= "      <p style=\"font-family:boon;font-size:140%;margin-top:10px\">$qtitle1</p>\n";
   $questionlisting .= "    </span></a>\n";
   $questionlisting .= "  </li>\n";
@@ -496,14 +498,13 @@ else if ($cd == "matrix") {
   }
   // print_r(($dc));
 
-  foreach ($dc as $q => $r) { $dd[] = percentile($dc[$q]); $de[] = array_sum($r); }
+  foreach ($dc as $q => $r) { $dd[] = percentile($dc[$q]); $de[] = array_sum($r); $cmax[] = count($dc[$q]); }
   $totalresponses = array_sum($de);
   $c1 = array_combine($db, $dd);
   $c2 = array_combine($db, $average);
-  // print_r(($c1));
-  if (count($dc[$q]) == 3) { $color = "colors: ['#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 1, type: 'line' } },\n"; }
-  else if (count($dc[$q]) == 4) { $color = "colors: ['#CC0000', '#FF4444', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 1, type: 'line' } },\n"; }
-  else if (count($dc[$q]) == 5) { $color = "colors: ['#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 1, type: 'line' } },\n"; }
+  if (max($cmax) == 3) { $color = "colors: ['#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 1, type: 'line' } },\n"; }
+  else if (max($cmax) == 4) { $color = "colors: ['#CC0000', '#FF4444', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 1, type: 'line' } },\n"; }
+  else if (max($cmax) == 5) { $color = "colors: ['#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 1, type: 'line' } },\n"; }
   $out = "[ 'Attribute', ";
   foreach ($column_link as $a) { $out .= "'".$a."', "; } // label
   if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $out .= " 'Mean' ],\n"; $color .= "'#000000' ],\n"; } else { $out .= " ],\n"; $color .= " ],\n"; }
@@ -569,7 +570,7 @@ $openendquery .= "</div>\n";
 <?php if ($_GET["q"]) { ?>
 
 <div class="row">
-  <div class="col-sm-12 bg-info" style="margin-bottom:40px">
+  <div class="col-sm-12" style="margin-bottom:40px;border: 1px dotted grey; background:mitcream">
     <?php echo $qout; ?>
     <?php echo $answers; ?>
   </div>

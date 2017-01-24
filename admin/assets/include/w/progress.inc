@@ -431,7 +431,7 @@ echo "<h3>Project $project</h3>\n";
     $(".csv textarea").val(csv2);
     var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(csv2);
     $(".csv a.download").attr("href", uri);
-    $(".csv textarea").blur(function() {showCSV(true);})
+    $(".csv textarea").blur(function() { showCSV(true); })
     $(".csv .raw").click(function() {
       showCSV(false);
       $(".csv textarea").focus().select();

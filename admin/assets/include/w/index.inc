@@ -1,9 +1,5 @@
 <?php
 
-// if (isset($_SESSION['frontpage']) && ($_SESSION['frontpage'] == 1)) { include $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/w/summaryuser.inc'; }
-// else if ($_SESSION['frontpage'] == 2) { include $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/w/summarycompany.inc'; }
-// else { include $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/w/summaryuser.inc'; }
-
 $title = "Client's dashboard";
 pageHeader($title);
 
@@ -32,14 +28,12 @@ if (isset($login)) {
   if ($login->messages) { foreach ($login->messages as $message) { echo $message; } }
 }
 
-
-
 ?>
 
 <nav>
   <ul class="nav nav-tabs">
-    <li class="active"><a href="#one" data-toggle="tab"><i class="pe-user pe-fw"></i> Summary of projects you manage</a></li>
-    <li><a href="#two" data-toggle="tab"><i class="pe-cog pe-fw"></i> Summary of all projects for the company</a></li>
+    <li class="active"><a href="#one" data-toggle="tab"><i class="pe-user pe-fw"></i> Summary of your projects</a></li>
+    <li><a href="#two" data-toggle="tab"><i class="pe-building pe-fw"></i> Summary of all company's projects</a></li>
   </ul>
 </nav>
 <br>

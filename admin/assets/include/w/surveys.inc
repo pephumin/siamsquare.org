@@ -131,7 +131,7 @@ $userlist .= " ]";
           <strong>Type:</strong> <span><span data-bind="text: pp"></span> <i class="pe-folder-o" data-bind="visible: pp == 'Private'"></i><i class="pe-folder-open-o" data-bind="visible: pp == 'Public'"></i></span>
           <a class="btn btn-default btn-tiny pull-right" data-bind="attr: { href: '/admin/?w=respondents&amp;s=' + id }, visible: pp == 'Private', css: { 'btn-primary': rD() > 0, 'disabled': $parent.showActive() == 'C' || $parent.showActive() == 'D' || $parent.showActive() == 'E' }"><span data-bind="text: rDFormatted(rD)"></span> respondent(s) <i class="pe-users"></i></a>
         </div>
-        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=edit&amp;s=' + id }, visible: $parent.showActive() == 'A'">Questionnaire <i class="pe-edit"></i></a>
+        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=design&amp;s=' + id }, visible: $parent.showActive() == 'A'">Questionnaire <i class="pe-edit"></i></a>
         <span data-bind="if: canedit"><a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=template&amp;s=' + id }, visible: (pp == 'Private' && $parent.showActive() == 'A') || (pp == 'Private' && $parent.showActive() == 'B')">Template <i class="pe-envelope"></i></a></span>
         <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/r.php?pilot=1&amp;s=' + id }, visible: $parent.showActive() == 'A'" target="_blank">Pilot test <i class="pe-paper-plane"></i></a>
         <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=progress&amp;s=' + id }, visible: $parent.showActive() == 'B' || $parent.showActive() == 'C'">Progress <i class="pe-flask"></i></a>
@@ -156,7 +156,7 @@ $userlist .= " ]";
           <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-showinfo': showInfo() }">
             <td style="border-top: none">Description <a data-bind="if: canedit, click: $parent.startEditDescription, visible: $parent.showActive() == 'A' && !isEditingDescription()" title="Change project description"> <i class="pe-edit"></i></a><a data-bind="click: $parent.cancelEditDescription, visible: isEditingDescription()"><i class="pe-times-circle-o"></i></a></td>
             <td style="border-top: none" colspan="2">
-              <span data-bind="visible: !isEditingDescription(), text: description"></span>
+              <span class="boon" data-bind="visible: !isEditingDescription(), text: description"></span>
               <span data-bind="visible: isEditingDescription()"><textarea data-bind="textInput: editingDescription, visible: isEditingDescription()" onclick="this.select()" class="form-control input-sm" rows="5"></textarea><a class="btn btn-sm" data-bind="click: $parent.postEditDescription, enable: description() != ''" href="">Update <i class="pe-check-circle-o"></i></a><a class="btn btn-sm" data-bind="click: $parent.cancelEditDescription" href="">Cancel <i class="pe-times-circle-o"></i></a></span>
             </td>
           </tr>
@@ -228,6 +228,11 @@ $userlist .= " ]";
     this.editingOwner = ko.observable(userid);
     this.editingName = ko.observable(title);
     this.description = ko.observable(description);
+    // this.description2 = ko.computed(function(description) {
+    //   var newdescription = description.replace(/\n/gi, '<br/>');
+    //   return newdescription;
+    // });
+    this.description2 = ko.computed(function() { var newdesc = this.description.toString().replace(/\n/gi, '<br>'); return newdesc; }, this);
     this.editingDescription = ko.observable(description);
     this.editingPP = ko.observable(private);
     this.userid = ko.observable(userid);;

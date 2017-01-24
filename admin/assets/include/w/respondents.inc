@@ -11,8 +11,8 @@ $help .= "  <p>CSV files can be used with any spreadsheet program, such as Micro
 $help .= "  <p>To create a CSV file, it is as simple as below instructions:</p>\n";
 $help .= "  <ul class=\"pe-ul\">\n";
 $help .= "    <li><i class=\"pe-li pe-check-square\"></i> Create a new Microsoft Excel file</li>\n";
-$help .= "    <li><i class=\"pe-li pe-check-square\"></i> Put all emails into the first column (Column A) by having one email per row</li>\n";
-$help .= "    <li><i class=\"pe-li pe-check-square\"></i> If you copy from other files, you do not have to delete data in other columns. Our system will handle that for you.</li>\n";
+$help .= "    <li><i class=\"pe-li pe-check-square\"></i> Ideally the content of this file should have all emails in the very first column (Column A) by listing only one email per each row. However, our system also allows having email in other column apart from Column A, and this will be needed to specify clearly when uploading the list</li>\n";
+$help .= "    <li><i class=\"pe-li pe-check-square\"></i> If you copy the list of emails from somewhere else, it is okay to leave other non-related content in the file as it makes absolutely no impact to the process. Our system will handle that by only selecting emails from the content for you.</li>\n";
 $help .= "    <li><i class=\"pe-li pe-check-square\"></i> Save the file by choosing <strong>Save As</strong> and then choose CSV format.</li>\n";
 $help .= "  </ul>\n";
 $help .= "</div>\n";
