@@ -25,63 +25,8 @@ function pageHeader($title) {
   }
   header("Content-language: en");
   header("Content-type: text/html; charset=utf-8");
+  meta($title);
 ?>
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="handheldfriendly" content="true">
-  <meta name="mobileoptimized" content="240">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <title><?php echo MYTITLE.": ".$title; ?></title>
-  <link rel="stylesheet" type="text/css" href="/admin/assets/css/admin.css">
-  <link rel="stylesheet" type="text/css" href="/admin/assets/css/csv.css">
-  <!-- <link rel="stylesheet" type="text/css" href="/admin/assets/css/dataTables/dataTables.bootstrap.css"> -->
-<?php if (($_REQUEST["w"]) == "edit") { echo "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/survey.css\">"; } ?>
-  <link rel="shortcut icon" type="image/x-icon" href="/admin/assets/icons/favicon.ico">
-  <link rel="apple-touch-icon" sizes="57x57" href="/admin/assets/icons/apple-icon-57x57.png">
-  <link rel="apple-touch-icon" sizes="60x60" href="/admin/assets/icons/apple-icon-60x60.png">
-  <link rel="apple-touch-icon" sizes="72x72" href="/admin/assets/icons/apple-icon-72x72.png">
-  <link rel="apple-touch-icon" sizes="76x76" href="/admin/assets/icons/apple-icon-76x76.png">
-  <link rel="apple-touch-icon" sizes="114x114" href="/admin/assets/icons/apple-icon-114x114.png">
-  <link rel="apple-touch-icon" sizes="120x120" href="/admin/assets/icons/apple-icon-120x120.png">
-  <link rel="apple-touch-icon" sizes="144x144" href="/admin/assets/icons/apple-icon-144x144.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="/admin/assets/icons/apple-icon-152x152.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/admin/assets/icons/apple-icon-180x180.png">
-  <link rel="icon" type="image/png" sizes="192x192"  href="/admin/assets/icons/android-icon-192x192.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/admin/assets/icons/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="96x96" href="/admin/assets/icons/favicon-96x96.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/admin/assets/icons/favicon-16x16.png">
-  <link rel="manifest" href="/admin/assets/icons/manifest.json">
-  <meta name="msapplication-TileColor" content="#FFFFFF">
-  <meta name="msapplication-TileImage" content="/admin/assets/icons/ms-icon-144x144.png">
-  <meta name="theme-color" content="#FFFFFF">
-  <script type="text/javascript" src="/admin/assets/js/jquery-2.1.4.min.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/jquery.steps.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/moment.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/jquery-csv.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/csv.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/highlight.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/lightbox.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/jquery.easyautocomplete.js"></script>
-  <!-- <script type="text/javascript" src="/admin/assets/js/dataTables/jquery.dataTables.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/dataTables/dataTables.bootstrap.js"></script> -->
-  <script type="text/javascript" src="/admin/assets/js/fv/formValidation.min.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/fv/bootstrap.min.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/survey/knockout.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/survey/ace/ace.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/survey/ace/worker-json.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/survey/ace/mode-json.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/survey/survey.ko.js"></script>
-  <script type="text/javascript" src="/admin/assets/js/survey/surveyeditor.js"></script>
-<?php if (($_REQUEST["w"] == "template") || ($_REQUEST["w"] == "promote")) { echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/tinymce/tinymce.min.js\"></script>"; } ?>
-  <script type="text/javascript" src="https://www.gstatic.com/firebasejs/3.4.1/firebase.js"></script>
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-</head>
 <body>
 <header>
   <div class="row">

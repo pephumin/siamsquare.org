@@ -146,12 +146,88 @@ function ago2($datetime, $depth=1) {
   return $output.($timediff<0?$suffix2:$suffix1);
 }
 
+function meta($title) {
+  echo "<!doctype html>\n";
+  if (strpos($_SERVER['REQUEST_URI'], "admin") !== false) { echo "<html lang=\"en\">\n"; }
+  else { echo "<html lang=\"th\">\n"; }
+  echo "<head>\n";
+  echo "  <meta charset=\"utf-8\">\n";
+  echo "  <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n";
+  echo "  <meta name=\"handheldfriendly\" content=\"true\">\n";
+  echo "  <meta name=\"mobileoptimized\" content=\"240\">\n";
+  echo "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
+  echo "  <meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n";
+  echo "  <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\">\n";
+  echo "  <title>".MYTITLE.": ".$title."</title>\n";
+  if (strpos($_SERVER['REQUEST_URI'], "admin") !== false) {
+    echo "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/admin.css\">\n";
+    // echo "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/csv.css\">\n";
+    if (($_REQUEST["w"] == "design") || ($_REQUEST["w"] == "result")) { echo "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/survey.css\">"; }
+  } else {
+    echo "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/themes.css\">\n";
+    echo "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/survey.css\">\n";
+  }
+  // echo "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/jquery-ui.css\">\n";
+  echo "  <link rel=\"shortcut icon\" type=\"image/x-icon\" href=\"/admin/assets/icons/favicon.ico\">\n";
+  echo "  <link rel=\"apple-touch-icon\" sizes=\"57x57\" href=\"/admin/assets/icons/apple-icon-57x57.png\">\n";
+  echo "  <link rel=\"apple-touch-icon\" sizes=\"60x60\" href=\"/admin/assets/icons/apple-icon-60x60.png\">\n";
+  echo "  <link rel=\"apple-touch-icon\" sizes=\"72x72\" href=\"/admin/assets/icons/apple-icon-72x72.png\">\n";
+  echo "  <link rel=\"apple-touch-icon\" sizes=\"76x76\" href=\"/admin/assets/icons/apple-icon-76x76.png\">\n";
+  echo "  <link rel=\"apple-touch-icon\" sizes=\"114x114\" href=\"/admin/assets/icons/apple-icon-114x114.png\">\n";
+  echo "  <link rel=\"apple-touch-icon\" sizes=\"120x120\" href=\"/admin/assets/icons/apple-icon-120x120.png\">\n";
+  echo "  <link rel=\"apple-touch-icon\" sizes=\"144x144\" href=\"/admin/assets/icons/apple-icon-144x144.png\">\n";
+  echo "  <link rel=\"apple-touch-icon\" sizes=\"152x152\" href=\"/admin/assets/icons/apple-icon-152x152.png\">\n";
+  echo "  <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/admin/assets/icons/apple-icon-180x180.png\">\n";
+  echo "  <link rel=\"icon\" type=\"image/png\" sizes=\"192x192\" href=\"/admin/assets/icons/android-icon-192x192.png\">\n";
+  echo "  <link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"/admin/assets/icons/favicon-32x32.png\">\n";
+  echo "  <link rel=\"icon\" type=\"image/png\" sizes=\"96x96\" href=\"/admin/assets/icons/favicon-96x96.png\">\n";
+  echo "  <link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"/admin/assets/icons/favicon-16x16.png\">\n";
+  echo "  <link rel=\"manifest\" href=\"/admin/assets/icons/manifest.json\">\n";
+  echo "  <meta name=\"msapplication-TileColor\" content=\"#FFFFFF\">\n";
+  echo "  <meta name=\"msapplication-TileImage\" content=\"/admin/assets/icons/ms-icon-144x144.png\">\n";
+  echo "  <meta name=\"theme-color\" content=\"#FFFFFF\">\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-2.1.4.min.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-ui.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/bootstrap.min.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery.steps.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/moment.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-csv.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/csv.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/highlight.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/lightbox.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery.easyautocomplete.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/fv/formValidation.min.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/fv/bootstrap.min.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/knockout.js\"></script>\n";
+  // echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/ace/ace.js\"></script>\n";
+  // echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/ace/worker-json.js\"></script>\n";
+  // echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/ace/mode-json.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/survey.ko.min.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/surveyeditor.min.js\"></script>\n";
+  if (($_REQUEST["w"] == "template") || ($_REQUEST["w"] == "promote")) { echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/tinymce/tinymce.min.js\"></script>"; }
+  echo "  <script type=\"text/javascript\" src=\"https://www.gstatic.com/firebasejs/3.4.1/firebase.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"></script>\n";
+  echo "</head>\n";
+}
+
 function percent($number) {
   return number_format($number * 100, 1).'%';
 }
 
 function iconize($data) {
-  if (preg_match("/pilot test/i", $data)) { $insert = "<i class=\"pe-paper-plane pe-fw\"></i> &nbsp; "; }
+  if ($data == "rating") { $insert = "<span class=\"icon-rating\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "radiogroup") { $insert = "<span class=\"icon-radiogroup\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "dropdown") { $insert = "<span class=\"icon-dropdown\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "checkbox") { $insert = "<span class=\"icon-checkbox\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "text") { $insert = "<span class=\"icon-text\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "mutipletext") { $insert = "<span class=\"icon-mutipletext\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "comment") { $insert = "<span class=\"icon-comment\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "file") { $insert = "<span class=\"icon-file\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "matrix") { $insert = "<span class=\"icon-matrix\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "matrixdropdown") { $insert = "<span class=\"icon-matrixdropdown\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "matrixdynamic") { $insert = "<span class=\"icon-matrixdynamic\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "html") { $insert = "<span class=\"icon-html\" style=\"font-size:0.7rem\"></span>"; }
+  else if (preg_match("/pilot test/i", $data)) { $insert = "<i class=\"pe-paper-plane pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/edited and saved/i", $data)) { $insert = "<i class=\"pe-save pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/conducted a survey/i", $data)) { $insert = "<i class=\"pe-plane pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/logged in/i", $data)) { $insert = "<i class=\"pe-sign-in pe-fw\"></i> &nbsp; "; }
@@ -298,4 +374,5 @@ function sendMail($surveyid, &$emails) {
     $mail->clearAddresses();
   }
 }
+
 ?>
