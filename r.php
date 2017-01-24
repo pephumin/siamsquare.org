@@ -1,17 +1,11 @@
 <?php
 
-$tophead = false;
-$navbar = "none"; // standard / custom / none
-$showlogo = true;
-$showdetail = true;
-
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/themes.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/functions.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.login.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.imgresize.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.phpmailer.php';
-
 
 if (empty($_GET['s'])) {
   $target = "/";
@@ -127,6 +121,14 @@ while ($r = $q1->fetchObject()) {
   if ($showlink == true) { $clientlogo = $d2; } else { $clientlogo = $d1; }
   $companyname = $r->company;
   $description = nl2br($r->description);
+  $showtopper = $r->show_top;
+  $shownavbar = $r->show_navbar;
+  $showlogo = $r->show_logo;
+  $showdetail = $r->show_detail;
+  if ($r->colour) {
+    $filename = $_SERVER['DOCUMENT_ROOT'].'/admin/assets/theme/'.$r->colour.'.php';
+    if (file_exists($filename)) { require_once $filename; }
+  }
 }
 
 $title = "ร่วมแสดงความคิดเห็น";
@@ -138,13 +140,13 @@ pageHeader($title);
 
 <div class="row">
   <div class="container">
-    <?php if ($showdetail == true) { ?>
+    <?php if (($description) && ($showdetail == true)) { ?>
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projectdetail">
-      <?php if ($showlogo == true) { echo "<div class=\"pull-right companylogo\">$clientlogo</div>\n"; } ?>
+      <?php if (($d1) && ($showlogo == true)) { echo "<div class=\"pull-right companylogo\">$clientlogo</div>\n"; } ?>
       <h5 class="projectdetailhead">รายละเอียดงานวิจัย</h5>
       <p class="projectdescription"><?php echo $description; ?></p>
     </div>
-    <?php } else if ($showlogo == true) { echo "<div class=\"companylogo\">$clientlogo</div>\n"; } ?>
+    <?php } else if (($d1) && ($showlogo == true)) { echo "<div class=\"companylogo\">$clientlogo</div>\n"; } ?>
   </div>
 </div>
 
@@ -175,7 +177,11 @@ pageHeader($title);
       dataType: 'json',
       type: 'post',
       contentType: 'application/json; charset=utf-8',
+<?php if ($_GET['pilot'] == 1) { ?>
+      data: '{"rd": "' + cid + '", "ip": "' + cip + '", "email": "' + email + '", "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ', "status": "0" }',
+<?php } else { ?>
       data: '{"rd": "' + cid + '", "ip": "' + cip + '", "email": "' + email + '", "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ', "status": "1" }',
+<?php } ?>
       success: function(data) {
         $('#showcompletion').show();
         $.ajax({
@@ -243,23 +249,28 @@ pageHeader($title);
   var email = "<?php echo $email; ?>";
   var title = "Project <?php echo $project; ?>";
   var ip = "<?php echo getip(); ?>";
+  $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
   Survey.Survey.cssType = "bootstrap";
   var survey = new Survey.Survey (getsurveydata(surveyid), "runsurvey");
+<?php if (!$_GET['pilot']) { ?>
   var checksave = getsavesurveydata(surveyid, email);
   if (checksave.data == null) { resultid = null; }
   else {
     survey.data = checksave.data; resultid = checksave.id;
-    moment.locale('en'); var s1 = moment(checksave.saved).fromNow(); var s2 = moment(checksave.saved).format("D MMM YYYY");
+    moment.locale('en'); s1 = moment(checksave.saved).fromNow(); s2 = moment(checksave.saved).format("D MMM YYYY"); s3 = moment(checksave.saved).format("h:mm:ss a");
     since = s2; //since = s2 + ' (' + s1 + ')';
-    $('#notification').html("<div class='alert alert-info'><strong><i class='pe-save pe-lg pe-fw'></i> พบข้อมูลเก่าของคุณ</strong><br>ระบบพบข้อมูลเก่าบางส่วนที่คุณเคยทำไว้ตั้งแต่ " + since + " และคุณสามารถใช้ข้อมูลนี้ต่อได้ทันที หากคุณต้องการเริ่มใหม่ คุณสามารถทำได้โดยกด <button type=\"button\" id=\"resetsave\" class=\"btn btn-xs btn-primary\">Reset</button></div>").hide();
+    $('#notification').html("<div class='alert alert-warning'><h4><i class='pe-save pe-lg pe-fw'></i> พบข้อมูลเก่าค้างไว้จากครั้งก่อน</h4><span>ระบบพบข้อมูลเก่าบางส่วนที่คุณเคยทำไว้ตั้งแตวันที่่ " + s2 + " เวลา " + s3 + " (" + s1 + ") และคุณสามารถใช้ข้อมูลนี้ต่อได้ทันที<br>หากคุณต้องการเริ่มใหม่ คุณสามารถทำได้โดยกด <button type=\"button\" id=\"resetsave\" class=\"btn btn-xs btn-danger\">Reset</button></span></div>").hide();
     $('#notification').show(); // setTimeout(function () { $("#notification").slideUp(500, function () { $("#notification").hide(); }); }, 12000);
   }
+<?php } ?>
   $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> ระบบกำลังอัพโหลดรูปของคุณ ระหว่างนี้คุณสามารถทำรายการต่อได้ทันที และอีกสักครู่เมื่อระบบทำงานในส่วนนี้เสร็จ ข้อความนี้จะหายไปเอง</div>").hide();
   $('#showcompletion').html("<div class='alert alert-success'><i class='pe-check-square-o pe-lg pe-fw'></i> เราได้ทำการจัดเก็บความคิดเห็นของคุณลงระบบเป็นที่เรียบร้อยแล้ว</div>").hide();
   $('#resetsave').on('click', function() { clearsavesurveydata(resultid, ip, email, surveyid, title); });
   survey.onComplete.add(function (s) { postsurveydata(cid, ip, email, surveyid, survey.data, title); });
   survey.onUploadFile.add(function (data) { $('#showupload').show(); setTimeout(function () { $("#showupload").slideUp(500, function () { $("#showupload").hide(); }); }, 6000); });
+<?php if (!$_GET['pilot']) { ?>
   survey.onCurrentPageChanged.add(function (data) { autosavesurveydata(cid, ip, email, surveyid, survey.data, title); });
+<?php } ?>
   // survey.onComplete
   // survey.onCurrentPageChanged
   // survey.onValueChanged
