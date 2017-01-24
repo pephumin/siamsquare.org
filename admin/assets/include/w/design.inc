@@ -1,5 +1,7 @@
 <?php
 
+$showprojectdescription = 0;
+
 // Get projcet title
 $q1 = $db->prepare("SELECT P.*, C.company, C.logo, C.website FROM j_projects P, j_companies C WHERE P.companyid = C.id AND P.id = :surveyid");
 //$q1 = $db->prepare("SELECT title, status FROM j_projects WHERE id = :surveyid");
@@ -48,84 +50,138 @@ if ($_SESSION['level'] != "9") {
   }
 }
 
-$title = "Edit a survey";
+$title = "Questionnaire design";
+$help = "Routing guideline";
 pageHeader($title);
 echo "<h2 id=\"h2pageTitle\"></h2>";
 echo "<p>This page allows you to freely edit your survey which includes both survey information and the arrangement of tailor-made questions that you need. You may want to test your survey to ensure the logical flow and the right routing are implemented. We also recommend ading the translation into the same version to make it less complicated after all.</p>\n";
 echo "<p>While you can edit your questionnaire as often as you want, it is important to click save to ensure all the changes will not be lost.</p>\n";
-echo "<hr>\n";
+echo "<br>\n";
 
 ?>
 
-<div id="showreadonly"></div><div id="showsaving"></div><div id="showsavesuccess"></div>
-
-<h3>Project <?php echo $project; ?></h3>
-
-<?php if ($description) { ?>
-<div class="row">
-  <div class="container">
-    <?php if ($description) { ?>
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projectdetail">
-      <?php if ($d1) { echo "<div class=\"pull-right companylogo\">$clientlogo</div>\n"; } ?>
-      <h5 class="projectdetailhead">รายละเอียดงานวิจัย</h5>
-      <p class="projectdescription"><?php echo $description; ?></p>
-    </div>
-    <?php } else if ($d1) { echo "<div class=\"companylogo\">$clientlogo</div>\n"; } ?>
-  </div>
-</div>
-<?php } ?>
+<nav>
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#1" data-toggle="tab"><i class="pe-edit pe-fw"></i> <?php echo $title; ?></a></li>
+    <li><a href="#2" data-toggle="tab"><i class="pe-book pe-fw"></i> <?php echo $help; ?></a></li>
+  </ul>
+</nav>
 
 <br>
 
-<div id="editor"></div>
+<div id="showreadonly"></div><div id="showsaving"></div><div id="showsavesuccess"></div>
 
-<br><br>
-
-<hr>
-
-<!-- <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script> -->
-
-<h3>Usage of visibleif and other triggers</h3>
-<div class="row">
-  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom:20px">
-    <h4>Visibleif</h4>
-    <pre><code class="r">visibleIf: "{haveKids}='Yes'"
-visibleIf: "{haveKids}='Yes' and {kids} >= 1"</code></pre>
+<div class="tab-content">
+  <div id="1" class="tab-pane fade in active">
+    <h3>Project <?php echo $project; ?></h3>
+    <?php if (($description) && ($showprojectdescription == true)) { ?>
+    <div class="row">
+      <div class="container">
+        <?php if ($description) { ?>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projectdetail">
+          <?php if ($d1) { echo "<div class=\"pull-right companylogo\">$clientlogo</div>\n"; } ?>
+          <h5 class="projectdetailhead">รายละเอียดงานวิจัย</h5>
+          <p class="projectdescription"><?php echo $description; ?></p>
+        </div>
+        <?php } else if ($d1) { echo "<div class=\"companylogo\">$clientlogo</div>\n"; } ?>
+      </div>
+    </div>
+    <?php } ?>
+    <br>
+    <div id="editor"></div>
+    <br><br>
   </div>
-  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom:20px">
-    <h4>Visible trigger</h4>
-    <p>This trigger is called when the question value name is changed. It makes the list of 'questions' and/or 'pages' visibles when the ('question' value 'operator' 'value') returns true, otherwise the list of 'questions' and/or 'pages' will become invisible.</p>
-    <p>Available operator values are: "empty", "notempty", "equal", "notequal", "greater", "less", "greaterorequal", "lessorequal", "contains" and "notcontains". And the default value is "equal".</p>
-    <pre><code class="r">triggers: [
-  { type: "visible", name: "type", operator: "equal", value: "Hot hatch", questions: ["Hot hatch"] },
-  { type: "visible", name: "type", value: "sedan", questions: ["Sedan"] },
-  { type: "visible", name: "type", value: "sports", questions: ["Sports"] },
-  { type: "visible", name: "type", value: "Grand tourer", questions: ["Grand tourer"] },
-  { type: "visible", name: "type", value: "SuperCar", questions: ["Supercar"] },
-  { type: "visible", name: "type", value: "Muscle car", questions: ["Muscle car"] },
-  { type: "visible", name: "type", value: "Pony car", questions: ["Pony car"] },
-  { type: "visible", name: "type", value: "Convertible", questions: ["Convertible"] },
-  { type: "visible", name: "type", value: "other", questions: ["otherType"] }
-]</code></pre>
-  </div>
-  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom:20px">
-    <h4>Complete trigger</h4>
-    <p>This trigger is called on the next page action. It completes the survey if the ('question' value 'operator' 'value') returns true.</p>
-    <pre><code class="r">visibleIf: "{haveKids}='Yes'"
-visibleIf: "{haveKids}='Yes' and {kids} >= 1"</code></pre>
-  </div>
-  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom:20px">
-    <h4>SetValue trigger</h4>
-    <pre><code class="r">triggers: [
-  { type: "setvalue", name: "copy", operator: "equal", value: "Yes", setToName: "name", setValue: "Jon Snow" },
-  { type: "setvalue", name: "copy", operator: "equal", value: "Yes", setToName: "email", setValue: "jon.snow@nightwatch.com" },
-  { type: "setvalue", name: "copy", operator: "equal", value: "Yes", setToName: "tempvar", isVariable: true, setValue: "You have decided to use your current information." },
-  { type: "setvalue", name: "copy", operator: "equal", value: "No", setToName: "name", setValue: "" },
-  { type: "setvalue", name: "copy", operator: "equal", value: "No", setToName: "email", setValue: "" },
-  { type: "setvalue", name: "copy", operator: "equal", value: "No", setToName: "tempvar", isVariable: true, setValue: "You have decided not to use your current information." }
-]</code></pre>
+  <div id="2" class="tab-pane fade">
+    <h3><?php echo $help; ?></h3>
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom:20px">
+        <h4>Visibleif</h4>
+        <p>This expression is used for showing or hiding more question(s) when a specific answer is selected by a respondent.</p>
+        <p>Below example shows an additional question on "How many kids do you have" will be displayed only when "Yes" is selected in "Do you have a kid(s)?".</p>
+        <pre><code class="r">var survey = new Survey.Model({
+  showQuestionNumbers: &#x22;off&#x22;,
+  questions: [
+    { type: &#x22;radiogroup&#x22;, name: &#x22;haveKids&#x22;, title: &#x22;Do you have a kid(s)?&#x22;, choices:[&#x22;Yes&#x22;, &#x22;No&#x22;], colCount: 0},
+    { type: &#x22;dropdown&#x22;, name: &#x22;kids&#x22;, title: &#x22;How many kids do you have&#x22;, visibleIf: &#x22;{haveKids}=&#x27;Yes&#x27;&#x22;, choices:[1, 2, 3, 4, 5] }
+  ]
+});
+survey.render(&#x22;surveyElement&#x22;);</code></pre>
+      </div>
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom:20px">
+        <h4>Visible trigger</h4>
+        <p>This trigger is typically used when there is a need to change the future answers based on the current answer. Multiple list of answers can be used per below example.</p>
+        <p>Available operator values are "empty", "notempty", "equal", "notequal", "greater", "less", "greaterorequal", "lessorequal", "contains" and "notcontains". And the default value is "equal".</p>
+        <pre><code class="r">var survey = new Survey.Model({
+  triggers: [
+    { type: &#x22;visible&#x22;, name: &#x22;type&#x22;, operator: &#x22;equal&#x22;, value: &#x22;sedan&#x22;, questions: [&#x22;Sedan&#x22;] },
+    { type: &#x22;visible&#x22;, name: &#x22;type&#x22;, operator: &#x22;equal&#x22;, value: &#x22;sports&#x22;, questions: [&#x22;Sports&#x22;] },
+    { type: &#x22;visible&#x22;, name: &#x22;type&#x22;, operator: &#x22;equal&#x22;, value: &#x22;supercar&#x22;, questions: [&#x22;Super Car&#x22;] },
+    { type: &#x22;visible&#x22;, name: &#x22;type&#x22;, operator: &#x22;equal&#x22;, value: &#x22;convertible&#x22;, questions: [&#x22;Convertible&#x22;] },
+    { type: &#x22;visible&#x22;, name: &#x22;type&#x22;, operator: &#x22;equal&#x22;, value: &#x22;other&#x22;, questions: [&#x22;otherType&#x22;] }
+  ],
+  questions: [
+    { type: &#x22;radiogroup&#x22;, name: &#x22;type&#x22;, title: &#x22;Select the car type&#x22;, hasOther: true, choices: [&#x22;Sedan&#x22;, &#x22;Sports&#x22;, &#x22;Super Car&#x22;, &#x22;Convertible&#x22;] },
+    { type: &#x22;radiogroup&#x22;, name: &#x22;Sedan&#x22;, visible: false, title: &#x22;Select the model&#x22;, hasOther: true, choices: [&#x22;BMW M5&#x22;, &#x22;Mazda 6 MPS&#x22;, &#x22;Mitsubishi EVO&#x22;] },
+    { type: &#x22;radiogroup&#x22;, name: &#x22;Sports&#x22;, visible: false, title: &#x22;Select the model&#x22;, hasOther: true, choices: [&#x22;Chevrolet Corvette&#x22;, &#x22;Mazda MX-5&#x22;, &#x22;Porsche 911&#x22;] },
+    { type: &#x22;radiogroup&#x22;, name: &#x22;Super Car&#x22;, visible: false, title: &#x22;Select the model&#x22;, hasOther: true, choices: [&#x22;McLaren P1&#x22;, &#x22;Lamborghini Miura&#x22;, &#x22;Bugatti Veyron 16.4&#x22;] },
+    { type: &#x22;radiogroup&#x22;, name: &#x22;Convertible&#x22;, visible: false, title: &#x22;Select the model&#x22;, hasOther: true, choices: [&#x22;Honda S2000&#x22;, &#x22;Volkswagen Eos&#x22;, &#x22;Volvo C70&#x22;] },
+    { type: &#x22;comment&#x22;, name: &#x22;otherType&#x22;, title: &#x22;Please specify&#x22;, visible: false, isRequired: true }
+  ]
+});
+survey.render(&#x22;surveyElement&#x22;);</code></pre>
+      </div>
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom:20px">
+        <h4>Complete trigger</h4>
+        <p>This trigger is called on the next page action. It completes the survey if the ('question' value 'operator' 'value') returns true.</p>
+        <pre><code class="r">var survey = new Survey.Model({
+  triggers: [
+    { type: &#x22;complete&#x22;, name: &#x22;exit1&#x22;, operator: &#x22;equal&#x22;, value: &#x22;Yes&#x22; },
+    { type: &#x22;complete&#x22;, name: &#x22;exit2&#x22;, operator: &#x22;equal&#x22;, value: &#x22;Yes&#x22; }
+  ],
+  pages: [
+    { title: &#x22;What operating system do you use?&#x22;, questions: [
+      { type:&#x22;checkbox&#x22;, name:&#x22;opSystem&#x22;, title: &#x22;OS&#x22;, hasOther: true, choices:[&#x22;Windows&#x22;, &#x22;Linux&#x22;, &#x22;Macintosh OSX&#x22;] },
+      { type:&#x22;radiogroup&#x22;, name:&#x22;exit1&#x22;, title:&#x22;Do you want to finish the survey?&#x22;, choices: [&#x22;Yes&#x22;, &#x22;No&#x22;], colCount: 0 }
+    ]},
+    { title: &#x22;What language(s) are you currently using?&#x22;, questions: [
+      { type:&#x22;checkbox&#x22;, name:&#x22;langs&#x22;,title:&#x22;Plese select from the list&#x22;, colCount: 4, choices:[&#x22;Javascript&#x22;, &#x22;Java&#x22;, &#x22;Python&#x22;, &#x22;CSS&#x22;, &#x22;PHP&#x22;, &#x22;Ruby&#x22;, &#x22;C++&#x22;, &#x22;C&#x22;,  &#x22;Shell&#x22;, &#x22;C#&#x22;, &#x22;Objective-C&#x22;, &#x22;R&#x22;, &#x22;VimL&#x22;, &#x22;Go&#x22;, &#x22;Perl&#x22;, &#x22;CoffeeScript&#x22;,  &#x22;TeX&#x22;, &#x22;Swift&#x22;, &#x22;Scala&#x22;, &#x22;Emacs List&#x22;, &#x22;Haskell&#x22;, &#x22;Lua&#x22;, &#x22;Clojure&#x22;,  &#x22;Matlab&#x22;, &#x22;Arduino&#x22;, &#x22;Makefile&#x22;, &#x22;Groovy&#x22;, &#x22;Puppet&#x22;, &#x22;Rust&#x22;, &#x22;PowerShell&#x22;] },
+      { type:&#x22;radiogroup&#x22;, name:&#x22;exit2&#x22;, title:&#x22;Do you want to finish the survey?&#x22;, choices: [&#x22;Yes&#x22;, &#x22;No&#x22;], colCount: 0 }
+    ]},
+    { title: &#x22;Please enter your name and e-mail&#x22;, questions: [
+      { type: &#x22;text&#x22;, name: &#x22;name&#x22;, title: &#x22;Name:&#x22; },
+      { type: &#x22;text&#x22;, name: &#x22;email&#x22;, title: &#x22;Your e-mail&#x22; }
+    ]}
+  ]
+});
+survey.render(&#x22;surveyElement&#x22;);</code></pre>
+      </div>
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom:20px">
+        <h4>SetValue trigger</h4>
+        <pre><code class="r">var survey = new Survey.Model({
+  triggers: [
+    { type: &#x22;setvalue&#x22;, name: &#x22;copy&#x22;, operator: &#x22;equal&#x22;, value: &#x22;Yes&#x22;, setToName: &#x22;name&#x22;, setValue: &#x22;Jon Snow&#x22; },
+    { type: &#x22;setvalue&#x22;, name: &#x22;copy&#x22;, operator: &#x22;equal&#x22;, value: &#x22;Yes&#x22;, setToName: &#x22;email&#x22;, setValue: &#x22;jon.snow@nightwatch.com&#x22; },
+    { type: &#x22;setvalue&#x22;, name: &#x22;copy&#x22;, operator: &#x22;equal&#x22;, value: &#x22;Yes&#x22;, setToName: &#x22;tempvar&#x22;, isVariable: true, setValue: &#x22;You have decided to use your current information.&#x22; },
+    { type: &#x22;setvalue&#x22;, name: &#x22;copy&#x22;, operator: &#x22;equal&#x22;, value: &#x22;No&#x22;, setToName: &#x22;name&#x22;, setValue: &#x22;&#x22; },
+    { type: &#x22;setvalue&#x22;, name: &#x22;copy&#x22;, operator: &#x22;equal&#x22;, value: &#x22;No&#x22;, setToName: &#x22;email&#x22;, setValue: &#x22;&#x22; },
+    { type: &#x22;setvalue&#x22;, name: &#x22;copy&#x22;, operator: &#x22;equal&#x22;, value: &#x22;No&#x22;, setToName: &#x22;tempvar&#x22;, isVariable: true, setValue: &#x22;You have decided not to use your current information.&#x22; }
+  ],
+  pages: [
+    { title: &#x22;Customer information&#x22;, questions: [
+      { type:&#x22;radiogroup&#x22;, name:&#x22;copy&#x22;, title: &#x22;Use your current data&#x22;, choices:[&#x22;Yes&#x22;, &#x22;No&#x22;], colCount: 0 },
+      { type: &#x22;text&#x22;, name: &#x22;name&#x22;, title: &#x22;Name:&#x22; },
+      { type: &#x22;text&#x22;, name: &#x22;email&#x22;, title: &#x22;Your e-mail&#x22;, validators: [{ type:&#x22;email&#x22; }] }
+    ]}
+  ],
+  completedHtml: &#x22;&#x3C;p&#x3E;&#x3C;h4&#x3E;Thank you for sharing this information with us.&#x3C;/h4&#x3E;&#x3C;/p&#x3E;&#x3C;p&#x3E;Your name is: &#x3C;b&#x3E;{name}&#x3C;/b&#x3E;&#x3C;/p&#x3E;&#x3C;p&#x3E;Your email is: &#x3C;b&#x3E;{email}&#x3C;/b&#x3E;&#x3C;/p&#x3E;&#x3C;p&#x3E;This information is not in the survey data result:&#x3C;b&#x3E; {tempvar}&#x3C;/b&#x3E;&#x3C;/p&#x3E;&#x22;
+});
+survey.render(&#x22;surveyElement&#x22;);</code></pre>
+      </div>
+    </div>
+    <br><br>
   </div>
 </div>
+
 
 <script type="text/javascript">
 
@@ -145,11 +201,26 @@ visibleIf: "{haveKids}='Yes' and {kids} >= 1"</code></pre>
   // Start scripting by pe (phumin@sawasdee.org)
   var options = {
     questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "matrixdynamic", "html"],
-    showJSONEditorTab: false,
+    showJSONEditorTab: true,
+    showTestSurveyTab: true,
     showEmbededSurveyTab: false
   };
   options.generateValidJSON = true;
   Survey.Survey.cssType = "bootstrap";
+  Survey.JsonObject.metaData.removeProperty("survey", "clearInvisibleValues");
+  Survey.JsonObject.metaData.removeProperty("survey", "cookieName");
+  // Survey.JsonObject.metaData.removeProperty("survey", "locale");
+  // Survey.JsonObject.metaData.removeProperty("survey", "mode");
+  Survey.JsonObject.metaData.removeProperty("survey", "sendResultOnPageNext");
+  Survey.JsonObject.metaData.removeProperty("survey", "storeOthersAsComment");
+  Survey.JsonObject.metaData.removeProperty("survey", "surveyPostId");
+  Survey.JsonObject.metaData.removeProperty("survey", "surveyId");
+  Survey.JsonObject.metaData.removeProperty("page", "visibleIf");
+  Survey.JsonObject.metaData.removeProperty("questionbase", "hasComment");
+  Survey.JsonObject.metaData.removeProperty("questionbase", "width");
+  // Survey.JsonObject.metaData.removeProperty("questionbase", "otherErrorText");
+  Survey.JsonObject.metaData.removeProperty("questionbase", "commentText");
+  // Survey.JsonObject.metaData.removeProperty("questionbase", "storeOthersAsComment");
   var editor = new SurveyEditor.SurveyEditor("editor", options);
   var api = "http://www.siamsquare.org.uk";
   var surveyid = <?php echo $_GET['s']; ?>;
@@ -197,7 +268,7 @@ visibleIf: "{haveKids}='Yes' and {kids} >= 1"</code></pre>
     $('#btn-save').addClass('disabled');
     $('#btn-save').prop('disabled', true);
   }
-  if (mm.title) { var title = "Editing a survey"; var pname = "Project " + mm.title; } else { var title = "Starting a survey"; }
+  if (mm.title) { var title = "Edit my questionnaire"; var pname = "Project " + mm.title; } else { var title = "Start a new questionnaire"; }
   document.getElementById('h2pageTitle').innerHTML = title;
   // document.getElementById('projectname').innerHTML = pname;
   $('#btn-save').on('click', function() {
