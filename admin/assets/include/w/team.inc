@@ -22,7 +22,7 @@ $rolelist .= " ]";
   </div>
   <?php } ?>
   <div class="col-sm-12">
-    <div id="showalert-create"></div><div id="showalert-delete"></div><div id="showalert-edit"></div><div id="showalert-suspend"></div><div id="showalert-changerole"></div>
+    <div id="showalert-create"></div><div id="showalert-delete"></div><div id="showalert-edit"></div><div id="showalert-suspend"></div><div id="showalert-reactivate"></div><div id="showalert-changerole"></div>
   </div>
 </div>
 
@@ -30,16 +30,18 @@ $rolelist .= " ]";
 <?php if ($_SESSION['level'] >= "6") { ?>
   <div data-bind="visible: isNewMemberCreating" class="col-xs-12 col-sm-7 col-md-4 col-lg-4" style="margin-bottom:20px">
     <div class="members">
-      <div class="members-header-new"></div>
-      <div class="members-body">
-        <h4 class="white" style="margin-bottom:5px !important">Create a new member</h4>
-        <div class="white small" style="margin-bottom:1.2rem">(Using the below avatar as a default)</div>
-        <p><img src="/admin/assets/img/u/M10.svg" class="img-circle members-photo" alt="Avatar"></p>
-        <div class="input-group"><span class="input-group-addon"><small>Name:</small></span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberName" onclick="this.select()" placeholder="Enter first and last name"></div><br>
-        <div class="input-group"><span class="input-group-addon"><small>Email</small>:</span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberEmail" onclick="this.select()" placeholder="Enter email address"></div><br>
-        <a class="btn btn-primary btn-tiny" data-bind="click: postNew, enable: newMemberName() != '', enable: newMemberEmail() != ''" href=""><i class="pe-user-plus"></i> Create</a>
-        <a class="btn btn-default btn-tiny" data-bind="click: cancelNew" href=""><i class="pe-times-circle-o"></i> Cancel</a><br><br>
-        <small class="red">Only create using a working email</small>
+      <div class="opq">
+        <div class="members-header-new"></div>
+        <div class="members-body">
+          <h4 class="fullname">Create a new member</h4>
+          <div class="email small">(Using the below avatar as a default)</div>
+          <p><img src="/admin/assets/img/u/M10.svg" class="img-circle members-photo" alt="Avatar"></p>
+          <div class="input-group"><span class="input-group-addon"><small>Name:</small></span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberName" onclick="this.select()" placeholder="Enter first and last name"></div><br>
+          <div class="input-group"><span class="input-group-addon"><small>Email</small>:</span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberEmail" onclick="this.select()" placeholder="Enter email address"></div><br>
+          <a class="btn btn-primary btn-tiny" data-bind="click: postNew, enable: newMemberName() != '', enable: newMemberEmail() != ''" href=""><i class="pe-user-plus"></i> Create</a>
+          <a class="btn btn-default btn-tiny" data-bind="click: cancelNew" href=""><i class="pe-times-circle-o"></i> Cancel</a><br><br>
+          <small class="red">Only create using a working email</small>
+        </div>
       </div>
     </div>
   </div>
@@ -47,79 +49,83 @@ $rolelist .= " ]";
   <!-- ko foreach: members -->
   <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4" style="margin-bottom:20px">
     <div class="members">
-      <div class="members-header"></div>
-      <div class="members-body">
-        <h4 data-bind="text: fullname" class="white" style="margin-bottom:5px !important"></h4>
-        <div class="white small" style="margin-bottom:1.2rem">(<span data-bind="text: email" class="white"></span>)</div>
-        <div><img data-bind="attr: {src: avatar}" class="img-circle members-photo" alt="Avatar"></div>
-        <h5 data-bind="text: role"></h5>
-        <p class="small">
-          <strong>No. of projects handled: <span data-bind="text: counts"></span></strong><br>
-        </p>
-        <p class="small">
-          Registered: <span data-bind="text: created"></span><br>
-          Last seen: <span data-bind="text: lastlogin2"></span><br>
-        </p>
-
+      <div class="opq" data-bind="css: { 'opaque': issuspended }">
+        <div class="members-header"></div>
+        <div class="members-body">
+          <h4 data-bind="text: fullname" class="fullname"></h4>
+          <div class="email small">(<span data-bind="text: email"></span>)</div>
+          <div><img data-bind="attr: { src: avatar }" class="img-circle members-photo" alt="Avatar"></div>
+          <h5 data-bind="text: role"></h5>
+          <p class="small">
+            <strong>No. of projects handled: <span data-bind="text: counts"></span></strong><br>
+          </p>
+          <p class="small">
+            Registered: <span data-bind="text: created"></span><br>
+            Last seen: <span data-bind="text: lastlogin2"></span><br>
+          </p>
+        </div>
 <?php if ($_SESSION['level'] >= "6") { ?>
-        <p>
-          <a class="btn btn-default btn-tiny" data-bind="click: $parent.showInfo"><i class="pe-cogs"></i> Edit <i class="" data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a>
-          <!-- <a class="btn btn-warning btn-tiny" data-bind="click: $parent.suspend" href=""><i class="pe-pause-circle"></i> Suspend</a> -->
-          <a class="btn btn-danger btn-tiny" data-bind="click: $parent.delete" href=""><i class="pe-trash"></i> Delete</a>
-          <!-- <a class="btn btn-danger btn-tiny" href="" data-toggle="modal" data-target="#confirm-delete" title="Delete this user"><i class="pe-trash"></i> Delete</a> -->
-        </p>
+        <div class="members-footer" data-bind="visible: showInfo()">
+          <div class="row" data-bind="visible: !isEditingFullName()">
+            <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Name <a href="" data-bind="click: $parent.startEditFullName" title="Edit fullname"><i class="pe-edit"></i></a></small></div>
+            <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: fullname"></small><br></div>
+          </div>
+          <div class="row" data-bind="visible: isEditingFullName()">
+            <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Name <a href="" data-bind="click: $parent.cancelEditFullName"><i class="pe-times-circle-o"></i></a></small></div>
+            <div class="col-sm-7" style="padding:2px 0px"><small>
+              <input data-bind="textInput: editingFullName, visible: isEditingFullName()" onclick="this.select()" placeholder="First and last name" class="form-control input-sm">
+              <a class="btn btn-tiny" data-bind="click: $parent.postEditFullName, enable: fullname() != ''" href="">Change <i class="pe-check-circle-o"></i></a>
+              <a class="btn btn-tiny" data-bind="click: $parent.cancelEditFullName" href="">Cancel <i class="pe-times-circle-o"></i></a>
+            </small></div>
+          </div>
+          <div class="row" data-bind="visible: !isEditingEmail()">
+            <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Email <a href="" data-bind="click: $parent.startEditEmail" title="Edit email"><i class="pe-edit"></i></a></small></div>
+            <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: email"></small><br></div>
+          </div>
+          <div class="row" data-bind="visible: isEditingEmail()">
+            <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Email <a href="" data-bind="click: $parent.cancelEditEmail"><i class="pe-times-circle-o"></i></a></small></div>
+            <div class="col-sm-7" style="padding:2px 0px"><small>
+              <input data-bind="textInput: editingEmail, visible: isEditingEmail()" onclick="this.select()" placeholder="email@company.com" class="form-control input-sm">
+              <a class="btn btn-tiny" data-bind="click: $parent.postEditEmail, enable: email() != ''" href="">Change <i class="pe-check-circle-o"></i></a>
+              <a class="btn btn-tiny" data-bind="click: $parent.cancelEditEmail" href="">Cancel <i class="pe-times-circle-o"></i></a>
+            </small></div>
+          </div>
+          <div class="row" data-bind="visible: !isEditingMobile()">
+            <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Mobile <a href="" data-bind="click: $parent.startEditMobile" title="Edit mobile no."><i class="pe-edit"></i></a></small></div>
+            <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: mobile"></small><br></div>
+          </div>
+          <div class="row" data-bind="visible: isEditingMobile()">
+            <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Mobile <a href="" data-bind="click: $parent.cancelEditMobile"><i class="pe-times-circle-o"></i></a></small></div>
+            <div class="col-sm-7" style="padding:2px 0px"><small>
+              <input data-bind="textInput: editingMobile, visible: isEditingMobile()" onclick="this.select()" placeholder="0813333333" class="form-control input-sm">
+              <a class="btn btn-tiny" data-bind="click: $parent.postEditMobile, enable: mobile() != ''" href="">Change <i class="pe-check-circle-o"></i></a>
+              <a class="btn btn-tiny" data-bind="click: $parent.cancelEditMobile" href="">Cancel <i class="pe-times-circle-o"></i></a>
+            </small></div>
+          </div>
+          <div class="row" data-bind="visible: !isEditingLevel()">
+            <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Role <a href="" data-bind="click: $parent.startEditLevel" title="Edit user level"><i class="pe-edit"></i></a></small></div>
+            <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: role"></small><br></div>
+          </div>
+          <div class="row" data-bind="visible: isEditingLevel()">
+            <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Role <a href="" data-bind="click: $parent.cancelEditLevel"><i class="pe-times-circle-o"></i></a></small></div>
+            <div class="col-sm-7" style="padding:2px 0px">
+              <select data-bind="options: rlist, optionsText: 'role', optionsValue: 'level', value: selectedRole, event: { change: $parent.changinglevel }" class="form-control input-sm"></select>
+            </div>
+          </div>
+          <br>
+        </div>
 <?php } ?>
       </div>
 <?php if ($_SESSION['level'] >= "6") { ?>
-      <div class="members-footer" data-bind="visible: showInfo()">
-        <div class="row" data-bind="visible: !isEditingFullName()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Name <a href="" data-bind="click: $parent.startEditFullName" title="Edit fullname"><i class="pe-edit"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: fullname"></small><br></div>
-        </div>
-        <div class="row" data-bind="visible: isEditingFullName()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Name <a href="" data-bind="click: $parent.cancelEditFullName"><i class="pe-times-circle-o"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px"><small>
-            <input data-bind="textInput: editingFullName, visible: isEditingFullName()" onclick="this.select()" placeholder="First and last name" class="form-control input-sm">
-            <a class="btn btn-tiny" data-bind="click: $parent.postEditFullName, enable: fullname() != ''" href="">Change <i class="pe-check-circle-o"></i></a>
-            <a class="btn btn-tiny" data-bind="click: $parent.cancelEditFullName" href="">Cancel <i class="pe-times-circle-o"></i></a>
-          </small></div>
-        </div>
-        <div class="row" data-bind="visible: !isEditingEmail()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Email <a href="" data-bind="click: $parent.startEditEmail" title="Edit email"><i class="pe-edit"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: email"></small><br></div>
-        </div>
-        <div class="row" data-bind="visible: isEditingEmail()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Email <a href="" data-bind="click: $parent.cancelEditEmail"><i class="pe-times-circle-o"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px"><small>
-            <input data-bind="textInput: editingEmail, visible: isEditingEmail()" onclick="this.select()" placeholder="email@company.com" class="form-control input-sm">
-            <a class="btn btn-tiny" data-bind="click: $parent.postEditEmail, enable: email() != ''" href="">Change <i class="pe-check-circle-o"></i></a>
-            <a class="btn btn-tiny" data-bind="click: $parent.cancelEditEmail" href="">Cancel <i class="pe-times-circle-o"></i></a>
-          </small></div>
-        </div>
-        <div class="row" data-bind="visible: !isEditingMobile()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Mobile <a href="" data-bind="click: $parent.startEditMobile" title="Edit mobile no."><i class="pe-edit"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: mobile"></small><br></div>
-        </div>
-        <div class="row" data-bind="visible: isEditingMobile()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Mobile <a href="" data-bind="click: $parent.cancelEditMobile"><i class="pe-times-circle-o"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px"><small>
-            <input data-bind="textInput: editingMobile, visible: isEditingMobile()" onclick="this.select()" placeholder="0813333333" class="form-control input-sm">
-            <a class="btn btn-tiny" data-bind="click: $parent.postEditMobile, enable: mobile() != ''" href="">Change <i class="pe-check-circle-o"></i></a>
-            <a class="btn btn-tiny" data-bind="click: $parent.cancelEditMobile" href="">Cancel <i class="pe-times-circle-o"></i></a>
-          </small></div>
-        </div>
-        <div class="row" data-bind="visible: !isEditingLevel()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Role <a href="" data-bind="click: $parent.startEditLevel" title="Edit user level"><i class="pe-edit"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px"><small data-bind="text: role"></small><br></div>
-        </div>
-        <div class="row" data-bind="visible: isEditingLevel()">
-          <div class="col-sm-offset-1 col-sm-3" style="padding:2px 0px"><small>Role <a href="" data-bind="click: $parent.cancelEditLevel"><i class="pe-times-circle-o"></i></a></small></div>
-          <div class="col-sm-7" style="padding:2px 0px">
-            <select data-bind="options: rlist, optionsText: 'role', optionsValue: 'level', value: selectedRole, event: { change: $parent.changinglevel }" class="form-control input-sm"></select>
-          </div>
-        </div>
-        <br>
-      </div>
+      <p>
+        <span data-bind="css: { 'opaque': issuspended }"><a class="btn btn-default btn-tiny ontop" data-bind="click: $parent.showInfo, css: { 'disabled': issuspended }"><i class="pe-cogs"></i> Edit <i class="" data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a></span>
+        <a class="btn btn-success btn-tiny" data-bind="click: $parent.reactivate, visible: issuspended" href=""><i class="pe-pause-circle"></i> Reactivate</a>
+        <a class="btn btn-warning btn-tiny" data-bind="click: $parent.suspend, visible: !issuspended" href=""><i class="pe-pause-circle"></i> Suspend</a>
+        <span data-bind="visible: showInfo()">
+          <!-- <a class="btn btn-danger btn-tiny" data-bind="click: $parent.delete, css: { 'disabled': issuspended }" href=""><i class="pe-trash"></i> Delete</a> -->
+          <a class="btn btn-danger btn-tiny" data-bind="click: $parent.delete, css: { 'disabled': issuspended }" href="" data-toggle="modal" data-target="#confirm-delete" title="Delete this user"><i class="pe-trash"></i> Delete</a>
+        </span>
+      </p>
 <?php } ?>
     </div>
   </div>
@@ -135,9 +141,8 @@ $rolelist .= " ]";
           <h4>Confirm delete?</h4>
           <p>Are you sure that you want to delete this member permanently?</p>
           <p>
+            <a type="button" href="" class="btn btn-danger btn-ok" data-bind="click: $parent.delete">Delete <i class="pe-trash-o"></i></a>
             <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-close">Cancel</button>
-            <!-- <button type="button" class="btn btn-danger">Delete <i class="pe-trash-o"></i></button> -->
-            <a href="" class="btn btn-danger btn-ok" data-bind="click: $parent.delete">Delete <i class="pe-trash-o"></i></a>
           </p>
         </div>
       </div>
@@ -167,14 +172,15 @@ $rolelist .= " ]";
   $('#showalert-create').html("<div class='alert alert-success'><i class='pe-save pe-fw'></i> A new user has been created</div>").hide();
   $('#showalert-delete').html("<div class='alert alert-danger'><i class='pe-trash pe-fw'></i> The user has been deleted</div>").hide();
   $('#showalert-edit').html("<div class='alert alert-success'><i class='pe-edit pe-fw'></i> The user information has been edited</div>").hide();
-  $('#showalert-suspend').html("<div class='alert alert-warning'><i class='pe-archive pe-fw'></i> The user has been suspended</div>").hide();
+  $('#showalert-suspend').html("<div class='alert alert-warning'><i class='pe-pause-circle pe-fw'></i> The user has been suspended</div>").hide();
+  $('#showalert-reactivate').html("<div class='alert alert-success'><i class='pe-check-square-o pe-fw'></i> The user has been reactivated</div>").hide();
   $('#showalert-changerole').html("<div class='alert alert-info'><i class='pe-cog pe-fw'></i> You have successfully changed this user's role</div>").hide();
   var RoleListing = function(level, role) {
     this.level = ko.observable(level);
     this.role = ko.observable(role);
     this.list = ko.computed(function() { return this.role() + " (" + this.level() + ")"; }, this);
   }
-  var Listing = function (id, userid, email, fullname, mobile, avatar, companyid, status, role, level, created, updated, lastlogin, lastlogin2, counts, RoleListing) {
+  var Listing = function (id, userid, email, fullname, mobile, avatar, companyid, status, role, level, created, updated, lastlogin, lastlogin2, counts, RoleListing, issuspended) {
     this.id = ko.observable(id);
     this.userid = ko.observable(userid);
     this.email = ko.observable(email);
@@ -195,7 +201,7 @@ $rolelist .= " ]";
     this.lastlogin = lastlogin;
     this.lastlogin2 = lastlogin2;
     this.counts = ko.observable(counts);
-    // this.isSuspended = ko.observable(false);
+    this.issuspended = issuspended;
     this.showInfo = ko.observable(false);
     this.isEditingEmail = ko.observable(false);
     this.isEditingFullName = ko.observable(false);
@@ -240,11 +246,11 @@ $rolelist .= " ]";
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "status": "-1" }',
+        data: '{ "status": "2" }',
         success: function (data) {
           $('#showalert-suspend').show();
           window.setTimeout(function () { $("#showalert-suspend").slideUp(500, function () { $("#showalert-suspend").hide(); }); }, 3000);
-          self.removeMember(member);
+          //self.removeMember(member);
           $.ajax({
             url: api + '/log',
             dataType: 'json',
@@ -259,15 +265,42 @@ $rolelist .= " ]";
         },
         error: function (error) { self.onFail(error); }
       });
+      window.setTimeout(function () { window.location.reload(); }, 3300);
+    }
+    this.reactivate = function (member) {
+      $.ajax({
+        url: api + '/member/' + member.id() + '/reactivate',
+        dataType: 'json',
+        type: 'put',
+        contentType: 'application/json; charset=utf-8',
+        data: '{ "status": "5" }',
+        success: function (data) {
+          $('#showalert-reactivate').show();
+          window.setTimeout(function () { $("#showalert-reactivate").slideUp(500, function () { $("#showalert-reactivate").hide(); }); }, 3000);
+          //self.removeMember(member);
+          $.ajax({
+            url: api + '/log',
+            dataType: 'json',
+            type: 'post',
+            contentType: 'application/json; charset=utf-8',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' reactivated a member named ' + member.fullname() + ' (' + member.email() + ')", "critical": "5" }',
+            success: function(data) { result = data; }
+          });
+          // $('.modal-backdrop').hide();
+          // $('body').removeClass('modal-open');
+          // $('#confirm-delete').hide();
+        },
+        error: function (error) { self.onFail(error); }
+      });
+      window.setTimeout(function () { window.location.reload(); }, 3300);
     }
     this.delete = function (member) {
-      // console.log(member);
       $.ajax({
         url: api + '/member/' + member.id() + '/delete',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
-        data: '{ "status": "-2" }',
+        data: '{ "status": "0" }',
         success: function (data) {
           $('#showalert-delete').show();
           window.setTimeout(function () { $("#showalert-delete").slideUp(500, function () { $("#showalert-delete").hide(); }); }, 3000);
@@ -280,16 +313,16 @@ $rolelist .= " ]";
             data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted a member named ' + member.fullname() + ' (' + member.email() + ')", "critical": "5" }',
             success: function(data) { result = data; }
           });
-          // $('.modal-backdrop').hide();
-          // $('body').removeClass('modal-open');
-          // $('#confirm-delete').hide();
+          $('.modal-backdrop').hide();
+          $('body').removeClass('modal-open');
+          $('#confirm-delete').hide();
         },
         error: function (error) { self.onFail(error); }
       });
     }
     this.changinglevel = function(member) {
       $.ajax({
-        url: api + '/member/' + member.id + '/L3',
+        url: api + '/member/' + member.id() + '/changerole',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
@@ -352,7 +385,7 @@ $rolelist .= " ]";
     this.postEditFullName = function (member) {
       self.cancelEditFullName(member);
       $.ajax({
-        url: api + '/member/' + member.id + '/refullname',
+        url: api + '/member/' + member.id() + '/refullname',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
@@ -381,7 +414,7 @@ $rolelist .= " ]";
     this.postEditEmail = function (member) {
       self.cancelEditEmail(member);
       $.ajax({
-        url: api + '/member/' + member.id + '/reemail',
+        url: api + '/member/' + member.id() + '/reemail',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
@@ -410,7 +443,7 @@ $rolelist .= " ]";
     this.postEditMobile = function (member) {
       self.cancelEditMobile(member);
       $.ajax({
-        url: api + '/member/' + member.id + '/remobile',
+        url: api + '/member/' + member.id() + '/remobile',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
@@ -456,8 +489,8 @@ $rolelist .= " ]";
       if (data.lastlogin2 != null) { var sd1 = moment(data.lastlogin2).fromNow(); var sd2 = moment(data.lastlogin2).format("D MMM YYYY"); lastlogin2 = sd2 + ' (' + sd1 + ')'; } else { lastlogin2 = "Never login"; }
       if (data.avatar != null) { avatar = "/admin/assets/img/u/" + data.avatar + ".svg"; } else { avatar = "/admin/assets/img/u/M10.svg"; }
       if (data.level == 9) { role = "Administrator"; } else if (data.level == 6) { role = "Manager"; } else if (data.level == 5) { role = "User"; } else if (data.level == 4) { role = "Guest"; }
-      //issuspended = false; if (data.status = "0") { issuspended = true; } else { issuspended = false; }
-      return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, avatar, companyid, data.status, role, data.level, created, updated, lastlogin, lastlogin2, data.counts, RoleListing);
+      var issuspended = false; if (data.status == 2) { issuspended = true; } else { issuspended = false; }
+      return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, avatar, companyid, data.status, role, data.level, created, updated, lastlogin, lastlogin2, data.counts, RoleListing, issuspended);
     }
     this.onFail = function (error) { alert(JSON.stringify(error)); }
     this.showInfo = function (member) { member.showInfo(!member.showInfo()); }

@@ -1,7 +1,7 @@
 <?php
 
 $defaultemail = EMAILNOREPLY; // "noreply@siamsquare.org";
-$me = "/admin/?w=template&s=".$_GET['s'];
+$me = "/admin/?w=promote&s=".$_GET['s'];
 $run = "/r.php?s=".$_GET['s'];
 
 // Get projcet title

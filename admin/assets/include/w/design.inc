@@ -2,8 +2,37 @@
 
 $showprojectdescription = 0;
 
+$me = "/admin/?w=design&s=".$_GET['s'];
+
+if ($_POST['selectA']) {
+  $qA = $db->prepare("UPDATE j_projects SET show_top = :show_top WHERE id = :surveyid");
+  $qA->bindValue(':surveyid', $_POST["surveyid"], PDO::PARAM_INT);
+  $qA->bindValue(':show_top', $_POST['selectA'], PDO::PARAM_INT);
+  $qA->execute();
+} else if ($_POST['selectB']) {
+  $qB = $db->prepare("UPDATE j_projects SET show_navbar = :show_navbar WHERE id = :surveyid");
+  $qB->bindValue(':surveyid', $_POST["surveyid"], PDO::PARAM_INT);
+  $qB->bindValue(':show_navbar', $_POST['selectB'], PDO::PARAM_INT);
+  $qB->execute();
+} else if ($_POST['selectC']) {
+  $qC = $db->prepare("UPDATE j_projects SET show_detail = :show_detail WHERE id = :surveyid");
+  $qC->bindValue(':surveyid', $_POST["surveyid"], PDO::PARAM_INT);
+  $qC->bindValue(':show_detail', $_POST['selectC'], PDO::PARAM_INT);
+  $qC->execute();
+} else if ($_POST['selectD']) {
+  $qD = $db->prepare("UPDATE j_projects SET show_about = :show_about WHERE id = :surveyid");
+  $qD->bindValue(':surveyid', $_POST["surveyid"], PDO::PARAM_INT);
+  $qD->bindValue(':show_about', $_POST['selectD'], PDO::PARAM_INT);
+  $qD->execute();
+} else if ($_POST['selectE']) {
+  $qE = $db->prepare("UPDATE j_projects SET show_logo = :show_logo WHERE id = :surveyid");
+  $qE->bindValue(':surveyid', $_POST["surveyid"], PDO::PARAM_INT);
+  $qE->bindValue(':show_logo', $_POST['selectE'], PDO::PARAM_INT);
+  $qE->execute();
+}
+
 // Get projcet title
-$q1 = $db->prepare("SELECT P.*, C.company, C.logo, C.website FROM j_projects P, j_companies C WHERE P.companyid = C.id AND P.id = :surveyid");
+$q1 = $db->prepare("SELECT P.*, C.company, C.description AS DD, C.logo, C.website FROM j_projects P, j_companies C WHERE P.companyid = C.id AND P.id = :surveyid");
 //$q1 = $db->prepare("SELECT title, status FROM j_projects WHERE id = :surveyid");
 $q1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q1->execute();
@@ -23,15 +52,28 @@ if ($q1->rowCount() == 0) {
   exit;
 }
 while ($row = $q1->fetchObject()) {
-  $status = $row->status;
   $project = $row->title;
   $status = $row->status;
-  if ($row->logo) { $d1 = "<img src=\"$row->logo\" title=\"$row->company\">"; }
-  if ($row->website) { $d2 = "<a href=\"$row->website\" title=\"$row->company\" target=\"_blank\">$d1</a>"; } else { $d2 = $d1; }
-  if ($showlink == true) { $clientlogo = $d2; } else { $clientlogo = $d1; }
+  $website = $row->website;
+  if ($row->logo) {
+    if ($website) { $clientlogo = "<a href=\"$website\" title=\"$row->company\" target=\"_blank\"><img src=\"$row->logo\" title=\"$row->company\"></a>"; }
+    else { $clientlogo = "<img src=\"$row->logo\" title=\"$row->company\">"; }
+  }
+  else { $clientlogo = ""; }
   $companyname = $row->company;
+  $desc = strip_tags($row->DD);
   $description = nl2br($row->description);
+  $showtopper = $row->show_top;
+  $shownavbar = $row->show_navbar;
+  $showdetail = $row->show_detail;
+  $showabout = $row->show_about;
+  $showlogo = $row->show_logo;
+  if ($row->colour) {
+    $filename = $_SERVER['DOCUMENT_ROOT'].'/admin/assets/theme/'.$row->colour.'.php';
+    if (file_exists($filename)) { require_once $filename; }
+  }
 }
+
 if ($_SESSION['level'] != "9") {
   if ($status != 1) {
     $title = "An error has been found";
@@ -51,6 +93,7 @@ if ($_SESSION['level'] != "9") {
 }
 
 $title = "Questionnaire design";
+$template = "Appearance settings";
 $help = "Routing guideline";
 pageHeader($title);
 echo "<h2 id=\"h2pageTitle\"></h2>";
@@ -62,8 +105,15 @@ echo "<br>\n";
 
 <nav>
   <ul class="nav nav-tabs">
+<?php if (($_POST['selectA']) || ($_POST['selectB']) || ($_POST['selectC']) || ($_POST['selectD']) || ($_POST['selectE'])) { ?>
+    <li><a href="#1" data-toggle="tab"><i class="pe-edit pe-fw"></i> <?php echo $title; ?></a></li>
+    <li class="active"><a href="#2" data-toggle="tab"><i class="pe-cog pe-fw"></i> <?php echo $template; ?></a></li>
+    <li><a href="#3" data-toggle="tab"><i class="pe-book pe-fw"></i> <?php echo $help; ?></a></li>
+<?php } else { ?>
     <li class="active"><a href="#1" data-toggle="tab"><i class="pe-edit pe-fw"></i> <?php echo $title; ?></a></li>
-    <li><a href="#2" data-toggle="tab"><i class="pe-book pe-fw"></i> <?php echo $help; ?></a></li>
+    <li><a href="#2" data-toggle="tab"><i class="pe-cog pe-fw"></i> <?php echo $template; ?></a></li>
+    <li><a href="#3" data-toggle="tab"><i class="pe-book pe-fw"></i> <?php echo $help; ?></a></li>
+<?php } ?>
   </ul>
 </nav>
 
@@ -72,7 +122,11 @@ echo "<br>\n";
 <div id="showreadonly"></div><div id="showsaving"></div><div id="showsavesuccess"></div>
 
 <div class="tab-content">
+<?php if (($_POST['selectA']) || ($_POST['selectB']) || ($_POST['selectC']) || ($_POST['selectD']) || ($_POST['selectE'])) { ?>
+  <div id="1" class="tab-pane fade">
+<?php } else { ?>
   <div id="1" class="tab-pane fade in active">
+<?php } ?>
     <h3>Project <?php echo $project; ?></h3>
     <?php if (($description) && ($showprojectdescription == true)) { ?>
     <div class="row">
@@ -91,7 +145,139 @@ echo "<br>\n";
     <div id="editor"></div>
     <br><br>
   </div>
+<?php if (($_POST['selectA']) || ($_POST['selectB']) || ($_POST['selectC']) || ($_POST['selectD']) || ($_POST['selectE'])) { ?>
+  <div id="2" class="tab-pane fade in active">
+<?php } else { ?>
   <div id="2" class="tab-pane fade">
+<?php } ?>
+    <h3>Customise the look of your survey</h3>
+    <div class="row">
+      <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 boxborder">
+        <div class="row boxoutside">
+          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu">Colour</div>
+          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu boxdrop">
+            <form method="post" class="form-inline" action="<?php echo $me; ?>">
+              <select name="selectA" class="form-control input-sm" onchange="this.form.submit()">
+<?php
+$options = array("Blue" => "1", "Green" => "2", "Red" => "3", "Yellow" => "4", "Grey" => "5");
+foreach($options as $a => $b) {
+  if ($b == $showtopper) { echo "                  <option value=\"$b\" selected>$a</option>\n"; }
+  else { echo "                  <option value=\"$b\">$a</option>\n"; }
+}
+?>
+              </select>
+              <input type="hidden" name="surveyid" value="<?php echo $_GET['s']; ?>">
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 boxborder">
+        <div class="row boxoutside">
+          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu">Top menu</div>
+          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu boxdrop">
+            <form method="post" class="form-inline" action="<?php echo $me; ?>">
+              <select name="selectA" class="form-control input-sm" onchange="this.form.submit()">
+<?php
+$options = array("Hide" => "1", "Show" => "2");
+foreach($options as $a => $b) {
+  if ($b == $showtopper) { echo "                  <option value=\"$b\" selected>$a</option>\n"; }
+  else { echo "                  <option value=\"$b\">$a</option>\n"; }
+}
+?>
+              </select>
+              <input type="hidden" name="surveyid" value="<?php echo $_GET['s']; ?>">
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 boxborder">
+        <div class="row boxoutside">
+          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu">Navigator</div>
+          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu boxdrop">
+            <form method="post" class="form-inline" action="<?php echo $me; ?>">
+              <select name="selectB" class="form-control input-sm" onchange="this.form.submit()">
+<?php
+$options = array("Hide" => "1", "Type #1" => "2", "Type #2" => "3", "Type #3 (full)" => "4");
+foreach($options as $a => $b) {
+  if ($b == $shownavbar) { echo "                  <option value=\"$b\" selected>$a</option>\n"; }
+  else { echo "                  <option value=\"$b\">$a</option>\n"; }
+}
+?>
+              </select>
+              <input type="hidden" name="surveyid" value="<?php echo $_GET['s']; ?>">
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 boxborder">
+        <div class="row boxoutside">
+          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu">Project detail</div>
+          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu boxdrop">
+            <form method="post" class="form-inline" action="<?php echo $me; ?>">
+              <select name="selectC" class="form-control input-sm" onchange="this.form.submit()">
+<?php
+$options = array("Hide" => "1", "Show" => "2");
+foreach($options as $a => $b) {
+  if ($b == $showdetail) { echo "                  <option value=\"$b\" selected>$a</option>\n"; }
+  else { echo "                  <option value=\"$b\">$a</option>\n"; }
+}
+?>
+              </select>
+              <input type="hidden" name="surveyid" value="<?php echo $_GET['s']; ?>">
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 boxborder">
+        <div class="row boxoutside">
+          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu">Company profile</div>
+          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu boxdrop">
+            <form method="post" class="form-inline" action="<?php echo $me; ?>">
+              <select name="selectD" class="form-control input-sm" onchange="this.form.submit()">
+<?php
+$options = array("Hide" => "1", "Show" => "2");
+foreach($options as $a => $b) {
+  if ($b == $showabout) { echo "                  <option value=\"$b\" selected>$a</option>\n"; }
+  else { echo "                  <option value=\"$b\">$a</option>\n"; }
+}
+?>
+              </select>
+              <input type="hidden" name="surveyid" value="<?php echo $_GET['s']; ?>">
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 boxborder">
+        <div class="row boxoutside">
+          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu">Company logo</div>
+          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu boxdrop">
+            <form method="post" class="form-inline" action="<?php echo $me; ?>">
+              <select name="selectE" class="form-control input-sm" onchange="this.form.submit()">
+<?php
+$options = array("Hide" => "1", "Show" => "2");
+foreach($options as $a => $b) {
+  if ($b == $showlogo) { echo "                  <option value=\"$b\" selected>$a</option>\n"; }
+  else { echo "                  <option value=\"$b\">$a</option>\n"; }
+}
+?>
+              </select>
+              <input type="hidden" name="surveyid" value="<?php echo $_GET['s']; ?>">
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <h4>The actual appearance</h4>
+    <div class="row">
+      <iframe class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="realexample"src="<?php echo MYHOME."/r.php?s=".$_GET['s']; ?>" frameborder="1" allowfullscreen></iframe>
+    </div>
+    <br><br>
+  </div>
+  <div id="3" class="tab-pane fade">
     <h3><?php echo $help; ?></h3>
     <div class="row">
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom:20px">
@@ -216,18 +402,16 @@ survey.render(&#x22;surveyElement&#x22;);</code></pre>
   Survey.JsonObject.metaData.removeProperty("survey", "surveyPostId");
   Survey.JsonObject.metaData.removeProperty("survey", "surveyId");
   Survey.JsonObject.metaData.removeProperty("page", "visibleIf");
-  Survey.JsonObject.metaData.removeProperty("questionbase", "hasComment");
+  // Survey.JsonObject.metaData.removeProperty("questionbase", "hasComment");
   Survey.JsonObject.metaData.removeProperty("questionbase", "width");
-  // Survey.JsonObject.metaData.removeProperty("questionbase", "otherErrorText");
-  Survey.JsonObject.metaData.removeProperty("questionbase", "commentText");
-  // Survey.JsonObject.metaData.removeProperty("questionbase", "storeOthersAsComment");
+  // Survey.JsonObject.metaData.removeProperty("questionbase", "commentText");
   var editor = new SurveyEditor.SurveyEditor("editor", options);
-  var api = "http://www.siamsquare.org.uk";
   var surveyid = <?php echo $_GET['s']; ?>;
   var userid = <?php echo $_SESSION['userid']; ?>;
   var email = "<?php echo $_SESSION['email']; ?>";
   var ip = "<?php echo $_SESSION['ip']; ?>";
   var level = <?php echo $_SESSION['level']; ?>;
+  var api = "http://www.siamsquare.org.uk";
   $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
   $('#showsaving').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> The system is now saving your data, please wait until the green message shows up which shoud be in a minute</div>").hide();
   $('#showsavesuccess').html("<div class='alert alert-success'><i class='pe-save pe-fw'></i> Data has been saved successfully</div>").hide();
@@ -248,10 +432,6 @@ survey.render(&#x22;surveyElement&#x22;);</code></pre>
       contentType: 'application/json; charset=utf-8',
       data: '{ "data": ' + JSON.stringify(editor.text) + ' }',
       success: function(data) {
-        // $('#showsaving').show();
-        // window.setTimeout(function () { $("#showsaving").slideUp(500, function () { $("#showsaving").hide(); }); }, 3000);
-        // $('#showsavesuccess').show();
-        // window.setTimeout(function () { $("#showsavesuccess").slideUp(500, function () { $("#showsavesuccess").hide(); }); }, 3000);
         $.ajax({
           url: api + '/log/' + userid + '/' + surveyid,
           dataType: 'json',
@@ -273,7 +453,6 @@ survey.render(&#x22;surveyElement&#x22;);</code></pre>
   // document.getElementById('projectname').innerHTML = pname;
   $('#btn-save').on('click', function() {
     if (typeof(Storage) !== "undefined") { localStorage.setItem("editdata." + surveyid, JSON.stringify(editor.text)); }
-    // document.getElementById("result").innerHTML = localStorage.getItem("editdata." + surveyid);
     var $this = $(this);
     $this.button('loading');
     $('#showsaving').show();
@@ -288,7 +467,6 @@ survey.render(&#x22;surveyElement&#x22;);</code></pre>
   for (var i = 0; i < localStorage.length; i++) {
     var name = localStorage.key( i );
     var value = localStorage.getItem( name );
-    // console.log( name + " is set to " + value );
   }
   // localStorage.clear();
 

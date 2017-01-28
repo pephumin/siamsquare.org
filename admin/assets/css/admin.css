@@ -10820,6 +10820,19 @@ i.pe-heart {
 .label-blue {
   background-color: #3B6AA0; }
 
+.label-needanswer {
+  font-family: "boon";
+  display: inline-block;
+  padding: 3px 4px;
+  font-size: 80%;
+  font-weight: bold;
+  letter-spacing: 0;
+  color: #FFFFFF;
+  vertical-align: text-top;
+  border-radius: 4px;
+  box-shadow: inset -2px -2px 0 rgba(17, 17, 17, 0.5);
+  background-color: #FF0000; }
+
 .wizard, .tabcontrol {
   display: block;
   width: 100%;
@@ -12888,14 +12901,16 @@ ul.list, ol.list {
     position: relative;
     padding: 10px auto;
     margin: 5px auto; }
-    .members .members-body h4.white {
+    .members .members-body h4.fullname {
       color: #FFFFFF;
-      font-weight: bold; }
+      font-weight: bold;
+      margin-bottom: 5px !important; }
+    .members .members-body div.email {
+      color: #FFFFFF;
+      margin-bottom: 1.2rem; }
     .members .members-body h5 {
       text-transform: none;
       font-weight: bold; }
-    .members .members-body span.smaller {
-      font-size: 0.9rem !important; }
   .members .members-footer {
     z-index: 3;
     position: relative;
@@ -12918,7 +12933,8 @@ img.members-photo {
   -webkit-box-shadow: 0 0 0 5px #DDDDDD;
   border: none;
   width: 70px;
-  height: 70px; }
+  height: 70px;
+  z-index: 2; }
 
 img.members-photo-small {
   background: #FFFFFF;
@@ -12938,6 +12954,12 @@ img.members-photo-tiny {
   border: none;
   width: 20px;
   height: 20px; }
+
+.opaque {
+  opacity: 0.2; }
+
+.ontop {
+  z-index: 9; }
 
 .pagination-centered {
   font-family: "ubuntu";
@@ -12973,6 +12995,24 @@ pre.verysmall {
 input[type="checkbox"], input[type="radio"] {
   margin: 5px;
   position: relative !important; }
+
+iframe {
+  width: 100%;
+  height: 500px;
+  border: 3px solid #eee;
+  overflow: hidden; }
+
+.boxoutside {
+  padding: 10px; }
+
+.boxborder {
+  border: 1px dotted grey; }
+
+.boxmenu {
+  padding: 5px; }
+
+.boxdrop {
+  text-align: right; }
 
 .pe-search {
   position: absolute;

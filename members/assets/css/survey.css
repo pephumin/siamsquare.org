@@ -7,15 +7,14 @@
   width: 100%;
   margin: 30px 0px;
   padding: 0px; }
-  #surveyjs h5 {
-    font-family: "boon";
-    font-size: 17.6px; }
 
 #surveyjsTest, #surveyjsExample, #surveyjsExampleResults {
   margin: 10px; }
-  #surveyjsTest h5, #surveyjsExample h5, #surveyjsExampleResults h5 {
-    font-family: "boon";
-    font-size: 17.6px; }
+
+h5 {
+  font-family: "boon";
+  font-size: 17.6px;
+  text-transform: none; }
 
 .input-sm {
   height: 25px;
@@ -36,10 +35,6 @@ input.btn {
 .navbar-right {
   margin-right: 0px;
   margin-top: 3px; }
-
-.nav-tabs > li > a {
-  font-family: "boon";
-  font-size: 14px; }
 
 .panel-heading-embed {
   font-weight: bold; }
@@ -63,10 +58,12 @@ i.pe-exclamation-circle {
   margin-bottom: 40px; }
 
 .pTitle {
+  font-family: "boon";
   font-style: italic;
   color: #777;
   text-align: right;
-  font-weight: bold; }
+  font-weight: bold;
+  font-size: 0.85rem; }
 
 div.modal-body.svd_notopbottompaddings > textarea {
   font-size: 1.2rem; }
@@ -147,6 +144,15 @@ textarea {
     font-size: 12px; }
     .svd_container .svd_actions .btn {
       margin-left: 5px; }
+  .svd_container .svd_actions_sub {
+    font-family: "ubuntu";
+    font-size: 12px;
+    position: absolute;
+    top: 70px;
+    right: 10px; }
+    .svd_container .svd_actions_sub .btn {
+      margin-left: 5px;
+      margin-bottom: 10px; }
   .svd_container .svd_content {
     background-color: #f5f6f7;
     padding: 10px 30px 30px 30px;
@@ -191,11 +197,15 @@ textarea {
         .svd_container .svd_content .svd_survey_designer .svd_editors .svd_pages_editor .nav-tabs li {
           cursor: pointer; }
           .svd_container .svd_content .svd_survey_designer .svd_editors .svd_pages_editor .nav-tabs li.active .svd_page_nav {
+            font-family: "boon";
+            font-size: 14px;
             color: #1ab394;
             background-color: #f5f6f7;
             border: 1px solid #e7eaec;
             border-bottom-color: #f5f6f7; }
           .svd_container .svd_content .svd_survey_designer .svd_editors .svd_pages_editor .nav-tabs li .svd_page_nav {
+            font-family: "boon";
+            font-size: 14px;
             color: #676a6c;
             padding: 7px 10px 7px 12px; }
       .svd_container .svd_content .svd_survey_designer .svd_editors .svd_pages_editor .svd_add_new_page_btn {
@@ -283,6 +293,9 @@ textarea {
             color: #a7a7a7; }
     .svd_container .svd_content .svd_json_editor {
       height: 450px; }
+    .svd_container .svd_content .svd_json_editor_area {
+      height: 450px;
+      width: 100%; }
   .svd_container [draggable] {
     -moz-user-select: none;
     -khtml-user-select: none;
@@ -373,7 +386,7 @@ textarea {
   right: 10px;
   background-color: cadetblue;
   padding: 1px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "ubuntu";
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -511,5 +524,32 @@ sv_body {
   position: absolute;
   clip: rect(0px, 0px, 0px, 0px);
   pointer-events: none; }
+
+@-webkit-keyframes highlight-fade {
+  0% {
+    background: orange; }
+  100% {
+    background: white; } }
+@-moz-keyframes highlight-fade {
+  0% {
+    background: orange; }
+  100% {
+    background: white; } }
+@-ms-keyframes highlight-fade {
+  0% {
+    background: orange; }
+  100% {
+    background: white; } }
+@keyframes highlight-fade {
+  0% {
+    background: orange; }
+  100% {
+    background: white; } }
+.highlight {
+  border: 3px solid red;
+  -webkit-animation: highlight-fade 2s ease-out;
+  -moz-animation: highlight-fade 2s ease-out;
+  -o-animation: highlight-fade 2s ease-out;
+  animation: highlight-fade 2s ease-out; }
 
 /*# sourceMappingURL=survey.css.map */

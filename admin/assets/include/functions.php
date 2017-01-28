@@ -210,10 +210,6 @@ function meta($title) {
   echo "</head>\n";
 }
 
-function percent($number) {
-  return number_format($number * 100, 1).'%';
-}
-
 function iconize($data) {
   if ($data == "rating") { $insert = "<span class=\"icon-rating\" style=\"font-size:0.7rem\"></span>"; }
   else if ($data == "radiogroup") { $insert = "<span class=\"icon-radiogroup\" style=\"font-size:0.7rem\"></span>"; }
@@ -248,6 +244,7 @@ function iconize($data) {
   else if (preg_match("/changed a member email/i", $data)) { $insert = "<i class=\"pe-envelope pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed a member mobile/i", $data)) { $insert = "<i class=\"pe-mobile pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/deleted a member/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/reactivated a member/i", $data)) { $insert = "<i class=\"pe-check-square-o pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/suspended a member/i", $data)) { $insert = "<i class=\"pe-pause-circle pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed level for/i", $data)) { $insert = "<i class=\"pe-level-up pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/failed to log in due to a wrong password/i", $data)) { $insert = "<i class=\"pe-key pe-fw\"></i> &nbsp; "; }
@@ -282,25 +279,6 @@ function shortdate($timestamp) {
   return date('j M Y', strtotime($timestamp));
 }
 
-function role($level) {
-  if ($level == 9) { $role = "Administrator"; }
-  else if ($level == 8) { $role = "System"; }
-  else if ($level == 6) { $role = "Manager"; }
-  else if ($level == 5) { $role = "User"; }
-  else if ($level == 4) { $role = "Guest"; }
-  return $role;
-}
-
-function percentile($array) {
-  $total = array_sum($array);
-  $names = array_map(function($number) use ($total) { return number_format($number / $total * 100, 1); }, $array);
-  return $names;
-}
-
-function isJSON($string) {
-  return is_string($string) && is_array(json_decode($string, true)) ? true : false;
-}
-
 function fullmonth($month, $format = "long") {
   if ($format == "short") {
     if ($month == 1) { $month = "Jan"; }
@@ -330,6 +308,40 @@ function fullmonth($month, $format = "long") {
     if ($month == 12) { $month = "December"; }
   }
   return $month;
+}
+
+function role($level) {
+  if ($level == 9) { $role = "Administrator"; }
+  else if ($level == 8) { $role = "System"; }
+  else if ($level == 6) { $role = "Manager"; }
+  else if ($level == 5) { $role = "User"; }
+  else if ($level == 4) { $role = "Guest"; }
+  return $role;
+}
+
+function userstatus($status) {
+  if ($status == "0") { $userstatus = "Account has been deleted"; }
+  else if ($status == "1") { $userstatus = "Account has been suspended"; }
+  else if ($status == "2") { $userstatus = "Account has been locked due to 5 incorrect login attempts"; }
+  else if ($status == "3") { $userstatus = ""; }
+  else if ($status == "4") { $userstatus = "Account inactive"; }
+  else if ($status == "5") { $userstatus = "Account active"; }
+  // else if ($status == "2") { $userstatus = "Guest"; }
+  return $userstatus;
+}
+
+function percent($number) {
+  return number_format($number * 100, 1).'%';
+}
+
+function percentile($array) {
+  $total = array_sum($array);
+  $names = array_map(function($number) use ($total) { return number_format($number / $total * 100, 1); }, $array);
+  return $names;
+}
+
+function isJSON($string) {
+  return is_string($string) && is_array(json_decode($string, true)) ? true : false;
 }
 
 function sendMail($surveyid, &$emails) {

@@ -129,7 +129,7 @@ function pageFooter($notes = null) {
 <div class="scroll-to-top"><i class="pe-arrow-up pe-lg white"></i></div>
 <script type="text/javascript" src="/admin/assets/js/etc.js"></script>
 <?php if ($notes) { notify($notes); } ?>
-<?php //debugOutput(); ?>
+<?php debugOutput(); ?>
 </body>
 </html>
 <?php

@@ -22,8 +22,8 @@ function pageHeader($title) {
 ?>
 <body>
 <header>
-<?php if ($showtopper == true) { topheader(); } ?>
-<?php if ($shownavbar == "1") { navbarB(); } ?>
+<?php if ($showtopper == 2) { topheader(); } ?>
+<?php if ($shownavbar == 2) { navbarB(); } ?>
   <div class="row header-2">
     <div class="container">
       <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6"><h1><a href="<?php echo MYHOME; ?>" title="<?php echo MYDESC; ?>"><?php logo(); ?></a></h1></div>
@@ -31,7 +31,7 @@ function pageHeader($title) {
     </div>
   </div>
   <div class="row header-3">
-<?php if ($shownavbar == "2") { navbarB(); } else if ($shownavbar == "3") { navbarA(); } ?>
+<?php if ($shownavbar == 3) { navbarB(); } else if ($shownavbar == 4) { navbarA(); } ?>
   </div>
 </header>
 <main class="container">
@@ -45,8 +45,8 @@ function topheader() {
   else { $signed = "<a href=\"$v1\" class=\"btn btn-info btn-tiny\" title=\"เข้าสู่ระบบ\"><i class=\"pe-power-off pe-fw\"></i> เข้าสู่ระบบ</a> <a href=\"$v3\" class=\"btn btn-primary btn-tiny\"><i class=\"pe-university pe-fw\"></i> ช่วยเหลือ</a>"; }
 ?>
   <div class="row header-1">
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-      <div class="container">
+    <div class="container">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <?php echo $signed; ?>
       </div>
     </div>
@@ -134,27 +134,37 @@ function navbarB() {
 <?php
 }
 
-function pageFooter($notes = null) {
+function pageFooter($project = null, $notes = null) {
 ?>
 </main>
 <footer>
-  <div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-1">
-      <div class="container">
-      </div>
+  <div class="row footer-1">
+    <div class="container">
+      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 footer-1A"></div>
+      <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 footer-1B">Internal use only - <?php if ($project) { echo "P. ".$project." (#PEB".date("Ym").str_pad($_GET['s'], 6, '0', STR_PAD_LEFT).")"; } ?></div>
     </div>
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-2">
-      <div class="container">
+  </div>
+  <div class="row footer-2">
+    <div class="container">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <a href="<?php echo MYHOME; ?>" class="footerlogo-ssq" title="<?php echo MYDESC; ?>"><?php ssqlogo(); ?></a> by
         <a href="http://www.pebinary.com" class="footerlogo" title="PE BINARY CO., LTD."><?php peblogo(); ?></a><br>
         <i class="pe-copyright"></i> Copyright 2016, All rights reserved.<br>
       </div>
     </div>
-    <!-- <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3">
-      <div class="container">
-        <h4 class="avatar">&#9836; &#9819; &#9962; &#9969; &#9748; &#9820; &#9822; &#9973; &#9961;</h4>
-      </div>
-    </div> -->
+  </div>
+  <div class="row footer-3">
+    <div class="container">
+      <nav class="footer">
+        <ul class="list-inline" itemscope itemtype="http://schema.org/SiteNavigationElement">
+          <li class="footerth"><a href="http://www.pebinary.com/about/privacy.html" title="นโยบายความเป็นส่วนตัว" itemprop="url"><i class="pe-lock"></i> <span class="hidden-md hidden-lg" itemprop="name">นโยบายส่วนบุคคล</span><span class="hidden-xs hidden-sm" itemprop="name">นโยบายส่วนบุคคล</span></a>&nbsp;</li>
+          <li class="footerth"><a href="http://www.pebinary.com/about/tos.html" title="ข้อกำหนดในการให้บริการ" itemprop="url"><i class="pe-gavel"></i> <span class="hidden-md hidden-lg" itemprop="name">ข้อกำหนดการให้บริการ</span><span class="hidden-xs hidden-sm" itemprop="name">ข้อกำหนดในการให้บริการ</span></a>&nbsp;</li>
+          <li class="footerth"><a href="http://www.pebinary.com/about/terms.html" title="ข้อกำหนดและเงื่อนไขต่างๆ" itemprop="url"><i class="pe-balance-scale"></i> <span class="hidden-md hidden-lg" itemprop="name">ข้อกำหนดและเงื่อนไข</span><span class="hidden-xs hidden-sm" itemprop="name">ข้อกำหนดและเงื่อนไขต่างๆ</span></a>&nbsp;</li>
+          <li class="footerth"><a href="http://www.pebinary.com/" title="กลับไปยังเว็บไซต์หลักของเรา" itemprop="url"><i class="pe-arrow-circle-left"></i> <span class="hidden-md hidden-lg" itemprop="name">กลับ</span><span class="hidden-xs hidden-sm" itemprop="name">กลับไปยังเว็บไซต์หลักของเรา</span></a>&nbsp;</li>
+        </ul>
+      </nav>
+
+    </div>
   </div>
 </footer>
 <div class="scroll-to-top"><i class="pe-arrow-up pe-lg white"></i></div>

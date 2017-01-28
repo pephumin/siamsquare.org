@@ -10819,6 +10819,19 @@ i.pe-heart {
 .label-blue {
   background-color: #3B6AA0; }
 
+.label-needanswer {
+  font-family: "boon";
+  display: inline-block;
+  padding: 3px 4px;
+  font-size: 80%;
+  font-weight: bold;
+  letter-spacing: 0;
+  color: #FFFFFF;
+  vertical-align: text-top;
+  border-radius: 4px;
+  box-shadow: inset -2px -2px 0 rgba(17, 17, 17, 0.5);
+  background-color: #FF0000; }
+
 .wizard, .tabcontrol {
   display: block;
   width: 100%;
