@@ -49,6 +49,7 @@ $rolelist .= " ]";
   <!-- ko foreach: members -->
   <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4" style="margin-bottom:20px">
     <div class="members">
+      <div class="ribbon" data-bind="visible: issuspended"><div class="ribbon-wrapper" data-toggle="tooltip" data-placement="left" title="This user is currently suspended. Only Manager can enable access to this user again by clicking Reactivate button."><div class="ribbon-text">Suspended</div></div></div>​
       <div class="opq" data-bind="css: { 'opaque': issuspended }">
         <div class="members-header"></div>
         <div class="members-body">
@@ -180,7 +181,7 @@ $rolelist .= " ]";
     this.role = ko.observable(role);
     this.list = ko.computed(function() { return this.role() + " (" + this.level() + ")"; }, this);
   }
-  var Listing = function (id, userid, email, fullname, mobile, avatar, companyid, status, role, level, created, updated, lastlogin, lastlogin2, counts, RoleListing, issuspended) {
+  var Listing = function (id, userid, email, fullname, mobile, avatar, companyid, status, role, level, created, updated, lastlogin, lastlogin2, counts, RoleListing, issuspended, islocked) {
     this.id = ko.observable(id);
     this.userid = ko.observable(userid);
     this.email = ko.observable(email);
@@ -202,6 +203,7 @@ $rolelist .= " ]";
     this.lastlogin2 = lastlogin2;
     this.counts = ko.observable(counts);
     this.issuspended = issuspended;
+    this.islocked = islocked;
     this.showInfo = ko.observable(false);
     this.isEditingEmail = ko.observable(false);
     this.isEditingFullName = ko.observable(false);
@@ -490,7 +492,8 @@ $rolelist .= " ]";
       if (data.avatar != null) { avatar = "/admin/assets/img/u/" + data.avatar + ".svg"; } else { avatar = "/admin/assets/img/u/M10.svg"; }
       if (data.level == 9) { role = "Administrator"; } else if (data.level == 6) { role = "Manager"; } else if (data.level == 5) { role = "User"; } else if (data.level == 4) { role = "Guest"; }
       var issuspended = false; if (data.status == 2) { issuspended = true; } else { issuspended = false; }
-      return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, avatar, companyid, data.status, role, data.level, created, updated, lastlogin, lastlogin2, data.counts, RoleListing, issuspended);
+      var islocked = false; if (data.status == 3) { islocked = true; } else { islocked = false; }
+      return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, avatar, companyid, data.status, role, data.level, created, updated, lastlogin, lastlogin2, data.counts, RoleListing, issuspended, islocked);
     }
     this.onFail = function (error) { alert(JSON.stringify(error)); }
     this.showInfo = function (member) { member.showInfo(!member.showInfo()); }
@@ -498,6 +501,7 @@ $rolelist .= " ]";
   }
   jQuery(document).ready(function () { ko.applyBindings(new ViewModel()); });
 
+  $(document).ready(function() { $("body").tooltip({ selector: '[data-toggle=tooltip]' }); });
   // $('#confirm-delete').on('show.bs.modal', function(e) {
   //   $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
   // });

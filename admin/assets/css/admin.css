@@ -2281,22 +2281,22 @@ h1, h2, h3, h4, h5, h6, p, blockquote {
     font-size: 1.7rem; }
 
   h3 {
-    font-size: 1.1rem; }
+    font-size: 1.4rem; }
 
   h4 {
-    font-size: 1rem; }
+    font-size: 1.05rem; }
 
   h4.avatar {
     font-size: 15px; }
 
   h5 {
-    font-size: 0.9rem; }
+    font-size: 1rem; }
 
   h6 {
-    font-size: 0.85rem; }
+    font-size: 0.9rem; }
 
   p {
-    font-size: 0.8rem; }
+    font-size: 0.95rem; }
 
   p.lead {
     font-size: 1.1rem; }
@@ -2358,7 +2358,7 @@ i.pe-quote-left, i.pe-quote-right {
 .silver {
   color: #DDDDDD; }
 
-.lightkgrey {
+.lightgrey {
   color: #AAAAAA; }
 
 .grey {
@@ -10633,9 +10633,10 @@ button.close {
   right: 20px;
   z-index: 999;
   text-align: center;
-  line-height: 40px;
+  height: 30px;
   width: 40px;
   border-radius: 4px;
+  padding: 2px;
   -webkit-transition: background-color 0.3s linear;
   -moz-transition: background-color 0.3s linear;
   -ms-transition: background-color 0.3s linear;
@@ -12960,6 +12961,55 @@ img.members-photo-tiny {
 
 .ontop {
   z-index: 9; }
+
+.ribbon {
+  position: relative;
+  z-index: 90; }
+
+.ribbon-wrapper {
+  position: absolute;
+  overflow: hidden;
+  width: 85px;
+  height: 88px;
+  top: -3px;
+  right: -3px; }
+
+.ribbon-text {
+  position: relative;
+  background-color: #FF0000;
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  padding: 5px 0;
+  left: -5px;
+  top: 15px;
+  width: 120px;
+  text-align: center;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg); }
+
+.tooltip {
+  display: block;
+  font-family: "ubuntu";
+  font-size: 0.75rem;
+  font-weight: bold; }
+
+.tooltip-inner {
+  background-color: #666666;
+  color: #FFFFFF;
+  max-width: 180px; }
+
+.tooltip.top .tooltip-arrow {
+  border-top-color: #666666; }
+.tooltip.right .tooltip-arrow {
+  border-right-color: #666666; }
+.tooltip.bottom .tooltip-arrow {
+  border-bottom-color: #666666; }
+.tooltip.left .tooltip-arrow {
+  border-left-color: #666666; }
 
 .pagination-centered {
   font-family: "ubuntu";

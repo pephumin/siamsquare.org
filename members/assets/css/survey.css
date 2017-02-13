@@ -77,6 +77,9 @@ textarea {
   font-family: "boon";
   font-size: 1rem; }
 
+.dropdown-menu {
+  padding: 0px !important; }
+
 .projectdetail {
   padding: 20px;
   border: 1px dotted #666; }

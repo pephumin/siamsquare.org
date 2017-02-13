@@ -847,10 +847,8 @@ $openendquery .= "</div>\n";
         isStacked: true,
         <?php echo $color; ?>
         seriesType: 'bars',
-        <?php // echo $series; ?>
         hAxes: {
           0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
-          //1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
         }
       };
       var chart = new google.visualization.BarChart(document.getElementById('chart'));
@@ -875,7 +873,6 @@ $openendquery .= "</div>\n";
         isStacked: true,
         <?php echo $color; ?>
         seriesType: 'bars',
-        <?php // echo $series; ?>
         hAxes: {
           0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
           1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
@@ -903,10 +900,8 @@ $openendquery .= "</div>\n";
         isStacked: true,
         <?php echo $color; ?>
         seriesType: 'bars',
-        <?php // echo $series; ?>
         vAxes: {
           0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
-          //1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
         }
       };
       var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
@@ -931,7 +926,6 @@ $openendquery .= "</div>\n";
         isStacked: true,
         <?php echo $color; ?>
         seriesType: 'bars',
-        <?php // echo $series; ?>
         vAxes: {
           0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
           1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },

@@ -2221,7 +2221,7 @@ i {
 .silver {
   color: #DDDDDD; }
 
-.lightkgrey {
+.lightgrey {
   color: #AAAAAA; }
 
 .grey {
@@ -2381,22 +2381,22 @@ h1, h2, h3, h4, h5, h6, p, blockquote {
     font-size: 1.7rem; }
 
   h3 {
-    font-size: 1.1rem; }
+    font-size: 1.4rem; }
 
   h4 {
-    font-size: 1rem; }
+    font-size: 1.05rem; }
 
   h4.avatar {
     font-size: 15px; }
 
   h5 {
-    font-size: 0.9rem; }
+    font-size: 1rem; }
 
   h6 {
-    font-size: 0.85rem; }
+    font-size: 0.9rem; }
 
   p {
-    font-size: 0.8rem; }
+    font-size: 0.95rem; }
 
   p.lead {
     font-size: 1.1rem; }
@@ -10632,9 +10632,10 @@ button.close {
   right: 20px;
   z-index: 999;
   text-align: center;
-  line-height: 40px;
+  height: 30px;
   width: 40px;
   border-radius: 4px;
+  padding: 2px;
   -webkit-transition: background-color 0.3s linear;
   -moz-transition: background-color 0.3s linear;
   -ms-transition: background-color 0.3s linear;

@@ -167,7 +167,7 @@ function pageFooter($project = null, $notes = null) {
     </div>
   </div>
 </footer>
-<div class="scroll-to-top"><i class="pe-arrow-up pe-lg white"></i></div>
+<div class="scroll-to-top" style="display: block"><i class="pe-arrow-up pe-lg white"></i></div>
 <script type="text/javascript" src="/members/assets/js/etc.js"></script>
 <?php if ($notes) { notify($notes); } ?>
 <?php //debugOutput(); ?>

@@ -186,8 +186,13 @@ function meta($title) {
   echo "  <meta name=\"msapplication-TileColor\" content=\"#FFFFFF\">\n";
   echo "  <meta name=\"msapplication-TileImage\" content=\"/admin/assets/icons/ms-icon-144x144.png\">\n";
   echo "  <meta name=\"theme-color\" content=\"#FFFFFF\">\n";
-  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-2.1.4.min.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-3.1.0.min.js\"></script>\n";
+  // echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-2.1.4.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-ui.js\"></script>\n";
+  echo "  <script type=\"text/javascript\">\n";
+  echo "    $.widget.bridge('uibutton', $.ui.button);\n";
+  echo "    $.widget.bridge('uitooltip', $.ui.tooltip);\n";
+  echo "  </script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/bootstrap.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery.steps.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/moment.js\"></script>\n";
@@ -195,6 +200,7 @@ function meta($title) {
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/csv.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/highlight.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/lightbox.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/nicEdit.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery.easyautocomplete.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/fv/formValidation.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/fv/bootstrap.min.js\"></script>\n";
@@ -202,9 +208,9 @@ function meta($title) {
   // echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/ace/ace.js\"></script>\n";
   // echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/ace/worker-json.js\"></script>\n";
   // echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/ace/mode-json.js\"></script>\n";
-  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/survey.ko.min.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/survey.knockout.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/surveyeditor.min.js\"></script>\n";
-  if (($_REQUEST["w"] == "template") || ($_REQUEST["w"] == "promote")) { echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/tinymce/tinymce.min.js\"></script>"; }
+  // if (($_REQUEST["w"] == "template") || ($_REQUEST["w"] == "promote")) { echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/tinymce/tinymce.min.js\"></script>"; }
   echo "  <script type=\"text/javascript\" src=\"https://www.gstatic.com/firebasejs/3.4.1/firebase.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"></script>\n";
   echo "</head>\n";
@@ -320,13 +326,20 @@ function role($level) {
 }
 
 function userstatus($status) {
-  if ($status == "0") { $userstatus = "Account has been deleted"; }
-  else if ($status == "1") { $userstatus = "Account has been suspended"; }
-  else if ($status == "2") { $userstatus = "Account has been locked due to 5 incorrect login attempts"; }
-  else if ($status == "3") { $userstatus = ""; }
+  if ($status == "5") { $userstatus = "Account active"; }
   else if ($status == "4") { $userstatus = "Account inactive"; }
-  else if ($status == "5") { $userstatus = "Account active"; }
-  // else if ($status == "2") { $userstatus = "Guest"; }
+  else if ($status == "3") { $userstatus = "Account has been locked due to 5 incorrect login attempts"; }
+  else if ($status == "2") { $userstatus = "Account has been suspended"; }
+  else if ($status == "1") { $userstatus = "Account has been deleted"; }
+  return $userstatus;
+}
+
+function sureystatus($status) {
+  if ($status == "5") { $userstatus = "Account active"; }
+  else if ($status == "4") { $userstatus = "Account inactive"; }
+  else if ($status == "3") { $userstatus = "Account has been locked due to 5 incorrect login attempts"; }
+  else if ($status == "2") { $userstatus = "Account has been suspended"; }
+  else if ($status == "1") { $userstatus = "Account has been deleted"; }
   return $userstatus;
 }
 

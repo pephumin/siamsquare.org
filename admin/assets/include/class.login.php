@@ -65,7 +65,7 @@ class Login {
       if (($result_row->fails == 3) && ($result_row->fails_last > (time() - 3600))) { $this->errors[] = mkwarn("You have entered too many incorrect passwords. You have 2 more chances before we lock your account."); }
       else if (($result_row->fails == 4) && ($result_row->fails_last > (time() - 3600))) { $this->errors[] = mkwarn("You have entered too many incorrect passwords. You have 1 more chance before we lock your account. Alternatively you can use the <a href=$url class='alert-link'>Password recovery tool</a> to reset your password."); }
       else if (($result_row->fails == 5) && ($result_row->fails_last > (time() - 3600))) {
-        $q0 = $this->db->prepare("UPDATE j_users SET status = 2 WHERE email = :email");
+        $q0 = $this->db->prepare("UPDATE j_users SET status = 3 WHERE email = :email");
         $q0->bindValue(':email', $result_row->email, PDO::PARAM_STR);
         $q0->execute();
         $this->errors[] = mkwarn("You have entered too many incorrect passwords. Your account has been locked for security reason. Please use the <a href=$url class='alert-link'>Password recovery tool</a> to unlock and activate your account again.");
@@ -76,14 +76,13 @@ class Login {
       }
     }
     if (!isset($result_row->id)) { $this->errors[] = mkerror("This account does not exist in our system. If you are one of our clients, please <a href='/admin/request/' class='alert-link'>click here</a> to request for an access."); }
-    else if ($result_row->status == 0) { $this->errors[] = mkerror("This account has been deleted, please contact your Manager for more information."); }
-    else if ($result_row->status == 1) { $this->errors[] = mkerror("This account has been suspended, please contact your Manager to reactivate it."); }
-    else if ($result_row->status == 2) {
+    else if ($result_row->status == 1) { $this->errors[] = mkerror("This account has been deleted, please contact your Manager for more information."); }
+    else if ($result_row->status == 2) { $this->errors[] = mkerror("This account has been suspended, please contact your Manager to reactivate it."); }
+    else if ($result_row->status == 3) {
       $since = date("j F Y h:i:s A", $result_row->fails_last);
       $logip = $result_row->fails_ip; //echo $logip;
       $this->errors[] = mkerror("This account has been locked due to too many attempts with incorrect password (detected on $since from $logip). In order to unlock and reactivate your account, please use the <a href=$url class='alert-link'>Password recovery tool</a>.");
     }
-    else if ($result_row->status == 3) { $this->errors[] = mkerror(""); }
     else if ($result_row->status == 4) { $this->errors[] = mkerror("This account in currently set to be inactive, please contact your Manager to reactivate it."); }
     else if (($result_row->status == 5) && (!password_verify($password, $result_row->password))) {
       $sth = $this->db->prepare('UPDATE j_users SET fails = fails+1, fails_last = :fails_last, fails_ip = :fails_ip WHERE email = :email');
@@ -150,14 +149,13 @@ class Login {
           $q0->execute();
           $result = $q0->fetchObject();
           if (!isset($result->id)) { $this->errors[] = mkerror("This account does not exist in our system. If you are one of our clients, please <a href='/admin/request/' class='alert-link'>click here</a> to request for a free access."); }
-          else if ($result->status == 0) { $this->errors[] = mkerror("This account has been deleted, please contact your Manager for more information."); }
-          else if ($result->status == 1) { $this->errors[] = mkerror("This account has been suspended, please contact your Manager to reactivate it."); }
-          else if ($result->status == 2) {
+          else if ($result->status == 1) { $this->errors[] = mkerror("This account has been deleted, please contact your Manager for more information."); }
+          else if ($result->status == 2) { $this->errors[] = mkerror("This account has been suspended, please contact your Manager to reactivate it."); }
+          else if ($result->status == 3) {
             $since = date("j F Y h:i:s A", $result->fails_last);
             $logip = $result->fails_ip; //echo $logip;
             $this->errors[] = mkerror("This account has been locked due to too many attempts with incorrect password (detected on $since from $logip). In order to unlock and reactivate your account, please use the <a href=$url class='alert-link'>Password recovery tool</a>.");
           }
-          else if ($result->status == 3) { $this->errors[] = mkerror(""); }
           else if ($result->status == 4) { $this->errors[] = mkerror("This account in currently set to be inactive, please contact your Manager to reactivate it."); }
           else if (($result->status == 5) && (isset($result->email))) {
             $_SESSION['logged_in'] = 1;                  $this->logged_in = true;

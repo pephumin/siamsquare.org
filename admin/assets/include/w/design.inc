@@ -154,10 +154,10 @@ echo "<br>\n";
     <div class="row">
       <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 boxborder">
         <div class="row boxoutside">
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu">Colour</div>
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu boxdrop">
+          <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7 boxmenu">Colour</div>
+          <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 boxmenu boxdrop">
             <form method="post" class="form-inline" action="<?php echo $me; ?>">
-              <select name="selectA" class="form-control input-sm" onchange="this.form.submit()">
+              <select name="selectA" class="form-control input-sm" onchange="this.form.submit()" disabled>
 <?php
 $options = array("Blue" => "1", "Green" => "2", "Red" => "3", "Yellow" => "4", "Grey" => "5");
 foreach($options as $a => $b) {
@@ -173,8 +173,8 @@ foreach($options as $a => $b) {
       </div>
       <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 boxborder">
         <div class="row boxoutside">
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu">Top menu</div>
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu boxdrop">
+          <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7 boxmenu">Top menu</div>
+          <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 boxmenu boxdrop">
             <form method="post" class="form-inline" action="<?php echo $me; ?>">
               <select name="selectA" class="form-control input-sm" onchange="this.form.submit()">
 <?php
@@ -192,8 +192,8 @@ foreach($options as $a => $b) {
       </div>
       <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 boxborder">
         <div class="row boxoutside">
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu">Navigator</div>
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu boxdrop">
+          <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7 boxmenu">Navigator</div>
+          <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 boxmenu boxdrop">
             <form method="post" class="form-inline" action="<?php echo $me; ?>">
               <select name="selectB" class="form-control input-sm" onchange="this.form.submit()">
 <?php
@@ -214,8 +214,8 @@ foreach($options as $a => $b) {
     <div class="row">
       <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 boxborder">
         <div class="row boxoutside">
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu">Project detail</div>
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu boxdrop">
+          <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7 boxmenu">Project detail</div>
+          <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 boxmenu boxdrop">
             <form method="post" class="form-inline" action="<?php echo $me; ?>">
               <select name="selectC" class="form-control input-sm" onchange="this.form.submit()">
 <?php
@@ -233,8 +233,8 @@ foreach($options as $a => $b) {
       </div>
       <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 boxborder">
         <div class="row boxoutside">
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu">Company profile</div>
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu boxdrop">
+          <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7 boxmenu">Company profile</div>
+          <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 boxmenu boxdrop">
             <form method="post" class="form-inline" action="<?php echo $me; ?>">
               <select name="selectD" class="form-control input-sm" onchange="this.form.submit()">
 <?php
@@ -252,8 +252,8 @@ foreach($options as $a => $b) {
       </div>
       <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 boxborder">
         <div class="row boxoutside">
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu">Company logo</div>
-          <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 boxmenu boxdrop">
+          <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7 boxmenu">Company logo</div>
+          <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 boxmenu boxdrop">
             <form method="post" class="form-inline" action="<?php echo $me; ?>">
               <select name="selectE" class="form-control input-sm" onchange="this.form.submit()">
 <?php
@@ -395,8 +395,15 @@ survey.render(&#x22;surveyElement&#x22;);</code></pre>
   Survey.Survey.cssType = "bootstrap";
   Survey.JsonObject.metaData.removeProperty("survey", "clearInvisibleValues");
   Survey.JsonObject.metaData.removeProperty("survey", "cookieName");
-  // Survey.JsonObject.metaData.removeProperty("survey", "locale");
-  // Survey.JsonObject.metaData.removeProperty("survey", "mode");
+  Survey.JsonObject.metaData.removeProperty("survey", "focusFirstQuestionAutomatic");
+  Survey.JsonObject.metaData.removeProperty("survey", "locale");
+  Survey.JsonObject.metaData.removeProperty("survey", "questionTitleTemplate");
+  Survey.JsonObject.metaData.removeProperty("survey", "questionTitleLocation");
+  Survey.JsonObject.metaData.removeProperty("survey", "requiredText");
+  Survey.JsonObject.metaData.removeProperty("survey", "completeText");
+  Survey.JsonObject.metaData.removeProperty("survey", "pageNextText");
+  Survey.JsonObject.metaData.removeProperty("survey", "pagePrevText");
+  Survey.JsonObject.metaData.removeProperty("survey", "mode");
   Survey.JsonObject.metaData.removeProperty("survey", "sendResultOnPageNext");
   Survey.JsonObject.metaData.removeProperty("survey", "storeOthersAsComment");
   Survey.JsonObject.metaData.removeProperty("survey", "surveyPostId");
@@ -417,7 +424,7 @@ survey.render(&#x22;surveyElement&#x22;);</code></pre>
   $('#showsavesuccess').html("<div class='alert alert-success'><i class='pe-save pe-fw'></i> Data has been saved successfully</div>").hide();
   $('#showreadonly').html("<div class='alert alert-warning'><i class='pe-exclamation-triangle pe-fw'></i> Because you are not the owner of this survey, the system puts you into the <strong>read-only mode</strong></div>").hide();
   mm = getsurveydata(surveyid);
-  var blank = JSON.stringify({ "completeText": "ยืนยันและส่งความคิดเห็น", "completedHtml": "<h2><i class='pe-flag-checkered pe-fw'></i> คุณได้ตอบแบบสอบถามเสร็จสมบูรณ์แล้ว</h2>\n\n<p>ความคิดเห็นของคุณได้ถูกบันทึกและจัดเก็บเข้าสู่ระบบของเราเป็นที่เรียบร้อยแล้ว ซึ่งเราจะนำความคิดเห็นของคุณและของผู้ที่ร่วมตอบคำถามท่านอื่นๆมารวมกันก่อนจะ ดำเนินการต่อไปในขั้นตอนการประมวลผลและการวิเคราะห์ผล</p>\n\n<p>เราขอย้ำกับคุณอีกครั้งว่า ระบบของเราได้รับการออกแบบและสร้างโดยมุ่งเน้นในเรื่องความลับของข้อมูลและผู้ให้ข้อมูล ด้วยเหตุผลนี้คุณจะสามารถมั่นใจได้ว่าข้อมุลของคุณจะถูกใช้อย่างเหมาะสมและไม่มีการเปิดเผยรายละเอียดเป็นรายบุคคลอย่างเด็ดขาด</p>\n\n<p>สุดท้ายนี้ ในนามของบริษัทฯ เราขอขอบพระคุณที่สละเวลาแสดงความคิดเห็นที่แท้จริงให้กับเรา ทุกๆความคิดเห็นของคุณนั้นมีค่ายิ่งสำหรับเรา เพราะข้อมูลเหล่านี้จะถูกนำไปใช้เพื่อพัฒนาผลิตภัณฑ์​หรือบริการต่างๆให้ดียิ่งขึ้นเพื่อให้เกิดการพัฒนาก้าวหน้าต่อไปในอนาคต</p>", "pageNextText": "หน้าถัดไป", "pagePrevText": "หน้าที่แล้ว", "pages": [{ "name": "page1" }], "questionTitleTemplate": "{no}. {title} {require}" });
+  var blank = JSON.stringify({ "completeText": "ยืนยันและส่งความคิดเห็น", "completedHtml": "<h2><i class='pe-flag-checkered pe-fw'></i> คุณได้ตอบแบบสอบถามเสร็จสมบูรณ์แล้ว</h2>\n\n<p>ความคิดเห็นของคุณได้ถูกบันทึกและจัดเก็บเข้าสู่ระบบของเราเป็นที่เรียบร้อยแล้ว ซึ่งเราจะนำความคิดเห็นของคุณและของผู้ที่ร่วมตอบคำถามท่านอื่นๆมารวมกันก่อนจะ ดำเนินการต่อไปในขั้นตอนการประมวลผลและการวิเคราะห์ผล</p>\n\n<p>เราขอย้ำกับคุณอีกครั้งว่า ระบบของเราได้รับการออกแบบและสร้างโดยมุ่งเน้นในเรื่องความลับของข้อมูลและผู้ให้ข้อมูล ด้วยเหตุผลนี้คุณจะสามารถมั่นใจได้ว่าข้อมุลของคุณจะถูกใช้อย่างเหมาะสมและไม่มีการเปิดเผยรายละเอียดเป็นรายบุคคลอย่างเด็ดขาด</p>\n\n<p>สุดท้ายนี้ ในนามของบริษัทฯ เราขอขอบพระคุณที่สละเวลาแสดงความคิดเห็นที่แท้จริงให้กับเรา ทุกๆความคิดเห็นของคุณนั้นมีค่ายิ่งสำหรับเรา เพราะข้อมูลเหล่านี้จะถูกนำไปใช้เพื่อพัฒนาผลิตภัณฑ์​หรือบริการต่างๆให้ดียิ่งขึ้นเพื่อให้เกิดการพัฒนาก้าวหน้าต่อไปในอนาคต</p>", "pageNextText": "หน้าถัดไป", "pagePrevText": "หน้าที่แล้ว", "pages": [{ "name": "page1" }], "questionTitleTemplate": "{no}. {title} {require}", "locale": "th", "focusFirstQuestionAutomatic": true });
   if (mm.data) { editor.text = mm.data; } else if (localStorage.getItem("editdata." + surveyid)) { editor.text = localStorage.getItem("editdata." + surveyid); } else { editor.text = blank; }
   if (userid == mm.userid) { var owner = true; } else { var owner = false; }
   if (level == 9) { var cansave = true; } else if (level == 6) { var cansave = true; }
