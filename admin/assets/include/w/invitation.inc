@@ -119,7 +119,7 @@ if ($_POST['saveme'] == 1) {
     $mail->Host = 'mail.thaiweb.net';
     $mail->Port = 587;
     // $mail->Username = 'sysop';
-    // $mail->Password = '2st3wp1d';
+    // $mail->Password = '';
     $mail->SMTPSecure = 'tls';
     $mail->SMTPAuth = true;
     $mail->SMTPKeepAlive = true;
