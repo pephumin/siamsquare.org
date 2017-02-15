@@ -8,7 +8,7 @@ echo "<br>\n";
 $me = "/admin/?w=help";
 if ((empty($_GET['d'])) || ($_GET['d'] == "questions")) {
 
-  echo "<p class=\"pull-right\"><strong>Select the help topic [</strong> <u>Questions</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&d=flow")."\">Flow</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&d=editor")."\">Editor</a> <strong>]</strong></p><br>\n";
+  echo "<p class=\"pull-right\"><strong>Select the help topic [</strong> <u>Questions</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&d=flow")."\">Flow</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&d=editor")."\">Editor</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&d=API")."\">API</a> <strong>]</strong></p><br>\n";
 
 ?>
 
@@ -268,7 +268,7 @@ survey.render();</code></pre>
 <?php
 } else if ($_GET['d'] == "flow") {
 
-  echo "<p class=\"pull-right\"><strong>Select the help topic [</strong> <a href=\"".htmlspecialchars($me."&d=questions")."\">Questions</a> <strong>:</strong> <u>Flow</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&d=editor")."\">Editor</a> <strong>]</strong></p><br>\n";
+  echo "<p class=\"pull-right\"><strong>Select the help topic [</strong> <a href=\"".htmlspecialchars($me."&d=questions")."\">Questions</a> <strong>:</strong> <u>Flow</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&d=editor")."\">Editor</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&d=API")."\">API</a> <strong>]</strong></p><br>\n";
 
 ?>
 
@@ -491,7 +491,7 @@ new Survey.SurveyTemplateText().replaceText(&#x27;&#x3C;div class=&#x22;btn-grou
   pages: [
     { questions: [{ type: &#x22;radiogroup&#x22;,  name: &#x22;civilwar&#x22;, title: &#x22;When was the Civil War?&#x22;, choices: [&#x22;1750-1800&#x22;, &#x22;1800-1850&#x22;, &#x22;1850-1900&#x22;, &#x22;1900-1950&#x22;,&#x22;after 1950&#x22;]} ]},
     { questions: [{ type: &#x22;radiogroup&#x22;,  name: &#x22;libertyordeath&#x22;, title: &#x22;Who said &#x27;Give me liberty or give me death?&#x27;&#x22;, choicesOrder: &#x22;random&#x22;, choices: [&#x22;John Hancock&#x22;, &#x22;James Madison&#x22;, &#x22;Patrick Henry&#x22;, &#x22;Samuel Adams&#x22;]} ]},
-    { questions: [{ type: &#x22;radiogroup&#x22;,  name: &#x22;magnacarta&#x22;, title: &#x22;What is the Magna Carta?&#x22;, choicesOrder: &#x22;random&#x22;, choices: [&#x22;The foundation of the British parliamentary system&#x22;, &#x22;The Great Seal of the monarchs of England&#x22;, &#x22;The French Declaration of the Rights of Man&#x22;, &#x22;The charter signed by the Pilgrims on the Mayflower&#x22;]} ]}
+    { questions: [{ type: &#x22;radiogroup&#x22;,  name: &#x22;magnacarta&#x22;, title: &#x22;What is the Magna Carta?&#x22;, choicesOrder: &#x22;random&#x22;, choices: [&#x22;The foundation of the British parliamentary system&#x22;, &#x22;The Great Seal of the monarchs of England&#x22;, &#x22;The French Declaration of the Rights of Man&#x22;, &#x22;The charter signed by the Pilgrims on the May flower&#x22;]} ]}
   ],
   completedHtml: &#x22;&#x3C;p&#x3E;Your anwers are:&#x3C;/p&#x3E;&#x3C;p&#x3E;When was the Civil War?: &#x3C;b&#x3E;{civilwar}&#x3C;/b&#x3E;. The correct is: &#x3C;b&#x3E;1850-1900&#x3C;/b&#x3E;&#x3C;/p&#x3E;&#x3C;p&#x3E;Who said &#x27;Give me liberty or give me death?&#x27;: &#x3C;b&#x3E;{libertyordeath}&#x3C;/b&#x3E;. The correct is: &#x3C;b&#x3E;Patrick Henry&#x3C;/b&#x3E;&#x3C;/p&#x3E;&#x3C;p&#x3E;What is the Magna Carta?: &#x3C;b&#x3E;{magnacarta}&#x3C;/b&#x3E;. The correct is: &#x3C;b&#x3E;The foundation of the British parliamentary system&#x3C;/b&#x3E;&#x3C;/p&#x3E;&#x22;
 });
@@ -721,7 +721,7 @@ survey.onGetResult</code></pre>
 <?php
 } else if ($_GET['d'] == "editor") {
 
-  echo "<p class=\"pull-right\"><strong>Select the help topic [</strong> <a href=\"".htmlspecialchars($me."&d=questions")."\">Questions</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&d=flow")."\">Flow</a> <strong>:</strong> <u>Editor</u> <strong>]</strong></p><br>\n";
+  echo "<p class=\"pull-right\"><strong>Select the help topic [</strong> <a href=\"".htmlspecialchars($me."&d=questions")."\">Questions</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&d=flow")."\">Flow</a> <strong>:</strong> <u>Editor</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&d=API")."\">API</a> <strong>]</strong></p><br>\n";
 
 ?>
 
@@ -783,6 +783,141 @@ editor.saveSurveyFunc = function() {
 }
 
 editor.text = &#x22;{ pages: [{ name:\&#x27;page1\&#x27;, questions: [{ type: \&#x27;text\&#x27;, name:\&#x22;q1\&#x22;}]}]}&#x22;;</code></pre>
+
+<?php
+} else if ($_GET['d'] == "API") {
+
+  echo "<p class=\"pull-right\"><strong>Select the help topic [</strong> <a href=\"".htmlspecialchars($me."&d=questions")."\">Questions</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&d=flow")."\">Flow</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&d=editor")."\">Editor</a> <strong>:</strong> <u>API</u> <strong>]</strong></p><br>\n";
+
+?>
+
+<h3>All surveys</h3>
+
+<pre><code class="r">/all/A</code></pre>
+<p>Get all survey info type A (status = 1)<br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/all/B</code></pre>
+<p>Get all survey info type B (status = 2)<br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/all/C</code></pre>
+<p>Get all survey info type C (status = 3)<br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/all/D</code></pre>
+<p>Get all survey info type D (status = 4)<br><small>Type: <code>GET</code></small></p>
+
+<h3>Survey by user</h3>
+
+<pre><code class="r">/user/:userid/new?title=Title</code></pre>
+<p>Create a new survey for <code>:userid</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/user/:userid/A</code></pre>
+<p>Get survey info type A (status = 1) for <code>:userid</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/user/:userid/B</code></pre>
+<p>Get survey info type B (status = 2) for <code>:userid</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/user/:userid/C</code></pre>
+<p>Get survey info type C (status = 3) for <code>:userid</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/user/:userid/D</code></pre>
+<p>Get survey info type D (status = 4) for <code>:userid</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/user/:userid</code></pre>
+<p>List all surveys for <code>:userid</code><br><small>Type: <code>GET</code></small></p>
+
+<h3>Survey by company</h3>
+
+<pre><code class="r">/company/:companyid/A</code></pre>
+<p>Get survey info type A (status = 1) for <code>:companyid</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/company/:companyid/B</code></pre>
+<p>Get survey info type B (status = 2) for <code>:companyid</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/company/:companyid/C</code></pre>
+<p>Get survey info type C (status = 3) for <code>:companyid</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/company/:companyid/D</code></pre>
+<p>Get survey info type D (status = 4) for <code>:companyid</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/company/:companyid</code></pre>
+<p>List all surveys for <code>:companyid</code><br><small>Type: <code>GET</code></small></p>
+
+<h3>Survey data</h3>
+
+<pre><code class="r">/survey/:surveyid/data</code></pre>
+<p>Show data for <code>:survey</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/survey/:surveyid</code></pre>
+<p>Show all information for <code>:survey</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/survey</code></pre>
+<p>Show all information for all surveys<br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/survey/:surveyid/updatedata</code></pre>
+<p>Update data for <code>:surveyid</code> (used by surveyeditor)<br><small>Type: <code>PUT</code></small></p>
+
+<pre><code class="r">/survey/:surveyid/rename</code></pre>
+<p>Change name for <code>:surveyid</code><br><small>Type: <code>PUT</code></small></p>
+
+<pre><code class="r">/survey/:surveyid/redescription</code></pre>
+<p>Change description for <code>:surveyid</code><br><small>Type: <code>PUT</code></small></p>
+
+<pre><code class="r">/survey/:surveyid/archive</code></pre>
+<p>Move <code>:surveyid</code> to archive<br><small>Type: <code>PUT</code></small></p>
+
+<pre><code class="r">/survey/:surveyid/delete</code></pre>
+<p>Delete <code>:surveyid</code><br><small>Type: <code>PUT</code></small></p>
+
+<pre><code class="r">/survey/:surveyid/restore</code></pre>
+<p>Restore <code>:surveyid</code> from archive<br><small>Type: <code>PUT</code></small></p>
+
+<h3>Survey result</h3>
+
+<pre><code class="r">/result/:surveyid/title</code></pre>
+<p>Show result specific to title for <code>:surveyid</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/result/focus/:surveyid</code></pre>
+<p>Show result specific to data for <code>:surveyid</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/result/:surveyid</code></pre>
+<p>Show all results for <code>:surveyid</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/interim/:surveyid</code></pre>
+<p>Show interim result for <code>:surveyid</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/delete/result/:surveyid/:resultid</code></pre>
+<p>Delete :resultid from <code>:surveyid</code> (use in interim)<br><small>Type: <code>PUT</code></small></p>
+
+<h3>Member</h3>
+
+<pre><code class="r">/member/:companyid/new?email=email&name=Name</code></pre>
+<p>Create a new member for <code>:companyid</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/member/:companyid</code></pre>
+<p>List all members for <code>:companyid</code><br><small>Type: <code>GET</code></small></p>
+
+<pre><code class="r">/member/:userid/refullname</code></pre>
+<p>Change fullname for <code>:userid</code><br><small>Type: <code>PUT</code></small></p>
+
+<pre><code class="r">/member/:userid/reemail</code></pre>
+<p>Change email for <code>:userid</code><br><small>Type: <code>PUT</code></small></p>
+
+<pre><code class="r">/member/:userid/remobile</code></pre>
+<p>Change mobile for <code>:userid</code><br><small>Type: <code>PUT</code></small></p>
+
+<pre><code class="r">/member/:userid/suspend</code></pre>
+<p>Suspend <code>:userid</code><br><small>Type: <code>PUT</code></small></p>
+
+<pre><code class="r">/member/:userid/delete</code></pre>
+<p>Delete <code>:userid</code><br><small>Type: <code>PUT</code></small></p>
+
+<h3>Others</h3>
+
+<pre><code class="r">/submit</code></pre>
+<p>Submit survey result (used by survey.js)<br><small>Type: <code>POST</code></small></p>
+
+<pre><code class="r">/log</code></pre>
+<p>Submit log (used by the whole system)<br><small>Type: <code>POST</code></small></p>
 
 <?php } ?>
 
