@@ -17,6 +17,7 @@ if ($_GET['d']) {
     if ($_GET['size']) { $ex3 = "&p=".$_GET['size']; } else { $ex3 = ""; }
     $redirect = $base.$ex1.$ex2.$ex3."&m=2";
     header("location: $redirect");
+    exit;
   } else { echo mkerror("Your level is not high enough to delete this data from the system."); }
 }
 

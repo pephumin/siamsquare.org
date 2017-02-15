@@ -95,6 +95,7 @@ if ($_POST['saveme'] == 1) {
   $ql1A->execute();
   $redirect = $base."&m=3";
   header("location: $redirect");
+  exit;
 // } else if ($_POST['saveme'] == 2) {
 //   if ($_POST["choice-email2"] == "system") { $email_r = $_POST["email_rA"]; }
 //   else if ($_POST["choice-email2"] == "custom") { $email_r = $_POST["email_rB"]; }
@@ -109,9 +110,10 @@ if ($_POST['saveme'] == 1) {
 //   $ql1B->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
 //   $ql1B->execute();
 //   header("location: $base");
+//   exit;
 } else if ($_POST['m'] == "sending") {
-  if (empty($email_i_content)) { $redirect = $base."&m=4"; header("location: $redirect"); }
-  else if (empty($_POST['checkbox'])) { $redirect = $base."&m=5"; header("location: $redirect"); }
+  if (empty($email_i_content)) { $redirect = $base."&m=4"; header("location: $redirect"); exit; }
+  else if (empty($_POST['checkbox'])) { $redirect = $base."&m=5"; header("location: $redirect"); exit; }
   else {
     $mail = new PHPMailer;
     // $mail->isSMTP();
@@ -161,7 +163,7 @@ if ($_POST['saveme'] == 1) {
       // $q4->execute();
       // $redirect = $base."&m=1";
     }
-    // if ($redirect) { header("location: $redirect"); }
+    // if ($redirect) { header("location: $redirect"); exit; }
   }
 }
 

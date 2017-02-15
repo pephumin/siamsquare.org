@@ -63,6 +63,7 @@ if ($_POST['saveme'] == 1) {
   $ql2A->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql2A->execute();
   // header("location: $me");
+  // exit;
 } else if ($_POST['saveme'] == 2) {
   if ($_POST["choice-email2"] == "system") { $email_r = $_POST["email_rA"]; }
   else if ($_POST["choice-email2"] == "custom") { $email_r = $_POST["email_rB"]; }
@@ -77,6 +78,7 @@ if ($_POST['saveme'] == 1) {
   $ql2B->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql2B->execute();
   // header("location: $me");
+  // exit;
 }
 
 $title = "Customise the templates";

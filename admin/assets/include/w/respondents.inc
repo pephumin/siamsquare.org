@@ -105,6 +105,7 @@ if ($_POST['uploading'] == 1) {
   }
   $redirect = $base."&m=1";
   header("location: $redirect");
+  exit;
 } else if ($_POST['adding'] == 1) {
   if (empty($_POST['addemail'])) { echo "Cannot proceed without any emails"; }
   for ($i=0; $i<count($_POST['addemail']); $i++) {
@@ -123,6 +124,7 @@ if ($_POST['uploading'] == 1) {
   $ql5->execute();
   $redirect = $base."&m=2";
   header("location: $redirect");
+  exit;
 } else if ($_POST['m'] == "fixerrors") {
   $q2A = $db->prepare("DELETE FROM j_respondents WHERE surveyid = 0 OR surveyid = :surveyid AND status = 0");
   $q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
@@ -133,6 +135,7 @@ if ($_POST['uploading'] == 1) {
   $ql2->execute();
   $redirect = $base."&m=3";
   header("location: $redirect");
+  exit;
 } else if ($_POST['m'] == "fixduplicates") {
   $q2B1 = $db->prepare("CREATE TABLE tmp SELECT * FROM j_respondents WHERE surveyid = :surveyid GROUP BY email");
   $q2B1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
@@ -150,6 +153,7 @@ if ($_POST['uploading'] == 1) {
   $ql3->execute();
   $redirect = $base."&m=4";
   header("location: $redirect");
+  exit;
 } else if ($_POST['m'] == "delthis") {
   $ids = implode(",", $_POST['checkbox']);
   $q2C = $db->prepare("DELETE FROM j_respondents WHERE surveyid = :surveyid AND id IN ($ids)");
@@ -161,6 +165,7 @@ if ($_POST['uploading'] == 1) {
   $ql4->execute();
   $redirect = $base."&m=5";
   header("location: $redirect");
+  exit;
 }
 
 if (empty($_GET['s'])) { pageHeader("Error"); echo mkerror("Cannot proceed without a surveyid"); pageFooter(); exit; }

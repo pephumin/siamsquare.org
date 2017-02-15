@@ -205,12 +205,8 @@ function meta($title) {
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/fv/formValidation.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/fv/bootstrap.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/knockout.js\"></script>\n";
-  // echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/ace/ace.js\"></script>\n";
-  // echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/ace/worker-json.js\"></script>\n";
-  // echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/ace/mode-json.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/survey.knockout.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/surveyeditor.min.js\"></script>\n";
-  // if (($_REQUEST["w"] == "template") || ($_REQUEST["w"] == "promote")) { echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/tinymce/tinymce.min.js\"></script>"; }
   echo "  <script type=\"text/javascript\" src=\"https://www.gstatic.com/firebasejs/3.4.1/firebase.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"></script>\n";
   echo "</head>\n";
@@ -325,6 +321,31 @@ function role($level) {
   return $role;
 }
 
+function is_admin() {
+  if (($_SESSION['logged_in'] == 1) && ($_SESSION['level'] == 9)) { return true; }
+  else { return false; }
+}
+
+function is_system() {
+  if (($_SESSION['logged_in'] == 1) && ($_SESSION['level'] == 8)) { return true; }
+  else { return false; }
+}
+
+function is_manager() {
+  if (($_SESSION['logged_in'] == 1) && ($_SESSION['level'] == 6)) { return true; }
+  else { return false; }
+}
+
+function is_user() {
+  if (($_SESSION['logged_in'] == 1) && ($_SESSION['level'] == 5)) { return true; }
+  else { return false; }
+}
+
+function is_guest() {
+  if (($_SESSION['logged_in'] == 1) && ($_SESSION['level'] == 4)) { return true; }
+  else { return false; }
+}
+
 function userstatus($status) {
   if ($status == "5") { $userstatus = "Account active"; }
   else if ($status == "4") { $userstatus = "Account inactive"; }
@@ -357,47 +378,5 @@ function isJSON($string) {
   return is_string($string) && is_array(json_decode($string, true)) ? true : false;
 }
 
-function sendMail($surveyid, &$emails) {
-  $mail = new PHPMailer;
-  $mail->isSMTP();
-  $mail->SMTPDebug = 3;
-  $mail->SMTPKeepAlive = true;
-  // $mail->SMTPAuth = true;
-  $mail->Host = 'localhost';
-  // $mail->Port = 587;
-  // $mail->Username = 'sysop';
-  // $mail->Password = '';
-  // $mail->SMTPSecure = 'tls';
-  $mail->isHTML(true);
-  $mail->addAddress(EMAILSYSTEM);
-  $mail->CharSet = "UTF-8";
-  if ($type == "invite") {
-    if ($row->email_i) { $mail->setFrom($row->email_i); } else { $mail->setFrom(EMAILNOREPLY); }
-    $mail->Subject = "ขอเชิญร่วมแสดงความคิดเห็น / Survey invitation";
-    $mail->Body = $row->email_i_content;
-    $mail->AltBody = strip_tags($row->email_i_content);
-  }
-  else if ($type == "remind") {
-    if ($row->email_r) { $mail->setFrom($row->email_r); } else { $mail->setFrom(EMAILNOREPLY); }
-    $mail->Subject = "ช่วยเตือนว่าคุณยังไม่ได้แสดงความคิดเห็น / Survey reminder";
-    $mail->Body = $row->email_r_content;
-    $mail->AltBody = strip_tags($row->email_r_content);
-  }
-  $q2 = $db->prepare("SELECT * FROM j_respondents WHERE surveyid = :surveyid AND status = 1 AND invite1 IS NULL");
-  $q2->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-  $q2->execute();
-  foreach ($q2->fetchObject() as $row) {
-    $mail->addBCC($row->email);
-    // if (!$mail->send()) { echo "Mailer Error (" . str_replace("@", "&#64;", $row->email) . ') ' . $mail->ErrorInfo . '<br>'; break; }
-    // else {
-    //   echo "Message sent to :" . $row->email . ' (' . str_replace("@", "&#64;", $row->email) . ')<br>';
-    //   $q3 = $db->prepare("UPDATE j_respondents SET invite1 = NOW() WHERE email = :email AND surveyid = :surveyid");
-    //   $q3->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-    //   $q3->bindValue(':email', $row->email, PDO::PARAM_INT);
-    //   $q3->execute();
-    // }
-    $mail->clearAddresses();
-  }
-}
 
 ?>

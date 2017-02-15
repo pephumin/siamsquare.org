@@ -132,7 +132,7 @@ class Login {
       $sth->execute(array(':email' => $result_row->email));
       if (isset($rememberme)) { $this->newRememberMeCookie(); }
       else { $this->deleteRememberMeCookie(); }
-      if ($ref) { header("location: $ref"); }
+      if ($ref) { header("location: $ref"); exit; }
     }
   }
 

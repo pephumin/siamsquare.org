@@ -63,6 +63,9 @@ function pageHeader($title) {
                 <ul class="dropdown-menu">
                   <li><a href="<?php echo(ADMIN."?w=profile"); ?>" title="Profile"><i class="pe-user pe-fw"></i> Profile</a></li>
                   <li><a href="<?php echo(ADMIN."?w=team"); ?>" title="Team"><i class="pe-graduation-cap pe-fw"></i> Team</a></li>
+<?php if ($_SESSION['level'] >= "6") { ?>
+                  <li><a href="<?php echo(ADMIN."?w=company"); ?>" title="Company"><i class="pe-building pe-fw"></i> Company</a></li>
+<?php } ?>
                 </ul>
               </li>
               <li class="dropdown">

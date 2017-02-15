@@ -17,6 +17,7 @@ if ($_POST['newpost'] == 1) {
   }
   $redirect = $me."&m=1";
   header("location: $redirect");
+  exit;
 } else if ($_GET['d']) {
   $q0B = $db->prepare("UPDATE j_board SET status = 0 WHERE id = :id");
   $q0B->bindValue(':id', base64_decode($_GET["d"]), PDO::PARAM_INT);
@@ -27,6 +28,7 @@ if ($_POST['newpost'] == 1) {
   $q0C->execute();
   $redirect = $me."&m=2";
   header("location: $redirect");
+  exit;
 }
 
 $title = "Message board";
@@ -181,12 +183,8 @@ while ($row = $q1C->fetchObject()) {
     <div class="modal-content">
       <div class="modal-body">
         <h4>Confirm delete?</h4>
-        <p>
-          Are you sure that you want to delete this post permanently?
-        </p>
-        <p>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <a href="" class="btn btn-danger btn-ok">Delete <i class="pe-trash-o"></i></a>
+        <p>Are you sure that you want to delete this post permanently?</p>
+        <p><button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> <a class="btn btn-danger btn-ok">Delete <i class="pe-trash-o"></i></a>
         </p>
       </div>
     </div>
@@ -205,7 +203,6 @@ while ($row = $q1C->fetchObject()) {
   var ViewModel = function () {
     var self = this;
     this.messages = ko.observableArray([]);
-    // this.url = api;
     this.isNewPostCreating = ko.observable(false);
     this.newPostHead = ko.observable("");
     this.newPostBody = ko.observable("");
@@ -219,13 +216,8 @@ while ($row = $q1C->fetchObject()) {
   }
   $(function () { ko.applyBindings(new ViewModel()); });
 
-  $('#confirm-delete').on('show.bs.modal', function(e) {
-    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
-  });
-
-  $(document).on('keypress', function (e) {
-    if ($('#confirm-delete').is(':visible')) { if (e.which == 13) { window.location= $("#confirm-delete .btn-ok", this).attr("href"); } }
-  });
+  $('#confirm-delete').on('show.bs.modal', function(e) { $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href')); });
+  $(document).on('keypress', function (e) { if ($('#confirm-delete').is(':visible')) { if (e.which == 13) { window.location= $("#confirm-delete .btn-ok", this).attr("href"); } } });
 
   $('.global.collapse').on('show.bs.collapse', function (e) {
     var all = $(document).find('.global.collapse');
@@ -235,6 +227,5 @@ while ($row = $q1C->fetchObject()) {
   })
 
 </script>
-
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
