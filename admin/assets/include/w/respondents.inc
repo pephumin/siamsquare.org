@@ -591,6 +591,6 @@ if ($total == 0) {
   });
 </script>
 
-<a href="/admin/?w=surveys" class="btn btn-danger btn-sm pull-right" style="margin-top:50px; margin-bottom: 20px"><i class="pe-chevron-circle-left pe-fw"></i> Back to the main page</a>
+<?php backButton("/admin/?w=surveys", "Back to the main page", "danger"); ?>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>

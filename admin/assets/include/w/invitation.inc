@@ -588,7 +588,6 @@ echo "</div><br>\n";
   FormStuff.init();
 </script>
 
-
-<a href="<?php echo $goback; ?>" class="btn btn-warning btn-sm pull-right" style="margin-top:50px; margin-bottom: 20px"><i class="pe-chevron-circle-left pe-fw"></i> Back to respondent page</a>
+<?php backButton($goback, "Back to the respondent page", "warning"); ?>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
