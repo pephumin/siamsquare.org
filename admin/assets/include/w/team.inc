@@ -554,6 +554,5 @@ $rolelist .= " ]";
 
 <br>
 
-<a href="/admin/?w=surveys" class="btn btn-danger btn-sm pull-right" style="margin-top:50px; margin-bottom: 20px"><i class="pe-chevron-circle-left pe-fw"></i> Back to the main page</a>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
