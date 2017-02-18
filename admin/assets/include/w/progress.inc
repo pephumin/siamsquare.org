@@ -67,9 +67,9 @@ while ($row = $q2A->fetchObject()) {
 }
 $q2B = $db->prepare("SELECT SUM(IF(status = :S1, 1, 0)) AS S1, SUM(IF(status = :S2, 1, 0)) AS S2, SUM(IF(status = :S3, 1, 0)) AS S3 FROM j_results WHERE surveyid = :surveyid ");
 $q2B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-$q2B->bindValue(':S1', '1', PDO::PARAM_INT);
-$q2B->bindValue(':S2', '0', PDO::PARAM_INT);
-$q2B->bindValue(':S3', '-1', PDO::PARAM_INT);
+$q2B->bindValue(':S1', '2', PDO::PARAM_INT);
+$q2B->bindValue(':S2', '1', PDO::PARAM_INT);
+$q2B->bindValue(':S3', '0', PDO::PARAM_INT);
 $q2B->execute();
 while ($row = $q2B->fetchObject()) {
   $c_responses_good = $row->S1;
@@ -123,7 +123,7 @@ $stat .= "    </tr>\n";
 
 if ($c_responses_good > 0) {
   $p_responses_good = percent($c_responses_good / $c_responses_total);
-  $sql3 = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 1 ORDER BY submitted DESC";
+  $sql3 = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 2 ORDER BY submitted DESC";
   $q = $db->prepare($sql3);
   $q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
   $q->execute(); // print_r($q->rowCount());
@@ -529,6 +529,6 @@ echo "<h3>Project $project</h3>\n";
 
 <br>
 
-<a href="/admin/?w=surveys" class="btn btn-danger btn-sm pull-right" style="margin-top:50px; margin-bottom: 20px"><i class="pe-chevron-circle-left pe-fw"></i> Back to the main page</a>
+<?php backButton("/admin/?w=surveys", "Back to the main page", "danger"); ?>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
