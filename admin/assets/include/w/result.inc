@@ -199,7 +199,7 @@ $questionlisting .= "</ul>";
 
 // ------- Show data --------------------------------------------------------------------------
 
-$sql = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status > 0 ORDER BY submitted DESC";
+$sql = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 2 ORDER BY submitted DESC";
 $q = $db->prepare($sql);
 $q->bindValue(':surveyid', $surveyid, PDO::PARAM_INT);
 $q->execute();
@@ -304,12 +304,27 @@ else if ($cd == "comment") {
   for ($i=0; $i < count($r); $i++) {
     $j = $r[$i]["data"];
     $j = json_decode($j, true);
-    $out .= "['".$j[$qq]."'],";
+    $out .= "['".addslashes($j[$qq])."'],";
     array_push($k, $j[$qq]);
   }
   $out .= " ]";
+  // print_r(array_count_values($k));
+  // echo $j[$qq];
+  // print_r ($k);
   $cece = array_count_values($k); arsort($cece);
   $totalresponses = array_sum($cece);
+  $A = array_keys($cece); $B = array_values($cece);
+  $C = count($cece);
+  $out2 = "";
+  $out2 .= "      data.addRows($C);\n";
+  for ($m=0; $m < $C; $m++) {
+    $BB[$m] = number_format(($B[$m]/$totalrecords)*100, 2);
+    $m1 = $m+1; $m2 = $m1+1;
+    $out2 .= "      data.setCell($m, 0, '".addslashes($A[$m])."');\n";
+    $out2 .= "      data.setCell($m, 1, $B[$m]);\n";
+    $out2 .= "      data.setCell($m, 2, $BB[$m]);\n";
+  }
+
 }
 else if ($cd == "file") {
   $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q']."&size=".$_GET['size'];
@@ -579,6 +594,7 @@ $openendquery .= "</div>\n";
     <?php if ($cd == "comment") { echo $openendquery; } else { echo $menu; } ?>
     <?php if (($cd != "matrix") && ($cd != "comment")) { echo "<p><small class=\"blue\">You can sort the results by clicking the table's headers</small></p>\n"; } ?>
     <div id="table" style="width:300px"></div>
+    <?php if ($cd == "comment") { echo "<br><br>"; } ?>
     <div id="chart"></div>
 <?php } ?>
   </div>
@@ -592,123 +608,119 @@ $openendquery .= "</div>\n";
 
 <?php if ((empty($_GET['type'])) || ($_GET['type'] == "pie")) { ?>
 
-  <script type="text/javascript">
-    google.charts.load('current', {'packages': ['table', 'corechart']});
-    google.charts.setOnLoadCallback(drawSort);
-    function drawSort() {
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Answer');
-      data.addColumn('number', 'Count');
-      data.addColumn('number', 'Percentage');
+<script type="text/javascript">
+  google.charts.load('current', {'packages': ['table', 'corechart']});
+  google.charts.setOnLoadCallback(drawSort);
+  function drawSort() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Answer');
+    data.addColumn('number', 'Count');
+    data.addColumn('number', 'Percentage');
 <?php echo $out; ?>
-      var view = new google.visualization.DataView(data);
-      view.setColumns([0, 1, 2]);
-      var formatter = new google.visualization.NumberFormat({suffix: '%'});
-      formatter.format(data, 2);
-      var options = { title: '<?php echo $bdx; ?>', is3D: true, width: '100%', height: '400' };
-      var chart = new google.visualization.PieChart(document.getElementById('chart'));
-      chart.draw(view, options);
-      var table = new google.visualization.Table(document.getElementById('table'));
-      table.draw(view, {width: '100%', height: '100%'});
-      google.visualization.events.addListener(table, 'sort',
-        function(event) {
-          data.sort([{column: event.column, desc: !event.ascending}]);
-          chart.draw(view);
-        });
-    }
-    $(window).resize(function() { drawSort(); });
-  </script>
+    var view = new google.visualization.DataView(data);
+    view.setColumns([0, 1, 2]);
+    var formatter = new google.visualization.NumberFormat({suffix: '%'});
+    formatter.format(data, 2);
+    var options = { title: '<?php echo $bdx; ?>', is3D: true, width: '100%', height: '400' };
+    var chart = new google.visualization.PieChart(document.getElementById('chart'));
+    chart.draw(view, options);
+    var table = new google.visualization.Table(document.getElementById('table'));
+    table.draw(view, {width: '100%', height: '100%'});
+    google.visualization.events.addListener(table, 'sort', function(event) {
+      data.sort([{column: event.column, desc: !event.ascending}]);
+      chart.draw(view);
+    });
+  }
+  $(window).resize(function() { drawSort(); });
+</script>
 
 <?php } else if ($_GET['type'] == "donut") { ?>
 
-  <script type="text/javascript">
-    google.charts.load('current', {'packages': ['table', 'corechart']});
-    google.charts.setOnLoadCallback(drawSort);
-    function drawSort() {
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Answer');
-      data.addColumn('number', 'Count');
-      data.addColumn('number', 'Percentage');
+<script type="text/javascript">
+  google.charts.load('current', {'packages': ['table', 'corechart']});
+  google.charts.setOnLoadCallback(drawSort);
+  function drawSort() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Answer');
+    data.addColumn('number', 'Count');
+    data.addColumn('number', 'Percentage');
 <?php echo $out; ?>
-      var view = new google.visualization.DataView(data);
-      view.setColumns([0, 1, 2]);
-      var formatter = new google.visualization.NumberFormat({suffix: '%'});
-      formatter.format(data, 2);
-      var options = { title: '<?php echo $bdx; ?>', pieHole: 0.4, width: '100%', height: '400' };
-      var chart = new google.visualization.PieChart(document.getElementById('chart'));
-      chart.draw(view, options);
-      var table = new google.visualization.Table(document.getElementById('table'));
-      table.draw(view, {width: '100%', height: '100%'});
-      google.visualization.events.addListener(table, 'sort',
-        function(event) {
-          data.sort([{column: event.column, desc: !event.ascending}]);
-          chart.draw(view);
-        });
-    }
-    $(window).resize(function() { drawSort(); });
-  </script>
+    var view = new google.visualization.DataView(data);
+    view.setColumns([0, 1, 2]);
+    var formatter = new google.visualization.NumberFormat({suffix: '%'});
+    formatter.format(data, 2);
+    var options = { title: '<?php echo $bdx; ?>', pieHole: 0.4, width: '100%', height: '400' };
+    var chart = new google.visualization.PieChart(document.getElementById('chart'));
+    chart.draw(view, options);
+    var table = new google.visualization.Table(document.getElementById('table'));
+    table.draw(view, {width: '100%', height: '100%'});
+    google.visualization.events.addListener(table, 'sort', function(event) {
+      data.sort([{column: event.column, desc: !event.ascending}]);
+      chart.draw(view);
+    });
+  }
+  $(window).resize(function() { drawSort(); });
+</script>
 
 <?php } else if ($_GET['type'] == "bar-H") { ?>
 
-  <script type="text/javascript">
-    google.charts.load('current', {'packages': ['table', 'corechart']});
-    google.charts.setOnLoadCallback(drawSort);
-    function drawSort() {
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Answer');
-      data.addColumn('number', 'Count');
-      data.addColumn('number', 'Percentage');
+<script type="text/javascript">
+  google.charts.load('current', {'packages': ['table', 'corechart']});
+  google.charts.setOnLoadCallback(drawSort);
+  function drawSort() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Answer');
+    data.addColumn('number', 'Count');
+    data.addColumn('number', 'Percentage');
 <?php echo $out; ?>
-      var viewTable = new google.visualization.DataView(data);
-      viewTable.setColumns([0, 1, 2]);
-      var viewChart = new google.visualization.DataView(data);
-      viewChart.setColumns([0, 2]);
-      var formatter = new google.visualization.NumberFormat({suffix: '%'});
-      formatter.format(data, 2);
-      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth:  '60%' }, legend: { position: 'none' } };
-      var chart = new google.visualization.BarChart(document.getElementById('chart'));
-      chart.draw(viewChart, options);
-      var table = new google.visualization.Table(document.getElementById('table'));
-      table.draw(viewTable, {width: '100%', height: '100%'});
-      google.visualization.events.addListener(table, 'sort',
-        function(event) {
-          data.sort([{column: event.column, desc: !event.ascending}]);
-          chart.draw(viewChart);
-        });
-    }
-    $(window).resize(function() { drawSort(); });
-  </script>
+    var viewTable = new google.visualization.DataView(data);
+    viewTable.setColumns([0, 1, 2]);
+    var viewChart = new google.visualization.DataView(data);
+    viewChart.setColumns([0, 2]);
+    var formatter = new google.visualization.NumberFormat({suffix: '%'});
+    formatter.format(data, 2);
+    var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth:  '60%' }, legend: { position: 'none' } };
+    var chart = new google.visualization.BarChart(document.getElementById('chart'));
+    chart.draw(viewChart, options);
+    var table = new google.visualization.Table(document.getElementById('table'));
+    table.draw(viewTable, {width: '100%', height: '100%'});
+    google.visualization.events.addListener(table, 'sort', function(event) {
+      data.sort([{column: event.column, desc: !event.ascending}]);
+      chart.draw(viewChart);
+    });
+  }
+  $(window).resize(function() { drawSort(); });
+</script>
 
 <?php } else if ($_GET['type'] == "bar-V") { ?>
 
-  <script type="text/javascript">
-    google.charts.load('current', {'packages': ['table', 'corechart']});
-    google.charts.setOnLoadCallback(drawSort);
-    function drawSort() {
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Answer');
-      data.addColumn('number', 'Count');
-      data.addColumn('number', 'Percentage');
+<script type="text/javascript">
+  google.charts.load('current', {'packages': ['table', 'corechart']});
+  google.charts.setOnLoadCallback(drawSort);
+  function drawSort() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Answer');
+    data.addColumn('number', 'Count');
+    data.addColumn('number', 'Percentage');
 <?php echo $out; ?>
-      var viewTable = new google.visualization.DataView(data);
-      viewTable.setColumns([0, 1, 2]);
-      var viewChart = new google.visualization.DataView(data);
-      viewChart.setColumns([0, 2]);
-      var formatter = new google.visualization.NumberFormat({suffix: '%'});
-      formatter.format(data, 2);
-      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth:  '60%' }, legend: { position: 'none' } };
-      var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
-      chart.draw(viewChart, options);
-      var table = new google.visualization.Table(document.getElementById('table'));
-      table.draw(viewTable, {width: '100%', height: '100%'});
-      google.visualization.events.addListener(table, 'sort',
-        function(event) {
-          data.sort([{column: event.column, desc: !event.ascending}]);
-          chart.draw(viewChart);
-        });
-    }
-    $(window).resize(function() { drawSort(); });
-  </script>
+    var viewTable = new google.visualization.DataView(data);
+    viewTable.setColumns([0, 1, 2]);
+    var viewChart = new google.visualization.DataView(data);
+    viewChart.setColumns([0, 2]);
+    var formatter = new google.visualization.NumberFormat({suffix: '%'});
+    formatter.format(data, 2);
+    var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth:  '60%' }, legend: { position: 'none' } };
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
+    chart.draw(viewChart, options);
+    var table = new google.visualization.Table(document.getElementById('table'));
+    table.draw(viewTable, {width: '100%', height: '100%'});
+    google.visualization.events.addListener(table, 'sort', function(event) {
+      data.sort([{column: event.column, desc: !event.ascending}]);
+      chart.draw(viewChart);
+    });
+  }
+  $(window).resize(function() { drawSort(); });
+</script>
 
 <?php } ?>
 
@@ -717,242 +729,255 @@ $openendquery .= "</div>\n";
 
 <?php if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { ?>
 
-  <script type="text/javascript">
-    google.charts.load('current', {'packages': ['table', 'corechart']});
-    google.charts.setOnLoadCallback(drawSort);
-    function drawSort() {
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Answer');
-      data.addColumn('number', 'Count');
-      data.addColumn('number', 'Percentage');
+<script type="text/javascript">
+  google.charts.load('current', {'packages': ['table', 'corechart']});
+  google.charts.setOnLoadCallback(drawSort);
+  function drawSort() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Answer');
+    data.addColumn('number', 'Count');
+    data.addColumn('number', 'Percentage');
 <?php echo $out; ?>
-      var viewTable = new google.visualization.DataView(data);
-      viewTable.setColumns([0, 1, 2]);
-      var viewChart = new google.visualization.DataView(data);
-      viewChart.setColumns([0, 2]);
-      var formatter = new google.visualization.NumberFormat({suffix: '%'});
-      formatter.format(data, 2);
-      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: {groupWidth: '60%' }, legend: {position: 'none' } };
-      var chart = new google.visualization.BarChart(document.getElementById('chart'));
-      chart.draw(viewChart, options);
-      var table = new google.visualization.Table(document.getElementById('table'));
-      table.draw(viewTable, {width: '100%', height: '100%'});
-      google.visualization.events.addListener(table, 'sort',
-        function(event) {
-          data.sort([{column: event.column, desc: !event.ascending}]);
-          chart.draw(viewChart);
-        });
-    }
-    $(window).resize(function() { drawSort(); });
-  </script>
+    var viewTable = new google.visualization.DataView(data);
+    viewTable.setColumns([0, 1, 2]);
+    var viewChart = new google.visualization.DataView(data);
+    viewChart.setColumns([0, 2]);
+    var formatter = new google.visualization.NumberFormat({suffix: '%'});
+    formatter.format(data, 2);
+    var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: {groupWidth: '60%' }, legend: {position: 'none' } };
+    var chart = new google.visualization.BarChart(document.getElementById('chart'));
+    chart.draw(viewChart, options);
+    var table = new google.visualization.Table(document.getElementById('table'));
+    table.draw(viewTable, {width: '100%', height: '100%'});
+    google.visualization.events.addListener(table, 'sort', function(event) {
+      data.sort([{column: event.column, desc: !event.ascending}]);
+      chart.draw(viewChart);
+    });
+  }
+  $(window).resize(function() { drawSort(); });
+</script>
 
 <?php } else if ($_GET['type'] == "newbar-H") { ?>
 
-  <script type="text/javascript">
-    google.charts.load('current', {'packages': ['table', 'bar']});
-    google.charts.setOnLoadCallback(drawSort);
-    function drawSort() {
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Answer');
-      data.addColumn('number', 'Count');
-      data.addColumn('number', 'Percentage');
+<script type="text/javascript">
+  google.charts.load('current', {'packages': ['table', 'bar']});
+  google.charts.setOnLoadCallback(drawSort);
+  function drawSort() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Answer');
+    data.addColumn('number', 'Count');
+    data.addColumn('number', 'Percentage');
 <?php echo $out; ?>
-      var viewTable = new google.visualization.DataView(data);
-      viewTable.setColumns([0, 1, 2]);
-      var viewChart = new google.visualization.DataView(data);
-      viewChart.setColumns([0, 2]);
-      // view.setColumns([0, 1, { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation" }, 2]);
-      var formatter = new google.visualization.NumberFormat({suffix: '%'});
-      formatter.format(data, 2);
-      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth: '60%' }, legend: { position: 'none' }, bars: 'horizontal' };
-      var chart = new google.charts.Bar(document.getElementById('chart'));
-      chart.draw(viewChart, options);
-      var table = new google.visualization.Table(document.getElementById('table'));
-      table.draw(viewTable, {width: '100%', height: '100%'});
-      google.visualization.events.addListener(table, 'sort',
-        function(event) {
-          data.sort([{column: event.column, desc: !event.ascending}]);
-          chart.draw(viewChart);
-        });
-    }
-    $(window).resize(function() { drawSort(); });
-  </script>
+    var viewTable = new google.visualization.DataView(data);
+    viewTable.setColumns([0, 1, 2]);
+    var viewChart = new google.visualization.DataView(data);
+    viewChart.setColumns([0, 2]);
+    // view.setColumns([0, 1, { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation" }, 2]);
+    var formatter = new google.visualization.NumberFormat({suffix: '%'});
+    formatter.format(data, 2);
+    var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth: '60%' }, legend: { position: 'none' }, bars: 'horizontal' };
+    var chart = new google.charts.Bar(document.getElementById('chart'));
+    chart.draw(viewChart, options);
+    var table = new google.visualization.Table(document.getElementById('table'));
+    table.draw(viewTable, {width: '100%', height: '100%'});
+    google.visualization.events.addListener(table, 'sort', function(event) {
+      data.sort([{column: event.column, desc: !event.ascending}]);
+      chart.draw(viewChart);
+    });
+  }
+  $(window).resize(function() { drawSort(); });
+</script>
 
 <?php } else if ($_GET['type'] == "bar-V") { ?>
 
-  <script type="text/javascript">
-    google.charts.load('current', {'packages': ['table', 'corechart']});
-    google.charts.setOnLoadCallback(drawSort);
-    function drawSort() {
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Answer');
-      data.addColumn('number', 'Count');
-      data.addColumn('number', 'Percentage');
+<script type="text/javascript">
+  google.charts.load('current', {'packages': ['table', 'corechart']});
+  google.charts.setOnLoadCallback(drawSort);
+  function drawSort() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Answer');
+    data.addColumn('number', 'Count');
+    data.addColumn('number', 'Percentage');
 <?php echo $out; ?>
-      var viewTable = new google.visualization.DataView(data);
-      viewTable.setColumns([0, 1, 2]);
-      var viewChart = new google.visualization.DataView(data);
-      viewChart.setColumns([0, 2]);
-      var formatter = new google.visualization.NumberFormat({suffix: '%'});
-      formatter.format(data, 2);
-      var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth:  '60%' }, legend: { position: 'none' } };
-      var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
-      chart.draw(viewChart, options);
-      var table = new google.visualization.Table(document.getElementById('table'));
-      table.draw(viewTable, {width: '100%', height: '100%'});
-      google.visualization.events.addListener(table, 'sort',
-        function(event) {
-          data.sort([{column: event.column, desc: !event.ascending}]);
-          chart.draw(viewChart);
-        });
-    }
-    $(window).resize(function() { drawSort(); });
-  </script>
+    var viewTable = new google.visualization.DataView(data);
+    viewTable.setColumns([0, 1, 2]);
+    var viewChart = new google.visualization.DataView(data);
+    viewChart.setColumns([0, 2]);
+    var formatter = new google.visualization.NumberFormat({suffix: '%'});
+    formatter.format(data, 2);
+    var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth:  '60%' }, legend: { position: 'none' } };
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
+    chart.draw(viewChart, options);
+    var table = new google.visualization.Table(document.getElementById('table'));
+    table.draw(viewTable, {width: '100%', height: '100%'});
+    google.visualization.events.addListener(table, 'sort', function(event) {
+      data.sort([{column: event.column, desc: !event.ascending}]);
+      chart.draw(viewChart);
+    });
+  }
+  $(window).resize(function() { drawSort(); });
+</script>
 
 <?php } ?>
 
 
 <?php } else if ($cd == "comment") { ?>
 
-  <script type="text/javascript">
-    google.charts.load('current', {packages:['wordtree']});
-    google.charts.setOnLoadCallback(drawChart);
-    function drawChart() {
-      var data = google.visualization.arrayToDataTable(<?php print_r($out); ?>);
-      var root = document.getElementById('root').value || '';
-      if (root) { var options = { wordtree: { format: 'implicit', type: 'double', word: root }, title: '<?php echo $bdx; ?>', width: '100%', height: '600' }; }
-      else { var options = { wordtree: { format: 'implicit', type: 'suffix', word: root }, title: '<?php echo $bdx; ?>', width: '100%', height: '600' }; }
-      var chart = new google.visualization.WordTree(document.getElementById('chart'));
-      chart.draw(data, options);
-      document.getElementById('go').onclick = drawChart;
-    }
-    $(window).resize(function() { drawChart(); });
-  </script>
+<script type="text/javascript">
+  google.charts.load('current', {'packages': ['table', 'wordtree']});
+  google.charts.setOnLoadCallback(drawSort);
+  function drawSort() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Answer');
+    data.addColumn('number', 'Count');
+    data.addColumn('number', 'Percentage');
+<?php echo $out2; ?>
+    var viewTable = new google.visualization.DataView(data);
+    viewTable.setColumns([0, 1, 2]);
+    var viewChart = new google.visualization.DataView(data);
+    viewChart.setColumns([0, 2]);
+    var formatter = new google.visualization.NumberFormat({suffix: '%'});
+    formatter.format(data, 2);
+    var data = google.visualization.arrayToDataTable(<?php print_r($out); ?>);
+    var root = document.getElementById('root').value || '';
+    if (root) { var options = { wordtree: { format: 'implicit', type: 'double', word: root }, title: '<?php echo $bdx; ?>', width: '100%', height: '600' }; }
+    else { var options = { wordtree: { format: 'implicit', type: 'suffix', word: root }, title: '<?php echo $bdx; ?>', width: '100%', height: '600' }; }
+    var chart = new google.visualization.WordTree(document.getElementById('chart'));
+    chart.draw(viewChart, options);
+    document.getElementById('go').onclick = drawSort;
+    var table = new google.visualization.Table(document.getElementById('table'));
+    table.draw(viewTable, {width: '100%', height: '100%'});
+    google.visualization.events.addListener(table, 'sort', function(event) {
+      data.sort([{column: event.column, desc: !event.ascending}]);
+      chart.draw(viewChart);
+    });
+  }
+  $(window).resize(function() { drawSort(); });
+</script>
 
 <?php } else if ($cd == "matrix") { ?>
 
 <?php if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { ?>
 
-  <script type="text/javascript">
-    google.charts.load("current", {packages:['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
-    function drawChart() {
-      var data = google.visualization.arrayToDataTable([<?php print_r($out); ?>]);
-      var view = new google.visualization.DataView(data);
-      var options = {
-        width: '100%',
-        height: '400',
-        bar: { groupWidth: '60%' },
-        legend: { position: 'top', textStyle: { color: '#000', fontSize: 10 } },
-        isStacked: true,
-        <?php echo $color; ?>
-        seriesType: 'bars',
-        hAxes: {
-          0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
-        }
-      };
-      var chart = new google.visualization.BarChart(document.getElementById('chart'));
-      chart.draw(view, options);
-    }
-    $(window).resize(function() { drawChart(); });
-  </script>
+<script type="text/javascript">
+  google.charts.load("current", {packages:['corechart']});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = google.visualization.arrayToDataTable([<?php print_r($out); ?>]);
+    var view = new google.visualization.DataView(data);
+    var options = {
+      width: '100%',
+      height: '400',
+      bar: { groupWidth: '60%' },
+      legend: { position: 'top', textStyle: { color: '#000', fontSize: 10 } },
+      isStacked: true,
+      <?php echo $color; ?>
+      seriesType: 'bars',
+      hAxes: {
+        0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
+      }
+    };
+    var chart = new google.visualization.BarChart(document.getElementById('chart'));
+    chart.draw(view, options);
+  }
+  $(window).resize(function() { drawChart(); });
+</script>
 
 <?php } else if ($_GET['type'] == "bar-H-mean") { ?>
 
-  <script type="text/javascript">
-    google.charts.load("current", {packages:['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
-    function drawChart() {
-      var data = google.visualization.arrayToDataTable([<?php print_r($out); ?>]);
-      var view = new google.visualization.DataView(data);
-      var options = {
-        width: '100%',
-        height: '400',
-        bar: { groupWidth: '60%' },
-        legend: { position: 'top', textStyle: { color: '#000', fontSize: 10 } },
-        isStacked: true,
-        <?php echo $color; ?>
-        seriesType: 'bars',
-        hAxes: {
-          0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
-          1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
-        }
-      };
-      var chart = new google.visualization.BarChart(document.getElementById('chart'));
-      chart.draw(view, options);
-    }
-    $(window).resize(function() { drawChart(); });
-  </script>
+<script type="text/javascript">
+  google.charts.load("current", {packages:['corechart']});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = google.visualization.arrayToDataTable([<?php print_r($out); ?>]);
+    var view = new google.visualization.DataView(data);
+    var options = {
+      width: '100%',
+      height: '400',
+      bar: { groupWidth: '60%' },
+      legend: { position: 'top', textStyle: { color: '#000', fontSize: 10 } },
+      isStacked: true,
+      <?php echo $color; ?>
+      seriesType: 'bars',
+      hAxes: {
+        0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
+        1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
+      }
+    };
+    var chart = new google.visualization.BarChart(document.getElementById('chart'));
+    chart.draw(view, options);
+  }
+  $(window).resize(function() { drawChart(); });
+</script>
 
 <?php } else if ($_GET['type'] == "bar-V") { ?>
 
-  <script type="text/javascript">
-    google.charts.load("current", {packages:['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
-    function drawChart() {
-      var data = google.visualization.arrayToDataTable([<?php print_r($out); ?>]);
-      var view = new google.visualization.DataView(data);
-      var options = {
-        width: '100%',
-        height: '400',
-        bar: { groupWidth: '60%' },
-        legend: { position: 'right', textStyle: { color: '#000', fontSize: 10 } },
-        isStacked: true,
-        <?php echo $color; ?>
-        seriesType: 'bars',
-        vAxes: {
-          0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
-        }
-      };
-      var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
-      chart.draw(view, options);
-    }
-    $(window).resize(function() { drawChart(); });
-  </script>
+<script type="text/javascript">
+  google.charts.load("current", {packages:['corechart']});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = google.visualization.arrayToDataTable([<?php print_r($out); ?>]);
+    var view = new google.visualization.DataView(data);
+    var options = {
+      width: '100%',
+      height: '400',
+      bar: { groupWidth: '60%' },
+      legend: { position: 'right', textStyle: { color: '#000', fontSize: 10 } },
+      isStacked: true,
+      <?php echo $color; ?>
+      seriesType: 'bars',
+      vAxes: {
+        0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
+      }
+    };
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
+    chart.draw(view, options);
+  }
+  $(window).resize(function() { drawChart(); });
+</script>
 
 <?php } else if ($_GET['type'] == "bar-V-mean") { ?>
 
-  <script type="text/javascript">
-    google.charts.load("current", {packages:['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
-    function drawChart() {
-      var data = google.visualization.arrayToDataTable([<?php print_r($out); ?>]);
-      var view = new google.visualization.DataView(data);
-      var options = {
-        width: '100%',
-        height: '400',
-        bar: { groupWidth: '60%' },
-        legend: { position: 'top', textStyle: { color: '#000', fontSize: 10 } },
-        isStacked: true,
-        <?php echo $color; ?>
-        seriesType: 'bars',
-        vAxes: {
-          0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
-          1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
-        }
-      };
-      var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
-      chart.draw(view, options);
-    }
-    $(window).resize(function() { drawChart(); });
-  </script>
+<script type="text/javascript">
+  google.charts.load("current", {packages:['corechart']});
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var data = google.visualization.arrayToDataTable([<?php print_r($out); ?>]);
+    var view = new google.visualization.DataView(data);
+    var options = {
+      width: '100%',
+      height: '400',
+      bar: { groupWidth: '60%' },
+      legend: { position: 'top', textStyle: { color: '#000', fontSize: 10 } },
+      isStacked: true,
+      <?php echo $color; ?>
+      seriesType: 'bars',
+      vAxes: {
+        0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
+        1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
+      }
+    };
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
+    chart.draw(view, options);
+  }
+  $(window).resize(function() { drawChart(); });
+</script>
 
 <?php } ?>
 
-
 <?php } else if ($cd == "file") { ?>
 
-  <script type="text/javascript">
-    $(document).on('click', '[data-toggle="lightbox"]', function(event) {
-      event.preventDefault();
-      $(this).ekkoLightbox();
-    });
-  </script>
+<script type="text/javascript">
+  $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+    event.preventDefault();
+    $(this).ekkoLightbox();
+  });
+</script>
 
 <?php } ?>
 
 <br>
 
-<a href="/admin/?w=surveys" class="btn btn-danger btn-sm pull-right" style="margin-top:50px; margin-bottom: 20px"><i class="pe-chevron-circle-left pe-fw"></i> Back to the main page</a>
+<?php backButton("/admin/?w=surveys", "Back to the main page", "danger"); ?>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
