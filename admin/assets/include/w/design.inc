@@ -29,11 +29,15 @@ if ($_POST['selectA']) {
   $qE->bindValue(':surveyid', $_POST["surveyid"], PDO::PARAM_INT);
   $qE->bindValue(':show_logo', $_POST['selectE'], PDO::PARAM_INT);
   $qE->execute();
+} else if ($_POST['selectF']) {
+  $qE = $db->prepare("UPDATE j_projects SET show_colour = :show_colour WHERE id = :surveyid");
+  $qE->bindValue(':surveyid', $_POST["surveyid"], PDO::PARAM_INT);
+  $qE->bindValue(':show_colour', $_POST['selectF'], PDO::PARAM_INT);
+  $qE->execute();
 }
 
 // Get projcet title
 $q1 = $db->prepare("SELECT P.*, C.company, C.description AS DD, C.logo, C.website FROM j_projects P, j_companies C WHERE P.companyid = C.id AND P.id = :surveyid");
-//$q1 = $db->prepare("SELECT title, status FROM j_projects WHERE id = :surveyid");
 $q1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q1->execute();
 if ($q1->rowCount() == 0) {
@@ -68,10 +72,7 @@ while ($row = $q1->fetchObject()) {
   $showdetail = $row->show_detail;
   $showabout = $row->show_about;
   $showlogo = $row->show_logo;
-  if ($row->colour) {
-    $filename = $_SERVER['DOCUMENT_ROOT'].'/admin/assets/theme/'.$row->colour.'.php';
-    if (file_exists($filename)) { require_once $filename; }
-  }
+  $showcolour = $row->show_colour;
 }
 
 if ($_SESSION['level'] != "9") {
@@ -105,7 +106,7 @@ echo "<br>\n";
 
 <nav>
   <ul class="nav nav-tabs">
-<?php if (($_POST['selectA']) || ($_POST['selectB']) || ($_POST['selectC']) || ($_POST['selectD']) || ($_POST['selectE'])) { ?>
+<?php if (($_POST['selectA']) || ($_POST['selectB']) || ($_POST['selectC']) || ($_POST['selectD']) || ($_POST['selectE']) || ($_POST['selectF'])) { ?>
     <li><a href="#1" data-toggle="tab"><i class="pe-edit pe-fw"></i> <?php echo $title; ?></a></li>
     <li class="active"><a href="#2" data-toggle="tab"><i class="pe-cog pe-fw"></i> <?php echo $template; ?></a></li>
     <li><a href="#3" data-toggle="tab"><i class="pe-book pe-fw"></i> <?php echo $help; ?></a></li>
@@ -122,7 +123,7 @@ echo "<br>\n";
 <div id="showreadonly"></div><div id="showsaving"></div><div id="showsavesuccess"></div>
 
 <div class="tab-content">
-<?php if (($_POST['selectA']) || ($_POST['selectB']) || ($_POST['selectC']) || ($_POST['selectD']) || ($_POST['selectE'])) { ?>
+<?php if (($_POST['selectA']) || ($_POST['selectB']) || ($_POST['selectC']) || ($_POST['selectD']) || ($_POST['selectE']) || ($_POST['selectF'])) { ?>
   <div id="1" class="tab-pane fade">
 <?php } else { ?>
   <div id="1" class="tab-pane fade in active">
@@ -145,7 +146,7 @@ echo "<br>\n";
     <div id="editor"></div>
     <br><br>
   </div>
-<?php if (($_POST['selectA']) || ($_POST['selectB']) || ($_POST['selectC']) || ($_POST['selectD']) || ($_POST['selectE'])) { ?>
+<?php if (($_POST['selectA']) || ($_POST['selectB']) || ($_POST['selectC']) || ($_POST['selectD']) || ($_POST['selectE']) || ($_POST['selectF'])) { ?>
   <div id="2" class="tab-pane fade in active">
 <?php } else { ?>
   <div id="2" class="tab-pane fade">
@@ -157,11 +158,11 @@ echo "<br>\n";
           <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7 boxmenu">Colour</div>
           <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 boxmenu boxdrop">
             <form method="post" class="form-inline" action="<?php echo $me; ?>">
-              <select name="selectA" class="form-control input-sm" onchange="this.form.submit()" disabled>
+              <select name="selectF" class="form-control input-sm" onchange="this.form.submit()">
 <?php
-$options = array("Blue" => "1", "Green" => "2", "Red" => "3", "Yellow" => "4", "Grey" => "5");
+$options = array("Blue" => "1", "Red" => "2", "Violet" => "3", "Green" => "4", "Yellow" => "5", "Maroon" => "6", "Orange" => "7");
 foreach($options as $a => $b) {
-  if ($b == $showtopper) { echo "                  <option value=\"$b\" selected>$a</option>\n"; }
+  if ($b == $showcolour) { echo "                  <option value=\"$b\" selected>$a</option>\n"; }
   else { echo "                  <option value=\"$b\">$a</option>\n"; }
 }
 ?>
@@ -273,7 +274,7 @@ foreach($options as $a => $b) {
     <br>
     <h4>The actual appearance</h4>
     <div class="row">
-      <iframe class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="realexample"src="<?php echo MYHOME."/r.php?s=".$_GET['s']; ?>" frameborder="1" allowfullscreen></iframe>
+      <iframe class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="realexample" src="<?php echo MYHOME."/r.php?s=".$_GET['s']; ?>" frameborder="1" allowfullscreen></iframe>
     </div>
     <br><br>
   </div>
@@ -386,12 +387,14 @@ survey.render(&#x22;surveyElement&#x22;);</code></pre>
 
   // Start scripting by pe (phumin@sawasdee.org)
   var options = {
-    questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "matrixdynamic", "html"],
+    // questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "matrixdynamic", "html"],
+    questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "html"],
     showJSONEditorTab: true,
     showTestSurveyTab: true,
-    showEmbededSurveyTab: false
+    showEmbededSurveyTab: false,
+    generateValidJSON: true,
   };
-  options.generateValidJSON = true;
+  // options.generateValidJSON = true;
   Survey.Survey.cssType = "bootstrap";
   Survey.JsonObject.metaData.removeProperty("survey", "clearInvisibleValues");
   Survey.JsonObject.metaData.removeProperty("survey", "cookieName");
@@ -403,7 +406,7 @@ survey.render(&#x22;surveyElement&#x22;);</code></pre>
   Survey.JsonObject.metaData.removeProperty("survey", "completeText");
   Survey.JsonObject.metaData.removeProperty("survey", "pageNextText");
   Survey.JsonObject.metaData.removeProperty("survey", "pagePrevText");
-  Survey.JsonObject.metaData.removeProperty("survey", "mode");
+  // Survey.JsonObject.metaData.removeProperty("survey", "mode");
   Survey.JsonObject.metaData.removeProperty("survey", "sendResultOnPageNext");
   Survey.JsonObject.metaData.removeProperty("survey", "storeOthersAsComment");
   Survey.JsonObject.metaData.removeProperty("survey", "surveyPostId");
@@ -426,6 +429,9 @@ survey.render(&#x22;surveyElement&#x22;);</code></pre>
   mm = getsurveydata(surveyid);
   var blank = JSON.stringify({ "completeText": "ยืนยันและส่งความคิดเห็น", "completedHtml": "<h2><i class='pe-flag-checkered pe-fw'></i> คุณได้ตอบแบบสอบถามเสร็จสมบูรณ์แล้ว</h2>\n\n<p>ความคิดเห็นของคุณได้ถูกบันทึกและจัดเก็บเข้าสู่ระบบของเราเป็นที่เรียบร้อยแล้ว ซึ่งเราจะนำความคิดเห็นของคุณและของผู้ที่ร่วมตอบคำถามท่านอื่นๆมารวมกันก่อนจะ ดำเนินการต่อไปในขั้นตอนการประมวลผลและการวิเคราะห์ผล</p>\n\n<p>เราขอย้ำกับคุณอีกครั้งว่า ระบบของเราได้รับการออกแบบและสร้างโดยมุ่งเน้นในเรื่องความลับของข้อมูลและผู้ให้ข้อมูล ด้วยเหตุผลนี้คุณจะสามารถมั่นใจได้ว่าข้อมุลของคุณจะถูกใช้อย่างเหมาะสมและไม่มีการเปิดเผยรายละเอียดเป็นรายบุคคลอย่างเด็ดขาด</p>\n\n<p>สุดท้ายนี้ ในนามของบริษัทฯ เราขอขอบพระคุณที่สละเวลาแสดงความคิดเห็นที่แท้จริงให้กับเรา ทุกๆความคิดเห็นของคุณนั้นมีค่ายิ่งสำหรับเรา เพราะข้อมูลเหล่านี้จะถูกนำไปใช้เพื่อพัฒนาผลิตภัณฑ์​หรือบริการต่างๆให้ดียิ่งขึ้นเพื่อให้เกิดการพัฒนาก้าวหน้าต่อไปในอนาคต</p>", "pageNextText": "หน้าถัดไป", "pagePrevText": "หน้าที่แล้ว", "pages": [{ "name": "page1" }], "questionTitleTemplate": "{no}. {title} {require}", "locale": "th", "focusFirstQuestionAutomatic": true });
   if (mm.data) { editor.text = mm.data; } else if (localStorage.getItem("editdata." + surveyid)) { editor.text = localStorage.getItem("editdata." + surveyid); } else { editor.text = blank; }
+  // var readonly = { mode: "display", hello: true };
+  // $.extend(editor.text, readonly); console.log(editor.text);
+  // editor.text.push(readonly); console.log(editor.text);
   if (userid == mm.userid) { var owner = true; } else { var owner = false; }
   if (level == 9) { var cansave = true; } else if (level == 6) { var cansave = true; }
   else if (level == 5) { if (owner == true) { var cansave = true; } }
@@ -479,6 +485,6 @@ survey.render(&#x22;surveyElement&#x22;);</code></pre>
 
 </script>
 
-<a href="/admin/?w=surveys" class="btn btn-danger btn-sm pull-right" style="margin-top:50px; margin-bottom:20px"><i class="pe-chevron-circle-left pe-fw"></i> Back to the main page</a>
+<?php backButton("/admin/?w=surveys", "Back to the main page", "danger"); ?>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
