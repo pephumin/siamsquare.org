@@ -1,8 +1,9 @@
 <?php
 
 $base = "/admin/?w=respondents&s=".$_GET['s'];
-$invitation = "/admin/?w=invitation&s=".$_GET['s'];
-$reminder = "/admin/?w=reminder&s=".$_GET['s'];
+$linkinvitation = "/admin/?w=mailinvite&s=".$_GET['s'];
+$linkreminder = "/admin/?w=mailremind&s=".$_GET['s'];
+
 if ($_GET['p']) { $p = $_GET['p']; $me = $base."&p=".$_GET['p']; }
 if ($p == '') { $p = "1"; }
 
@@ -168,8 +169,6 @@ if ($_POST['uploading'] == 1) {
   exit;
 }
 
-if (empty($_GET['s'])) { pageHeader("Error"); echo mkerror("Cannot proceed without a surveyid"); pageFooter(); exit; }
-
 $title = "Manage respondents";
 pageHeader($title);
 echo "<h2>$title</h2>";
@@ -177,30 +176,33 @@ echo "<p>Given a nature of any private surveys where respondents are specific to
 echo "<p>This includes the actual respondent management such as upload/ add emails to the system, clean note this page is mainly for managing respondents, if you want to check for participation rate, kindly use the project status instead.</p>\n";
 echo "<p>Please see table below for more information about these respodnents. And of course, you can always use the upload function to add more respondents to the project if need.</p>\n";
 echo $golden;
-echo "<hr>\n";
+echo "<br>\n";
 echo "<h3>Project $project</h3>\n";
 
 
 // Get status
-$q2A = $db->prepare("SELECT COUNT(*) as q2A1, SUM(status='0') AS q2A2, SUM(status='1') AS q2A3 FROM j_respondents WHERE surveyid = :surveyid");
-$q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-$q2A->execute();
-while ($row = $q2A->fetchObject()) {
-  $all = $row->q2A1; $all_format = number_format($row->q2A1);
-  $uncleaned = $row->q2A2; $uncleaned_format = number_format($row->q2A2);
-  $cleaned = $row->q2A3; $cleaned_format = number_format($row->q2A3);
-}
-
-$q2B = $db->prepare("SELECT SUM(IF(invitation IS NOT NULL, 1, 0)) AS q2B1, SUM(IF(invitation IS NULL, 1, 0)) AS q2B2, SUM(IF(invitation IS NOT NULL AND participation IS NOT NULL, 1, 0)) AS q2B3, SUM(IF(invitation IS NOT NULL AND participation IS NULL, 1, 0)) AS q2B4, SUM(IF(status = 1, 1, 0)) AS q2B5 FROM j_respondents WHERE surveyid = :surveyid");
+$q2B = $db->prepare("SELECT COUNT(*) as q2A1, SUM(status='0') AS q2A2, SUM(IF(invitation IS NOT NULL, 1, 0)) AS q2B1, SUM(IF(invitation IS NULL, 1, 0)) AS q2B2, SUM(IF(invitation IS NOT NULL AND participation IS NOT NULL, 1, 0)) AS q2B3, SUM(IF(invitation IS NOT NULL AND participation IS NULL, 1, 0)) AS q2B4, SUM(IF(status = 1, 1, 0)) AS q2B5 FROM j_respondents WHERE surveyid = :surveyid");
 $q2B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2B->execute();
-
 while ($row = $q2B->fetchObject()) {
-  $invited = $row->q2B1; $invited_format = number_format($row->q2B1);
-  $notinvited = $row->q2B2; $notinvited_format = number_format($row->q2B2);
-  $participated = $row->q2B3; $participated_format = number_format($row->q2B3);
-  $notparticipated = $row->q2B4; $notparticipated_format = number_format($row->q2B4);
+  $all = $row->q2A1;
+  $uncleaned = $row->q2A2;
+  $invited = $row->q2B1;
+  $notinvited = $row->q2B2;
+  $participated = $row->q2B3;
+  $notparticipated = $row->q2B4;
 }
+
+if ($all == 0) { $invited = 0; $notinvited = 0; $participated = 0; $notparticipated = 0; }
+else if ($invited == 0) { $participated = 0; $notparticipated = 0; }
+
+$all_format = number_format($all);
+$uncleaned_format = number_format($uncleaned);
+$invited_format = number_format($invited);
+$notinvited_format = number_format($notinvited);
+$participated_format = number_format($participated);
+$notparticipated_format = number_format($notparticipated);
+
 
 $all_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"100%\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width:2em; width:100%\">100%</div></div>";
 
@@ -215,94 +217,106 @@ if ($notparticipated) { $notparticipated_bar = "<div class=\"progress\"><div cla
 
 $strikerate = number_format(($participated / $invited) * 100, 1);
 
-echo "<h4><i class=\"pe-dashboard pe-fw\"></i> Current status</h4>\n";
-
 if ($all == 0) {
-  $text .= "<p>This project has <strong>no respondent</strong> stored in our database.</p>\n";
-  $text .= "<p>Please upload respondent's emails using a Comma Separated Value (CSV) file in order to store those emails in our database, and then come back to this page again for sending the invites.</p>\n";
-  $text .= "<p></p>\n";
+  echo "<p>This project currently has <strong>no respondent</strong> stored in the database.</p>\n";
+  echo "<p>Please upload respondent's emails using a Comma Separated Value (CSV) file and our system will enable the email function allowing you to send invitation / reminder to respondents accordingly.</p>\n";
+  echo "<p></p>\n";
 } else {
-  if ($uncleaned) { $ins = " <em class=\"red\">uncleaned</em>"; } else { $ins = ""; }
-  $text .= "<p>This project has <strong>$all_format$ins respondents</strong> stored in our database.</p>\n";
-  $text .= "<p>Among them, <strong>$invited_format respondents</strong> have been invited and <strong>$participated_format respondents</strong> have actually participated with this project.</p>\n";
-  $text .= "<p>And the current strike rate <em>(participation vs. invitation)</em> for this project is <strong>$strikerate%</strong>.</p>\n";
+  if (!empty($uncleaned)) { $text .= "<p>This project currently has a total of <strong>$all_format <em class=\"red\">uncleaned</em> respondents</strong> in the database.</p>\n"; }
+  else { $text .= "<p>This project currently has a total of <strong>$all_format respondents</strong> in the database.</p>\n"; }
+  if ($invited == 0) { $text .= "<p><strong>None of them</strong> has been invited resulting to <strong>zero participation</strong> and <strong>zero strike rate</strong> <em>(participation vs. invitation)</em>.</p>\n"; }
+  else { $text .= "<p><strong>$invited_format respondents</strong> have been invited and <strong>$participated_format respondents</strong> have participated resulting to a strike rate of <strong>$strikerate%</strong> <em>(participation vs. invitation)</em>.</p>\n"; }
   $text .= "<div id=\"gaugechart\"></div>\n";
+
+  echo "<div class=\"row\">\n";
+  echo "  <div class=\"col-xs-12 col-sm-8 col-md-8 col-lg-8\">\n";
+  echo "    <div id=\"orgchart\"></div>\n";
+  echo "  </div>\n";
+  echo "  <div class=\"col-xs-12 col-sm-4 col-md-4 col-lg-4\">\n";
+  echo "    $text\n";
+  echo "  </div>\n";
+  echo "</div>\n";
+  echo "<br>\n";
+  echo "<script type=\"text/javascript\">\n";
+  echo "  google.charts.load('current', { 'packages': ['orgchart', 'gauge'] });\n";
+  echo "  google.charts.setOnLoadCallback(drawOrgChart);\n";
+  echo "  google.charts.setOnLoadCallback(drawGaugeChart);\n";
+  echo "  function drawOrgChart() {\n";
+  echo "    var chart = new google.visualization.OrgChart(document.getElementById('orgchart'));\n";
+  echo "    var dataTable = new google.visualization.DataTable();\n";
+  echo "    dataTable.addColumn('string', 'Status');\n";
+  echo "    dataTable.addColumn('string', 'Sample');\n";
+  echo "    dataTable.addColumn('string', 'ToolTip');\n";
+  echo "    dataTable.addRows([\n";
+  echo "      [{ v:'Total', f:'<div class=\"small\">Total</div><div style=\"font-size:1.5rem\">n=".$all_format."</div>$all_bar' }, '', 'Total respondents (The target Universe)' ],\n";
+  echo "      [{ v:'Invited', f:'<div class=\"small\">Invited</div><div style=\"font-size:1.5rem\">n=".$invited_format."</div>$invited_bar' }, 'Total', 'Those who have been invited' ],\n";
+  echo "      [{ v:'Not invited', f:'<div class=\"small\">Not invited</div><div style=\"font-size:1.5rem\">n=".$notinvited_format."</div>$notinvited_bar' }, 'Total', 'Those who have not been invited' ],\n";
+  echo "      [{ v:'Participated', f:'<div class=\"small\">Participated</div><div style=\"font-size:1.5rem\">n=".$participated_format."</div>$participated_bar' }, 'Invited', 'Those who have participated in this project' ],\n";
+  echo "      [{ v:'Not participated', f:'<div class=\"small\">Not participated</div><div style=\"font-size:1.5rem\">n=".$notparticipated_format."</div>$notparticipated_bar' }, 'Invited', 'Those who have not participated in this study' ],\n";
+  echo "    ]);\n";
+  // if ($all == 0) { echo "    dataTable.setRowProperty(0, 'style', 'background: #f2dede; border: 3px solid red');\n"; }
+  // if ($invited == 0) { echo "    dataTable.setRowProperty(1, 'style', 'background: #f2dede; border: 3px solid red');\n"; }
+  if ($notinvited == 0) { echo "    dataTable.setRowProperty(2, 'style', 'background: #f2dede; border: 3px solid red');\n"; }
+  // if ($participated == 0) { echo "    dataTable.setRowProperty(3, 'style', 'background: #f2dede; border: 3px solid red');\n"; }
+  if ($notparticipated == 0) { echo "    dataTable.setRowProperty(4, 'style', 'background: #f2dede; border: 3px solid red');\n"; }
+  echo "    var options = { allowHtml: true, nodeClass: \"nodeClass\", selectedNodeClass: \"selectedNodeClass\", size: \"large\" };\n";
+  echo "    chart.draw(dataTable, options);\n";
+  echo "  }\n";
+  echo "  function drawGaugeChart() {\n";
+  echo "    var chart = new google.visualization.Gauge(document.getElementById('gaugechart'));\n";
+  echo "    var dataTable = new google.visualization.DataTable();\n";
+  echo "    dataTable.addColumn('number', 'Strike rate');\n";
+  echo "    dataTable.addRows(1);\n";
+  echo "    dataTable.setCell(0, 0, $strikerate);\n";
+  echo "    var options = { width: 120, height: 400, redFrom: 0, redTo: 10, yellowFrom:10, yellowTo: 30, greenFrom:30, greenTo: 100, minorTicks: 5 };\n";
+  echo "    chart.draw(dataTable, options);\n";
+  echo "  }\n";
+  echo "</script>\n";
+  echo "<style media=\"screen\">\n";
+  echo "  .google-visualization-orgchart-node { font-family: \"ubuntu\"; font-size: 1rem; width: 150px; }\n";
+  echo "  .google-visualization-orgchart-connrow-medium { border-bottom: none; }\n";
+  echo "  .google-visualization-orgchart-table { border-collapse: separate !important; }\n";
+  echo "  .google-visualization-orgchart-linebottom { border-bottom: 3px solid #ddd; }\n";
+  echo "  .google-visualization-orgchart-lineleft { border-left: 3px solid #ddd; }\n";
+  echo "  .google-visualization-orgchart-lineright { border-right: 3px solid #ddd; }\n";
+  echo "  .nodeClass { font-family: \"ubuntu\"; font-size: 1rem; width: 150px; background: #f5f5f5; border: 3px solid #ccc; border-radius: 10px; }\n";
+  echo "  .selectedNodeClass { color: #66512c; background: #fcf8e3; border: 3px solid #faebcc }\n";
+  echo "  .progress { height: 15px; }\n";
+  echo "  .progress-bar { font-size:0.7rem; font-weight: normal; line-height: 10px; }\n";
+  echo "</style>\n";
 }
 
-echo "<div class=\"row\">\n";
-echo "  <div class=\"col-xs-12 col-sm-8 col-md-8 col-lg-8\">\n";
-echo "    <div id=\"orgchart\"></div>\n";
-echo "  </div>\n";
-echo "  <div class=\"col-xs-12 col-sm-4 col-md-4 col-lg-4\">\n";
-echo "    $text\n";
-echo "  </div>\n";
-echo "</div>\n";
-echo "<br>\n";
-echo "<script type=\"text/javascript\">\n";
-echo "  google.charts.load('current', { 'packages': ['orgchart', 'gauge'] });\n";
-echo "  google.charts.setOnLoadCallback(drawOrgChart);\n";
-echo "  google.charts.setOnLoadCallback(drawGaugeChart);\n";
-echo "  function drawOrgChart() {\n";
-echo "    var chart = new google.visualization.OrgChart(document.getElementById('orgchart'));\n";
-echo "    var dataTable = new google.visualization.DataTable();\n";
-echo "    dataTable.addColumn('string', 'Status');\n";
-echo "    dataTable.addColumn('string', 'Sample');\n";
-echo "    dataTable.addColumn('string', 'ToolTip');\n";
-echo "    dataTable.addRows([\n";
-echo "      [{ v:'Total', f:'<div class=\"small\">Total</div><div style=\"font-size:1.5rem\">n=".$all_format."</div>$all_bar' }, '', 'Total respondents (The target Universe)' ],\n";
-echo "      [{ v:'Invited', f:'<div class=\"small\">Invited</div><div style=\"font-size:1.5rem\">n=".$invited_format."</div>$invited_bar' }, 'Total', 'Those who have been invited' ],\n";
-echo "      [{ v:'Not invited', f:'<div class=\"small\">Not invited</div><div style=\"font-size:1.5rem\">n=".$notinvited_format."</div>$notinvited_bar' }, 'Total', 'Those who have not been invited' ],\n";
-echo "      [{ v:'Participated', f:'<div class=\"small\">Participated</div><div style=\"font-size:1.5rem\">n=".$participated_format."</div>$participated_bar' }, 'Invited', 'Those who have participated in this project' ],\n";
-echo "      [{ v:'Not participated', f:'<div class=\"small\">Not participated</div><div style=\"font-size:1.5rem\">n=".$notparticipated_format."</div>$notparticipated_bar' }, 'Invited', 'Those who have not participated in this study' ],\n";
-echo "    ]);\n";
-// echo "    dataTable.setRowProperty(2, 'style', 'background: #f2dede; border: 3px solid red');\n";
-echo "    var options = { allowHtml: true, nodeClass: \"nodeClass\", selectedNodeClass: \"selectedNodeClass\", size: \"large\" };\n";
-echo "    chart.draw(dataTable, options);\n";
-echo "  }\n";
-echo "  function drawGaugeChart() {\n";
-echo "    var chart = new google.visualization.Gauge(document.getElementById('gaugechart'));\n";
-echo "    var dataTable = new google.visualization.DataTable();\n";
-echo "    dataTable.addColumn('number', 'Strike rate');\n";
-echo "    dataTable.addRows(1);\n";
-echo "    dataTable.setCell(0, 0, $strikerate);\n";
-echo "    var options = { width: 120, height: 400, redFrom: 0, redTo: 10, yellowFrom:10, yellowTo: 30, greenFrom:30, greenTo: 100, minorTicks: 5 };\n";
-echo "    chart.draw(dataTable, options);\n";
-echo "  }\n";
-echo "</script>\n";
-echo "<style media=\"screen\">\n";
-echo "  .google-visualization-orgchart-node { font-family: \"ubuntu\"; font-size: 1rem; width: 150px; }\n";
-echo "  .google-visualization-orgchart-connrow-medium { border-bottom: none; }\n";
-echo "  .google-visualization-orgchart-table { border-collapse: separate !important; }\n";
-echo "  .google-visualization-orgchart-linebottom { border-bottom: 3px solid #ddd; }\n";
-echo "  .google-visualization-orgchart-lineleft { border-left: 3px solid #ddd; }\n";
-echo "  .google-visualization-orgchart-lineright { border-right: 3px solid #ddd; }\n";
-echo "  .nodeClass { font-family: \"ubuntu\"; font-size: 1rem; width: 150px; background: #f5f5f5; border: 3px solid #ccc; border-radius: 10px; }\n";
-echo "  .selectedNodeClass { color: #66512c; background: #fcf8e3; border: 3px solid #faebcc }\n";
-echo "  .progress { height: 15px; }\n";
-echo "  .progress-bar { font-size:0.7rem; font-weight: normal; line-height: 10px; }\n";
-echo "</style>\n";
-
+if (isset($_GET['search'])) {
+  $q3B = $db->prepare("SELECT * FROM j_respondents WHERE surveyid = :surveyid AND email LIKE :email ORDER BY participation DESC, invitation DESC, created DESC");
+  $q3B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+  $q3B->bindValue(':email', '%'.$_GET["search"].'%', PDO::PARAM_STR);
+} else {
+  $q3B = $db->prepare("SELECT * FROM j_respondents WHERE surveyid = :surveyid ORDER BY participation DESC, invitation DESC, created DESC");
+  $q3B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+}
+$q3B->execute();
+$amount = $q3B->rowCount(); $amount_format = number_format($amount);
 
 if ($_REQUEST['size']) {
   $limit = $_REQUEST['size'];
   if ($_GET['p']) { $me = $base."&size=".$_REQUEST['size']; }
   else { $me = $base."&p=".$_GET['p']."&size=".$_REQUEST['size']; }
 } else {
-  if ($all <= 100) { $limit = 20; }
-  else if ($all > 100 && $all <= 250) { $limit = 50; }
-  else if ($all > 250 && $all <= 500) { $limit = 100; }
-  else if ($all > 500 && $all <= 1000) { $limit = 200; }
-  else if ($all > 1000) { $limit = 500; }
+  if ($amount <= 250) { $limit = 50; }
+  else if ($amount > 250 && $amount <= 500) { $limit = 100; }
+  else if ($amount > 500 && $amount <= 1000) { $limit = 300; }
+  else if ($amount > 1000) { $limit = 500; }
 }
 
 if (empty($start)) { $start = 0; }
 if (empty($limit)) { $limit = 500; }
 if ($p) { $start = ($p-1) * $limit; }
 $to_record = $start + $limit;
-$total = ceil($all/$limit);
-
-if ($to_record > $all) { $to_record = $all; }
+$total = ceil($amount/$limit);
+if ($to_record > $amount) { $to_record = $amount; }
 $from_record = $start + 1;
+$to_record_format = number_format($to_record);
+$from_record_format = number_format($from_record);
 
 // Get respondent error list
 $q3A = $db->prepare("SELECT * FROM j_respondents WHERE surveyid = :surveyid AND status = 0");
@@ -317,12 +331,8 @@ $email_error .= "  <p>Alternatively you can also <a data-toggle=\"collapse\" hre
 $email_error .= "  <div class=\"collapse\" id=\"showerrors\"><div class=\"well small\">";
 for($x = 0; $x < count($errorlist); $x++) { $email_error .= $errorlist[$x].", "; }
 $email_error .= "</div></div>\n";
-$email_error .= "  <form action=\"$base\" method=\"post\"><button type=\"submit\" name=\"m\" value=\"fixerrors\" class=\"btn btn-warning\">Click here to remove errors</button></form>\n";
+$email_error .= "  <form action=\"$base\" method=\"post\"><button type=\"submit\" name=\"m\" value=\"fixerrors\" class=\"btn btn-danger\">Fix this error</button></form>\n";
 $email_error .= "</div>\n";
-
-if (isset($_POST['showbyemail'])) { $add = " AND email = :email"; }
-else if ($ss == "invalid") { $add = " ORDER BY status ASC, id DESC LIMIT $start, $limit"; }
-else { $add = " ORDER BY created DESC, invitation DESC LIMIT $start, $limit"; }
 
 // Query all for auto complete search box
 $dd = array();
@@ -337,11 +347,11 @@ while ($rr = $q3C->fetchObject()) {
 $dd = json_encode($dd, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
 // Check duplications
-$q4 = $db->prepare("SELECT COUNT(*) as duplicates, id, email FROM j_respondents WHERE surveyid = :surveyid GROUP BY email HAVING duplicates > 1");
-$q4->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-$q4->execute();
+$q4A = $db->prepare("SELECT COUNT(*) as duplicates, id, email FROM j_respondents WHERE surveyid = :surveyid GROUP BY email HAVING duplicates > 1");
+$q4A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q4A->execute();
 $e = array(); $f = array(); $g = array(); //$h = array();
-while ($r = $q4->fetchObject()) {
+while ($r = $q4A->fetchObject()) {
   $duplist[] = $r->email;
   array_push($e, $r->email);
   array_push($f, $r->duplicates);
@@ -356,108 +366,118 @@ $email_duplicated .= "  <p>We display these duplicates in the table below with <
 $email_duplicated .= "  <ul class=\"pe-ul\">\n";
 $d = array_count_values($c);
 arsort($d);
-foreach ($d as $dd => $ddd) {
-  $email_duplicated .= "    <li><i class=\"pe-li pe-check-square\"></i> $ddd respondents with $dd emails</li>";
-  // echo $ddd;
-}
+foreach ($d as $dA => $dB) { $email_duplicated .= "    <li><i class=\"pe-li pe-check-square\"></i> $dB respondents with $dA emails</li>"; }
 $email_duplicated .= "  </ul>\n";
 $email_duplicated .= "  <br>\n";
 $email_duplicated .= "  <p>You can <a data-toggle=\"collapse\" href=\"#showduplicates\" aria-expanded=\"false\" class=\"alert-link\">click here <i class=\"pe-arrow-circle-down pe-fw\"></i></a> to see them all in one big list (click again to close).</p>\n";
 $email_duplicated .= "  <div class=\"collapse\" id=\"showduplicates\"><div class=\"well small\">";
 for($x = 0; $x < count($duplist); $x++) { $email_duplicated .= $duplist[$x].", "; }
 $email_duplicated .= "</div></div>\n";
-$email_duplicated .= "  <form action=\"$base\" method=\"post\"><button type=\"submit\" name=\"m\" value=\"fixduplicates\" class=\"btn btn-warning\">Click here to remove duplicates</button></form>\n";
+$email_duplicated .= "  <form action=\"$base\" method=\"post\"><button type=\"submit\" name=\"m\" value=\"fixduplicates\" class=\"btn btn-danger\">Fix this error</button></form>\n";
 $email_duplicated .= "</div>\n";
 
 // Get respondent listing
 $tablelist = "";
-$q3B = $db->prepare("SELECT * FROM j_respondents WHERE surveyid = :surveyid".$add);
-$q3B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-if (isset($_POST['showbyemail'])) { $q3B->bindValue(':email', $_POST["showbyemail"], PDO::PARAM_STR); }
-// print_r($q3B);
-$q3B->execute();
+if ($ss == "invalid") {
+  $q3D = $db->prepare("SELECT * FROM j_respondents WHERE surveyid = :surveyid ORDER BY status ASC, id DESC LIMIT $start, $limit");
+  $q3D->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+} else if (isset($_GET['search'])) {
+  $q3D = $db->prepare("SELECT * FROM j_respondents WHERE surveyid = :surveyid AND email LIKE :email ORDER BY participation DESC, invitation DESC, created DESC LIMIT $start, $limit");
+  $q3D->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+  $q3D->bindValue(':email', '%'.$_GET["search"].'%', PDO::PARAM_STR);
+} else {
+  $q3D = $db->prepare("SELECT * FROM j_respondents WHERE surveyid = :surveyid ORDER BY participation DESC, invitation DESC, created DESC LIMIT $start, $limit");
+  $q3D->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+}
+$q3D->execute();
 if ($from_record) { $i = $from_record; } else { $i = 1; }
-while ($row = $q3B->fetchObject()) {
+while ($row = $q3D->fetchObject()) {
+  $ii = number_format($i);
   $email = $row->email;
   if ($row->status == 0) { $a1 = "<del>"; $a2 = "</del>"; $a3 = "<tr style='background-color:#eee'>"; } else { $a1 = ""; $a2 = ""; $a3 = "<tr>"; }
   if (!empty($row->invitation)) { $disablecheckbox = " disabled"; } else { $disablecheckbox = ""; }
   if (in_array($email, $duplist)) { $a4 = "<span class=\"label label-danger\">duplicated</span>"; } else { $a4 = ""; }
   $tablelist .= "      $a3\n";
   $tablelist .= "        <td><div class=\"checbox\"><input type=\"checkbox\" name=\"checkbox[]\" id=\"$i\" value=\"$row->id\"$disablecheckbox></div></td>\n";
-  $tablelist .= "        <td><small>$a1$i$a2</small></td>\n";
   $tablelist .= "        <td><small>$a1$email$a2 $a4</small></td>\n";
   if (!empty($row->created)) { $created = ago($row->created); $tablelist .= "      <td style=\"text-align:right\"><small>$a1$created$a2</small></td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\"><small>-</small></td>\n"; }
   if (!empty($row->invitation)) { $invitation = ago($row->invitation); $tablelist .= "      <td style=\"text-align:right\"><small>$invitation</small></td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\"><small>-</small></td>\n"; }
   if (!empty($row->reminder)) { $reminder = ago($row->reminder); $tablelist .= "      <td style=\"text-align:right\"><small>$reminder</small></td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\"><small>-</small></td>\n"; }
   if (!empty($row->participation)) { $participation = ago($row->participation); $tablelist .= "      <td style=\"text-align:right\"><small>$participation</small></td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\"><small>-</small></td>\n"; }
-  if (!empty($row->completion)) { $completion = ago($row->completion); $tablelist .= "      <td style=\"text-align:right\"><small>$completion</small></td>\n"; } else { $tablelist .= "      <td style=\"text-align:right\"><small>-</small></td>\n"; }
   $i++;
   $tablelist .= "      </tr>\n";
 }
 
 if ($total == 0) {
-  echo "<p>Currently this project has <strong>no respondent</strong> stored in our database.</p>\n";
-  echo "<p>Please upload with a Comma Separated Value (CSV) file that at least contains a list of emails in a column.</p>";
-  echo "<p></p>\n";
   echo "<div align=\"right\"><a class=\"btn btn-info\" href=\"\" data-toggle=\"modal\" data-target=\"#uploading\"><i class=\"pe-upload pe-fw\"></i> Upload a new name list</a> <a class=\"btn btn-info\" href=\"\" data-toggle=\"modal\" data-target=\"#manuallyadd\"><i class=\"pe-user-plus pe-fw\"></i> Manually add new respondents</a></div>\n";
   echo "<br>\n";
   echo $help;
 } else {
-  // echo "<p>Currently this project has <strong>$all respondents</strong> stored in our database.</p>\n";
   if ($uncleaned) { echo $email_error; $showlink = false; } else { $showlink = true; }
   if ($duplicated_records) { echo $email_duplicated; $showlink = false; } else { $showlink = true; }
   if ($showlink == true) {
-    echo "<h4><i class=\"pe-check-square pe-fw\"></i> Email sending function enabled</h4>\n";
-    echo "<p>Because there is no error in the email list, the email sending function is now enabled.</p>\n";
-    echo "<p>This means you can choose to send emails to these respondents by using below functions:</p>";
-    echo "<div><a class=\"btn btn-default\" href=\"$invitation\"><i class=\"pe-envelope pe-fw\"></i> Send an invitation email</a> <a class=\"btn btn-default\" href=\"$reminder\"><i class=\"pe-envelope pe-fw\"></i> Send a reminder email</a></div>\n";
+    echo "<div class=\"alert alert-warning\" role=\"alert\">\n";
+    echo "  <h4><i class=\"pe-check-square pe-fw\"></i> Email sending function enabled</h4>\n";
+    echo "  <p>Because there is no error in the email list, the email sending function is now enabled.</p>\n";
+    echo "  <p>This means you can choose to send emails to these respondents by using below functions:</p>";
+    echo "  <div><a class=\"btn btn-warning\" href=\"$linkinvitation\"><i class=\"pe-envelope pe-fw\"></i> Send an invitation email</a> <a class=\"btn btn-warning disabled\" href=\"$linkreminder\"><i class=\"pe-envelope pe-fw\"></i> Send a reminder email</a></div>\n";
+    echo "</div>\n";
   } else {
-    echo "<h4><i class=\"pe-times pe-fw\"></i> Email sending function disabled</h4>\n";
-    echo "<p>Because our system still detects errors in the email list as shown in the box above, the email sending function is now disabled.</p>\n";
-    echo "<p>You must make sure the email list is error-free before you can send any emails to these respondents.</p>";
-    echo "<div><a class=\"btn btn-default\" href=\"$invitation\" disabled=\"disabled\"><i class=\"pe-envelope pe-fw\"></i> Send an invitation email</a> <a class=\"btn btn-default\" href=\"$reminder\" disabled=\"disabled\"><i class=\"pe-envelope pe-fw\"></i> Send a reminder email</a></div>\n";
+    echo "<div class=\"alert alert-warning\" role=\"alert\">\n";
+    echo "  <h4><i class=\"pe-times pe-fw\"></i> Email sending function disabled</h4>\n";
+    echo "  <p>Because our system still detects errors in the email list as shown in the box above, the email sending function is now disabled.</p>\n";
+    echo "  <p>You must make sure the email list is error-free before you can send any emails to these respondents.</p>";
+    echo "  <div><a class=\"btn btn-warning disabled\" href=\"$linkinvitation\"><i class=\"pe-envelope pe-fw\"></i> Send an invitation email</a> <a class=\"btn btn-warning disabled\" href=\"$linkreminder\"><i class=\"pe-envelope pe-fw\"></i> Send a reminder email</a></div>\n";
+    echo "</div>\n";
   }
-  echo "<br>\n";
   if ($_GET['m'] == "1") { $message = mksuccess("You have successfully uploaded and added respondents(s) to the database."); echo "<p>$message</p>\n"; }
   else if ($_GET['m'] == "2") { $message = mksuccess("You have successfully added respondents(s) to the database."); echo "<p>$message</p>\n"; }
   else if ($_GET['m'] == "3") { $message = mksuccess("All respondents(s) with invalid emails have been removed."); echo "<p>$message</p>\n"; }
   else if ($_GET['m'] == "4") { $message = mksuccess("All duplicated emails have been removed while system still keeps the original ones."); echo "<p>$message</p>\n"; }
   else if ($_GET['m'] == "5") { $message = mkwarn("Selected respondents(s) has/have been deleted."); echo "<p>$message</p>\n"; }
   else { echo "<p></p>\n"; }
-  // echo "<p>Please see table below for more information about these respodnents. And of course, you can always use the upload function to add more respondents to the project if need.</p>\n";
-  // echo $golden;
+
   echo "<div align=\"right\"><a class=\"btn btn-info\" href=\"\" data-toggle=\"modal\" data-target=\"#uploading\"><i class=\"pe-upload pe-fw\"></i> Upload a new name list</a> <a class=\"btn btn-info\" href=\"\" data-toggle=\"modal\" data-target=\"#manuallyadd\"><i class=\"pe-user-plus pe-fw\"></i> Manually add new respondents</a></div>\n";
   echo "<br><br>\n";
 
-  $me = $base."&size=".$_REQUEST['size'];
+  if ($_GET['search']) { $me = $base."&size=".$_REQUEST['size']."&search=".$_GET['search']; }
+  else { $me = $base."&size=".$_REQUEST['size']; }
   $pagination = "<nav class=\"pagination-centered\">\n";
   $pagination .= "  <ul class=\"pagination\">\n";
-  if ($p > 1) { $previous = $p-1; $pagination .= "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$previous."\">&laquo;</a></li>\n"; }
-  else { $pagination .= "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&laquo;</a></li>\n"; }
-  for ($i=1; $i <= $total; $i++) {
-    if ($i == $p) { $pagination .= "    <li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
-    else { $pagination .= "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>\n"; }
+  if ($total >= 1 && $p <= $total) {
+    if (($p == 1) || (empty($p))) { $pagination .= "<li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=1\">1</a></li>"; }
+    else { $pagination .= "<li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=1\">1</a></li>"; }
+    $i = max(2, $p - 2);
+    if ($i > 2) { $pagination .= "<li><a class=\"btn btn-sm\" role=\"button\" href=\"\" style=\"border:none\">...</a></li>"; }
+    for (; $i < min($p + 3, $total); $i++) {
+      if ($i == $p) { $pagination .= "<li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>"; }
+      else { $pagination .= "<li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>"; }
+    }
+    if ($i != $total) { $pagination .= "<li><a class=\"btn btn-sm\" role=\"button\" href=\"\" style=\"border:none\">...</a></li>"; }
+    if ($p == $total) { $pagination .= "<li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$total."\">".$total."</a></li>"; }
+    else { $pagination .= "<li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$total."\">".$total."</a></li>"; }
   }
-  if ($p != $total) { $next = $p+1; $pagination .= "    <li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$next."\">&raquo;</a></li>\n"; }
-  else { $pagination .= "    <li class=\"disabled\"><a class=\"btn btn-sm\" role=\"button\" href=\"\">&raquo;</a></li>\n"; }
   $pagination .= "  </ul>\n";
   $pagination .= "</nav>\n\n";
 
   echo "<div class=\"row\">\n";
   echo "  <div class=\"col-sm-4\">\n";
-  if (!isset($_POST['showbyemail'])) { echo "    Found <strong>$all records</strong><br><small>(showing results $from_record to $to_record)</small>\n"; }
-  else { echo "    <i class=\"pe-times-circle-o\"></i> <a href=\"$base\"><span class=\"grey\"><strong>Remove this filter</strong></a><br><small>(back to show all)</small></span>\n"; }
+  if (isset($_GET['search'])) { echo "    Filter: <span class=\"search-filter\"><a href=\"$base\" title=\"Remove this search filter\"><i class=\"pe-times pe-fw red\"></i> ".$_GET['search']."</a></span><br>\n"; }
+  // else { echo "    Filter: <span class=\"search-filter\"><a href=\"$base\" title=\"Remove this search filter\"><i class=\"pe-times pe-fw red\"></i> ".$_POST['showbyemail']."</a></span>\n"; }
   echo "  </div>\n";
   echo "  <div class=\"col-sm-4\">\n";
-  echo "    <form action=\"$base\" method=\"post\">\n";
+  echo "    <form action=\"$base\" method=\"get\">\n";
   echo "      <div class=\"form-group has-feedback\">\n";
-  echo "        <input type=\"text\" id=\"RDsearchbox\" name=\"showbyemail\" class=\"form-control input-sm\"><i class=\"pe-search form-control-feedback\" aria-hidden=\"true\"></i>\n";
+  echo "        <input type=\"hidden\" name=\"w\" value=\"respondents\">\n";
+  echo "        <input type=\"hidden\" name=\"s\" value=\"".$_GET['s']."\">\n";
+  echo "        <input type=\"text\" id=\"RDsearchbox\" name=\"search\" class=\"form-control input-sm\"><i class=\"pe-search form-control-feedback\" aria-hidden=\"true\"></i>\n";
   echo "      </div>\n";
   echo "    </form>\n";
   echo "  </div>\n";
-  echo "  <div class=\"col-sm-4\" style=\"text-align:right\"><form method=\"post\" class=\"form-inline\" action=\"$me\">\n";
+  if ($_GET['search']) { echo "  <div class=\"col-sm-4\" style=\"text-align:right\"><form method=\"post\" class=\"form-inline\" action=\"".$base."&search=".$_GET['search']."\">\n"; }
+  else { echo "  <div class=\"col-sm-4\" style=\"text-align:right\"><form method=\"post\" class=\"form-inline\" action=\"$base\">\n"; }
   echo "    <small >Select display size:</small>\n";
-  if (!isset($_POST['showbyemail'])) { echo "    <select class=\"form-control input-sm\" name=\"size\" onchange=\"this.form.submit()\">\n"; }
+  if ($amount > 50) { echo "    <select class=\"form-control input-sm\" name=\"size\" onchange=\"this.form.submit()\">\n"; }
   else { echo "    <select class=\"form-control input-sm\" name=\"size\" onchange=\"this.form.submit()\" disabled>\n"; }
   if ($limit == "50") { echo "      <option selected>50</option>\n"; } else { echo "      <option>50</option>\n"; }
   if ($limit == "100") { echo "      <option selected>100</option>\n"; } else { echo "      <option>100</option>\n"; }
@@ -467,6 +487,8 @@ if ($total == 0) {
   echo "    </select>\n";
   echo "  </form></div>\n";
   echo "</div><br>\n";
+  echo "<small>Found <strong>$amount_format records</strong> (showing results $from_record_format to $to_record_format)</small>\n";
+
 ?>
 
 <form method="post" action="<?php echo $me; ?>">
@@ -474,13 +496,11 @@ if ($total == 0) {
     <thead>
       <tr class="bg-success">
         <th width="5%"></th>
-        <th width="5%">No</th>
-        <th width="25%">Respondents</th>
-        <th width="13%" style="text-align:right">Upload</th>
-        <th width="13%" style="text-align:right">Invitation</th>
-        <th width="13%" style="text-align:right">Reminder</th>
-        <th width="13%" style="text-align:right">Participated</th>
-        <th width="13%" style="text-align:right">Completion</th>
+        <th width="27%">Respondent</th>
+        <th width="17%" style="text-align:right">Total upload</th>
+        <th width="17%" style="text-align:right">Invitation</th>
+        <th width="17%" style="text-align:right">Reminder</th>
+        <th width="17%" style="text-align:right">Participation</th>
       </tr>
     </thead>
     <tbody>
@@ -493,7 +513,7 @@ if ($total == 0) {
   <div class="checkbox"><label class="small" style="padding-left:0"><input type="checkbox" name="all" id="all" value=""<?php echo $disablecheckbox; ?>> <i class="pe-level-up pe-flip-horizontal red"></i> Select / deselect all</label></div>
   <button type="submit" class="btn btn-danger"><i class="pe-trash pe-fw"></i> Delete selected</button>
   <p></p>
-  <p class="small"><em>Note: You only can delete respondents who have not been invited to this survey.</em></p>
+  <p class="small"><em>Note: You only can delete respondents who have <u>not</u> been invited to this survey.</em></p>
 </form>
 
 <?php } ?>
@@ -582,11 +602,17 @@ if ($total == 0) {
       },
     },
     theme: "bootstrap",
-    placeholder: "Email search among all (n=<?php echo $all; ?>)"
+    placeholder: "Email search among all (n=<?php echo $all_format; ?>)"
   });
-  $(document).ready(function(){
+  $("td input:checkbox").click(function() {
+    if ($(this).is(':checked')) { $(this).parent().parent().parent().addClass("highlight");  }
+    else { $(this).parent().parent().parent().removeClass("highlight"); }
+  });
+  $(document).ready(function() {
     $('#all').click( function () {
-      $('input[type="checkbox"]').not(":disabled").prop('checked', this.checked)
+      $('td input:checkbox').not(":disabled").prop('checked', this.checked);
+      if ($('td input:checkbox').is(':checked')) { $('td input:checkbox').not(":disabled").parent().parent().parent().addClass("highlight"); }
+      else { $('td input:checkbox').not(":disabled").parent().parent().parent().removeClass("highlight"); }
     })
   });
 </script>
