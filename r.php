@@ -15,87 +15,11 @@ if (empty($_GET['s'])) {
   echo "<h2>ไม่พบแบบสอบถาม</h2>\n";
   echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากไม่พบแบบสอบถาม กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
   echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
-  echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้");
+  echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้ เนื่องจากไม่พบแบบสอบถาม");
   echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
   pageFooter();
   exit;
 }
-
-$login = new Login();
-if ($login->isUserLoggedIn() == true) { $email = $_SESSION["email"]; }
-else if (($_GET["email"]) && ($_GET["token"])) {
-  $q1 = $db->prepare("SELECT * FROM j_respondents WHERE email = :email AND surveyid :surveyid");
-  $q1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
-  $q1->bindValue(':email', $_GET["email"], PDO::PARAM_STR);
-  // $q1->bindValue(':password', $_GET["token"], PDO::PARAM_STR);
-  $q1->execute();
-  if ($q1->rowCount() == 0) { $error[] = mkerror("ไม่พบอีเมล์ของคุณในระบบสำหรับงานวิจัยนี้"); }
-  else {
-    while ($row = $q1->fetchObject()) {
-      $password = $row->password;
-      if ($password != $_GET["token"]) {
-        // $q2 = $db->prepare('UPDATE j_respondents_private SET fails = fails+1, fails_last = :fails_last, fails_ip = :fails_ip WHERE email = :email');
-        // $q2->execute(array(':email' => $email, ':fails_last' => time(), ':fails_ip' => $ip));
-        // $q3 = $db->prepare("INSERT INTO j_respondents_private_logs (email, ip, data, critical) VALUE (:email, :ip, '".$email." failed to log in due to a wrong token', '4')");
-        // $q3->bindValue(':email', $email, PDO::PARAM_INT);
-        // $q3->bindValue(':ip', $ip, PDO::PARAM_STR);
-        // $q3->execute();
-        $errors[] = mkerror("Wrong access token");
-      } else {
-        $email = $row->email;
-        // $q4 = $db->prepare("UPDATE j_respondents_private SET lastlogin2 = lastlogin, lastip2 = lastip WHERE email = :email AND surveyid = :surveyid");
-        // $q4->bindValue(':email', $email, PDO::PARAM_STR);
-        // $q4->bindValue(':surveyid', $surveyid, PDO::PARAM_INT);
-        // $q4->execute();
-        // $q5 = $db->prepare("UPDATE j_respondents_private SET lastlogin = NOW(), lastip = :ip WHERE email = :email AND surveyid = :surveyid");
-        // $q5->bindValue(':ip', $ip, PDO::PARAM_STR);
-        // $q5->bindValue(':email', $email, PDO::PARAM_STR);
-        // $q5->bindValue(':surveyid', $surveyid, PDO::PARAM_INT);
-        // $q5->execute();
-        // $q6 = $db->prepare("SELECT * FROM j_respondents_private WHERE email = :email AND surveyid = :surveyid");
-        // $q6->bindValue(':email', $result_row->email, PDO::PARAM_STR);
-        // $q6->bindValue(':surveyid', $surveyid, PDO::PARAM_INT);
-        // $q6->execute();
-        // $resulty = $q6->fetchObject();
-        // $_SESSION['logged_in'] = 1;                     $this->logged_in = true;
-        // $_SESSION['email'] = $result_row->email;        $this->email = $result_row->email;
-        // $_SESSION['created'] = $resulty->created;       $this->created = $resulty->created;
-        // $_SESSION['updated'] = $resulty->updated;       $this->updated = $resulty->updated;
-        // $_SESSION['lastlogin'] = $resulty->lastlogin;   $this->lastlogin = $resulty->lastlogin;
-        // $_SESSION['lastlogin2'] = $resulty->lastlogin2; $this->lastlogin2 = $resulty->lastlogin2;
-        // $_SESSION['ip'] = $ip;                          $this->ip = $ip;
-        // $_SESSION['lastip'] = $resulty->lastip;         $this->lastip = $resulty->lastip;
-        // $_SESSION['lastip2'] = $resulty->lastip2;       $this->lastip2 = $resulty->lastip2;
-        // $q7 = $db->prepare("INSERT INTO j_respondents_private_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$result_row->email." logged in', '1')");
-        // $q7->bindValue(':userid', $resulty->id, PDO::PARAM_INT);
-        // $q7->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
-        // $q7->execute();
-        // $q8 = $db->prepare('UPDATE j_respondents_private SET fails = 0, fails_last = NULL WHERE email = :email AND fails != 0');
-        // $q8->execute(array(':email' => $email));
-        if ($ref) { header("location: $ref"); }
-      }
-    }
-  }
-}
-else {
-  $ip = getip();
-  $email = "anonymous@siamsquare.org"; $userid = 0;
-  // $email = $_GET["email"];
-  // $surveyid = $_GET["s"];
-  // $q1 = $db->prepare("SELECT password FROM j_respondents_private WHERE email = :email AND surveyid = :surveyid");
-  // $q1->bindValue(':email', $email, PDO::PARAM_INT);
-  // $q1->bindValue(':surveyid', $surveyid, PDO::PARAM_INT);
-  // $q1->execute();
-  // while ($row = $q1->fetchObject()) { $password = $row->password; }
-}
-
-// if (isset($_GET['o']) || ($_GET['o'] == "CNT")) {
-//   $auth = $_GET['o'];
-//   $continue = true;
-//   $userid = 0;
-//   // run function get email from CNT, fallback below
-//   $email = "CNT@siamsquare.org";
-// }
 
 // Get survey and company information (e.g. logo, website, etc.)
 $q1 = $db->prepare("SELECT P.*, C.company, C.description AS DD, C.logo, C.website FROM j_projects P, j_companies C WHERE P.companyid = C.id AND P.id = :surveyid");
@@ -109,7 +33,7 @@ if ($q1->rowCount() == 0) {
   echo "<h2>ไม่พบงานวิจัย</h2>\n";
   echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากไม่พบงานวิจัย กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
   echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
-  echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้");
+  echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้เนื่องจากไม่พบงานวิจัย");
   echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
   pageFooter();
   exit;
@@ -118,6 +42,7 @@ while ($r = $q1->fetchObject()) {
   $project = $r->title;
   $status = $r->status;
   $website = $r->website;
+  $private = $r->private;
   if ($r->logo) {
     if ($website) { $clientlogo = "<a href=\"$website\" title=\"$r->company\" target=\"_blank\"><img src=\"$r->logo\" title=\"$r->company\"></a>"; }
     else { $clientlogo = "<img src=\"$r->logo\" title=\"$r->company\">"; }
@@ -134,11 +59,159 @@ while ($r = $q1->fetchObject()) {
   if ($_showcolour) { $showcolour = $_showcolour; } else { $showcolour = $r->show_colour; }
 }
 
+$showsurvey = 0;
+
+// Check email and token if it is a private survey
+if ($private == 1) {
+  if (empty($_GET["email"])) {
+    $email = "anonymous@siamsquare.org";
+    $userid = 0;
+    $showsurvey = 1;
+    // $title = "เกิดข้อผิดพลาด";
+    // pageHeader($title);
+    // echo "<h2>ไม่พบอีเมล์ของคุณ</h2>\n";
+    // echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากไม่พบอีเมล์ของคุณ กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
+    // echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
+    // echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้เนื่องจากไม่พบอีเมล์ของคุณ");
+    // echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
+    // pageFooter();
+    // exit;
+  } else if (empty($_GET["token"])) {
+    $email = "anonymous@siamsquare.org";
+    $userid = 0;
+    $showsurvey = 1;
+    // $title = "เกิดข้อผิดพลาด";
+    // pageHeader($title);
+    // echo "<h2>ไม่พบรหัสผ่าน</h2>\n";
+    // echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากไม่พบรหัสผ่าน กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
+    // echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
+    // echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้เนื่องจากไม่พบรหัสผ่าน");
+    // echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
+    // pageFooter();
+    // exit;
+  } else {
+    $q1 = $db->prepare("SELECT * FROM j_respondents WHERE email = :email AND surveyid :surveyid");
+    $q1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+    $q1->bindValue(':email', $_GET["email"], PDO::PARAM_STR);
+    $q1->execute();
+    if ($q1->rowCount() == 0) {
+      $title = "เกิดข้อผิดพลาด";
+      pageHeader($title);
+      echo "<h2>อีเมล์ของคุณไม่ถุกต้อง</h2>\n";
+      echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากอีเมล์ของคุณไม่ถุกต้อง กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
+      echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
+      echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้เนื่องจากอีเมล์ของคุณไม่ถุกต้อง");
+      echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
+      pageFooter();
+      exit;
+    } else {
+      while ($row = $q1->fetchObject()) {
+        $password = $row->password;
+        if ($password != $_GET["token"]) {
+          $title = "เกิดข้อผิดพลาด";
+          pageHeader($title);
+          echo "<h2>รหัสลับของคุณไม่ถุกต้อง</h2>\n";
+          echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากรหัสลับของคุณไม่ถุกต้อง กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
+          echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
+          echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้เนื่องจากรหัสลับของคุณไม่ถุกต้อง");
+          echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
+          pageFooter();
+          exit;
+        } else {
+          $email = $_GET["email"];
+          $userid = $row->id;
+          $showsurvey = 1;
+          // Update respondent participation
+          $q2 = $db->prepare("UPDATE j_respondents SET participation = NOW() WHERE email = :email AND surveyid = :surveyid");
+          $q2->bindValue(':email', $_GET["email"], PDO::PARAM_INT);
+          $q2->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+          $q2->execute();
+        }
+      }
+    }
+  }
+} else if ($private == 0) {
+  $login = new Login();
+  if ($login->isUserLoggedIn() == true) {
+    $email = $_SESSION["email"];
+    $userid = $_SESSION["userid"];
+    $showsurvey = 1;
+  } else if (($_GET["email"]) && ($_GET["token"])) {
+    $q1 = $db->prepare("SELECT * FROM j_respondents WHERE email = :email AND surveyid :surveyid");
+    $q1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+    $q1->bindValue(':email', $_GET["email"], PDO::PARAM_STR);
+    $q1->execute();
+    if ($q1->rowCount() == 0) {
+      $title = "เกิดข้อผิดพลาด";
+      pageHeader($title);
+      echo "<h2>อีเมล์ของคุณไม่ถุกต้อง</h2>\n";
+      echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากอีเมล์ของคุณไม่ถุกต้อง กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
+      echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
+      echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้เนื่องจากอีเมล์ของคุณไม่ถุกต้อง");
+      echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
+      pageFooter();
+      exit;
+    } else {
+      while ($row = $q1->fetchObject()) {
+        $password = $row->password;
+        if ($password != $_GET["token"]) {
+          $title = "เกิดข้อผิดพลาด";
+          pageHeader($title);
+          echo "<h2>รหัสลับของคุณไม่ถุกต้อง</h2>\n";
+          echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากรหัสลับของคุณไม่ถุกต้อง กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
+          echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
+          echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้เนื่องจากรหัสลับของคุณไม่ถุกต้อง");
+          echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
+          pageFooter();
+          exit;
+        } else {
+          $email = $row->email;
+          $userid = $row->id;
+          $showsurvey = 1;
+        }
+      }
+    }
+  } else {
+    $ip = getip();
+    $email = "anonymous@siamsquare.org"; $userid = 0;
+    // $email = $_GET["email"];
+    // $surveyid = $_GET["s"];
+    // $q1 = $db->prepare("SELECT password FROM j_respondents_private WHERE email = :email AND surveyid = :surveyid");
+    // $q1->bindValue(':email', $email, PDO::PARAM_INT);
+    // $q1->bindValue(':surveyid', $surveyid, PDO::PARAM_INT);
+    // $q1->execute();
+    // while ($row = $q1->fetchObject()) { $password = $row->password; }
+  }
+}
+
+// if (isset($_GET['o']) || ($_GET['o'] == "CNT")) {
+//   $auth = $_GET['o'];
+//   $continue = true;
+//   $userid = 0;
+//   // run function get email from CNT, fallback below
+//   $email = "CNT@siamsquare.org";
+// }
+
+if ($_SESSION["level"] == 9) {
+  $email = $_SESSION["email"];
+  $userid = $_SESSION["userid"];
+  $showsurvey = 1;
+}
+
+if ($showsurvey != 1) {
+  $title = "เกิดข้อผิดพลาด";
+  pageHeader($title);
+  echo "<h2>ไม่สามารถเข้าร่วมวิจัยได้</h2>\n";
+  echo "<p>ไม่สามารถทำรายการต่อได้ กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
+  echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
+  echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้");
+  echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
+  pageFooter();
+  exit;
+} else {
+
 $title = "ร่วมแสดงความคิดเห็น";
 pageHeader($title);
-// $email = "anonymous@siamsquare.org";
-// $email = base64_encode($email);
-// $email = base64_decode($email);
 ?>
 
 <?php //if (($description) && ($showdetail == 2)) { ?>
@@ -335,5 +408,7 @@ pageHeader($title);
   header > .header-2 { <?php echo themeBG($showcolour); ?>; }
   footer > .footer-2 { <?php echo themeBG($showcolour); ?>; }
 </style>
+
+<?php } ?>
 
 <?php if ($project || $notes) { pageFooter($project, $notes); } else { pageFooter(); } ?>
