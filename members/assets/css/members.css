@@ -11202,6 +11202,9 @@ span.input-group-addon {
 div.alert, div.alert-pe, div.alert-eng, div.alert-th, div.nav-rd {
   font-size: 1rem; }
 
+.pagination > li > a {
+  margin: 3px; }
+
 .panel-heading h4 {
   margin-bottom: 0px !important;
   padding: 0px auto; }

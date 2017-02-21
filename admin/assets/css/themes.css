@@ -11018,6 +11018,9 @@ label {
   font-family: "boon";
   font-size: 1rem; }
 
+.pagination > li > a {
+  margin: 3px; }
+
 .panel-heading h4 {
   margin-bottom: 0px !important;
   padding: 0px auto; }
