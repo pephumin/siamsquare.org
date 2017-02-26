@@ -11583,4 +11583,45 @@ pre {
     padding: 0.5em;
     font-size: 85%; }
 
+.google-visualization-orgchart-node {
+  font-family: "ubuntu";
+  font-size: 1rem;
+  width: 150px; }
+
+.google-visualization-orgchart-connrow-medium {
+  border-bottom: none; }
+
+.google-visualization-orgchart-table {
+  border-collapse: separate !important; }
+
+.google-visualization-orgchart-linebottom {
+  border-bottom: 3px solid #ddd; }
+
+.google-visualization-orgchart-lineleft {
+  border-left: 3px solid #ddd; }
+
+.google-visualization-orgchart-lineright {
+  border-right: 3px solid #ddd; }
+
+.nodeClass {
+  font-family: "ubuntu";
+  font-size: 1rem;
+  width: 150px;
+  background: #f5f5f5;
+  border: 3px solid #ccc;
+  border-radius: 10px; }
+
+.selectedNodeClass {
+  color: #66512c;
+  background: #fcf8e3;
+  border: 3px solid #faebcc; }
+
+div.progress.progress-inbox {
+  height: 15px; }
+
+div.progress-bar.progress-bar-inbox {
+  font-size: 0.7rem;
+  font-weight: normal;
+  line-height: 10px; }
+
 /*# sourceMappingURL=admin.css.map */

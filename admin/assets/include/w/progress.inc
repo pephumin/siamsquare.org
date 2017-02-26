@@ -1,6 +1,6 @@
 <?php
 
-$c_target = 300;
+// $c_target = 300;
 
 $today['year'] = date("Y"); $today['month'] = date("m"); $today['day'] = date("d");
 if ($today['month'] == "01") { $today['month'] = "12"; $today['year'] = $today['year']-1; } else { $today['month'] = $today['month']-1; }
@@ -10,13 +10,45 @@ $timelinedata = "[ \n"; $colordata = "[ ";
 $q1 = $db->prepare("SELECT * FROM j_projects WHERE id = :surveyid");
 $q1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q1->execute();
+if ($q1->rowCount() == 0) {
+  $title = "An error has been found";
+  pageHeader($title);
+  echo "<h2>We could not find a match for ID for this project</h2>\n";
+  echo "<p>There has been an error locating the project you are looking for. This is caused by two reasons which are either there is a false in our system (which is very unlikely) or you use our system incorrectly.</p>";
+  echo "<p>If you have tried entering the project ID manually, we strongly suggest you should stop doing this. You should instead use the client dashboard which will never lead you to a wrong link or any errors like this at all.</p>";
+  echo mkerror("In fact we typically consider such action as violent.");
+  echo "<p>Our system has already recorded this error including your identity and timestamp.</p>";
+  pageFooter();
+  $q = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " tried accessing a non-existing project', '5')");
+  $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+  $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
+  $q->execute();
+  exit;
+}
 while ($row = $q1->fetchObject()) {
   $project = $row->title;
+  $status = $row->status;
+  $private = $row->private;
   if ($row->userid == $_SESSION['userid']) { $owner = 1; } else { $owner = 0; }
   if ($row->created) { $L0 = date_parse_from_format("Y-m-d H:i:s", $row->created); if ($L0['month'] == "01") { $L0['month'] = "12"; $L0['year'] = $L0['year']-1; } else { $L0['month'] = $L0['month']-1; } $created = ago($row->created); }
-  if ($row->L1) { $L1 = date_parse_from_format("Y-m-d H:i:s", $row->L1); if ($L1['month'] == "01") { $L1['month'] = "12"; $L1['year'] = $L1['year']-1; } else { $L1['month'] = $L1['month']-1; } $LL1 = ago($row->L1); } else { $LL1 = "-"; }
-  if ($row->L2) { $L2 = date_parse_from_format("Y-m-d H:i:s", $row->L2); if ($L2['month'] == "01") { $L2['month'] = "12"; $L2['year'] = $L2['year']-1; } else { $L2['month'] = $L2['month']-1; } $LL2 = ago($row->L2); } else { $LL2 = "-"; }
-  if ($row->L3) { $L3 = date_parse_from_format("Y-m-d H:i:s", $row->L3); if ($L3['month'] == "01") { $L3['month'] = "12"; $L3['year'] = $L3['year']-1; } else { $L3['month'] = $L3['month']-1; } $LL3 = ago($row->L3); } else { $LL3 = "-"; }
+  if ($row->L1) {
+    $L1 = date_parse_from_format("Y-m-d H:i:s", $row->L1);
+    if ($L1['month'] == "01") { $L1['month'] = "12"; $L1['year'] = $L1['year']-1; } else { $L1['month'] = $L1['month']-1; }
+    $LL1 = ago($row->L1);
+    $LLL1 = $row->L1;
+  } else { $LL1 = "-"; }
+  if ($row->L2) {
+    $L2 = date_parse_from_format("Y-m-d H:i:s", $row->L2);
+    if ($L2['month'] == "01") { $L2['month'] = "12"; $L2['year'] = $L2['year']-1; } else { $L2['month'] = $L2['month']-1; }
+    $LL2 = ago($row->L2);
+    $LLL2 = $row->L2;
+  } else { $LL2 = "-"; }
+  if ($row->L3) {
+    $L3 = date_parse_from_format("Y-m-d H:i:s", $row->L3);
+    if ($L3['month'] == "01") { $L3['month'] = "12"; $L3['year'] = $L3['year']-1; } else { $L3['month'] = $L3['month']-1; }
+    $LL3 = ago($row->L3);
+    $LLL3 = $row->L3;
+  } else { $LL3 = "-"; }
   if ($row->status == 1) {
     $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
   } else if ($row->status == 2) {
@@ -34,95 +66,178 @@ while ($row = $q1->fetchObject()) {
   }
 }
 $timelinedata .= " ]";
+if ($_SESSION['level'] != "9") {
+  if ($status < 1 || $status > 3) {
+    $title = "An error has been found";
+    pageHeader($title);
+    echo "<h2>This project is no longer editable</h2>\n";
+    echo "<p>You only can make change on this with projects that have not started the data-collection. This prevents having any unexpected errors at the analysis stage such as a conflict based on a mismatch information between pre and post data-collection.</p>";
+    echo "<p>If you have tried entering the project ID manually, we strongly suggest you should stop doing this. You should instead use the client dashboard which will never lead you to a wrong link or any errors like this at all.</p>";
+    echo mkerror("In fact we typically consider such action as violent.");
+    echo "<p>Our system has already recorded this error including your identity and timestamp.</p>";
+    pageFooter();
+    $q = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " tried editing a non-editable project', '5')");
+    $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+    $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
+    $q->execute();
+    exit;
+  }
+}
 
-// Get counts
-$q2A = $db->prepare("SELECT COUNT(created) AS created, COUNT(invited1) AS invited1, COUNT(invited2) AS invited2, COUNT(viewed) AS viewed, COUNT(completed) AS completed FROM j_respondents WHERE surveyid = :surveyid ");
+$title = "Job monitoring";
+pageHeader($title);
+echo "<h2>$title</h2>";
+echo "<p>This page gives a real time update on the project especially on the progress of data collection.</p>";
+echo "<p>Ideally one would want to have the progress reaching to 100%, however it is also acceptable that a decision to stop before the full scale is shown especially when a business decision has to be made sooner rather than later.</p>";
+echo "<p>The target set in this page is either an estimation of industry average or an indication has been agreed prior to starting the data collection.</p>";
+echo "<hr>\n";
+echo "<h3>Project $project</h3>\n";
+
+// Data for area chart
+
+
+$q2C = $db->prepare("SELECT SSDATE, SUM(SSCOUNT1) as SSCOUNT1, SUM(SSCOUNT2) as SSCOUNT2 FROM ((SELECT COUNT(*) AS SSCOUNT1, NULL AS SSCOUNT2, DATE(submitted) as SSDATE FROM j_results WHERE surveyid = :surveyid AND status = 2 GROUP BY DATE(submitted)) UNION ALL (SELECT NULL AS SSCOUNT1, SUM(IF(invitation IS NOT NULL AND participation IS NOT NULL, 1, 0)) AS SSCOUNT2, DATE(participation) as SSDATE FROM j_respondents WHERE surveyid = :surveyid GROUP BY DATE(participation))) t GROUP BY SSDATE");
+//$q2C = $db->prepare("SELECT COUNT(*) AS SSCOUNT, DATE(submitted) as SSDATE FROM j_results WHERE surveyid = :surveyid AND status = 2 GROUP BY DATE(submitted) ");
+$q2C->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q2C->execute();
+$area = "[\n";
+$areacount = 0;
+while ($row = $q2C->fetchObject()) {
+  $SSDATE = $row->SSDATE;
+  $SSDATE = explode("-", $row->SSDATE);
+  $month = fullmonth($SSDATE[1], "short");
+  $NEWSSDATE = $SSDATE[2]." ".$month;
+  $SSCOUNT1 += $row->SSCOUNT1;
+  $SSCOUNT2 += $row->SSCOUNT2;
+  // $area .= "        [\"".$NEWSSDATE."\", ".$SSCOUNT1.", ".$SSCOUNT1."], \n";
+  if ($private == 1) { $area .= "        [\"".$NEWSSDATE."\", ".$SSCOUNT2.", ".$SSCOUNT1."], \n"; }
+  else { $area .= "        [\"".$NEWSSDATE."\", ".$SSCOUNT1."], \n"; }
+  $areacount++;
+}
+$area .= "      ]";
+
+// Data for fieldwork summary boxes
+$b = date_parse_from_format("Y-m-d H:i:s", $LLL1);
+$bc = $b['year']."-".$b['month']."-".$b['day'];
+$begindate = $b['day']." ".fullmonth($b['month'], "short");
+$from = strtotime($bc);
+$today = time();
+$difference = $today - $from;
+$daysoffieldwork = floor($difference / 86400);
+echo "<h4>Summary of current project status</h4>\n";
+echo "<div class=\"row\">\n";
+// echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
+// echo "    <div class=\"progresswrap\" style=\"width:85%; margin: 0 auto\">\n";
+// echo "     <span><strong>Achievement compared with the target</strong></span>\n";
+// echo "     <div class=\"progress\" style=\"height:30px;\">\n";
+// echo "      <div class=\"progress-bar progress-bar-warning progress-bar-striped active\" role=\"progressbar\" aria-valuenow=\"85\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width:2em; width:85%\"></div>\n";
+// echo "      <span class=\"progress-value\" style=\"float:right\">85%</span>\n";
+// echo "    </div><br>\n";
+// echo "  </div>\n";
+echo "  <div class=\"col-xs-12 col-sm-3 col-md-3 col-lg-3\">\n";
+echo "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork (since $begindate)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork days</strong></h4></div>\n";
+echo "    <br>\n";
+echo "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Sample achieved</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$SSCOUNT1</strong></h4></div>\n";
+echo "  </div>\n";
+echo "  <div class=\"col-xs-12 col-sm-9 col-md-9 col-lg-9 overlay-area\">\n";
+echo "    <div style=\"width:100%; height:100%\"><center><div id=\"areachart\"></div></center></div>\n";
+if ($SSCOUNT1 >= 200) { echo "    <div class=\"overlay-marker\"><img src=\"assets/img/marker-green.svg\" title=\"A total sample size achieved so far\" alt=\"A total sample size achieved so far\" width=\"30\"></div>\n"; }
+else if ($SSCOUNT1 >= 80 && $SSCOUNT1 < 200) { echo "    <div class=\"overlay-marker\"><img src=\"assets/img/marker-yellow.svg\" title=\"A total sample size achieved so far\" alt=\"A total sample size achieved so far\" width=\"30\"></div>\n"; }
+else { echo "    <div class=\"overlay-marker\"><img src=\"assets/img/marker-red.svg\" title=\"A total sample size achieved so far\" alt=\"A total sample size achieved so far\" width=\"30\"></div>\n"; }
+echo "  </div>\n";
+echo "</div>\n";
+echo "<br>\n";
+echo "<style>\n";
+echo "  .overlay-area { position: relative; }\n";
+// echo "  .overlay-marker { position: absolute; top: 53px; left: 528px; }\n";
+echo "  .overlay-marker { position: absolute; }\n";
+echo "</style>\n";
+
+// Get stats
+$q2A = $db->prepare("SELECT COUNT(*) as q2A1, SUM(status = '0') AS q2A2, SUM(IF(invitation IS NOT NULL, 1, 0)) AS q2A3, SUM(IF(invitation IS NULL, 1, 0)) AS q2A4, SUM(IF(invitation IS NOT NULL AND participation IS NOT NULL, 1, 0)) AS q2A5, SUM(IF(invitation IS NOT NULL AND participation IS NULL, 1, 0)) AS q2A6 FROM j_respondents WHERE surveyid = :surveyid");
 $q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2A->execute();
 while ($row = $q2A->fetchObject()) {
-  $row->invited1 = 520;
-  $row->invited2 = 450;
-  $c_created = $row->created; $created = number_format($c_created);
-  $c_invited1 = $row->invited1; $invited1 = number_format($c_invited1);
-  $c_invited2 = $row->invited2; $invited2 = number_format($c_invited2);
-  $c_invited_all = $c_invited1 + $c_invited2; $invited_all = number_format($c_invited_all);
-  if ($c_invited1) {
-    $p_invited1 = percent($c_invited1 / $c_created);
-    $p_invited1C = percent($c_invited1 / $c_invited_all);
-  }
-  else {
-    $c_invited1 = 0; $p_invited1 = 0;
-  }
-  if ($c_invited2) {
-    $p_invited2A = percent($c_invited2 / $c_created);
-    $p_invited2B = percent($c_invited2 / $c_invited1);
-    $p_invited2C = percent($c_invited2 / $c_invited_all);
-  }
-  else {
-    $c_invited2 = 0; $p_invited2A = 0; $p_invited2B = 0;
-  }
-  if ($c_invited_all) { $p_invited_all = percent($c_invited_all / $c_created); } else { $c_invited_all = 0; $p_invited_all = 0; }
-  $c_viewed = $row->viewed;
-  $c_completed = $row->completed;
+  $invited = $row->q2A3;
+  $notinvited = $row->q2A4;
+  $participated = $row->q2A5;
+  $notparticipated = $row->q2A6;
 }
-$q2B = $db->prepare("SELECT SUM(IF(status = :S1, 1, 0)) AS S1, SUM(IF(status = :S2, 1, 0)) AS S2, SUM(IF(status = :S3, 1, 0)) AS S3 FROM j_results WHERE surveyid = :surveyid ");
+if ($invited == 0) { $participated = 0; $notparticipated = 0; }
+$invited_format = number_format($invited);
+$notinvited_format = number_format($notinvited);
+$participated_format = number_format($participated);
+$notparticipated_format = number_format($notparticipated);
+$invited_bar = "<div class=\"progress progress-inbox\"><div class=\"progress-bar progress-bar-inbox progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"100%\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width:2em; width:100%\">100%</div></div>";
+$invited_percent = percent($invited / $invited);
+if ($invited) { $invited_bar = "<div class=\"progress progress-inbox\"><div class=\"progress-bar progress-bar-inbox progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$invited_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width:2em; width:$invited_percent\">$invited_percent</div></div>"; } else { $invited_bar = "<div class=\"progress progress-inbox\"></div>"; }
+$notinvited_percent = percent($notinvited / $invited);
+if ($notinvited) { $notinvited_bar = "<div class=\"progress progress-inbox\"><div class=\"progress-bar progress-bar-inbox progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$notinvited_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width:2em; width:$notinvited_percent\">$notinvited_percent</div></div>"; } else { $notinvited_bar = "<div class=\"progress progress-inbox\"></div>"; }
+$participated_percent = percent($participated / $invited);
+if ($participated) { $participated_bar = "<div class=\"progress progress-inbox\"><div class=\"progress-bar progress-bar-inbox progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$participated_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width:2em; width:$participated_percent\">$participated_percent</div></div>"; } else { $participated_bar = "<div class=\"progress progress-inbox\"></div>"; }
+$notparticipated_percent = percent($notparticipated / $invited);
+if ($notparticipated) { $notparticipated_bar = "<div class=\"progress progress-inbox\"><div class=\"progress-bar progress-bar-inbox progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$notparticipated_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width:2em; width:$notparticipated_percent\">$notparticipated_percent</div></div>"; } else { $notparticipated_bar = "<div class=\"progress progress-inbox\"></div>"; }
+$strikerate = number_format(($participated / $invited) * 100, 1);
+// Get stats
+$q2B = $db->prepare("SELECT SUM(status = :S1) AS q2B1, SUM(status = :S2) AS q2B2, SUM(status = :S3) AS q2B3 FROM j_results WHERE surveyid = :surveyid ");
 $q2B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2B->bindValue(':S1', '2', PDO::PARAM_INT);
 $q2B->bindValue(':S2', '1', PDO::PARAM_INT);
 $q2B->bindValue(':S3', '0', PDO::PARAM_INT);
 $q2B->execute();
 while ($row = $q2B->fetchObject()) {
-  $c_responses_good = $row->S1;
-  $c_responses_tested = $row->S2;
-  $c_responses_deleted = $row->S3;
-  $c_responses_total = $c_responses_good + $c_responses_tested + $c_responses_deleted;
+  $rgood = $row->q2B1;
+  $rtested = $row->q2B2;
+  $rdeleted = $row->q2B3;
+  $valid = $rgood;
+  $invalid = $rtested + $deleted;
 }
-$p_responses_total = percent($c_responses_total / $c_target);
-$p_targetA = percent($c_target / $c_created);
-$p_targetB = percent($c_target / $c_invited_all);
+$valid_format = number_format($valid);
+$invalid_format = number_format($invalid);
+$completion_format = number_format($completion);
+$valid_percent = percent($valid / $invited);
+if ($valid) { $valid_bar = "<div class=\"progress progress-inbox\"><div class=\"progress-bar progress-bar-inbox progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$valid_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width:2em; width:$valid_percent\">$valid_percent</div></div>"; } else { $valid_bar = "<div class=\"progress progress-inbox\"></div>"; }
+$invalid_percent = percent($invalid / $invited);
+if ($invalid) { $invalid_bar = "<div class=\"progress progress-inbox\"><div class=\"progress-bar progress-bar-inbox progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$invalid_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width:2em; width:$invalid_percent\">$invalid_percent</div></div>"; } else { $invalid_bar = "<div class=\"progress progress-inbox\"></div>"; }
+$successrate = number_format(($valid / $participated) * 100, 1);
 
-$stat = "<table class=\"table table-hover small\">\n";
-$stat .= "  <thead>\n";
-$stat .= "    <tr class=\"bg-primary\">\n";
-$stat .= "      <th width=\"25%\"><i class=\"pe-dashboard pe-fw\"></i> Details</th>\n";
-$stat .= "      <th width=\"15%\" style=\"text-align:center\"><i class=\"pe-braille pe-fw\"></i> Count</th>\n";
-$stat .= "      <th width=\"60%\"><i class=\"pe-percent pe-fw\"></i> Percentage</th>\n";
-$stat .= "    </tr>\n";
-$stat .= "  </thead>\n";
-$stat .= "  <tbody>\n";
-$stat .= "    <tr>\n";
-$stat .= "      <td>Universe</td>\n";
-$stat .= "      <td align=\"center\">$c_created</td>\n";
-$stat .= "      <td>Total target (Public) or Total name list (Private)</td>\n";
-$stat .= "    </tr>\n";
-$stat .= "    <tr class=\"bg-warning\">\n";
-$stat .= "      <td><small>First invitation</small></td>\n";
-$stat .= "      <td align=\"center\"><small>$invited1</small></td>\n";
-if ($p_invited1) { $stat .= "      <td><small>$p_invited1 of Universe</small></td>\n"; } else { $stat .= "      <td></td>\n"; }
-$stat .= "    </tr>\n";
-$stat .= "    <tr class=\"bg-warning\">\n";
-$stat .= "      <td><small>Reminder</small></td>\n";
-$stat .= "      <td align=\"center\"><small>$invited2</small></td>\n";
-if ($p_invited2A) { $stat .= "      <td><small>$p_invited2A of Universe ($p_invited2B of first invites)</small></td>\n"; } else { $stat .= "      <td></td>\n"; }
-$stat .= "    </tr>\n";
-$stat .= "    <tr class=\"bg-warning\">\n";
-$stat .= "      <td>Total invitation</td>\n";
-$stat .= "      <td align=\"center\">$invited_all</td>\n";
-if ($p_invited_all) { $stat .= "      <td>$p_invited_all of Universe ($p_invited1C first invites vs. $p_invited2C reminders)</td>\n"; } else { $stat .= "      <td></td>\n"; }
-$stat .= "    </tr>\n";
-$stat .= "    <tr>\n";
-$stat .= "      <td><strong>Target sample size</strong></td>\n";
-$stat .= "      <td align=\"center\"><strong>$c_target</strong></td>\n";
-if ($c_target) { $stat .= "      <td><strong>$p_targetB of all invites</strong> ($p_targetA of Universe)</td>\n"; } else { $stat .= "      <td></td>\n"; }
-$stat .= "    </tr>\n";
-$stat .= "    <tr>\n";
-$stat .= "      <td>Participation to date</td>\n";
-$stat .= "      <td align=\"center\">$c_responses_total</td>\n";
-$stat .= "      <td>$p_responses_total (of all invites)</td>\n";
-$stat .= "    </tr>\n";
+// Contact sheet for Private project
+if ($private == 1) {
+  echo "<h4>Contact sheet (private project only)</h4>\n";
+  if ($invited == 0) {
+    echo "<p>This project currently has <strong>no respondent</strong> stored in the database.</p>\n";
+    echo "<p>Please upload respondent's emails using a Comma Separated Value (CSV) file and our system will enable the email function allowing you to send invitation / reminder to respondents accordingly.</p>\n";
+    echo "<div id=\"gauge1\" style=\"display:none\"></div><div id=\"gauge2\" style=\"display:none\"></div><div id=\"orgchart\" style=\"display:none\"></div>\n";
+    echo "<p></p>\n";
+  } else {
+    if ($participated == 0) {
+      $text .= "<p>From <strong>$invited_format invitations</strong>, <strong>none of them</strong> has been participatd so far</p>\n";
+      $text .= "<p>This means both strike rate <em>(participation vs. invitation)</em> and success rate <em>(valid vs. participation)</em> are <strong>zero</strong>.</p>\n";
+    }
+    else {
+      if ($valid == 0) {
+        $text .= "<p>Although there are <strong>$participated_format respondents</strong> from <strong>$invited_format invitations</strong> who have participated, <strong>none of them</strong> seems to be valid.</p>\n";
+        $text .= "<p>This results to a strike rate <em>(participation vs. invitation)</em> of <strong>$strikerate%</strong>, while a success rate <em>(valid vs. participation)</em> remains <strong>zero</strong>.</p>\n";
+      } else {
+        $text .= "<p>From <strong>$invited_format invitations</strong>, <strong>$participated_format respondents</strong> have participated and <strong>$valid_format respondents</strong> are valid.</p>\n";
+        $text .= "<p>This results to <strong>$strikerate%</strong> strike rate <em>(participation vs. invitation)</em> and <strong>$successrate%</strong> success rate <em>(valid vs. participation)</em>.</p>\n";
+      }
+    }
+    $text .= "<div class=\"row\"><div class=\"col-xs-6\"><div id=\"gauge1\"></div></div><div class=\"col-xs-6\"><div id=\"gauge2\"></div></div></div>\n";
+    echo "<div class=\"row\">\n";
+    echo "  <div class=\"col-xs-12 col-sm-8 col-md-8 col-lg-8\">\n";
+    echo "    <div id=\"orgchart\"></div>\n";
+    echo "  </div>\n";
+    echo "  <div class=\"col-xs-12 col-sm-4 col-md-4 col-lg-4\">\n";
+    echo "    $text\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+    echo "<br>\n";
+  }
+} else { echo "<div id=\"gauge1\" style=\"display:none\"></div><div id=\"gauge2\" style=\"display:none\"></div><div id=\"orgchart\" style=\"display:none\"></div>\n"; }
 
-if ($c_responses_good > 0) {
-  $p_responses_good = percent($c_responses_good / $c_responses_total);
+
+if ($valid > 0) {
   $sql3 = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 2 ORDER BY submitted DESC";
   $q = $db->prepare($sql3);
   $q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
@@ -136,156 +251,28 @@ if ($c_responses_good > 0) {
         unset($ee[$i][$key]);
       }
       $ee[$i]['data'] = json_decode($ee[$i]['data'], true);
-      // $ee[$i]['submitted'] = ago($ee[$i]['submitted']);
       $ee[$i]['submitted'] = $ee[$i]['submitted'];
     }
-    $first_id = $row[$first]['id'];
-    $first_email = $row[$first]['email'];
-    $first_ip = $row[$first]['ip'];
-    $t1 = date_parse_from_format("Y-m-d H:i:s", $row[$first]['submitted']);
-    if ($t1['month'] == "01") { $t1['month'] = "12"; $t1['year'] = $t1['year']-1; } else { $t1['month'] = $t1['month']-1; }
-    $first_submitted = ago($row[$first]['submitted']);
-    $last_id = $row[$last]['id'];
-    $last_email = $row[$last]['email'];
-    $last_ip = $row[$last]['ip'];
-    $t2 = date_parse_from_format("Y-m-d H:i:s", $row[$last]['submitted']);
-    if ($t2['month'] == "01") { $t2['month'] = "12"; $t2['year'] = $t2['year']-1; } else { $t2['month'] = $t2['month']-1; }
-    $last_submitted = ago($row[$last]['submitted']);
   }
   $datafortable = json_encode($ee);
-  if ($c_responses_good == 1) {
-    $stat .= "    <tr class=\"bg-success\">\n";
-    $stat .= "      <td style=\"font-size:120%\">Valid completions</td>\n";
-    $stat .= "      <td style=\"font-size:120%\" align=\"center\">$c_responses_good</td>\n";
-    $stat .= "      <td>$p_responses_good (of all participations)</td>\n";
-    $stat .= "    </tr>\n";
-    $stat .= "    <tr>\n";
-    $stat .= "      <td class=\"grey\">First response</td>\n";
-    $stat .= "      <td class=\"grey\" colspan=\"2\">$first_submitted by $first_email <small>(from $first_ip)</small></td>\n";
-    $stat .= "    </tr>\n";
-    $stat .= "    <tr>\n";
-    $stat .= "      <td class=\"grey\">Latest response</td>\n";
-    $stat .= "      <td class=\"grey\" colspan=\"2\"><em>NONE</em></td>\n";
-    $stat .= "    </tr>\n";
-  } else {
-    $stat .= "    <tr class=\"bg-success\">\n";
-    $stat .= "      <td style=\"font-size:120%\">Valid completions</td>\n";
-    $stat .= "      <td style=\"font-size:120%\" align=\"center\">$c_responses_good</td>\n";
-    $stat .= "      <td>$p_responses_good (of all participations)</td>\n";
-    $stat .= "    </tr>\n";
-    $stat .= "    <tr>\n";
-    $stat .= "      <td class=\"grey\">First response</td>\n";
-    $stat .= "      <td class=\"grey\" colspan=\"2\">$first_submitted by <u>$first_email</u> <small>(from $first_ip)</small></td>\n";
-    $stat .= "    </tr>\n";
-    $stat .= "    <tr>\n";
-    $stat .= "      <td class=\"grey\">Latest response</td>\n";
-    $stat .= "      <td class=\"grey\" colspan=\"2\">$last_submitted by <u>$last_email</u> <small>(from $last_ip)</small></td>\n";
-    $stat .= "    </tr>\n";
-  }
-} else {
-  $stat .= "    <tr class=\"bg-success\">\n";
-  $stat .= "      <td style=\"font-size:120%\">Valid completions</td>\n";
-  $stat .= "      <td style=\"font-size:120%\" align=\"center\"><em>NONE</em></td>\n";
-  $stat .= "      <td><em>NONE</em></td>\n";
-  $stat .= "    </tr>\n";
-  $stat .= "    <tr>\n";
-  $stat .= "      <td class=\"grey\">First response</td>\n";
-  $stat .= "      <td class=\"grey\" colspan=\"2\"><em>NONE</em></td>\n";
-  $stat .= "    </tr>\n";
-  $stat .= "    <tr>\n";
-  $stat .= "      <td class=\"grey\">Latest response</td>\n";
-  $stat .= "      <td class=\"grey\" colspan=\"2\"><em>NONE</em></td>\n";
-  $stat .= "    </tr>\n";
+  echo "<h4>Interim data</h4>\n";
+  echo "<div class=\"alert alert-warning\" role=\"alert\">\n";
+  echo "  <h4>Important note</h4>\n";
+  echo "  <p>This data should only be used as a sanitary check rather than using it as result for analysis. Interim data is not a true reflection of the final result and the final result can very different from the interim data depending on several factors such as the sample size, sample composition, etc.</p>\n";
+  echo "  <p><strong>It is imperative that business decision must not be made based on the interim result</strong>. We hereby take no responsibility on any damages to the business caused by the usage of interim result. You must use it at your own risk.</p>\n";
+  echo "</div>\n";
+  echo "<div id=\"showalert-delete\"></div>\n";
+  echo "<div class=\"csv\">\n";
+  // echo "  <h4>Showing data ordered by the most recent response (total of <span class=\"rows count\"></span> records)</h4>\n";
+  echo "  <p>Table below shows the interim data ordered by the most recent response (total of <span class=\"rows count\"></span> records).</p>\n";
+  echo "  <p>In order to view all responses, you would need to either <a download=\"result.csv\" class=\"download\"><i class=\"pe-download pe-fw\"></i> download the data file</a> or <a class=\"raw\"><i class=\"pe-desktop pe-fw\"></i> view the data file online</a>.</p>\n";
+  echo "  <textarea class=\"editing form-control\" readonly></textarea>\n";
+  echo "  <div class=\"table rendered\"><table class=\"table\"></table></div>\n";
+  echo "  <span class=\"tablenotice\">You may need to scroll right if there are many columns <i class=\"pe-hand-o-right\"></i></span>\n";
+  echo "</div>\n";
 }
-$stat .= "  </tbody>\n";
-$stat .= "</table>\n";
 
-$achievement = ($c_responses_good / $c_target)*100;
-
-$title = "Job monitoring";
-pageHeader($title);
-echo "<h2>$title</h2>";
-echo "<p>This page gives a real time update on the project especially on the progress of data collection.</p>";
-echo "<p>Ideally one would want to have the progress reaching to 100%, however it is also acceptable that a decision to stop before the full scale is shown especially when a business decision has to be made sooner rather than later.</p>";
-echo "<p>The target set in this page is either an estimation of industry average or an indication has been agreed prior to starting the data collection.</p>";
-echo "<hr>\n";
-echo "<h3>Project $project</h3>\n";
-// echo "<pre>$datafortable</pre>";
 ?>
-
-<h4>Progress summary</h4>
-
-<div class="row">
-  <div align="center" class="col-sm-3">
-    <h4>Universe</h4>
-    <p><?php echo $created; ?></p>
-    <p>Total target (Public) or Total name list (Private)</p>
-  </div>
-  <div align="center" class="col-sm-1"><i class="pe-arrow-right pe-2x"></i></div>
-  <div align="center" class="col-sm-3">
-    <h4>Invitation</h4>
-    <p><?php echo $invited1; ?></p>
-    <p><small><?php echo $p_invited1; ?> of Universe</small></p>
-    <table class="table table-condensed table-hover small">
-      <thead>
-        <tr class="bg-primary">
-          <th width="65%">Type</th>
-          <th width="35%">Details</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Invitation</td>
-          <td><?php echo $invited1; ?></td>
-        </tr>
-        <tr>
-          <td>Reminder</td>
-          <td><?php echo $invited2; ?></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <div align="center" class="col-sm-1"><i class="pe-arrow-right pe-2x"></i></div>
-  <div align="center" class="col-sm-3">
-    <h4>Participation</h4>
-    <p><?php echo $c_responses_good; ?></p>
-    <p><small><?php echo $p_invited_all; ?> of Universe<br><?php echo $p_invited_all; ?> of all invites</small></p>
-  </div>
-</div>
-
-<br>
-
-<div class="row">
-  <div class="col-sm-9">
-    <?php echo $stat; ?>
-  </div>
-  <div class="col-sm-3" align="center">
-    <div id="gaugechart"></div>
-  </div>
-</div>
-
-<h4>Actual timeline</h4>
-<div id="timeline"></div>
-
-<!-- <h4>For syndicate and tracking study</h4> -->
-<!-- <div id="calendar"></div> -->
-<hr>
-
-<h3>Interim data</h3>
-<p>The interim result must be used with cautions because it is not necesary a true reflection of the final result. The final result could possibly end up in a totally different direction (depending on the sample size and other factors).</p>
-<p>Therefore, it is imperative that business decision must not be made based on the interim result. We strongly suggest using the final result for a better decision since the data would have been verified to ensure the highest integrity.</p>
-<p>We hereby take no responsibility on any damages happened from the usage of interim result. You must use it at your own risk.</p>
-
-<div id="showalert-delete"></div>
-
-<div class="csv">
-  <h4>Showing data ordered by the most recent response (total of <span class="rows count"></span> records)</h4>
-  <p>In order to view all responses, you would need to either <a download="result.csv" href="" class="download"><i class="pe-download pe-fw"></i> download the data file</a> or <a href="" class="raw"><i class="pe-desktop pe-fw"></i> view the data file online</a>.</p>
-  <textarea class="editing form-control" readonly></textarea>
-  <div class="table rendered"><table class="table"></table></div>
-  <span class="tablenotice">You may need to scroll right if there are many columns <i class="pe-hand-o-right"></i></span>
-</div>
-
 
 <script type="text/javascript">
 
@@ -358,7 +345,7 @@ echo "<h3>Project $project</h3>\n";
     var header = rows[0];
       for (field in header) {
         var th = document.createElement("th");
-        $(th).html(header[field]).addClass("bg-primary");
+        $(th).html(header[field]).addClass("bg-primary small");
         tr.appendChild(th);
       }
     thead.appendChild(tr);
@@ -378,7 +365,7 @@ echo "<h3>Project $project</h3>\n";
       var tr2 = document.createElement("tr"); tr2.setAttribute('id', 'row' + i); tr2.setAttribute('style', 'display:none');
       for (field in rows[i]) {
         var td = document.createElement("td");
-        $(td).html(rows[i][field]);
+        $(td).html(rows[i][field]).addClass("small");
         // if (td.contains("upload")) { alert("String Found"); }
         tr.appendChild(td);
         $(tr).find('td:first-child').append(a1).append(a2);
@@ -404,8 +391,8 @@ echo "<h3>Project $project</h3>\n";
 
   $(document).ready(function () {
     var excerptRows = 50;
-    var tt = <?php echo $datafortable; ?>;
-    var ttt = <?php echo $datafortable; ?>;
+    <?php if ($valid == 0) { echo "var tt = [];"; } else { echo "var tt = $datafortable;"; } ?>
+    <?php if ($valid == 0) { echo "var ttt = [];"; } else { echo "var ttt = $datafortable;"; } ?>
     for(var k in tt) {
       var o = tt[k];
       moment.locale('en');
@@ -445,83 +432,87 @@ echo "<h3>Project $project</h3>\n";
     $(".csv textarea").click(function() {$(this).focus().select();});
   });
 
-  google.charts.load('current', {'packages': ['calendar', 'timeline', 'gauge'] });
-  // google.charts.setOnLoadCallback(drawCalendarChart);
-  google.charts.setOnLoadCallback(drawTimelineChart);
-  google.charts.setOnLoadCallback(drawGaugeChart);
+  google.charts.load('current', {'packages': ['corechart', 'orgchart', 'gauge'] });
+  google.charts.setOnLoadCallback(drawOrgChart);
+  google.charts.setOnLoadCallback(drawGaugeChart1);
+  google.charts.setOnLoadCallback(drawGaugeChart2);
+  google.charts.setOnLoadCallback(drawAreaChart);
 
-  function drawCalendarChart() {
+  function drawOrgChart() {
+    var chart = new google.visualization.OrgChart(document.getElementById('orgchart'));
     var dataTable = new google.visualization.DataTable();
-      dataTable.addColumn({ type: 'date', id: 'Date' });
-      dataTable.addColumn({ type: 'number', id: 'Respondents who have completed the survey' });
-      dataTable.addRows([
-        [ new Date(2017, 1, 13), 1 ],
-        [ new Date(2017, 1, 14), 24 ],
-        [ new Date(2017, 1, 15), 25 ],
-        [ new Date(2017, 1, 16), 28 ],
-        [ new Date(2017, 1, 17), 38 ],
-        [ new Date(2017, 1, 19), 73 ],
-        [ new Date(2017, 1, 20), 87 ],
-        [ new Date(2017, 1, 21), 113 ],
-        [ new Date(2017, 1, 22), 129 ],
-        [ new Date(2017, 1, 23), 133 ],
-        [ new Date(2017, 1, 24), 145 ],
-        [ new Date(2017, 1, 25), 166 ],
-        [ new Date(2017, 1, 26), 172 ],
-        [ new Date(2017, 1, 27), 185 ],
-        [ new Date(2017, 1, 28), 196 ],
-        [ new Date(2017, 1, 29), 204 ],
+    dataTable.addColumn('string', 'Status');
+    dataTable.addColumn('string', 'Sample');
+    dataTable.addColumn('string', 'ToolTip');
+    dataTable.addRows([
+      <?php echo "[{ v:'Invited', f:'<div class=\"small\">Invited</div><div style=\"font-size:1.5rem\">n=".$invited_format."</div>$invited_bar' }, '', 'Those who have been invited' ],\n"; ?>
+      <?php echo "[{ v:'Participated', f:'<div class=\"small\">Participated</div><div style=\"font-size:1.5rem\">n=".$participated_format."</div>$participated_bar' }, 'Invited', 'Those who have participated in this project' ],\n"; ?>
+      <?php echo "[{ v:'Not participated', f:'<div class=\"small\">Not participated</div><div style=\"font-size:1.5rem\">n=".$notparticipated_format."</div>$notparticipated_bar' }, 'Invited', 'Those who have not participated in this study' ],\n"; ?>
+      <?php echo "[{ v:'Valid', f:'<div class=\"small\">Valid</div><div style=\"font-size:1.5rem\">n=".$valid_format."</div>$valid_bar' }, 'Participated', 'Those who have completed and results are valid' ],\n"; ?>
+      <?php echo "[{ v:'Invalid', f:'<div class=\"small\">Invalid</div><div style=\"font-size:1.5rem\">n=".$invalid_format."</div>$invalid_bar' }, 'Participated', 'Those who have completed but results are invalid' ],\n"; ?>
     ]);
-    var chart = new google.visualization.Calendar(document.getElementById('calendar'));
-    var options = {
-      height: 350,
-      calendar: {
-        cellSize: 15,
-        focusedCellColor: { stroke: '#d3362d', strokeOpacity: 1, strokeWidth: 1 },
-        dayOfWeekLabel: { fontName: 'Times-Roman', fontSize: 12, color: '#1a8763', bold: true, italic: true },
-        dayOfWeekRightSpace: 10,
-        monthLabel: { fontName: 'roboto', fontSize: 11, bold: true, italic: true },
-        monthOutlineColor: { stroke: '#981b48', strokeOpacity: 0.8, strokeWidth: 2 },
-        underYearSpace: 20,
-        yearLabel: { fontName: 'roboto', fontSize: 32, color: '#1A8763', bold: true, italic: true }
-      }
-    };
+    dataTable.setRowProperty(3, 'style', 'background: #d9edf7; border: 3px solid #31708f');
+    var options = { allowHtml: true, nodeClass: "nodeClass", selectedNodeClass: "selectedNodeClass", size: "large" };
     chart.draw(dataTable, options);
   }
 
-  function drawTimelineChart() {
-    var container = document.getElementById('timeline');
-    var chart = new google.visualization.Timeline(container);
+  function drawGaugeChart1() {
+    var chart = new google.visualization.Gauge(document.getElementById('gauge1'));
     var dataTable = new google.visualization.DataTable();
-    dataTable.addColumn({ type: 'string', id: 'Project' });
-    dataTable.addColumn({ type: 'string', id: 'Status' });
-    dataTable.addColumn({ type: 'date', id: 'Start' });
-    dataTable.addColumn({ type: 'date', id: 'End' });
-    dataTable.addRows(<?php echo $timelinedata; ?>);
-    var options = {
-      // height: <?php echo $height; ?>,
-      colors: [ '#B3FFB3', '#00E600', '#009900', '#AAAAAA' ],
-      backgroundColor: { fill: 'transparent' },
-      avoidOverlappingGridLines: false,
-      timeline: {
-        groupByRowLabel: false,
-        colorByRow: true,
-        showRowLabels: true,
-      }
-    };
+    dataTable.addColumn('number', 'Strike rate');
+    dataTable.addRows(1);
+    dataTable.setCell(0, 0, <?php echo $strikerate; ?>);
+    var options = { width: 120, height: 400, redFrom: 0, redTo: 10, yellowFrom:10, yellowTo: 30, greenFrom:30, greenTo: 100, minorTicks: 5 };
     chart.draw(dataTable, options);
   }
 
-  function drawGaugeChart() {
-    var container = document.getElementById('gaugechart');
-    var chart = new google.visualization.Gauge(container);
+  function drawGaugeChart2() {
+    var chart = new google.visualization.Gauge(document.getElementById('gauge2'));
     var dataTable = new google.visualization.DataTable();
-    dataTable.addColumn('number', '% Strike rate');
-    dataTable.addColumn('number', '% Achievement');
-    dataTable.addRows(2);
-    dataTable.setCell(0, 0, 120);
-    dataTable.setCell(0, 1, <?php echo $achievement; ?>);
-    var options = { width: 150, height: 400, redFrom: 0, redTo: 10, yellowFrom:10, yellowTo: 30, greenFrom:30, greenTo: 100, minorTicks: 5 };
+    dataTable.addColumn('number', 'Success rate');
+    dataTable.addRows(1);
+    dataTable.setCell(0, 0, <?php echo $successrate; ?>);
+    var options = { width: 120, height: 400, redFrom: 0, redTo: 10, yellowFrom:10, yellowTo: 30, greenFrom:30, greenTo: 100, minorTicks: 5 };
+    chart.draw(dataTable, options);
+  }
+
+  function drawAreaChart() {
+    var container = document.getElementById('areachart');
+    var chart = new google.visualization.AreaChart(container);
+    var dataTable = new google.visualization.DataTable();
+      dataTable.addColumn('string', 'Date');
+<?php if ($private == 1) { echo "      dataTable.addColumn('number', 'Participation');"; } ?>
+      dataTable.addColumn('number', 'Success sample Size');
+      dataTable.addRows(<?php echo $area; ?>);
+    var options = {
+      title: 'Detail on sample size achievement by date (n=<?php echo $SSCOUNT1; ?>)',
+<?php if ($private == 1) { echo "      colors: ['grey', 'blue'],"; } ?>
+<?php if ($private == 1) { echo "      legend: { position: \"top\", alignment: \"end\" },"; } else { echo "      legend: { position: \"none\" },"; } ?>
+      areaOpacity: 0.1,
+      hAxis: {
+        gridlines: { color: '#E0E0E0'},
+        textStyle: { color: "#666666", fontName: "Arial", fontSize: 9, bold: false, italic: false },
+      },
+      vAxis: {
+        gridlines: {color: '#E0E0E0'},
+        textStyle: { color: "#666666", fontName: "Arial", fontSize: 9, bold: false, italic: false },
+        minValue: 0
+      },
+      pointSize: 5,
+      chartArea: { width: "90%", height: "65%" }
+    };
+    function placeMarker(d) {
+      var cli = this.getChartLayoutInterface();
+      var chartArea = cli.getChartAreaBoundingBox();
+<?php if ($private == 1) { ?>
+      document.querySelector('.overlay-marker').style.top = Math.floor(cli.getYLocation(d.getValue(<?php echo $areacount-1; ?>, 1))) + 45 + "px";
+      document.querySelector('.overlay-marker').style.left = Math.floor(cli.getXLocation(<?php echo $areacount-1; ?>)) - 0 + "px";
+<?php } else { ?>
+    document.querySelector('.overlay-marker').style.top = Math.floor(cli.getYLocation(d.getValue(<?php echo $areacount-1; ?>, 1))) - 35 + "px";
+    document.querySelector('.overlay-marker').style.left = Math.floor(cli.getXLocation(<?php echo $areacount-1; ?>)) - 0 + "px";
+<?php } ?>
+    };
+    google.visualization.events.addListener(chart, 'ready', placeMarker.bind(chart, dataTable));
     chart.draw(dataTable, options);
   }
 

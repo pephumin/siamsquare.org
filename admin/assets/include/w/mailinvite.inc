@@ -176,7 +176,7 @@ echo "<br>\n";
 echo "<h3>Project $project</h3>\n";
 
 // get stats
-$q2B = $db->prepare("SELECT SUM(status = '0') AS q2A1, SUM(status = '1') AS q2A2, SUM(IF(invitation IS NOT NULL, 1, 0)) AS q2B1, SUM(IF(invitation IS NULL, 1, 0)) AS q2B2, SUM(IF(invitation IS NOT NULL AND participation IS NOT NULL, 1, 0)) AS q2B3, SUM(IF(invitation IS NOT NULL AND participation IS NULL, 1, 0)) AS q2B4, SUM(IF(status = 1, 1, 0)) AS q2B5 FROM j_respondents WHERE surveyid = :surveyid");
+$q2B = $db->prepare("SELECT SUM(status = '0') AS q2A1, SUM(status = '1') AS q2A2, SUM(IF(invitation IS NOT NULL, 1, 0)) AS q2B1, SUM(IF(invitation IS NULL, 1, 0)) AS q2B2, SUM(IF(invitation IS NOT NULL AND participation IS NOT NULL, 1, 0)) AS q2B3, SUM(IF(invitation IS NOT NULL AND participation IS NULL, 1, 0)) AS q2B4 FROM j_respondents WHERE surveyid = :surveyid");
 $q2B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2B->execute();
 while ($row = $q2B->fetchObject()) {

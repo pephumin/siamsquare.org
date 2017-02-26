@@ -26,132 +26,124 @@ function pageHeader($title) {
   header("Content-language: en");
   header("Content-type: text/html; charset=utf-8");
   meta($title);
-?>
-<body>
-<header>
-  <div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-1">
-      <div class="container">
-        <?php echo $signed; ?>
-      </div>
-    </div>
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-2">
-      <div class="container">
-        <h1><a href="<?php echo ADMIN; ?>" title="<?php echo MYDESC; ?>"><?php logo(); ?></a></h1>
-        <p class="description"><?php echo SLOGANEN; ?></p>
-      </div>
-    </div>
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 header-3">
-      <nav class="navbar navbar-default navbar-static-top">
-        <div class="container">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <span class="navbar-brand"><?php echo $ww; ?></span>
-          </div>
-          <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-<?php if ($_SESSION['logged_in'] == 1) { ?>
-              <li><a href="<?php echo(ADMIN); ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> Home</a></i>
-              <li><a href="<?php echo(ADMIN."?w=surveys"); ?>" title="Research projects"><i class="pe-cubes pe-fw"></i> Projects</a></i>
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-cogs pe-fw"></i> Setting <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li><a href="<?php echo(ADMIN."?w=profile"); ?>" title="Profile"><i class="pe-user pe-fw"></i> Profile</a></li>
-                  <li><a href="<?php echo(ADMIN."?w=team"); ?>" title="Team"><i class="pe-graduation-cap pe-fw"></i> Team</a></li>
-<?php if ($_SESSION['level'] >= "6") { ?>
-                  <li><a href="<?php echo(ADMIN."?w=company"); ?>" title="Company"><i class="pe-building pe-fw"></i> Company</a></li>
-<?php } ?>
-                </ul>
-              </li>
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="pe-wrench pe-fw"></i> Tools <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <li><a href="<?php echo(ADMIN."?w=board"); ?>" title="Message board"><i class="pe-wpforms pe-fw"></i> Message board</a></li>
-                  <li><a href="<?php echo(ADMIN."?w=activity"); ?>" title="Activity"><i class="pe-map-o pe-fw"></i> Activity</a></li>
-                  <!-- <li><a href="<?php echo(ADMIN."?w=data2table"); ?>" title="Data to table"><i class="pe-table pe-fw"></i> Data to table</a></li> -->
-                  <li role="separator" class="divider"></li>
-                  <li><a href="<?php echo(ADMIN."contact/"); ?>" title="Contact us"><i class="pe-envelope-o pe-fw"></i> Contact us</a></li>
-<?php //if ($_SESSION['level'] == "9") { ?>
-                  <!-- <li role="separator" class="divider"></li> -->
-                  <!-- <li><a href="<?php echo(ADMIN."?w=help"); ?>" title="Help"><i class="pe-question-circle pe-fw"></i> Help</a></li> -->
-                  <!-- <li><a href="<?php echo(ADMIN."?w=api"); ?>" title="API commands"><i class="pe-code pe-fw"></i> API commands</a></li> -->
-                  <!-- <li><a href="<?php echo(ADMIN."?w=todo"); ?>" title="Todo list"><i class="pe-tasks pe-fw"></i> Todo list</a></li> -->
-<?php //} ?>
-                </ul>
-              </li>
-<?php } else { ?>
-              <li><a href="<?php echo ADMIN; ?>" title="<?php echo MYDESC; ?>"><i class="pe-home pe-fw"></i> Home</a></i>
-              <li><a href="<?php echo(ADMIN."request/"); ?>" title="Request for an access"><i class="pe-credit-card pe-fw"></i> Request for an access</a></li>
-<?php } ?>
-            </ul>
-          </div>
-        </div>
-      </nav>
-    </div>
-  </div>
-</header>
-<main class="container">
-<?php
+  echo "<body>\n";
+  echo "<header>\n";
+  echo "  <div class=\"row\">\n";
+  echo "    <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 header-1\">\n";
+  echo "      <div class=\"container\">$signed</div>\n";
+  echo "    </div>\n";
+  echo "    <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 header-2\">\n";
+  echo "      <div class=\"container\">\n";
+  echo "        <h1><a href=\"".ADMIN."\" title=\"".MYDESC."\">";
+  logo();
+  echo "</a></h1>\n";
+  echo "        <p class=\"description\">".SLOGANEN."</p>\n";
+  echo "      </div>\n";
+  echo "    </div>\n";
+  echo "    <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 header-3\">\n";
+  echo "      <nav class=\"navbar navbar-default navbar-static-top\">\n";
+  echo "        <div class=\"container\">\n";
+  echo "          <div class=\"navbar-header\">\n";
+  echo "            <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#navbar\">\n";
+  echo "              <span class=\"sr-only\">Toggle navigation</span>\n";
+  echo "              <span class=\"icon-bar\"></span>\n";
+  echo "              <span class=\"icon-bar\"></span>\n";
+  echo "              <span class=\"icon-bar\"></span>\n";
+  echo "            </button>\n";
+  echo "            <span class=\"navbar-brand\">$ww</span>\n";
+  echo "          </div>\n";
+  echo "          <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
+  echo "            <ul class=\"nav navbar-nav navbar-right\">\n";
+  if ($_SESSION['logged_in'] == 1) {
+    echo "              <li><a href=\"".ADMIN."\" title=\"".MYDESC."\"><i class=\"pe-home pe-fw\"></i> Home</a></i>\n";
+    echo "              <li><a href=\"".ADMIN."?w=surveys"."\" title=\"Research projects\"><i class=\"pe-cubes pe-fw\"></i> Projects</a></i>\n";
+    echo "              <li class=\"dropdown\">\n";
+    echo "                <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\"><i class=\"pe-cogs pe-fw\"></i> Setting <span class=\"caret\"></span></a>\n";
+    echo "                <ul class=\"dropdown-menu\">\n";
+    echo "                  <li><a href=\"".ADMIN."?w=profile"."\" title=\"Profile\"><i class=\"pe-user pe-fw\"></i> Profile</a></li>\n";
+    echo "                  <li><a href=\"".ADMIN."?w=team"."\" title=\"Team\"><i class=\"pe-graduation-cap pe-fw\"></i> Team</a></li>\n";
+    if ($_SESSION['level'] >= "6") {
+      echo "                  <li><a href=\"".ADMIN."?w=company"."\" title=\"Company\"><i class=\"pe-building pe-fw\"></i> Company</a></li>\n";
+    }
+    echo "                </ul>\n";
+    echo "              </li>\n";
+    echo "              <li class=\"dropdown\">\n";
+    echo "                <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\"><i class=\"pe-wrench pe-fw\"></i> Tools <span class=\"caret\"></span></a>\n";
+    echo "                <ul class=\"dropdown-menu\">\n";
+    echo "                  <li><a href=\"".ADMIN."?w=board"."\" title=\"Message board\"><i class=\"pe-wpforms pe-fw\"></i> Message board</a></li>\n";
+    echo "                  <li><a href=\"".ADMIN."?w=activity"."\" title=\"Activity\"><i class=\"pe-map-o pe-fw\"></i> Activity</a></li>\n";
+    // echo "                  <li><a href=\"".ADMIN."?w=data2table"."\" title=\"Data to table\"><i class=\"pe-table pe-fw\"></i> Data to table</a></li>\n";
+    echo "                  <li role=\"separator\" class=\"divider\"></li>\n";
+    echo "                  <li><a href=\"".ADMIN."contact/"."\" title=\"Contact us\"><i class=\"pe-envelope-o pe-fw\"></i> Contact us</a></li>\n";
+    echo "                </ul>\n";
+    echo "              </li>\n";
+  } else {
+    echo "              <li><a href=\"".ADMIN."\" title=\"".MYDESC."\"><i class=\"pe-home pe-fw\"></i> Home</a></i>\n";
+    echo "              <li><a href=\"".ADMIN."request/"."\" title=\"Request for an access\"><i class=\"pe-credit-card pe-fw\"></i> Request for an access</a></li>\n";
+  }
+  echo "            </ul>\n";
+  echo "          </div>\n";
+  echo "        </div>\n";
+  echo "      </nav>\n";
+  echo "    </div>\n";
+  echo "  </div>\n";
+  echo "</header>\n";
+  echo "<main class=\"container\">\n";
 }
 
 function pageFooter($notes = null) {
-?>
-</main>
-<footer>
-  <div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-1">
-      <div class="container">
-      </div>
-    </div>
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-2">
-      <div class="container">
-        <a href="<?php echo MYHOME; ?>" class="footerlogo-ssq" title="<?php echo MYDESC; ?>"><?php ssqlogo(); ?></a> by
-        <a href="http://www.pebinary.com" class="footerlogo" title="PE BINARY CO., LTD."><?php peblogo(); ?></a><br>
-        <i class="pe-copyright"></i> Copyright 2016, All rights reserved.<br>
-        <nav class="footer">
-          <ul class="list-inline" itemscope itemtype="http://schema.org/SiteNavigationElement">
-            <li><a href="http://www.pebinary.com/about/privacy.html" title="Privacy policy" itemprop="url"><i class="pe-lock"></i> <span class="hidden-md hidden-lg" itemprop="name">Privacy</span><span class="hidden-xs hidden-sm" itemprop="name">Privacy policy</span></a></li>
-            <li><a href="http://www.pebinary.com/about/tos.html" title="Terms of services" itemprop="url"><i class="pe-gavel"></i> <span class="hidden-md hidden-lg" itemprop="name">TOS</span><span class="hidden-xs hidden-sm" itemprop="name">Terms of services</span></a></li>
-            <li><a href="http://www.pebinary.com/about/terms.html" title="Terms &amp; conditions" itemprop="url"><i class="pe-balance-scale"></i> <span class="hidden-md hidden-lg" itemprop="name">Terms</span><span class="hidden-xs hidden-sm" itemprop="name">Terms &amp; conditions</span></a></li>
-          </ul>
-        </nav>
-      </div>
-    </div>
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3">
-      <div class="container">
-        <h4 class="avatar">&#9836; &#9819; &#9962; &#10000; &#9820; &#9822; &#9973; &#9961;</h4>
-      </div>
-    </div>
-  </div>
-</footer>
-<div class="scroll-to-top" style="display: block"><i class="pe-arrow-up pe-lg white"></i></div>
-<script type="text/javascript" src="/admin/assets/js/etc.js"></script>
-<?php if ($notes) { notify($notes); } ?>
-<?php //debugOutput(); ?>
-</body>
-</html>
-<?php
+  echo "</main>\n";
+  echo "<footer>\n";
+  echo "  <div class=\"row\">\n";
+  echo "    <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-1\">\n";
+  echo "      <div class=\"container\">\n";
+  echo "      </div>\n";
+  echo "    </div>\n";
+  echo "    <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-2\">\n";
+  echo "      <div class=\"container\">\n";
+  echo "        <a href=\"".MYHOME."\" class=\"footerlogo-ssq\" title=\"".MYDESC."\">";
+  ssqlogo();
+  echo "</a> by\n";
+  echo "        <a href=\"http://www.pebinary.com\" class=\"footerlogo\" title=\"PE BINARY CO., LTD.\">";
+  peblogo();
+  echo "</a><br>\n";
+  echo "        <i class=\"pe-copyright\"></i> Copyright 2016, All rights reserved.<br>\n";
+  echo "        <nav class=\"footer\">\n";
+  echo "          <ul class=\"list-inline\" itemscope itemtype=\"http://schema.org/SiteNavigationElement\">\n";
+  echo "            <li><a href=\"http://www.pebinary.com/about/privacy.html\" title=\"Privacy policy\" itemprop=\"url\"><i class=\"pe-lock\"></i> <span class=\"hidden-md hidden-lg\" itemprop=\"name\">Privacy</span><span class=\"hidden-xs hidden-sm\" itemprop=\"name\">Privacy policy</span></a></li>\n";
+  echo "            <li><a href=\"http://www.pebinary.com/about/tos.html\" title=\"Terms of services\" itemprop=\"url\"><i class=\"pe-gavel\"></i> <span class=\"hidden-md hidden-lg\" itemprop=\"name\">TOS</span><span class=\"hidden-xs hidden-sm\" itemprop=\"name\">Terms of services</span></a></li>\n";
+  echo "            <li><a href=\"http://www.pebinary.com/about/terms.html\" title=\"Terms &amp; conditions\" itemprop=\"url\"><i class=\"pe-balance-scale\"></i> <span class=\"hidden-md hidden-lg\" itemprop=\"name\">Terms</span><span class=\"hidden-xs hidden-sm\" itemprop=\"name\">Terms &amp; conditions</span></a></li>\n";
+  echo "          </ul>\n";
+  echo "        </nav>\n";
+  echo "      </div>\n";
+  echo "    </div>\n";
+  echo "    <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3\">\n";
+  echo "      <div class=\"container\">\n";
+  echo "        <h4 class=\"avatar\">&#9836; &#9819; &#9962; &#10000; &#9820; &#9822; &#9973; &#9961;</h4>\n";
+  echo "      </div>\n";
+  echo "    </div>\n";
+  echo "  </div>\n";
+  echo "</footer>\n";
+  echo "<div class=\"scroll-to-top\" style=\"display: block\"><i class=\"pe-arrow-up pe-lg white\"></i></div>\n";
+  echo "<script type=\"text/javascript\" src=\"/admin/assets/js/etc.js\"></script>\n";
+  if ($notes) { notify($notes); }
+  //debugOutput();
+  echo "</body>\n";
+  echo "</html>\n";
 }
 
 function notify($messages) {
-?>
-<script type="text/javascript">
-  function notifyBox(title, text, image) { Notification({ title: title, text: text, image: image, inAnimation: "bounce", outAnimation: "zoomOut", position: 2 }); }
-  function delayNext(title, text, image) { $(this).delay(2000).queue(function() { notifyBox(title, text, image); $(this).dequeue(); }); }
-  $(document).ready(function() {
-    var obj = JSON.parse ('<?php echo json_encode($messages) ?>');
-     for (var i=0; i<obj.length; i++) {
-       if (i == 0) { notifyBox(obj[i].title, obj[i].text, obj[i].image); } // show the first notification
-       else { delayNext(obj[i].title, obj[i].text, obj[i].image); } // show the second one with 2 seconds delay
-     }
-  });
-</script>
-<?php
+  echo "<script type=\"text/javascript\">\n";
+  echo "  function notifyBox(title, text, image) { Notification({ title: title, text: text, image: image, inAnimation: \"bounce\", outAnimation: \"zoomOut\", position: 2 }); }\n";
+  echo "  function delayNext(title, text, image) { $(this).delay(2000).queue(function() { notifyBox(title, text, image); $(this).dequeue(); }); }\n";
+  echo "  $(document).ready(function() {\n";
+  echo "    var obj = JSON.parse ('".json_encode($messages)."');\n";
+  echo "     for (var i=0; i<obj.length; i++) {\n";
+  echo "       if (i == 0) { notifyBox(obj[i].title, obj[i].text, obj[i].image); }\n";
+  echo "       else { delayNext(obj[i].title, obj[i].text, obj[i].image); }\n";
+  echo "     }\n";
+  echo "  });\n";
+  echo "</script>\n";
 }
 
 function debugOutput() {
