@@ -18,7 +18,7 @@
 define('MYTITLE',          "SiamSquare");
 define('MYDESC',           "SiamSquare Survey Engine by PE BINARY CO., LTD.");
 define('SLOGANEN',         "We build a society where your opinion matters");
-define('SLOGANTH',         "เพราะทุกเสียงของคุณมีความหมายสำหรับเรา");
+define('SLOGANTH',         "เราสร้างสังคมที่มองเห็นความสำคัญในความคิดเห็นของคุณ");
 define('MYDOMAIN',         "siamsquare.org");
 define('MYHOME',           "http://www.siamsquare.org");
 define('ADMIN',            MYHOME."/admin/");
@@ -29,6 +29,7 @@ define('EMAILSUPPORT',     "support@siamsquare.org");
 define('EMAILNOREPLY',     "noreply@siamsquare.org");
 define('ME',               $_SERVER['SCRIPT_NAME']);
 define('DOCROOT',          $_SERVER['DOCUMENT_ROOT']);
+define('MYXML',            DOCROOT.'/members/assets/xml');
 
 define('DB_HOST',          "magenta.thaiweb.net");
 define('DB_USER',          "sinbad");
