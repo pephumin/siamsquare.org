@@ -108,7 +108,7 @@ $q1C->execute();
 while ($row = $q1C->fetchObject()) {
   $postid = base64_encode($row->id);
   $body = nl2br($row->body);
-  $t1 = shortdate($row->created); $t2 = ago($row->created);
+  if ($row->created) { $t1 = shortdate($row->created); $t2 = ago($row->created); } else { $t1 = "Never login"; $t2 = "Never login"; }
   if ($_SESSION['email'] == $row->email) { echo "    <div class=\"panel panel-info\" style=\"border:2px solid navy\">\n"; }
   else { echo "    <div class=\"panel panel-info\">\n"; }
   if ($_SESSION['level'] >= $row->level) { echo "    <a href=\"\" data-href=\"$me&amp;d=$postid\" data-toggle=\"modal\" data-target=\"#confirm-delete\" class=\"pull-right red\" style=\"margin-top:10px;margin-right:10px\" title=\"Delete this post\"><i class=\"pe-trash\"></i></a>\n"; }
@@ -146,7 +146,7 @@ $i = 0;
 while ($row = $q1B->fetchObject()) {
   $postid = base64_encode($row->id);
   $body = nl2br($row->body);
-  $t1 = shortdate($row->created); $t2 = ago($row->created);
+  if ($row->created) { $t1 = shortdate($row->created); $t2 = ago($row->created); } else { $t1 = "Never login"; $t2 = "Never login"; }
   echo "      <div class=\"list-group-item small\">\n";
   if ($_SESSION['level'] >= $row->level) { echo "        <a href=\"\" data-href=\"$me&amp;d=$postid\" data-toggle=\"modal\" data-target=\"#confirm-delete\" class=\"pull-right red\" title=\"Delete this post\"><i class=\"pe-trash\"></i></a>\n"; }
   echo "        <i class=\"pe-bullhorn pe-fw\"></i> <a class=\"collapsed\" data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#c$postid\">$row->head</a>\n";
@@ -167,7 +167,7 @@ $q1C->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
 $q1C->bindValue(':email', $_SESSION["email"], PDO::PARAM_STR);
 $q1C->execute();
 while ($row = $q1C->fetchObject()) {
-  $lastlogin = ago($row->lastlogin);
+  if ($row->lastlogin) { $lastlogin = ago($row->lastlogin); } else { $lastlogin = "Never login"; }
   echo "        <div class=\"panel-body grey\" style=\"padding:8px 10px 5px 10px\"><small><strong>$row->fullname</strong>: $lastlogin</small></div>\n";
 }
 ?>
@@ -193,8 +193,8 @@ while ($row = $q1C->fetchObject()) {
 
 <script type="text/javascript">
 
-  var userid = <?php echo $_SESSION['userid']; ?>;
-  var companyid = <?php echo $_SESSION['companyid']; ?>;
+  var companyid = parseInt("<?php echo $_SESSION['companyid']; ?>");
+  var userid = parseInt("<?php echo $_SESSION['userid']; ?>");
   $('#showalert-create').html("<div class='alert alert-success'><i class='pe-save pe-fw'></i> A new user has been created</div>").hide();
   $('#showalert-delete').html("<div class='alert alert-danger'><i class='pe-trash pe-fw'></i> The user has been deleted</div>").hide();
   $('#showalert-edit').html("<div class='alert alert-success'><i class='pe-edit pe-fw'></i> The user information has been edited</div>").hide();

@@ -132,7 +132,7 @@ function pageFooter($project = null, $notes = null) {
   echo "    <div class=\"container\">\n";
   echo "      <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6 footer-1A\"></div>\n";
   echo "      <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6 footer-1B\">";
-  if ($project) { echo "Internal use only - P. ".$project." (#PEB".date("Ym").str_pad($_GET['s'], 6, '0', STR_PAD_LEFT).")"; }
+  if ($project) { echo "Internal use only - P. ".$project." (PEB-".date("Ym")."W".str_pad($_GET['s'], 4, '0', STR_PAD_LEFT).")"; }
   else { echo "Contact technical support <a href=\"http://www.siamsquare.org/members/contact/\"><i class=\"pe-envelope pe-fw\"></i></a>"; }
   echo "</div>\n";
   echo "    </div>\n";

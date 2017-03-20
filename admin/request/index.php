@@ -1,11 +1,14 @@
 <?php
 
-$title = 'Request for an access';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/template.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/functions.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.login.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.phpmailer.php';
 
 $sent = false;
+$disable = false;
+$title = 'Request for an access';
 
 $login = new Login();
 
@@ -40,7 +43,7 @@ if (isset($_REQUEST['captcha'])) {
 
 }
 
-if ($_SESSION["logged_in"] == 1) { $msg = mkerror("You already have an access to our system, so no need to request anything. If this request is actually for your colleague, please logout and try again."); }
+if ($_SESSION["logged_in"] == 1) { $msg = mkerror("You already have an access to our system, so no need to request anything. If this request is actually for your colleague, please logout and reload this page. And this page will be available to fill in."); $disable = true; }
 
 pageHeader($title);
 echo "<h2>Request for an access to our system</h2>\n";
@@ -58,7 +61,7 @@ echo "<br>\n";
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
       <div class="input-group">
         <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
-        <?php if ($sent) { ?>
+        <?php if ($sent || $disable) { ?>
         <input type="text" class="form-control" name="name" placeholder="First &amp; last name" value="<?php echo htmlspecialchars($name); ?>" disabled>
         <?php } else { ?>
         <input type="text" class="form-control" name="name" placeholder="First &amp; last name" value="<?php echo htmlspecialchars($name); ?>">
@@ -71,7 +74,7 @@ echo "<br>\n";
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
       <div class="input-group">
         <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
-        <?php if ($sent) { ?>
+        <?php if ($sent || $disable) { ?>
         <input type="email" class="form-control" name="email" placeholder="email@company.com" value="<?php echo htmlspecialchars($email); ?>" disabled>
         <?php } else { ?>
         <input type="email" class="form-control" name="email" placeholder="email@company.com" value="<?php echo htmlspecialchars($email); ?>">
@@ -84,7 +87,7 @@ echo "<br>\n";
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
       <div class="input-group">
         <span class="input-group-addon input-group-addon-top"><i class="pe-commenting pe-fw"></i></span>
-        <?php if ($sent) { ?>
+        <?php if ($sent || $disable) { ?>
         <textarea class="form-control" rows="7" name="message" placeholder="Your message can be as long as you need" disabled><?php echo htmlspecialchars($message);?></textarea>
         <?php } else { ?>
         <textarea class="form-control" rows="7" name="message" placeholder="Your message can be as long as you need"><?php echo htmlspecialchars($message);?></textarea>
@@ -100,7 +103,7 @@ echo "<br>\n";
       <img src="/admin/assets/include/captcha.php" alt="captcha"></p>
       <div class="input-group">
         <span class="input-group-addon"><i class="pe-cog pe-fw"></i></span>
-        <?php if ($sent) { ?>
+        <?php if ($sent || $disable) { ?>
           <input type="text" name="captcha" class="form-control" placeholder="Please type in the words as shown in the picture" value="<?php echo htmlspecialchars($captcha); ?>" disabled>
         <?php } else { ?>
         <input type="text" name="captcha" class="form-control" placeholder="Please type in the words as shown in the picture" value="<?php echo htmlspecialchars($captcha); ?>">
@@ -110,7 +113,7 @@ echo "<br>\n";
   </div>
   <hr>
   <p class="text-center">
-    <?php if ($sent) { ?>
+    <?php if ($sent || $disable) { ?>
     <button type="submit" class="btn btn-warning" disabled>Send my request <i class="pe-paper-plane"></i></button>
     <?php } else { ?>
     <button type="submit" class="btn btn-warning">Send my request <i class="pe-paper-plane"></i></button>

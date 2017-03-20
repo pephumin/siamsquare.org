@@ -34,8 +34,8 @@ if ($_SESSION['level'] == 9) {
 }
 $q1->execute();
 $userlist = "[ \n";
-while ($row = $q1->fetchObject()) { $userlist .= 'new UserListing('.$row->id.', "'.$row->fullname.'", "'.$row->email.'", "'.$row->company.'", '.$row->companyid.'), '."\n"; }
-$userlist .= " ]";
+while ($row = $q1->fetchObject()) { $userlist .= '      new UserListing('.$row->id.', "'.$row->fullname.'", "'.$row->email.'", "'.$row->company.'", '.$row->companyid.'), '."\n"; }
+$userlist .= "    ]";
 ?>
 
 <br>
@@ -106,8 +106,7 @@ $userlist .= " ]";
   <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" style="margin-bottom:20px">
     <div class="projects">
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projects-header">
-        <?php if ($_SESSION['level'] == "9") { ?>
-          <div class="adminmovewrap">
+          <div class="adminmovewrap" data-bind="if: admin">
             <a href="" class="adminmove" title="Move to the next step" data-bind="click: $parent.one2two, visible: $parent.showActive() == 'A'"><i class="pe-arrow-circle-right pe-lg"></i></a>
             <a href="" class="adminmove" title="Move to the previous step" data-bind="click: $parent.two2one, visible: $parent.showActive() == 'B'"><i class="pe-arrow-circle-left pe-lg"></i></a>
             <a href="" class="adminmove" title="Move to the next step" data-bind="click: $parent.two2three, visible: $parent.showActive() == 'B'"><i class="pe-arrow-circle-right pe-lg"></i></a>
@@ -117,30 +116,31 @@ $userlist .= " ]";
             <a href="" class="adminmove" title="Move to the next step" data-bind="click: $parent.four2zero, visible: $parent.showActive() == 'D'"><i class="pe-arrow-circle-right pe-lg"></i></a>
             <a href="" class="adminmove" title="Move to the previous step" data-bind="click: $parent.zero2four, visible: $parent.showActive() == 'E'"><i class="pe-arrow-circle-left pe-lg"></i></a>
           </div>
-        <?php } ?>
-        <h4>Project <span data-bind="text: title"></span>  <span data-bind="if: owner" class="label-red" style="font-size:0.6rem">owner</span></h4>
+        <h4>Project <span data-bind="text: title"></span> <span data-bind="if: owner" class="label-red" style="font-size:0.6rem">owner</span></h4>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projects-subhead">
         <i class="pe-user pe-fw"></i> <strong data-bind="text: fullname"></strong> (<span data-bind="text: email"></span>) <i class="pe-building pe-fw"></i> <span data-bind="text: company"></span>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projects-body">
-        <div data-bind="if: canedit"><a class="btn btn-default btn-tiny pull-right" data-bind="click: $parent.showInfo"><i class="pe-cogs"></i> Info <i class="" data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a></div>
+        <div class="pull-right">
+          <span data-bind="if: canedit"><a class="btn btn-default btn-tiny" data-bind="click: $parent.showInfo" title="Show the detailed information of this project">Info <i class="" data-bind="css: { 'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo() }"></i></a></span>
+          <span data-bind=""><a class="btn btn-success btn-tiny" data-bind="attr: { href: '/r.php?designer=✓&amp;s=' + id, title: 'View the actual questionnaire', target: '_blank' }, css: { 'disabled': DT() == null }">View <i class="pe-plane"></i></a></span>
+        </div>
         <div class="projectinfo">
           <strong>Created:</strong> <span data-bind="text: created"></span><br>
           <strong>Updated:</strong> <span data-bind="text: updated"></span><br>
           <strong>Type:</strong> <span><span data-bind="text: pp"></span> <i class="pe-folder-o" data-bind="visible: pp == 'Private'"></i><i class="pe-folder-open-o" data-bind="visible: pp == 'Public'"></i></span>
           <a class="btn btn-default btn-tiny pull-right" data-bind="attr: { href: '/admin/?w=respondents&amp;s=' + id }, visible: pp == 'Private', css: { 'btn-primary': rD() > 0, 'disabled': $parent.showActive() == 'C' || $parent.showActive() == 'D' || $parent.showActive() == 'E' }"><span data-bind="text: rDFormatted(rD)"></span> respondent(s) <i class="pe-users"></i></a>
         </div>
-        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=design&amp;s=' + id }, visible: $parent.showActive() == 'A'">Questionnaire <i class="pe-edit"></i></a>
-        <!-- <span data-bind="if: canedit"><a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=template&amp;s=' + id }, visible: (pp == 'Private' && $parent.showActive() == 'A') || (pp == 'Private' && $parent.showActive() == 'B')">Template <i class="pe-envelope"></i></a></span> -->
-        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/r.php?pilot=1&amp;s=' + id }, visible: $parent.showActive() == 'A'" target="_blank">Pilot test <i class="pe-paper-plane"></i></a>
-        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=progress&amp;s=' + id }, visible: $parent.showActive() == 'B' || $parent.showActive() == 'C'">Progress <i class="pe-flask"></i></a>
-        <a class="btn btn-primary btn-tiny" data-bind="attr: { href: '/r.php?s=' + id }, visible: $parent.showActive() == 'B'" target="_blank">Live <i class="pe-plane"></i></a>
-        <a class="btn btn-success btn-tiny" data-bind="attr: { href: '/admin/?w=result&amp;s=' + id }, visible: $parent.showActive() == 'C' || $parent.showActive() == 'D'">Result <i class="pe-line-chart"></i></a>
-        <a class="btn btn-warning btn-tiny" data-bind="click: $parent.archive, visible: $parent.showActive() == 'C'" href="">Archive <i class="pe-archive"></i></a>
-        <a class="btn btn-warning btn-tiny" data-bind="click: $parent.restore, visible: $parent.showActive() == 'D'" href="">Restore <i class="pe-undo"></i></a>
-        <a class="btn btn-danger btn-tiny" data-bind="click: $parent.delete, visible: $parent.showActive() == 'D'" href="">Delete <i class="pe-trash"></i></a>
-        <a class="btn btn-danger btn-tiny" data-bind="click: $parent.undelete, visible: $parent.showActive() == 'E'" href="">Undelete <i class="pe-undo"></i></a>
+        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=design&amp;s=' + id }, visible: $parent.showActive() == 'A'" title="Edit the questionnaire">Questionnaire design <i class="pe-edit"></i></a>
+        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/r.php?pilot=✓&amp;s=' + id }, visible: $parent.showActive() == 'A'" target="_blank" title="Conduct a pilot test on the questionnaire">Pilot test <i class="pe-paper-plane"></i></a>
+        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=progress&amp;s=' + id }, visible: $parent.showActive() == 'B' || $parent.showActive() == 'C'" title="Monitor data-collection progress and view interim data">Progress <i class="pe-flask"></i></a>
+        <!-- <a class="btn btn-primary btn-tiny" data-bind="attr: { href: '/r.php?s=' + id }, visible: $parent.showActive() == 'B'" target="_blank">Live <i class="pe-plane"></i></a> -->
+        <a class="btn btn-success btn-tiny" data-bind="attr: { href: '/admin/?w=result&amp;s=' + id }, visible: $parent.showActive() == 'C' || $parent.showActive() == 'D'" title="Real-time result display in graph and table">Result <i class="pe-line-chart"></i></a>
+        <a class="btn btn-warning btn-tiny" data-bind="click: $parent.archive, visible: $parent.showActive() == 'C'" title="Move this project to Archive folder">Archive <i class="pe-archive"></i></a>
+        <a class="btn btn-warning btn-tiny" data-bind="click: $parent.restore, visible: $parent.showActive() == 'D'" title="Move this project out of Archive folder">Restore <i class="pe-undo"></i></a>
+        <a class="btn btn-danger btn-tiny pull-right" data-bind="click: $parent.delete, visible: $parent.showActive() == 'A' || $parent.showActive() == 'D'" title="Delete this project from the system">Delete <i class="pe-trash"></i></a>
+        <a class="btn btn-danger btn-tiny pull-right disabled" data-bind="click: $parent.undelete, visible: $parent.showActive() == 'E'" title="Undelete this project">Undelete <i class="pe-undo"></i></a>
       </div>
 
 <?php if ($_SESSION['level'] >= "5") { ?>
@@ -149,7 +149,7 @@ $userlist .= " ]";
           <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-showinfo': showInfo() }">
             <td width="25%" style="border-top: none">Name <a data-bind="if: canedit, click: $parent.startEdit, visible: $parent.showActive() == 'A' && !isEditing()" title="Change project name"> <i class="pe-edit"></i></a><a data-bind="click: $parent.cancelEdit, visible: isEditing()"><i class="pe-times-circle-o"></i></a></td>
             <td width="75%" style="border-top: none" colspan="2">
-              <span data-bind="visible: !isEditing()"><strong><span data-bind="text: title"></span></strong><?php if ($_SESSION['level'] == "9") { ?> (surveyid = <span data-bind="text: id"></span>)<?php } ?></span>
+              <span data-bind="visible: !isEditing()"><strong><span data-bind="text: title"></span></strong> <span data-bind="if: admin">(surveyid = <span data-bind="text: id"></span>)</span></span>
               <span data-bind="visible: isEditing()"><input data-bind="textInput: editingName" onclick="this.select()" class="form-control input-sm"><a class="btn btn-sm" data-bind="click: $parent.postEdit, enable: title() != ''" href="">Rename <i class="pe-check-circle-o"></i></a><a class="btn btn-sm" data-bind="click: $parent.cancelEdit" href="">Cancel <i class="pe-times-circle-o"></i></a></span>
             </td>
           </tr>
@@ -157,14 +157,16 @@ $userlist .= " ]";
             <td style="border-top: none">Description <a data-bind="if: canedit, click: $parent.startEditDescription, visible: $parent.showActive() == 'A' && !isEditingDescription()" title="Change project description"> <i class="pe-edit"></i></a><a data-bind="click: $parent.cancelEditDescription, visible: isEditingDescription()"><i class="pe-times-circle-o"></i></a></td>
             <td style="border-top: none" colspan="2">
               <span class="boon" data-bind="visible: !isEditingDescription(), text: description"></span>
-              <span data-bind="visible: isEditingDescription()"><textarea data-bind="textInput: editingDescription, visible: isEditingDescription()" onclick="this.select()" class="form-control input-sm" rows="5"></textarea><a class="btn btn-sm" data-bind="click: $parent.postEditDescription, enable: description() != ''" href="">Update <i class="pe-check-circle-o"></i></a><a class="btn btn-sm" data-bind="click: $parent.cancelEditDescription" href="">Cancel <i class="pe-times-circle-o"></i></a></span>
+              <span data-bind="visible: isEditingDescription()"><textarea data-bind="textInput: editingDescription, visible: isEditingDescription()" onclick="this.select()" class="form-control input-sm" rows="5" placeholder="Please make sure you insert a short description that is easy to understand in Thai language only as it may be displayed directly to respondents"></textarea>
+                <a class="btn btn-sm" data-bind="click: $parent.postEditDescription, enable: description() != ''" href="">Update <i class="pe-check-circle-o"></i></a><a class="btn btn-sm" data-bind="click: $parent.cancelEditDescription" href="">Cancel <i class="pe-times-circle-o"></i></a>
+              </span>
             </td>
           </tr>
           <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-showinfo': showInfo() }">
             <td style="border-top: none">Owner <a data-bind="if: canedit, click: $parent.startEditOwner, visible: $parent.showActive() == 'A' && !isEditingOwner()" title="Change project owner"> <i class="pe-edit"></i></a><a data-bind="click: $parent.cancelEditOwner, visible: isEditingOwner()"><i class="pe-times-circle-o"></i></a></td>
             <td style="border-top: none" colspan="2">
               <span data-bind="visible: !isEditingOwner()"><strong><span data-bind="text: fullname"></span></strong> (<span data-bind="text: email, visible: !isEditingOwner()"></span>)</span>
-              <span data-bind="visible: isEditingOwner()"><div class="col-sm-6" style="padding:0px"><select data-bind="options: ulist, optionsText: '<?php if ($_SESSION['level'] == "9") { ?>list1<?php } else { ?>list2<?php }?>', optionsValue: 'userid', value: selectedUser, event: { change: $parent.changingowner }" class="form-control input-sm"></select></div></span>
+              <span data-bind="visible: isEditingOwner()"><div class="col-sm-6" style="padding:0px"><select data-bind="options: ulist, optionsText: '<?php if ($_SESSION['level'] == "9") { ?>list1<?php } else { ?>list2<?php }?>', optionsValue: userid, value: selectedUser, event: { change: $parent.changingowner }" class="form-control input-sm"></select></div></span>
             </td>
           </tr>
           <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-showinfo': showInfo() }">
@@ -184,7 +186,10 @@ $userlist .= " ]";
             </td>
           </tr>
           <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-showinfo': showInfo() }">
-            <td style="border-top: none" colspan="3" data-bind="if: canedit, visible: $parent.showActive() == 'A'"><a class="btn btn-danger btn-tiny pull-right" style="white-space:normal;width:100px;word-wrap:break-word"><i class="pe-flag-checkered pe-fw"></i> Ready for data-collection</a><div>Once you are sure this project is ready for fieldwork, please submit your request using this button and we will proceed for you as soon as possible. <strong>It is important to understand that once the project is moved to the Data-collection stage, you <em>will not</em> be able to make any changes in the questionaire.</strong></div></td>
+            <td style="border-top:none;" colspan="3" data-bind="if: canedit, visible: $parent.showActive() == 'A'">
+              <a class="btn btn-success btn-tiny pull-right" style="white-space:normal;width:100px;word-wrap:break-word"><i class="pe-flag-checkered pe-fw"></i> Ready for data-collection</a>
+              <div class="small darkgreen" style="margin:0px 5px">Click this button to submit your request to start the fieldwork. <strong>Please note the questionnaire will no longer be editable</strong>. Only submit when you are sure it is really finallised.</div>
+            </td>
           </tr>
         </table>
       </div>
@@ -196,9 +201,9 @@ $userlist .= " ]";
 
 <script type="text/javascript">
 
-  var companyid = <?php echo $_SESSION['companyid']; ?>;
+  var companyid = parseInt("<?php echo $_SESSION['companyid']; ?>");
+  var userid = parseInt("<?php echo $_SESSION['userid']; ?>");
   var level = <?php echo $_SESSION['level']; ?>;
-  var userid = <?php echo $_SESSION['userid']; ?>;
   var email = "<?php echo $_SESSION['email']; ?>";
   var ip = "<?php echo getip(); ?>";
   var api = "http://www.siamsquare.org.uk";
@@ -214,28 +219,23 @@ $userlist .= " ]";
     return this.getFullYear() + "-" + pad(1 + this.getMonth()) + "-" + pad(this.getDate()) + " " + pad(this.getHours()) + ":" + pad(this.getMinutes()) + ":" + pad(this.getSeconds());
   };
   var TimeNow = new Date().toMysqlFormat();
-  var UserListing = function(userid, fullname, email, company, companyid) {
-    this.userid = ko.observable(userid);
+  var UserListing = function(uid, fullname, email, company, companyid) {
+    this.uid = ko.observable(uid);
     this.fullname = ko.observable(fullname);
     this.email = ko.observable(email);
     this.company = ko.observable(company);
     this.companyid = ko.observable(companyid);
-    this.list1 = ko.computed(function() { return this.company() + " (companyid=" + this.companyid() + ")" + " - " + this.fullname() + " (userid=" + this.userid() + ") - " + this.email() ; }, this);
+    this.list1 = ko.computed(function() { return this.company() + " (companyid=" + this.companyid() + ")" + " - " + this.fullname() + " (userid=" + this.uid() + ") - " + this.email() ; }, this);
     this.list2 = ko.computed(function() { return this.fullname() + " (" + this.email() + ")"; }, this);
   }
-  var Listing = function (title, description, userid, created, updated, id, email, fullname, company, companyid, private, canedit, owner, rD, UserListing) {
+  var Listing = function (title, description, userid, created, updated, id, email, fullname, company, companyid, private, canedit, owner, admin, rD, UserListing, DT) {
     this.title = ko.observable(title);
     this.editingOwner = ko.observable(userid);
     this.editingName = ko.observable(title);
     this.description = ko.observable(description);
-    // this.description2 = ko.computed(function(description) {
-    //   var newdescription = description.replace(/\n/gi, '<br/>');
-    //   return newdescription;
-    // });
     this.description2 = ko.computed(function() { var newdesc = this.description.toString().replace(/\n/gi, '<br>'); return newdesc; }, this);
     this.editingDescription = ko.observable(description);
     this.editingPP = ko.observable(private);
-    this.userid = ko.observable(userid);;
     this.created = created;
     this.updated = updated;
     this.id = id;
@@ -254,17 +254,16 @@ $userlist .= " ]";
     this.isEditingPP = ko.observable(false);
     this.canedit = canedit;
     this.owner = owner;
-    // this.canedit = ko.observable(false);
-    // this.owner = ko.observable(false);
+    this.admin = admin;
     if (private) { this.pp = "Private"; } else { this.pp = "Public"; }
     options = <?php echo $userlist; ?>;
     this.ulist = ko.observableArray(options);
     this.selectedUser = ko.observable(userid);
     this.canclick = ko.observable();
+    this.DT = ko.observable(DT);
   }
   var ViewModel = function () {
     var self = this;
-    // this.canclick = ko.observable(false);
     this.surveys = ko.observableArray([]);
     this.url = api;
     this.showActive = ko.observable(true);
@@ -272,8 +271,9 @@ $userlist .= " ]";
     this.newSurveyName = ko.observable("New project");
     this.loadData = function (i) {
       self.showActive(i);
-      if (level == 9) { var url = "/all/" + i; }
-      else { var url = "/company/" + companyid + "/" + i; }
+      // if (level == 9) { var url = "/all/" + i; }
+      // else { var url = "/company/" + companyid + "/" + i; }
+      var url = "/company/" + companyid + "/" + i;
       $.ajax({
         url: api + url,
         type: 'get',
@@ -308,7 +308,7 @@ $userlist .= " ]";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' archived a survey named ' + survey.title() + ' (id=' + survey.id + ')", "critical": "3" }',
+            data: '{ "surveyid": "' + survey.id + '", "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' archived a survey named ' + survey.title() + '", "critical": "3" }',
             success: function(data) { result = data; }
           });
         },
@@ -331,7 +331,7 @@ $userlist .= " ]";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' restored a survey named ' + survey.title() + ' (id=' + survey.id + ')", "critical": "3" }',
+            data: '{ "surveyid": "' + survey.id + '", "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' restored a survey named ' + survey.title() + '", "critical": "3" }',
             success: function(data) { result = data; }
           });
         },
@@ -354,7 +354,7 @@ $userlist .= " ]";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted a survey named ' + survey.title() + ' (id=' + survey.id + ')", "critical": "5" }',
+            data: '{ "surveyid": "' + survey.id + '", "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted a survey named ' + survey.title() + '", "critical": "5" }',
             success: function(data) { result = data; }
           });
         },
@@ -377,7 +377,7 @@ $userlist .= " ]";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' undeleted a survey named ' + survey.title() + ' (id=' + survey.id + ')", "critical": "5" }',
+            data: '{ "surveyid": "' + survey.id + '", "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' undeleted a survey named ' + survey.title() + '", "critical": "5" }',
             success: function(data) { result = data; }
           });
         },
@@ -519,7 +519,7 @@ $userlist .= " ]";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed survey to public for ' + survey.title() + ' (id=' + survey.id + ')", "critical": "3" }',
+            data: '{ "surveyid": "' + survey.id + '", "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed survey to public for ' + survey.title() + '", "critical": "3" }',
             success: function(data) { result = data; }
           });
         },
@@ -542,7 +542,7 @@ $userlist .= " ]";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed survey to private for ' + survey.title() + ' (id=' + survey.id + ')", "critical": "3" }',
+            data: '{ "surveyid": "' + survey.id + '", "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed survey to private for ' + survey.title() + '", "critical": "3" }',
             success: function(data) { result = data; }
           });
         },
@@ -575,7 +575,7 @@ $userlist .= " ]";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' created a new survey named ' + self.newSurveyName() + ' (id=' + survey.id + ')", "critical": "3" }',
+            data: '{ "surveyid": "' + survey.id + '", "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' created a new survey named ' + self.newSurveyName() + '", "critical": "3" }',
             success: function(data) { result = data; }
           });
         },
@@ -609,7 +609,7 @@ $userlist .= " ]";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' renamed a survey to ' + survey.title() + ' (id=' + survey.id + ')", "critical": "3" }',
+            data: '{ "surveyid": "' + survey.id + '", "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' renamed a survey to ' + survey.title() + '", "critical": "3" }',
             success: function(data) { result = data; }
           });
         },
@@ -636,7 +636,7 @@ $userlist .= " ]";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed a description for ' + survey.title() + ' (id=' + survey.id + ')", "critical": "3" }',
+            data: '{ "surveyid": "' + survey.id + '", "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed a description for ' + survey.title() + '", "critical": "3" }',
             success: function(data) { result = data; }
           });
         },
@@ -667,7 +667,7 @@ $userlist .= " ]";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed survey owner for ' + survey.title() + ' (id=' + survey.id + ')", "critical": "4" }',
+            data: '{ "surveyid": "' + survey.id + '", "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed survey owner for ' + survey.title() + '", "critical": "4" }',
             success: function(data) { result = data; }
           });
         },
@@ -677,13 +677,13 @@ $userlist .= " ]";
     }
     this.createSurveyObject = function (data) {
       var canedit = false; var owner = false; var admin = false;
-      if (userid == data.userid) { var owner = true; }
-      if (level == 9) { var canedit = true; var admin = true; } else if (level == 6) { var canedit = true; }
-      else if (level == 5) { if (owner == true) { var canedit = true; } } else if (level == 4) { var canedit = false; }
+      if (userid == data.userid) { owner = true; }
+      if (level == 9) { canedit = true; admin = true; } else if (level == 6) { canedit = true; }
+      else if (level == 5) { if (owner == true) { canedit = true; } } else if (level == 4) { canedit = false; }
       moment.locale('en');
       var s1 = moment(data.created).fromNow(); var s2 = moment(data.created).format("D MMM YYYY"); created = s2 + ' (' + s1 + ')';
       var t1 = moment(data.updated).fromNow(); var t2 = moment(data.updated).format("D MMM YYYY"); updated = t2 + ' (' + t1 + ')';
-      return new Listing(data.title, data.description, data.userid, created, updated, data.id, data.email, data.fullname, data.company, data.companyid, data.private, canedit, owner, data.rD, UserListing);
+      return new Listing(data.title, data.description, data.userid, created, updated, data.id, data.email, data.fullname, data.company, data.companyid, data.private, canedit, owner, admin, data.rD, UserListing, data.data);
     }
     this.onFail = function (error) { alert(JSON.stringify(error)); }
     this.showInfo = function (survey) { survey.showInfo(!survey.showInfo()); }
@@ -698,5 +698,77 @@ $userlist .= " ]";
   }
   jQuery(document).ready(function () { ko.applyBindings(new ViewModel()); });
 </script>
+
+<br>
+<hr style="margin-bottom:30px">
+
+<h4>Label definition</h4>
+<div class="row">
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <table class="table table-hover table-condensed small">
+      <!-- <thead>
+        <tr class="bg-success">
+          <th>Label</th>
+          <th>Definition</th>
+        </tr>
+      </thead> -->
+      <tbody>
+        <tr>
+          <td><button class="btn btn-tiny btn-default">Info <i class="pe-chevron-down"></i></button></td>
+          <td class="small">Project information such as title or description which can be edited either by owner or Manager.</td>
+        </tr>
+        <tr>
+          <td><button class="btn btn-tiny btn-success">View <i class="pe-plane"></i></button></td>
+          <td class="small">View the actual project questionnaire, the same version that respondents would see.</td>
+        </tr>
+        <tr>
+          <td><button class="btn btn-tiny btn-primary">1,631 respondent(s) <i class="pe-users"></i></button></td>
+          <td class="small">Information about respondents in the database which is only available for project private type.</td>
+        </tr>
+        <tr>
+          <td><button class="btn btn-tiny btn-default">Questionnaire design <i class="pe-edit"></i></button></td>
+          <td class="small">Enter the questionnaire design mode for editing all questions in the questionnaire.</td>
+        </tr>
+        <tr>
+          <td><button class="btn btn-tiny btn-default">Pilot test <i class="pe-paper-plane"></i></button></td>
+          <td class="small">Conduct a pilot test on the real questionnaire that respondent would see.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <table class="table table-hover table-condensed small">
+      <!-- <thead>
+        <tr class="bg-success">
+          <th>Label</th>
+          <th>Definition</th>
+        </tr>
+      </thead> -->
+      <tbody>
+        <tr>
+          <td><button class="btn btn-tiny btn-default">Progress <i class="pe-flask"></i></button></td>
+          <td class="small">Monitor the progress of data-collection and view interim data.</td>
+        </tr>
+        <tr>
+          <td><button class="btn btn-tiny btn-success">Result <i class="pe-line-chart"></i></button></td>
+          <td class="small">View results in real-time in graph and table mode and download the full data file.</td>
+        </tr>
+        <tr>
+          <td><button class="btn btn-tiny btn-default">Archive <i class="pe-archive"></i></button></td>
+          <td class="small">Move this project to Archive folder which considered as inactive.</td>
+        </tr>
+        <tr>
+          <td><button class="btn btn-tiny btn-default">Restore <i class="pe-undo"></i></button></td>
+          <td class="small">Restore this project from Archive foler back to Completed (being active again).</td>
+        </tr>
+        <tr>
+          <td><button class="btn btn-tiny btn-danger">Delete <i class="pe-trash"></i></button></td>
+          <td class="small">Delete this project from the system.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>

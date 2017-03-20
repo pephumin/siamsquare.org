@@ -1,5 +1,16 @@
 <?php
 
+if ($_GET['pilot'] == "✓") { $pilottest = 1; } else { $pilottest = 2; }
+if ($_GET['designer'] == "✓") { $readonly = 1; } else { $readonly = 0; }
+
+// copy results
+// 1. copy j_results to j_temp with structure and all data
+// 2. remove all excetp surveyid = 8 --> DELETE FROM `j_temp` WHERE `surveyid` <> 8;
+// 3. update to a new surveyid --> UPDATE `j_temp` SET surveyid = 19;
+// 4. insert back to j_results --> INSERT INTO `j_results` (`rd`, `email`, `ip`, `surveyid`, `submitted`, `data`, `status`) SELECT `rd`, `email`, `ip`, `surveyid`, `submitted`, `data`, `status` FROM `j_temp`
+// replace results
+// UPDATE `j_results` SET `data` = REPLACE(`data`, '8_', '19_') WHERE `surveyid` = 19
+
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/themes.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/functions.php';
@@ -13,16 +24,16 @@ if (empty($_GET['s'])) {
   $title = "เกิดข้อผิดพลาด";
   pageHeader($title);
   echo "<h2>ไม่พบแบบสอบถาม</h2>\n";
-  echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากไม่พบแบบสอบถาม กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
-  echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
+  echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากไม่พบแบบสอบถาม กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>\n";
+  echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>\n";
   echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้ เนื่องจากไม่พบแบบสอบถาม");
-  echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
+  echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>\n";
   pageFooter();
   exit;
 }
 
 // Get survey and company information (e.g. logo, website, etc.)
-$q1 = $db->prepare("SELECT P.*, C.company, C.description AS DD, C.logo, C.website FROM j_projects P, j_companies C WHERE P.companyid = C.id AND P.id = :surveyid");
+$q1 = $db->prepare("SELECT P.*, C.company, C.description AS DD, C.logo, C.website, C.email FROM j_projects P, j_companies C WHERE P.companyid = C.id AND P.id = :surveyid");
 $q1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q1->execute();
 if ($q1->rowCount() == 0) {
@@ -31,25 +42,27 @@ if ($q1->rowCount() == 0) {
   $title = "เกิดข้อผิดพลาด";
   pageHeader($title);
   echo "<h2>ไม่พบงานวิจัย</h2>\n";
-  echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากไม่พบงานวิจัย กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
-  echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
+  echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากไม่พบงานวิจัย กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>\n";
+  echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>\n";
   echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้เนื่องจากไม่พบงานวิจัย");
-  echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
+  echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>\n";
   pageFooter();
   exit;
 }
 while ($r = $q1->fetchObject()) {
   $project = $r->title;
   $status = $r->status;
-  $website = $r->website;
+  if ($status == 3) { $readonly = 1; $closed = 1; }
+  else if ($status > 3) { $readonly = 1; }
+  $cwebsite = $r->website;
+  $cemail = $r->email;
+  $ccompany = $r->company;
+  $cdescription = strip_tags($r->DD);
   $private = $r->private;
   if ($r->logo) {
-    if ($website) { $clientlogo = "<a href=\"$website\" title=\"$r->company\" target=\"_blank\"><img src=\"$r->logo\" title=\"$r->company\"></a>"; }
-    else { $clientlogo = "<img src=\"$r->logo\" title=\"$r->company\">"; }
-  }
-  else { $clientlogo = ""; }
-  $companyname = $r->company;
-  $desc = strip_tags($r->DD);
+    if ($cwebsite) { $clientlogo = "<a href=\"$cwebsite\" title=\"$ccompany\" target=\"_blank\"><img src=\"admin/$r->logo\" title=\"$ccompany\"></a>"; }
+    else { $clientlogo = "<img src=\"admin/$r->logo\" title=\"$ccompany\">"; }
+  } else { $clientlogo = ""; }
   $description = nl2br($r->description);
   if ($_showtopper) { $showtopper = $_showtopper; } else { $showtopper = $r->show_top; }
   if ($_shownavbar) { $shownavbar = $_shownavbar; } else { $shownavbar = $r->show_navbar; }
@@ -70,10 +83,10 @@ if ($private == 1) {
     // $title = "เกิดข้อผิดพลาด";
     // pageHeader($title);
     // echo "<h2>ไม่พบอีเมล์ของคุณ</h2>\n";
-    // echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากไม่พบอีเมล์ของคุณ กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
-    // echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
+    // echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากไม่พบอีเมล์ของคุณ กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>\n";
+    // echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>\n";
     // echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้เนื่องจากไม่พบอีเมล์ของคุณ");
-    // echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
+    // echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>\n";
     // pageFooter();
     // exit;
   } else if (empty($_GET["token"])) {
@@ -83,10 +96,10 @@ if ($private == 1) {
     // $title = "เกิดข้อผิดพลาด";
     // pageHeader($title);
     // echo "<h2>ไม่พบรหัสผ่าน</h2>\n";
-    // echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากไม่พบรหัสผ่าน กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
-    // echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
+    // echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากไม่พบรหัสผ่าน กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>\n";
+    // echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>\n";
     // echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้เนื่องจากไม่พบรหัสผ่าน");
-    // echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
+    // echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>\n";
     // pageFooter();
     // exit;
   } else {
@@ -98,10 +111,10 @@ if ($private == 1) {
       $title = "เกิดข้อผิดพลาด";
       pageHeader($title);
       echo "<h2>อีเมล์ของคุณไม่ถุกต้อง</h2>\n";
-      echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากอีเมล์ของคุณไม่ถุกต้อง กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
-      echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
+      echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากอีเมล์ของคุณไม่ถุกต้อง กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>\n";
+      echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>\n";
       echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้เนื่องจากอีเมล์ของคุณไม่ถุกต้อง");
-      echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
+      echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>\n";
       pageFooter();
       exit;
     } else {
@@ -111,10 +124,10 @@ if ($private == 1) {
           $title = "เกิดข้อผิดพลาด";
           pageHeader($title);
           echo "<h2>รหัสลับของคุณไม่ถุกต้อง</h2>\n";
-          echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากรหัสลับของคุณไม่ถุกต้อง กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
-          echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
+          echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากรหัสลับของคุณไม่ถุกต้อง กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>\n";
+          echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>\n";
           echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้เนื่องจากรหัสลับของคุณไม่ถุกต้อง");
-          echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
+          echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>\n";
           pageFooter();
           exit;
         } else {
@@ -145,10 +158,10 @@ if ($private == 1) {
       $title = "เกิดข้อผิดพลาด";
       pageHeader($title);
       echo "<h2>อีเมล์ของคุณไม่ถุกต้อง</h2>\n";
-      echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากอีเมล์ของคุณไม่ถุกต้อง กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
-      echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
+      echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากอีเมล์ของคุณไม่ถุกต้อง กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>\n";
+      echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>\n";
       echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้เนื่องจากอีเมล์ของคุณไม่ถุกต้อง");
-      echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
+      echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>\n";
       pageFooter();
       exit;
     } else {
@@ -158,10 +171,10 @@ if ($private == 1) {
           $title = "เกิดข้อผิดพลาด";
           pageHeader($title);
           echo "<h2>รหัสลับของคุณไม่ถุกต้อง</h2>\n";
-          echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากรหัสลับของคุณไม่ถุกต้อง กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
-          echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
+          echo "<p>ไม่สามารถทำรายการต่อได้เนื่องจากรหัสลับของคุณไม่ถุกต้อง กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>\n";
+          echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>\n";
           echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้เนื่องจากรหัสลับของคุณไม่ถุกต้อง");
-          echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
+          echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>\n";
           pageFooter();
           exit;
         } else {
@@ -202,35 +215,39 @@ if ($showsurvey != 1) {
   $title = "เกิดข้อผิดพลาด";
   pageHeader($title);
   echo "<h2>ไม่สามารถเข้าร่วมวิจัยได้</h2>\n";
-  echo "<p>ไม่สามารถทำรายการต่อได้ กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>";
-  echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>";
+  echo "<p>ไม่สามารถทำรายการต่อได้ กรุณาตรวจสอบให้แน่ใจว่าคุณได้พิมพ์ที่อยู่เว็บไซต์ได้ถูกต้องและครบถ้วน</p>\n";
+  echo "<p>หากจะให้แน่นอนที่สุด เราขอแนะนำให้กดจากลิ๊งที่คุณได้รับโดยตรง จะรับประกันได้ว่าไม่มีข้อผิดพลาดอย่างเด็ดขาด</p>\n";
   echo mkerror("เกิดข้อผิดพลาด ไม่สามารถทำรายการได้");
-  echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>";
+  echo "<p>คุณสามารถ<a href=\"/members/contact/\">ติดต่อมาที่เราได้ทุกเวลา</a> หากคุณมีความประสงค์ต้องการข้อมูลหรือความช่วยเหลือเพิ่มเติม</p>\n";
   pageFooter();
   exit;
 } else {
 
 $title = "ร่วมแสดงความคิดเห็น";
 pageHeader($title);
+
+if ($pilottest == 1) { echo "<div class='alert alert-warning'><i class='pe-exclamation-triangle pe-lg pe-fw'></i> You are in a pilot test mode where result will still be submitted but will not be included in the actual result.</div>\n"; }
+
+if ($readonly == 1) {
+  if ($closed == 1) { echo "<div class='alert alert-warning'><h4><i class='pe-clock-o pe-lg pe-fw'></i> โครงงานวิจัยนี้ได้ปิดรับความคิดเห็นไปแล้ว</h4><span>เนื่องจากโครงงานวิจัยชิ้นนี้ได้ปิดรับความคิดเห็นไปเป็นที่เรียบร้อยแล้ว คุณจะสามารถดูแบบสอบถามได้ <strong>แต่คุณจะไม่สามารถส่งความคิดเห็นได้</strong></span></div>\n"; }
+  else { echo "<div class='alert alert-warning'><i class='pe-exclamation-triangle pe-lg pe-fw'></i> Non respondents only view questionnaire in read-only mode where result will not be submitted.</div>\n"; }
+}
+
+if ($showdetail == 2) {
+  echo "<div class=\"row\" style=\"margin-top:20px\">\n";
+  echo "  <div class=\"container\">\n";
+  echo "    <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 projectdetail bg-info\">\n";
+  echo "      <h5 class=\"projectdetailhead\"><i class=\"pe-map-o pe-fw small\"></i> รายละเอียดงานวิจัย</h5>\n";
+  echo "      <p class=\"projectdescription\">$description</p>\n";
+  echo "    </div>\n";
+  echo "  </div>\n";
+  echo "</div>\n";
+}
+
+echo "<div id=\"showupload\"></div><div id=\"showcompletion\"></div><br>\n";
+echo "<div id=\"runsurvey\"></div><br>\n";
+echo "<div id=\"notification\"></div>\n";
 ?>
-
-<?php //if (($description) && ($showdetail == 2)) { ?>
-<?php if ($showdetail == 2) { ?>
-<div class="row" style="margin-top: 20px">
-  <div class="container">
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projectdetail bg-info">
-      <h5 class="projectdetailhead">รายละเอียดงานวิจัย</h5>
-      <p class="projectdescription"><?php echo $description; ?></p>
-    </div>
-  </div>
-</div>
-<?php } ?>
-
-<div id="showupload"></div><div id="showcompletion"></div>
-<br>
-<div id="runsurvey"></div>
-<br>
-<div id="notification"></div>
 
 <script type="text/javascript">
 
@@ -246,34 +263,24 @@ pageHeader($title);
     });
     return result;
   }
-  function postsurveydata(cid, cip, email, id, data, etitle) {
+  function postsurveydata(cid, cip, email, id, data, etitle, pilot) {
     var result = "";
+    if (pilot == 1) { logger = "/log/" + cid; logmessage = '"userid": "' + cid + '"'; loglevel = 2; }
+    else { logger = "/rlog/" + email; logmessage = '"email": "' + email + '"'; loglevel = 1; }
     $.ajax({
       url: api + '/submit',
       dataType: 'json',
       type: 'post',
       contentType: 'application/json; charset=utf-8',
-<?php if ($_GET['pilot'] == 1) { ?>
-      data: '{"rd": "' + cid + '", "ip": "' + cip + '", "email": "' + email + '", "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ', "status": "1" }',
-<?php } else { ?>
-      data: '{"rd": "' + cid + '", "ip": "' + cip + '", "email": "' + email + '", "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ', "status": "2" }',
-<?php } ?>
+      data: '{"rd": "' + cid + '", "ip": "' + cip + '", "email": "' + email + '", "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ', "status": ' + pilot + ' }',
       success: function(data) {
         $('#showcompletion').show();
         $.ajax({
-<?php if ($_GET['pilot'] == 1) { ?>
-          url: api + '/log/' + cid + '/' + id,
-<?php } else { ?>
-          url: api + '/rlog/' + cid + '/' + id,
-<?php } ?>
+          url: api + logger + '/' + id,
           dataType: 'json',
           type: 'post',
           contentType: 'application/json; charset=utf-8',
-<?php if ($_GET['pilot'] == 1) { ?>
-          data: '{ "userid": "' + cid + '", "ip": "' + cip + '", "data": "' + email + ' pilot tested a survey ' + etitle + ' (id=' + id + ')", "critical": "2" }',
-<?php } else { ?>
-          data: '{ "userid": "' + cid + '", "ip": "' + cip + '", "data": "' + email + ' conducted a survey ' + etitle + ' (id=' + id + ')", "critical": "2" }',
-<?php } ?>
+          data: '{ "surveyid": "' + id + '", ' + logmessage + ', "ip": "' + cip + '", "data": "' + email + ' pilot tested a survey ' + etitle + '", "critical": "' + loglevel + '" }',
           success: function(data) { result = data; }
         });
       }
@@ -305,7 +312,7 @@ pageHeader($title);
           dataType: 'json',
           type: 'post',
           contentType: 'application/json; charset=utf-8',
-          data: '{ "surveyid": "' + id + '","email": "' + email + '", "ip": "' + cip + '", "data": "' + email + ' clear saved survey results for ' + etitle + ' (id=' + id + ')", "critical": "2" }',
+          data: '{ "surveyid": "' + id + '","email": "' + email + '", "ip": "' + cip + '", "data": "' + email + ' clear saved survey results for ' + etitle + '", "critical": "2" }',
           success: function(data) { result = data; }
         });
       }
@@ -333,6 +340,8 @@ pageHeader($title);
   var email = "<?php echo $email; ?>";
   var title = "Project <?php echo $project; ?>";
   var ip = "<?php echo getip(); ?>";
+  var pilot = <?php echo $pilottest; ?>;
+  var readonly = <?php echo $readonly; ?>;
   var colour = <?php echo $showcolour; ?>;
   $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
   if (colour == 1) { Survey.defaultBootstrapCss.navigationButton = "btn btn-primary"; Survey.defaultBootstrapCss.progressBar = "progress-bar progress-bar-primary progress-bar-striped active"; }
@@ -345,27 +354,26 @@ pageHeader($title);
   else if (colour == 8) { Survey.defaultBootstrapCss.navigationButton = "btn btn-info"; Survey.defaultBootstrapCss.progressBar = "progress-bar progress-bar-info progress-bar-striped active"; }
   else { Survey.defaultBootstrapCss.navigationButton = "btn btn-info"; Survey.defaultBootstrapCss.progressBar = "progress-bar progress-bar-info progress-bar-striped active"; }
   Survey.Survey.cssType = "bootstrap";
-  var survey = new Survey.Survey (getsurveydata(surveyid), "runsurvey");
-  // survey.mode = "display"; // "edit" or "display" (read only)
-<?php if (!$_GET['pilot']) { ?>
-  var checksave = getsavesurveydata(surveyid, email);
-  if ((checksave.data == null) || (checksave.data == "")) { resultid = null; }
-  else {
-    survey.data = checksave.data; resultid = checksave.id;
-    moment.locale('en'); s1 = moment(checksave.saved).fromNow(); s2 = moment(checksave.saved).format("D MMM YYYY"); s3 = moment(checksave.saved).format("h:mm:ss a");
-    $('#notification').html("<div class='alert alert-warning'><h4><i class='pe-save pe-lg pe-fw'></i> พบข้อมูลเก่าค้างไว้จากครั้งก่อน</h4><span>ระบบพบข้อมูลเก่าบางส่วนที่คุณเคยทำไว้ตั้งแตวันที่่ " + s2 + " เวลา " + s3 + " (" + s1 + ") และคุณสามารถใช้ข้อมูลนี้ต่อได้ทันที<br>หากคุณต้องการเริ่มใหม่ คุณสามารถทำได้โดยกด <button type=\"button\" id=\"resetsave\" class=\"btn btn-xs btn-danger\">Reset</button></span></div>").hide();
-    $('#notification').show();
-    survey.onCurrentPageChanged.add(function(data) { $('#notification').hide(); });
+  var survey = new Survey.Model (getsurveydata(surveyid));
+  if (readonly == 1) { survey.mode = "display"; $(function () { $('#pageComplete').attr('disabled', 'disabled'); }); } else if (readonly == 0) { survey.mode = "edit"; }
+  if (pilot != 1) {
+    var checksave = getsavesurveydata(surveyid, email);
+    if ((checksave.data == null) || (checksave.data == "")) { resultid = null; }
+    else {
+      survey.data = checksave.data; resultid = checksave.id;
+      moment.locale('en'); s1 = moment(checksave.saved).fromNow(); s2 = moment(checksave.saved).format("D MMM YYYY"); s3 = moment(checksave.saved).format("h:mm:ss a");
+      $('#notification').html("<div class='alert alert-warning'><h4><i class='pe-save pe-lg pe-fw'></i> พบข้อมูลเก่าค้างไว้จากครั้งก่อน</h4><span>ระบบพบข้อมูลเก่าบางส่วนที่คุณเคยทำไว้ตั้งแตวันที่่ " + s2 + " เวลา " + s3 + " (" + s1 + ") และคุณสามารถใช้ข้อมูลนี้ต่อได้ทันที<br>หากคุณต้องการเริ่มใหม่ คุณสามารถทำได้โดยกด <button type=\"button\" id=\"resetsave\" class=\"btn btn-xs btn-danger\">Reset</button></span></div>").hide();
+      $('#notification').show();
+      survey.onCurrentPageChanged.add(function(data) { $('#notification').hide(); });
+    }
   }
-<?php } ?>
+  survey.render("runsurvey");
   $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> ระบบกำลังอัพโหลดรูปของคุณ ระหว่างนี้คุณสามารถทำรายการต่อได้ทันที และอีกสักครู่เมื่อระบบทำงานในส่วนนี้เสร็จ ข้อความนี้จะหายไปเอง</div>").hide();
   $('#showcompletion').html("<div class='alert alert-success'><i class='pe-check-square-o pe-lg pe-fw'></i> เราได้ทำการจัดเก็บความคิดเห็นของคุณลงระบบเป็นที่เรียบร้อยแล้ว</div>").hide();
   $('#resetsave').on('click', function() { clearsavesurveydata(resultid, ip, email, surveyid, title); });
-  survey.onComplete.add(function (s) { postsurveydata(cid, ip, email, surveyid, survey.data, title); });
+  survey.onComplete.add(function (s) { postsurveydata(cid, ip, email, surveyid, survey.data, title, pilot); });
   survey.onUploadFile.add(function (data) { $('#showupload').show(); setTimeout(function () { $("#showupload").slideUp(500, function () { $("#showupload").hide(); }); }, 6000); });
-<?php if (!$_GET['pilot']) { ?>
-  survey.onCurrentPageChanged.add(function (data) { autosavesurveydata(cid, ip, email, surveyid, survey.data, title); });
-<?php } ?>
+  if (pilot != 1) { survey.onCurrentPageChanged.add(function (data) { autosavesurveydata(cid, ip, email, surveyid, survey.data, title); }); }
   // survey.onComplete
   // survey.onCurrentPageChanged
   // survey.onValueChanged
@@ -380,25 +388,40 @@ pageHeader($title);
   // survey.onUploadFile
 </script>
 
-<?php if (($desc) && ($showabout == 2)) { ?>
+<?php if (($cdescription) && ($showabout == 2)) { ?>
 <div class="row companydetail" style="margin-top: 40px">
   <div class="container">
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 companybox">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
       <h5 class="companydetailhead">เกี่ยวกับบริษัท</h5>
     </div>
     <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 companylogoboxA">
-      <?php if ($showlogo == 2) { echo "<div class=\"companylogo\">$clientlogo</div>\n"; } else { echo "<div class=\"companyname\"><strong>$companyname</strong></div>\n"; } ?>
+<?php if ($showlogo == 2) { if ($clientlogo != "") { echo "      <div class=\"companylogo\">$clientlogo</div>\n"; } else { echo "      <div class=\"companyname\"><strong>$ccompany</strong></div>\n"; } } else { echo "      <div class=\"companyname\"><strong>$ccompany</strong></div>\n"; } ?>
     </div>
     <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 companylogoboxB"<?php if ($showlogo != true) { echo " style=\"font-size:85%\""; } ?>>
-      <?php if ($showlogo == 2) { echo "<div class=\"companylogo\"><a href=\"http://www.pebinary.com\" class=\"footerlogo\" title=\"PE BINARY CO., LTD.\">".peblogo()."</a></div>\n"; } else { echo "<div class=\"companyname\"><strong>".peblogo()."</strong></div>\n"; } ?>
+<?php if ($showlogo == 2) { echo "      <div class=\"companylogo\"><a href=\"http://www.pebinary.com\" class=\"footerlogo\" title=\"PE BINARY CO., LTD.\">".peblogo()."</a></div>\n"; } else { echo "      <div class=\"companyname\"><strong>".peblogo()."</strong></div>\n"; } ?>
     </div>
-    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 companybox">
-      <p class="companydescription"><i class="pe-globe pe-fw"></i> <a href="<?php echo $website; ?>" title="<?php echo $r->company; ?>" target="_blank"><?php echo $website; ?> <i class=\"pe-external-link\"></i></a></p><br>
-      <p class="companydescription"><?php echo $desc; ?></p>
+  </div>
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+      <p class="companydescription"><?php echo $cdescription; ?></p><br>
     </div>
-    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 companybox">
-      <p class="companydescription"><i class="pe-globe pe-fw"></i> <a href="http://www.pebinary.com" title="PE BINARY CO., LTD." target="_blank">http://www.pebinary.com</a></p><br>
-      <p class="companydescription">A revolutionary market research company founded in 2016 with a vision to help clients changing the way they access consumer insights. The company provides accurate and more responsive consumer insights allowing business decisions to be made quicker.</p>
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+      <p class="companydescription">A revolutionary market research company founded in 2016 with a vision to help clients changing the way they access consumer insights. The company provides accurate and more responsive consumer insights allowing business decisions to be made quicker.</p><br>
+    </div>
+  </div>
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+      <p class="companydescription">
+<?php if ($cwebsite) { echo "        <i class=\"pe-globe pe-fw\"></i> <a href=\"$cwebsite\" title=\"$ccompany\" target=\"_blank\">$cwebsite</a><br>\n"; } ?>
+<?php if ($cemail) { echo "        <i class=\"pe-envelope pe-fw\"></i> <a href=\"mailto:$cemail\" title=\"Contact $ccompany\" target=\"_blank\">$cemail</a><br>\n"; } ?>
+      </p>
+      <br>
+    </div>
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+      <p class="companydescription">
+        <i class="pe-globe pe-fw"></i> <a href="http://www.pebinary.com" title="PE BINARY CO., LTD." target="_blank">http://www.pebinary.com</a><br>
+        <i class="pe-envelope pe-fw"></i> <a href="mailto:info@pebinary.com" title="Contact PE BINARY CO., LTD." target="_blank">info@pebinary.com</a><br>
+      </p>
     </div>
   </div>
 </div>

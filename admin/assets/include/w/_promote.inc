@@ -17,7 +17,8 @@ if ($q->rowCount() == 0) {
   echo mkerror("In fact we typically consider such action as violent.");
   echo "<p>Our system has already recorded this error including your identity and timestamp.</p>";
   pageFooter();
-  $q = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " tried accessing a non-existing project', '5')");
+  $q = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '" . $_SESSION["email"] . " tried accessing a non-existing project', '5')");
+  $q->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
   $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
   $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
   $q->execute();
@@ -41,7 +42,8 @@ if ($_SESSION['level'] != "9") {
     echo mkerror("In fact we typically consider such action as violent.");
     echo "<p>Our system has already recorded this error including your identity and timestamp.</p>";
     pageFooter();
-    $q = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " tried editing a non-editable project', '5')");
+    $q = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '" . $_SESSION["email"] . " tried editing a non-editable project', '5')");
+    $q->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
     $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
     $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
     $q->execute();

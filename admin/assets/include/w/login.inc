@@ -1,10 +1,10 @@
 <?php
 
-$title = "Client login";
+$title = "The front page";
 pageHeader($title);
-echo "<h2>$title</h2>";
-echo "<p>This section is reserved only for our clients whom we have granted with a high level of secured access. Within this section you will be able to access to a highly confidential data such as questionnaire design, data collected from respondents, reports, etc. We carefully design our system to ensure such high important data is kept separately for different users or user groups.</p>\n";
-echo "<p>Should you need an access to our system, or should you need any further support on how-to use our system, you can either contact us directly or read our documents at our support site.</p>\n";
+echo "<h2>Welcome to <span class=\"ssqlogo1\">Siam</span><span class=\"ssqlogo2\">Square</span></h2>\n";
+echo "<p>A market research service platform which is built from an intention to help clients changing the way they access consumer insights. We believe consumer insights should be accurate and more responsive in order to allow a quicker business decision to be made and being ahead of competition.</p>\n";
+echo "<p>Only registered clients can access to our service. Feel free to contact us for more infomation or send us a request for an access.</p>\n";
 echo "<br>\n";
 
 if (isset($login)) {
@@ -46,7 +46,7 @@ if (isset($login)) {
     <button class="btn btn-warning" id="btn-login" data-loading-text="Loggin in..." data-reset-text="Completed" name="login" value="1" type="submit">Log in <i class="pe-check-circle-o"></i></button>
     <button class="btn btn-default" name="cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
-  <p class="text-center"><strong>[</strong> <i class="pe-flag pe-fw"></i> <a href="/admin/setup/?d=activation" title="Account activation">Account activation</a> <strong>:</strong> <i class="pe-life-ring pe-fw"></i> <a href="/admin/setup/" title="Reset password">Forgot password?</a> <strong>]</strong></p>
+  <p class="text-center"><strong>[</strong> <i class="pe-flag-o pe-fw"></i> <a href="/admin/setup/" title="Account activation">Account activation</a> <strong>:</strong> <i class="pe-life-ring pe-fw"></i> <a href="/admin/setup/?d=recovery" title="Reset password">Forgot password?</a> <strong>]</strong></p>
 </form>
 
 <script type="text/javascript">

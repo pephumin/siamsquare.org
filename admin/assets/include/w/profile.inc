@@ -1,5 +1,7 @@
 <?php
 
+$goback = "/admin/?w=profile";
+
 if ($_GET["m"] == "tips") {
 
   $title = "Choosing a strong password";
@@ -21,7 +23,7 @@ if ($_GET["m"] == "tips") {
 
 <br>
 
-<a href="/admin/?w=profile" class="btn btn-danger btn-sm pull-right" style="margin-top:50px; margin-bottom: 20px"><i class="pe-chevron-circle-left pe-fw"></i> Back to my profile page</a>
+<?php backButton($goback, "Back to profile page", "warning"); ?>
 
 <?php
 } else {
@@ -43,6 +45,7 @@ if ($_GET["m"] == "tips") {
 
   if ($_SESSION["lastlogin2"]) { $lastlogin = ago($_SESSION["lastlogin2"]); } else { $lastlogin = "Never"; }
   $registersince = ago($_SESSION["created"]);
+  $lastupdate = ago($_SESSION["updated"]);
 
   $title = "My profile";
   pageHeader($title);
@@ -76,6 +79,17 @@ if ($_GET["m"] == "tips") {
         <br>
         <table class="table">
           <tr>
+            <td width="25%" style="text-align:right">Full name</td>
+            <td width="5%"></td>
+            <td width="70%">
+              <div class="input-group">
+                <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
+                <input type="text" name="fullname" class="form-control" value="<?php echo $_SESSION["fullname"]; ?>" onclick="this.select()" readonly>
+              </div>
+              <span class="text-muted small"><small>Can be changed by each User (profile setting) or Manager (team member setting)</small></span>
+            </td>
+          </tr>
+          <tr>
             <td width="25%" style="text-align:right">Email</td>
             <td width="5%"></td>
             <td width="70%">
@@ -83,6 +97,7 @@ if ($_GET["m"] == "tips") {
                 <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
                 <input type="email" name="email" class="form-control" value="<?php echo $_SESSION["email"]; ?>" onclick="this.select()" readonly>
               </div>
+              <span class="text-muted small"><small>Contact us if you want to change this information</small></span>
             </td>
           </tr>
           <tr>
@@ -93,6 +108,7 @@ if ($_GET["m"] == "tips") {
                 <span class="input-group-addon"><i class="pe-building pe-fw"></i></span>
                 <input type="text" name="company" class="form-control" value="<?php echo $_SESSION["company"]; ?>" onclick="this.select()" readonly>
               </div>
+              <span class="text-muted small"><small>Can be changed only by Manager (company setting)</small></span>
             </td>
           </tr>
           <tr>
@@ -100,19 +116,21 @@ if ($_GET["m"] == "tips") {
             <td width="5%"></td>
             <td width="70%">
               <div class="input-group">
-                <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
+                <span class="input-group-addon"><i class="pe-flag pe-fw"></i></span>
                 <input type="text" name="role" class="form-control" value="<?php echo $_SESSION["role"]; ?>" onclick="this.select()" readonly>
               </div>
+              <span class="text-muted small"><small>Can be changed only by Manager (team member setting)</small></span>
             </td>
           </tr>
           <tr>
-            <td width="25%" style="text-align:right">Registered</td>
+            <td width="25%" style="text-align:right">Joined</td>
             <td width="5%"></td>
             <td width="70%">
               <div class="input-group">
                 <span class="input-group-addon"><i class="pe-calendar pe-fw"></i></span>
                 <input type="text" name="created" class="form-control" value="<?php echo shortdate($_SESSION["created"]); ?> (<?php echo ago($_SESSION["created"]); ?>)" onclick="this.select()" readonly>
               </div>
+              <span class="text-muted small"><small>Cannot be changed</small></span>
             </td>
           </tr>
           <tr>
@@ -120,6 +138,7 @@ if ($_GET["m"] == "tips") {
             <td width="5%"></td>
             <td width="70%">
 <?php echo $output; ?>
+              <span class="text-muted small"><small>Can be changed only by Manager (project section)</small></span>
             </td>
           </tr>
         </table>
@@ -132,27 +151,29 @@ if ($_GET["m"] == "tips") {
         <form id="updateinformation" class="form-horizontal" method="post" action="/admin/?w=profile">
           <table class="table">
             <tr>
-              <td width="25%" style="text-align:right">Full name</td>
+              <td width="25%" style="text-align:right">Full name <span class="label label-red">required</span></td>
               <td width="5%"></td>
               <td width="70%">
                 <div class="input-group">
                   <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
-                  <input type="text" name="fullname" class="form-control" placeholder="First name and surname" value="<?php echo $_SESSION["fullname"]; ?>">
+                  <input type="text" name="fullname" class="form-control" placeholder="First and last name" value="<?php echo $_SESSION["fullname"]; ?>">
                 </div>
+                <span class="text-muted small"><small>Please enter your full name including the first and last name</small></span>
               </td>
             </tr>
             <tr>
-              <td width="25%" style="text-align:right">Mobile No.</td>
+              <td width="25%" style="text-align:right">Mobile No. <span class="label label-blue">optional</span></td>
               <td width="5%"></td>
               <td width="70%">
                 <div class="input-group">
                   <span class="input-group-addon"><i class="pe-mobile pe-fw"></i></span>
                   <input type="text" name="mobile" class="form-control" placeholder="0814447777" value="<?php echo $_SESSION["mobile"]; ?>">
                 </div>
+                <span class="text-muted small"><small>Please entetr contactable mobile number following the example format</small></span>
               </td>
             </tr>
             <tr>
-              <td width="25%" style="text-align:right">Picture</td>
+              <td width="25%" style="text-align:right">Picture <span class="label label-blue">optional</span></td>
               <td width="5%"></td>
               <td width="70%">
                 <div class="input-group">
@@ -171,6 +192,7 @@ if ($_GET["m"] == "tips") {
 ?>
                   </select>
                 </div>
+                <span class="text-muted small"><small>You can optionally choose a display character</small></span>
               </td>
             </tr>
           </table>
@@ -218,6 +240,7 @@ if ($_GET["m"] == "tips") {
                   <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
                   <input type="password" name="oldpass" class="form-control" placeholder="Current password">
                 </div>
+                <span class="text-muted small"><small>Please enter your current password</small></span>
               </td>
             </tr>
             <tr>
@@ -228,6 +251,7 @@ if ($_GET["m"] == "tips") {
                   <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
                   <input type="password" name="newpass1" class="form-control" placeholder="New password">
                 </div>
+                <span class="text-muted small"><small>Please enter the new password</small></span>
               </td>
             </tr>
             <tr>
@@ -238,6 +262,7 @@ if ($_GET["m"] == "tips") {
                   <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
                   <input type="password" name="newpass2" class="form-control" placeholder="New password again">
                 </div>
+                <span class="text-muted small"><small>Please enter the new password one more time to confirm</small></span>
               </td>
             </tr>
           </table>
@@ -278,17 +303,20 @@ if ($_GET["m"] == "tips") {
     <h4>Others</h4>
     <div class="panel-group">
       <div class="panel panel-primary">
-        <div class="panel-body"><small>Last login: <strong><?php echo $lastlogin; ?></strong></small></div>
+        <div class="panel-body"><small>Joined: <strong><?php echo $registersince; ?></strong></small></div>
       </div>
       <div class="panel panel-primary">
-        <div class="panel-body"><small>Registered: <strong><?php echo $registersince; ?></strong></small></div>
+        <div class="panel-body"><small>Last updated: <strong><?php echo $lastupdate; ?></strong></small></div>
+      </div>
+      <div class="panel panel-primary">
+        <div class="panel-body"><small>Last seen: <strong><?php echo $lastlogin; ?></strong></small></div>
       </div>
     </div>
     <div class="list-group">
       <a href="/admin/?w=profile&amp;m=tips" class="list-group-item"><i class="pe-lightbulb-o pe-fw"></i> Tips for choosing a strong password</a>
       <a href="/admin/contact/" class="list-group-item"><i class="pe-question-circle pe-fw"></i> Need help? Click to contact us</a>
       <a href="/admin/setup/" class="list-group-item list-group-item-warning"><i class="pe-life-ring pe-fw"></i> Forgot password</a>
-      <a href="/admin/setup/?d=activation" class="list-group-item list-group-item-warning"><i class="pe-flag pe-fw"></i> Account activation</a>
+      <a href="/admin/setup/?d=activation" class="list-group-item list-group-item-warning"><i class="pe-flag-o pe-fw"></i> Account activation</a>
     </div>
   </div>
 </div>
@@ -302,9 +330,7 @@ if ($_GET["m"] == "tips") {
       $("#avatar2").attr("src", "assets/img/u/" + $(this).val() + ".svg");
     });
   });
-  $(function () {
-    $("#projectlist").css("height", parseInt($("#projectlist option").length) * 25);
-  });
+  $(function () { $("#projectlist").css("height", parseInt($("#projectlist option").length) * 25); });
 </script>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>

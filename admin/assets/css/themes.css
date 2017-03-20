@@ -11371,15 +11371,21 @@ ul.dropdown-menu {
     float: right;
     font-size: 0.9rem; }
   .companydetail p.companyname {
+    font-size: 0.85%; }
+  .companydetail p.companyname {
     font-family: "ubuntu";
     font-size: 0.9rem;
     padding: 10px 20px; }
   .companydetail i.pe-external-link {
     font-size: 70%; }
   .companydetail p.companydescription {
-    margin-bottom: 0px !important;
-    line-height: 1.15;
+    margin-bottom: 10px !important;
+    line-height: 1.2;
     font-size: 0.75rem; }
+  .companydetail p.companydescriptionth {
+    margin-bottom: 10px !important;
+    line-height: 1.2;
+    font-size: 0.8rem; }
 
 .btn, button, a[role=menuitem] {
   font-size: 0.9rem;

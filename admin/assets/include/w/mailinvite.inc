@@ -43,7 +43,8 @@ if ($q->rowCount() == 0) {
   echo mkerror("In fact we typically consider such action as violent.");
   echo "<p>Our system has already recorded this error including your identity and timestamp.</p>";
   pageFooter();
-  $q = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " tried accessing a non-existing project', '5')");
+  $q = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '" . $_SESSION["email"] . " tried accessing a non-existing project', '5')");
+  $q->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
   $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
   $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
   $q->execute();
@@ -67,7 +68,8 @@ if ($_SESSION['level'] != "9") {
     echo mkerror("In fact we typically consider such action as violent.");
     echo "<p>Our system has already recorded this error including your identity and timestamp.</p>";
     pageFooter();
-    $q = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " tried editing a non-editable project', '5')");
+    $q = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '" . $_SESSION["email"] . " tried editing a non-editable project', '5')");
+    $q->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
     $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
     $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
     $q->execute();
@@ -86,7 +88,8 @@ if ($_POST['saveme'] == 1) {
   $q1A->bindValue(':email_i_content', $email_i_content, PDO::PARAM_STR);
   $q1A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
   $q1A->execute();
-  $ql1A = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." edited email invitation template for $project (id=".$_GET['s'].")', '2')");
+  $ql1A = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '".$_SESSION['email']." edited email invitation template for $project (id=".$_GET['s'].")', '2')");
+  $ql1A->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
   $ql1A->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
   $ql1A->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql1A->execute();
@@ -102,7 +105,8 @@ if ($_POST['saveme'] == 1) {
 //   $q1B->bindValue(':email_r_content', $email_r_content, PDO::PARAM_STR);
 //   $q1B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 //   $q1B->execute();
-//   $ql1B = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." edited email reminder template for $project (id=".$_GET['s'].")', '2')");
+//   $ql1B = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '".$_SESSION['email']." edited email reminder template for $project (id=".$_GET['s'].")', '2')");
+//   $ql1B->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
 //   $ql1B->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
 //   $ql1B->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
 //   $ql1B->execute();
@@ -154,7 +158,8 @@ if ($_POST['saveme'] == 1) {
       }
       $mail->clearAddresses();
       $mail->clearAttachments();
-      // $q4 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." sent ".$amount." invitations for $project', '4')");
+      // $q4 = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '".$_SESSION['email']." sent ".$amount." invitations for $project', '4')");
+      // $q4->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
       // $q4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
       // $q4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
       // $q4->execute();

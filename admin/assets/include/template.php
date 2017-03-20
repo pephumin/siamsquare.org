@@ -17,10 +17,10 @@ function pageHeader($title) {
   if (isset($avatar)) { $show = "<img src=\"/admin/assets/img/u/$avatar.svg\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
   $v1 = ADMIN."?w=login"; $v2 = ADMIN."?w=logout"; $v3 = "http://www.pebinary.net/en/clients/";
   if ($_SESSION['logged_in']) {
-    $signed = "<a href=\"$v2\" class=\"btn btn-warning btn-xs\" title=\"Log out\"><i class=\"pe-sign-out pe-fw\"></i> Log out</a> <a href=\"$v3\" class=\"btn btn-danger btn-xs\"><i class=\"pe-university pe-fw\"></i> Help</a>\n";
+    $signed = "<a href=\"$v2\" class=\"btn btn-warning btn-xs\" title=\"Log out\"><i class=\"pe-sign-out pe-fw\"></i> Log out</a> <a href=\"$v3\" class=\"btn btn-danger btn-xs\"><i class=\"pe-university pe-fw\"></i> Help</a>";
     $ww = "Logged in as $show";
   } else {
-    $signed = "<a href=\"$v1\" class=\"btn btn-warning btn-xs\" title=\"Log in\"><i class=\"pe-power-off pe-fw\"></i> Log in</a> <a href=\"$v3\" class=\"btn btn-danger btn-xs\"><i class=\"pe-university pe-fw\"></i> Help</a>\n";
+    $signed = "<a href=\"$v1\" class=\"btn btn-warning btn-xs\" title=\"Log in\"><i class=\"pe-power-off pe-fw\"></i> Log in</a> <a href=\"$v3\" class=\"btn btn-danger btn-xs\"><i class=\"pe-university pe-fw\"></i> Help</a>";
     $ww = "<span class=\"deepgreen\"><i class=\"pe-info-circle pe-fw\"></i> Authorised clients only</span>";
   }
   header("Content-language: en");
@@ -56,12 +56,12 @@ function pageHeader($title) {
   echo "            <ul class=\"nav navbar-nav navbar-right\">\n";
   if ($_SESSION['logged_in'] == 1) {
     echo "              <li><a href=\"".ADMIN."\" title=\"".MYDESC."\"><i class=\"pe-home pe-fw\"></i> Home</a></i>\n";
-    echo "              <li><a href=\"".ADMIN."?w=surveys"."\" title=\"Research projects\"><i class=\"pe-cubes pe-fw\"></i> Projects</a></i>\n";
+    echo "              <li><a href=\"".ADMIN."?w=surveys"."\" title=\"Projects\"><i class=\"pe-cubes pe-fw\"></i> Projects</a></i>\n";
     echo "              <li class=\"dropdown\">\n";
     echo "                <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\"><i class=\"pe-cogs pe-fw\"></i> Setting <span class=\"caret\"></span></a>\n";
     echo "                <ul class=\"dropdown-menu\">\n";
     echo "                  <li><a href=\"".ADMIN."?w=profile"."\" title=\"Profile\"><i class=\"pe-user pe-fw\"></i> Profile</a></li>\n";
-    echo "                  <li><a href=\"".ADMIN."?w=team"."\" title=\"Team\"><i class=\"pe-graduation-cap pe-fw\"></i> Team</a></li>\n";
+    echo "                  <li><a href=\"".ADMIN."?w=team"."\" title=\"Team members\"><i class=\"pe-graduation-cap pe-fw\"></i> Team members</a></li>\n";
     if ($_SESSION['level'] >= "6") {
       echo "                  <li><a href=\"".ADMIN."?w=company"."\" title=\"Company\"><i class=\"pe-building pe-fw\"></i> Company</a></li>\n";
     }
@@ -71,8 +71,11 @@ function pageHeader($title) {
     echo "                <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\"><i class=\"pe-wrench pe-fw\"></i> Tools <span class=\"caret\"></span></a>\n";
     echo "                <ul class=\"dropdown-menu\">\n";
     echo "                  <li><a href=\"".ADMIN."?w=board"."\" title=\"Message board\"><i class=\"pe-wpforms pe-fw\"></i> Message board</a></li>\n";
-    echo "                  <li><a href=\"".ADMIN."?w=activity"."\" title=\"Activity\"><i class=\"pe-map-o pe-fw\"></i> Activity</a></li>\n";
-    // echo "                  <li><a href=\"".ADMIN."?w=data2table"."\" title=\"Data to table\"><i class=\"pe-table pe-fw\"></i> Data to table</a></li>\n";
+    echo "                  <li><a href=\"".ADMIN."?w=activity"."\" title=\"Activity\"><i class=\"pe-map-o pe-fw\"></i> Activity log</a></li>\n";
+    if ($_SESSION['level'] >= "8") {
+      echo "                  <li role=\"separator\" class=\"divider\"></li>\n";
+      echo "                  <li><a href=\"".ADMIN."?w=admin"."\" title=\"Administration\"><span style=\"color:red\"><i class=\"pe-gamepad pe-fw\"></i> Administration</span></a></li>\n";
+    }
     echo "                  <li role=\"separator\" class=\"divider\"></li>\n";
     echo "                  <li><a href=\"".ADMIN."contact/"."\" title=\"Contact us\"><i class=\"pe-envelope-o pe-fw\"></i> Contact us</a></li>\n";
     echo "                </ul>\n";
@@ -127,7 +130,7 @@ function pageFooter($notes = null) {
   echo "<div class=\"scroll-to-top\" style=\"display: block\"><i class=\"pe-arrow-up pe-lg white\"></i></div>\n";
   echo "<script type=\"text/javascript\" src=\"/admin/assets/js/etc.js\"></script>\n";
   if ($notes) { notify($notes); }
-  //debugOutput();
+  // debugOutput();
   echo "</body>\n";
   echo "</html>\n";
 }

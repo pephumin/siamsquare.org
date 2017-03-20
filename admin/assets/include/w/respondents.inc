@@ -42,15 +42,16 @@ if ($q1->rowCount() == 0) {
   echo mkerror("In fact we typically consider such action as violent.");
   echo "<p>Our system has already recorded this error including your identity and timestamp.</p>";
   pageFooter();
-  $q = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " tried accessing a non-existing project', '5')");
+  $q = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '" . $_SESSION["email"] . " tried accessing a non-existing project', '5')");
+  $q->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
   $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
   $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
   $q->execute();
   exit;
 }
-while ($row = $q1->fetchObject()) { $project = $row->title; $status = $row->status; }
+while ($row = $q1->fetchObject()) { $project = $row->title; $pstatus = $row->status; }
 if ($_SESSION['level'] != "9") {
-  if ($status < 1 || $status > 2) {
+  if ($pstatus == 0 || $pstatus == 4) {
     $title = "An error has been found";
     pageHeader($title);
     echo "<h2>This project is no longer editable</h2>\n";
@@ -59,13 +60,15 @@ if ($_SESSION['level'] != "9") {
     echo mkerror("In fact we typically consider such action as violent.");
     echo "<p>Our system has already recorded this error including your identity and timestamp.</p>";
     pageFooter();
-    $q = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " tried editing a non-editable project', '5')");
+    $q = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '" . $_SESSION["email"] . " tried editing a non-editable project', '5')");
+    $q->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
     $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
     $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
     $q->execute();
     exit;
   }
-}
+} else if ($pstatus == 3) { $showlink = 3; }
+// echo $showlink;
 
 if ($_POST['uploading'] == 1) {
   if (empty($_POST['surveyid'])) { echo "Cannot proceed without a surveyid"; }
@@ -99,7 +102,8 @@ if ($_POST['uploading'] == 1) {
     $qm2->execute();
     $qm3 = $db->prepare("DROP TABLE tmp");
     $qm3->execute();
-    $ql1 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." uploaded a name list of respondents for $project', '3')");
+    $ql1 = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '".$_SESSION['email']." uploaded a name list of respondents for $project', '3')");
+    $ql1->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
     $ql1->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
     $ql1->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
     $ql1->execute();
@@ -119,7 +123,8 @@ if ($_POST['uploading'] == 1) {
       $q2D->execute();
     }
   }
-  $ql5 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." manually added respondent emails for $project', '3')");
+  $ql5 = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '".$_SESSION['email']." manually added respondent emails for $project', '3')");
+  $ql5->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
   $ql5->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
   $ql5->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql5->execute();
@@ -130,7 +135,8 @@ if ($_POST['uploading'] == 1) {
   $q2A = $db->prepare("DELETE FROM j_respondents WHERE surveyid = 0 OR surveyid = :surveyid AND status = 0");
   $q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
   $q2A->execute();
-  $ql2 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." deleted respondent emails with errors for $project', '3')");
+  $ql2 = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '".$_SESSION['email']." deleted respondent emails with errors for $project', '3')");
+  $ql2->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
   $ql2->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
   $ql2->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql2->execute();
@@ -148,7 +154,8 @@ if ($_POST['uploading'] == 1) {
   $q2B3->execute();
   $q2B4 = $db->prepare("DROP TABLE tmp");
   $q2B4->execute();
-  $ql3 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." deleted respondent duplicated emails for $project', '3')");
+  $ql3 = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '".$_SESSION['email']." deleted respondent duplicated emails for $project', '3')");
+  $ql3->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
   $ql3->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
   $ql3->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql3->execute();
@@ -160,7 +167,8 @@ if ($_POST['uploading'] == 1) {
   $q2C = $db->prepare("DELETE FROM j_respondents WHERE surveyid = :surveyid AND id IN ($ids)");
   $q2C->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
   $q2C->execute();
-  $ql4 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." manually deleted respondent emails for $project', '3')");
+  $ql4 = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '".$_SESSION['email']." manually deleted respondent emails for $project', '3')");
+  $ql4->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
   $ql4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
   $ql4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql4->execute();
@@ -413,21 +421,38 @@ if ($total == 0) {
   echo "<br>\n";
   echo $help;
 } else {
-  if ($uncleaned) { echo $email_error; $showlink = false; } else { $showlink = true; }
-  if ($duplicated_records) { echo $email_duplicated; $showlink = false; } else { $showlink = true; }
-  if ($showlink == true) {
-    echo "<div class=\"alert alert-warning\" role=\"alert\">\n";
-    echo "  <h4><i class=\"pe-check-square pe-fw\"></i> Email sending function enabled</h4>\n";
-    echo "  <p>Because there is no error in the email list, the email sending function is now enabled.</p>\n";
-    echo "  <p>This means you can choose to send emails to these respondents by using below functions:</p>";
-    echo "  <div><a class=\"btn btn-warning\" href=\"$linkinvitation\"><i class=\"pe-envelope pe-fw\"></i> Send an invitation email</a> <a class=\"btn btn-warning disabled\" href=\"$linkreminder\"><i class=\"pe-envelope pe-fw\"></i> Send a reminder email</a></div>\n";
-    echo "</div>\n";
-  } else {
+  if (empty($showlink)) {
+    if ($uncleaned) { echo $email_error; $showlink = 1; } else { $showlink = 5; }
+    if ($duplicated_records) { echo $email_duplicated; $showlink = 2; } else { $showlink = 5; }
+  }
+  if ($showlink == 1) {
     echo "<div class=\"alert alert-warning\" role=\"alert\">\n";
     echo "  <h4><i class=\"pe-times pe-fw\"></i> Email sending function disabled</h4>\n";
     echo "  <p>Because our system still detects errors in the email list as shown in the box above, the email sending function is now disabled.</p>\n";
     echo "  <p>You must make sure the email list is error-free before you can send any emails to these respondents.</p>";
     echo "  <div><a class=\"btn btn-warning disabled\" href=\"$linkinvitation\"><i class=\"pe-envelope pe-fw\"></i> Send an invitation email</a> <a class=\"btn btn-warning disabled\" href=\"$linkreminder\"><i class=\"pe-envelope pe-fw\"></i> Send a reminder email</a></div>\n";
+    echo "</div>\n";
+  } else if ($showlink == 2) {
+    echo "<div class=\"alert alert-warning\" role=\"alert\">\n";
+    echo "  <h4><i class=\"pe-times pe-fw\"></i> Email sending function disabled</h4>\n";
+    echo "  <p>Because our system still detects duplications in the email list as shown in the box above, the email sending function is now disabled.</p>\n";
+    echo "  <p>You must make sure the email list is error-free before you can send any emails to these respondents.</p>";
+    echo "  <div><a class=\"btn btn-warning disabled\" href=\"$linkinvitation\"><i class=\"pe-envelope pe-fw\"></i> Send an invitation email</a> <a class=\"btn btn-warning disabled\" href=\"$linkreminder\"><i class=\"pe-envelope pe-fw\"></i> Send a reminder email</a></div>\n";
+    echo "</div>\n";
+  } else if ($showlink == 3) {
+    echo "<div class=\"alert alert-warning\" role=\"alert\">\n";
+    echo "  <h4><i class=\"pe-times pe-fw\"></i> Email sending function disabled</h4>\n";
+    echo "  <p>Because this project is currently marked as <strong>completed</strong> so the email sending function is no longer required.</p>\n";
+    echo "  <p>Our system has automatically disabled this function to protect any emails unintentionally sent to respondents.</p>";
+    echo "  <p>Additionally, our system has also disabled the function for adding new respondents.</p>";
+    echo "  <div><a class=\"btn btn-warning disabled\" href=\"$linkinvitation\"><i class=\"pe-envelope pe-fw\"></i> Send an invitation email</a> <a class=\"btn btn-warning disabled\" href=\"$linkreminder\"><i class=\"pe-envelope pe-fw\"></i> Send a reminder email</a></div>\n";
+    echo "</div>\n";
+  } else if ($showlink == 5) {
+    echo "<div class=\"alert alert-success\" role=\"alert\">\n";
+    echo "  <h4><i class=\"pe-check-square pe-fw\"></i> Email sending function enabled</h4>\n";
+    echo "  <p>Because there is no error in the email list, the email sending function is now enabled.</p>\n";
+    echo "  <p>This means you can choose to send emails to these respondents by using below functions:</p>";
+    echo "  <div><a class=\"btn btn-warning\" href=\"$linkinvitation\"><i class=\"pe-envelope pe-fw\"></i> Send an invitation email</a> <a class=\"btn btn-warning disabled\" href=\"$linkreminder\"><i class=\"pe-envelope pe-fw\"></i> Send a reminder email</a></div>\n";
     echo "</div>\n";
   }
   if ($_GET['m'] == "1") { $message = mksuccess("You have successfully uploaded and added respondents(s) to the database."); echo "<p>$message</p>\n"; }
@@ -437,25 +462,25 @@ if ($total == 0) {
   else if ($_GET['m'] == "5") { $message = mkwarn("Selected respondents(s) has/have been deleted."); echo "<p>$message</p>\n"; }
   else { echo "<p></p>\n"; }
 
-  echo "<div align=\"right\"><a class=\"btn btn-info\" href=\"\" data-toggle=\"modal\" data-target=\"#uploading\"><i class=\"pe-upload pe-fw\"></i> Upload a new name list</a> <a class=\"btn btn-info\" href=\"\" data-toggle=\"modal\" data-target=\"#manuallyadd\"><i class=\"pe-user-plus pe-fw\"></i> Manually add new respondents</a></div>\n";
-  echo "<br><br>\n";
+  if ($showlink == 3) { echo "<div align=\"right\"><a class=\"btn btn-info disabled\" data-toggle=\"modal\" data-target=\"#uploading\"><i class=\"pe-upload pe-fw\"></i> Upload a new name list</a> <a class=\"btn btn-info disabled\" data-toggle=\"modal\" data-target=\"#manuallyadd\"><i class=\"pe-user-plus pe-fw\"></i> Manually add new respondents</a></div><br><br>\n"; }
+  else { echo "<div align=\"right\"><a class=\"btn btn-info\" data-toggle=\"modal\" data-target=\"#uploading\"><i class=\"pe-upload pe-fw\"></i> Upload a new name list</a> <a class=\"btn btn-info\" data-toggle=\"modal\" data-target=\"#manuallyadd\"><i class=\"pe-user-plus pe-fw\"></i> Manually add new respondents</a></div><br><br>\n"; }
 
   if ($_GET['search']) { $me = $base."&size=".$_REQUEST['size']."&search=".$_GET['search']; }
   else { $me = $base."&size=".$_REQUEST['size']; }
   $pagination = "<nav class=\"pagination-centered\">\n";
   $pagination .= "  <ul class=\"pagination\">\n";
   if ($total >= 1 && $p <= $total) {
-    if (($p == 1) || (empty($p))) { $pagination .= "<li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=1\">1</a></li>"; }
-    else { $pagination .= "<li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=1\">1</a></li>"; }
+    if (($p == 1) || (empty($p))) { $pagination .= "<li class=\"active\"><a class=\"btn btn-sm\" href=\"".$me."&p=1\">1</a></li>"; }
+    else { $pagination .= "<li><a class=\"btn btn-sm\" href=\"".$me."&p=1\">1</a></li>"; }
     $i = max(2, $p - 2);
-    if ($i > 2) { $pagination .= "<li><a class=\"btn btn-sm\" role=\"button\" href=\"\" style=\"border:none\">...</a></li>"; }
+    if ($i > 2) { $pagination .= "<li><a class=\"btn btn-sm\" href=\"\" style=\"border:none\">...</a></li>"; }
     for (; $i < min($p + 3, $total); $i++) {
-      if ($i == $p) { $pagination .= "<li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>"; }
-      else { $pagination .= "<li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$i."\">".$i."</a></li>"; }
+      if ($i == $p) { $pagination .= "<li class=\"active\"><a class=\"btn btn-sm\" href=\"".$me."&p=".$i."\">".$i."</a></li>"; }
+      else { $pagination .= "<li><a class=\"btn btn-sm\" href=\"".$me."&p=".$i."\">".$i."</a></li>"; }
     }
-    if ($i != $total) { $pagination .= "<li><a class=\"btn btn-sm\" role=\"button\" href=\"\" style=\"border:none\">...</a></li>"; }
-    if ($p == $total) { $pagination .= "<li class=\"active\"><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$total."\">".$total."</a></li>"; }
-    else { $pagination .= "<li><a class=\"btn btn-sm\" role=\"button\" href=\"".$me."&p=".$total."\">".$total."</a></li>"; }
+    if ($i != $total) { $pagination .= "<li><a class=\"btn btn-sm\" href=\"\" style=\"border:none\">...</a></li>"; }
+    if ($p == $total) { $pagination .= "<li class=\"active\"><a class=\"btn btn-sm\" href=\"".$me."&p=".$total."\">".$total."</a></li>"; }
+    else { $pagination .= "<li><a class=\"btn btn-sm\" href=\"".$me."&p=".$total."\">".$total."</a></li>"; }
   }
   $pagination .= "  </ul>\n";
   $pagination .= "</nav>\n\n";

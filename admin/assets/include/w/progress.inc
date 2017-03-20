@@ -19,7 +19,8 @@ if ($q1->rowCount() == 0) {
   echo mkerror("In fact we typically consider such action as violent.");
   echo "<p>Our system has already recorded this error including your identity and timestamp.</p>";
   pageFooter();
-  $q = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " tried accessing a non-existing project', '5')");
+  $q = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '" . $_SESSION["email"] . " tried accessing a non-existing project', '5')");
+  $q->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
   $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
   $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
   $q->execute();
@@ -76,7 +77,8 @@ if ($_SESSION['level'] != "9") {
     echo mkerror("In fact we typically consider such action as violent.");
     echo "<p>Our system has already recorded this error including your identity and timestamp.</p>";
     pageFooter();
-    $q = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " tried editing a non-editable project', '5')");
+    $q = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '" . $_SESSION["email"] . " tried editing a non-editable project', '5')");
+    $q->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
     $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
     $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
     $q->execute();
@@ -102,29 +104,37 @@ $q2C->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2C->execute();
 $area = "[\n";
 $areacount = 0;
-while ($row = $q2C->fetchObject()) {
-  $SSDATE = $row->SSDATE;
-  $SSDATE = explode("-", $row->SSDATE);
-  $month = fullmonth($SSDATE[1], "short");
-  $NEWSSDATE = $SSDATE[2]." ".$month;
-  $SSCOUNT1 += $row->SSCOUNT1;
-  $SSCOUNT2 += $row->SSCOUNT2;
-  // $area .= "        [\"".$NEWSSDATE."\", ".$SSCOUNT1.", ".$SSCOUNT1."], \n";
-  if ($private == 1) { $area .= "        [\"".$NEWSSDATE."\", ".$SSCOUNT2.", ".$SSCOUNT1."], \n"; }
-  else { $area .= "        [\"".$NEWSSDATE."\", ".$SSCOUNT1."], \n"; }
-  $areacount++;
+if ($q2C->rowCount() < 1) { $SSCOUNT1 = "0"; $SSCOUNT2 = "0"; $NEWSSDATE = "-"; }
+else {
+  while ($row = $q2C->fetchObject()) {
+    $SSDATE = $row->SSDATE;
+    $SSDATE = explode("-", $row->SSDATE);
+    $month = fullmonth($SSDATE[1], "short");
+    $NEWSSDATE = $SSDATE[2]." ".$month;
+    $SSCOUNT1 += $row->SSCOUNT1;
+    $SSCOUNT2 += $row->SSCOUNT2;
+    // $area .= "        [\"".$NEWSSDATE."\", ".$SSCOUNT1.", ".$SSCOUNT1."], \n";
+    if ($private == 1) { $area .= "        [\"".$NEWSSDATE."\", ".$SSCOUNT2.", ".$SSCOUNT1."], \n"; }
+    else { $area .= "        [\"".$NEWSSDATE."\", ".$SSCOUNT1."], \n"; }
+    $areacount++;
+  }
 }
 $area .= "      ]";
 
 // Data for fieldwork summary boxes
-$b = date_parse_from_format("Y-m-d H:i:s", $LLL1);
-$bc = $b['year']."-".$b['month']."-".$b['day'];
-$begindate = $b['day']." ".fullmonth($b['month'], "short");
-$from = strtotime($bc);
-$today = time();
-$difference = $today - $from;
-$daysoffieldwork = floor($difference / 86400);
-echo "<h4>Summary of current project status</h4>\n";
+if ($LLL1) {
+  $b = date_parse_from_format("Y-m-d H:i:s", $LLL1);
+  $bc = $b['year']."-".$b['month']."-".$b['day'];
+  $begindate = $b['day']." ".fullmonth($b['month'], "short");
+  $from = strtotime($bc);
+  $today = time();
+  $difference = $today - $from;
+  $daysoffieldwork = floor($difference / 86400);
+} else {
+  $begindate = "-";
+  $daysoffieldwork = "0";
+}
+echo "<h4>Data collection up-to-date</h4>\n";
 echo "<div class=\"row\">\n";
 // echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
 // echo "    <div class=\"progresswrap\" style=\"width:85%; margin: 0 auto\">\n";
@@ -139,19 +149,11 @@ echo "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px 
 echo "    <br>\n";
 echo "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Sample achieved</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$SSCOUNT1</strong></h4></div>\n";
 echo "  </div>\n";
-echo "  <div class=\"col-xs-12 col-sm-9 col-md-9 col-lg-9 overlay-area\">\n";
+echo "  <div class=\"col-xs-12 col-sm-9 col-md-9 col-lg-9\">\n";
 echo "    <div style=\"width:100%; height:100%\"><center><div id=\"areachart\"></div></center></div>\n";
-if ($SSCOUNT1 >= 200) { echo "    <div class=\"overlay-marker\"><img src=\"assets/img/marker-green.svg\" title=\"A total sample size achieved so far\" alt=\"A total sample size achieved so far\" width=\"30\"></div>\n"; }
-else if ($SSCOUNT1 >= 80 && $SSCOUNT1 < 200) { echo "    <div class=\"overlay-marker\"><img src=\"assets/img/marker-yellow.svg\" title=\"A total sample size achieved so far\" alt=\"A total sample size achieved so far\" width=\"30\"></div>\n"; }
-else { echo "    <div class=\"overlay-marker\"><img src=\"assets/img/marker-red.svg\" title=\"A total sample size achieved so far\" alt=\"A total sample size achieved so far\" width=\"30\"></div>\n"; }
 echo "  </div>\n";
 echo "</div>\n";
 echo "<br>\n";
-echo "<style>\n";
-echo "  .overlay-area { position: relative; }\n";
-// echo "  .overlay-marker { position: absolute; top: 53px; left: 528px; }\n";
-echo "  .overlay-marker { position: absolute; }\n";
-echo "</style>\n";
 
 // Get stats
 $q2A = $db->prepare("SELECT COUNT(*) as q2A1, SUM(status = '0') AS q2A2, SUM(IF(invitation IS NOT NULL, 1, 0)) AS q2A3, SUM(IF(invitation IS NULL, 1, 0)) AS q2A4, SUM(IF(invitation IS NOT NULL AND participation IS NOT NULL, 1, 0)) AS q2A5, SUM(IF(invitation IS NOT NULL AND participation IS NULL, 1, 0)) AS q2A6 FROM j_respondents WHERE surveyid = :surveyid");
@@ -276,9 +278,9 @@ if ($valid > 0) {
 
 <script type="text/javascript">
 
-  var userid = <?php echo $_SESSION['userid']; ?>;
+  var companyid = parseInt("<?php echo $_SESSION['companyid']; ?>");
+  var userid = parseInt("<?php echo $_SESSION['userid']; ?>");
   var surveyid = <?php echo $_GET['s']; ?>;
-  var companyid = <?php echo $_SESSION['companyid']; ?>;
   var level = <?php echo $_SESSION['level']; ?>;
   var email = "<?php echo $_SESSION['email']; ?>";
   var ip = "<?php echo getip(); ?>";
@@ -501,18 +503,6 @@ if ($valid > 0) {
       pointSize: 5,
       chartArea: { width: "90%", height: "65%" }
     };
-    function placeMarker(d) {
-      var cli = this.getChartLayoutInterface();
-      var chartArea = cli.getChartAreaBoundingBox();
-<?php if ($private == 1) { ?>
-      document.querySelector('.overlay-marker').style.top = Math.floor(cli.getYLocation(d.getValue(<?php echo $areacount-1; ?>, 1))) + 45 + "px";
-      document.querySelector('.overlay-marker').style.left = Math.floor(cli.getXLocation(<?php echo $areacount-1; ?>)) - 0 + "px";
-<?php } else { ?>
-    document.querySelector('.overlay-marker').style.top = Math.floor(cli.getYLocation(d.getValue(<?php echo $areacount-1; ?>, 1))) - 35 + "px";
-    document.querySelector('.overlay-marker').style.left = Math.floor(cli.getXLocation(<?php echo $areacount-1; ?>)) - 0 + "px";
-<?php } ?>
-    };
-    google.visualization.events.addListener(chart, 'ready', placeMarker.bind(chart, dataTable));
     chart.draw(dataTable, options);
   }
 

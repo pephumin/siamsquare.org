@@ -49,7 +49,8 @@ if ($q1->rowCount() == 0) {
   echo mkerror("In fact we typically consider such action as violent.");
   echo "<p>Our system has already recorded this error including your identity and timestamp.</p>";
   pageFooter();
-  $q2 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " tried accessing a non-existing project', '5')");
+  $q2 = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '" . $_SESSION["email"] . " tried accessing a non-existing project', '5')");
+  $q2->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
   $q2->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
   $q2->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
   $q2->execute();
@@ -85,7 +86,8 @@ if ($_SESSION['level'] != "9") {
     echo mkerror("In fact we typically consider such action as violent.");
     echo "<p>Our system has already recorded this error including your identity and timestamp.</p>";
     pageFooter();
-    $q = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " tried editing a non-editable project', '5')");
+    $q = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '" . $_SESSION["email"] . " tried editing a non-editable project', '5')");
+    $q->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
     $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
     $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
     $q->execute();
@@ -288,7 +290,7 @@ foreach($options as $a => $b) {
         <pre><code class="r">var survey = new Survey.Model({
   showQuestionNumbers: &#x22;off&#x22;,
   questions: [
-    { type: &#x22;radiogroup&#x22;, name: &#x22;haveKids&#x22;, title: &#x22;Do you have a kid(s)?&#x22;, choices:[&#x22;Yes&#x22;, &#x22;No&#x22;], colCount: 0},
+    { type: &#x22;radiogroup&#x22;, name: &#x22;haveKids&#x22;, title: &#x22;Do you have a kid(s)?&#x22;, choices:[&#x22;Yes&#x22;, &#x22;No&#x22;], colCount: 0 },
     { type: &#x22;dropdown&#x22;, name: &#x22;kids&#x22;, title: &#x22;How many kids do you have&#x22;, visibleIf: &#x22;{haveKids}=&#x27;Yes&#x27;&#x22;, choices:[1, 2, 3, 4, 5] }
   ]
 });
@@ -417,7 +419,8 @@ survey.render(&#x22;surveyElement&#x22;);</code></pre>
   // Survey.JsonObject.metaData.removeProperty("questionbase", "commentText");
   var editor = new SurveyEditor.SurveyEditor("editor", options);
   var surveyid = <?php echo $_GET['s']; ?>;
-  var userid = <?php echo $_SESSION['userid']; ?>;
+  // var companyid = parseInt("<?php echo $_SESSION['companyid']; ?>");
+  var userid = parseInt("<?php echo $_SESSION['userid']; ?>");
   var email = "<?php echo $_SESSION['email']; ?>";
   var ip = "<?php echo $_SESSION['ip']; ?>";
   var level = <?php echo $_SESSION['level']; ?>;
@@ -450,7 +453,7 @@ survey.render(&#x22;surveyElement&#x22;);</code></pre>
           dataType: 'json',
           type: 'post',
           contentType: 'application/json; charset=utf-8',
-          data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' edited and saved ' + mm.title + ' (id=' + mm.id + ')", "critical": "2" }',
+          data: '{ "surveyid": "' + surveyid + '", "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' edited and saved ' + mm.title + '", "critical": "2" }',
           success: function(data) { result = data; }
         });
       }

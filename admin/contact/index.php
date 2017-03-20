@@ -1,11 +1,13 @@
 <?php
 
-$title = "Contact us";
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/template.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/functions.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.login.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.phpmailer.php';
 
 $sent = false;
+$title = "Contact us";
 
 $login = new Login();
 
@@ -57,11 +59,11 @@ echo "<br>\n";
       <div class="input-group">
         <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
 <?php if ($sent) { ?>
-        <input type="text" class="form-control" name="name" placeholder="First &amp; Last Name" value="<?php echo htmlspecialchars($name); ?>" disabled>
+        <input type="text" class="form-control" name="name" placeholder="First &amp; last Name" value="<?php echo htmlspecialchars($name); ?>" disabled>
 <?php } else if ($_SESSION["logged_in"] == 1) { ?>
         <input type="text" class="form-control" name="name" value="<?php echo $_SESSION["fullname"]; ?>" readonly>
 <?php } else { ?>
-        <input type="text" class="form-control" name="name" placeholder="First &amp; Last Name" value="<?php echo htmlspecialchars($name); ?>">
+        <input type="text" class="form-control" name="name" placeholder="First &amp; last Name" value="<?php echo htmlspecialchars($name); ?>">
 <?php } ?>
       </div>
     </div>

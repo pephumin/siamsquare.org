@@ -1,8 +1,14 @@
 <?php
 
-$title = "สมัครสมาชิกใหม่ด้วยอีเมล์";
-require_once $_SERVER['DOCUMENT_ROOT'].'/members/assets/include/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/functions.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/members/assets/include/template.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/members/assets/include/login.class.php';
+// require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.json2csv.php';
+// require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.imgresize.php';
+// require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.phpmailer.php';
 
+$title = "สมัครสมาชิกใหม่ด้วยอีเมล์";
 pageHeader($title);
 echo "<h2>$title</h2>\n";
 echo "<p>เราเปิดรับสมาชิกใหม่อยู่ <strong>รีบสมัครเลยเพราะเรารับจำนวนจำกัดเท่านั้น</strong></p>\n";
@@ -17,7 +23,7 @@ $fields = array('username','password','email','fname','lname');
 
 if (isset($_POST['submit'])) {
   if (isset($msg)) { break; }
-  $checksql = "SELECT id FROM ".X_RESPONDENT." WHERE username = "._addslashes($_POST['email']);
+  $checksql = "SELECT id FROM j_respondents WHERE username = "._addslashes($_POST['email']);
   $checkresult = execute_sql($checksql);
   if (record_count($checkresult) > 0) { $msg = mkerror("อีเมล์นี้มีอยู่ในระบบแล้ว คุณไม่ควรสมัครสมาชิกใหม่ คุณควรจะทำรายการด้วยการกู้รหัสผ่าน"); break; }
   db_close($checkresult);
@@ -31,7 +37,7 @@ if (isset($_POST['submit'])) {
   }
   array_push($sqlf, 'realm'); array_push($sqlv, 'RD-Email');
   $sqlf = implode(',', $sqlf); $sqlv = implode(',', $sqlv);
-  $sql = "INSERT INTO ".X_RESPONDENT." ($sqlf) VALUES ($sqlv)";
+  $sql = "INSERT INTO j_respondents ($sqlf) VALUES ($sqlv)";
   $res = execute_sql($sql);
   if ($res) { $msg = mksuccess("ระบบได้ดำเนินการสมัครสมาชิกใหม่ให้กับคุณเป็นที่เรียบร้อยแล้ว กรุณาล็อคอินเพื่อเริ่มต้นใช้งานได้ทันที"); }
   foreach ($fields as $f) { $_POST[$f] = null; unset($_POST[$f]); }

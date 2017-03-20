@@ -3,8 +3,8 @@
 $title = "Team members";
 pageHeader($title);
 echo "<h2>$title</h2>";
-echo "<p>User with an account level of Manager will be able to manage your team members. This includes an ability to create new users, edit existing users, or even suspend or delete users where required.</p>\n";
-echo "<p><strong>It is important to note that once a new member has been created, the new account has to be activated before it can be used</strong> (<a href=\"http://www.siamsquare.org/admin/setup/?d=activation\" title=\"Account Activation\">http://www.siamsquare.org/admin/setup/?d=activation</a>).</p>\n";
+echo "<p>If your level is Manager, you have an ability to manage your team members which includes adding a new user, editing or suspending an existing user, or even deleting should you need to. For others who are not Manager, this page will be more or less read-only for you.</p>\n";
+echo "<p>And when adding a new member, you must make sure <strong>a valid email is used</strong> and <strong>the new member must activate his/her account</strong> (at <a href=\"http://www.siamsquare.org/admin/setup/\" title=\"Account Activation\">http://www.siamsquare.org/admin/setup/</a>) before he/she can access our system.</p>\n";
 echo "<p></p><br>\n";
 
 $rolelist = "[ ";
@@ -17,18 +17,18 @@ $rolelist .= " ]";
 
 <div class="rows">
   <?php if ($_SESSION['level'] >= "6") { ?>
-  <div class="col-sm-12" style="text-align:right">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="text-align:right">
     <p class="pull-right"><a class="btn btn-success" data-bind="click: createNew, enable: !isNewMemberCreating()" href=""><i class="pe-user-plus pe-fw"></i> New member</a></p>
   </div>
   <?php } ?>
-  <div class="col-sm-12">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
     <div id="showalert-create"></div><div id="showalert-delete"></div><div id="showalert-edit"></div><div id="showalert-suspend"></div><div id="showalert-reactivate"></div><div id="showalert-changerole"></div>
   </div>
 </div>
-
+<br>
 <div class="row">
 <?php if ($_SESSION['level'] >= "6") { ?>
-  <div data-bind="visible: isNewMemberCreating" class="col-xs-12 col-sm-7 col-md-4 col-lg-4" style="margin-bottom:20px">
+  <div data-bind="visible: isNewMemberCreating" class="col-xs-6 col-sm-4 col-md-4 col-lg-4" style="margin-bottom:20px">
     <div class="members">
       <div class="opq">
         <div class="members-header-new"></div>
@@ -41,6 +41,7 @@ $rolelist .= " ]";
           <a class="btn btn-primary btn-tiny" data-bind="click: postNew, enable: newMemberName() != '', enable: newMemberEmail() != ''" href=""><i class="pe-user-plus"></i> Create</a>
           <a class="btn btn-default btn-tiny" data-bind="click: cancelNew" href=""><i class="pe-times-circle-o"></i> Cancel</a><br><br>
           <small class="red">Only create using a working email</small>
+          <br><br>
         </div>
       </div>
     </div>
@@ -120,45 +121,43 @@ $rolelist .= " ]";
 <?php if ($_SESSION['level'] >= "6") { ?>
       <p>
         <span data-bind="css: { 'opaque': issuspended }"><a class="btn btn-default btn-tiny ontop" data-bind="click: $parent.showInfo, css: { 'disabled': issuspended }"><i class="pe-cogs"></i> Edit <i class="" data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a></span>
-        <a class="btn btn-success btn-tiny" data-bind="click: $parent.reactivate, visible: issuspended" href=""><i class="pe-pause-circle"></i> Reactivate</a>
-        <a class="btn btn-warning btn-tiny" data-bind="click: $parent.suspend, visible: !issuspended" href=""><i class="pe-pause-circle"></i> Suspend</a>
-        <span data-bind="visible: showInfo()">
-          <!-- <a class="btn btn-danger btn-tiny" data-bind="click: $parent.delete, css: { 'disabled': issuspended }" href=""><i class="pe-trash"></i> Delete</a> -->
-          <a class="btn btn-danger btn-tiny" data-bind="click: $parent.delete, css: { 'disabled': issuspended }" href="" data-toggle="modal" data-target="#confirm-delete" title="Delete this user"><i class="pe-trash"></i> Delete</a>
+        <a class="btn btn-success btn-tiny" data-bind="click: $parent.reactivate, visible: issuspended"><i class="pe-play-circle"></i> Reactivate</a>
+        <a class="btn btn-warning btn-tiny" data-bind="click: $parent.suspend, visible: !issuspended"><i class="pe-pause-circle"></i> Suspend</a>
+        <span data-bind="if: candeletemember, visible: showInfo()">
+          <a class="btn btn-danger btn-tiny" data-bind="if: candeletemember, click: $parent.delete, css: { 'disabled': issuspended }"><i class="pe-trash"></i> Delete</a>
+          <!-- <a class="btn btn-danger btn-tiny" data-href="click: $parent.delete, css: { 'disabled': issuspended }" data-toggle="modal" data-target="#confirm-delete" title="Delete this user"><i class="pe-trash"></i> Delete</a> -->
         </span>
+        <div data-bind="if: candeletemember, visible: showInfo()" class="small red" style="margin: auto 10px">Note: Once a member is deleted, there is no going back. Please be certain.</div>
       </p>
 <?php } ?>
     </div>
   </div>
-  <div data-bind="template: { name: 'confirm-delete-modal' }"></div>
+  <!-- <div data-bind="template: { name: 'confirm-delete-modal' }, click: $parent.delete"></div> -->
   <!-- /ko -->
 </div>
 
-<script type="text/html" id="confirm-delete-modal">
+<!-- <script type="text/html" id="confirm-delete-modal">
   <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-body">
           <h4>Confirm delete?</h4>
           <p>Are you sure that you want to delete this member permanently?</p>
-          <p>
-            <a type="button" href="" class="btn btn-danger btn-ok" data-bind="click: $parent.delete">Delete <i class="pe-trash-o"></i></a>
-            <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-close">Cancel</button>
-          </p>
+          <p><button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> <a class="btn btn-danger btn-ok" data-bind="click: $root.delete">Delete <i class="pe-trash-o"></i></a></p>
         </div>
       </div>
     </div>
   </div>
-</script>
+</script> -->
 
 <script type="text/javascript">
 
-  var userid = <?php echo $_SESSION['userid']; ?>;
+  var companyid = parseInt("<?php echo $_SESSION['companyid']; ?>");
+  var userid = parseInt("<?php echo $_SESSION['userid']; ?>");
   var email = "<?php echo $_SESSION['email']; ?>";
   var fullname = "<?php echo $_SESSION['fullname']; ?>";
   var mobile = "<?php echo $_SESSION['mobile']; ?>";
   var avatar = "/admin/assets/img/u/<?php echo $_SESSION['avatar']; ?>.svg";
-  var companyid = <?php echo $_SESSION['companyid']; ?>;
   var company = "<?php echo $_SESSION['company']; ?>";
   var status = <?php echo $_SESSION['status']; ?>;
   var role = "<?php echo $_SESSION['role']; ?>";
@@ -181,7 +180,7 @@ $rolelist .= " ]";
     this.role = ko.observable(role);
     this.list = ko.computed(function() { return this.role() + " (" + this.level() + ")"; }, this);
   }
-  var Listing = function (id, userid, email, fullname, mobile, avatar, companyid, status, role, level, created, updated, lastlogin, lastlogin2, counts, RoleListing, issuspended, islocked) {
+  var Listing = function (id, userid, email, fullname, mobile, avatar, companyid, status, role, level, created, updated, lastlogin, lastlogin2, counts, RoleListing, issuspended, islocked, candeletemember) {
     this.id = ko.observable(id);
     this.userid = ko.observable(userid);
     this.email = ko.observable(email);
@@ -214,15 +213,10 @@ $rolelist .= " ]";
     options = <?php echo $rolelist; ?>;
     this.rlist = ko.observableArray(options);
     this.selectedRole = ko.observable(level);
-    this.deleting = ko.observable("");
+    this.candeletemember = candeletemember;
   }
   var ViewModel = function () {
     var self = this;
-    // this.showModal = function (member) {
-    //   this.deleting(member.id());
-    //   // console.log(member.id());
-    //   $('#confirm-delete').modal('show');
-    // };
     this.members = ko.observableArray([]);
     this.url = api;
     this.isNewMemberCreating = ko.observable(false);
@@ -243,6 +237,7 @@ $rolelist .= " ]";
       });
     }
     this.suspend = function (member) {
+      console.log(member.id());
       $.ajax({
         url: api + '/member/' + member.id() + '/suspend',
         dataType: 'json',
@@ -270,6 +265,7 @@ $rolelist .= " ]";
       window.setTimeout(function () { window.location.reload(); }, 3300);
     }
     this.reactivate = function (member) {
+      console.log(member.id());
       $.ajax({
         url: api + '/member/' + member.id() + '/reactivate',
         dataType: 'json',
@@ -297,6 +293,7 @@ $rolelist .= " ]";
       window.setTimeout(function () { window.location.reload(); }, 3300);
     }
     this.delete = function (member) {
+      console.log(member.id());
       $.ajax({
         url: api + '/member/' + member.id() + '/delete',
         dataType: 'json',
@@ -307,14 +304,14 @@ $rolelist .= " ]";
           $('#showalert-delete').show();
           window.setTimeout(function () { $("#showalert-delete").slideUp(500, function () { $("#showalert-delete").hide(); }); }, 3000);
           self.removeMember(member);
-          $.ajax({
-            url: api + '/log',
-            dataType: 'json',
-            type: 'post',
-            contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted a member named ' + member.fullname() + ' (' + member.email() + ')", "critical": "5" }',
-            success: function(data) { result = data; }
-          });
+          // $.ajax({
+          //   url: api + '/log',
+          //   dataType: 'json',
+          //   type: 'post',
+          //   contentType: 'application/json; charset=utf-8',
+          //   data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted a member named ' + member.fullname() + ' (' + member.email() + ')", "critical": "5" }',
+          //   success: function(data) { result = data; }
+          // });
           $('.modal-backdrop').hide();
           $('body').removeClass('modal-open');
           $('#confirm-delete').hide();
@@ -337,7 +334,7 @@ $rolelist .= " ]";
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed role for ' + member.fullname() + ' (' + member.email() + ')", "critical": "4" }',
+            data: '{ "surveyid": "' + surveyid + '", "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' changed role for ' + member.fullname() + ' (' + member.email() + ')", "critical": "4" }',
             success: function(data) { result = data; }
           });
         },
@@ -490,10 +487,16 @@ $rolelist .= " ]";
       if (data.lastlogin != null) { var sc1 = moment(data.lastlogin).fromNow(); var sc2 = moment(data.lastlogin).format("D MMM YYYY"); lastlogin = sc2 + ' (' + sc1 + ')'; } else { lastlogin = "Never login"; }
       if (data.lastlogin2 != null) { var sd1 = moment(data.lastlogin2).fromNow(); var sd2 = moment(data.lastlogin2).format("D MMM YYYY"); lastlogin2 = sd2 + ' (' + sd1 + ')'; } else { lastlogin2 = "Never login"; }
       if (data.avatar != null) { avatar = "/admin/assets/img/u/" + data.avatar + ".svg"; } else { avatar = "/admin/assets/img/u/M10.svg"; }
-      if (data.level == 9) { role = "Administrator"; } else if (data.level == 6) { role = "Manager"; } else if (data.level == 5) { role = "User"; } else if (data.level == 4) { role = "Guest"; }
       var issuspended = false; if (data.status == 2) { issuspended = true; } else { issuspended = false; }
       var islocked = false; if (data.status == 3) { islocked = true; } else { islocked = false; }
-      return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, avatar, companyid, data.status, role, data.level, created, updated, lastlogin, lastlogin2, data.counts, RoleListing, issuspended, islocked);
+      var candeletemember = false;
+      if (level >= 6) {
+        if (level > data.level) { candeletemember = true; }
+        else { candeletemember = true; }
+      }
+      else if (level < 6) { candeletemember = false; }
+      if (data.level == 9) { role = "Administrator"; } else if (data.level == 8) { role = "Support"; } else if (data.level == 6) { role = "Manager"; } else if (data.level == 5) { role = "User"; } else if (data.level == 4) { role = "Guest"; }
+      return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, avatar, companyid, data.status, role, data.level, created, updated, lastlogin, lastlogin2, data.counts, RoleListing, issuspended, islocked, candeletemember);
     }
     this.onFail = function (error) { alert(JSON.stringify(error)); }
     this.showInfo = function (member) { member.showInfo(!member.showInfo()); }
@@ -501,14 +504,8 @@ $rolelist .= " ]";
   }
   jQuery(document).ready(function () { ko.applyBindings(new ViewModel()); });
 
-  $(document).ready(function() { $("body").tooltip({ selector: '[data-toggle=tooltip]' }); });
-  // $('#confirm-delete').on('show.bs.modal', function(e) {
-  //   $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
-  // });
-
-  $(document).on('keypress', function (e) {
-    if ($('#confirm-delete').is(':visible')) { if (e.which == 13) { window.location= $("#confirm-delete .btn-ok", this).attr("href"); } }
-  });
+  $('#confirm-delete').on('show.bs.modal', function(e) { $(this).find('.btn-ok').attr('data-href', $(e.relatedTarget).data('href')); });
+  $(document).on('keypress', function (e) { if ($('#confirm-delete').is(':visible')) { if (e.which == 13) { window.location= $("#confirm-delete .btn-ok", this).attr("data-bind"); } } });
 
 </script>
 
@@ -516,13 +513,13 @@ $rolelist .= " ]";
 
 <h3>Information on account type</h3>
 
-<p>While we have several account types, we currently provide two account types to our clients which are an <strong>user</strong> and a <strong>manager</strong>.</p>
+<p>While we have several account types, we currently provide two account types to our clients which are an <strong>user</strong> and a <strong>manager</strong>. It is quite common that our clients tend to have just one (or two) manager account together with several user accounts.</p>
 
 <table class="table table-hover small">
   <thead>
-    <tr class="bg-primary">
-      <th width="20%">Type</th>
-      <th>Description</th>
+    <tr class="bg-success">
+      <th width="20%"><i class="pe-flag pe-fw"></i> Role</th>
+      <th><i class="pe-paperclip pe-fw"></i> Description</th>
     </tr>
   </thead>
   <tbody>
@@ -541,16 +538,14 @@ $rolelist .= " ]";
       </td>
     </tr>
     <tr>
-      <td>Guest</td>
+      <td><del>Guest</del> (currently disabled)</td>
       <td>
-        <p>Guest account is a readonly account and only specific to a survey project. This account type is different from respondent because Guest can still access the client section.</p>
-        <p>This account type is useful for providing some of the team members a temporary access (such as fieldwork, DP, or sometimes can be used for providing access only to view survey results).</p>
+        <p><del>Guest account is a readonly account and only specific to a survey project. This account type is different from respondent because Guest can still access the client section.</del></p>
+        <p><del>This account type is useful for providing some of the team members a temporary access (such as fieldwork, DP, or sometimes can be used for providing access only to view survey results).</del></p>
       </td>
     </tr>
   </tbody>
 </table>
-
-<p>It is quite common that our clients tend to have just one (or two) manager account together with several user accounts.</p>
 
 <br>
 
