@@ -11,4 +11,4 @@ run
 siamsquare.sql
 members/assets/upload
 *.csv
-*.png
+1/*
