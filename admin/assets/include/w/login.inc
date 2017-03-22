@@ -1,5 +1,6 @@
 <?php
 
+$me = "/admin/";
 $title = "The front page";
 pageHeader($title);
 echo "<h2>Welcome to <span class=\"ssqlogo1\">Siam</span><span class=\"ssqlogo2\">Square</span></h2>\n";
@@ -15,7 +16,7 @@ if (isset($login)) {
 ?>
 <br>
 
-<form id="clientloginform" method="post" class="form-horizontal" action="<?php echo(htmlspecialchars(ME)); ?>">
+<form id="clientloginform" method="post" class="form-horizontal" action="<?php echo(htmlspecialchars($me)); ?>">
   <div class="form-group">
     <label for="username" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Email</label>
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
@@ -46,7 +47,13 @@ if (isset($login)) {
     <button class="btn btn-warning" id="btn-login" data-loading-text="Loggin in..." data-reset-text="Completed" name="login" value="1" type="submit">Log in <i class="pe-check-circle-o"></i></button>
     <button class="btn btn-default" name="cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
-  <p class="text-center"><strong>[</strong> <i class="pe-flag-o pe-fw"></i> <a href="/admin/setup/" title="Account activation">Account activation</a> <strong>:</strong> <i class="pe-life-ring pe-fw"></i> <a href="/admin/setup/?d=recovery" title="Reset password">Forgot password?</a> <strong>]</strong></p>
+  <br>
+  <p class="text-center">
+    <strong>[</strong> <i class="pe-flag-o pe-fw"></i> <a href="/admin/setup/" title="Account activation">Account activation</a>
+    <strong>&middot;</strong> <i class="pe-life-ring pe-fw"></i> <a href="/admin/setup/?d=recovery" title="Reset password">Forgot password?</a>
+    <strong>&middot;</strong> <i class="pe-envelope-o pe-fw"></i> <a href="/admin/contact/" title="Contact us">Contact us</a>
+    <strong>]</strong>
+  </p>
 </form>
 
 <script type="text/javascript">
@@ -57,8 +64,8 @@ if (isset($login)) {
       button: { selector: '[type="submit"]', disabled: '' },
       excluded: ':disabled',
       fields: {
-        email: { validators: { notEmpty: { message: 'The login is required' }, emailAddress: { message: 'Please enter a valid email address' } } },
-        password: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 4, message: 'Password must be more than 6 characters long' }, different: { field: 'email', message: 'The password cannot be the same as the login' } } }
+        email: { err: 'tooltip', validators: { notEmpty: { message: 'Login is required' }, emailAddress: { message: 'Please enter a valid email address' } } },
+        password: { err: 'tooltip', validators: { notEmpty: { message: 'Password is required' }, stringLength: { min: 4, message: 'Password must be more than 6 characters long' }, different: { field: 'email', message: 'The password cannot be the same as the login' } } }
       }
     });
   });

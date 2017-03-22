@@ -75,7 +75,7 @@ class Login {
         $q4->execute();
       }
     }
-    if (!isset($result_row->id)) { $this->errors[] = mkerror("This account does not exist in our system. If you are one of our clients, please <a href='/admin/request/' class='alert-link'>click here</a> to request for an access."); }
+    if (!isset($result_row->id)) { $this->errors[] = mkerror("This account does not exist in our system. If you are one of our clients, please <a href='/admin/contact/?d=request' class='alert-link'>click here</a> to request for an access."); }
     else if ($result_row->status == 1) { $this->errors[] = mkerror("This account has been deleted, please contact your Manager for more information."); }
     else if ($result_row->status == 2) { $this->errors[] = mkerror("This account has been suspended, please contact your Manager to reactivate it."); }
     else if ($result_row->status == 3) {
@@ -101,28 +101,29 @@ class Login {
       $q2->bindValue(':ip', $ip, PDO::PARAM_STR);
       $q2->bindValue(':email', $result_row->email, PDO::PARAM_STR);
       $q2->execute();
-      $q3 = $this->db->prepare("SELECT U.*, C.company FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.email = :email");
+      $q3 = $this->db->prepare("SELECT U.*, C.fullname as cfullname, C.fullname_th as cfullname_th FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.email = :email");
       $q3->bindValue(':email', $result_row->email, PDO::PARAM_STR);
       $q3->execute();
       $resulty = $q3->fetchObject();
-      $_SESSION['logged_in'] = 1;                     $this->logged_in = true;
-      $_SESSION['userid'] = $resulty->id;             $this->userid = $resulty->id;
-      $_SESSION['email'] = $result_row->email;        $this->email = $result_row->email;
-      $_SESSION['companyid'] = $resulty->companyid;   $this->companyid = $resulty->companyid;
-      $_SESSION['company'] = $resulty->company;       $this->company = $resulty->company;
-      $_SESSION['fullname'] = $resulty->fullname;     $this->fullname = $resulty->fullname;
-      $_SESSION['mobile'] = $resulty->mobile;         $this->mobile = $resulty->mobile;
-      $_SESSION['avatar'] = $resulty->avatar;         $this->avatar = $resulty->avatar;
-      $_SESSION['status'] = $resulty->status;         $this->status = $resulty->status;
-      $_SESSION['level'] = $resulty->level;           $this->level = $resulty->level;
-      $_SESSION['created'] = $resulty->created;       $this->created = $resulty->created;
-      $_SESSION['updated'] = $resulty->updated;       $this->updated = $resulty->updated;
-      $_SESSION['lastlogin'] = $resulty->lastlogin;   $this->lastlogin = $resulty->lastlogin;
-      $_SESSION['lastlogin2'] = $resulty->lastlogin2; $this->lastlogin2 = $resulty->lastlogin2;
-      $_SESSION['ip'] = $ip;                          $this->ip = $ip;
-      $_SESSION['lastip'] = $resulty->lastip;         $this->lastip = $resulty->lastip;
-      $_SESSION['lastip2'] = $resulty->lastip2;       $this->lastip2 = $resulty->lastip2;
-      $_SESSION['role'] = role($resulty->level);      $this->role = role($resulty->level);
+      $_SESSION['logged_in'] = 1;                          $this->logged_in = true;
+      $_SESSION['userid'] = $resulty->id;                  $this->userid = $resulty->id;
+      $_SESSION['email'] = $result_row->email;             $this->email = $result_row->email;
+      $_SESSION['companyid'] = $resulty->companyid;        $this->companyid = $resulty->companyid;
+      $_SESSION['cfullname'] = $resulty->cfullname;        $this->cfullname = $resulty->cfullname;
+      $_SESSION['cfullname_th'] = $resulty->cfullname_th;  $this->cfullname_th = $resulty->cfullname_th;
+      $_SESSION['fullname'] = $resulty->fullname;          $this->fullname = $resulty->fullname;
+      $_SESSION['mobile'] = $resulty->mobile;              $this->mobile = $resulty->mobile;
+      $_SESSION['avatar'] = $resulty->avatar;              $this->avatar = $resulty->avatar;
+      $_SESSION['status'] = $resulty->status;              $this->status = $resulty->status;
+      $_SESSION['level'] = $resulty->level;                $this->level = $resulty->level;
+      $_SESSION['created'] = $resulty->created;            $this->created = $resulty->created;
+      $_SESSION['updated'] = $resulty->updated;            $this->updated = $resulty->updated;
+      $_SESSION['lastlogin'] = $resulty->lastlogin;        $this->lastlogin = $resulty->lastlogin;
+      $_SESSION['lastlogin2'] = $resulty->lastlogin2;      $this->lastlogin2 = $resulty->lastlogin2;
+      $_SESSION['ip'] = $ip;                               $this->ip = $ip;
+      $_SESSION['lastip'] = $resulty->lastip;              $this->lastip = $resulty->lastip;
+      $_SESSION['lastip2'] = $resulty->lastip2;            $this->lastip2 = $resulty->lastip2;
+      $_SESSION['role'] = role($resulty->level);           $this->role = role($resulty->level);
       $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$result_row->email." logged in', '1')");
       $q4->bindValue(':userid', $resulty->id, PDO::PARAM_INT);
       $q4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
@@ -142,12 +143,12 @@ class Login {
       list ($userid, $token, $hash) = explode(':', $_COOKIE['siamsquare']);
       if ($hash == hash('sha256', $userid . ':' . $token . COOKIE_KEY) && !empty($token)) {
         if ($this->dbconnect()) {
-          $q0 = $this->db->prepare("SELECT U.id, U.email, U.companyid, C.company, U.status, U.level, U.fails, U.fails_last, U.fails_ip FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.id = :userid AND U.token = :token AND U.token IS NOT NULL");
+          $q0 = $this->db->prepare("SELECT U.id, U.email, U.companyid, C.fullname as cfullname, C.fullname_th as cfullname_th, U.status, U.level, U.fails, U.fails_last, U.fails_ip FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.id = :userid AND U.token = :token AND U.token IS NOT NULL");
           $q0->bindValue(':userid', $userid, PDO::PARAM_INT);
           $q0->bindValue(':token', $token, PDO::PARAM_STR);
           $q0->execute();
           $result = $q0->fetchObject();
-          if (!isset($result->id)) { $this->errors[] = mkerror("This account does not exist in our system. If you are one of our clients, please <a href='/admin/request/' class='alert-link'>click here</a> to request for a free access."); }
+          if (!isset($result->id)) { $this->errors[] = mkerror("This account does not exist in our system. If you are one of our clients, please <a href='/admin/contact/?d=request' class='alert-link'>click here</a> to request for a free access."); }
           else if ($result->status == 1) { $this->errors[] = mkerror("This account has been deleted, please contact your Manager for more information."); }
           else if ($result->status == 2) { $this->errors[] = mkerror("This account has been suspended, please contact your Manager to reactivate it."); }
           else if ($result->status == 3) {
@@ -157,13 +158,14 @@ class Login {
           }
           else if ($result->status == 4) { $this->errors[] = mkerror("This account in currently set to be inactive, please contact your Manager to reactivate it."); }
           else if (($result->status == 5) && (isset($result->email))) {
-            $_SESSION['logged_in'] = 1;                  $this->logged_in = true;
-            $_SESSION['email'] = $result->email;         $this->email = $result->email;
-            $_SESSION['companyid'] = $result->companyid; $this->companyid = $result->companyid;
-            $_SESSION['company'] = $result->company;     $this->company = $result->company;
-            $_SESSION['status'] = $result->status;       $this->status = $result->status;
-            $_SESSION['level'] = $result->level;         $this->level = $result->level;
-            $_SESSION['role'] = role($result->level);    $this->role = role($result->level);
+            $_SESSION['logged_in'] = 1;                         $this->logged_in = true;
+            $_SESSION['email'] = $result->email;                $this->email = $result->email;
+            $_SESSION['companyid'] = $result->companyid;        $this->companyid = $result->companyid;
+            $_SESSION['cfullname'] = $result->cfullname;        $this->cfullname = $result->cfullname;
+            $_SESSION['cfullname_th'] = $result->cfullname_th;  $this->cfullname_th = $result->cfullname_th;
+            $_SESSION['status'] = $result->status;              $this->status = $result->status;
+            $_SESSION['level'] = $result->level;                $this->level = $result->level;
+            $_SESSION['role'] = role($result->level);           $this->role = role($result->level);
             $q1 = $this->db->prepare("UPDATE j_users SET lastlogin2 = lastlogin, lastip2 = lastip WHERE email = :email");
             $q1->bindValue(':email', $_SESSION['email'], PDO::PARAM_STR);
             $q1->execute();
@@ -372,18 +374,20 @@ class Login {
     global $url;
     $mail = new PHPMailer;
     $mail->IsMail();
-    $mail->FromName = EMAILNOREPLY;
+    $mail->setFrom(EMAILNOREPLY);
     $mail->addAddress($email);
     $mail->IsHTML(true);
     $mail->CharSet="utf-8";
-    if ($d == "activation") { $subject = "Account activation at SiamSquare"; }
-    else if ($d == "recovery") { $subject = "Password reset at SiamSquare"; }
-    $mail->Subject = $subject;
+    if ($d == "activation") { $mail->Subject = "Account activation at SiamSquare"; }
+    else if ($d == "recovery") { $mail->Subject = "Password reset at SiamSquare"; }
+    $date = date("M d, Y"); $time = date("h:m");
+    $datetime = "Email sent on ".$date." at ".$time;
     $template = $_SERVER['DOCUMENT_ROOT'].'/admin/assets/email/setup.html';
     $message = file_get_contents($template, $message);
+    $message = str_replace('%datetime%', $datetime, $message);
     $message = str_replace('%subject%', $subject, $message);
     $message = str_replace('%sendto%', $email, $message);
-    $message = str_replace('%siamsquare%', 'SiamSquare', $message);
+    $message = str_replace('%siamsquare%', MYTITLE, $message);
     $link = MYHOME.$url.'?email='.urlencode($email).'&verification='.urlencode($password_reset);
     $message = str_replace('%link%', $link, $message);
     $mail->msgHTML($message);
