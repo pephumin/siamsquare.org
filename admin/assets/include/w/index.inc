@@ -12,7 +12,8 @@ if ($q1->rowCount()) {
   if ($r->logo) { $d1 = "<img src=\"$r->logo\" title=\"$r->company\">"; }
   if ($r->website) { $d2 = "<a href=\"$r->website\" title=\"$r->company\" target=\"_blank\">$d1</a>"; } else { $d2 = $d1; }
   $clientlogo = "<div class=\"pull-right\" style=\"margin-top:0px\">$d2</div>\n";
-  $companyname = $r->company;
+  if ($r->fullname_th) { $companyname = $r->fullname." <small>&laquo; ".$r->fullname_th." &raquo;</small>"; }
+  else { $companyname = $r->fullname; }
 }
 
 echo "<h2>The main dashboard</h2>\n";
@@ -48,15 +49,20 @@ $percentActive = percent($totalActive / $totalALL); $percentInactive = percent($
 $percentStatus1 = percent($ustatus1 / $totalALL); $percentStatus2 = percent($ustatus2 / $totalALL);
 $percentStatus3 = percent($ustatus3 / $totalALL); $percentStatus4 = percent($ustatus4 / $totalALL);
 $percentStatus5 = percent($ustatus5 / $totalALL);
-echo "    <h3>".$_SESSION['fullname']."</h3>\n";
-$new = "<a class=\"btn btn-success\"><i class=\"pe-cube pe-fw\"></i> New project</a>";
-if ($totalALL == 0) { echo "    <br><p>Currently you do <u>not</u> have any survey projects under your direct management so there is no stats to be shown here.</p><p>You can create a new project at anytime by clicking $new in the survey page.\n"; }
+if ($_SESSION['avatar']) { echo "    <div class=\"pull-right\" style=\"margin-top:0px\"><img src=\"assets/img/u/".$_SESSION['avatar'].".svg\" class=\"img-circle members-photo\"></div>\n"; }
+echo "    <h3>".$_SESSION['fullname']." <small>&laquo; ".$_SESSION['email']." &raquo;</small></h3>\n";
+echo "    <h4>Summary of all your projects</h4>\n";
+$new = "<a href=\"/admin/?w=surveys\" class=\"btn btn-success\"><i class=\"pe-cube pe-fw\"></i> New project</a>";
+if ($totalALL == 0) { echo "    <p>Currently you do <u>not</u> have any survey projects under your direct management so there is no stats to be shown here.</p>\n"; echo "    <p>You can create a new project at anytime by clicking $new in the survey page.\n"; }
 else {
+  if ($totalALL == 1) { echo "    <p>You directly manage <strong>$totalALL project</strong>"; if ($totalActive == 1) { echo " and it is an active project.</p>\n"; } else if ($totalInactive == 1) { echo " and it is an inactive project.</p>\n"; } }
+  else if ($totalALL > 1) { echo "    <p>You directly manage <strong>$totalALL projects</strong> including <strong>$totalActive</strong> active and <strong>$totalInactive</strong> inactive respectively.</p>\n"; }
+  echo "    <br>\n";
 ?>
-    <h4>Summary of all your projects</h4>
-    <p>You directly manage <strong><?php echo $totalALL; ?> project(s)</strong> where <strong><?php echo $totalActive; ?> project(s)</strong> are active and <strong><?php echo $totalInactive; ?> project(s)</strong> are inactive e.g. either archived or deleted.</p>
-    <br>
     <div class="row">
+      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+        <div id="piechart1" style="height:200px"></div>
+      </div>
       <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
         <table class="table table-hover small">
           <thead>
@@ -96,9 +102,6 @@ else {
 <?php } ?>
           </tbody>
         </table>
-      </div>
-      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-        <div id="piechart1" style="height:200px"></div>
       </div>
     </div>
     <br>
@@ -269,41 +272,37 @@ foreach ($rr as $r) {
   $email = $r['email'];
   if ($r['lastlogin']) { $lastlogin = ago($r['lastlogin']); } else { $lastlogin = "Never"; }
   $role = role($r['level']);
-  if ($r['level'] == 9) {
+  if (($r['level'] == 6) || ($r['level'] == 5) || ($r['level'] == 4)) {
     if ($r['email'] == $_SESSION['email']) { $orgdata .= "            <tr bgcolor='#D7EFFD'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww1</td><td align='right'>$ww0</td></tr>\n"; }
     else { $orgdata .= "            <tr><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww1</td><td align='right'>$ww0</td></tr>\n"; }
     // $bdata .= "          [ '".addslashes($fullname)."', $w1, $w ], \n";
     $bdata .= "      [ '".addslashes($firstname[0])."', $w1, $w1, $w0, $w0 ], \n";
   }
-  else if ($r['level'] == 6) {
-    if ($r['email'] == $_SESSION['email']) { $orgdata .= "            <tr bgcolor='#D7EFFD'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww1</td><td align='right'>$ww0</td></tr>\n"; }
-    else { $orgdata .= "            <tr><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww1</td><td align='right'>$ww0</td></tr>\n"; }
-    // $bdata .= "          [ '".addslashes($fullname)."', $w1, $w ], \n";
-    $bdata .= "      [ '".addslashes($firstname[0])."', $w1, $w1, $w0, $w0 ], \n";
-  }
-  else if ($r['level'] == 5) {
-    if ($r['email'] == $_SESSION['email']) { $orgdata .= "            <tr bgcolor='#D7EFFD'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww1</td><td align='right'>$ww0</td></tr>\n"; }
-    else { $orgdata .= "            <tr><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww1</td><td align='right'>$ww0</td></tr>\n"; }
-    // $bdata .= "          [ '".addslashes($fullname)."', $w1, $w ], \n";
-    $bdata .= "      [ '".addslashes($firstname[0])."', $w1, $w1, $w0, $w0 ], \n";
-  }
-  else if ($r['level'] == 4) {
-    if ($r['email'] == $_SESSION['email']) { $orgdata .= "            <tr bgcolor='#D7EFFD'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww1</td><td align='right'>$ww0</td></tr>\n"; }
-    else { $orgdata .= "            <tr><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww1</td><td align='right'>$ww0</td></tr>\n"; }
-    // $bdata .= "          [ '".addslashes($fullname)."', $w1, $w ], \n";
-    $bdata .= "      [ '".addslashes($firstname[0])."', $w1, $w1, $w0, $w0 ], \n";
-  }
+  // else if ($r['level'] == 9) {
+  //   if ($r['email'] == $_SESSION['email']) { $orgdata .= "            <tr bgcolor='#D7EFFD'><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww1</td><td align='right'>$ww0</td></tr>\n"; }
+  //   else { $orgdata .= "            <tr><td><strong>$fullname</strong><br><small>Email: $email</small><br><small class=\"grey\">Last seen: $lastlogin</small></td><td>$role</td><td align='right'>$ww1</td><td align='right'>$ww0</td></tr>\n"; }
+  //   // $bdata .= "          [ '".addslashes($fullname)."', $w1, $w ], \n";
+  //   $bdata .= "      [ '".addslashes($firstname[0])."', $w1, $w1, $w0, $w0 ], \n";
+  // }
   $height3 = $height3 + "45";
   $j++;
 }
 $bdata .= "    ]";
+
+if ($clientlogo) { echo $clientlogo; }
+echo "<h3>$companyname</h3>\n";
+echo "<h4>Summary of all projects</h4>\n";
+if ($sstotal == 0) { echo "    <p>Currently the company does <u>not</u> have any survey projects so there is no stats to be shown here.</p>\n"; echo "    <p>You can create a new project at anytime by clicking $new in the survey page.\n"; }
+else {
+  if ($sstotal == 1) { echo "    <p>The company currently has <strong>$sstotal project</strong>"; if ($ssActive == 1) { echo " and it is an active project.</p>\n"; } else if ($ssInactive == 1) { echo " and it is an inactive project.</p>\n"; } }
+  else if ($sstotal > 1) { echo "    <p>The company currently has <strong>$sstotal projects</strong> including <strong>$ssActive</strong> active and <strong>$ssInactive</strong> inactive respectively.</p>\n"; }
+  echo "    <br>\n";
+}
 ?>
-    <?php echo $clientlogo; ?>
-    <h3><?php echo $companyname; ?></h3>
-    <h4>Summary of all projects</h4>
-    <p>There are <strong><?php echo $sstotal; ?> project(s)</strong> where <strong><?php echo $ssActive; ?> project(s)</strong> are active and <strong><?php echo $ssInactive; ?> project(s)</strong> are inactive e.g. either archived or deleted.</p>
-    <br>
     <div class="row">
+      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+        <div id="piechart2" style="height:200px"></div>
+      </div>
       <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
         <table class="table table-hover small">
           <thead>
@@ -344,12 +343,9 @@ $bdata .= "    ]";
           </tbody>
         </table>
       </div>
-      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-        <div id="piechart2" style="height:200px"></div>
-      </div>
     </div>
-    <h4>Summary of all users</h4>
-    <p>The company has a total of <strong><?php echo $sttotal; ?> user(s)</strong> including <?php echo $levellist; ?> as shown in the table below.</p>
+    <h4>Summary of team members</h4>
+    <p>There are <strong><?php echo $sttotal; ?> member(s)</strong> in the team which are <?php echo $levellist; ?> as shown in details below.</p>
     <br>
     <div class="row">
       <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
@@ -374,7 +370,7 @@ $bdata .= "    ]";
     </div>
   </div>
 </div>
-<h4 id="timeline2heading">Timing of all projects</h4>
+<h4 id="timeline2heading">Comparative timeline for all projects</h4>
 <div id="timeline2"></div>
 <script type="text/javascript">
   google.charts.load('current', {'packages': ['corechart', 'timeline'] });
