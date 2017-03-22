@@ -96,10 +96,7 @@ echo "<hr>\n";
 echo "<h3>Project $project</h3>\n";
 
 // Data for area chart
-
-
 $q2C = $db->prepare("SELECT SSDATE, SUM(SSCOUNT1) as SSCOUNT1, SUM(SSCOUNT2) as SSCOUNT2 FROM ((SELECT COUNT(*) AS SSCOUNT1, NULL AS SSCOUNT2, DATE(submitted) as SSDATE FROM j_results WHERE surveyid = :surveyid AND status = 2 GROUP BY DATE(submitted)) UNION ALL (SELECT NULL AS SSCOUNT1, SUM(IF(invitation IS NOT NULL AND participation IS NOT NULL, 1, 0)) AS SSCOUNT2, DATE(participation) as SSDATE FROM j_respondents WHERE surveyid = :surveyid GROUP BY DATE(participation))) t GROUP BY SSDATE");
-//$q2C = $db->prepare("SELECT COUNT(*) AS SSCOUNT, DATE(submitted) as SSDATE FROM j_results WHERE surveyid = :surveyid AND status = 2 GROUP BY DATE(submitted) ");
 $q2C->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2C->execute();
 $area = "[\n";
@@ -113,7 +110,6 @@ else {
     $NEWSSDATE = $SSDATE[2]." ".$month;
     $SSCOUNT1 += $row->SSCOUNT1;
     $SSCOUNT2 += $row->SSCOUNT2;
-    // $area .= "        [\"".$NEWSSDATE."\", ".$SSCOUNT1.", ".$SSCOUNT1."], \n";
     if ($private == 1) { $area .= "        [\"".$NEWSSDATE."\", ".$SSCOUNT2.", ".$SSCOUNT1."], \n"; }
     else { $area .= "        [\"".$NEWSSDATE."\", ".$SSCOUNT1."], \n"; }
     $areacount++;
@@ -134,37 +130,35 @@ if ($LLL1) {
   $begindate = "-";
   $daysoffieldwork = "0";
 }
-echo "<h4>Data collection up-to-date</h4>\n";
-echo "<div class=\"row\">\n";
-// echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
-// echo "    <div class=\"progresswrap\" style=\"width:85%; margin: 0 auto\">\n";
-// echo "     <span><strong>Achievement compared with the target</strong></span>\n";
-// echo "     <div class=\"progress\" style=\"height:30px;\">\n";
-// echo "      <div class=\"progress-bar progress-bar-warning progress-bar-striped active\" role=\"progressbar\" aria-valuenow=\"85\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width:2em; width:85%\"></div>\n";
-// echo "      <span class=\"progress-value\" style=\"float:right\">85%</span>\n";
-// echo "    </div><br>\n";
-// echo "  </div>\n";
-echo "  <div class=\"col-xs-12 col-sm-3 col-md-3 col-lg-3\">\n";
-echo "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork (since $begindate)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork days</strong></h4></div>\n";
-echo "    <br>\n";
-echo "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Sample achieved</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$SSCOUNT1</strong></h4></div>\n";
-echo "  </div>\n";
-echo "  <div class=\"col-xs-12 col-sm-9 col-md-9 col-lg-9\">\n";
-echo "    <div style=\"width:100%; height:100%\"><center><div id=\"areachart\"></div></center></div>\n";
-echo "  </div>\n";
-echo "</div>\n";
-echo "<br>\n";
+$dcupdate = "<h4>Data collection up-to-date</h4>\n";
+$dcupdate .= "<div class=\"row\">\n";
+$dcupdate .= "  <div class=\"col-xs-12 col-sm-3 col-md-3 col-lg-3\">\n";
+$dcupdate .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork (since $begindate)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork days</strong></h4></div>\n";
+$dcupdate .= "    <br>\n";
+$dcupdate .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Sample achieved</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$SSCOUNT1</strong></h4></div>\n";
+$dcupdate .= "  </div>\n";
+$dcupdate .= "  <div class=\"col-xs-12 col-sm-9 col-md-9 col-lg-9\">\n";
+$dcupdate .= "    <div style=\"width:100%; height:100%\"><center><div id=\"areachart\"></div></center></div>\n";
+$dcupdate .= "  </div>\n";
+$dcupdate .= "</div>\n";
+$dcupdate .= "<br>\n";
 
 // Get stats
 $q2A = $db->prepare("SELECT COUNT(*) as q2A1, SUM(status = '0') AS q2A2, SUM(IF(invitation IS NOT NULL, 1, 0)) AS q2A3, SUM(IF(invitation IS NULL, 1, 0)) AS q2A4, SUM(IF(invitation IS NOT NULL AND participation IS NOT NULL, 1, 0)) AS q2A5, SUM(IF(invitation IS NOT NULL AND participation IS NULL, 1, 0)) AS q2A6 FROM j_respondents WHERE surveyid = :surveyid");
 $q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2A->execute();
 while ($row = $q2A->fetchObject()) {
+  $all = $row->q2A1;
+  $bad = $row->q2A2;
+  $allgood = $all - $bad;
   $invited = $row->q2A3;
   $notinvited = $row->q2A4;
   $participated = $row->q2A5;
   $notparticipated = $row->q2A6;
 }
+$all_format = number_format($all);
+$allgood_format = number_format($allgood);
+
 if ($invited == 0) { $participated = 0; $notparticipated = 0; }
 $invited_format = number_format($invited);
 $notinvited_format = number_format($notinvited);
@@ -204,24 +198,41 @@ if ($invalid) { $invalid_bar = "<div class=\"progress progress-inbox\"><div clas
 $successrate = number_format(($valid / $participated) * 100, 1);
 
 // Contact sheet for Private project
+$mainrespondent = "/admin/?w=respondents&s=".$_GET['s'];
+$showdc = false;
 if ($private == 1) {
   echo "<h4>Contact sheet (private project only)</h4>\n";
-  if ($invited == 0) {
+  if ($all == 0) {
     echo "<p>This project currently has <strong>no respondent</strong> stored in the database.</p>\n";
     echo "<p>Please upload respondent's emails using a Comma Separated Value (CSV) file and our system will enable the email function allowing you to send invitation / reminder to respondents accordingly.</p>\n";
     echo "<div id=\"gauge1\" style=\"display:none\"></div><div id=\"gauge2\" style=\"display:none\"></div><div id=\"orgchart\" style=\"display:none\"></div>\n";
-    echo "<p></p>\n";
+    echo "<p>The upload function can be found in the <a href=\"$mainrespondent\">respondent's main page</a>, and it looks like below example <i class=\"pe-arrow-down\"></i>.</p>\n";
+    echo "<div align=\"right\"><a class=\"btn btn-info\"><i class=\"pe-upload pe-fw\"></i> Upload a new name list</a> <a class=\"btn btn-info\"><i class=\"pe-user-plus pe-fw\"></i> Manually add new respondents</a></div>\n";
+  } else if (($all != 0) && ($allgood == 0)) {
+    echo "<p>Although you have uploaded some respondents to the database (n=$all_format), <strong>none of them</strong> appears to be good to use.</p>\n";
+    echo "<p>This is because their emails appears to be in an incorrect format. To fix this, you have to delete them from the database, and upload a new list making sure the right column on your Comma Separated Value (CSV) file is selected.</p>\n";
+    echo "<div id=\"gauge1\" style=\"display:none\"></div><div id=\"gauge2\" style=\"display:none\"></div><div id=\"orgchart\" style=\"display:none\"></div>\n";
+    echo "<p>The upload function can be found in the <a href=\"$mainrespondent\">respondent's main page</a>, and it looks like below example <i class=\"pe-arrow-down\"></i>.</p>\n";
+    echo "<div align=\"right\"><a class=\"btn btn-info\"><i class=\"pe-upload pe-fw\"></i> Upload a new name list</a> <a class=\"btn btn-info\"><i class=\"pe-user-plus pe-fw\"></i> Manually add new respondents</a></div>\n";
+  } else if (($allgood != 0) && ($invited == 0)) {
+    echo "<p>Although you have uploaded valid respondents to the database (n=$allgood_format valid from a total upload of n=$all_format), <strong>none of them</strong> has been sent with an invitation to your survey, and therefore <strong>no participation</strong>.</p>\n";
+    echo "<p>We therefore strongly suggest you start inviting your respondents to this survey to start the data collection process.</p>\n";
+    echo "<div id=\"gauge1\" style=\"display:none\"></div><div id=\"gauge2\" style=\"display:none\"></div><div id=\"orgchart\" style=\"display:none\"></div>\n";
+    echo "<p>The invitation function can be found in the <a href=\"$mainrespondent\">respondent's main page</a>, and it looks like below examples <i class=\"pe-arrow-down\"></i>.</p>\n";
+    echo "<div align=\"right\"><a class=\"btn btn-warning\"><i class=\"pe-envelope pe-fw\"></i> Send an invitation email</a> <a class=\"btn btn-warning\"><i class=\"pe-envelope pe-fw\"></i> Send a reminder email</a></div>\n";
   } else {
     if ($participated == 0) {
-      $text .= "<p>From <strong>$invited_format invitations</strong>, <strong>none of them</strong> has been participatd so far</p>\n";
-      $text .= "<p>This means both strike rate <em>(participation vs. invitation)</em> and success rate <em>(valid vs. participation)</em> are <strong>zero</strong>.</p>\n";
+      $text .= "<p>From a total upload of <strong>$all_format</strong> respondents, <strong>$allgood_format</strong> have valid email and <strong>$invited_format</strong> have been invited. However, particiation is still <strong>zero</strong> so far.</p>\n";
+      $text .= "<p>This means both strike rate <em>(participation vs. invitation)</em> and success rate <em>(valid vs. participation)</em> are also <strong>zero</strong>.</p>\n";
     }
     else {
       if ($valid == 0) {
-        $text .= "<p>Although there are <strong>$participated_format respondents</strong> from <strong>$invited_format invitations</strong> who have participated, <strong>none of them</strong> seems to be valid.</p>\n";
+        $text .= "<p>From a total upload of <strong>$all_format</strong> respondents, <strong>$allgood_format</strong> have valid email and <strong>$invited_format</strong> have been invited.</p>\n";
+        $text .= "<p><strong>$participated_format</strong> respondents have participated but still <strong>no completion</strong> is seen.</p>\n";
         $text .= "<p>This results to a strike rate <em>(participation vs. invitation)</em> of <strong>$strikerate%</strong>, while a success rate <em>(valid vs. participation)</em> remains <strong>zero</strong>.</p>\n";
       } else {
-        $text .= "<p>From <strong>$invited_format invitations</strong>, <strong>$participated_format respondents</strong> have participated and <strong>$valid_format respondents</strong> are valid.</p>\n";
+        $text .= "<p>From a total upload of <strong>$all_format</strong> respondents, <strong>$allgood_format</strong> have valid email and <strong>$invited_format</strong> have been invited.</p>\n";
+        $text .= "<p><strong>$participated_format</strong> respondents have participated and <strong>$valid_format</strong> have completed the survey.</p>\n";
         $text .= "<p>This results to <strong>$strikerate%</strong> strike rate <em>(participation vs. invitation)</em> and <strong>$successrate%</strong> success rate <em>(valid vs. participation)</em>.</p>\n";
       }
     }
@@ -235,8 +246,9 @@ if ($private == 1) {
     echo "  </div>\n";
     echo "</div>\n";
     echo "<br>\n";
+    echo $dcupdate;
   }
-} else { echo "<div id=\"gauge1\" style=\"display:none\"></div><div id=\"gauge2\" style=\"display:none\"></div><div id=\"orgchart\" style=\"display:none\"></div>\n"; }
+} else { echo $dcupdate; echo "<div id=\"gauge1\" style=\"display:none\"></div><div id=\"gauge2\" style=\"display:none\"></div><div id=\"orgchart\" style=\"display:none\"></div>\n"; }
 
 
 if ($valid > 0) {
