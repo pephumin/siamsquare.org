@@ -87,11 +87,34 @@
     }
     blockquote {
       color: darkgreen;
-      font-size: 12px;
-      padding: 15px;
-      margin: 20px 0px;
+      /*font-family: "boon";*/
+      font-size: 18px;
+      line-height: 1.2;
+      padding: 30px 50px;
+      margin: 20px 10px;
       position: relative;
       box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12)!important
+    }
+    blockquote:before {
+      position: absolute;
+      content: url('http://www.siamsquare.org/admin/assets/img/quote.svg');
+      top: 0px;
+      left: 10px;
+    }
+    blockquote:after {
+      position: absolute;
+      content: url('http://www.siamsquare.org/admin/assets/img/quote.svg');
+      transform: rotate(180deg);
+      bottom: 0px;
+      right: 10px;
+    }
+    .author {
+      display: block;
+      text-align: right;
+      font-size: 14px;
+      padding: 4px;
+      color: grey;
+      font-style: italic;
     }
     @media only screen and (min-device-width: 375px) and (max-device-width: 413px) { /* iPhone 6 and 6+ */
       /*.mycontainer { min-width: 375px !important; }*/
@@ -136,10 +159,10 @@
           <tr>
             <td style="width:19px;">&nbsp;</td>
             <td style="width:420px; vertical-align:bottom;">
-              <h1>%subject%</h1>
+              <h1>Client message</h1>
             </td>
             <td style="width:161px; vertical-align:top; padding-right:10px">
-              <a href="http://www.siamsquare.org" title="SiamSquare: We build a society where your opinion matters"><img src="http://www.siamsquare.org/admin/assets/img/ssq-horizontal.svg" alt="SiamSquare Survey Engine: We build a society where your opinion matters" style="width:161px; height:24px; border:none;"></a>
+              <a href="http://www.siamsquare.org" title="SiamSquare Survey Engine: We build a society where your opinion matters"><img src="http://www.siamsquare.org/admin/assets/img/ssq-horizontal.svg" alt="SiamSquare Survey Engine: We build a society where your opinion matters" style="width:161px; height:24px; border:none;"></a>
             </td>
           </tr>
           <tr>
@@ -157,20 +180,18 @@
                   <tr>
                     <td style="width:30px; background-color:#ffffff;">&nbsp;</td>
                     <td style="width:540px; background-color:#ffffff;">
-                      <h2>ATTN: %sendto%</h2>
+                      <h2>FROM: %from%</h2>
                       <div class="space">
                         <hr class="thin">
                         <div class="datetime">%datetime%</div>
                       </div>
                       <div class="content">
                         <p>Hello,</p>
-                        <p>It appears that you have requested for an access to %siamsquare% client section.</p>
-                        <p><i>If you didn't take this action, you can simple ignore this email</i>, otherwise please click the link below to verify your email.</p>
+                        <p>A message has been received via SiamSquare contact form.</p>
                         <blockquote>
-                          <div>Link: <a style="color:darkgreen; text-decoration:underline;" href="%link%">%link%</a></div>
+                          <div>%message%</div><br>
+                          <div class="author">%sender%</div>
                         </blockquote>
-                        <p></p>
-                        <p>Please note this link will be valid for 3 hours. And it will be automatically expired after that. You can ignore this email if you have not made this request.</p>
                         <p>Regards,<br>%siamsquare%</p>
                       </div>
                       <div class="space">
