@@ -49,7 +49,7 @@ $userlist .= "    ]";
         <li data-bind="css: { active: showActive() == 'B' }"><a data-bind="click: loadB" style="cursor: pointer"><i class="pe-hourglass-half pe-fw"></i> <?php echo $titleB; ?></a></li>
         <li data-bind="css: { active: showActive() == 'C' }"><a data-bind="click: loadC" style="cursor: pointer"><i class="pe-hourglass-end pe-fw"></i> <?php echo $titleC; ?></a></li>
         <li data-bind="css: { active: showActive() == 'D' }"><a data-bind="click: loadD" style="cursor: pointer"><i class="pe-archive pe-fw"></i> <?php echo $titleD; ?></a></li>
-<?php if ($_SESSION['level'] > 5) { ?>
+<?php if ($_SESSION['level'] >= 6) { ?>
         <li data-bind="css: { active: showActive() == 'E' }"><a data-bind="click: loadE" style="cursor: pointer"><i class="pe-trash pe-fw"></i> <?php echo $titleE; ?></a></li>
 <?php } ?>
       </ul>
@@ -60,7 +60,7 @@ $userlist .= "    ]";
     <p data-bind="visible: showActive() == 'B'" class="text-muted"><?php echo $detailsB; ?></p>
     <p data-bind="visible: showActive() == 'C'" class="text-muted"><?php echo $detailsC; ?></p>
     <p data-bind="visible: showActive() == 'D'" class="text-muted"><?php echo $detailsD; ?></p>
-<?php if ($_SESSION['level'] > 5) { ?>
+<?php if ($_SESSION['level'] >= 6) { ?>
     <p data-bind="visible: showActive() == 'E'" class="text-muted"><?php echo $detailsE; ?></p>
 <?php } ?>
   </div>
@@ -119,7 +119,7 @@ $userlist .= "    ]";
         <h4>Project <span data-bind="text: title"></span> <span data-bind="if: owner" class="label-red" style="font-size:0.6rem">owner</span></h4>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projects-subhead">
-        <i class="pe-user pe-fw"></i> <strong data-bind="text: fullname"></strong> (<span data-bind="text: email"></span>) <i class="pe-building pe-fw"></i> <span data-bind="text: company"></span>
+        <i class="pe-user pe-fw"></i> <strong data-bind="text: fullname"></strong> (<span data-bind="text: email"></span>) <span data-bind="if: admin"><i class="pe-building pe-fw"></i> <span data-bind="text: company"></span></span>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projects-body">
         <div class="pull-right">
@@ -702,71 +702,61 @@ $userlist .= "    ]";
 <br>
 <hr style="margin-bottom:30px">
 
-<h4>Label definition</h4>
-<div class="row">
-  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-    <table class="table table-hover table-condensed small">
-      <!-- <thead>
-        <tr class="bg-success">
-          <th>Label</th>
-          <th>Definition</th>
-        </tr>
-      </thead> -->
-      <tbody>
-        <tr>
-          <td><button class="btn btn-tiny btn-default">Info <i class="pe-chevron-down"></i></button></td>
-          <td class="small">Project information such as title or description which can be edited either by owner or Manager.</td>
-        </tr>
-        <tr>
-          <td><button class="btn btn-tiny btn-success">View <i class="pe-plane"></i></button></td>
-          <td class="small">View the actual project questionnaire, the same version that respondents would see.</td>
-        </tr>
-        <tr>
-          <td><button class="btn btn-tiny btn-primary">1,631 respondent(s) <i class="pe-users"></i></button></td>
-          <td class="small">Information about respondents in the database which is only available for project private type.</td>
-        </tr>
-        <tr>
-          <td><button class="btn btn-tiny btn-default">Questionnaire design <i class="pe-edit"></i></button></td>
-          <td class="small">Enter the questionnaire design mode for editing all questions in the questionnaire.</td>
-        </tr>
-        <tr>
-          <td><button class="btn btn-tiny btn-default">Pilot test <i class="pe-paper-plane"></i></button></td>
-          <td class="small">Conduct a pilot test on the real questionnaire that respondent would see.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-    <table class="table table-hover table-condensed small">
-      <!-- <thead>
-        <tr class="bg-success">
-          <th>Label</th>
-          <th>Definition</th>
-        </tr>
-      </thead> -->
-      <tbody>
-        <tr>
-          <td><button class="btn btn-tiny btn-default">Progress <i class="pe-flask"></i></button></td>
-          <td class="small">Monitor the progress of data-collection and view interim data.</td>
-        </tr>
-        <tr>
-          <td><button class="btn btn-tiny btn-success">Result <i class="pe-line-chart"></i></button></td>
-          <td class="small">View results in real-time in graph and table mode and download the full data file.</td>
-        </tr>
-        <tr>
-          <td><button class="btn btn-tiny btn-default">Archive <i class="pe-archive"></i></button></td>
-          <td class="small">Move this project to Archive folder which considered as inactive.</td>
-        </tr>
-        <tr>
-          <td><button class="btn btn-tiny btn-default">Restore <i class="pe-undo"></i></button></td>
-          <td class="small">Restore this project from Archive foler back to Completed (being active again).</td>
-        </tr>
-        <tr>
-          <td><button class="btn btn-tiny btn-danger">Delete <i class="pe-trash"></i></button></td>
-          <td class="small">Delete this project from the system.</td>
-        </tr>
-      </tbody>
-    </table>
+<div class="" style="background:mintcream; padding:20px; border: 2px solid grey; border-radius:30px">
+  <p class="text-muted">Label definition</p>
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      <table class="table table-condensed small">
+        <tbody>
+          <tr>
+            <td><button class="btn btn-tiny btn-default">Info <i class="pe-chevron-down"></i></button></td>
+            <td class="small">Project information such as title or description which can be edited either by owner or Manager.</td>
+          </tr>
+          <tr>
+            <td><button class="btn btn-tiny btn-success">View <i class="pe-plane"></i></button></td>
+            <td class="small">View the actual project questionnaire, the same version that respondents would see.</td>
+          </tr>
+          <tr>
+            <td><button class="btn btn-tiny btn-primary">1,681 respondent(s) <i class="pe-users"></i></button></td>
+            <td class="small">Information about respondents in the database which is only available for project private type.</td>
+          </tr>
+          <tr>
+            <td><button class="btn btn-tiny btn-default">Questionnaire design <i class="pe-edit"></i></button></td>
+            <td class="small">Enter the questionnaire design mode for editing all questions in the questionnaire.</td>
+          </tr>
+          <tr>
+            <td><button class="btn btn-tiny btn-default">Pilot test <i class="pe-paper-plane"></i></button></td>
+            <td class="small">Conduct a pilot test on the questionnaire replicating the same view as respondent.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      <table class="table table-condensed small">
+        <tbody>
+          <tr>
+            <td><button class="btn btn-tiny btn-default">Progress <i class="pe-flask"></i></button></td>
+            <td class="small">Monitor data-collection strike rate and success rate plus a quick view of interim data.</td>
+          </tr>
+          <tr>
+            <td><button class="btn btn-tiny btn-success">Result <i class="pe-line-chart"></i></button></td>
+            <td class="small">Real-time results in graph &amp; table and the full data file can be downloaded in key formats.</td>
+          </tr>
+          <tr>
+            <td><button class="btn btn-tiny btn-default">Archive <i class="pe-archive"></i></button></td>
+            <td class="small">Manually move a project from completion to archive folder so it becomes inactive but can still refer to.</td>
+          </tr>
+          <tr>
+            <td><button class="btn btn-tiny btn-default">Restore <i class="pe-undo"></i></button></td>
+            <td class="small">Restore a project from archive foler back to completion so it becomes active again.</td>
+          </tr>
+          <tr>
+            <td><button class="btn btn-tiny btn-danger">Delete <i class="pe-trash"></i></button></td>
+            <td class="small">Delete a project from the system.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 

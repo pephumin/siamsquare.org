@@ -113,6 +113,11 @@ textarea {
     .svd_container .nav-tabs.svd_menu > li.active > a:hover, .svd_container .nav-tabs.svd_menu > li.active > a:focus {
       color: #1ab394;
       background-color: transparent; } }
+.svd_object_editor {
+  background-color: #fff;
+  height: 75vh;
+  overflow-y: scroll; }
+
 .svd_container {
   position: relative; }
   .svd_container * {
@@ -151,6 +156,11 @@ textarea {
     font-size: 12px; }
     .svd_container .svd_actions .btn {
       margin-left: 5px; }
+    .svd_container .svd_actions .btn-group.open .dropdown-toggle {
+      background-color: #1ab394;
+      border-color: #1ab394; }
+    .svd_container .svd_actions .dropdown-menu > .active > a {
+      background-color: #1ab394; }
   .svd_container .svd_actions_sub {
     font-family: "ubuntu";
     font-size: 12px;
@@ -360,6 +370,9 @@ textarea {
 
 .icon-html:before {
   content: ""; }
+
+.icon-date:before {
+  content: ""; }
 
 .icon-default:before {
   content: ""; }

@@ -111,11 +111,11 @@ echo "<br>\n";
 <?php if (($_POST['selectA']) || ($_POST['selectB']) || ($_POST['selectC']) || ($_POST['selectD']) || ($_POST['selectE']) || ($_POST['selectF'])) { ?>
     <li><a href="#1" data-toggle="tab"><i class="pe-edit pe-fw"></i> <?php echo $title; ?></a></li>
     <li class="active"><a href="#2" data-toggle="tab"><i class="pe-cog pe-fw"></i> <?php echo $template; ?></a></li>
-    <li><a href="#3" data-toggle="tab"><i class="pe-book pe-fw"></i> <?php echo $help; ?></a></li>
+    <!-- <li><a href="#3" data-toggle="tab"><i class="pe-book pe-fw"></i> <?php //echo $help; ?></a></li> -->
 <?php } else { ?>
     <li class="active"><a href="#1" data-toggle="tab"><i class="pe-edit pe-fw"></i> <?php echo $title; ?></a></li>
     <li><a href="#2" data-toggle="tab"><i class="pe-cog pe-fw"></i> <?php echo $template; ?></a></li>
-    <li><a href="#3" data-toggle="tab"><i class="pe-book pe-fw"></i> <?php echo $help; ?></a></li>
+    <!-- <li><a href="#3" data-toggle="tab"><i class="pe-book pe-fw"></i> <?php //echo $help; ?></a></li> -->
 <?php } ?>
   </ul>
 </nav>
@@ -253,25 +253,25 @@ foreach($options as $a => $b) {
           </div>
         </div>
       </div>
-      <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 boxborder">
+      <!-- <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 boxborder">
         <div class="row boxoutside">
           <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7 boxmenu">Company logo</div>
           <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 boxmenu boxdrop">
-            <form method="post" class="form-inline" action="<?php echo $me; ?>">
-              <select name="selectE" class="form-control input-sm" onchange="this.form.submit()">
+            <form method="post" class="form-inline" action="<?php //echo $me; ?>">
+              <select name="selectE" class="form-control input-sm" onchange="this.form.submit()"> -->
 <?php
-$options = array("Hide" => "1", "Show" => "2");
-foreach($options as $a => $b) {
-  if ($b == $showlogo) { echo "                  <option value=\"$b\" selected>$a</option>\n"; }
-  else { echo "                  <option value=\"$b\">$a</option>\n"; }
-}
+// $options = array("Hide" => "1", "Show" => "2");
+// foreach($options as $a => $b) {
+//   if ($b == $showlogo) { echo "                  <option value=\"$b\" selected>$a</option>\n"; }
+//   else { echo "                  <option value=\"$b\">$a</option>\n"; }
+// }
 ?>
-              </select>
-              <input type="hidden" name="surveyid" value="<?php echo $_GET['s']; ?>">
+              <!-- </select>
+              <input type="hidden" name="surveyid" value="<?php //echo $_GET['s']; ?>">
             </form>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
     <br>
     <h4>The actual appearance</h4>
@@ -280,96 +280,25 @@ foreach($options as $a => $b) {
     </div>
     <br><br>
   </div>
-  <div id="3" class="tab-pane fade">
-    <h3><?php echo $help; ?></h3>
-    <div class="row">
-      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom:20px">
-        <h4>Visibleif</h4>
-        <p>This expression is used for showing or hiding more question(s) when a specific answer is selected by a respondent.</p>
-        <p>Below example shows an additional question on "How many kids do you have" will be displayed only when "Yes" is selected in "Do you have a kid(s)?".</p>
-        <pre><code class="r">var survey = new Survey.Model({
-  showQuestionNumbers: &#x22;off&#x22;,
-  questions: [
-    { type: &#x22;radiogroup&#x22;, name: &#x22;haveKids&#x22;, title: &#x22;Do you have a kid(s)?&#x22;, choices:[&#x22;Yes&#x22;, &#x22;No&#x22;], colCount: 0 },
-    { type: &#x22;dropdown&#x22;, name: &#x22;kids&#x22;, title: &#x22;How many kids do you have&#x22;, visibleIf: &#x22;{haveKids}=&#x27;Yes&#x27;&#x22;, choices:[1, 2, 3, 4, 5] }
-  ]
-});
-survey.render(&#x22;surveyElement&#x22;);</code></pre>
-      </div>
-      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom:20px">
-        <h4>Visible trigger</h4>
-        <p>This trigger is typically used when there is a need to change the future answers based on the current answer. Multiple list of answers can be used per below example.</p>
-        <p>Available operator values are "empty", "notempty", "equal", "notequal", "greater", "less", "greaterorequal", "lessorequal", "contains" and "notcontains". And the default value is "equal".</p>
-        <pre><code class="r">var survey = new Survey.Model({
-  triggers: [
-    { type: &#x22;visible&#x22;, name: &#x22;type&#x22;, operator: &#x22;equal&#x22;, value: &#x22;sedan&#x22;, questions: [&#x22;Sedan&#x22;] },
-    { type: &#x22;visible&#x22;, name: &#x22;type&#x22;, operator: &#x22;equal&#x22;, value: &#x22;sports&#x22;, questions: [&#x22;Sports&#x22;] },
-    { type: &#x22;visible&#x22;, name: &#x22;type&#x22;, operator: &#x22;equal&#x22;, value: &#x22;supercar&#x22;, questions: [&#x22;Super Car&#x22;] },
-    { type: &#x22;visible&#x22;, name: &#x22;type&#x22;, operator: &#x22;equal&#x22;, value: &#x22;convertible&#x22;, questions: [&#x22;Convertible&#x22;] },
-    { type: &#x22;visible&#x22;, name: &#x22;type&#x22;, operator: &#x22;equal&#x22;, value: &#x22;other&#x22;, questions: [&#x22;otherType&#x22;] }
-  ],
-  questions: [
-    { type: &#x22;radiogroup&#x22;, name: &#x22;type&#x22;, title: &#x22;Select the car type&#x22;, hasOther: true, choices: [&#x22;Sedan&#x22;, &#x22;Sports&#x22;, &#x22;Super Car&#x22;, &#x22;Convertible&#x22;] },
-    { type: &#x22;radiogroup&#x22;, name: &#x22;Sedan&#x22;, visible: false, title: &#x22;Select the model&#x22;, hasOther: true, choices: [&#x22;BMW M5&#x22;, &#x22;Mazda 6 MPS&#x22;, &#x22;Mitsubishi EVO&#x22;] },
-    { type: &#x22;radiogroup&#x22;, name: &#x22;Sports&#x22;, visible: false, title: &#x22;Select the model&#x22;, hasOther: true, choices: [&#x22;Chevrolet Corvette&#x22;, &#x22;Mazda MX-5&#x22;, &#x22;Porsche 911&#x22;] },
-    { type: &#x22;radiogroup&#x22;, name: &#x22;Super Car&#x22;, visible: false, title: &#x22;Select the model&#x22;, hasOther: true, choices: [&#x22;McLaren P1&#x22;, &#x22;Lamborghini Miura&#x22;, &#x22;Bugatti Veyron 16.4&#x22;] },
-    { type: &#x22;radiogroup&#x22;, name: &#x22;Convertible&#x22;, visible: false, title: &#x22;Select the model&#x22;, hasOther: true, choices: [&#x22;Honda S2000&#x22;, &#x22;Volkswagen Eos&#x22;, &#x22;Volvo C70&#x22;] },
-    { type: &#x22;comment&#x22;, name: &#x22;otherType&#x22;, title: &#x22;Please specify&#x22;, visible: false, isRequired: true }
-  ]
-});
-survey.render(&#x22;surveyElement&#x22;);</code></pre>
-      </div>
-      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom:20px">
-        <h4>Complete trigger</h4>
-        <p>This trigger is called on the next page action. It completes the survey if the ('question' value 'operator' 'value') returns true.</p>
-        <pre><code class="r">var survey = new Survey.Model({
-  triggers: [
-    { type: &#x22;complete&#x22;, name: &#x22;exit1&#x22;, operator: &#x22;equal&#x22;, value: &#x22;Yes&#x22; },
-    { type: &#x22;complete&#x22;, name: &#x22;exit2&#x22;, operator: &#x22;equal&#x22;, value: &#x22;Yes&#x22; }
-  ],
-  pages: [
-    { title: &#x22;What operating system do you use?&#x22;, questions: [
-      { type:&#x22;checkbox&#x22;, name:&#x22;opSystem&#x22;, title: &#x22;OS&#x22;, hasOther: true, choices:[&#x22;Windows&#x22;, &#x22;Linux&#x22;, &#x22;Macintosh OSX&#x22;] },
-      { type:&#x22;radiogroup&#x22;, name:&#x22;exit1&#x22;, title:&#x22;Do you want to finish the survey?&#x22;, choices: [&#x22;Yes&#x22;, &#x22;No&#x22;], colCount: 0 }
-    ]},
-    { title: &#x22;What language(s) are you currently using?&#x22;, questions: [
-      { type:&#x22;checkbox&#x22;, name:&#x22;langs&#x22;,title:&#x22;Plese select from the list&#x22;, colCount: 4, choices:[&#x22;Javascript&#x22;, &#x22;Java&#x22;, &#x22;Python&#x22;, &#x22;CSS&#x22;, &#x22;PHP&#x22;, &#x22;Ruby&#x22;, &#x22;C++&#x22;, &#x22;C&#x22;,  &#x22;Shell&#x22;, &#x22;C#&#x22;, &#x22;Objective-C&#x22;, &#x22;R&#x22;, &#x22;VimL&#x22;, &#x22;Go&#x22;, &#x22;Perl&#x22;, &#x22;CoffeeScript&#x22;,  &#x22;TeX&#x22;, &#x22;Swift&#x22;, &#x22;Scala&#x22;, &#x22;Emacs List&#x22;, &#x22;Haskell&#x22;, &#x22;Lua&#x22;, &#x22;Clojure&#x22;,  &#x22;Matlab&#x22;, &#x22;Arduino&#x22;, &#x22;Makefile&#x22;, &#x22;Groovy&#x22;, &#x22;Puppet&#x22;, &#x22;Rust&#x22;, &#x22;PowerShell&#x22;] },
-      { type:&#x22;radiogroup&#x22;, name:&#x22;exit2&#x22;, title:&#x22;Do you want to finish the survey?&#x22;, choices: [&#x22;Yes&#x22;, &#x22;No&#x22;], colCount: 0 }
-    ]},
-    { title: &#x22;Please enter your name and e-mail&#x22;, questions: [
-      { type: &#x22;text&#x22;, name: &#x22;name&#x22;, title: &#x22;Name:&#x22; },
-      { type: &#x22;text&#x22;, name: &#x22;email&#x22;, title: &#x22;Your e-mail&#x22; }
-    ]}
-  ]
-});
-survey.render(&#x22;surveyElement&#x22;);</code></pre>
-      </div>
-      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom:20px">
-        <h4>SetValue trigger</h4>
-        <pre><code class="r">var survey = new Survey.Model({
-  triggers: [
-    { type: &#x22;setvalue&#x22;, name: &#x22;copy&#x22;, operator: &#x22;equal&#x22;, value: &#x22;Yes&#x22;, setToName: &#x22;name&#x22;, setValue: &#x22;Jon Snow&#x22; },
-    { type: &#x22;setvalue&#x22;, name: &#x22;copy&#x22;, operator: &#x22;equal&#x22;, value: &#x22;Yes&#x22;, setToName: &#x22;email&#x22;, setValue: &#x22;jon.snow@nightwatch.com&#x22; },
-    { type: &#x22;setvalue&#x22;, name: &#x22;copy&#x22;, operator: &#x22;equal&#x22;, value: &#x22;Yes&#x22;, setToName: &#x22;tempvar&#x22;, isVariable: true, setValue: &#x22;You have decided to use your current information.&#x22; },
-    { type: &#x22;setvalue&#x22;, name: &#x22;copy&#x22;, operator: &#x22;equal&#x22;, value: &#x22;No&#x22;, setToName: &#x22;name&#x22;, setValue: &#x22;&#x22; },
-    { type: &#x22;setvalue&#x22;, name: &#x22;copy&#x22;, operator: &#x22;equal&#x22;, value: &#x22;No&#x22;, setToName: &#x22;email&#x22;, setValue: &#x22;&#x22; },
-    { type: &#x22;setvalue&#x22;, name: &#x22;copy&#x22;, operator: &#x22;equal&#x22;, value: &#x22;No&#x22;, setToName: &#x22;tempvar&#x22;, isVariable: true, setValue: &#x22;You have decided not to use your current information.&#x22; }
-  ],
-  pages: [
-    { title: &#x22;Customer information&#x22;, questions: [
-      { type:&#x22;radiogroup&#x22;, name:&#x22;copy&#x22;, title: &#x22;Use your current data&#x22;, choices:[&#x22;Yes&#x22;, &#x22;No&#x22;], colCount: 0 },
-      { type: &#x22;text&#x22;, name: &#x22;name&#x22;, title: &#x22;Name:&#x22; },
-      { type: &#x22;text&#x22;, name: &#x22;email&#x22;, title: &#x22;Your e-mail&#x22;, validators: [{ type:&#x22;email&#x22; }] }
-    ]}
-  ],
-  completedHtml: &#x22;&#x3C;p&#x3E;&#x3C;h4&#x3E;Thank you for sharing this information with us.&#x3C;/h4&#x3E;&#x3C;/p&#x3E;&#x3C;p&#x3E;Your name is: &#x3C;b&#x3E;{name}&#x3C;/b&#x3E;&#x3C;/p&#x3E;&#x3C;p&#x3E;Your email is: &#x3C;b&#x3E;{email}&#x3C;/b&#x3E;&#x3C;/p&#x3E;&#x3C;p&#x3E;This information is not in the survey data result:&#x3C;b&#x3E; {tempvar}&#x3C;/b&#x3E;&#x3C;/p&#x3E;&#x22;
-});
-survey.render(&#x22;surveyElement&#x22;);</code></pre>
-      </div>
-    </div>
-    <br><br>
-  </div>
 </div>
+
+<!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+<script src="https://unpkg.com/icheck@1.0.2"></script>
+<link rel="stylesheet" href="https://unpkg.com/icheck@1.0.2/skins/square/blue.css">
+<script src="https://unpkg.com/jquery-bar-rating"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="https://unpkg.com/jquery-bar-rating@1.2.2/dist/themes/bars-1to10.css">
+<link rel="stylesheet" href="https://unpkg.com/jquery-bar-rating@1.2.2/dist/themes/bars-movie.css">
+<link rel="stylesheet" href="https://unpkg.com/jquery-bar-rating@1.2.2/dist/themes/bars-square.css">
+<link rel="stylesheet" href="https://unpkg.com/jquery-bar-rating@1.2.2/dist/themes/bars-pill.css">
+<link rel="stylesheet" href="https://unpkg.com/jquery-bar-rating@1.2.2/dist/themes/bars-reversed.css">
+<link rel="stylesheet" href="https://unpkg.com/jquery-bar-rating@1.2.2/dist/themes/bars-horizontal.css">
+<link rel="stylesheet" href="https://unpkg.com/jquery-bar-rating@1.2.2/dist/themes/fontawesome-stars.css">
+<link rel="stylesheet" href="https://unpkg.com/jquery-bar-rating@1.2.2/dist/themes/css-stars.css">
+<link rel="stylesheet" href="https://unpkg.com/jquery-bar-rating@1.2.2/dist/themes/bootstrap-stars.css">
+<link rel="stylesheet" href="https://unpkg.com/jquery-bar-rating@1.2.2/dist/themes/fontawesome-stars-o.css"> -->
 
 
 <script type="text/javascript">
@@ -388,15 +317,6 @@ survey.render(&#x22;surveyElement&#x22;);</code></pre>
   }
 
   // Start scripting by pe (phumin@sawasdee.org)
-  var options = {
-    // questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "matrixdynamic", "html"],
-    questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "html"],
-    showJSONEditorTab: true,
-    showTestSurveyTab: true,
-    showEmbededSurveyTab: false,
-    generateValidJSON: true,
-  };
-  // options.generateValidJSON = true;
   Survey.Survey.cssType = "bootstrap";
   Survey.JsonObject.metaData.removeProperty("survey", "clearInvisibleValues");
   Survey.JsonObject.metaData.removeProperty("survey", "cookieName");
@@ -417,7 +337,169 @@ survey.render(&#x22;surveyElement&#x22;);</code></pre>
   // Survey.JsonObject.metaData.removeProperty("questionbase", "hasComment");
   Survey.JsonObject.metaData.removeProperty("questionbase", "width");
   // Survey.JsonObject.metaData.removeProperty("questionbase", "commentText");
+
+
+
+
+  //Add date format property into text question
+  Survey.JsonObject.metaData.addProperty("dropdown", { name: "dateFormat", default: "dd-mm-yy", choices: ["dd-mm-yy", "dd/mm/yy", "d MM y", "M d, y", "DD, d MM, yy", "'day' d 'of' MM 'in the year' yy"] });
+  //Add properties for Bar Rating
+  Survey.JsonObject.metaData.addProperty("dropdown", { name: "renderAs", default: "standard", choices: ["standard", "barrating"] });
+  Survey.JsonObject.metaData.addProperty("dropdown", { name: "ratingTheme", default: "fontawesome-stars", choices: ["fontawesome-stars", "css-stars", "bars-pill", "bars-1to10", "bars-movie", "bars-square", "bars-reversed", "bars-horizontal", "bootstrap-stars", "fontawesome-stars-o"] });
+  Survey.JsonObject.metaData.addProperty("dropdown", { name: "showValues: boolean", default: false});
+
+  var dateWidget = {
+    name: "datepicker",
+    htmlTemplate: "<input id='widget-datepicker' type='text'>",
+    isFit: function(question) { return question.inputType === 'date'; },
+    afterRender: function(question, el) {
+      var dateFormat = question.dateFormat ? question.dateFormat : "dd-mm-yy";
+      var widget = $(el).datepicker({ dateFormat: dateFormat });
+      widget.on("change", function (e) { question.value = $(this).val(); });
+      question.valueChangedCallback = function() { widget.datepicker('setDate', new Date(question.value)); }
+    }
+  }
+  Survey.CustomWidgetCollection.Instance.addCustomWidget(dateWidget);
+
+  //Antennaio jQuery Bar Rating. It is based on "dropdown" question. If renderAs equals to 'barrating' then it is used.
+  var barRatingWidget = {
+    name: "antennaio-jquery-bar-rating",
+    isFit: function(question) { return question["renderAs"] === 'barrating'; },
+    isDefaultRender: true,
+    afterRender: function(question, el) {
+      var $el = $(el);
+      var ratingTheme = question.ratingTheme ? question.ratingTheme : "fontawesome-stars";
+      var showValues = question.showValues ? question.showValues : false;
+      $el.barrating('show', {
+        theme: ratingTheme,
+        initialRating: question.value,
+        showValues: showValues,
+        showSelectedRating: false,
+        onSelect: function(value, text) { question.value = value; }
+      });
+      question.valueChangedCallback = function() { $(el).find('select').barrating('set', question.value); }
+    }
+  }
+  Survey.CustomWidgetCollection.Instance.addCustomWidget(barRatingWidget);
+
+  // //select2. All dropdown questions, except Bar Rating, are rendered as select2.
+  // var select2Widget = {
+  //   name: "select2",
+  //   htmlTemplate: "<select style='width: 100%;'></select>",
+  //   isFit : function(question) { return question.getType() === 'dropdown'; },
+  //   afterRender: function(question, el) {
+  //     var $el = $(el);
+  //     var widget = $el.select2({
+  //       data: question.choices.map(function(choice) { return { id: choice.value, text: choice.text }; }),
+  //       theme: "classic"
+  //     });
+  //     $el.on('select2:select', function (e) { question.value = e.target.value; });
+  //     var updateHandler = function() { $el.val(question.value).trigger("change"); };
+  //     question.valueChangedCallback = updateHandler;
+  //     updateHandler();
+  //   }
+  // }
+  // Survey.CustomWidgetCollection.Instance.addCustomWidget(select2Widget);
+
+  // //select2, with multiple set on. All checkbox questions are rendered as multiple select2
+  // var select2TagBoxWidget = {
+  //   name: "select2tagbox",
+  //   htmlTemplate: "<select multiple='multiple' style='width: 100%;'></select>",
+  //   isFit : function(question) { return question.getType() === 'checkbox'; },
+  //   afterRender: function(question, el) {
+  //     var $el = $(el);
+  //     var widget = $el.select2({
+  //         tags: "true",
+  //         data: question.choices.map(function(choice) { return { id: choice.value, text: choice.text }; }),
+  //         theme: "classic"
+  //     });
+  //     $el.on('select2:unselect', function (e) {
+  //         var index = (question.value || []).indexOf(e.params.data.id);
+  //         if (index !== -1) { question.value = question.value.splice(index, 1); }
+  //     });
+  //     $el.on('select2:select', function (e) { question.value = (question.value || []).concat(e.params.data.id); });
+  //     var updateHandler = function() { $el.val(question.value).trigger("change"); };
+  //     question.valueChangedCallback = updateHandler;
+  //     updateHandler();
+  //   }
+  // }
+  // Survey.CustomWidgetCollection.Instance.addCustomWidget(select2TagBoxWidget);
+
+  // //iCheck. All radio group questions are rendered as iCheck
+  // var iCheckWidget = {
+  //   name: "icheck",
+  //   isFit : function(question) { return question.getType() == "radiogroup"; },
+  //   isDefaultRender: true,
+  //   afterRender: function(question, el) {
+  //     var select = function() { $(el).find("input[value=" + question.value + "]").iCheck('check'); }
+  //     $(el).find('input').iCheck({
+  //       checkboxClass: 'iradio_square-blue',
+  //       radioClass: 'iradio_square-blue',
+  //       increaseArea: '20%' // optional
+  //     });
+  //     $(el).find('input').on('ifChecked', function(event) { question.value = event.target.value; });
+  //     question.valueChangedCallback = select;
+  //     select();
+  //   }
+  // }
+  // Survey.CustomWidgetCollection.Instance.addCustomWidget(iCheckWidget);
+
+  //Hide json tab and allow to drop only three questions
+  // var editorOptions = { questionTypes: ["text", "radiogroup", "dropdown"], showJSONEditorTab: false };
+  var options = {
+    // questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "matrixdynamic", "html"],
+    questionTypes: ["rating", "radiogroup", "dropdown", "checkbox", "text", "multipletext", "comment", "file", "matrix", "matrixdropdown", "html"],
+    showJSONEditorTab: true,
+    showTestSurveyTab: true,
+    showEmbededSurveyTab: false,
+    generateValidJSON: true,
+  };
+  // options.generateValidJSON = true;
   var editor = new SurveyEditor.SurveyEditor("editor", options);
+  // var editor = new SurveyEditor.SurveyEditor("editor", editorOptions);
+
+  // //Hide some properties.
+  // editor.onCanShowProperty.add(function(sender, options){
+  //   if (options.obj.getType() == "dropdown") {
+  //     var forbiddenBarRatingProperties = ["choicesOrder", "choicesByUrl", "optionsCaption", "hasOther"];
+  //     var forbiddenDropDownProperties = ["ratingTheme", "showValues"];
+  //     var isBarRating = options.obj["renderAs"] == "barrating";
+  //     var propName = options.property.name;
+  //     //hide renderAs property
+  //     canShow = propName != "renderAs";
+  //     //hide properties for standard dropdown
+  //     if (canShow && !isBarRating) canShow = forbiddenDropDownProperties.indexOf(propName) < 0;
+  //     //hide properties for Bar Rating
+  //     if (canShow && isBarRating) canShow = forbiddenBarRatingProperties.indexOf(propName) < 0;
+  //     options.canShow = canShow;
+  //   }
+  // });
+  //
+  //Add Date question into Toolbox
+  editor.toolbox.addItem({
+    name: "datepicker",
+    iconName: "icon-date",
+    title: "Date Picker",
+    json: { "type": "text", "inputType": "date", "dateFormat": "dd-mm-yy" }
+  });
+  //
+  // //Add Bar Rating question into Toolbox
+  // editor.toolbox.addItem({
+  //   name: "barrating",
+  //   iconName: "icon-rating",
+  //   title: "Bar Rating",
+  //   json: { "type": "dropdown", "renderAs": "barrating", "choices": [1, 2, 3, 4, 5] }
+  // });
+  //
+  // //Add Multiple Select question into Toolbox
+  // editor.toolbox.addItem({
+  //   name: "multiple",
+  //   iconName: "icon-checkbox",
+  //   title: "Multiple Selector",
+  //   json: { "type": "checkbox", "choices": [1, 2, 3] }
+  // });
+
+  // var editor = new SurveyEditor.SurveyEditor("editor", options);
   var surveyid = <?php echo $_GET['s']; ?>;
   // var companyid = parseInt("<?php echo $_SESSION['companyid']; ?>");
   var userid = parseInt("<?php echo $_SESSION['userid']; ?>");

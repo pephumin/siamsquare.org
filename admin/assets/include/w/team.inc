@@ -28,7 +28,7 @@ $rolelist .= " ]";
 <br>
 <div class="row">
 <?php if ($_SESSION['level'] >= "6") { ?>
-  <div data-bind="visible: isNewMemberCreating" class="col-xs-6 col-sm-4 col-md-4 col-lg-4" style="margin-bottom:20px">
+  <div data-bind="visible: isNewMemberCreating" class="col-xs-12 col-sm-6 col-md-4 col-lg-4" style="margin-bottom:20px">
     <div class="members">
       <div class="opq">
         <div class="members-header-new"></div>
@@ -48,7 +48,7 @@ $rolelist .= " ]";
   </div>
 <?php } ?>
   <!-- ko foreach: members -->
-  <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4" style="margin-bottom:20px">
+  <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4" style="margin-bottom:20px">
     <div class="members">
       <div class="ribbon" data-bind="visible: issuspended"><div class="ribbon-wrapper" data-toggle="tooltip" data-placement="left" title="This user is currently suspended. Only Manager can enable access to this user again by clicking Reactivate button."><div class="ribbon-text">Suspended</div></div></div>​
       <div class="opq" data-bind="css: { 'opaque': issuspended }">
@@ -124,7 +124,8 @@ $rolelist .= " ]";
         <a class="btn btn-success btn-tiny" data-bind="click: $parent.reactivate, visible: issuspended"><i class="pe-play-circle"></i> Reactivate</a>
         <a class="btn btn-warning btn-tiny" data-bind="click: $parent.suspend, visible: !issuspended"><i class="pe-pause-circle"></i> Suspend</a>
         <span data-bind="if: candeletemember, visible: showInfo()">
-          <a class="btn btn-danger btn-tiny" data-bind="if: candeletemember, click: $parent.delete, css: { 'disabled': issuspended }"><i class="pe-trash"></i> Delete</a>
+          <!-- <a class="btn btn-danger btn-tiny" onclick="return confirm('Are you sure you want to delete this member?\n\nOnce a member is deleted, there is no going back.\n\nPlease be certain.');" data-bind="if: candeletemember, click: $parent.delete, clickBubble: false, css: { 'disabled': issuspended }"><i class="pe-trash"></i> Delete</a> -->
+          <a class="btn btn-danger btn-tiny" data-bind="if: candeletemember, click: $parent.delete, clickBubble: false, css: { 'disabled': issuspended }"><i class="pe-trash"></i> Delete</a>
           <!-- <a class="btn btn-danger btn-tiny" data-href="click: $parent.delete, css: { 'disabled': issuspended }" data-toggle="modal" data-target="#confirm-delete" title="Delete this user"><i class="pe-trash"></i> Delete</a> -->
         </span>
         <div data-bind="if: candeletemember, visible: showInfo()" class="small red" style="margin: auto 10px">Note: Once a member is deleted, there is no going back. Please be certain.</div>
@@ -237,7 +238,7 @@ $rolelist .= " ]";
       });
     }
     this.suspend = function (member) {
-      console.log(member.id());
+      //console.log(member.id());
       $.ajax({
         url: api + '/member/' + member.id() + '/suspend',
         dataType: 'json',
@@ -265,7 +266,7 @@ $rolelist .= " ]";
       window.setTimeout(function () { window.location.reload(); }, 3300);
     }
     this.reactivate = function (member) {
-      console.log(member.id());
+      //console.log(member.id());
       $.ajax({
         url: api + '/member/' + member.id() + '/reactivate',
         dataType: 'json',
@@ -293,7 +294,7 @@ $rolelist .= " ]";
       window.setTimeout(function () { window.location.reload(); }, 3300);
     }
     this.delete = function (member) {
-      console.log(member.id());
+      //console.log(member.id());
       $.ajax({
         url: api + '/member/' + member.id() + '/delete',
         dataType: 'json',
@@ -304,14 +305,14 @@ $rolelist .= " ]";
           $('#showalert-delete').show();
           window.setTimeout(function () { $("#showalert-delete").slideUp(500, function () { $("#showalert-delete").hide(); }); }, 3000);
           self.removeMember(member);
-          // $.ajax({
-          //   url: api + '/log',
-          //   dataType: 'json',
-          //   type: 'post',
-          //   contentType: 'application/json; charset=utf-8',
-          //   data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted a member named ' + member.fullname() + ' (' + member.email() + ')", "critical": "5" }',
-          //   success: function(data) { result = data; }
-          // });
+          $.ajax({
+            url: api + '/log',
+            dataType: 'json',
+            type: 'post',
+            contentType: 'application/json; charset=utf-8',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted a member named ' + member.fullname() + ' (' + member.email() + ')", "critical": "5" }',
+            success: function(data) { result = data; }
+          });
           $('.modal-backdrop').hide();
           $('body').removeClass('modal-open');
           $('#confirm-delete').hide();

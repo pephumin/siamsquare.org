@@ -3,15 +3,15 @@
 $user = $_SESSION['email']; $avatar = $_SESSION['avatar'];
 
 function logo() {
-  echo "<img src=\"/admin/assets/img/ssq-horizontal.svg\" alt=\"SiamSquare Survey Engine by PE BINARY CO., LTD.\">";
+  return "<img src=\"/admin/assets/img/ssq-horizontal.svg\" alt=\"SiamSquare Survey Engine by PE BINARY CO., LTD.\">";
 }
 
 function ssqlogo() {
-  echo "<span class=\"ssqlogo1\">Siam</span><span class=\"ssqlogo2\">Square</span>";
+  return "<span class=\"ssqlogo1\">Siam</span><span class=\"ssqlogo2\">Square</span>";
 }
 
 function peblogo() {
-  echo "<span class=\"logo1\"><i class=\"pe-logo\"></i></span> <span class=\"logo2\">pe</span><span class=\"logo3\">binary</span>";
+  return "<span class=\"logo1\"><i class=\"pe-logo\"></i></span> <span class=\"logo2\">pe</span><span class=\"logo3\">binary</span>";
 }
 
 function pageHeader($title) {
@@ -25,9 +25,7 @@ function pageHeader($title) {
   if ($shownavbar == 2) { navbarB(); }
   echo "  <div class=\"row header-2\">\n";
   echo "    <div class=\"container\">\n";
-  echo "      <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\"><h1><a href=\"".MYHOME."\" title=\"".MYDESC."\">";
-  logo();
-  echo "</a></h1></div>\n";
+  echo "      <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\"><h1><a href=\"".MYHOME."\" title=\"".MYDESC."\">".logo()."</a></h1></div>\n";
   echo "      <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\"><h4 class=\"pull-right\">ร่วมแสดงความคิดเห็น <i class=\"pe-comments-o\"></i></h4></div>\n";
   echo "    </div>\n";
   echo "  </div>\n";
@@ -140,12 +138,8 @@ function pageFooter($project = null, $notes = null) {
   echo "  <div class=\"row footer-2\">\n";
   echo "    <div class=\"container\">\n";
   echo "      <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
-  echo "        <a href=\"".MYHOME."\" class=\"footerlogo-ssq\" title=\"".MYDESC."\">";
-  ssqlogo();
-  echo "</a> by";
-  echo "        <a href=\"http://www.pebinary.com\" class=\"footerlogo\" title=\"PE BINARY CO., LTD.\">";
-  peblogo();
-  echo "</a><br>\n";
+  echo "        <a href=\"".MYHOME."\" class=\"footerlogo-ssq\" title=\"".MYDESC."\">".ssqlogo()."</a> by";
+  echo "        <a href=\"http://www.pebinary.com\" class=\"footerlogo\" title=\"PE BINARY CO., LTD.\">".peblogo()."</a><br>\n";
   echo "        <i class=\"pe-copyright\"></i> Copyright 2016, All rights reserved.<br>\n";
   echo "      </div>\n";
   echo "    </div>\n";

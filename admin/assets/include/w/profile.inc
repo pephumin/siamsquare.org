@@ -105,8 +105,13 @@ if ($_GET["m"] == "tips") {
             <td width="5%"></td>
             <td width="70%">
               <div class="input-group">
-                <span class="input-group-addon"><i class="pe-building pe-fw"></i></span>
-                <input type="text" name="company" class="form-control" value="<?php echo $_SESSION["company"]; ?>" onclick="this.select()" readonly>
+                <span class="input-group-addon">EN</span>
+                <input type="text" name="cfullname" class="form-control" value="<?php echo $_SESSION["cfullname"]; ?>" onclick="this.select()" readonly>
+              </div>
+              <br>
+              <div class="input-group">
+                <span class="input-group-addon">TH</span>
+                <input type="text" name="cfullname_th" class="form-control" value="<?php echo $_SESSION["cfullname_th"]; ?>" onclick="this.select()" style="font-family:'boon'; font-size:1.1rem; color:black" readonly>
               </div>
               <span class="text-muted small"><small>Can be changed only by Manager (company setting)</small></span>
             </td>

@@ -1,15 +1,15 @@
 <?php
 
 function logo() {
-  echo "<img src=\"/admin/assets/img/ssq.svg\" alt=\"SiamSquare Survey Engine by PE BINARY CO., LTD.\">";
+  return "<img src=\"/admin/assets/img/ssq.svg\" alt=\"SiamSquare Survey Engine by PE BINARY CO., LTD.\">";
 }
 
 function ssqlogo() {
-  echo "<span class=\"ssqlogo1\">Siam</span><span class=\"ssqlogo2\">Square</span>";
+  return "<span class=\"ssqlogo1\">Siam</span><span class=\"ssqlogo2\">Square</span>";
 }
 
 function peblogo() {
-  echo "<span class=\"logo1\"><i class=\"pe-logo\"></i></span> <span class=\"logo2\">pe</span><span class=\"logo3\">binary</span>";
+  return "<span class=\"logo1\"><i class=\"pe-logo\"></i></span> <span class=\"logo2\">pe</span><span class=\"logo3\">binary</span>";
 }
 
 function pageHeader($title) {
@@ -34,9 +34,7 @@ function pageHeader($title) {
   echo "    </div>\n";
   echo "    <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 header-2\">\n";
   echo "      <div class=\"container\">\n";
-  echo "        <h1><a href=\"".ADMIN."\" title=\"".MYDESC."\">";
-  logo();
-  echo "</a></h1>\n";
+  echo "        <h1><a href=\"".ADMIN."\" title=\"".MYDESC."\">".logo()."</a></h1>\n";
   echo "        <p class=\"description\">".SLOGANEN."</p>\n";
   echo "      </div>\n";
   echo "    </div>\n";
@@ -58,7 +56,7 @@ function pageHeader($title) {
     echo "              <li><a href=\"".ADMIN."\" title=\"".MYDESC."\"><i class=\"pe-home pe-fw\"></i> Home</a></i>\n";
     echo "              <li><a href=\"".ADMIN."?w=surveys"."\" title=\"Projects\"><i class=\"pe-cubes pe-fw\"></i> Projects</a></i>\n";
     echo "              <li class=\"dropdown\">\n";
-    echo "                <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\"><i class=\"pe-cogs pe-fw\"></i> Setting <span class=\"caret\"></span></a>\n";
+    echo "                <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\"><i class=\"pe-cog pe-spin pe-fw\"></i> Setting <span class=\"caret\"></span></a>\n";
     echo "                <ul class=\"dropdown-menu\">\n";
     echo "                  <li><a href=\"".ADMIN."?w=profile"."\" title=\"Profile\"><i class=\"pe-user pe-fw\"></i> Profile</a></li>\n";
     echo "                  <li><a href=\"".ADMIN."?w=team"."\" title=\"Team members\"><i class=\"pe-graduation-cap pe-fw\"></i> Team members</a></li>\n";
@@ -82,7 +80,7 @@ function pageHeader($title) {
     echo "              </li>\n";
   } else {
     echo "              <li><a href=\"".ADMIN."\" title=\"".MYDESC."\"><i class=\"pe-home pe-fw\"></i> Home</a></i>\n";
-    echo "              <li><a href=\"".ADMIN."request/"."\" title=\"Request for an access\"><i class=\"pe-credit-card pe-fw\"></i> Request for an access</a></li>\n";
+    echo "              <li><a href=\"".ADMIN."contact/?d=request"."\" title=\"Request for an access\"><i class=\"pe-credit-card pe-fw\"></i> Request for an access</a></li>\n";
   }
   echo "            </ul>\n";
   echo "          </div>\n";
@@ -104,12 +102,8 @@ function pageFooter($notes = null) {
   echo "    </div>\n";
   echo "    <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-2\">\n";
   echo "      <div class=\"container\">\n";
-  echo "        <a href=\"".MYHOME."\" class=\"footerlogo-ssq\" title=\"".MYDESC."\">";
-  ssqlogo();
-  echo "</a> by\n";
-  echo "        <a href=\"http://www.pebinary.com\" class=\"footerlogo\" title=\"PE BINARY CO., LTD.\">";
-  peblogo();
-  echo "</a><br>\n";
+  echo "        <a href=\"".MYHOME."\" class=\"footerlogo-ssq\" title=\"".MYDESC."\">".ssqlogo()."</a> by\n";
+  echo "        <a href=\"http://www.pebinary.com\" class=\"footerlogo\" title=\"PE BINARY CO., LTD.\">".peblogo()."</a><br>\n";
   echo "        <i class=\"pe-copyright\"></i> Copyright 2016, All rights reserved.<br>\n";
   echo "        <nav class=\"footer\">\n";
   echo "          <ul class=\"list-inline\" itemscope itemtype=\"http://schema.org/SiteNavigationElement\">\n";

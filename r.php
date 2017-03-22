@@ -3,14 +3,6 @@
 if ($_GET['pilot'] == "✓") { $pilottest = 1; } else { $pilottest = 2; }
 if ($_GET['designer'] == "✓") { $readonly = 1; } else { $readonly = 0; }
 
-// copy results
-// 1. copy j_results to j_temp with structure and all data
-// 2. remove all excetp surveyid = 8 --> DELETE FROM `j_temp` WHERE `surveyid` <> 8;
-// 3. update to a new surveyid --> UPDATE `j_temp` SET surveyid = 19;
-// 4. insert back to j_results --> INSERT INTO `j_results` (`rd`, `email`, `ip`, `surveyid`, `submitted`, `data`, `status`) SELECT `rd`, `email`, `ip`, `surveyid`, `submitted`, `data`, `status` FROM `j_temp`
-// replace results
-// UPDATE `j_results` SET `data` = REPLACE(`data`, '8_', '19_') WHERE `surveyid` = 19
-
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/themes.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/functions.php';
@@ -33,7 +25,7 @@ if (empty($_GET['s'])) {
 }
 
 // Get survey and company information (e.g. logo, website, etc.)
-$q1 = $db->prepare("SELECT P.*, C.company, C.description AS DD, C.logo, C.website, C.email FROM j_projects P, j_companies C WHERE P.companyid = C.id AND P.id = :surveyid");
+$q1 = $db->prepare("SELECT P.*, C.company, C.fullname, C.fullname_th, C.description AS DD, C.description_th AS DD_th, C.logo, C.website, C.email FROM j_projects P, j_companies C WHERE P.companyid = C.id AND P.id = :surveyid");
 $q1->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q1->execute();
 if ($q1->rowCount() == 0) {
@@ -57,12 +49,16 @@ while ($r = $q1->fetchObject()) {
   $cwebsite = $r->website;
   $cemail = $r->email;
   $ccompany = $r->company;
+  $cfullname = $r->fullname;
+  $cfullname_th = $r->fullname_th;
   $cdescription = strip_tags($r->DD);
+  $cdescription_th = strip_tags($r->DD_th);
   $private = $r->private;
-  if ($r->logo) {
-    if ($cwebsite) { $clientlogo = "<a href=\"$cwebsite\" title=\"$ccompany\" target=\"_blank\"><img src=\"admin/$r->logo\" title=\"$ccompany\"></a>"; }
-    else { $clientlogo = "<img src=\"admin/$r->logo\" title=\"$ccompany\">"; }
-  } else { $clientlogo = ""; }
+  $language_credential = $r->language_credential;
+  // if ($r->logo) {
+  //   if ($cwebsite) { $clientlogo = "<a href=\"$cwebsite\" title=\"$ccompany\" target=\"_blank\"><img src=\"admin/$r->logo\" title=\"$ccompany\"></a>"; }
+  //   else { $clientlogo = "<img src=\"admin/$r->logo\" title=\"$ccompany\">"; }
+  // } else { $clientlogo = ""; }
   $description = nl2br($r->description);
   if ($_showtopper) { $showtopper = $_showtopper; } else { $showtopper = $r->show_top; }
   if ($_shownavbar) { $shownavbar = $_shownavbar; } else { $shownavbar = $r->show_navbar; }
@@ -247,6 +243,7 @@ if ($showdetail == 2) {
 echo "<div id=\"showupload\"></div><div id=\"showcompletion\"></div><br>\n";
 echo "<div id=\"runsurvey\"></div><br>\n";
 echo "<div id=\"notification\"></div>\n";
+
 ?>
 
 <script type="text/javascript">
@@ -354,6 +351,7 @@ echo "<div id=\"notification\"></div>\n";
   else if (colour == 8) { Survey.defaultBootstrapCss.navigationButton = "btn btn-info"; Survey.defaultBootstrapCss.progressBar = "progress-bar progress-bar-info progress-bar-striped active"; }
   else { Survey.defaultBootstrapCss.navigationButton = "btn btn-info"; Survey.defaultBootstrapCss.progressBar = "progress-bar progress-bar-info progress-bar-striped active"; }
   Survey.Survey.cssType = "bootstrap";
+
   var survey = new Survey.Model (getsurveydata(surveyid));
   if (readonly == 1) { survey.mode = "display"; $(function () { $('#pageComplete').attr('disabled', 'disabled'); }); } else if (readonly == 0) { survey.mode = "edit"; }
   if (pilot != 1) {
@@ -367,6 +365,24 @@ echo "<div id=\"notification\"></div>\n";
       survey.onCurrentPageChanged.add(function(data) { $('#notification').hide(); });
     }
   }
+
+  Survey.JsonObject.metaData.addProperty("dropdown", { name: "dateFormat", default: "dd-mm-yy", choices: ["dd-mm-yy", "dd/mm/yy", "M d, y", "d MM yy", "DD, d MM yy", "'day' d 'of' MM 'in the year' yy"]});
+  var widget = {
+    name: "datepicker",
+    htmlTemplate: "<input id='widget-datepicker' type='text' style='width: 100%;'>",
+    isFit: function(question) { return question.inputType == 'date'; },
+    afterRender: function(question, el) {
+      var dateFormat = question.dateFormat ? question.dateFormat : "dd-mm-yy";
+      var widget = $(el).datepicker({ dateFormat: dateFormat });
+      // var widget = $(el).datepicker({ dateFormat: question.dateFormat });
+      widget.on("change", function (e) { question.value = $(this).val(); });
+      question.valueChangedCallback = function() { widget.datepicker('setDate', new Date(question.value)); }
+      widget.datepicker('setDate', new Date(question.value || Date.now));
+    }
+  }
+  Survey.CustomWidgetCollection.Instance.addCustomWidget(widget);
+
+
   survey.render("runsurvey");
   $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> ระบบกำลังอัพโหลดรูปของคุณ ระหว่างนี้คุณสามารถทำรายการต่อได้ทันที และอีกสักครู่เมื่อระบบทำงานในส่วนนี้เสร็จ ข้อความนี้จะหายไปเอง</div>").hide();
   $('#showcompletion').html("<div class='alert alert-success'><i class='pe-check-square-o pe-lg pe-fw'></i> เราได้ทำการจัดเก็บความคิดเห็นของคุณลงระบบเป็นที่เรียบร้อยแล้ว</div>").hide();
@@ -388,50 +404,90 @@ echo "<div id=\"notification\"></div>\n";
   // survey.onUploadFile
 </script>
 
-<?php if (($cdescription) && ($showabout == 2)) { ?>
-<div class="row companydetail" style="margin-top: 40px">
-  <div class="container">
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-      <h5 class="companydetailhead">เกี่ยวกับบริษัท</h5>
-    </div>
-    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 companylogoboxA">
-<?php if ($showlogo == 2) { if ($clientlogo != "") { echo "      <div class=\"companylogo\">$clientlogo</div>\n"; } else { echo "      <div class=\"companyname\"><strong>$ccompany</strong></div>\n"; } } else { echo "      <div class=\"companyname\"><strong>$ccompany</strong></div>\n"; } ?>
-    </div>
-    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 companylogoboxB"<?php if ($showlogo != true) { echo " style=\"font-size:85%\""; } ?>>
-<?php if ($showlogo == 2) { echo "      <div class=\"companylogo\"><a href=\"http://www.pebinary.com\" class=\"footerlogo\" title=\"PE BINARY CO., LTD.\">".peblogo()."</a></div>\n"; } else { echo "      <div class=\"companyname\"><strong>".peblogo()."</strong></div>\n"; } ?>
-    </div>
-  </div>
-  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-      <p class="companydescription"><?php echo $cdescription; ?></p><br>
-    </div>
-    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-      <p class="companydescription">A revolutionary market research company founded in 2016 with a vision to help clients changing the way they access consumer insights. The company provides accurate and more responsive consumer insights allowing business decisions to be made quicker.</p><br>
-    </div>
-  </div>
-  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-      <p class="companydescription">
-<?php if ($cwebsite) { echo "        <i class=\"pe-globe pe-fw\"></i> <a href=\"$cwebsite\" title=\"$ccompany\" target=\"_blank\">$cwebsite</a><br>\n"; } ?>
-<?php if ($cemail) { echo "        <i class=\"pe-envelope pe-fw\"></i> <a href=\"mailto:$cemail\" title=\"Contact $ccompany\" target=\"_blank\">$cemail</a><br>\n"; } ?>
-      </p>
-      <br>
-    </div>
-    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-      <p class="companydescription">
-        <i class="pe-globe pe-fw"></i> <a href="http://www.pebinary.com" title="PE BINARY CO., LTD." target="_blank">http://www.pebinary.com</a><br>
-        <i class="pe-envelope pe-fw"></i> <a href="mailto:info@pebinary.com" title="Contact PE BINARY CO., LTD." target="_blank">info@pebinary.com</a><br>
-      </p>
-    </div>
-  </div>
-</div>
-<?php } ?>
+<?php
 
-<style media="screen">
-  header > .header-2 { <?php echo themeBG($showcolour); ?>; }
-  footer > .footer-2 { <?php echo themeBG($showcolour); ?>; }
-</style>
+  if (($cdescription) && ($showabout == 2)) {
+    echo "<div class=\"row companydetail\" style=\"margin-top: 40px\">\n";
+    echo "  <div class=\"container\">\n";
+    echo "    <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
+    echo "      <h5 class=\"companydetailhead\">เกี่ยวกับบริษัท</h5>\n";
+    echo "    </div>\n";
+    echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6 companylogoboxA\">\n";
+    if ($language_credential == 1) {
+      if ($cwebsite) { echo "      <div class=\"companyname\"><a href=\"$cwebsite\" class=\"footerlogo\" title=\"$cfullname\" style=\"color:black; text-decoration:none\"><strong>$cfullname</strong></a></div>\n"; }
+      else { echo "      <div class=\"companyname\"><strong>$cfullname</strong></div>\n"; }
+    }
+    else {
+      if ($cwebsite) { echo "      <div class=\"companyname\"><a href=\"$cwebsite\" class=\"footerlogo\" title=\"$cfullname_th\" style=\"color:black; text-decoration:none\"><strong>$cfullname_th</strong></a></div>\n"; }
+      else { echo "      <div class=\"companyname\"><strong>$cfullname_th</strong></div>\n"; }
+    }
+    echo "    </div>\n";
+    if ($language_credential == 1) { echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6 companylogoboxB\">\n"; }
+    else { echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6 companylogoboxA\">\n"; }
+    if ($language_credential == 1) {
+      if ($cwebsite) { echo "      <div class=\"companylogo\"><a href=\"http://www.pebinary.com\" class=\"footerlogo\" title=\"PE BINARY CO., LTD.\" style=\"color:black; text-decoration:none\"><span class=\"logo1\"><i class=\"pe-logo\"></i></span>&nbsp;<span class=\"logo2\">pe</span><span class=\"logo3\">binary</span></a></div>\n"; }
+      else { echo "      <div class=\"companylogo\"><span class=\"logo1\"><i class=\"pe-logo\"></i></span>&nbsp;<span class=\"logo2\">pe</span><span class=\"logo3\">binary</span></div>\n"; }
+    }
+    else {
+      if ($cwebsite) { echo "      <div class=\"companyname\"><a href=\"http://www.pebinary.com\" class=\"footerlogo\" title=\"บริษัท พีอี ไบนารี่ จำกัด\" style=\"color:black; text-decoration:none\"><strong>บริษัท พีอี ไบนารี่ จำกัด</strong></a></div>\n"; }
+      else { echo "      <div class=\"companyname\"><strong>บริษัท พีอี ไบนารี่ จำกัด</strong></div>\n"; }
+    }
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
+    echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
+    if ($language_credential== 1) { echo "      <p class=\"companydescription\">".$cdescription."</p>"; }
+    else { echo "      <p class=\"companydescriptionth\">".$cdescription_th."</p>"; }
+    echo "    </div>\n";
+    echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
+    if ($language_credential== 1) { echo "      <p class=\"companydescription\">A revolutionary market research company founded in 2016 with a vision to help clients changing the way they access consumer insights. The company provides accurate and more responsive consumer insights allowing business decisions to be made quicker.</p>"; }
+    else { echo "      <p class=\"companydescriptionth\">บริษัทวิจัยการตลาดที่มุ่งเน้นการสร้างธุรกิจกับการทำวิจัยผ่านสื่อออนไลน์เป็นหลัก เพื่อยกระดับให้ธุรกิจการทำวิจัยตลาดให้มีความทันสมัยและสามารถตอบโจทย์และความต้องการในยุคดิจิตัลได้เป็นอย่างดี</p>"; }
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
+    echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
+    echo "      <p class=\"companydescription\">\n";
+    if ($cwebsite) {
+      if ($language_credential== 1) { echo "        <i class=\"pe-globe pe-fw\"></i> <a href=\"$cwebsite\" title=\"$cfullname\" target=\"_blank\">$cwebsite</a><br>\n"; }
+      else { echo "        <i class=\"pe-globe pe-fw\"></i> <a href=\"$cwebsite\" title=\"$cfullname_th\" target=\"_blank\">$cwebsite</a><br>\n"; }
+    } else { echo "        <br>"; }
+    if ($cemail) {
+      if ($language_credential== 1) { echo "        <i class=\"pe-envelope pe-fw\"></i> <a href=\"mailto:$cemail\" title=\"Contact $cfullname\" target=\"_blank\">$cemail</a><br>\n"; }
+      else { echo "        <i class=\"pe-envelope pe-fw\"></i> <a href=\"mailto:$cemail\" title=\"ติดต่อ $cfullname_th\" target=\"_blank\">$cemail</a><br>\n"; }
+    } else { echo "        <br>"; }
+    echo "      </p>\n";
+    echo "    </div>\n";
+    echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
+    echo "      <p class=\"companydescription\" style=\"margin-bottom:20px !important\">\n";
+    if ($language_credential== 1) {
+      echo "        <i class=\"pe-globe pe-fw\"></i> <a href=\"http://www.pebinary.com\" title=\"PE BINARY CO., LTD.\" target=\"_blank\">http://www.pebinary.com</a><br>\n";
+      echo "        <i class=\"pe-envelope pe-fw\"></i> <a href=\"mailto:info@pebinary.com\" title=\"Contact PE BINARY CO., LTD.\" target=\"_blank\">info@pebinary.com</a><br>\n";
+    }
+    else {
+      echo "        <i class=\"pe-globe pe-fw\"></i> <a href=\"http://www.pebinary.com\" title=\"บริษัท พีอี ไบนารี่ จำกัด\" target=\"_blank\">http://www.pebinary.com</a><br>\n";
+      echo "        <i class=\"pe-envelope pe-fw\"></i> <a href=\"mailto:info@pebinary.com\" title=\"ติดต่อ บริษัท พีอี ไบนารี่ จำกัด\" target=\"_blank\">info@pebinary.com</a><br>\n";
+    }
+    echo "      </p>\n";
+    echo "    </div>\n";
+    echo "  </div>\n";
+    echo "</div>\n";
+  }
+}
 
-<?php } ?>
+// $themcolour = themeBG($showcolour);
+echo "<style>\n";
+echo "  header .header-2, footer .footer-2 { ".themeBG($showcolour)." }\n";
+// echo "  footer > .footer-2 { ".themeBG($showcolour)." }\n";
+echo "</style>\n";
 
-<?php if ($project || $notes) { pageFooter($project, $notes); } else { pageFooter(); } ?>
+if ($project || $notes) { pageFooter($project, $notes); } else { pageFooter(); }
+
+// copy results
+// 1. copy j_results to j_temp with structure and all data
+// 2. remove all excetp surveyid = 8 --> DELETE FROM `j_temp` WHERE `surveyid` <> 8;
+// 3. update to a new surveyid --> UPDATE `j_temp` SET surveyid = 19;
+// 4. insert back to j_results --> INSERT INTO `j_results` (`rd`, `email`, `ip`, `surveyid`, `submitted`, `data`, `status`) SELECT `rd`, `email`, `ip`, `surveyid`, `submitted`, `data`, `status` FROM `j_temp`
+// replace results
+// UPDATE `j_results` SET `data` = REPLACE(`data`, '8_', '19_') WHERE `surveyid` = 19
+
+?>
