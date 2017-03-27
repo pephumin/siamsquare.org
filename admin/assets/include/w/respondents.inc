@@ -184,13 +184,13 @@ if ($_POST['uploading'] == 1) {
 
 $title = "Manage respondents";
 pageHeader($title);
-$menu0 = "<h2>$title</h2>";
-$menu0 .= "<p>Given a nature of any private surveys where respondents are specific to the project, we provide you with a tool that helps you manage your respondents with ease.</p>\n";
-$menu0 .= "<p>This includes the actual respondent management such as upload/ add emails to the system, clean note this page is mainly for managing respondents, if you want to check for participation rate, kindly use the project status instead.</p>\n";
-$menu0 .= "<p>Please see table below for more information about these respodnents. And of course, you can always use the upload function to add more respondents to the project if need.</p>\n";
-$menu0 .= $golden;
-$menu0 .= "<br>\n";
-$menu0 .= "<h3>Project $project</h3>\n";
+echo "<h2>$title</h2>";
+echo "<p>Given a nature of any private surveys where respondents are specific to the project, we provide you with a tool that helps you manage your respondents with ease.</p>\n";
+echo "<p>This includes the actual respondent management such as upload/ add emails to the system, clean note this page is mainly for managing respondents, if you want to check for participation rate, kindly use the project status instead.</p>\n";
+echo "<p>Please see table below for more information about these respodnents. And of course, you can always use the upload function to add more respondents to the project if need.</p>\n";
+echo $golden;
+echo "<br>\n";
+echo "<h3>Project $project</h3>\n";
 
 
 // Get status
@@ -229,18 +229,33 @@ if ($notparticipated) { $notparticipated_bar = "<div class=\"progress\"><div cla
 
 $strikerate = number_format(($participated / $invited) * 100, 1);
 
+// echo "<div class=\"row\">\n";
+// echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
+// echo "    <p>This project currently has <strong>no respondent</strong> stored in the database.</p>\n";
+// echo "    <p>Please upload respondent's emails using a Comma Separated Value (CSV) file and our system will enable the email function allowing you to send invitation / reminder to respondents accordingly.</p>\n";
+// echo "    <p></p>\n";
+// echo "    <div id=\"gaugechart\" style=\"display:none\"></div><div id=\"orgchart\" style=\"display:none\"></div>\n";
+// echo "  </div>\n";
+// echo "</div>\n";
+// echo "<br>\n";
+
 if ($all == 0) {
-  $menu0 .= "<p>This project currently has <strong>no respondent</strong> stored in the database.</p>\n";
-  $menu0 .= "<p>Please upload respondent's emails using a Comma Separated Value (CSV) file and our system will enable the email function allowing you to send invitation / reminder to respondents accordingly.</p>\n";
-  $menu0 .= "<p></p>\n";
+  echo "<div class=\"row\">\n";
+  echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
+  echo "    <p>This project currently has <strong>no respondent</strong> stored in the database.</p>\n";
+  echo "    <p>Please upload respondent's emails using a Comma Separated Value (CSV) file and our system will enable the email function allowing you to send invitation / reminder to respondents accordingly.</p>\n";
+  echo "    <p></p>\n";
+  echo "    <div id=\"gaugechart\" style=\"display:none\"></div><div id=\"orgchart\" style=\"display:none\"></div>\n";
+  echo "  </div>\n";
+  echo "</div>\n";
+  echo "<br>\n";
 } else {
   if (!empty($uncleaned)) { $text .= "<p>This project currently has a total of <strong>$all_format <em class=\"red\">uncleaned</em> respondents</strong> in the database.</p>\n"; }
   else { $text .= "<p>This project currently has a total of <strong>$all_format respondents</strong> in the database.</p>\n"; }
   if ($invited == 0) { $text .= "<p><strong>None of them</strong> has been invited resulting to <strong>zero participation</strong> and <strong>zero strike rate</strong> <em>(participation vs. invitation)</em>.</p>\n"; }
   else { $text .= "<p><strong>$invited_format respondents</strong> have been invited and <strong>$participated_format respondents</strong> have participated resulting to a strike rate of <strong>$strikerate%</strong> <em>(participation vs. invitation)</em>.</p>\n"; }
   $text .= "<div id=\"gaugechart\"></div>\n";
-
-  $menu0 .= "<div class=\"row\">\n";
+  $menu0 = "<div class=\"row\">\n";
   $menu0 .= "  <div class=\"col-xs-12 col-sm-8 col-md-8 col-lg-8\">\n";
   $menu0 .= "    <div id=\"orgchart\"></div>\n";
   $menu0 .= "  </div>\n";
@@ -284,7 +299,7 @@ if ($all == 0) {
   $menu0 .= "    chart.draw(dataTable, options);\n";
   $menu0 .= "  }\n";
   $menu0 .= "</script>\n";
-  $menu0 .= "<style media=\"screen\">\n";
+  $menu0 .= "<style>\n";
   $menu0 .= "  .google-visualization-orgchart-node { font-family: \"ubuntu\"; font-size: 1rem; width: 150px; }\n";
   $menu0 .= "  .google-visualization-orgchart-connrow-medium { border-bottom: none; }\n";
   $menu0 .= "  .google-visualization-orgchart-table { border-collapse: separate !important; }\n";
@@ -422,7 +437,7 @@ while ($row = $q3D->fetchObject()) {
 
 if ($total == 0) {
   $menu0 = "<div align=\"right\"><a class=\"btn btn-info\" href=\"\" data-toggle=\"modal\" data-target=\"#uploading\"><i class=\"pe-upload pe-fw\"></i> Upload a new name list</a> <a class=\"btn btn-info\" href=\"\" data-toggle=\"modal\" data-target=\"#manuallyadd\"><i class=\"pe-user-plus pe-fw\"></i> Manually add new respondents</a></div>\n";
-  $menu0 .= "<br>\n";
+  $menu0 .= "<br><br>\n";
   $menu0 .= $help;
 } else {
   if (empty($showlink)) {
@@ -525,9 +540,6 @@ if ($total == 0) {
   $menu1 .= "</div><br>\n";
   $menu1 .= "<small>Found <strong>$amount_format records</strong> (showing results $from_record_format to $to_record_format)</small>\n";
 
-  echo $menu0;
-  echo $menu1;
-
   $menu2 .= "<form method=\"post\" action=\"$me\">\n";
   $menu2 .= "  <table class=\"table table-hover table-condensed small\">\n";
   $menu2 .= "    <thead>\n";
@@ -552,7 +564,6 @@ if ($total == 0) {
   $menu2 .= "  <p></p>\n";
   $menu2 .= "  <p class=\"small\"><em>Note: You only can delete respondents who have <u>not</u> been invited to this survey.</em></p>\n";
   $menu2 .= "</form>\n";
-
 }
 
 $menu2 .= "<div class=\"modal fade\" id=\"uploading\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"uploading\">\n";
@@ -617,6 +628,8 @@ $menu2 .= "  </div>\n";
 $menu2 .= "</div>\n";
 $menu2 .= "<br>\n";
 
+echo $menu0;
+echo $menu1;
 echo $menu2;
 
 if (($total != 0) && (!isset($_POST['showbyemail']))) { echo $pagination; }

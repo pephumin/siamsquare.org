@@ -52,9 +52,10 @@ $percentStatus5 = percent($ustatus5 / $totalALL);
 if ($_SESSION['avatar']) { echo "    <div class=\"pull-right\" style=\"margin-top:0px\"><img src=\"assets/img/u/".$_SESSION['avatar'].".svg\" class=\"img-circle members-photo\"></div>\n"; }
 echo "    <h3>".$_SESSION['fullname']." <small>&laquo; ".$_SESSION['email']." &raquo;</small></h3>\n";
 echo "    <h4>Summary of all your projects</h4>\n";
-$new = "<a href=\"/admin/?w=surveys\" class=\"btn btn-success\"><i class=\"pe-cube pe-fw\"></i> New project</a>";
-if ($totalALL == 0) { echo "    <p>Currently you do <u>not</u> have any survey projects under your direct management so there is no stats to be shown here.</p>\n"; echo "    <p>You can create a new project at anytime by clicking $new in the survey page.\n"; }
-else {
+if ($totalALL == 0) {
+  echo "    <p>Currently you do <u>not</u> have any survey projects under your direct management so there is no stats to be shown here.</p>\n";
+  echo "    <p>You can create a new project at anytime by clicking <a class=\"btn btn-success\"><i class=\"pe-cube pe-fw\"></i> New project</a> which can be found in <a href=\"/admin/?w=surveys\" title=\"The main survey page\">the main survey page</a>.\n";
+} else {
   if ($totalALL == 1) { echo "    <p>You directly manage <strong>$totalALL project</strong>"; if ($totalActive == 1) { echo " and it is an active project.</p>\n"; } else if ($totalInactive == 1) { echo " and it is an inactive project.</p>\n"; } }
   else if ($totalALL > 1) { echo "    <p>You directly manage <strong>$totalALL projects</strong> including <strong>$totalActive</strong> active and <strong>$totalInactive</strong> inactive respectively.</p>\n"; }
   echo "    <br>\n";
@@ -292,8 +293,10 @@ $bdata .= "    ]";
 if ($clientlogo) { echo $clientlogo; }
 echo "<h3>$companyname</h3>\n";
 echo "<h4>Summary of all projects</h4>\n";
-if ($sstotal == 0) { echo "    <p>Currently the company does <u>not</u> have any survey projects so there is no stats to be shown here.</p>\n"; echo "    <p>You can create a new project at anytime by clicking $new in the survey page.\n"; }
-else {
+if ($sstotal == 0) {
+  echo "    <p>Currently there is still <strong>zero projects</strong> and therefore no statistic can be shown.</p>\n";
+  echo "    <p>You can create a new project by clicking <a class=\"btn btn-success\"><i class=\"pe-cube pe-fw\"></i> New project</a> which can be found in <a href=\"/admin/?w=surveys\" title=\"The main survey page\">the main survey page</a>.\n";
+} else {
   if ($sstotal == 1) { echo "    <p>The company currently has <strong>$sstotal project</strong>"; if ($ssActive == 1) { echo " and it is an active project.</p>\n"; } else if ($ssInactive == 1) { echo " and it is an inactive project.</p>\n"; } }
   else if ($sstotal > 1) { echo "    <p>The company currently has <strong>$sstotal projects</strong> including <strong>$ssActive</strong> active and <strong>$ssInactive</strong> inactive respectively.</p>\n"; }
   echo "    <br>\n";
