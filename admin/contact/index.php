@@ -33,14 +33,9 @@ if ((empty($_GET['d'])) || ($_GET['d'] == "contact")) {
       $mail->IsMail();
       $mail->setFrom(EMAILNOREPLY);
       $mail->addReplyTo($email, $name);
-      if ($_POST['copyme'] == 1) {
-        $mail->addAddress(EMAILADMIN);
-        $mail->addAddress($email);
-        $mail->Subject = "Contact query at ".MYTITLE." (copy)";
-      } else {
-        $mail->addAddress(EMAILADMIN);
-        $mail->Subject = "Contact query at ".MYTITLE;
-      }
+      $mail->addAddress(EMAILADMIN);
+      if ($_POST['copyme'] == 1) { $mail->addAddress($email); }
+      $mail->Subject = "Contact query at ".MYTITLE;
       $mail->IsHTML(true);
       $mail->CharSet="utf-8";
       $date = date("M d, Y"); $time = date("h:m");
@@ -196,14 +191,9 @@ if ((empty($_GET['d'])) || ($_GET['d'] == "contact")) {
       $mail->IsMail();
       $mail->setFrom(EMAILNOREPLY);
       $mail->addReplyTo($email, $name);
-      if ($_POST['copyme'] == 1) {
-        $mail->addAddress(EMAILADMIN);
-        $mail->addAddress($email);
-        $mail->Subject = "Request for an access at ".MYTITLE;
-      } else {
-        $mail->addAddress(EMAILADMIN);
-        $mail->Subject = "Request for an access at ".MYTITLE;
-      }
+      $mail->addAddress(EMAILADMIN);
+      if ($_POST['copyme'] == 1) { $mail->addAddress($email); }
+      $mail->Subject = "Request for an access at ".MYTITLE;
       $mail->IsHTML(true);
       $mail->CharSet="utf-8";
       $date = date("M d, Y"); $time = date("h:m");
