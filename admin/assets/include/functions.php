@@ -376,6 +376,8 @@ function meta($title) {
   // echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-2.1.4.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-ui.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery.form.min.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-csv.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-bar-rating.js\"></script>\n";
   echo "  <script type=\"text/javascript\">\n";
   echo "    $.widget.bridge('uibutton', $.ui.button);\n";
   echo "    $.widget.bridge('uitooltip', $.ui.tooltip);\n";
@@ -383,7 +385,6 @@ function meta($title) {
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/bootstrap.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery.steps.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/moment.js\"></script>\n";
-  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-csv.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/csv.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/highlight.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/lightbox.js\"></script>\n";

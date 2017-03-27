@@ -1,5 +1,5 @@
 @charset "UTF-8";
-#surveyjs, #surveyjsTest, #surveyjsExample, #surveyjsExampleResults, #surveyjsExamplereRun {
+#surveyjs, #surveyjsTest, #surveyjsExample, #surveyjsExample > p, #surveyjsExampleResults, #surveyjsExamplereRun {
   font-family: "boon";
   font-size: 16px !important; }
 
@@ -55,7 +55,7 @@ i.pe-exclamation-circle {
 
 .eachquestion {
   margin-top: 10px;
-  margin-bottom: 40px; }
+  margin-bottom: 10px; }
 
 .pTitle {
   font-family: "boon";
@@ -99,20 +99,6 @@ textarea {
   font-family: "boon";
   font-size: 1rem; }
 
-@media (max-width: 991px) {
-  .svd_container .svd_content .svd_editors {
-    padding: 0; } }
-@media (max-width: 991px) {
-  .svd_container .svd_content .svd_properties {
-    margin-top: 20px; } }
-@media (max-width: 816px) {
-  .svd_container .nav-tabs.svd_menu > li.active > a {
-    color: #1ab394;
-    background-color: transparent;
-    border: none; }
-    .svd_container .nav-tabs.svd_menu > li.active > a:hover, .svd_container .nav-tabs.svd_menu > li.active > a:focus {
-      color: #1ab394;
-      background-color: transparent; } }
 .svd_object_editor {
   background-color: #fff;
   height: 75vh;
@@ -215,14 +201,14 @@ textarea {
           cursor: pointer; }
           .svd_container .svd_content .svd_survey_designer .svd_editors .svd_pages_editor .nav-tabs li.active .svd_page_nav {
             font-family: "boon";
-            font-size: 14px;
+            font-size: 12px;
             color: #1ab394;
             background-color: #f5f6f7;
             border: 1px solid #e7eaec;
             border-bottom-color: #f5f6f7; }
           .svd_container .svd_content .svd_survey_designer .svd_editors .svd_pages_editor .nav-tabs li .svd_page_nav {
             font-family: "boon";
-            font-size: 14px;
+            font-size: 12px;
             color: #676a6c;
             padding: 7px 10px 7px 12px; }
       .svd_container .svd_content .svd_survey_designer .svd_editors .svd_pages_editor .svd_add_new_page_btn {
@@ -564,10 +550,16 @@ sv_body {
   100% {
     background: white; } }
 .highlight {
-  border: 3px solid red;
-  -webkit-animation: highlight-fade 2s ease-out;
-  -moz-animation: highlight-fade 2s ease-out;
-  -o-animation: highlight-fade 2s ease-out;
-  animation: highlight-fade 2s ease-out; }
+  -webkit-animation: highlight-fade 5s ease-out;
+  -moz-animation: highlight-fade 5s ease-out;
+  -o-animation: highlight-fade 5s ease-out;
+  animation: highlight-fade 5s ease-out; }
+
+@media (max-width: 991px) {
+  .svd_container .svd_content .svd_editors {
+    padding: 0; } }
+@media (max-width: 991px) {
+  .svd_container .svd_content .svd_properties {
+    margin-top: 20px; } }
 
 /*# sourceMappingURL=survey.css.map */

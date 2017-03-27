@@ -700,7 +700,7 @@ $userlist .= "    ]";
 </script>
 
 <br>
-<hr style="margin-bottom:30px">
+<br style="margin-bottom:50px">
 
 <div class="" style="background:mintcream; padding:20px; border: 2px solid grey; border-radius:30px">
   <p class="text-muted">Label definition</p>
