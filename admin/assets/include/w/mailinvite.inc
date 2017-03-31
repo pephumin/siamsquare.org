@@ -174,8 +174,8 @@ if ($_POST['saveme'] == 1) {
 $title = "Send an invitation";
 pageHeader($title);
 echo "<h2>$title</h2>\n";
-echo "<p>We provide you with a tool that helps you sending out all emails to respondents in a very easy way.</p>\n";
-echo "<p>You just simply follow these steps, and the emails will be sent to target respondents per your demand.</p>\n";
+echo "<p class=\"introtext\">We provide you with a tool that helps you sending out all emails to respondents in a very easy way.</p>\n";
+echo "<p class=\"introtext\">You just simply follow these steps, and the emails will be sent to target respondents per your demand.</p>\n";
 echo $golden;
 echo "<br>\n";
 echo "<h3>Project $project</h3>\n";

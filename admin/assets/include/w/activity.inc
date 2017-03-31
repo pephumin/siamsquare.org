@@ -84,8 +84,8 @@ $from_record_format = number_format($from_record);
 $title = "Activity";
 pageHeader($title);
 echo "<h2>$title</h2>";
-echo "<p>This page shows the activities sorted by time where the most recent activity is on the top of the list. While the default is set to have each user only sees his/her own activity, users with a higher access permission will also see the activity of other members within the same group.</p>\n";
-echo "<p>Feel free to contact us if you find any problems using our site. Any other suggestions are also more than welcome.</p>\n";
+echo "<p class=\"introtext\">This page shows the activities sorted by time where the most recent activity is on the top of the list. While the default is set to have each user only sees his/her own activity, users with a higher access permission will also see the activity of other members within the same group.</p>\n";
+echo "<p class=\"introtext\">Feel free to contact us if you find any problems using our site. Any other suggestions are also more than welcome.</p>\n";
 // echo "<br>\n";
 
 if ($_GET['m'] == "2") { $message = mkwarn("The selected activity has been deleted."); echo "<p>$message</p>\n"; }

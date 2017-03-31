@@ -1,6 +1,6 @@
 <?php
 
-$title = "Client's dashboard";
+$title = "Dashboard";
 pageHeader($title);
 
 // Get company information (e.g. logo, website, etc.)
@@ -16,9 +16,9 @@ if ($q1->rowCount()) {
   else { $companyname = $r->fullname; }
 }
 
-echo "<h2>The main dashboard</h2>\n";
-echo "<p>This is the main interface containing the overview information regarding to youself or your company, $companyname.</p>\n";
-echo "<p>Although we build this website with an objective of being an easy for self-administration, we are still happy to support you in any cases. Should you need anything, please feel free to <a href=\"/admin/contact/\">contact us</a>.</p>\n";
+echo "<h2>$title</h2>\n";
+echo "<p class=\"introtext\">This is the main user interface containing the overview information about you (".$_SESSION['fullname'].") and your company ($r->fullname).</p>\n";
+echo "<p class=\"introtext\">Although we build this website with an objective of being an easy for self-administration, we are still happy to support you in any cases. Should you need anything, please feel free to <a href=\"/admin/contact/\">contact us</a>.</p>\n";
 echo "<br>\n";
 
 if (isset($login)) {

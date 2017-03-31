@@ -3,9 +3,9 @@
 $title = "Team members";
 pageHeader($title);
 echo "<h2>$title</h2>";
-echo "<p>If your level is Manager, you have an ability to manage your team members which includes adding a new user, editing or suspending an existing user, or even deleting should you need to. For others who are not Manager, this page will be more or less read-only for you.</p>\n";
-echo "<p>And when adding a new member, you must make sure <strong>a valid email is used</strong> and <strong>the new member must activate his/her account</strong> (at <a href=\"http://www.siamsquare.org/admin/setup/\" title=\"Account Activation\">http://www.siamsquare.org/admin/setup/</a>) before he/she can access our system.</p>\n";
-echo "<p></p><br>\n";
+echo "<p class=\"introtext\">If your level is Manager, you have an ability to manage your team members which includes adding a new user, editing or suspending an existing user, or even deleting should you need to. For others who are not Manager, this page will be more or less read-only for you.</p>\n";
+echo "<p class=\"introtext\">And when adding a new member, you must make sure <strong>a valid email is used</strong> and <strong>the new member must activate his/her account</strong> (at <a href=\"http://www.siamsquare.org/admin/setup/\" title=\"Account Activation\">http://www.siamsquare.org/admin/setup/</a>) before he/she can access our system.</p>\n";
+echo "<p class=\"introtext\"></p><hr>\n";
 
 $rolelist = "[ ";
 $rolelist .= "new RoleListing(6, \"Manager\"), ";
@@ -520,7 +520,7 @@ $rolelist .= " ]";
   <thead>
     <tr class="bg-success">
       <th width="20%"><i class="pe-flag pe-fw"></i> Role</th>
-      <th><i class="pe-paperclip pe-fw"></i> Description</th>
+      <th><i class="pe-map-o pe-fw"></i> Description</th>
     </tr>
   </thead>
   <tbody>

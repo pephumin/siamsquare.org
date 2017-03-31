@@ -87,11 +87,11 @@ if ($_SESSION['level'] != "9") {
 }
 
 $title = "Job monitoring";
+$result = "/admin/?w=result&s=".$_GET['s'];
 pageHeader($title);
 echo "<h2>$title</h2>";
-echo "<p>This page gives a real time update on the project especially on the progress of data collection.</p>";
-echo "<p>Ideally one would want to have the progress reaching to 100%, however it is also acceptable that a decision to stop before the full scale is shown especially when a business decision has to be made sooner rather than later.</p>";
-echo "<p>The target set in this page is either an estimation of industry average or an indication has been agreed prior to starting the data collection.</p>";
+echo "<p class=\"introtext\">This page gives a real time update on the progress of data collection. An additional of the interim tabulation is also shown for project with valid responses.</p>";
+echo "<p class=\"introtext\">Kidnly note the interim data should be used for data-checking only, and <strong>must not be used for business decision</strong>. If you would like to see the result, please use <a href=\"$result\">the result page</a> where the analysis of each question is displayed with a full graphic visualisation.</p>";
 echo "<hr>\n";
 echo "<h3>Project $project</h3>\n";
 

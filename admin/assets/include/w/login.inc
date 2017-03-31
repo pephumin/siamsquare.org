@@ -4,8 +4,8 @@ $me = "/admin/";
 $title = "The front page";
 pageHeader($title);
 echo "<h2>Welcome to <span class=\"ssqlogo1\">Siam</span><span class=\"ssqlogo2\">Square</span></h2>\n";
-echo "<p>A market research service platform which is built from an intention to help clients changing the way they access consumer insights. We believe consumer insights should be accurate and more responsive in order to allow a quicker business decision to be made and being ahead of competition.</p>\n";
-echo "<p>Only registered clients can access to our service. Feel free to contact us for more infomation or send us a request for an access.</p>\n";
+echo "<p class=\"introtext\">A market research service platform which is built from an intention to help clients changing the way they access consumer insights. We believe consumer insights should be accurate and more responsive in order to allow a quicker business decision to be made and being ahead of competition.</p>\n";
+echo "<p class=\"introtext\">Only registered clients can access to our service. Feel free to contact us for more infomation or send us a request for an access.</p>\n";
 echo "<br>\n";
 
 if (isset($login)) {

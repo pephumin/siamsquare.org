@@ -23,7 +23,7 @@ else { $title = $title; $details = $details; }
 
 pageHeader($title);
 echo "<h2>$title</h2>\n";
-echo "<p>$details</p>\n";
+echo "<p class=\"introtext\">$details</p>\n";
 
 // Get user list
 if ($_SESSION['level'] == 9) {
@@ -136,11 +136,11 @@ $userlist .= "    ]";
         <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/r.php?pilot=✓&amp;s=' + id }, visible: $parent.showActive() == 'A'" target="_blank" title="Conduct a pilot test on the questionnaire">Pilot test <i class="pe-paper-plane"></i></a>
         <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=progress&amp;s=' + id }, visible: $parent.showActive() == 'B' || $parent.showActive() == 'C'" title="Monitor data-collection progress and view interim data">Progress <i class="pe-flask"></i></a>
         <!-- <a class="btn btn-primary btn-tiny" data-bind="attr: { href: '/r.php?s=' + id }, visible: $parent.showActive() == 'B'" target="_blank">Live <i class="pe-plane"></i></a> -->
-        <a class="btn btn-success btn-tiny" data-bind="attr: { href: '/admin/?w=result&amp;s=' + id }, visible: $parent.showActive() == 'C' || $parent.showActive() == 'D'" title="Real-time result display in graph and table">Result <i class="pe-line-chart"></i></a>
-        <a class="btn btn-warning btn-tiny" data-bind="click: $parent.archive, visible: $parent.showActive() == 'C'" title="Move this project to Archive folder">Archive <i class="pe-archive"></i></a>
-        <a class="btn btn-warning btn-tiny" data-bind="click: $parent.restore, visible: $parent.showActive() == 'D'" title="Move this project out of Archive folder">Restore <i class="pe-undo"></i></a>
-        <a class="btn btn-danger btn-tiny pull-right" data-bind="click: $parent.delete, visible: $parent.showActive() == 'A' || $parent.showActive() == 'D'" title="Delete this project from the system">Delete <i class="pe-trash"></i></a>
-        <a class="btn btn-danger btn-tiny pull-right disabled" data-bind="click: $parent.undelete, visible: $parent.showActive() == 'E'" title="Undelete this project">Undelete <i class="pe-undo"></i></a>
+        <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=result&amp;s=' + id }, visible: $parent.showActive() == 'C' || $parent.showActive() == 'D'" title="Real-time result display in graph and table">Result <i class="pe-line-chart"></i></a>
+        <a class="btn btn-default btn-tiny" data-bind="click: $parent.archive, visible: $parent.showActive() == 'C'" title="Move this project to Archive folder">Archive <i class="pe-archive"></i></a>
+        <a class="btn btn-default btn-tiny" data-bind="click: $parent.restore, visible: $parent.showActive() == 'D'" title="Move this project out of Archive folder">Restore <i class="pe-undo"></i></a>
+        <a class="btn btn-default btn-tiny pull-right" data-bind="click: $parent.delete, visible: $parent.showActive() == 'A' || $parent.showActive() == 'D'" title="Delete this project from the system">Delete <i class="pe-trash"></i></a>
+        <a class="btn btn-default btn-tiny pull-right disabled" data-bind="click: $parent.undelete, visible: $parent.showActive() == 'E'" title="Undelete this project">Undelete <i class="pe-undo"></i></a>
       </div>
 
 <?php if ($_SESSION['level'] >= "5") { ?>

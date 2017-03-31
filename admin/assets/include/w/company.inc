@@ -4,7 +4,7 @@ if ($_SESSION['level'] < "6") {
   $title = "An error has been found";
   pageHeader($title);
   echo "<h2>No access</h2>\n";
-  echo "<p>This page can be accessed by Manager only.</p>\n";
+  echo "<p><strong>This page can be accessed by Manager only.</strong></p>\n";
   echo "<p>In fat we strongly suggest you should stop accessing by manually enter the URL as we consider this to be a violent action and our system has already recorded this error including your identity and timestamp.</p>\n";
   echo "<p>You should instead use the client dashboard which will never lead you to a wrong link or any errors like this at all.</p>\n";
   echo mkerror("Your level is not high enough to access this page.");
@@ -136,9 +136,9 @@ if ($_GET['removelogo'] == "✓") {
 $title = "The company";
 pageHeader($title);
 echo "<h2>$title</h2>\n";
-echo "<p>This page can only be accessed by Manager who can make necessary changes to the company information.</p>\n";
-echo "<p>Please think of this page as a <strong>vendor registration form</strong> as we will take some information from this page to use in our paperwork such as billing/ invoicing. Normally our clients will correct set this information once and forget this page.</p>\n";
-echo "<br>\n";
+echo "<p class=\"introtext\">This page can only be accessed by Manager who can make necessary changes to the company information.</p>\n";
+echo "<p class=\"introtext\">Please think of this page as a <strong>vendor registration form</strong> as we will take some information from this page to use in our paperwork such as billing/ invoicing. Normally our clients will correct set this information once and forget this page.</p>\n";
+echo "<hr>\n";
 
 if ($_GET['m'] == "1") { $message = mksuccess("You have successfully uploaded and replaced the company's logo."); echo "<p>$message</p>\n"; }
 else if ($_GET['m'] == "2") { $message = mksuccess("You have successfully updated the company's information."); echo "<p>$message</p>\n"; }
@@ -255,8 +255,9 @@ if ($logo) {
     <button type="reset" class="btn btn-default">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
 </form>
-
-<p class="small grey">Registered: <?php echo $created; ?><br>Last updated: <?php echo $updated; ?></p>
+<hr>
+<br>
+<p class="small lightgrey pull-right">Registered: <?php echo $created; ?><br>Last updated: <?php echo $updated; ?></p>
 
 <div class="modal fade" id="upload" tabindex="-1" role="dialog" aria-labelledby="upload">
   <div class="modal-dialog" role="document">

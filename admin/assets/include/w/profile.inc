@@ -47,10 +47,10 @@ if ($_GET["m"] == "tips") {
   $registersince = ago($_SESSION["created"]);
   $lastupdate = ago($_SESSION["updated"]);
 
-  $title = "My profile";
+  $title = "Profile";
   pageHeader($title);
   echo "<h2>$title</h2>\n";
-  echo "<p>This is a user-dashboard where all users including yourself can manage your own information here which includes editing and updating your profile and more importantly keeping your account secure by changing your password whenever you need to.</p>\n";
+  echo "<p class=\"introtext\">This is a user-dashboard where all users including yourself can manage your own information here which includes editing and updating your profile and more importantly keeping your account secure by changing your password whenever you need to.</p>\n";
   echo "<br>\n";
 
   if (isset($login)) {

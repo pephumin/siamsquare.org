@@ -3,7 +3,7 @@
 $title = "Help";
 pageHeader($title);
 echo "<h2>$title</h2>";
-echo "<p>This page shows a collection of help and examples to be used and applied appropriately.</p>\n";
+echo "<p class=\"introtext\">This page shows a collection of help and examples to be used and applied appropriately.</p>\n";
 echo "<br>\n";
 $me = "/admin/?w=help";
 if ((empty($_GET['d'])) || ($_GET['d'] == "questions")) {

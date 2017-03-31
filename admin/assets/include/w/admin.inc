@@ -2,16 +2,31 @@
 
 $title = "Administration";
 pageHeader($title);
-echo "<h2>$title</h2>";
+echo "<h2>$title</h2>\n";
+echo "<p class=\"introtext\">This is an administration page which contains all necessary utility tools which are used for managing clients effectively.</p>\n";
+echo "<p class=\"introtext\"></p>\n";
 
 // Get company list
-$q1 = $db->prepare("SELECT * FROM j_companies");
+$q1 = $db->prepare("SELECT C.*, (SELECT COUNT(*) FROM j_users AS U WHERE U.companyid = C.id) AS nUsers, (SELECT COUNT(*) FROM j_projects AS P WHERE P.companyid = C.id) AS nProjects FROM j_companies AS C");
 // $q1->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
 $q1->execute();
-$count = $q1->rowCount();
-echo "<h4>Total of $count companies</h4>\n";
-echo "<div class=\"rows\">\n";
+$countcompany = $q1->rowCount();
+echo "<h4>Total of $countcompany companies</h4>\n";
+echo "<table class=\"table small\">\n";
+echo "  <thead>\n";
+echo "    <tr class=\"bg-success\">\n";
+echo "      <th width=\"10%\"><i class=\"pe-info-circle pe-fw\"></i> No.</th>\n";
+echo "      <th width=\"40%\"><i class=\"pe-building pe-fw\"></i> Company</th>\n";
+echo "      <th width=\"20%\"><i class=\"pe-clock-o pe-fw\"></i> Since</th>\n";
+echo "      <th width=\"15%\"><i class=\"pe-user pe-fw\"></i> Users</th>\n";
+echo "      <th width=\"15%\"><i class=\"pe-cube pe-fw\"></i> Projects</th>\n";
+echo "    </tr>\n";
+echo "  </thead>\n";
+echo "  <tbody>\n";
+
+//echo "<div class=\"rows\">\n";
 while ($row = $q1->fetchObject()) {
+  $companyid = $row->id;
   $name = $row->company;
   $fullname = $row->fullname;
   $fullname_th = $row->fullname_th;
@@ -25,28 +40,124 @@ while ($row = $q1->fetchObject()) {
   $fax = $row->fax;
   $created = ago($row->created);
   $updated = ago($row->updated);
-  echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 bg-info\">\n";
-  echo "    <h4>$fullname <small>($fullname_th)</small></h4>\n";
-  echo "    <p class=\"small\">$address</p>\n";
-  echo "    <p class=\"small\">Tel: $telephone<br>Fax: $fax</p>\n";
-  echo "    <p class=\"small\">Email: $email<br>Web: $website</p>\n";
-  echo "    <p class=\"small\">$description</p>\n";
-  echo "    <p class=\"small\">$description_th</p>\n";
-  echo "  </div>\n";
+  $nUsers = $row->nUsers;
+  $nProjects = $row->nProjects;
+  echo "    <tr>\n";
+  echo "      <td><a data-toggle=\"collapse\" href=\"#$companyid\" aria-expanded=\"false\" aria-controls=\"$companyid\">$companyid</a></td>\n";
+  echo "      <td>$name</td>\n";
+  echo "      <td>$created</td>\n";
+  echo "      <td>$nUsers</td>\n";
+  echo "      <td>$nProjects</td>\n";
+  echo "    </tr>\n";
+  echo "    <tr class=\"collapse\" id=\"$companyid\">\n";
+  echo "      <td colspan=\"5\">\n";
+  echo "        <div class=\"panel-group\" id=\"a-$companyid\" role=\"tablist\" aria-multiselectable=\"true\">\n";
+  echo "          <div class=\"panel panel-default\">\n";
+  echo "            <div class=\"panel-heading panel-heading-again\" role=\"tab\" id=\"h1-$companyid\">\n";
+  echo "              <h4 class=\"panel-title panel-title-small\"><a role=\"button\" data-toggle=\"collapse\" data-parent=\"#a-$companyid\" href=\"#c1-$companyid\" aria-expanded=\"false\" aria-controls=\"c1-$companyid\">Company information</a></h4>\n";
+  echo "            </div>\n";
+  echo "            <div id=\"c1-$companyid\" class=\"panel-collapse collapse\" role=\"tabpanel\" aria-labelledby=\"h1-$companyid\">\n";
+  echo "              <div class=\"panel-body\">\n";
+  if ($logo) { echo "                <div class=\"pull-right\" style=\"margin-top:0px\"><img src=\"$logo\" title=\"$fullname\"></div>\n"; }
+  echo "                <h4>$name</h4>\n";
+  echo "                <table class=\"table table-hover table-condensed\">\n";
+  echo "                  <tbody>\n";
+  echo "                    <tr>\n";
+  echo "                      <td width=\"35%\">Full name:</td>\n";
+  echo "                      <td width=\"65%\">$fullname</td>\n";
+  echo "                    </tr>\n";
+  echo "                    <tr>\n";
+  echo "                      <td width=\"35%\"></td>\n";
+  echo "                      <td width=\"65%\">$fullname_th</td>\n";
+  echo "                    </tr>\n";
+  echo "                    <tr>\n";
+  echo "                      <td width=\"35%\">Address:</td>\n";
+  echo "                      <td width=\"65%\">$address</td>\n";
+  echo "                    </tr>\n";
+  echo "                    <tr>\n";
+  echo "                      <td width=\"35%\">Telephone:</td>\n";
+  echo "                      <td width=\"65%\">$telephone</td>\n";
+  echo "                    </tr>\n";
+  echo "                    <tr>\n";
+  echo "                      <td width=\"35%\">Fax:</td>\n";
+  echo "                      <td width=\"65%\">$fax</td>\n";
+  echo "                    </tr>\n";
+  echo "                    <tr>\n";
+  echo "                      <td width=\"35%\">Email:</td>\n";
+  echo "                      <td width=\"65%\">$email</td>\n";
+  echo "                    </tr>\n";
+  echo "                    <tr>\n";
+  echo "                      <td width=\"35%\">Description:</td>\n";
+  echo "                      <td width=\"65%\">$description</td>\n";
+  echo "                    </tr>\n";
+  echo "                    <tr>\n";
+  echo "                      <td width=\"35%\"></td>\n";
+  echo "                      <td width=\"65%\">$description_th</td>\n";
+  echo "                    </tr>\n";
+  echo "                  </tbody>\n";
+  echo "                </table>\n";
+  echo "              </div>\n";
+  echo "            </div>\n";
+  echo "          </div>\n";
+  echo "          <div class=\"panel panel-default\">\n";
+  echo "            <div class=\"panel-heading panel-heading-again\" role=\"tab\" id=\"h2-$companyid\">\n";
+  echo "              <h4 class=\"panel-title panel-title-small\"><a class=\"collapsed\" role=\"button\" data-toggle=\"collapse\" data-parent=\"#a-$companyid\" href=\"#c2-$companyid\" aria-expanded=\"true\" aria-controls=\"c2-$companyid\">Users</a></h4>\n";
+  echo "            </div>\n";
+  echo "            <div id=\"c2-$companyid\" class=\"panel-collapse collapse in\" role=\"tabpanel\" aria-labelledby=\"h2-$companyid\">\n";
+  echo "              <div class=\"panel-body\">\n";
+  // Get user list
+  $q2 = $db->prepare("SELECT * FROM j_users WHERE companyid = :companyid");
+  // $q2 = $db->prepare("SELECT U.fullname AS fullname, U.email AS email, P.* FROM j_users U, j_projects P WHERE companyid = :companyid");
+  $q2->bindValue(':companyid', $companyid, PDO::PARAM_INT);
+  $q2->execute();
+  echo "                <h4>A total of $nUsers users</h4>\n";
+  echo "                <div class=\"list-group\">\n";
+  while ($rr = $q2->fetchObject()) {
+    echo "                  <a class=\"list-group-item\">$rr->fullname ($rr->email)</a>\n";
+  }
+  echo "                </div>\n";
+  echo "              </div>\n";
+  echo "            </div>\n";
+  echo "          </div>\n";
+  echo "          <div class=\"panel panel-default\">\n";
+  echo "            <div class=\"panel-heading panel-heading-again\" role=\"tab\" id=\"h3-$companyid\">\n";
+  echo "              <h4 class=\"panel-title panel-title-small\"><a class=\"collapsed\" role=\"button\" data-toggle=\"collapse\" data-parent=\"#a-$companyid\" href=\"#c3-$companyid\" aria-expanded=\"false\" aria-controls=\"c3-$companyid\">Projects</a></h4>\n";
+  echo "            </div>\n";
+  echo "            <div id=\"c3-$companyid\" class=\"panel-collapse collapse\" role=\"tabpanel\" aria-labelledby=\"h3-$companyid\">\n";
+  echo "              <div class=\"panel-body\">\n";
+  // Get project list
+  $q3 = $db->prepare("SELECT * FROM j_projects WHERE companyid = :companyid");
+  $q3->bindValue(':companyid', $companyid, PDO::PARAM_INT);
+  $q3->execute();
+  echo "                <h4>A total of $nProjects projects</h4>\n";
+  echo "                <div class=\"list-group\">\n";
+  while ($rrr = $q3->fetchObject()) {
+    echo "                  <a class=\"list-group-item\">$rrr->title ($rrr->id)</a>\n";
+  }
+  echo "                </div>\n";
+  echo "              </div>\n";
+  echo "            </div>\n";
+  echo "          </div>\n";
+  echo "        </div>\n";
+  echo "      </td>\n";
+  echo "    </tr>\n";
 }
-echo "</div>\n";
+echo "    <tr>\n";
+echo "      <td colspan=\"2\">Add a new company</td>\n";
+echo "      <td colspan=\"2\"><input type=\"text\" class=\"form-control input-sm\"></td>\n";
+echo "      <td><input type=\"submit\" class=\"btn btn-warning btn-sm\" value=\"Add\"></td>\n";
+echo "    </tr>\n";
+echo "  </tbody>\n";
+echo "</table>\n";
 
 ?>
 
-<h2>Team members</h2>
-<p>User with an account level of Manager will be able to manage your team members. This includes an ability to create new users, edit existing users, or even suspend or delete users where required.</p>
-<p><strong>It is important to note that once a new member has been created, the new account has to be activated before it can be used</strong> (<a href="http://www.siamsquare.org/admin/setup/?d=activation" title="Account Activation">http://www.siamsquare.org/admin/setup/?d=activation</a>).</p>
-<p></p><br>
 
 
-
-
-
+<style media="screen">
+  .panel-heading-again { color: #31708f !important; background-color: #d9edf7 !important; padding: 8px 12px; }
+  .panel-title-small { font-size: 14px; font-weight: bold; }
+</style>
 
 <br>
 

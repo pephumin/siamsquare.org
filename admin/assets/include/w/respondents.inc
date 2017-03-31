@@ -183,11 +183,11 @@ if ($_POST['uploading'] == 1) {
 }
 
 $title = "Manage respondents";
+$progress = "/admin/?w=progress&s=".$_GET['s'];
 pageHeader($title);
 echo "<h2>$title</h2>";
-echo "<p>Given a nature of any private surveys where respondents are specific to the project, we provide you with a tool that helps you manage your respondents with ease.</p>\n";
-echo "<p>This includes the actual respondent management such as upload/ add emails to the system, clean note this page is mainly for managing respondents, if you want to check for participation rate, kindly use the project status instead.</p>\n";
-echo "<p>Please see table below for more information about these respodnents. And of course, you can always use the upload function to add more respondents to the project if need.</p>\n";
+echo "<p class=\"introtext\">Given a nature of any private surveys where respondents are specific to the project, we provide you with a tool that helps you manage your respondents with ease including add (upload if bulk), delete, clean errors / duplication, and search the respondent database.</p>\n";
+echo "<p class=\"introtext\">If you would like to check for the participation rate of these respondents, please use <a href=\"$progress\">the project progress report</a> instead.</p>\n";
 echo $golden;
 echo "<br>\n";
 echo "<h3>Project $project</h3>\n";

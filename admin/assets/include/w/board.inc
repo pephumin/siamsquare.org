@@ -34,7 +34,7 @@ if ($_POST['newpost'] == 1) {
 $title = "Message board";
 pageHeader($title);
 echo "<h2>$title</h2>\n";
-echo "<p>We provide a message board aiming to give our clients a more convenient way to communicate. All messages will be seen only by members within your company, and only post owner or Manager will have a permission to delete a message from this board.</p>\n";
+echo "<p class=\"introtext\">We provide a message board so an easy and convenient communication can be reached by our clients. All messages will be seen only by members within your company, and only post owner or Manager will have a permission to delete a message from this board.</p>\n";
 echo "<hr>\n";
 
 if (empty($start)) { $start = 0; }

@@ -12754,6 +12754,10 @@ a.tabsmenu {
   font-size: 15px !important;
   color: #003E08; }
 
+p.introtext {
+  font-size: 0.9rem;
+  color: #666666; }
+
 .pagination > li > a {
   margin: 3px; }
 
@@ -12964,26 +12968,6 @@ img.members-photo-tiny {
   -moz-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   -o-transform: rotate(45deg); }
-
-.tooltip {
-  display: block;
-  font-family: "ubuntu";
-  font-size: 0.75rem;
-  font-weight: bold; }
-
-.tooltip-inner {
-  background-color: #666666;
-  color: #FFFFFF;
-  max-width: 180px; }
-
-.tooltip.top .tooltip-arrow {
-  border-top-color: #666666; }
-.tooltip.right .tooltip-arrow {
-  border-right-color: #666666; }
-.tooltip.bottom .tooltip-arrow {
-  border-bottom-color: #666666; }
-.tooltip.left .tooltip-arrow {
-  border-left-color: #666666; }
 
 .pagination-centered {
   font-family: "ubuntu";
