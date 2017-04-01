@@ -293,12 +293,20 @@ function status_user($status) {
   return $status_user;
 }
 
-function status_project($status) {
-  if ($status == "1") { $status_project = "Set up"; }
-  else if ($status == "2") { $status_project = "Data-collection"; }
-  else if ($status == "3") { $status_project = "Completed"; }
-  else if ($status == "4") { $status_project = "Archived"; }
-  else if ($status == "0") { $status_project = "Deleted"; }
+function status_project($status, $icon = false) {
+  if ($icon == true) {
+    if ($status == "1") { $status_project = "<i class='pe-hourglass-start pe-fw'></i> Set up"; }
+    else if ($status == "2") { $status_project = "<i class='pe-hourglass-half pe-fw'></i> Data-collection"; }
+    else if ($status == "3") { $status_project = "<i class='pe-hourglass-end pe-fw'></i> Completed"; }
+    else if ($status == "4") { $status_project = "<i class='pe-archive pe-fw'></i> Archived"; }
+    else if ($status == "0") { $status_project = "<i class='pe-trash pe-fw'></i> Deleted"; }
+  } else {
+    if ($status == "1") { $status_project = "Set up"; }
+    else if ($status == "2") { $status_project = "Data-collection"; }
+    else if ($status == "3") { $status_project = "Completed"; }
+    else if ($status == "4") { $status_project = "Archived"; }
+    else if ($status == "0") { $status_project = "Deleted"; }
+  }
   return $status_project;
 }
 
