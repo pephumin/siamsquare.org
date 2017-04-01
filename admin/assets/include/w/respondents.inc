@@ -611,11 +611,11 @@ $menu2 .= "          <h4 class=\"modal-title\">Manually add new respondents</h4>
 $menu2 .= "        </div>\n";
 $menu2 .= "        <div class=\"modal-body\">\n";
 $menu2 .= "          <p>Project owners also can add new respondents by manually inserting their email(s) using the provided boxes below. You can insert up to 5 emails at once.</p>\n";
-$menu2 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-envelope pe-fw\"></i> New email (#1):</span><input type=\"email\" class=\"form-control\" placeholder=\"Please insert only valid email\" name=\"addemail[]\"></div><br>\n";
-$menu2 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-envelope pe-fw\"></i> New email (#2):</span><input type=\"email\" class=\"form-control\" placeholder=\"Please insert only valid email\" name=\"addemail[]\"></div><br>\n";
-$menu2 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-envelope pe-fw\"></i> New email (#3):</span><input type=\"email\" class=\"form-control\" placeholder=\"Please insert only valid email\" name=\"addemail[]\"></div><br>\n";
-$menu2 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-envelope pe-fw\"></i> New email (#4):</span><input type=\"email\" class=\"form-control\" placeholder=\"Please insert only valid email\" name=\"addemail[]\"></div><br>\n";
-$menu2 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-envelope pe-fw\"></i> New email (#5):</span><input type=\"email\" class=\"form-control\" placeholder=\"Please insert only valid email\" name=\"addemail[]\"></div><br>\n";
+$menu2 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-envelope pe-fw\"></i> New email (#1):</span><input type=\"text\" class=\"form-control\" placeholder=\"Please insert only valid email\" name=\"addemail[]\"></div><br>\n";
+$menu2 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-envelope pe-fw\"></i> New email (#2):</span><input type=\"text\" class=\"form-control\" placeholder=\"Please insert only valid email\" name=\"addemail[]\"></div><br>\n";
+$menu2 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-envelope pe-fw\"></i> New email (#3):</span><input type=\"text\" class=\"form-control\" placeholder=\"Please insert only valid email\" name=\"addemail[]\"></div><br>\n";
+$menu2 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-envelope pe-fw\"></i> New email (#4):</span><input type=\"text\" class=\"form-control\" placeholder=\"Please insert only valid email\" name=\"addemail[]\"></div><br>\n";
+$menu2 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-envelope pe-fw\"></i> New email (#5):</span><input type=\"text\" class=\"form-control\" placeholder=\"Please insert only valid email\" name=\"addemail[]\"></div><br>\n";
 $menu2 .= "        </div>\n";
 $menu2 .= "        <div class=\"modal-footer\">\n";
 $menu2 .= "          <input type=\"hidden\" name=\"surveyid\" value=\"".$_GET['s']."\">\n";
