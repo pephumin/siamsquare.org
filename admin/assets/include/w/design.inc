@@ -326,25 +326,6 @@ foreach($options as $a => $b) {
           </div>
         </div>
       </div>
-      <!-- <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 boxborder">
-        <div class="row boxoutside">
-          <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7 boxmenu">Company logo</div>
-          <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 boxmenu boxdrop">
-            <form method="post" class="form-inline" action="<?php //echo $me; ?>">
-              <select name="selectE" class="form-control input-sm" onchange="this.form.submit()"> -->
-<?php
-// $options = array("Hide" => "1", "Show" => "2");
-// foreach($options as $a => $b) {
-//   if ($b == $showlogo) { echo "                  <option value=\"$b\" selected>$a</option>\n"; }
-//   else { echo "                  <option value=\"$b\">$a</option>\n"; }
-// }
-?>
-              <!-- </select>
-              <input type="hidden" name="surveyid" value="<?php //echo $_GET['s']; ?>">
-            </form>
-          </div>
-        </div>
-      </div> -->
     </div>
     <br>
     <h4>The actual appearance</h4>
@@ -354,9 +335,6 @@ foreach($options as $a => $b) {
     <br><br>
   </div>
 </div>
-
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
-<link rel="stylesheet" href="/admin/assets/css/stars.css">
 
 <div id="newsetup" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-lg">
@@ -428,10 +406,7 @@ foreach($options as $a => $b) {
   Survey.JsonObject.metaData.removeProperty("survey", "surveyId");
   Survey.JsonObject.metaData.removeProperty("page", "visibleIf");
 
-  //Add date format property into text question
-  //Add properties for Bar Rating
-
-  Survey.JsonObject.metaData.addProperty("text", { name: "dateFormat", default: "d MM yy", choices: ["dd-mm-yy", "dd/mm/yy", "d MM y", "M d, y", "DD, d MM, yy", "'day' d 'of' MM 'in the year' yy"] });
+  Survey.JsonObject.metaData.addProperty("text", { name: "dateFormat", default: "d MM yy", choices: ["d MM yy", "dd-mm-yy", "dd/mm/yy", "dd.mm.yy", "M d, yy", "DD d MM yy"] });
   var widget1 = {
     name: "datepicker",
     htmlTemplate: "<input id='widget-datepicker' type='text' style='width:100%;'>",
@@ -447,15 +422,15 @@ foreach($options as $a => $b) {
   Survey.CustomWidgetCollection.Instance.addCustomWidget(widget1);
 
   Survey.JsonObject.metaData.addProperty("dropdown", { name: "renderAs", default: "standard", choices: ["standard", "barrating"] });
-  Survey.JsonObject.metaData.addProperty("dropdown", { name: "ratingTheme", default: "fontawesome-stars", choices: ["fontawesome-stars", "css-stars", "bars-pill", "bars-1to10", "bars-movie", "bars-square", "bars-reversed", "bars-horizontal", "bootstrap-stars", "fontawesome-stars-o"] });
+  Survey.JsonObject.metaData.addProperty("dropdown", { name: "ratingTheme", default: "star", choices: ["star", "heart", "thumb", "check", "bell", "flag", "user", "square-1", "square-2", "square-3"] });
   Survey.JsonObject.metaData.addProperty("dropdown", { name: "showValues: boolean", default: false });
   var widget2 = {
-    name: "antennaio-jquery-bar-rating",
-    isFit : function(question) { return question["renderAs"] === 'barrating'; },
+    name: "bar-rating",
+    isFit: function(question) { return question["renderAs"] === 'barrating'; },
     isDefaultRender: true,
     afterRender: function(question, el) {
       var $el = $(el);
-      if (question.ratingTheme) { ratingTheme = question.ratingTheme; } else { ratingTheme = 'fontawesome-stars'; }
+      if (question.ratingTheme) { ratingTheme = question.ratingTheme; } else { ratingTheme = 'star'; }
       if (question.showValues) { showValues = question.showValues; } else { showValues = false; }
       $el.barrating('destroy');
       $el.barrating('show', {
@@ -484,7 +459,7 @@ foreach($options as $a => $b) {
 
   editor.onCanShowProperty.add(function(sender, options) {
     if (options.obj.getType() == "dropdown") {
-      var forbiddenBarRatingProperties = ["hasComment", "commentText", "otherErrorText", "storeOthersAsComment", "width", "choicesOrder", "choicesByUrl", "optionsCaption", "hasOther"];
+      var forbiddenBarRatingProperties = ["hasComment", "commentText", "otherErrorText", "storeOthersAsComment", "width", "choicesOrder", "choicesByUrl", "optionsCaption", "hasOther", "otherText"];
       var forbiddenDropDownProperties = ["hasComment", "commentText", "otherErrorText", "storeOthersAsComment", "width", "ratingTheme", "showValues"];
       var isBarRating = options.obj["renderAs"] == "barrating";
       var propName = options.property.name;
@@ -514,13 +489,13 @@ foreach($options as $a => $b) {
   editor.toolbox.addItem({
     name: "datepicker",
     iconName: "icon-date",
-    title: "Date Picker",
-    json: { "type": "text", "inputType": "date", "dateFormat": "dd-mm-yy" }
+    title: "Date Picker (OE)",
+    json: { "type": "text", "inputType": "date", "dateFormat": "d MM yy" }
   });
   editor.toolbox.addItem({
     name: "barrating",
     iconName: "icon-rating",
-    title: "Bar Rating",
+    title: "Icon Rating (SA)",
     json: { "type": "dropdown", "renderAs": "barrating", "choices": [1, 2, 3, 4, 5] }
   });
 
@@ -573,7 +548,7 @@ foreach($options as $a => $b) {
     $('#btn-save').prop('disabled', true);
   }
   // if (mm.title) { var title = "Questionnaire"; var pname = "Project " + mm.title; } else { var title = "Start a new questionnaire"; }
-  document.getElementById('h2pageTitle').innerHTML = title;
+  // document.getElementById('h2pageTitle').innerHTML = title;
   // document.getElementById('projectname').innerHTML = pname;
   $('#btn-save').on('click', function() {
     if (typeof(Storage) !== "undefined") { localStorage.setItem("editdata." + surveyid, JSON.stringify(editor.text)); }
