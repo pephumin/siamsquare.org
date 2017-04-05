@@ -250,12 +250,20 @@ function fullmonth($month, $format = "long") {
   return $month;
 }
 
-function role($level) {
-  if ($level == 9) { $role = "Administrator"; }
-  else if ($level == 8) { $role = "System"; }
-  else if ($level == 6) { $role = "Manager"; }
-  else if ($level == 5) { $role = "User"; }
-  else if ($level == 4) { $role = "Guest"; }
+function role($level, $icon = false) {
+  if ($icon == true) {
+    if ($level == 9) { $role = "<i class='pe-flag-checkered pe-fw'></i> Administrator"; }
+    else if ($level == 8) { $role = "<i class='pe-flag pe-fw'></i> System"; }
+    else if ($level == 6) { $role = "<i class='pe-user-secret pe-fw'></i> Manager"; }
+    else if ($level == 5) { $role = "<i class='pe-user pe-fw'></i> User"; }
+    else if ($level == 4) { $role = "<i class='pe-user-md pe-fw'></i> Guest"; }
+  } else {
+    if ($level == 9) { $role = "Administrator"; }
+    else if ($level == 8) { $role = "System"; }
+    else if ($level == 6) { $role = "Manager"; }
+    else if ($level == 5) { $role = "User"; }
+    else if ($level == 4) { $role = "Guest"; }
+  }
   return $role;
 }
 
@@ -284,36 +292,86 @@ function is_guest() {
   else { return false; }
 }
 
-function status_user($status) {
-  if ($status == "5") { $status_user = "Account active"; }
-  else if ($status == "4") { $status_user = "Account inactive"; }
-  else if ($status == "3") { $status_user = "Account has been locked due to 5 incorrect login attempts"; }
-  else if ($status == "2") { $status_user = "Account has been suspended"; }
-  else if ($status == "1") { $status_user = "Account has been deleted"; }
+function status_user($status, $icon = false, $colour = false) {
+  if ($icon == true) {
+    if ($colour == true) {
+      if ($status == "5") { $status_user = "<span class='green'><i class='pe-check-circle pe-fw'></i> Active</span>"; }
+      else if ($status == "4") { $status_user = "<span class='red'><i class='pe-stop-circle pe-fw'></i> Inactive</span>"; }
+      else if ($status == "3") { $status_user = "<span class='orange'><i class='pe-exclamation-circle pe-fw'></i> Locked</span>"; }
+      else if ($status == "2") { $status_user = "<span class='orange'><i class='pe-pause-circle pe-fw'></i> Suspended</span>"; }
+      else if ($status == "1") { $status_user = ""; }
+      else if ($status == "0") { $status_user = "<span class='red'><i class='pe-minus-circle pe-fw'></i> Deleted</span>"; }
+    } else {
+      if ($status == "5") { $status_user = "<i class='pe-check-circle pe-fw'></i> Active"; }
+      else if ($status == "4") { $status_user = "<i class='pe-stop-circle pe-fw'></i> Inactive"; }
+      else if ($status == "3") { $status_user = "<i class='pe-exclamation-circle pe-fw'></i> Locked"; }
+      else if ($status == "2") { $status_user = "<i class='pe-pause-circle pe-fw'></i> Suspended"; }
+      else if ($status == "1") { $status_user = ""; }
+      else if ($status == "0") { $status_user = "<i class='pe-minus-circle pe-fw'></i> Deleted"; }
+    }
+  } else {
+    if ($colour == true) {
+      if ($status == "5") { $status_user = "<span class='green'>Active</span>"; }
+      else if ($status == "4") { $status_user = "<span class='red'>Inactive</span>"; }
+      else if ($status == "3") { $status_user = "<span class='orange'>Locked</span>"; }
+      else if ($status == "2") { $status_user = "<span class='orange'>Suspended</span>"; }
+      else if ($status == "1") { $status_user = ""; }
+      else if ($status == "0") { $status_user = "<span class='red'>Deleted</span>"; }
+    } else {
+      if ($status == "5") { $status_user = "Active"; }
+      else if ($status == "4") { $status_user = "Inactive"; }
+      else if ($status == "3") { $status_user = "Locked"; }
+      else if ($status == "2") { $status_user = "Suspended"; }
+      else if ($status == "1") { $status_user = ""; }
+      else if ($status == "0") { $status_user = "Deleted"; }
+    }
+  }
   return $status_user;
 }
 
-function status_project($status, $icon = false) {
+function status_project($status, $icon = false, $colour = false) {
   if ($icon == true) {
-    if ($status == "1") { $status_project = "<i class='pe-hourglass-start pe-fw'></i> Set up"; }
-    else if ($status == "2") { $status_project = "<i class='pe-hourglass-half pe-fw'></i> Data-collection"; }
-    else if ($status == "3") { $status_project = "<i class='pe-hourglass-end pe-fw'></i> Completed"; }
-    else if ($status == "4") { $status_project = "<i class='pe-archive pe-fw'></i> Archived"; }
-    else if ($status == "0") { $status_project = "<i class='pe-trash pe-fw'></i> Deleted"; }
+    if ($colour == true) {
+      if ($status == "1") { $status_project = "<span class=''><i class='pe-hourglass-start pe-fw'></i> Set up</span>"; }
+      else if ($status == "2") { $status_project = "<span class=''><i class='pe-hourglass-half pe-fw'></i> Data-collection</span>"; }
+      else if ($status == "3") { $status_project = "<span class=''><i class='pe-hourglass-end pe-fw'></i> Completed</span>"; }
+      else if ($status == "4") { $status_project = "<span class='lightgrey'><i class='pe-archive pe-fw'></i> Archived</span>"; }
+      else if ($status == "0") { $status_project = "<span class='red'><i class='pe-trash pe-fw'></i> Deleted</span>"; }
+    } else {
+      if ($status == "1") { $status_project = "<i class='pe-hourglass-start pe-fw'></i> Set up"; }
+      else if ($status == "2") { $status_project = "<i class='pe-hourglass-half pe-fw'></i> Data-collection"; }
+      else if ($status == "3") { $status_project = "<i class='pe-hourglass-end pe-fw'></i> Completed"; }
+      else if ($status == "4") { $status_project = "<i class='pe-archive pe-fw'></i> Archived"; }
+      else if ($status == "0") { $status_project = "<i class='pe-trash pe-fw'></i> Deleted"; }
+    }
   } else {
-    if ($status == "1") { $status_project = "Set up"; }
-    else if ($status == "2") { $status_project = "Data-collection"; }
-    else if ($status == "3") { $status_project = "Completed"; }
-    else if ($status == "4") { $status_project = "Archived"; }
-    else if ($status == "0") { $status_project = "Deleted"; }
+    if ($colour == true) {
+      if ($status == "1") { $status_project = "<span class=''>Set up</span>"; }
+      else if ($status == "2") { $status_project = "<span class=''>Data-collection</span>"; }
+      else if ($status == "3") { $status_project = "<span class=''>Completed</span>"; }
+      else if ($status == "4") { $status_project = "<span class='lightgrey'>Archived</span>"; }
+      else if ($status == "0") { $status_project = "<span class='red'>Deleted</span>"; }
+    } else {
+      if ($status == "1") { $status_project = "Set up"; }
+      else if ($status == "2") { $status_project = "Data-collection"; }
+      else if ($status == "3") { $status_project = "Completed"; }
+      else if ($status == "4") { $status_project = "Archived"; }
+      else if ($status == "0") { $status_project = "Deleted"; }
+    }
   }
   return $status_project;
 }
 
-function status_result($status) {
-  if ($status == "2") { $status_result = "Valid"; }
-  else if ($status == "1") { $status_result = "Invalid"; }
-  else if ($status == "0") { $status_result = "Deleted"; }
+function status_result($status, $icon = false) {
+  if ($icon == true) {
+    if ($status == "2") { $status_result = "<i class='pe-check-circle pe-fw'></i> Valid"; }
+    else if ($status == "1") { $status_result = "<i class='pe-stop-circle pe-fw'></i> Invalid"; }
+    else if ($status == "0") { $status_result = "<i class='pe-minus-circle pe-fw'></i> Deleted"; }
+  } else {
+    if ($status == "2") { $status_result = "Valid"; }
+    else if ($status == "1") { $status_result = "Invalid"; }
+    else if ($status == "0") { $status_result = "Deleted"; }
+  }
   return $status_result;
 }
 

@@ -175,12 +175,12 @@ $menu2 .= "        <tr class=\"bg-success\">\n";
 if ($_SESSION['level'] == "9") {
   $menu2 .= "          <th width=\"15%\"><small><i class=\"pe-calendar pe-fw\"></i> Time</small></th>\n";
   $menu2 .= "          <th width=\"62%\"><small><i class=\"pe-map-o pe-fw\"></i> Activity</small></th>\n";
-  $menu2 .= "          <th width=\"18%\"><small><i class=\"pe-cube pe-fw\"></i> Project</small></th>\n";
+  $menu2 .= "          <th width=\"18%\"><small><i class=\"pe-cubes pe-fw\"></i> Project</small></th>\n";
   $menu2 .= "          <th width=\"5%\"></th>\n";
 } else {
   $menu2 .= "          <th width=\"15%\"><small><i class=\"pe-clock-o pe-fw\"></i> Time</small></th>\n";
   $menu2 .= "          <th width=\"65%\"><small><i class=\"pe-map-o pe-fw\"></i> Activity</small></th>\n";
-  $menu2 .= "          <th width=\"20%\"><small><i class=\"pe-cube pe-fw\"></i> Project</small></th>\n";
+  $menu2 .= "          <th width=\"20%\"><small><i class=\"pe-cubes pe-fw\"></i> Project</small></th>\n";
 }
 $menu2 .= "        </tr>\n";
 $menu2 .= "      </thead>\n";

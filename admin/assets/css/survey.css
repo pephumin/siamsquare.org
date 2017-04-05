@@ -73,27 +73,12 @@ div.commentText {
   font-size: 0.9rem;
   padding-top: 15px; }
 
-textarea {
+textarea, div.panel-body {
   font-family: "boon";
-  font-size: 1rem; }
+  font-size: 1.1rem !important; }
 
 .dropdown-menu {
   padding: 0px !important; }
-
-.projectdetail {
-  padding: 20px;
-  border: 1px dotted #666; }
-  .projectdetail div.companylogo {
-    border: none; }
-  .projectdetail h5.projectdetailhead {
-    font-family: "boon";
-    margin-top: 0px !important;
-    line-height: 1; }
-  .projectdetail p.projectdescription {
-    font-family: "boon";
-    margin: 0px !important;
-    line-height: 1;
-    font-size: 0.95rem; }
 
 #surveyquestioneditorwindow input[type="text"].form-control {
   font-family: "boon";
@@ -101,8 +86,7 @@ textarea {
 
 .svd_object_editor {
   background-color: #fff;
-  height: 75vh;
-  overflow-y: scroll; }
+  height: auto; }
 
 .svd_container {
   position: relative; }
@@ -147,15 +131,6 @@ textarea {
       border-color: #1ab394; }
     .svd_container .svd_actions .dropdown-menu > .active > a {
       background-color: #1ab394; }
-  .svd_container .svd_actions_sub {
-    font-family: "ubuntu";
-    font-size: 12px;
-    position: absolute;
-    top: 70px;
-    right: 10px; }
-    .svd_container .svd_actions_sub .btn {
-      margin-left: 5px;
-      margin-bottom: 10px; }
   .svd_container .svd_content {
     background-color: #f5f6f7;
     padding: 10px 30px 30px 30px;
@@ -341,6 +316,9 @@ textarea {
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale; }
+
+.icon-panel::before {
+  content: ""; }
 
 .icon-checkbox:before {
   content: ""; }

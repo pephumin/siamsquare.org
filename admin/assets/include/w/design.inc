@@ -211,7 +211,7 @@ echo "<br>\n";
           <p class="text-center">
             <input type="hidden" name="otherelements" value="1">
             <input type="hidden" name="surveyid" value="<?php echo $_GET['s']; ?>">
-            <button type="submit" class="btn btn-warning"<?php if ($cansave == false) { echo " disabled"; } ?>>Save <i class="pe-check-circle-o"></i></button>
+            <button type="submit" class="btn btn-success"<?php if ($cansave == false) { echo " disabled"; } ?>>Save <i class="pe-check-circle-o"></i></button>
             <button type="reset" class="btn btn-default"<?php if ($cansave == false) { echo " disabled"; } ?>>Cancel <i class="pe-times-circle-o"></i></button>
           </p>
         </form>
@@ -225,7 +225,7 @@ echo "<br>\n";
   <div id="3" class="tab-pane fade">
 <?php } ?>
     <h3>Customise the look of your survey</h3>
-    <p>Before adjusting anything, <strong class="red">please make sure you have saved the questionnaire</strong> (by clicking <button type="button" class="btn btn-success btn-xs svd_save_btn">Save</button> in the previous tab) to ensure all changes will not be lost once you adjust something in this tab.</p>
+    <p>Before adjusting anything, <strong class="red">please make sure you have saved the questionnaire</strong> (by clicking <button type="button" class="btn btn-success btn-xs svd_save_btn">Save</button> in the first tab) to ensure all changes will not be lost once you adjust something in this tab.</p>
     <h4>Settings</h4>
     <div class="row">
       <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 boxborder">
@@ -519,8 +519,6 @@ foreach($options as $a => $b) {
   // if (mm.data) { editor.text = mm.data; } else if (localStorage.getItem("editdata." + surveyid)) { editor.text = localStorage.getItem("editdata." + surveyid); } else { editor.text = blank; }
   if (mm.data) { editor.text = mm.data; } else { editor.text = blank; }
   if (userid == mm.userid) { var owner = true; } else { var owner = false; }
-  // if (level == 9) { var cansave = true; } else if (level == 6) { var cansave = true; }
-  // else if (level == 5) { if (owner == true) { var cansave = true; } }
   editor.surveyId = mm.id;
   editor.surveyPostId = mm.id;
   editor.saveSurveyFunc = function() {

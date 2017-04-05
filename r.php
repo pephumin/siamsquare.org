@@ -226,7 +226,7 @@ if ($pilottest == 1) { echo "<div class='alert alert-warning'><i class='pe-excla
 
 if ($readonly == 1) {
   if ($closed == 1) { echo "<div class='alert alert-warning'><h4><i class='pe-clock-o pe-lg pe-fw'></i> โครงงานวิจัยนี้ได้ปิดรับความคิดเห็นไปแล้ว</h4><span>เนื่องจากโครงงานวิจัยชิ้นนี้ได้ปิดรับความคิดเห็นไปเป็นที่เรียบร้อยแล้ว คุณจะสามารถดูแบบสอบถามได้ <strong>แต่คุณจะไม่สามารถส่งความคิดเห็นได้</strong></span></div>\n"; }
-  else { echo "<div class='alert alert-warning'><i class='pe-exclamation-triangle pe-lg pe-fw'></i> Non respondents only view questionnaire in read-only mode where result will not be submitted.</div>\n"; }
+  else { echo "<div class='alert alert-warning'><i class='pe-exclamation-triangle pe-lg pe-fw'></i> Non respondents only view questionnaire in <strong>read-only mode</strong> where result will not be submitted.</div>\n"; }
 }
 
 if ($showdetail == 2) {
@@ -314,7 +314,7 @@ echo "<div id=\"notification\"></div>\n";
         });
       }
     });
-    window.setTimeout(function () { window.location.reload(); }, 1500);
+    // window.setTimeout(function () { window.location.reload(); }, 1500);
     return result;
   }
   function autosavesurveydata(cid, cip, email, id, data, etitle) {
@@ -351,9 +351,50 @@ echo "<div id=\"notification\"></div>\n";
   else if (colour == 8) { Survey.defaultBootstrapCss.navigationButton = "btn btn-info"; Survey.defaultBootstrapCss.progressBar = "progress-bar progress-bar-info progress-bar-striped active"; }
   else { Survey.defaultBootstrapCss.navigationButton = "btn btn-info"; Survey.defaultBootstrapCss.progressBar = "progress-bar progress-bar-info progress-bar-striped active"; }
   Survey.Survey.cssType = "bootstrap";
+  // if (readonly == 1) { survey.mode = "display"; $(function () { $('#pageComplete').attr('disabled', 'disabled'); }); } else if (readonly == 0) { survey.mode = "edit"; }
+  if (readonly == 1) { $(function () { $('#pageComplete').attr('disabled', 'disabled'); }); }
+
+  Survey.JsonObject.metaData.addProperty("text", { name: "dateFormat", default: "d MM yy", choices: ["d MM yy", "dd-mm-yy", "dd/mm/yy", "dd.mm.yy", "M d, yy", "DD d MM yy"] });
+  var widget1 = {
+    name: "datepicker",
+    htmlTemplate: "<input id='widget-datepicker' type='text' style='width:100%;'>",
+    isFit: function(question) { return question.inputType == 'date'; },
+    afterRender: function(question, el) {
+      if (question.dateFormat) { dateFormat = question.dateFormat; } else { dateFormat = 'd MM yy'; }
+      var widget1 = $(el).datepicker({ dateFormat: dateFormat });
+      widget1.on("change", function (e) { question.value = $(this).val(); });
+      question.valueChangedCallback = function() { widget1.datepicker('setDate', new Date(question.value)); }
+      widget1.datepicker('setDate', new Date(question.value || Date.now));
+    }
+  }
+  Survey.CustomWidgetCollection.Instance.addCustomWidget(widget1);
+
+  Survey.JsonObject.metaData.addProperty("dropdown", { name: "renderAs", default: "standard", choices: ["standard", "barrating"] });
+  Survey.JsonObject.metaData.addProperty("dropdown", { name: "ratingTheme", default: "star", choices: ["star", "heart", "thumb", "check", "bell", "flag", "user", "square-1", "square-2", "square-3"] });
+  Survey.JsonObject.metaData.addProperty("dropdown", { name: "showValues: boolean", default: false });
+  var widget2 = {
+    name: "bar-rating",
+    isFit: function(question) { return question["renderAs"] === 'barrating'; },
+    isDefaultRender: true,
+    afterRender: function(question, el) {
+      var $el = $(el);
+      if (question.ratingTheme) { ratingTheme = question.ratingTheme; } else { ratingTheme = 'star'; }
+      if (question.showValues) { showValues = question.showValues; } else { showValues = false; }
+      $el.barrating('destroy');
+      $el.barrating('show', {
+        theme: ratingTheme,
+        initialRating: question.value,
+        showValues: showValues,
+        showSelectedRating: false,
+        onSelect: function(value, text) { question.value = value; }
+      });
+      // question.valueChangedCallback = function() { $(el).find('select').barrating('set', question.value); }
+      question.valueChangedCallback = function() { $el.barrating('set', question.value); }
+    }
+  }
+  Survey.CustomWidgetCollection.Instance.addCustomWidget(widget2);
 
   var survey = new Survey.Model (getsurveydata(surveyid));
-  if (readonly == 1) { survey.mode = "display"; $(function () { $('#pageComplete').attr('disabled', 'disabled'); }); } else if (readonly == 0) { survey.mode = "edit"; }
   if (pilot != 1) {
     var checksave = getsavesurveydata(surveyid, email);
     if ((checksave.data == null) || (checksave.data == "")) { resultid = null; }
@@ -365,23 +406,6 @@ echo "<div id=\"notification\"></div>\n";
       survey.onCurrentPageChanged.add(function(data) { $('#notification').hide(); });
     }
   }
-
-  Survey.JsonObject.metaData.addProperty("dropdown", { name: "dateFormat", default: "dd-mm-yy", choices: ["dd-mm-yy", "dd/mm/yy", "M d, y", "d MM yy", "DD, d MM yy", "'day' d 'of' MM 'in the year' yy"]});
-  var widget = {
-    name: "datepicker",
-    htmlTemplate: "<input id='widget-datepicker' type='text' style='width: 100%;'>",
-    isFit: function(question) { return question.inputType == 'date'; },
-    afterRender: function(question, el) {
-      var dateFormat = question.dateFormat ? question.dateFormat : "dd-mm-yy";
-      var widget = $(el).datepicker({ dateFormat: dateFormat });
-      // var widget = $(el).datepicker({ dateFormat: question.dateFormat });
-      widget.on("change", function (e) { question.value = $(this).val(); });
-      question.valueChangedCallback = function() { widget.datepicker('setDate', new Date(question.value)); }
-      widget.datepicker('setDate', new Date(question.value || Date.now));
-    }
-  }
-  Survey.CustomWidgetCollection.Instance.addCustomWidget(widget);
-
 
   survey.render("runsurvey");
   $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> ระบบกำลังอัพโหลดรูปของคุณ ระหว่างนี้คุณสามารถทำรายการต่อได้ทันที และอีกสักครู่เมื่อระบบทำงานในส่วนนี้เสร็จ ข้อความนี้จะหายไปเอง</div>").hide();
@@ -474,10 +498,8 @@ echo "<div id=\"notification\"></div>\n";
   }
 }
 
-// $themcolour = themeBG($showcolour);
 echo "<style>\n";
 echo "  header .header-2, footer .footer-2 { ".themeBG($showcolour)." }\n";
-// echo "  footer > .footer-2 { ".themeBG($showcolour)." }\n";
 echo "</style>\n";
 
 if ($project || $notes) { pageFooter($project, $notes); } else { pageFooter(); }

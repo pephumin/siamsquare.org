@@ -122,34 +122,18 @@ $rolelist .= " ]";
       <p>
         <span data-bind="css: { 'opaque': issuspended }"><a class="btn btn-default btn-tiny ontop" data-bind="click: $parent.showInfo, css: { 'disabled': issuspended }"><i class="pe-cogs"></i> Edit <i class="" data-bind="css: {'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo()}"></i></a></span>
         <a class="btn btn-success btn-tiny" data-bind="click: $parent.reactivate, visible: issuspended"><i class="pe-play-circle"></i> Reactivate</a>
-        <a class="btn btn-warning btn-tiny" data-bind="click: $parent.suspend, visible: !issuspended"><i class="pe-pause-circle"></i> Suspend</a>
         <span data-bind="if: candeletemember, visible: showInfo()">
-          <!-- <a class="btn btn-danger btn-tiny" onclick="return confirm('Are you sure you want to delete this member?\n\nOnce a member is deleted, there is no going back.\n\nPlease be certain.');" data-bind="if: candeletemember, click: $parent.delete, clickBubble: false, css: { 'disabled': issuspended }"><i class="pe-trash"></i> Delete</a> -->
-          <a class="btn btn-danger btn-tiny" data-bind="if: candeletemember, click: $parent.delete, clickBubble: false, css: { 'disabled': issuspended }"><i class="pe-trash"></i> Delete</a>
-          <!-- <a class="btn btn-danger btn-tiny" data-href="click: $parent.delete, css: { 'disabled': issuspended }" data-toggle="modal" data-target="#confirm-delete" title="Delete this user"><i class="pe-trash"></i> Delete</a> -->
+          <a class="btn btn-warning btn-tiny" data-bind="visible: !issuspended, confirmClick: { message: 'Are you sure you want to suspend this user?\n\nYou may want to also consider moving his/her projects to other user.', click: $parent.suspend }"><i class="pe-pause-circle"></i> Suspend</a>
+          <a class="btn btn-danger btn-tiny" data-bind="if: candeletemember, confirmClick: { message: 'Are you sure you want to delete this member?\n\nOnce a member is deleted, there is no going back.\n\nPlease be very certain.', click: $parent.delete }, css: { 'disabled': issuspended }"><i class="pe-trash"></i> Delete</a>
         </span>
         <div data-bind="if: candeletemember, visible: showInfo()" class="small red" style="margin: auto 10px">Note: Once a member is deleted, there is no going back. Please be certain.</div>
       </p>
 <?php } ?>
     </div>
   </div>
-  <!-- <div data-bind="template: { name: 'confirm-delete-modal' }, click: $parent.delete"></div> -->
   <!-- /ko -->
 </div>
 
-<!-- <script type="text/html" id="confirm-delete-modal">
-  <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-body">
-          <h4>Confirm delete?</h4>
-          <p>Are you sure that you want to delete this member permanently?</p>
-          <p><button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> <a class="btn btn-danger btn-ok" data-bind="click: $root.delete">Delete <i class="pe-trash-o"></i></a></p>
-        </div>
-      </div>
-    </div>
-  </div>
-</script> -->
 
 <script type="text/javascript">
 
@@ -238,7 +222,6 @@ $rolelist .= " ]";
       });
     }
     this.suspend = function (member) {
-      //console.log(member.id());
       $.ajax({
         url: api + '/member/' + member.id() + '/suspend',
         dataType: 'json',
@@ -248,7 +231,6 @@ $rolelist .= " ]";
         success: function (data) {
           $('#showalert-suspend').show();
           window.setTimeout(function () { $("#showalert-suspend").slideUp(500, function () { $("#showalert-suspend").hide(); }); }, 3000);
-          //self.removeMember(member);
           $.ajax({
             url: api + '/log',
             dataType: 'json',
@@ -257,16 +239,12 @@ $rolelist .= " ]";
             data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' suspended a member named ' + member.fullname() + ' (' + member.email() + ')", "critical": "5" }',
             success: function(data) { result = data; }
           });
-          // $('.modal-backdrop').hide();
-          // $('body').removeClass('modal-open');
-          // $('#confirm-delete').hide();
         },
         error: function (error) { self.onFail(error); }
       });
       window.setTimeout(function () { window.location.reload(); }, 3300);
     }
     this.reactivate = function (member) {
-      //console.log(member.id());
       $.ajax({
         url: api + '/member/' + member.id() + '/reactivate',
         dataType: 'json',
@@ -276,7 +254,6 @@ $rolelist .= " ]";
         success: function (data) {
           $('#showalert-reactivate').show();
           window.setTimeout(function () { $("#showalert-reactivate").slideUp(500, function () { $("#showalert-reactivate").hide(); }); }, 3000);
-          //self.removeMember(member);
           $.ajax({
             url: api + '/log',
             dataType: 'json',
@@ -285,16 +262,12 @@ $rolelist .= " ]";
             data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' reactivated a member named ' + member.fullname() + ' (' + member.email() + ')", "critical": "5" }',
             success: function(data) { result = data; }
           });
-          // $('.modal-backdrop').hide();
-          // $('body').removeClass('modal-open');
-          // $('#confirm-delete').hide();
         },
         error: function (error) { self.onFail(error); }
       });
       window.setTimeout(function () { window.location.reload(); }, 3300);
     }
     this.delete = function (member) {
-      //console.log(member.id());
       $.ajax({
         url: api + '/member/' + member.id() + '/delete',
         dataType: 'json',
@@ -313,9 +286,9 @@ $rolelist .= " ]";
             data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted a member named ' + member.fullname() + ' (' + member.email() + ')", "critical": "5" }',
             success: function(data) { result = data; }
           });
-          $('.modal-backdrop').hide();
-          $('body').removeClass('modal-open');
-          $('#confirm-delete').hide();
+          // $('.modal-backdrop').hide();
+          // $('body').removeClass('modal-open');
+          // $('#confirm-delete').hide();
         },
         error: function (error) { self.onFail(error); }
       });
@@ -503,10 +476,17 @@ $rolelist .= " ]";
     this.showInfo = function (member) { member.showInfo(!member.showInfo()); }
     this.loadData();
   }
-  jQuery(document).ready(function () { ko.applyBindings(new ViewModel()); });
-
-  $('#confirm-delete').on('show.bs.modal', function(e) { $(this).find('.btn-ok').attr('data-href', $(e.relatedTarget).data('href')); });
-  $(document).on('keypress', function (e) { if ($('#confirm-delete').is(':visible')) { if (e.which == 13) { window.location= $("#confirm-delete .btn-ok", this).attr("data-bind"); } } });
+  jQuery(document).ready(function () {
+    ko.bindingHandlers.confirmClick = {
+      init: function(element, valueAccessor, allBindings, viewModel) {
+        var value = valueAccessor();
+        var message = ko.unwrap(value.message);
+        var click = value.click;
+        ko.applyBindingsToNode(element, { click: function () { if (confirm(message)) { return click.apply(this, Array.prototype.slice.apply(arguments)); } } }, viewModel);
+      }
+    }
+    ko.applyBindings(new ViewModel());
+  });
 
 </script>
 

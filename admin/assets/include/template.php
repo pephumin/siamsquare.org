@@ -68,7 +68,7 @@ function pageHeader($title) {
     echo "              <li class=\"dropdown\">\n";
     echo "                <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\"><i class=\"pe-wrench pe-fw\"></i> Tools <span class=\"caret\"></span></a>\n";
     echo "                <ul class=\"dropdown-menu\">\n";
-    echo "                  <li><a href=\"".ADMIN."?w=board"."\" title=\"Message board\"><i class=\"pe-wpforms pe-fw\"></i> Message board</a></li>\n";
+    echo "                  <li><a href=\"".ADMIN."?w=board"."\" title=\"Message board\"><i class=\"pe-comments-o pe-fw\"></i> Message board</a></li>\n";
     echo "                  <li><a href=\"".ADMIN."?w=activity"."\" title=\"Activity\"><i class=\"pe-map-o pe-fw\"></i> Activity log</a></li>\n";
     if ($_SESSION['level'] >= "8") {
       echo "                  <li role=\"separator\" class=\"divider\"></li>\n";
@@ -116,7 +116,7 @@ function pageFooter($notes = null) {
   echo "    </div>\n";
   echo "    <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3\">\n";
   echo "      <div class=\"container\">\n";
-  echo "        <h4 class=\"avatar\">&#9836; &#9819; &#9962; &#10000; &#9820; &#9822; &#9973; &#9961;</h4>\n";
+  echo "        <h4 class=\"avatar\">&#9836; &#9819; &#9962; &#10000; &#9820; &#9822; &#9973;</h4>\n";
   echo "      </div>\n";
   echo "    </div>\n";
   echo "  </div>\n";
