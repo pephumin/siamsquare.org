@@ -75,28 +75,28 @@ if ($totalALL == 0) {
           </thead>
           <tbody>
             <tr>
-              <td><i class="pe-hourglass-start pe-fw"></i> Set-up</td>
+              <td><?php echo status_project(1, true, true); ?></td>
               <td align="right"><?php echo $ustatus1; ?> </td>
               <td align="right"><?php echo $percentStatus1; ?></td>
             </tr>
             <tr>
-              <td><i class="pe-hourglass-half pe-fw"></i> Data-collection</td>
+              <td><?php echo status_project(2, true, true); ?></td>
               <td align="right"><?php echo $ustatus2; ?> </td>
               <td align="right"><?php echo $percentStatus2; ?></td>
             </tr>
             <tr>
-              <td><i class="pe-hourglass-end pe-fw"></i> Completed</td>
+              <td><?php echo status_project(3, true, true); ?></td>
               <td align="right"><?php echo $ustatus3; ?> </td>
               <td align="right"><?php echo $percentStatus3; ?></td>
             </tr>
             <tr style="background-color:#eee">
-              <td><i class="pe-archive pe-fw"></i> Archived</td>
+              <td><?php echo status_project(4, true, true); ?></td>
               <td align="right"><?php echo $ustatus4; ?> </td>
               <td align="right"><?php echo $percentStatus4; ?></td>
             </tr>
 <?php if ($_SESSION['level'] > 5) { ?>
             <tr style="background-color:#eee">
-              <td><i class="pe-trash pe-fw"></i> Deleted</td>
+              <td><?php echo status_project(0, true, true); ?></td>
               <td align="right"><?php echo $ustatus5; ?> </td>
               <td align="right"><?php echo $percentStatus5; ?></td>
             </tr>
@@ -317,28 +317,28 @@ if ($sstotal == 0) {
           </thead>
           <tbody>
             <tr>
-              <td><i class="pe-hourglass-start pe-fw"></i> Set-up</td>
+              <td><?php echo status_project(1, true, false); ?></td>
               <td align="right"><?php echo $ss1; ?> </td>
               <td align="right"><?php echo $pss1; ?></td>
             </tr>
             <tr>
-              <td><i class="pe-hourglass-half pe-fw"></i> Data-collection</td>
+              <td><?php echo status_project(2, true, false); ?></td>
               <td align="right"><?php echo $ss2; ?> </td>
               <td align="right"><?php echo $pss2; ?></td>
             </tr>
             <tr>
-              <td><i class="pe-hourglass-end pe-fw"></i> Completed</td>
+              <td><?php echo status_project(3, true, false); ?></td>
               <td align="right"><?php echo $ss3; ?> </td>
               <td align="right"><?php echo $pss3; ?></td>
             </tr>
             <tr style="background-color:#eee">
-              <td><i class="pe-archive pe-fw"></i> Archived</td>
+              <td><?php echo status_project(4, true, false); ?></td>
               <td align="right"><?php echo $ss4; ?> </td>
               <td align="right"><?php echo $pss4; ?></td>
             </tr>
 <?php if ($_SESSION['level'] > 5) { ?>
             <tr style="background-color:#eee">
-              <td><i class="pe-trash pe-fw"></i> Deleted</td>
+              <td><?php echo status_project(0, true, false); ?></td>
               <td align="right"><?php echo $ss5; ?> </td>
               <td align="right"><?php echo $pss5; ?></td>
             </tr>
@@ -385,11 +385,11 @@ if ($sstotal == 0) {
   function drawPieChart1() {
     var data = google.visualization.arrayToDataTable([
       [ 'Stage', 'No. of project' ],
-      [ 'Set-up', <?php echo $ustatus1; ?> ],
-      [ 'Fieldwork', <?php echo $ustatus2; ?> ],
-      [ 'Completed', <?php echo $ustatus3; ?> ],
-      [ 'Archived', <?php echo $ustatus4; ?> ],
-      [ 'Deleted', <?php echo $ustatus5; ?> ]
+      [ '<?php echo status_project(1, false, false); ?>', <?php echo $ustatus1; ?> ],
+      [ '<?php echo status_project(2, false, false); ?>', <?php echo $ustatus2; ?> ],
+      [ '<?php echo status_project(3, false, false); ?>', <?php echo $ustatus3; ?> ],
+      [ '<?php echo status_project(4, false, false); ?>', <?php echo $ustatus4; ?> ],
+      [ '<?php echo status_project(0, false, false); ?>', <?php echo $ustatus5; ?> ]
     ]);
     var options = {
       pieHole: 0.4,
@@ -423,11 +423,11 @@ if ($sstotal == 0) {
   function drawPieChart2() {
     var data = google.visualization.arrayToDataTable([
       [ 'Stage', 'No. of project' ],
-      [ 'Set-up', <?php echo $ss1; ?> ],
-      [ 'Fieldwork', <?php echo $ss2; ?> ],
-      [ 'Completed', <?php echo $ss3; ?> ],
-      [ 'Archived', <?php echo $ss4; ?> ],
-      [ 'Deleted', <?php echo $ss5; ?> ]
+      [ '<?php echo status_project(1, false, false); ?>', <?php echo $ss1; ?> ],
+      [ '<?php echo status_project(2, false, false); ?>', <?php echo $ss2; ?> ],
+      [ '<?php echo status_project(3, false, false); ?>', <?php echo $ss3; ?> ],
+      [ '<?php echo status_project(4, false, false); ?>', <?php echo $ss4; ?> ],
+      [ '<?php echo status_project(0, false, false); ?>', <?php echo $ss5; ?> ]
     ]);
     var options = {
       pieHole: 0.4,
