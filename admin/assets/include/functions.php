@@ -439,7 +439,6 @@ function meta($title) {
   echo "  <meta name=\"msapplication-TileImage\" content=\"/admin/assets/icons/ms-icon-144x144.png\">\n";
   echo "  <meta name=\"theme-color\" content=\"#FFFFFF\">\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-3.1.0.min.js\"></script>\n";
-  // echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-2.1.4.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-ui.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery.form.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-csv.js\"></script>\n";
@@ -454,11 +453,10 @@ function meta($title) {
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/csv.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/highlight.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/lightbox.js\"></script>\n";
-  // echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/nicEdit.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery.easyautocomplete.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/fv/formValidation.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/fv/bootstrap.min.js\"></script>\n";
-  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/knockout.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/knockout-3.4.2.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/survey.ko.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/surveyeditor.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"https://www.gstatic.com/firebasejs/3.4.1/firebase.js\"></script>\n";
