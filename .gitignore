@@ -13,6 +13,6 @@ members/assets/upload
 *.csv
 1/*
 admin/assets/js/1
-admin/assets/js/surveyeditor.js
-admin/assets/js/_surveyeditor.js
+admin/assets/js/surveyeditor.min.js
+admin/assets/js/_surveyeditor.min.js
 admin/assets/include/w/design.inc
