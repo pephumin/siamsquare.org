@@ -714,7 +714,7 @@ $userlist .= "    ]";
           </tr>
           <tr>
             <td><button class="btn btn-tiny btn-success">View <i class="pe-plane"></i></button></td>
-            <td class="small">View the actual project questionnaire, the same version that respondents would see.</td>
+            <td class="small">View the real questionnaire in action which is exactly the same version that used with respondents.</td>
           </tr>
           <tr>
             <td><button class="btn btn-tiny btn-primary">1,681 respondent(s) <i class="pe-users"></i></button></td>
@@ -725,8 +725,12 @@ $userlist .= "    ]";
             <td class="small">Enter the questionnaire design mode for editing all questions in the questionnaire.</td>
           </tr>
           <tr>
-            <td><button class="btn btn-tiny btn-default">Pilot test <i class="pe-paper-plane"></i></button></td>
-            <td class="small">Conduct a pilot test on the questionnaire replicating the same view as respondent.</td>
+            <td><i class="pe-folder-o"></i> Private</td>
+            <td class="small">A project that runs the data collection among its own target group (name list is required).</td>
+          </tr>
+          <tr>
+            <td><i class="pe-folder-open-o"></i> Public</td>
+            <td class="small">A project that runs the data collection among respondents in our panel.</td>
           </tr>
         </tbody>
       </table>
@@ -734,6 +738,10 @@ $userlist .= "    ]";
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
       <table class="table table-condensed small">
         <tbody>
+          <tr>
+            <td><button class="btn btn-tiny btn-default">Pilot test <i class="pe-paper-plane"></i></button></td>
+            <td class="small">Conduct a pilot test on the questionnaire replicating the same view as respondent.</td>
+          </tr>
           <tr>
             <td><button class="btn btn-tiny btn-default">Progress <i class="pe-flask"></i></button></td>
             <td class="small">Monitor data-collection strike rate and success rate plus a quick view of interim data.</td>

@@ -404,6 +404,8 @@ foreach($options as $a => $b) {
   Survey.JsonObject.metaData.removeProperty("survey", "storeOthersAsComment");
   Survey.JsonObject.metaData.removeProperty("survey", "surveyPostId");
   Survey.JsonObject.metaData.removeProperty("survey", "surveyId");
+  Survey.JsonObject.metaData.removeProperty("survey", "title");
+  Survey.JsonObject.metaData.removeProperty("survey", "showTitle");
   Survey.JsonObject.metaData.removeProperty("page", "visibleIf");
 
   Survey.JsonObject.metaData.addProperty("text", { name: "dateFormat", default: "d MM yy", choices: ["d MM yy", "dd-mm-yy", "dd/mm/yy", "dd.mm.yy", "M d, yy", "DD d MM yy"] });
@@ -423,7 +425,8 @@ foreach($options as $a => $b) {
 
   Survey.JsonObject.metaData.addProperty("dropdown", { name: "renderAs", default: "standard", choices: ["standard", "barrating"] });
   Survey.JsonObject.metaData.addProperty("dropdown", { name: "ratingTheme", default: "star", choices: ["star", "heart", "thumb", "check", "bell", "flag", "user", "square-1", "square-2", "square-3"] });
-  Survey.JsonObject.metaData.addProperty("dropdown", { name: "showValues: boolean", default: false });
+  // Survey.JsonObject.metaData.addProperty("dropdown", { name: "ratingColour", default: "orange", choices: ["orange", "blue", "green", "red"] });
+  Survey.JsonObject.metaData.addProperty("dropdown", { name: "showValues:boolean", default: false });
   var widget2 = {
     name: "bar-rating",
     isFit: function(question) { return question["renderAs"] === 'barrating'; },
@@ -431,13 +434,15 @@ foreach($options as $a => $b) {
     afterRender: function(question, el) {
       var $el = $(el);
       if (question.ratingTheme) { ratingTheme = question.ratingTheme; } else { ratingTheme = 'star'; }
+      // if (question.ratingColour) { ratingColour = question.ratingColour; } else { ratingColour = 'orange'; }
       if (question.showValues) { showValues = question.showValues; } else { showValues = false; }
       $el.barrating('destroy');
       $el.barrating('show', {
         theme: ratingTheme,
+        // colour: ratingColour,
         initialRating: question.value,
         showValues: showValues,
-        showSelectedRating: false,
+        showSelectedRating: true,
         onSelect: function(value, text) { question.value = value; }
       });
       // question.valueChangedCallback = function() { $(el).find('select').barrating('set', question.value); }
@@ -459,7 +464,7 @@ foreach($options as $a => $b) {
 
   editor.onCanShowProperty.add(function(sender, options) {
     if (options.obj.getType() == "dropdown") {
-      var forbiddenBarRatingProperties = ["hasComment", "commentText", "otherErrorText", "storeOthersAsComment", "width", "choicesOrder", "choicesByUrl", "optionsCaption", "hasOther", "otherText"];
+      var forbiddenBarRatingProperties = ["hasComment", "commentText", "otherErrorText", "storeOthersAsComment", "width", "choicesOrder", "choicesByUrl", "optionsCaption", "hasOther", "otherText", "showValues"];
       var forbiddenDropDownProperties = ["hasComment", "commentText", "otherErrorText", "storeOthersAsComment", "width", "ratingTheme", "showValues"];
       var isBarRating = options.obj["renderAs"] == "barrating";
       var propName = options.property.name;
@@ -490,14 +495,22 @@ foreach($options as $a => $b) {
     name: "datepicker",
     iconName: "icon-date",
     title: "Date Picker (OE)",
-    json: { "type": "text", "inputType": "date", "dateFormat": "d MM yy" }
+    json: { type: "text", inputType: "date", dateFormat: "d MM yy" }
   });
   editor.toolbox.addItem({
     name: "barrating",
     iconName: "icon-rating",
     title: "Icon Rating (SA)",
-    json: { "type": "dropdown", "renderAs": "barrating", "choices": [1, 2, 3, 4, 5] }
+    json: { type: "dropdown", renderAs: "barrating", choices: [1, 2, 3, 4, 5] }
   });
+  editor.toolbox.addItem({
+    name: "country",
+    isCopied: false,
+    iconName: "icon-dropdown",
+    title: "Country (SA)",
+    json: { type: "dropdown", optionsCaption: "Select a country", choicesByUrl: { url: "https://restcountries.eu/rest/v1/all" } }
+  });
+
 
   var surveyid = <?php echo $_GET['s']; ?>;
   // var companyid = parseInt("<?php echo $_SESSION['companyid']; ?>");

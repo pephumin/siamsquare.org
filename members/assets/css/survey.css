@@ -547,7 +547,10 @@ sv_body {
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     text-decoration: none;
-    margin-right: 2px; }
+    margin-right: 2px;
+    display: block;
+    float: left;
+    text-align: center; }
     .br-theme-star .br-widget a:after {
       content: "";
       color: #d2d2d2; }
@@ -560,7 +563,9 @@ sv_body {
       color: #f0ad4e;
       border-color: #eea236; }
   .br-theme-star .br-widget .br-current-rating {
-    display: none; }
+    float: left;
+    margin-left: 20px;
+    margin-top: 5px; }
 .br-theme-star .br-readonly a {
   cursor: default; }
 
@@ -572,7 +577,9 @@ sv_body {
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     text-decoration: none;
-    margin-right: 2px; }
+    margin-right: 2px;
+    display: block;
+    float: left; }
     .br-theme-heart .br-widget a:after {
       content: "";
       color: #d2d2d2; }
@@ -581,7 +588,9 @@ sv_body {
       color: #d9534f;
       border-color: #d43f3a; }
   .br-theme-heart .br-widget .br-current-rating {
-    display: none; }
+    float: left;
+    margin-left: 20px;
+    margin-top: 5px; }
 .br-theme-heart .br-readonly a {
   cursor: default; }
 
@@ -593,7 +602,9 @@ sv_body {
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     text-decoration: none;
-    margin-right: 2px; }
+    margin-right: 2px;
+    display: block;
+    float: left; }
     .br-theme-thumb .br-widget a:after {
       content: "";
       color: #d2d2d2; }
@@ -602,7 +613,9 @@ sv_body {
       color: #337ab7;
       border-color: #2e6da4; }
   .br-theme-thumb .br-widget .br-current-rating {
-    display: none; }
+    float: left;
+    margin-left: 20px;
+    margin-top: 5px; }
 .br-theme-thumb .br-readonly a {
   cursor: default; }
 
@@ -614,7 +627,9 @@ sv_body {
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     text-decoration: none;
-    margin-right: 2px; }
+    margin-right: 2px;
+    display: block;
+    float: left; }
     .br-theme-check .br-widget a:after {
       content: "";
       color: #d2d2d2; }
@@ -623,7 +638,9 @@ sv_body {
       color: #5cb85c;
       border-color: #4cae4c; }
   .br-theme-check .br-widget .br-current-rating {
-    display: none; }
+    float: left;
+    margin-left: 20px;
+    margin-top: 5px; }
 .br-theme-check .br-readonly a {
   cursor: default; }
 
@@ -635,7 +652,9 @@ sv_body {
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     text-decoration: none;
-    margin-right: 2px; }
+    margin-right: 2px;
+    display: block;
+    float: left; }
     .br-theme-bell .br-widget a:after {
       content: "";
       color: #d2d2d2; }
@@ -644,7 +663,9 @@ sv_body {
       color: #5bc0de;
       border-color: #46b8da; }
   .br-theme-bell .br-widget .br-current-rating {
-    display: none; }
+    float: left;
+    margin-left: 20px;
+    margin-top: 5px; }
 .br-theme-bell .br-readonly a {
   cursor: default; }
 
@@ -656,7 +677,9 @@ sv_body {
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     text-decoration: none;
-    margin-right: 2px; }
+    margin-right: 2px;
+    display: block;
+    float: left; }
     .br-theme-flag .br-widget a:after {
       content: "";
       color: #d2d2d2; }
@@ -665,7 +688,9 @@ sv_body {
       color: #f0ad4e;
       border-color: #eea236; }
   .br-theme-flag .br-widget .br-current-rating {
-    display: none; }
+    float: left;
+    margin-left: 20px;
+    margin-top: 5px; }
 .br-theme-flag .br-readonly a {
   cursor: default; }
 
@@ -677,7 +702,9 @@ sv_body {
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     text-decoration: none;
-    margin-right: 2px; }
+    margin-right: 2px;
+    display: block;
+    float: left; }
     .br-theme-user .br-widget a:after {
       content: "";
       color: #d2d2d2; }
@@ -685,7 +712,9 @@ sv_body {
       color: #337ab7;
       border-color: #2e6da4; }
   .br-theme-user .br-widget .br-current-rating {
-    display: none; }
+    float: left;
+    margin-left: 20px;
+    margin-top: 5px; }
 .br-theme-user .br-readonly a {
   cursor: default; }
 
@@ -697,7 +726,9 @@ sv_body {
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     text-decoration: none;
-    margin-right: 2px; }
+    margin-right: 2px;
+    display: block;
+    float: left; }
     .br-theme-square-1 .br-widget a:after {
       content: "";
       color: #d2d2d2; }
@@ -705,7 +736,9 @@ sv_body {
       color: #d9534f;
       border-color: #d43f3a; }
   .br-theme-square-1 .br-widget .br-current-rating {
-    display: none; }
+    float: left;
+    margin-left: 20px;
+    margin-top: 5px; }
 .br-theme-square-1 .br-readonly a {
   cursor: default; }
 
@@ -719,14 +752,15 @@ sv_body {
     float: left;
     border: 2px solid #eeeeee;
     background-color: white;
-    margin: 2px; }
-    .br-theme-square-2 .br-widget a.br-active, .br-theme-square-2 .br-widget a.br-selected {
-      border: 2px solid #2e6da4; }
-  .br-theme-square-2 .br-widget .br-current-rating {
-    clear: both;
-    width: 330px;
+    margin: 2px;
     display: block;
-    padding: 0.5em 0; }
+    float: left; }
+    .br-theme-square-2 .br-widget a.br-active, .br-theme-square-2 .br-widget a.br-selected {
+      border: 2px solid #d43f3a; }
+  .br-theme-square-2 .br-widget .br-current-rating {
+    float: left;
+    margin-left: 20px;
+    margin-top: 5px; }
 .br-theme-square-2 .br-readonly a {
   cursor: default; }
 
@@ -739,17 +773,18 @@ sv_body {
     height: 10px;
     float: left;
     background-color: #d2d2d2;
-    margin: 1px; }
+    margin: 1px;
+    display: block;
+    float: left; }
     .br-theme-square-3 .br-widget a.br-active, .br-theme-square-3 .br-widget a.br-selected {
       background-color: #337ab7;
       border-color: #2e6da4; }
   .br-theme-square-3 .br-widget .br-current-rating {
     clear: both;
-    width: 240px;
+    width: 300px;
     display: block;
-    padding: 0.5em 0;
-    background-color: #337ab7;
-    border-color: #2e6da4; }
+    padding: 10px 0;
+    text-align: center; }
 .br-theme-square-3 .br-readonly a {
   cursor: default; }
 

@@ -51,7 +51,7 @@ $percentStatus3 = percent($ustatus3 / $totalALL); $percentStatus4 = percent($ust
 $percentStatus5 = percent($ustatus5 / $totalALL);
 if ($_SESSION['avatar']) { echo "    <div class=\"pull-right\" style=\"margin-top:0px\"><img src=\"assets/img/u/".$_SESSION['avatar'].".svg\" class=\"img-circle members-photo\"></div>\n"; }
 echo "    <h3>".$_SESSION['fullname']." <small>&laquo; ".$_SESSION['email']." &raquo;</small></h3>\n";
-echo "    <h4>Summary of all your projects</h4>\n";
+echo "    <h4>Summary of your projects</h4>\n";
 if ($totalALL == 0) {
   echo "    <p>Currently you do <u>not</u> have any survey projects under your direct management so there is no stats to be shown here.</p>\n";
   echo "    <p>You can create a new project at anytime by clicking <a class=\"btn btn-success\"><i class=\"pe-cube pe-fw\"></i> New project</a> which can be found in <a href=\"/admin/?w=surveys\" title=\"The main survey page\">the main survey page</a>.\n";
@@ -157,10 +157,10 @@ $utimelinedata .= "    ]";
 $colordata = substr($colordata, 0, -2);
 $colordata .= " ]";
 ?>
-    <h4>Timing of your projects</h4>
-    <p>Please note that below timing is shown for all your projects excluding the ones are deleted.</p>
-    <div id="timeline1"></div>
-    <br>
+    <!-- <h4>Timing of your projects</h4> -->
+    <!-- <p>Please note that below timing is shown for all your projects excluding the ones are deleted.</p> -->
+    <!-- <div id="timeline1"></div> -->
+    <!-- <br> -->
 <?php } ?>
   </div>
   <div id="two" class="tab-pane fade">
@@ -373,8 +373,19 @@ if ($sstotal == 0) {
     </div>
   </div>
 </div>
-<h4 id="timeline2heading">Comparative timeline for all projects</h4>
-<div id="timeline2"></div>
+
+<div id="tabone">
+  <h4 id="timeline1heading">Timing of your projects</h4>
+  <p id="timeline1description">Please note that below timing is shown for all your projects excluding the ones are deleted.</p>
+  <div id="timeline1"></div>
+</div>
+<br>
+<div id="tabtwo">
+  <h4 id="timeline2heading">Timings of all projects</h4>
+  <p id="timeline2description">This shows the timing for all projects giving you a good helicopter view of all projects.</p>
+  <div id="timeline2"></div>
+</div>
+
 <script type="text/javascript">
   google.charts.load('current', {'packages': ['corechart', 'timeline'] });
 <?php if ($totalALL != 0) { echo "  google.charts.setOnLoadCallback(drawPieChart1);\n"; } ?>
@@ -481,15 +492,15 @@ if ($sstotal == 0) {
     drawBarChart();
     drawTimelineChart2();
   });
-  // $(document).ready(function() { $('#timeline2').hide(); });
-  // $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
-  //   var tab = $(e.target);
-  //   var contentId = tab.attr("href");
-  //   if (tab.parent().hasClass('active')) {
-  //     if (contentId == "#one") { $(function () { $('#timeline2').css('display','none'); $('#timeline2heading').css('display','none'); }); }
-  //     else if (contentId == "#two") { $(function () { $('#timeline2').css('display','block'); $('#timeline2heading').css('display','block'); }); }
-  //   }
-  // });
+
+  $('.nav-tabs a').click(function (e) {
+    e.preventDefault();
+    $(this).tab('show');
+    if ($(this).attr("href") == "#one") { $("#tabone").css({ 'display': 'block' }); $("#tabtwo").css({ 'display': 'none' }); }
+    else if ($(this).attr("href") == "#two") { $("#tabone").css({ 'display': 'none' }); $("#tabtwo").css({ 'display': 'block' }); }
+    else { $("#tabone").css({ 'display': 'block' }); $("#tabtwo").css({ 'display': 'none' }); }
+  })
+
 </script>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>

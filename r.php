@@ -1,7 +1,8 @@
 <?php
 
-if ($_GET['pilot'] == "✓") { $pilottest = 1; } else { $pilottest = 2; }
-if ($_GET['designer'] == "✓") { $readonly = 1; } else { $readonly = 0; }
+if ($_GET['pilot'] == "✓") { $mpilot = 1; $readonly = 0; }
+else if ($_GET['designer'] == "✓") { $mdesign = 1; $readonly = 1; }
+else { $mpilot = 2; $readonly = 0; }
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/themes.php';
@@ -222,9 +223,8 @@ if ($showsurvey != 1) {
 $title = "ร่วมแสดงความคิดเห็น";
 pageHeader($title);
 
-if ($pilottest == 1) { echo "<div class='alert alert-warning'><i class='pe-exclamation-triangle pe-lg pe-fw'></i> You are in a pilot test mode where result will still be submitted but will not be included in the actual result.</div>\n"; }
-
-if ($readonly == 1) {
+if ($mpilot == 1) { echo "<div class='alert alert-warning'><i class='pe-exclamation-triangle pe-lg pe-fw'></i> You are in a pilot test mode where result will still be submitted but will not be included in the actual result.</div>\n"; }
+else if (($mpilot != 1) && ($readonly == 1)) {
   if ($closed == 1) { echo "<div class='alert alert-warning'><h4><i class='pe-clock-o pe-lg pe-fw'></i> โครงงานวิจัยนี้ได้ปิดรับความคิดเห็นไปแล้ว</h4><span>เนื่องจากโครงงานวิจัยชิ้นนี้ได้ปิดรับความคิดเห็นไปเป็นที่เรียบร้อยแล้ว คุณจะสามารถดูแบบสอบถามได้ <strong>แต่คุณจะไม่สามารถส่งความคิดเห็นได้</strong></span></div>\n"; }
   else { echo "<div class='alert alert-warning'><i class='pe-exclamation-triangle pe-lg pe-fw'></i> Non respondents only view questionnaire in <strong>read-only mode</strong> where result will not be submitted.</div>\n"; }
 }
@@ -337,7 +337,7 @@ echo "<div id=\"notification\"></div>\n";
   var email = "<?php echo $email; ?>";
   var title = "Project <?php echo $project; ?>";
   var ip = "<?php echo getip(); ?>";
-  var pilot = <?php echo $pilottest; ?>;
+  var pilot = <?php echo $mpilot; ?>;
   var readonly = <?php echo $readonly; ?>;
   var colour = <?php echo $showcolour; ?>;
   $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
@@ -371,7 +371,8 @@ echo "<div id=\"notification\"></div>\n";
 
   Survey.JsonObject.metaData.addProperty("dropdown", { name: "renderAs", default: "standard", choices: ["standard", "barrating"] });
   Survey.JsonObject.metaData.addProperty("dropdown", { name: "ratingTheme", default: "star", choices: ["star", "heart", "thumb", "check", "bell", "flag", "user", "square-1", "square-2", "square-3"] });
-  Survey.JsonObject.metaData.addProperty("dropdown", { name: "showValues: boolean", default: false });
+  // Survey.JsonObject.metaData.addProperty("dropdown", { name: "ratingColour", default: "orange", choices: ["orange", "blue", "green", "red"] });
+  Survey.JsonObject.metaData.addProperty("dropdown", { name: "showValues:boolean", default: false });
   var widget2 = {
     name: "bar-rating",
     isFit: function(question) { return question["renderAs"] === 'barrating'; },
@@ -379,13 +380,15 @@ echo "<div id=\"notification\"></div>\n";
     afterRender: function(question, el) {
       var $el = $(el);
       if (question.ratingTheme) { ratingTheme = question.ratingTheme; } else { ratingTheme = 'star'; }
+      // if (question.ratingColour) { ratingColour = question.ratingColour; } else { ratingColour = 'orange'; }
       if (question.showValues) { showValues = question.showValues; } else { showValues = false; }
       $el.barrating('destroy');
       $el.barrating('show', {
         theme: ratingTheme,
+        // colour: ratingColour,
         initialRating: question.value,
         showValues: showValues,
-        showSelectedRating: false,
+        showSelectedRating: true,
         onSelect: function(value, text) { question.value = value; }
       });
       // question.valueChangedCallback = function() { $(el).find('select').barrating('set', question.value); }
