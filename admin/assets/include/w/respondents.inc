@@ -140,7 +140,7 @@ if ($_POST['uploading'] == 1) {
   $q2A = $db->prepare("DELETE FROM j_respondents WHERE surveyid = 0 OR surveyid = :surveyid AND status = 0");
   $q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
   $q2A->execute();
-  $ql2 = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '".$_SESSION['email']." deleted respondents with email error for $project', '3')");
+  $ql2 = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '".$_SESSION['email']." deleted respondents with email errors for $project', '3')");
   $ql2->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
   $ql2->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
   $ql2->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
@@ -159,7 +159,7 @@ if ($_POST['uploading'] == 1) {
   $q2B3->execute();
   $q2B4 = $db->prepare("DROP TABLE tmp");
   $q2B4->execute();
-  $ql3 = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '".$_SESSION['email']." deleted respondents with duplicated email for $project', '3')");
+  $ql3 = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '".$_SESSION['email']." deleted respondents with duplicated emails for $project', '3')");
   $ql3->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
   $ql3->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
   $ql3->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
