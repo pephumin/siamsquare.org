@@ -207,6 +207,7 @@ function iconize($data) {
   else if (preg_match("/deleted an interim result/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/deleted a post in/i", $data)) { $insert = "<i class=\"pe-trash pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/tried acccessing a company page manually/i", $data)) { $insert = "<i class=\"pe-exclamation-triangle pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/tried acccessing the administration page manually/i", $data)) { $insert = "<i class=\"pe-exclamation-triangle pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/edited the company info/i", $data)) { $insert = "<i class=\"pe-edit pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed the company logo/i", $data)) { $insert = "<i class=\"pe-photo pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/removed the company logo/i", $data)) { $insert = "<i class=\"pe-photo pe-fw\"></i> &nbsp; "; }
