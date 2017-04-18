@@ -5,7 +5,7 @@ if ($_SESSION['level'] < "6") {
   pageHeader($title);
   echo "<h2>No access</h2>\n";
   echo "<p><strong>This page can be accessed by Manager only.</strong></p>\n";
-  echo "<p>In fat we strongly suggest you should stop accessing by manually enter the URL as we consider this to be a violent action and our system has already recorded this error including your identity and timestamp.</p>\n";
+  echo "<p>We strongly suggest you should stop accessing by manually enter the URL as we consider this to be a violent action and our system has already recorded this error including your identity and timestamp.</p>\n";
   echo "<p>You should instead use the client dashboard which will never lead you to a wrong link or any errors like this at all.</p>\n";
   echo mkerror("Your level is not high enough to access this page.");
   pageFooter();
