@@ -42,7 +42,21 @@ function DDstatus($status) {
   return $output;
 }
 
-
+if ($_SESSION['level'] <= "8") {
+  $title = "An error has been found";
+  pageHeader($title);
+  echo "<h2>No access</h2>\n";
+  echo "<p><strong>This page can be accessed by Super Users only.</strong></p>\n";
+  echo "<p>We strongly suggest you should stop accessing by manually enter the URL as we consider this to be a violent action and our system has already recorded this error including your identity and timestamp.</p>\n";
+  echo "<p>You should instead use the client dashboard which will never lead you to a wrong link or any errors like this at all.</p>\n";
+  echo mkerror("Your level is not high enough to access this page.");
+  pageFooter();
+  $q1 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " tried acccessing the administration page manually', '5')");
+  $q1->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+  $q1->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
+  $q1->execute();
+  exit;
+}
 
 // Get company list
 $q1 = $db->prepare("SELECT C.*, (SELECT COUNT(*) FROM j_users AS U WHERE U.companyid = C.id) AS nUsers, (SELECT COUNT(*) FROM j_projects AS P WHERE P.companyid = C.id) AS nProjects, (SELECT COUNT(*) FROM j_board AS B WHERE B.companyid = C.id) AS nBoards FROM j_companies AS C ORDER BY C.id DESC");
