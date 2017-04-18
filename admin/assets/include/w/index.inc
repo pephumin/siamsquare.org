@@ -108,7 +108,6 @@ if ($totalALL == 0) {
     <br>
 <?php
 $i = 0;
-$height1 = "70";
 $today['year'] = date("Y"); $today['month'] = date("m"); $today['day'] = date("d");
 if ($today['month'] == "01") { $today['month'] = "12"; $today['year'] = $today['year']-1; } else { $today['month'] = $today['month']-1; }
 $utimelinedata = "[ \n"; $colordata = "[ ";
@@ -150,17 +149,16 @@ foreach ($rows as $row) {
   }
   $updated = ago($row['updated']);
   if ($row['private'] == 1) { $private = "<span class=\"label label-success\">PRIVATE</span>"; } else { $private = ""; }
-  $height1 = $height1 + "40";
   $i++;
 }
 $utimelinedata .= "    ]";
 $colordata = substr($colordata, 0, -2);
 $colordata .= " ]";
 ?>
-    <!-- <h4>Timing of your projects</h4> -->
-    <!-- <p>Please note that below timing is shown for all your projects excluding the ones are deleted.</p> -->
-    <!-- <div id="timeline1"></div> -->
-    <!-- <br> -->
+    <h4>Timing of your projects</h4>
+    <p>Please note that below timing is shown for all your projects excluding the ones are deleted.</p>
+    <div id="timeline1"></div>
+    <br>
 <?php } ?>
   </div>
   <div id="two" class="tab-pane fade">
@@ -191,7 +189,6 @@ if ($st5) { $levellist .= "<strong>$st5 User(s)</strong> "; } else { $levellist 
 if ($st4) { $levellist .= "<strong>$st4 Guest(s)</strong> "; } else { $levellist .= ""; }
 // if ($st3) { $levellist .= "<strong>$st3 person(s)</strong> "; } else { $levellist .= ""; }
 $i = 0;
-$height2 = "70";
 $today['year'] = date("Y"); $today['month'] = date("m"); $today['day'] = date("d");
 if ($today['month'] == "01") { $today['month'] = "12"; $today['year'] = $today['year']-1; } else { $today['month'] = $today['month']-1; }
 $ctimelinedata = "[ \n"; $colordata = "[ "; $tabledata = ""; $AA = array();
@@ -248,7 +245,6 @@ foreach ($rows as $row) {
   $tabledata .= "      <td>$ss</td>\n";
   // $tabledata .= "      <td align=\"right\">$updated</td>\n";
   $tabledata .= "    </tr>\n";
-  $height2 = $height2 + "40";
   $i++;
 }
 $ctimelinedata .= "    ]";
@@ -263,7 +259,6 @@ $rr = $q6A->fetchAll(PDO::FETCH_ASSOC);
 $bdata = "[ \n";
 $bdata .= "      [ 'Member', 'Active', { role: 'annotation' }, 'All', { role: 'annotation' } ],\n";
 $j = 1;
-$height3 = "60";
 foreach ($rr as $r) {
   if ($r['pall'] != NULL) { $ww0 = $r['pall']; } else { $ww0 = "0"; } $w0 = ($ww0 / $sstotal) * 100; $w0 = number_format($w0, 1);
   if ($r['pactive'] != NULL) { $ww1 = $r['pactive']; } else { $ww1 = "0"; } $w1 = ($ww1 / $ssActive) * 100; $w1 = number_format($w1, 1);
@@ -285,7 +280,6 @@ foreach ($rr as $r) {
   //   // $bdata .= "          [ '".addslashes($fullname)."', $w1, $w ], \n";
   //   $bdata .= "      [ '".addslashes($firstname[0])."', $w1, $w1, $w0, $w0 ], \n";
   // }
-  $height3 = $height3 + "45";
   $j++;
 }
 $bdata .= "    ]";
@@ -371,15 +365,18 @@ if ($sstotal == 0) {
         <div id="barchart"></div>
       </div>
     </div>
+    <!-- <h4 id="timeline2heading">Timings of all projects</h4>
+    <p id="timeline2description">This shows the timing for all projects giving you a good helicopter view of all projects.</p>
+    <div id="timeline2"></div> -->
   </div>
 </div>
 
-<div id="tabone">
+<!-- <div id="tabone">
   <h4 id="timeline1heading">Timing of your projects</h4>
   <p id="timeline1description">Please note that below timing is shown for all your projects excluding the ones are deleted.</p>
   <div id="timeline1"></div>
-</div>
-<br>
+</div> -->
+<!-- <br> -->
 <div id="tabtwo">
   <h4 id="timeline2heading">Timings of all projects</h4>
   <p id="timeline2description">This shows the timing for all projects giving you a good helicopter view of all projects.</p>
@@ -387,9 +384,10 @@ if ($sstotal == 0) {
 </div>
 
 <script type="text/javascript">
+  var totalAll = <?php echo $totalALL; ?>;
   google.charts.load('current', {'packages': ['corechart', 'timeline'] });
-<?php if ($totalALL != 0) { echo "  google.charts.setOnLoadCallback(drawPieChart1);\n"; } ?>
-<?php if ($totalALL != 0) { echo "  google.charts.setOnLoadCallback(drawTimelineChart1);\n"; } ?>
+  if (totalAll != 0) { google.charts.setOnLoadCallback(drawPieChart1); }
+  if (totalAll != 0) { google.charts.setOnLoadCallback(drawTimelineChart1); }
   google.charts.setOnLoadCallback(drawPieChart2);
   google.charts.setOnLoadCallback(drawBarChart);
   google.charts.setOnLoadCallback(drawTimelineChart2);
@@ -423,8 +421,10 @@ if ($sstotal == 0) {
     data.addColumn({ type: 'date', id: 'Start' });
     data.addColumn({ type: 'date', id: 'End' });
     data.addRows(<?php echo $utimelinedata; ?>);
+    chart.draw(data, options);
+    var newheight = parseInt($("#timeline1 div:first-child div:first-child div:first-child div svg").attr( "height"))+70;
     var options = {
-<?php if ($totalALL != 0) { echo "      height: $height1,\n"; } ?>
+      height: newheight,
       colors: [ '#B3FFB3', '#00C851', '#007E33', '#AAAAAA' ],
       avoidOverlappingGridLines: false,
       timeline: { groupByRowLabel: true, colorByRow: true, }
@@ -456,10 +456,11 @@ if ($sstotal == 0) {
     var container = document.getElementById('barchart');
     var chart = new google.visualization.BarChart(container);
     var data = google.visualization.arrayToDataTable(<?php echo $bdata; ?>);
+    chart.draw(data, options);
+    var newheight = parseInt($("#barchart div:first-child div:first-child div svg").attr( "height"))-50;
     var options = {
-      height: <?php echo $height3; ?>,
+      height: newheight,
       backgroundColor: 'transparent',
-      // legend: { position: 'right' },
       hAxis: { gridlines: { color: 'transparent' } },
       bar: { groupWidth: "90%" },
       chartArea: { top: 0, bottom: 0 },
@@ -476,8 +477,12 @@ if ($sstotal == 0) {
     data.addColumn({ type: 'date', id: 'Start' });
     data.addColumn({ type: 'date', id: 'End' });
     data.addRows(<?php echo $ctimelinedata; ?>);
+    chart.draw(data, options);
+    var newheight = parseInt($("#timeline2 div:first-child div:first-child div:first-child div svg").attr( "height"))+70;
+    // var newwidth = parseInt($("#timeline2 div:first-child div:first-child div:first-child div svg").attr( "width"))+540;
     var options = {
-      height: <?php echo $height2; ?>,
+      height: newheight,
+      // width: newwidth,
       colors: [ '#B3FFB3', '#00C851', '#007E33', '#AAAAAA' ],
       avoidOverlappingGridLines: false,
       timeline: { groupByRowLabel: true, colorByRow: true, },
@@ -486,8 +491,8 @@ if ($sstotal == 0) {
     chart.draw(data, options);
   }
   $(window).resize(function() {
-<?php if ($totalALL != 0) { echo "    drawPieChart1();\n"; } ?>
-<?php if ($totalALL != 0) { echo "    drawTimelineChart1();\n"; } ?>
+    if (totalALL != 0) { drawPieChart1(); }
+    if (totalALL != 0) { drawTimelineChart1(); }
     drawPieChart2();
     drawBarChart();
     drawTimelineChart2();
