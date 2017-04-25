@@ -355,6 +355,10 @@ echo "<div id=\"notification\"></div>\n";
   if (readonly == 1) { $(function () { $('#pageComplete').attr('disabled', 'disabled'); }); }
 
   Survey.JsonObject.metaData.addProperty("text", { name: "dateFormat", default: "d MM yy", choices: ["d MM yy", "dd-mm-yy", "dd/mm/yy", "dd.mm.yy", "M d, yy", "DD d MM yy"] });
+  Survey.JsonObject.metaData.addProperty("dropdown", { name: "renderAs", default: "standard", choices: ["standard", "barrating", "imagepicker"] });
+  Survey.JsonObject.metaData.addProperty("dropdown", { name: "ratingTheme", default: "star", choices: ["star", "heart", "thumb", "check", "bell", "flag", "user", "square-1", "square-2", "square-3"] });
+  Survey.JsonObject.metaData.addProperty("dropdown", { name: "showValues:boolean", default: false });
+
   var widget1 = {
     name: "datepicker",
     htmlTemplate: "<input id='widget-datepicker' type='text' style='width:100%;'>",
@@ -368,19 +372,13 @@ echo "<div id=\"notification\"></div>\n";
     }
   }
   Survey.CustomWidgetCollection.Instance.addCustomWidget(widget1);
-
-  Survey.JsonObject.metaData.addProperty("dropdown", { name: "renderAs", default: "standard", choices: ["standard", "barrating"] });
-  Survey.JsonObject.metaData.addProperty("dropdown", { name: "ratingTheme", default: "star", choices: ["star", "heart", "thumb", "check", "bell", "flag", "user", "square-1", "square-2", "square-3"] });
-  // Survey.JsonObject.metaData.addProperty("dropdown", { name: "ratingColour", default: "orange", choices: ["orange", "blue", "green", "red"] });
-  Survey.JsonObject.metaData.addProperty("dropdown", { name: "showValues:boolean", default: false });
   var widget2 = {
-    name: "bar-rating",
+    name: "icon",
     isFit: function(question) { return question["renderAs"] === 'barrating'; },
     isDefaultRender: true,
     afterRender: function(question, el) {
       var $el = $(el);
       if (question.ratingTheme) { ratingTheme = question.ratingTheme; } else { ratingTheme = 'star'; }
-      // if (question.ratingColour) { ratingColour = question.ratingColour; } else { ratingColour = 'orange'; }
       if (question.showValues) { showValues = question.showValues; } else { showValues = false; }
       $el.barrating('destroy');
       $el.barrating('show', {
@@ -391,11 +389,46 @@ echo "<div id=\"notification\"></div>\n";
         showSelectedRating: true,
         onSelect: function(value, text) { question.value = value; }
       });
-      // question.valueChangedCallback = function() { $(el).find('select').barrating('set', question.value); }
       question.valueChangedCallback = function() { $el.barrating('set', question.value); }
     }
   }
   Survey.CustomWidgetCollection.Instance.addCustomWidget(widget2);
+  var widget3 = {
+    name: "NPS",
+    isFit: function(question) { return question["renderAs"] === 'barrating'; },
+    isDefaultRender: true,
+    afterRender: function(question, el) {
+      var $el = $(el);
+      if (question.ratingTheme) { ratingTheme = question.ratingTheme; } else { ratingTheme = 'square-2'; }
+      if (question.showValues) { showValues = question.showValues; } else { showValues = true; }
+      $el.barrating('destroy');
+      $el.barrating('show', {
+        theme: ratingTheme,
+        initialRating: question.value,
+        showValues: true,
+        showSelectedRating: true,
+        onSelect: function(value, text) { question.value = value; }
+      });
+      question.valueChangedCallback = function() { $el.barrating('set', question.value); }
+    }
+  }
+  Survey.CustomWidgetCollection.Instance.addCustomWidget(widget3);
+  var widget4 = {
+    name: "imagepicker",
+    isFit: function(question) { return question["renderAs"] === 'imagepicker'; },
+    isDefaultRender: true,
+    afterRender: function(question, el) {
+      var $el = $(el);
+      var options = $el.find('option');
+      for (var i=1; i<options.length; i++) { options[i].dataset["imgSrc"] = options[i].text; }
+      $el.imagepicker({
+        hide_select: true,
+        show_label: false,
+        selected: function(opts) { question.value = opts.picker.select[0].value; }
+      })
+    }
+  }
+  Survey.CustomWidgetCollection.Instance.addCustomWidget(widget4);
 
   var survey = new Survey.Model (getsurveydata(surveyid));
   if (pilot != 1) {
@@ -506,13 +539,5 @@ echo "  header .header-2, footer .footer-2 { ".themeBG($showcolour)." }\n";
 echo "</style>\n";
 
 if ($project || $notes) { pageFooter($project, $notes); } else { pageFooter(); }
-
-// copy results
-// 1. copy j_results to j_temp with structure and all data
-// 2. remove all excetp surveyid = 8 --> DELETE FROM `j_temp` WHERE `surveyid` <> 8;
-// 3. update to a new surveyid --> UPDATE `j_temp` SET surveyid = 19;
-// 4. insert back to j_results --> INSERT INTO `j_results` (`rd`, `email`, `ip`, `surveyid`, `submitted`, `data`, `status`) SELECT `rd`, `email`, `ip`, `surveyid`, `submitted`, `data`, `status` FROM `j_temp`
-// replace results
-// UPDATE `j_results` SET `data` = REPLACE(`data`, '8_', '19_') WHERE `surveyid` = 19
 
 ?>

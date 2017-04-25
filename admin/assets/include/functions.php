@@ -93,7 +93,7 @@ function cleanstring($string) {
 
 function ago($ptime) {
   $estimate_time = time() - strtotime($ptime);
-  if( $estimate_time < 1 ) { return 'less than 1 second ago'; }
+  if( $estimate_time < 1 ) { return 'Less than 1 second ago'; }
   $condition = array(
     12 * 30 * 24 * 60 * 60  =>  'year',
     30 * 24 * 60 * 60       =>  'month',
@@ -293,6 +293,27 @@ function is_guest() {
   else { return false; }
 }
 
+function status_company($status, $icon = false, $colour = false) {
+  if ($icon == true) {
+    if ($colour == true) {
+      if ($status == "1") { $status_company = "<span class='green'><i class='pe-check-circle pe-fw'></i> Active</span>"; }
+      else if ($status == "0") { $status_company = "<span class='red'><i class='pe-stop-circle pe-fw'></i> Inactive</span>"; }
+    } else {
+      if ($status == "1") { $status_company = "<i class='pe-check-circle pe-fw'></i> Active"; }
+      else if ($status == "0") { $status_company = "<i class='pe-stop-circle pe-fw'></i> Inactive"; }
+    }
+  } else {
+    if ($colour == true) {
+      if ($status == "1") { $status_company = "<span class='green'>Active</span>"; }
+      else if ($status == "0") { $status_company = "<span class='red'>Inactive</span>"; }
+    } else {
+      if ($status == "1") { $status_company = "Active"; }
+      else if ($status == "0") { $status_company = "Inactive"; }
+    }
+  }
+  return $status_company;
+}
+
 function status_user($status, $icon = false, $colour = false) {
   if ($icon == true) {
     if ($colour == true) {
@@ -444,6 +465,7 @@ function meta($title) {
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery.form.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-csv.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-bar-rating.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/imagepicker.js\"></script>\n";
   echo "  <script type=\"text/javascript\">\n";
   echo "    $.widget.bridge('uibutton', $.ui.button);\n";
   echo "    $.widget.bridge('uitooltip', $.ui.tooltip);\n";
