@@ -67,7 +67,7 @@ else { echo "<p></p>\n"; }
 
 <!-- <div id="showalert-create"></div><div id="showalert-delete"></div><div id="showalert-edit"></div> -->
 
-<p>Found <strong><?php echo $rows; ?> posts</strong> in our database (showing results <?php echo $from_record; ?> to <?php echo $to_record; ?>) plus another <strong><?php echo $totalglobal; ?> posts</strong> by system announcement</p>
+<p>Found <strong><?php echo $rows; ?> posts</strong> (showing results <?php echo $from_record; ?> to <?php echo $to_record; ?>)</p>
 <div class="row">
   <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
     <form method="post" action="<?php echo $me; ?>">
@@ -75,16 +75,16 @@ else { echo "<p></p>\n"; }
         <div class="panel-body small bg-success">
           <div class="input-group">
             <span class="input-group-addon"><i class="pe-wpforms pe-fw"></i></span>
-            <input type="text" name="head" class="form-control" value="" placeholder="Topic of the message" onclick="this.select()">
+            <input type="text" name="head" id="newhead" class="form-control" value="" placeholder="Topic of the message" onclick="this.select()">
           </div>
           <br>
-          <textarea name="body" rows="5" class="form-control" placeholder="Message content"></textarea><br>
+          <textarea name="body" id="newbody" rows="5" class="form-control" placeholder="Message content"></textarea><br>
           <div class="row">
             <div class="col-sm-9">
               <p class="text-center">
                 <input type="hidden" name="userid" value="<?php echo $_SESSION['userid']; ?>">
                 <input type="hidden" name="companyid" value="<?php echo $_SESSION['companyid']; ?>">
-                <button class="btn btn-sm btn-success" name="newpost" value="1" type="submit">Post <i class="pe-check-circle-o"></i></button>
+                <button class="btn btn-sm btn-success" name="newpost" id="newbutton" value="1" type="submit">Post <i class="pe-check-circle-o"></i></button>
                 <a class="btn btn-sm btn-default" data-bind="click: cancelNew" href="">Cancel <i class="pe-times-circle-o"></i></a>
               </p>
             </div>
@@ -225,6 +225,14 @@ while ($row = $q1C->fetchObject()) {
     all.each(function (index, element) { $(element).collapse('hide'); })
     actives.each(function (index, element) { $(element).collapse('show'); })
   })
+
+  $('#newbutton').prop('disabled', true);
+  $('input[type="text"], textarea').on('keyup',function() {
+    var value_head = $('#newhead').val();
+    var value_body = $("#newbody").val();
+    if (value_head != '' && value_body != '') { $('#newbutton').prop('disabled', false); }
+    else { $('input[type="submit"]').attr('disabled' , true); }
+  });
 
 </script>
 
