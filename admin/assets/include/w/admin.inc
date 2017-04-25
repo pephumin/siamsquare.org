@@ -2,45 +2,9 @@
 
 $me = "/admin/?w=admin";
 
-if ($_GET['c']) { $c = $_GET['c']; }
-else if ($_POST['companyid']) { $c = $_POST['companyid']; }
-else { $c = ""; }
-
-if ($_GET['d']) { $d = $_GET['d']; }
-else if ($_POST['userid']) { $d = $_POST['userid']; }
-else { $d = ""; }
-
-function DDcompany($companyid) {
-  global $db;
-  $output = "";
-  $qf1 = $db->prepare("SELECT id, fullname FROM j_companies ORDER BY id DESC");
-  $qf1->execute();
-  while ($row = $qf1->fetchObject()) {
-    if ($row->id == $companyid) { $output .= "        <option value=\"$row->id\" selected>$row->fullname</option>\n"; }
-    else { $output .= "        <option value=\"$row->id\">$row->fullname</option>\n"; }
-  }
-  return $output;
-}
-
-function DDrole($level) {
-  $output = "";
-  $lists = array("Administration" => "9", "System" => "8", "Manager" => "6", "User" => "5", "Guest" => "4");
-  foreach($lists as $a => $b) {
-    if ($b == $level) { $output .= "        <option value=\"$b\" selected>$a</option>\n"; }
-    else { $output .= "        <option value=\"$b\">$a</option>\n"; }
-  }
-  return $output;
-}
-
-function DDstatus($status) {
-  $output = "";
-  $lists = array("Active" => "5", "Inactive" => "4", "Locked" => "3", "Suspended" => "2", "Deleted" => "0");
-  foreach($lists as $a => $b) {
-    if ($b == $status) { $output .= "        <option value=\"$b\" selected>$a</option>\n"; }
-    else { $output .= "        <option value=\"$b\">$a</option>\n"; }
-  }
-  return $output;
-}
+if ($_POST['companyid']) { $c = $_POST['companyid']; } else if ($_GET['c']) { $c = $_GET['c']; } else { $c = ""; }
+if ($_POST['userid']) { $d = $_POST['userid']; } else if ($_GET['d']) { $d = $_GET['d']; } else { $d = ""; }
+if ($_POST['surveyid']) { $p = $_POST['surveyid']; } else if ($_GET['p']) { $p = $_GET['p']; } else { $p = ""; }
 
 if ($_SESSION['level'] <= "8") {
   $title = "An error has been found";
@@ -59,23 +23,19 @@ if ($_SESSION['level'] <= "8") {
 }
 
 // Get company list
-$q1 = $db->prepare("SELECT C.*, (SELECT COUNT(*) FROM j_users AS U WHERE U.companyid = C.id) AS nUsers, (SELECT COUNT(*) FROM j_projects AS P WHERE P.companyid = C.id) AS nProjects, (SELECT COUNT(*) FROM j_board AS B WHERE B.companyid = C.id) AS nBoards FROM j_companies AS C ORDER BY C.id DESC");
+$q1 = $db->prepare("SELECT C.*,
+                    (SELECT COUNT(*) FROM j_users AS U WHERE U.companyid = C.id) AS nUsers,
+                    (SELECT COUNT(*) FROM j_users AS U WHERE U.companyid = C.id AND U.status = 5) AS nUserActives,
+                    (SELECT COUNT(*) FROM j_users AS U WHERE U.companyid = C.id AND U.status IN (1,2,3,4,0)) AS nUserInactives,
+                    (SELECT COUNT(*) FROM j_projects AS P WHERE P.companyid = C.id) AS nProjects,
+                    (SELECT COUNT(*) FROM j_projects AS P WHERE P.companyid = C.id AND P.status IN (1,2,3)) AS nProjectActives,
+                    (SELECT COUNT(*) FROM j_projects AS P WHERE P.companyid = C.id AND P.status IN (4,0)) AS nProjectInactives,
+                    (SELECT COUNT(*) FROM j_board AS B WHERE B.companyid = C.id) AS nBoards
+                  FROM j_companies AS C ORDER BY C.id DESC");
 $q1->execute();
 $countcompany = $q1->rowCount();
-$mm1 .= "<table class=\"table small\">\n";
-$mm1 .= "  <thead>\n";
-$mm1 .= "    <tr class=\"bg-success\">\n";
-$mm1 .= "      <th style=\"text-align:left\" width=\"10%\"><i class=\"pe-sort-amount-desc pe-fw orange\"></i> No.</th>\n";
-$mm1 .= "      <th style=\"text-align:left\" width=\"25%\"><i class=\"pe-building pe-fw\"></i> Company</th>\n";
-$mm1 .= "      <th style=\"text-align:left\" width=\"15%\"><i class=\"pe-calendar pe-fw\"></i> Registered</th>\n";
-$mm1 .= "      <th style=\"text-align:left\" width=\"15%\"><i class=\"pe-clock-o pe-fw\"></i> Last updated</th>\n";
-$mm1 .= "      <th style=\"text-align:right\" width=\"11%\"><i class=\"pe-users pe-fw\"></i> Users</th>\n";
-$mm1 .= "      <th style=\"text-align:right\" width=\"12%\"><i class=\"pe-cubes pe-fw\"></i> Projects</th>\n";
-$mm1 .= "      <th style=\"text-align:right\" width=\"12%\"><i class=\"pe-comments-o pe-fw\"></i> Messages</th>\n";
-$mm1 .= "    </tr>\n";
-$mm1 .= "  </thead>\n";
-$mm1 .= "  <tbody>\n";
-$i = 1; $companylist = ""; $userlist = "";
+$mm1 = "<div class=\"row\">\n";
+$i = 1; $companylist = "";
 while ($row = $q1->fetchObject()) {
   $companyid = $row->id; // $companyid += 0;
   $name = $row->company;
@@ -92,206 +52,336 @@ while ($row = $q1->fetchObject()) {
   $fax = $row->fax;
   $created = ago($row->created);
   $updated = ago($row->updated);
-  $nUsers = $row->nUsers;
-  $allUsers += $nUsers;
-  $nProjects = $row->nProjects;
-  $allProjects += $nProjects;
-  $nBoards = $row->nBoards;
-  $allBoards += $nBoards;
+  $cstatus = status_company($row->status, true, true);
+  $nUsers = $row->nUsers; $nUserActives = $row->nUserActives; $nUserInactives = $row->nUserInactives; $nProjects = $row->nProjects; $nProjectActives = $row->nProjectActives; $nProjectInactives = $row->nProjectInactives; $nBoards = $row->nBoards;
+  $allUsers += $nUsers; $allUserActives += $nUserActives; $allUserInactives += $nUserInactives; $allProjects += $nProjects; $allProjectActives += $nProjectActives; $allProjectInactives += $nProjectInactives; $allBoards += $nBoards;
   if ($companyid == $c) { $companylist .= "        <option value=\"$companyid\" selected>$cfullname</option>\n"; }
   else { $companylist .= "        <option value=\"$companyid\">$cfullname</option>\n"; }
-  $mm1 .= "    <tr id=\"firstrow$i\">\n";
-  // $mm1 .= "      <td style=\"text-align:left\"><a data-toggle=\"collapse\" href=\"#$companyid\" aria-expanded=\"false\" aria-controls=\"$companyid\">$companyid</a></td>\n";
-  $mm1 .= "      <td style=\"text-align:left\">$companyid <a id=\"rowshow$i\" href=\"\" onclick=\"return showRow(event, $i)\" style=\"\"> <i class=\"pe-chevron-down\"></i></a><a id=\"rowhide$i\" href=\"\" onclick=\"return hideRow(event, $i)\" style=\"display:none\"> <i class=\"pe-chevron-up\"></i></a></td>\n";
-  $mm1 .= "      <td style=\"text-align:left\">$name</td>\n";
-  $mm1 .= "      <td style=\"text-align:left\">$created</td>\n";
-  $mm1 .= "      <td style=\"text-align:left\">$updated</td>\n";
-  $mm1 .= "      <td style=\"text-align:right\">$nUsers</td>\n";
-  $mm1 .= "      <td style=\"text-align:right\">$nProjects</td>\n";
-  $mm1 .= "      <td style=\"text-align:right\">$nBoards</td>\n";
-  $mm1 .= "    </tr>\n";
-  // $mm1 .= "    <tr class=\"collapse\" id=\"$companyid\">\n";
-  $mm1 .= "    <tr id=\"row$i\" style=\"display:none\">\n";
-  $mm1 .= "      <td colspan=\"7\" style=\"padding:30px\">\n";
-  $mm1 .= "        <nav>\n";
-  $mm1 .= "          <ul class=\"nav nav-tabs\">\n";
-  $mm1 .= "            <li class=\"active\"><a href=\"#1-$companyid\" data-toggle=\"tab\"><i class=\"pe-info-circle pe-fw\"></i> Information</a></li>\n";
-  $mm1 .= "            <li><a href=\"#2-$companyid\" data-toggle=\"tab\"><i class=\"pe-users pe-fw\"></i> Users <span class=\"badge\">$nUsers</span></a></li>\n";
-  $mm1 .= "            <li><a href=\"#3-$companyid\" data-toggle=\"tab\"><i class=\"pe-cubes pe-fw\"></i> Projects <span class=\"badge\">$nProjects</span></a></li>\n";
-  $mm1 .= "            <li><a href=\"#4-$companyid\" data-toggle=\"tab\"><i class=\"pe-comments-o pe-fw\"></i> Messages <span class=\"badge\">$nBoards</span></a></li>\n";
-  $mm1 .= "          </ul>\n";
-  $mm1 .= "        </nav>\n";
-  $mm1 .= "        <div class=\"tab-content\" style=\"border:1px #ddd solid;border-top-color: transparent;\">\n";
-  $mm1 .= "          <div id=\"1-$companyid\" class=\"tab-pane fade in active\" style=\"padding:20px;\">\n";
-  if ($logo) { $mm1 .= "            <div class=\"pull-right\" style=\"margin-top:0px\"><img src=\"$logo\" title=\"$cfullname\"></div>\n"; }
-  $mm1 .= "            <h4>$name</h4>\n";
-  $mm1 .= "            <table class=\"table table-hover table-condensed\">\n";
-  $mm1 .= "              <tbody>\n";
-  $mm1 .= "                <tr>\n";
-  $mm1 .= "                  <td width=\"20%\">Company name</td>\n";
-  $mm1 .= "                  <td width=\"10%\"><button class=\"btn btn-default btn-tiny\"><i class=\"pe-language pe-fw\"></i> EN</button></td>\n";
-  $mm1 .= "                  <td width=\"70%\">$cfullname</td>\n";
-  $mm1 .= "                </tr>\n";
-  $mm1 .= "                <tr>\n";
-  $mm1 .= "                  <td width=\"20%\"></td>\n";
-  $mm1 .= "                  <td width=\"10%\"><button class=\"btn btn-default btn-tiny\"><i class=\"pe-language pe-fw\"></i> TH</button></td>\n";
-  $mm1 .= "                  <td width=\"70%\">$cfullname_th</td>\n";
-  $mm1 .= "                </tr>\n";
-  $mm1 .= "                <tr>\n";
-  $mm1 .= "                  <td width=\"20%\">Address</td>\n";
-  $mm1 .= "                  <td width=\"10%\"><button class=\"btn btn-default btn-tiny\"><i class=\"pe-language pe-fw\"></i> EN</button></td>\n";
-  $mm1 .= "                  <td width=\"70%\">$address</td>\n";
-  $mm1 .= "                </tr>\n";
-  $mm1 .= "                <tr>\n";
-  $mm1 .= "                  <td width=\"20%\"></td>\n";
-  $mm1 .= "                  <td width=\"10%\"><button class=\"btn btn-default btn-tiny\"><i class=\"pe-language pe-fw\"></i> TH</button></td>\n";
-  $mm1 .= "                  <td width=\"70%\">$address_th</td>\n";
-  $mm1 .= "                </tr>\n";
-  $mm1 .= "                <tr>\n";
-  $mm1 .= "                  <td width=\"30%\" colspan=\"2\"><i class=\"pe-phone pe-fw\"></i> Telephone</td>\n";
-  $mm1 .= "                  <td width=\"70%\">$telephone</td>\n";
-  $mm1 .= "                </tr>\n";
-  $mm1 .= "                <tr>\n";
-  $mm1 .= "                  <td width=\"30%\" colspan=\"2\"><i class=\"pe-fax pe-fw\"></i> Fax</td>\n";
-  $mm1 .= "                  <td width=\"70%\">$fax</td>\n";
-  $mm1 .= "                </tr>\n";
-  $mm1 .= "                <tr>\n";
-  $mm1 .= "                  <td width=\"30%\" colspan=\"2\"><i class=\"pe-envelope pe-fw\"></i> Email</td>\n";
-  $mm1 .= "                  <td width=\"70%\"><a href=\"mailto:$cemail\">$cemail</a></td>\n";
-  $mm1 .= "                </tr>\n";
-  $mm1 .= "                <tr>\n";
-  $mm1 .= "                  <td width=\"30%\" colspan=\"2\"><i class=\"pe-globe pe-fw\"></i> Website</td>\n";
-  $mm1 .= "                  <td width=\"70%\"><a href=\"$website\">$website</a></td>\n";
-  $mm1 .= "                </tr>\n";
-  $mm1 .= "                <tr>\n";
-  $mm1 .= "                  <td width=\"20%\">Description</td>\n";
-  $mm1 .= "                  <td width=\"10%\"><button class=\"btn btn-default btn-tiny\"><i class=\"pe-language pe-fw\"></i> EN</button></td>\n";
-  $mm1 .= "                  <td width=\"70%\">$description</td>\n";
-  $mm1 .= "                </tr>\n";
-  $mm1 .= "                <tr>\n";
-  $mm1 .= "                  <td width=\"20%\"></td>\n";
-  $mm1 .= "                  <td width=\"10%\"><button class=\"btn btn-default btn-tiny\"><i class=\"pe-language pe-fw\"></i> TH</button></td>\n";
-  $mm1 .= "                  <td width=\"70%\">$description_th</td>\n";
-  $mm1 .= "                </tr>\n";
-  $mm1 .= "                <tr>\n";
-  $mm1 .= "                  <td width=\"30%\" colspan=\"2\">Registered</td>\n";
-  $mm1 .= "                  <td width=\"70%\">$created</td>\n";
-  $mm1 .= "                </tr>\n";
-  $mm1 .= "                <tr>\n";
-  $mm1 .= "                  <td width=\"30%\" colspan=\"2\">Last updated</td>\n";
-  $mm1 .= "                  <td width=\"70%\">$updated</td>\n";
-  $mm1 .= "                </tr>\n";
-  $mm1 .= "              </tbody>\n";
-  $mm1 .= "            </table>\n";
-  $mm1 .= "            <div align=\"right\"><a class=\"btn btn-success btn-sm\" href=\"$me&c=$companyid\"><i class=\"pe-edit pe-lg pe-fw\"></i> Edit this company</a></div>\n";
-  $mm1 .= "          </div>\n";
-  $mm1 .= "          <div id=\"2-$companyid\" class=\"tab-pane fade\" style=\"padding:20px;\">\n";
+  $mm1 .= "  <div class=\"col-xs-12 col-sm-6 col-md-4 col-lg-3\" style=\"padding:10px\">\n";
+  $mm1 .= "    <div class=\"bg-info\" id=\"firstrow$i\" style=\"padding:10px 20px; border: 1px dotted lightgrey\">\n";
+  $mm1 .= "    <p class=\"pull-right\"><a id=\"rowshow$i\" href=\"\" onclick=\"return showRow(event, $i)\" style=\"\"> <i class=\"pe-chevron-down\"></i></a><a id=\"rowhide$i\" href=\"\" onclick=\"return hideRow(event, $i)\" style=\"display:none\"> <i class=\"pe-chevron-up\"></i></a></p>\n";
+  $mm1 .= "    <h4>$name <small>($companyid) <a href=\"$me&c=$companyid\"><i class=\"pe-edit\"></i></a></small></h4>\n";
+  $mm1 .= "    <table class=\"table\">\n";
+  $mm1 .= "      <thead><tr><th width=\"33%\" style=\"text-align:center\">Users</th><th width=\"33%\" style=\"text-align:center\">Projects</th><th width=\"33%\" style=\"text-align:center\">Messages</th></tr></thead>\n";
+  $mm1 .= "      <tfoot><tr><td style=\"text-align:center; font-size: 0.65rem; color:grey\">$nUserActives active<br>$nUserInactives inactive</td><td style=\"text-align:center; font-size: 0.65rem; color:grey\">$nProjectActives active<br>$nProjectInactives inactive</td><td style=\"text-align:center\"></td></tr></tfoot>\n";
+  $mm1 .= "      <tbody><tr><td style=\"text-align:center\">$nUsers</td><td style=\"text-align:center\">$nProjects</td><td style=\"text-align:center\">$nBoards</td></tr></tbody>\n";
+  $mm1 .= "    </table>\n";
+  $mm1 .= "    <br>\n";
+  $mm1 .= "    <p class=\"small grey\">Registered: $created<br>Last updated: $updated<br>Status: $cstatus</p>\n";
+  $mm1 .= "    </div>\n";
+  $mm1 .= "  </div>\n";
+  $mm1 .= "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 small\" id=\"row$i\" style=\"display:none; padding:30px\">\n";
+  $mm1 .= "    <nav>\n";
+  $mm1 .= "      <ul class=\"nav nav-tabs\">\n";
+  $mm1 .= "        <li class=\"active\"><a href=\"#1-$companyid\" data-toggle=\"tab\"><i class=\"pe-info-circle pe-fw\"></i> Information</a></li>\n";
+  $mm1 .= "        <li><a href=\"#2-$companyid\" data-toggle=\"tab\"><i class=\"pe-users pe-fw\"></i> Users <span class=\"badge smaller\">$nUsers</span></a></li>\n";
+  $mm1 .= "        <li><a href=\"#3-$companyid\" data-toggle=\"tab\"><i class=\"pe-cubes pe-fw\"></i> Projects <span class=\"badge smaller\">$nProjects</span></a></li>\n";
+  $mm1 .= "        <li><a href=\"#4-$companyid\" data-toggle=\"tab\"><i class=\"pe-comments-o pe-fw\"></i> Messages <span class=\"badge smaller\">$nBoards</span></a></li>\n";
+  $mm1 .= "      </ul>\n";
+  $mm1 .= "    </nav>\n";
+  $mm1 .= "    <div class=\"tab-content\" style=\"border:1px #ddd solid;border-top-color: transparent;\">\n";
+  $mm1 .= "      <div id=\"1-$companyid\" class=\"tab-pane fade in active\" style=\"padding:20px;\">\n";
+  if ($logo) { $mm1 .= "        <div class=\"pull-right\" style=\"margin-top:0px\"><img src=\"$logo\" title=\"$cfullname\"></div>\n"; }
+  $mm1 .= "        <h4>$name</h4>\n";
+  $mm1 .= "        <table class=\"table table-hover table-condensed\">\n";
+  $mm1 .= "          <tbody>\n";
+  $mm1 .= "            <tr>\n";
+  $mm1 .= "              <td width=\"20%\">Company name</td>\n";
+  $mm1 .= "              <td width=\"10%\"><button class=\"btn btn-default btn-tiny\"><i class=\"pe-language pe-fw\"></i> EN</button></td>\n";
+  $mm1 .= "              <td width=\"70%\">$cfullname</td>\n";
+  $mm1 .= "            </tr>\n";
+  $mm1 .= "            <tr>\n";
+  $mm1 .= "              <td width=\"20%\"></td>\n";
+  $mm1 .= "              <td width=\"10%\"><button class=\"btn btn-default btn-tiny\"><i class=\"pe-language pe-fw\"></i> TH</button></td>\n";
+  $mm1 .= "              <td width=\"70%\">$cfullname_th</td>\n";
+  $mm1 .= "            </tr>\n";
+  $mm1 .= "            <tr>\n";
+  $mm1 .= "              <td width=\"20%\">Description</td>\n";
+  $mm1 .= "              <td width=\"10%\"><button class=\"btn btn-default btn-tiny\"><i class=\"pe-language pe-fw\"></i> EN</button></td>\n";
+  $mm1 .= "              <td width=\"70%\">$description</td>\n";
+  $mm1 .= "            </tr>\n";
+  $mm1 .= "            <tr>\n";
+  $mm1 .= "              <td width=\"20%\"></td>\n";
+  $mm1 .= "              <td width=\"10%\"><button class=\"btn btn-default btn-tiny\"><i class=\"pe-language pe-fw\"></i> TH</button></td>\n";
+  $mm1 .= "              <td width=\"70%\">$description_th</td>\n";
+  $mm1 .= "            </tr>\n";
+  $mm1 .= "            <tr>\n";
+  $mm1 .= "              <td width=\"20%\">Address</td>\n";
+  $mm1 .= "              <td width=\"10%\"><button class=\"btn btn-default btn-tiny\"><i class=\"pe-language pe-fw\"></i> EN</button></td>\n";
+  $mm1 .= "              <td width=\"70%\">$address</td>\n";
+  $mm1 .= "            </tr>\n";
+  $mm1 .= "            <tr>\n";
+  $mm1 .= "              <td width=\"20%\"></td>\n";
+  $mm1 .= "              <td width=\"10%\"><button class=\"btn btn-default btn-tiny\"><i class=\"pe-language pe-fw\"></i> TH</button></td>\n";
+  $mm1 .= "              <td width=\"70%\">$address_th</td>\n";
+  $mm1 .= "            </tr>\n";
+  $mm1 .= "            <tr>\n";
+  $mm1 .= "              <td width=\"30%\" colspan=\"2\"><i class=\"pe-envelope pe-fw\"></i> Email</td>\n";
+  $mm1 .= "              <td width=\"70%\"><a href=\"mailto:$cemail\">$cemail</a></td>\n";
+  $mm1 .= "            </tr>\n";
+  $mm1 .= "            <tr>\n";
+  $mm1 .= "              <td width=\"30%\" colspan=\"2\"><i class=\"pe-globe pe-fw\"></i> Website</td>\n";
+  $mm1 .= "              <td width=\"70%\"><a href=\"$website\">$website</a></td>\n";
+  $mm1 .= "            </tr>\n";
+  $mm1 .= "            <tr>\n";
+  $mm1 .= "              <td width=\"30%\" colspan=\"2\"><i class=\"pe-phone pe-fw\"></i> Telephone</td>\n";
+  $mm1 .= "              <td width=\"70%\">$telephone</td>\n";
+  $mm1 .= "            </tr>\n";
+  $mm1 .= "            <tr>\n";
+  $mm1 .= "              <td width=\"30%\" colspan=\"2\"><i class=\"pe-fax pe-fw\"></i> Fax</td>\n";
+  $mm1 .= "              <td width=\"70%\">$fax</td>\n";
+  $mm1 .= "            </tr>\n";
+  $mm1 .= "          </tbody>\n";
+  $mm1 .= "        </table>\n";
+  $mm1 .= "        <div align=\"right\"><a class=\"btn btn-warning btn-sm\" href=\"$me&c=$companyid\"><i class=\"pe-edit pe-lg pe-fw\"></i> Edit this company</a></div>\n";
+  $mm1 .= "      </div>\n";
+  $mm1 .= "      <div id=\"2-$companyid\" class=\"tab-pane fade\" style=\"padding:20px;\">\n";
+  $allListing = array('companyid' => $companyid, 'companyname' => $name, 'companyfullname' => $cfullname);
   // Get user list
   $q2 = $db->prepare("SELECT * FROM j_users WHERE companyid = :companyid ORDER BY level DESC, status DESC");
   $q2->bindValue(':companyid', $companyid, PDO::PARAM_INT);
   $q2->execute();
-  $mm1 .= "            <h4>A total of $nUsers users</h4>\n";
-  $mm1 .= "            <table class=\"table table-condensed table-hover\">\n";
-  $mm1 .= "              <thead>\n";
-  $mm1 .= "                <tr class=\"bg-info\">\n";
-  $mm1 .= "                  <th width=\"10%\">ID (edit)</th><th width=\"30%\">Name (email)</th><th width=\"15%\"><i class=\"pe-sort-amount-desc pe-fw orange\"></i> Role</th><th width=\"15%\">Registered</th><th width=\"15%\">Last seen</th><th width=\"15%\"><i class=\"pe-sort-amount-desc pe-fw orange\"></i> Status</th>\n";
-  $mm1 .= "                </tr>\n";
-  $mm1 .= "              </thead>\n";
-  $mm1 .= "              <tbody>\n";
-  $userListEach = array('companyname' => $name, 'companyid' => $companyid);
-  // $ulist = array($companyid);
-  while ($rr = $q2->fetchObject()) {
-    $userid = $rr->id; // $userid += 0;
-    $ufullname = $rr->fullname;
-    $uemail = $rr->email;
-    $role = role($rr->level, true);
-    $status = status_user($rr->status, true, true);
-    $created = ago($rr->created);
-    $updated = ago($rr->updated);
-    if ($rr->lastlogin) { $lastlogin = ago($rr->lastlogin); } else { $lastlogin = "Never login"; }
-    if ($rr->lastlogin2) { $lastlogin2 = ago($rr->lastlogin2); } else { $lastlogin2 = "Never login"; }
-    if ($rr->lastip) { $lastip = $rr->lastip; } else { $lastip = "Never login"; }
-    if ($rr->lastip2) { $lastip2 = $rr->lastip2; } else { $lastip2 = "Never login"; }
-    $mm1 .= "                <tr>\n";
-    $mm1 .= "                  <td>$rr->id <a href=\"$me&d=$rr->id\"><i class=\"pe-edit\"></i></a></td><td>$rr->fullname <span class=\"small\">(<a href=\"mailto:$rr->email\">$rr->email</a>)</span></td><td>$role</td><td>$created</td><td>$lastlogin2</td><td>$status</td>\n";
-    $mm1 .= "                </tr>\n";
-    if ($userid == $d) { $userlist .= "        <option value=\"$userid\" selected>$name - $ufullname ($uemail)</option>\n"; }
-    else { $userlist .= "        <option value=\"$userid\">$name - $ufullname ($uemail)</option>\n"; }
-    $userListEach['users'][] = array('username' => $ufullname, 'userid' => $userid, 'useremail' => $uemail);
-    // $ulistpush = array();
-    // array_push($ulist, );
+  $mm1 .= "      <div class=\"pull-right\"><a class=\"btn btn-success btn-sm\" data-toggle=\"modal\" data-target=\"#addinguser\"><i class=\"pe-plus-circle pe-lg pe-fw\"></i> Add a new user</a></div>\n";
+  if ($q2->rowCount() < 1) {
+    $mm1 .= "        <h4>No users found</h4>\n";
+    $mm1 .= "        <br>\n";
+  } else {
+    $mm1 .= "        <h4>A total of $nUsers users</h4>\n";
+    $mm1 .= "        <table class=\"table table-condensed table-hover\">\n";
+    $mm1 .= "          <thead>\n";
+    $mm1 .= "            <tr class=\"bg-primary\">\n";
+    $mm1 .= "              <th width=\"10%\">ID (edit)</th><th width=\"30%\">Name (email)</th><th width=\"15%\"><i class=\"pe-sort-amount-desc pe-fw orange\"></i> Role</th><th width=\"15%\">Registered</th><th width=\"15%\">Last seen</th><th width=\"15%\"><i class=\"pe-sort-amount-desc pe-fw orange\"></i> Status</th>\n";
+    $mm1 .= "            </tr>\n";
+    $mm1 .= "          </thead>\n";
+    $mm1 .= "          <tbody>\n";
+    $userlist = ""; $i = $i+1;
+    while ($rr = $q2->fetchObject()) {
+      $userid = $rr->id; // $userid += 0;
+      $ufullname = $rr->fullname;
+      $uemail = $rr->email;
+      $role = role($rr->level, true);
+      $status = status_user($rr->status, true, true);
+      $created = ago($rr->created);
+      $updated = ago($rr->updated);
+      if ($rr->lastlogin) { $lastlogin = ago($rr->lastlogin); } else { $lastlogin = "Never login"; }
+      if ($rr->lastlogin2) { $lastlogin2 = ago($rr->lastlogin2); } else { $lastlogin2 = "Never login"; }
+      if ($rr->lastip) { $lastip = $rr->lastip; } else { $lastip = "Never login"; }
+      if ($rr->lastip2) { $lastip2 = $rr->lastip2; } else { $lastip2 = "Never login"; }
+      // userListing
+      if ($userid == $d) { $userlist .= "        <option value=\"$userid\" selected>$name - $ufullname ($uemail)</option>\n"; }
+      else { $userlist .= "        <option value=\"$userid\">$name - $ufullname ($uemail)</option>\n"; }
+      $allListing['users'][] = array('username' => $ufullname, 'userid' => $userid, 'useremail' => $uemail);
+      // Get user activities
+      $q2A = $db->prepare("SELECT L.*, P.title, U.email AS uemail, U.fullname AS ufullname FROM j_users_logs L LEFT JOIN j_projects P ON P.id = L.surveyid LEFT JOIN j_users U ON U.id = L.userid WHERE L.userid = :userid AND L.critical > 0 ORDER BY L.recorded DESC LIMIT 30");
+      $q2A->bindValue(':userid', $userid, PDO::PARAM_INT);
+      $q2A->execute();
+      if ($q2A->rowCount() < 1) {
+        $lastactivities = "    <br>\n";
+        $lastactivities .= "    <p>No recent activities found</p>\n";
+        $lastactivities .= "    <br>\n";
+      } else {
+        $lastactivities = "    <br>\n";
+        $lastactivities .= "    <p>Recent activities</p>\n";
+        $lastactivities .= "    <table class=\"table table-condensed table-hover\" id=\"showme\" width=\"90%\">\n";
+        $lastactivities .= "      <thead>\n";
+        $lastactivities .= "        <tr class=\"bg-info\">\n";
+        $lastactivities .= "          <th width=\"20%\"><small><i class=\"pe-clock-o pe-fw\"></i> Time</small></th>\n";
+        $lastactivities .= "          <th width=\"60%\"><small><i class=\"pe-map-o pe-fw\"></i> Activity</small></th>\n";
+        $lastactivities .= "          <th width=\"20%\"><small><i class=\"pe-cubes pe-fw\"></i> Project</small></th>\n";
+        // $lastactivities .= "          <th width=\"13%\"><small><i class=\"pe-users pe-fw\"></i> User</small></th>\n";
+        $lastactivities .= "        </tr>\n";
+        $lastactivities .= "      </thead>\n";
+        $lastactivities .= "      <tbody>\n";
+        while ($sss = $q2A->fetchObject()) {
+          $t = ago($sss->recorded);
+          if ($sss->surveyid) { $s = "$sss->title <small>($sss->surveyid)</small>"; } else { $s = "-"; }
+          // if ($sss->uemail) { $u = "$sss->ufullname <small>($sss->userid)</small>"; } else { $u = "-"; }
+          $sss->data = iconize($sss->data);
+          if ($sss->critical == 4) { $color = "#F0F8FF"; } else if ($sss->critical == 5) { $color = "#BDEDFF"; } else { $color = ""; }
+          if ($color) { $td = "<td style=\"background:$color\"><small>"; } else { $td = "<td><small>"; }
+          $lastactivities .= "        <tr>\n";
+          $lastactivities .= "          $td$t</small></td>\n";
+          $lastactivities .= "          $td$sss->data</small></td>\n";
+          $lastactivities .= "          $td$s</small></td>\n";
+          // $lastactivities .= "          $td$u</small></td>\n";
+          $lastactivities .= "        </tr>\n";
+        }
+        $lastactivities .= "      </tbody>\n";
+        $lastactivities .= "    </table>\n";
+        $lastactivities .= "    <div align=\"right\"><a class=\"btn btn-warning btn-sm\" href=\"$me&c=$companyid&d=$userid\"><i class=\"pe-edit pe-lg pe-fw\"></i> Edit this user</a></div>\n";
+        $lastactivities .= "    <br>\n";
+      }
+      $show = "<a id=\"rowshow$i\" href=\"\" onclick=\"return showRow(event, $i)\" style=\"\"> <i class=\"pe-chevron-down\"></i></a><a id=\"rowhide$i\" href=\"\" onclick=\"return hideRow(event, $i)\" style=\"display:none\"> <i class=\"pe-chevron-up\"></i></a>";
+      $mm1 .= "            <tr id=\"firstrow$i\" >\n";
+      $mm1 .= "              <td>$rr->id <a href=\"$me&c=$companyid&d=$rr->id\"><i class=\"pe-edit pull-right grey\"></i></a></td><td>$rr->fullname <span class=\"small\">(<a href=\"mailto:$rr->email\">$rr->email</a>)</span></td><td>$role</td><td>$created</td><td>$lastlogin2</td><td>$status <span class=\"pull-right\">$show</span></td>\n";
+      $mm1 .= "            </tr>\n";
+      $mm1 .= "            <tr id=\"row$i\" style=\"display:none\">\n";
+      $mm1 .= "              <td colspan=\"6\" class=\"\">$lastactivities</td>\n";
+      $mm1 .= "            </tr>\n";
+      $i++;
+    }
+    $mm1 .= "          </tbody>\n";
+    $mm1 .= "        </table>\n";
   }
-  $userListEachNew[] = $userListEach;
-  $mm1 .= "              </tbody>\n";
-  $mm1 .= "            </table>\n";
-  $mm1 .= "          </div>\n";
-  $mm1 .= "          <div id=\"3-$companyid\" class=\"tab-pane fade\" style=\"padding:20px;\">\n";
+  $mm1 .= "      </div>\n";
+  $mm1 .= "      <div id=\"3-$companyid\" class=\"tab-pane fade\" style=\"padding:20px;\">\n";
   // Get project list
-  $q3 = $db->prepare("SELECT P.*, U.fullname, U.email FROM j_projects P, j_users U WHERE P.userid = U.id AND P.companyid = :companyid ORDER BY P.status, P.updated DESC");
+  $q3 = $db->prepare("SELECT P.*, P.id AS pid, U.id AS uid, U.fullname, U.email FROM j_projects P, j_users U WHERE P.userid = U.id AND P.companyid = :companyid ORDER BY P.status, P.updated DESC");
   $q3->bindValue(':companyid', $companyid, PDO::PARAM_INT);
   $q3->execute();
-  $mm1 .= "            <h4>A total of $nProjects projects</h4>\n";
-  $mm1 .= "            <table class=\"table table-condensed table-hover\">\n";
-  $mm1 .= "              <thead>\n";
-  $mm1 .= "                <tr class=\"bg-info\">\n";
-  $mm1 .= "                  <th width=\"10%\">ID</th><th width=\"15%\">Project</th><th width=\"30%\">Owner</th><th width=\"15%\">Created</th><th width=\"15%\"><i class=\"pe-sort-amount-desc pe-fw orange\"></i> Last updated</th><th width=\"15%\"><i class=\"pe-sort-amount-asc pe-fw orange\"></i> Status</th>\n";
-  $mm1 .= "                </tr>\n";
-  $mm1 .= "              </thead>\n";
-  $mm1 .= "              <tbody>\n";
-  while ($rrr = $q3->fetchObject()) {
-    $status = status_project($rrr->status, true, true);
-    $created = ago($rrr->created);
-    $updated = ago($rrr->updated);
-    if ($rrr->status == 4) {
-      $mm1 .= "                <tr class=\"lightgrey\">\n";
-      $mm1 .= "                  <td>$rrr->id</td><td>$rrr->title</td><td>$rrr->fullname <span class=\"small\">(<a href=\"mailto:$rrr->email\">$rrr->email</a>)</span></td><td>$created</td><td>$updated</td><td>$status</td>\n";
-      $mm1 .= "                </tr>\n";
-    } else if ($rrr->status == 0) {
-      $mm1 .= "                <tr class=\"lightgrey\">\n";
-      $mm1 .= "                  <td>$rrr->id</td><td>$rrr->title</td><td>$rrr->fullname <span class=\"small\">(<a href=\"mailto:$rrr->email\">$rrr->email</a>)</span></td><td>$created</td><td>$updated</td><td>$status</td>\n";
-      $mm1 .= "                </tr>\n";
-    } else {
-      $mm1 .= "                <tr>\n";
-      $mm1 .= "                  <td>$rrr->id</td><td>$rrr->title</td><td>$rrr->fullname <span class=\"small\">(<a href=\"mailto:$rrr->email\">$rrr->email</a>)</span></td><td>$created</td><td>$updated</td><td>$status</td>\n";
-      $mm1 .= "                </tr>\n";
+  $sep1 = ""; $sep2 = ""; $sep3 = "";
+  $mm1 .= "      <div class=\"pull-right\"><a class=\"btn btn-success btn-sm\" data-toggle=\"modal\" data-target=\"#addingproject\"><i class=\"pe-plus-circle pe-lg pe-fw\"></i> Add a new project</a></div>\n";
+  if ($q3->rowCount() < 1) {
+    $mm1 .= "        <h4>No projects found</h4>\n";
+    $mm1 .= "        <br>\n";
+  } else {
+    $mm1 .= "        <h4>A total of $nProjects projects</h4>\n";
+    $projectlist = ""; $i = $i+1;
+    while ($rrr = $q3->fetchObject()) {
+      $pid = $rrr->pid;
+      $ptitle = $rrr->title;
+      $uid = $rrr->uid;
+      $status = status_project($rrr->status, true, true);
+      $status2 = status_project($rrr->status, false, false);
+      $created = ago($rrr->created);
+      $updated = ago($rrr->updated);
+      // projectListing
+      if ($pid == $p) { $projectlist .= "        <option value=\"$pid\" selected>$ptitle ($status2)</option>\n"; }
+      else { $projectlist .= "        <option value=\"$pid\">$ptitle ($status2)</option>\n"; }
+      $allListing['projects'][] = array('title' => $ptitle, 'surveyid' => $pid, 'owner' => $rrr->fullname, 'userid' => $uid, 'companyid' => $companyid);
+      // Get project activities
+      $q3A = $db->prepare("SELECT L.*, P.title, U.email AS uemail, U.fullname AS ufullname FROM j_users_logs L LEFT JOIN j_projects P ON P.id = L.surveyid LEFT JOIN j_users U ON U.id = L.userid WHERE L.surveyid = :surveyid AND L.critical > 0 ORDER BY L.id DESC LIMIT 30");
+      $q3A->bindValue(':surveyid', $rrr->id, PDO::PARAM_INT);
+      $q3A->execute();
+      if ($q3A->rowCount() < 1) {
+        $lastactivities = "    <br>\n";
+        $lastactivities .= "    <p>No recent activities found</p>\n";
+        $lastactivities .= "    <br>\n";
+      } else {
+        $lastactivities = "    <br>\n";
+        $lastactivities .= "    <p>Recent activities</p>\n";
+        $lastactivities .= "    <table class=\"table table-condensed table-hover\" id=\"showme\" width=\"90%\">\n";
+        $lastactivities .= "      <thead>\n";
+        $lastactivities .= "        <tr class=\"bg-info\">\n";
+        $lastactivities .= "          <th width=\"20%\"><small><i class=\"pe-clock-o pe-fw\"></i> Time</small></th>\n";
+        $lastactivities .= "          <th width=\"60%\"><small><i class=\"pe-map-o pe-fw\"></i> Activity</small></th>\n";
+        // $lastactivities .= "          <th width=\"20%\"><small><i class=\"pe-cubes pe-fw\"></i> Project</small></th>\n";
+        $lastactivities .= "          <th width=\"13%\"><small><i class=\"pe-users pe-fw\"></i> User</small></th>\n";
+        $lastactivities .= "        </tr>\n";
+        $lastactivities .= "      </thead>\n";
+        $lastactivities .= "      <tbody>\n";
+        while ($sss = $q3A->fetchObject()) {
+          $t = ago($sss->recorded);
+          // if ($sss->surveyid) { $s = "$sss->title <small>($sss->surveyid)</small>"; } else { $s = "-"; }
+          if ($sss->uemail) { $u = "$sss->ufullname <small>($sss->userid)</small>"; } else { $u = "-"; }
+          $sss->data = iconize($sss->data);
+          if ($sss->critical == 4) { $color = "#F0F8FF"; } else if ($sss->critical == 5) { $color = "#BDEDFF"; } else { $color = ""; }
+          if ($color) { $td = "<td style=\"background:$color\"><small>"; } else { $td = "<td><small>"; }
+          $lastactivities .= "        <tr>\n";
+          $lastactivities .= "          $td$t</small></td>\n";
+          $lastactivities .= "          $td$sss->data</small></td>\n";
+          // $lastactivities .= "          $td$s</small></td>\n";
+          $lastactivities .= "          $td$u</small></td>\n";
+          $lastactivities .= "        </tr>\n";
+        }
+        $lastactivities .= "      </tbody>\n";
+        $lastactivities .= "    </table>\n";
+        $lastactivities .= "    <div align=\"right\"><a class=\"btn btn-warning btn-sm\" href=\"$me&p=$rrr->id\"><i class=\"pe-edit pe-lg pe-fw\"></i> Edit this project</a></div>\n";
+        $lastactivities .= "    <br>\n";
+      }
+      $show = "<a id=\"rowshow$i\" href=\"\" onclick=\"return showRow(event, $i)\" style=\"\"> <i class=\"pe-chevron-down\"></i></a><a id=\"rowhide$i\" href=\"\" onclick=\"return hideRow(event, $i)\" style=\"display:none\"> <i class=\"pe-chevron-up\"></i></a>";
+      if ($rrr->status == 4) {
+        $sep1 .= "            <tr id=\"firstrow$i\" class=\"lightgrey\">\n";
+        $sep1 .= "              <td>$rrr->id <a href=\"$me&p=$rrr->id\"><i class=\"pe-edit pull-right grey\"></i></a></td><td>$ptitle</td><td>$rrr->fullname <span class=\"small\">(<a href=\"mailto:$rrr->email\">$rrr->email</a>)</span></td><td>$created</td><td>$updated</td><td>$status <span class=\"pull-right\">$show</span></td>\n";
+        $sep1 .= "            </tr>\n";
+        $sep1 .= "            <tr id=\"row$i\" style=\"display:none\">\n";
+        $sep1 .= "              <td colspan=\"6\" class=\"\">$lastactivities</td>\n";
+        $sep1 .= "            </tr>\n";
+        $withinactives = 1;
+      } else if ($rrr->status == 0) {
+        $sep2 .= "            <tr id=\"firstrow$i\" class=\"lightgrey\">\n";
+        $sep2 .= "              <td>$rrr->id <a href=\"$me&p=$rrr->id\"><i class=\"pe-edit pull-right grey\"></i></a></td><td>$ptitle</td><td>$rrr->fullname <span class=\"small\">(<a href=\"mailto:$rrr->email\">$rrr->email</a>)</span></td><td>$created</td><td>$updated</td><td>$status <span class=\"pull-right\">$show</span></td>\n";
+        $sep2 .= "            </tr>\n";
+        $sep2 .= "            <tr id=\"row$i\" style=\"display:none\">\n";
+        $sep2 .= "              <td colspan=\"6\" class=\"\">$lastactivities</td>\n";
+        $sep2 .= "            </tr>\n";
+        $withinactives = 1;
+      } else {
+        $sep3 .= "            <tr id=\"firstrow$i\">\n";
+        $sep3 .= "              <td>$rrr->id <a href=\"$me&p=$rrr->id\"><i class=\"pe-edit pull-right grey\"></i></a></td><td>$ptitle</td><td>$rrr->fullname <span class=\"small\">(<a href=\"mailto:$rrr->email\">$rrr->email</a>)</span></td><td>$created</td><td>$updated</td><td>$status <span class=\"pull-right\">$show</span></td>\n";
+        $sep3 .= "            </tr>\n";
+        $sep3 .= "            <tr id=\"row$i\" style=\"display:none\">\n";
+        $sep3 .= "              <td colspan=\"6\" class=\"\">$lastactivities</td>\n";
+        $sep3 .= "            </tr>\n";
+      }
+      $i++;
+    }
+    if ($nProjectActives == 0) { $mm1 .= "        <p>No active projects</p>\n"; }
+    else {
+      $mm1 .= "        <p>Listing <i class=\"pe-bell-o pe-fw\"></i> $nProjectActives active projects</p>\n";
+      $mm1 .= "        <table class=\"table table-condensed table-hover\">\n";
+      $mm1 .= "          <thead>\n";
+      $mm1 .= "            <tr class=\"bg-primary\">\n";
+      $mm1 .= "              <th width=\"10%\">ID (edit)</th><th width=\"16%\">Project</th><th width=\"30%\">Owner</th><th width=\"13%\">Created</th><th width=\"13%\"><i class=\"pe-sort-amount-desc pe-fw orange\"></i> Last updated</th><th width=\"18%\"><i class=\"pe-sort-amount-asc pe-fw orange\"></i> Status</th>\n";
+      $mm1 .= "            </tr>\n";
+      $mm1 .= "          </thead>\n";
+      $mm1 .= "          <tbody>\n";
+      $mm1 .= $sep3;
+      $mm1 .= "          </tbody>\n";
+      $mm1 .= "        </table>\n";
+    }
+    if ($nProjectInactives == 0) { $mm1 .= "        <p>No inactive projects</p>\n"; }
+    else {
+      $mm1 .= "        <p>Listing <i class=\"pe-bell-slash-o pe-fw\"></i> $nProjectInactives inactive projects</p>\n";
+      $mm1 .= "        <table class=\"table table-condensed table-hover\">\n";
+      $mm1 .= "          <thead>\n";
+      $mm1 .= "            <tr class=\"bg-info\">\n";
+      $mm1 .= "              <th width=\"10%\">ID (edit)</th><th width=\"16%\">Project</th><th width=\"30%\">Owner</th><th width=\"13%\">Created</th><th width=\"13%\"><i class=\"pe-sort-amount-desc pe-fw orange\"></i> Last updated</th><th width=\"18%\"><i class=\"pe-sort-amount-asc pe-fw orange\"></i> Status</th>\n";
+      $mm1 .= "            </tr>\n";
+      $mm1 .= "          </thead>\n";
+      $mm1 .= "          <tbody>\n";
+      $mm1 .= $sep1.$sep2;
+      $mm1 .= "          </tbody>\n";
+      $mm1 .= "        </table>\n";
     }
   }
-  $mm1 .= "              </tbody>\n";
-  $mm1 .= "            </table>\n";
-  $mm1 .= "          </div>\n";
-  $mm1 .= "          <div id=\"4-$companyid\" class=\"tab-pane fade\" style=\"padding:20px;\">\n";
-  // Get project list
+  $mm1 .= "      </div>\n";
+  $mm1 .= "      <div id=\"4-$companyid\" class=\"tab-pane fade\" style=\"padding:20px;\">\n";
+  // Get message list
   $q4 = $db->prepare("SELECT B.*, U.fullname, U.email FROM j_board B, j_users U WHERE B.userid = U.id AND B.companyid = :companyid ORDER BY B.created DESC");
   $q4->bindValue(':companyid', $companyid, PDO::PARAM_INT);
   $q4->execute();
-  $mm1 .= "            <h4>A total of $nBoards messages</h4>\n";
-  $mm1 .= "            <table class=\"table table-condensed table-hover\">\n";
-  $mm1 .= "              <thead>\n";
-  $mm1 .= "                <tr class=\"bg-info\">\n";
-  $mm1 .= "                  <th width=\"10%\">ID</th><th width=\"45%\">Topic</th><th width=\"30%\">Post by</th><th width=\"15%\"><i class=\"pe-sort-amount-desc pe-fw orange\"></i> Date</th>\n";
-  $mm1 .= "                </tr>\n";
-  $mm1 .= "              </thead>\n";
-  $mm1 .= "              <tbody>\n";
-  while ($rrrr = $q4->fetchObject()) {
-    $created = ago($rrrr->created);
-    $mm1 .= "                <tr>\n";
-    $mm1 .= "                  <td>$rrrr->id</td><td>$rrrr->head</td><td>$rrrr->fullname <span class=\"small\">(<a href=\"mailto:$rrrr->email\">$rrrr->email</a>)</span></td><td>$created</td>\n";
-    $mm1 .= "                </tr>\n";
+  $mm1 .= "      <div class=\"pull-right\"><a class=\"btn btn-success btn-sm\" data-toggle=\"modal\" data-target=\"#addingmessage\"><i class=\"pe-plus-circle pe-lg pe-fw\"></i> Post a new message</a></div>\n";
+  if ($q4->rowCount() < 1) {
+    $mm1 .= "        <h4>No messages found</h4>\n";
+    $mm1 .= "        <br>\n";
+  } else {
+    $mm1 .= "        <h4>A total of $nBoards messages</h4>\n";
+    $mm1 .= "        <table class=\"table table-condensed table-hover\">\n";
+    $mm1 .= "          <thead>\n";
+    $mm1 .= "            <tr class=\"bg-primary\">\n";
+    $mm1 .= "              <th width=\"10%\">ID (delete)</th><th width=\"45%\">Topic</th><th width=\"30%\">Posted by</th><th width=\"15%\"><i class=\"pe-sort-amount-desc pe-fw orange\"></i> Date</th>\n";
+    $mm1 .= "            </tr>\n";
+    $mm1 .= "          </thead>\n";
+    $mm1 .= "          <tbody>\n";
+    while ($rrrr = $q4->fetchObject()) {
+      $created = ago($rrrr->created);
+      $mm1 .= "            <tr>\n";
+      if ($rrrr->status == 0) { $mm1 .= "              <td><del>$rrrr->id</del></td><td><del>$rrrr->head</del></td><td><del>$rrrr->fullname <span class=\"small\">(<a href=\"mailto:$rrrr->email\">$rrrr->email</a>)</span></del></td><td><del>$created</del></td>\n"; }
+      else { $mm1 .= "              <td>$rrrr->id <a href=\"$me&post=$rrrr->id&delete=✓\"><i class=\"pe-trash pull-right red\"></i></a></td><td>$rrrr->head</td><td>$rrrr->fullname <span class=\"small\">(<a href=\"mailto:$rrrr->email\">$rrrr->email</a>)</span></td><td>$created</td>\n"; }
+      $mm1 .= "            </tr>\n";
+    }
+    $mm1 .= "          </tbody>\n";
+    $mm1 .= "        </table>\n";
   }
-  $mm1 .= "              </tbody>\n";
-  $mm1 .= "            </table>\n";
-  $mm1 .= "          </div>\n";
-  $mm1 .= "        </div>\n";
-  $mm1 .= "      </td>\n";
-  $mm1 .= "    </tr>\n";
-  $i++;
+  $mm1 .= "      </div>\n";
+  $mm1 .= "    </div>\n";
+  $mm1 .= "  </div>\n";
+  $allListingNew[] = $allListing;
 }
-$userListing = json_encode($userListEachNew, JSON_PRETTY_PRINT);
-$mm1 .= "  </tbody>\n";
-$mm1 .= "</table>\n";
-$mm1 .= "<style>\n";
-$mm1 .= "  .list-group-item-again { padding: 5px 10px; }\n";
-$mm1 .= "</style>\n";
+$allListing = json_encode($allListingNew, JSON_PRETTY_PRINT);
+// print_r($allListing);
+$mm1 .= "</div>\n";
 
 $mm1 .= "<div class=\"modal fade\" id=\"addingcompany\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"addingcompany\">\n";
 $mm1 .= "  <div class=\"modal-dialog\" role=\"document\">\n";
@@ -316,46 +406,90 @@ $mm1 .= "      </form>\n";
 $mm1 .= "    </div>\n";
 $mm1 .= "  </div>\n";
 $mm1 .= "</div>\n";
+$mm1 .= "<div class=\"modal fade\" id=\"addinguser\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"addinguser\">\n";
+$mm1 .= "  <div class=\"modal-dialog\" role=\"document\">\n";
+$mm1 .= "    <div class=\"modal-content\">\n";
+$mm1 .= "      <form class=\"\" action=\"$me\" method=\"post\">\n";
+$mm1 .= "        <div class=\"modal-header\">\n";
+$mm1 .= "          <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n";
+$mm1 .= "          <h4 class=\"modal-title\">Adding a new user</h4>\n";
+$mm1 .= "        </div>\n";
+$mm1 .= "        <div class=\"modal-body\">\n";
+$mm1 .= "          <p>Below are the minimum requirements for adding a new company to the database. This function will add a new company with one user (Manager level) and will post a welcome message to the board.</p>\n";
+$mm1 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-building pe-fw\"></i> Company:</span><input type=\"text\" class=\"form-control\" placeholder=\"Only one word which can be a short name or an initial\" name=\"company\"></div><br>\n";
+$mm1 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-user pe-fw\"></i> User name:</span><input type=\"text\" class=\"form-control\" placeholder=\"Name of the main contact person for this company\" name=\"user\"></div><br>\n";
+$mm1 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-envelope pe-fw\"></i> User email:</span><input type=\"email\" class=\"form-control\" placeholder=\"Email of the main contact person for this company\" name=\"email\"></div><br>\n";
+$mm1 .= "          <p class=\"pull-right small red\">* All of these fields are required.</p><br>\n";
+$mm1 .= "        </div>\n";
+$mm1 .= "        <div class=\"modal-footer\">\n";
+$mm1 .= "          <button type=\"submit\" class=\"btn btn-warning\" name=\"addinguser\" value=\"1\">Add <i class=\"pe-check-circle-o\"></i></button>\n";
+$mm1 .= "          <button type=\"reset\" class=\"btn btn-default\" data-dismiss=\"modal\">Cancel <i class=\"pe-times-circle-o\"></i></button>\n";
+$mm1 .= "        </div>\n";
+$mm1 .= "      </form>\n";
+$mm1 .= "    </div>\n";
+$mm1 .= "  </div>\n";
+$mm1 .= "</div>\n";
+$mm1 .= "<div class=\"modal fade\" id=\"addingproject\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"addingproject\">\n";
+$mm1 .= "  <div class=\"modal-dialog\" role=\"document\">\n";
+$mm1 .= "    <div class=\"modal-content\">\n";
+$mm1 .= "      <form class=\"\" action=\"$me\" method=\"post\">\n";
+$mm1 .= "        <div class=\"modal-header\">\n";
+$mm1 .= "          <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n";
+$mm1 .= "          <h4 class=\"modal-title\">Adding a new project</h4>\n";
+$mm1 .= "        </div>\n";
+$mm1 .= "        <div class=\"modal-body\">\n";
+$mm1 .= "          <p>Below are the minimum requirements for adding a new company to the database. This function will add a new company with one user (Manager level) and will post a welcome message to the board.</p>\n";
+$mm1 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-building pe-fw\"></i> Company:</span><input type=\"text\" class=\"form-control\" placeholder=\"Only one word which can be a short name or an initial\" name=\"company\"></div><br>\n";
+$mm1 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-user pe-fw\"></i> User name:</span><input type=\"text\" class=\"form-control\" placeholder=\"Name of the main contact person for this company\" name=\"user\"></div><br>\n";
+$mm1 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-envelope pe-fw\"></i> User email:</span><input type=\"email\" class=\"form-control\" placeholder=\"Email of the main contact person for this company\" name=\"email\"></div><br>\n";
+$mm1 .= "          <p class=\"pull-right small red\">* All of these fields are required.</p><br>\n";
+$mm1 .= "        </div>\n";
+$mm1 .= "        <div class=\"modal-footer\">\n";
+$mm1 .= "          <button type=\"submit\" class=\"btn btn-warning\" name=\"addingproject\" value=\"1\">Add <i class=\"pe-check-circle-o\"></i></button>\n";
+$mm1 .= "          <button type=\"reset\" class=\"btn btn-default\" data-dismiss=\"modal\">Cancel <i class=\"pe-times-circle-o\"></i></button>\n";
+$mm1 .= "        </div>\n";
+$mm1 .= "      </form>\n";
+$mm1 .= "    </div>\n";
+$mm1 .= "  </div>\n";
+$mm1 .= "</div>\n";
+$mm1 .= "<div class=\"modal fade\" id=\"addingmessage\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"addingmessage\">\n";
+$mm1 .= "  <div class=\"modal-dialog\" role=\"document\">\n";
+$mm1 .= "    <div class=\"modal-content\">\n";
+$mm1 .= "      <form class=\"\" action=\"$me\" method=\"post\">\n";
+$mm1 .= "        <div class=\"modal-header\">\n";
+$mm1 .= "          <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n";
+$mm1 .= "          <h4 class=\"modal-title\">Adding a new message</h4>\n";
+$mm1 .= "        </div>\n";
+$mm1 .= "        <div class=\"modal-body\">\n";
+$mm1 .= "          <p>Below are the minimum requirements for adding a new company to the database. This function will add a new company with one user (Manager level) and will post a welcome message to the board.</p>\n";
+$mm1 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-building pe-fw\"></i> Company:</span><input type=\"text\" class=\"form-control\" placeholder=\"Only one word which can be a short name or an initial\" name=\"company\"></div><br>\n";
+$mm1 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-user pe-fw\"></i> User name:</span><input type=\"text\" class=\"form-control\" placeholder=\"Name of the main contact person for this company\" name=\"user\"></div><br>\n";
+$mm1 .= "          <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"pe-envelope pe-fw\"></i> User email:</span><input type=\"email\" class=\"form-control\" placeholder=\"Email of the main contact person for this company\" name=\"email\"></div><br>\n";
+$mm1 .= "          <p class=\"pull-right small red\">* All of these fields are required.</p><br>\n";
+$mm1 .= "        </div>\n";
+$mm1 .= "        <div class=\"modal-footer\">\n";
+$mm1 .= "          <button type=\"submit\" class=\"btn btn-warning\" name=\"addingmessage\" value=\"1\">Add <i class=\"pe-check-circle-o\"></i></button>\n";
+$mm1 .= "          <button type=\"reset\" class=\"btn btn-default\" data-dismiss=\"modal\">Cancel <i class=\"pe-times-circle-o\"></i></button>\n";
+$mm1 .= "        </div>\n";
+$mm1 .= "      </form>\n";
+$mm1 .= "    </div>\n";
+$mm1 .= "  </div>\n";
+$mm1 .= "</div>\n";
 
 $mm1 .= "<script type=\"text/javascript\">\n";
 $mm1 .= "  function showRow(e, rowIndex) { showhideRow(rowIndex, true); e.preventDefault(); return false; }\n";
 $mm1 .= "  function hideRow(e, rowIndex) { showhideRow(rowIndex, false); e.preventDefault(); return false; }\n";
 $mm1 .= "  function showhideRow(rowIndex, show) {\n";
-$mm1 .= "    document.getElementById(\"firstrow\" + rowIndex).style.backgroundColor = show ? \"#eee\" : \"\";\n";
+// $mm1 .= "    document.getElementById(\"firstrow\" + rowIndex).style.backgroundColor = show ? \"#337ab7\" : \"\";\n";
+// $mm1 .= "    document.getElementById(\"firstrow\" + rowIndex).style.color = show ? \"#fff\" : \"\";\n";
+$mm1 .= "    document.getElementById(\"firstrow\" + rowIndex).style.border = show ? \"2px solid black\" : \"\";\n";
 $mm1 .= "    document.getElementById(\"row\" + rowIndex).style.display = show ? \"\" : \"none\";\n";
 $mm1 .= "    document.getElementById(\"rowhide\" + rowIndex).style.display = show ? \"\" : \"none\";\n";
 $mm1 .= "    document.getElementById(\"rowshow\" + rowIndex).style.display =  show ? \"none\" : \"\";\n";
 $mm1 .= "  }\n";
 $mm1 .= "</script>\n";
 
-
-if ($_POST['addingcompany'] == 1) {
-  if (($_POST['company']) || ($_POST['user']) || ($_POST['email'])) {
-    // Add a new company
-    $q5A = $db->prepare("INSERT INTO j_companies (company) VALUES (:company)");
-    $q5A->bindValue(':company', $_POST['company'], PDO::PARAM_STR);
-    $q5A->execute();
-    $id = $db->lastInsertId();
-    // Add a new user in Manager level
-    $q5B = $db->prepare("INSERT INTO j_users (fullname, email, password, level) VALUES (:fullname, :email, :password, :level)");
-    $q5B->bindValue(':fullname', $_POST['user'], PDO::PARAM_STR);
-    $q5B->bindValue(':email', $_POST['email'], PDO::PARAM_STR);
-    $q5B->bindValue(':password', 'xxx', PDO::PARAM_STR);
-    $q5B->bindValue(':level', '6', PDO::PARAM_INT);
-    $q5B->execute();
-    // Post a new welcome message on the board
-    $q5C = $db->prepare("INSERT INTO j_board (head, body, userid, companyid) VALUES (:head, :body, :userid, :companyid)");
-    $q5C->bindValue(':head', 'Welcome to your message board', PDO::PARAM_STR);
-    $q5C->bindValue(':body', $_POST['body'], PDO::PARAM_STR);
-    $q5C->bindValue(':userid', '000002', PDO::PARAM_INT);
-    $q5C->bindValue(':companyid', $id, PDO::PARAM_INT);
-    $q5C->execute();
-    // Add some demo projects
-  }
-  $redirect = $me."&m=0";
-  header("location: $redirect");
-  exit;
-}
+// -- functions
 
 if ($c) {
   $q6A = $db->prepare("SELECT * FROM j_companies WHERE id = :companyid");
@@ -378,7 +512,6 @@ if ($c) {
     $cupdated = ago($row->updated);
   }
 }
-
 if ($d) {
   $q6B = $db->prepare("SELECT U.*, C.fullname AS cfullname FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.id = :userid");
   $q6B->bindValue(':userid', $d, PDO::PARAM_INT);
@@ -403,7 +536,61 @@ if ($d) {
     $uupdated = ago($row->updated);
   }
 }
-
+if ($p) {
+  $q6C = $db->prepare("SELECT P.id AS pid, P.title, P.description AS pdescription, P.userid AS puserid, P.companyid AS pcompanyid, P.thankyou, P.status AS pstatus, P.created AS pcreated, P.updated AS pupdated, P.private, P.points, P.points_bonus, U.fullname, U.email FROM j_projects P, j_users U WHERE P.userid = U.id AND P.id = :pid");
+  $q6C->bindValue(':pid', $p, PDO::PARAM_INT);
+  $q6C->execute();
+  while ($row = $q6C->fetchObject()) {
+    //$psurveyid = $row->pid;
+    $ptitle = $row->title;
+    $pdescription = $row->pdescription;
+    $puserid = $row->puserid;
+    $pcompanyid = $row->pcompanyid;
+    $pthankyou = $row->thankyou;
+    $powner = $row->fullname;
+    $pemail = $row->email;
+    $pprivate = $row->private;
+    $pstatus = $row->pstatus;
+    $ppoints = $row->points;
+    $ppoints_bonus = $row->points_bonus;
+    $pcreated = ago($row->pcreated);
+    $pupdated = ago($row->pupdated);
+  }
+}
+if ($_POST['addingcompany'] == 1) {
+  if (($_POST['company']) || ($_POST['user']) || ($_POST['email'])) {
+    // Add a new company
+    $q5A = $db->prepare("INSERT INTO j_companies (company) VALUES (:company)");
+    $q5A->bindValue(':company', $_POST['company'], PDO::PARAM_STR);
+    $q5A->execute();
+    $id = $db->lastInsertId();
+    // Add a new user in Manager level
+    $q5B = $db->prepare("INSERT INTO j_users (fullname, email, password, level) VALUES (:fullname, :email, :password, :level)");
+    $q5B->bindValue(':fullname', $_POST['user'], PDO::PARAM_STR);
+    $q5B->bindValue(':email', $_POST['email'], PDO::PARAM_STR);
+    $q5B->bindValue(':password', 'xxx', PDO::PARAM_STR);
+    $q5B->bindValue(':level', '6', PDO::PARAM_INT);
+    $q5B->execute();
+    // Post a new welcome message on the board
+    $q5C = $db->prepare("INSERT INTO j_board (head, body, userid, companyid) VALUES (:head, :body, :userid, :companyid)");
+    $q5C->bindValue(':head', 'Welcome to your message board', PDO::PARAM_STR);
+    $q5C->bindValue(':body', $_POST['body'], PDO::PARAM_STR);
+    $q5C->bindValue(':userid', '000002', PDO::PARAM_INT);
+    $q5C->bindValue(':companyid', $id, PDO::PARAM_INT);
+    $q5C->execute();
+    // Add some demo projects
+    // copy results
+    // 1. copy j_results to j_temp with structure and all data
+    // 2. remove all excetp surveyid = 8 --> DELETE FROM `j_temp` WHERE `surveyid` <> 8;
+    // 3. update to a new surveyid --> UPDATE `j_temp` SET surveyid = 19;
+    // 4. insert back to j_results --> INSERT INTO `j_results` (`rd`, `email`, `ip`, `surveyid`, `submitted`, `data`, `status`) SELECT `rd`, `email`, `ip`, `surveyid`, `submitted`, `data`, `status` FROM `j_temp`
+    // replace results
+    // UPDATE `j_results` SET `data` = REPLACE(`data`, '8_', '19_') WHERE `surveyid` = 19
+  }
+  $redirect = $me."&m=0";
+  header("location: $redirect");
+  exit;
+}
 if (isset($_POST['uploadsubmit'])) {
   $uploadfile = $_FILES["uploadfile"]["tmp_name"];
   $folder = "assets/img/tmp/";
@@ -484,7 +671,7 @@ if ($_GET['removelogo'] == "✓") {
 }
 if ($_POST['saveuserinfo'] == 1) {
   if ((empty($_POST['ufullname'])) || (empty($_POST['uemail']))) {
-    $redirect = $me."&m=6&d=".$d;
+    $redirect = $me."&m=3&c=".$_POST['c']."&d=".$d;
     header("location: $redirect");
     exit;
   } else {
@@ -494,11 +681,11 @@ if ($_POST['saveuserinfo'] == 1) {
     if ($_POST['umobile'] != $umobile) { $add .= "mobile = :mobile, "; $move = 1; }
     if ($_POST['ulevel'] != $ulevel) { $add .= "level = :level, "; $move = 1; }
     if ($_POST['ustatus'] != $ustatus) { $add .= "status = :status, "; $move = 1; }
-    if ($_POST['ucompanyid'] != $ucompanyid) { $add .= "companyid = :companyid, "; $move = 1; }
+    if ($_POST['ucompanyid'] != $ucompanyid) { $add .= "companyid = :companyid, "; $move = 1; $changecompany = 1; }
     if ($_POST['uavatar'] != $uavatar) { $add .= "avatar = :avatar, "; $move = 1; }
     $add = substr_replace($add, '', -2);
     if ($move == 0) {
-      $redirect = $me."&m=7&d=".$d;
+      $redirect = $me."&m=4&c=".$_POST['c']."&d=".$d;
       header("location: $redirect");
       exit;
     } else {
@@ -512,59 +699,161 @@ if ($_POST['saveuserinfo'] == 1) {
       if ($_POST['uavatar'] != $uavatar) { $q10->bindValue(':avatar', $_POST['uavatar'], PDO::PARAM_INT); }
       $q10->bindValue(':userid', $_POST['userid'], PDO::PARAM_INT);
       $q10->execute();
-      $redirect = $me."&m=8&d=".$d;
+      if ($changecompany == 1) { $redirect = $me."&m=7&c=".$_POST['ucompanyid']."&d=".$d; }
+      else { $redirect = $me."&m=6&c=".$_POST['c']."&d=".$d; }
+      header("location: $redirect");
+      exit;
+    }
+  }
+}
+if ($_POST['saveprojectinfo'] == 1) {
+  if ((empty($_POST['surveyid'])) || (empty($_POST['ptitle']))) {
+    $redirect = $me."&m=3&c=".$_POST['c']."&d=".$_POST['d']."&p=".$p;
+    header("location: $redirect");
+    exit;
+  } else {
+    $add = ""; $move = 0;
+    if ($_POST['ptitle'] != $ptitle) { $add .= "title = :title, "; $move = 1; }
+    if ($_POST['pprivate'] != $pprivate) { $add .= "private = :private, "; $move = 1; }
+    if ($_POST['pstatus'] != $pstatus) { $add .= "status = :status, "; $move = 1; }
+    if ($_POST['pdescription'] != $pdescription) { $add .= "description = :description, "; $move = 1; }
+    if ($_POST['pthankyou'] != $pthankyou) { $add .= "thankyou = :thankyou, "; $move = 1; }
+    if ($_POST['ppoints'] != $ppoints) { $add .= "points = :points, "; $move = 1; }
+    if ($_POST['ppoints_bonus'] != $ppoints_bonus) { $add .= "points_bonus = :points_bonus, "; $move = 1; }
+    if ($_POST['pcompanyid'] != $pcompanyid) { $add .= "companyid = :companyid, "; $move = 1; }
+    if ($_POST['puserid'] != $puserid) { $add .= "userid = :userid, "; $move = 1; }
+    $add = substr_replace($add, '', -2);
+    if ($move == 0) {
+      $redirect = $me."&m=4&c=".$_POST['c']."&d=".$_POST['d']."&p=".$p;
+      header("location: $redirect");
+      exit;
+    } else {
+      $q11 = $db->prepare("UPDATE j_projects SET ".$add." WHERE id = :id");
+      if ($_POST['ptitle'] != $ptitle) { $q11->bindValue(':title', $_POST['ptitle'], PDO::PARAM_STR); }
+      if ($_POST['pprivate'] != $pprivate) { $q11->bindValue(':private', $_POST['pprivate'], PDO::PARAM_INT); }
+      if ($_POST['pstatus'] != $pstatus) { $q11->bindValue(':status', $_POST['pstatus'], PDO::PARAM_INT); }
+      if ($_POST['pdescription'] != $pdescription) { $q11->bindValue(':description', $_POST['pdescription'], PDO::PARAM_STR); }
+      if ($_POST['pthankyou'] != $pthankyou) { $q11->bindValue(':thankyou', $_POST['pthankyou'], PDO::PARAM_STR); }
+      if ($_POST['ppoints'] != $ppoints) { $q11->bindValue(':points', $_POST['ppoints'], PDO::PARAM_INT); }
+      if ($_POST['ppoints_bonus'] != $ppoints_bonus) { $q11->bindValue(':points_bonus', $_POST['ppoints_bonus'], PDO::PARAM_INT); }
+      if ($_POST['pcompanyid'] != $pcompanyid) { $q11->bindValue(':companyid', $_POST['pcompanyid'], PDO::PARAM_INT); }
+      if ($_POST['puserid'] != $puserid) { $q11->bindValue(':userid', $_POST['puserid'], PDO::PARAM_INT); }
+      $q11->bindValue(':id', $_POST['surveyid'], PDO::PARAM_INT);
+      $q11->execute();
+      $redirect = $me."&m=8&c=".$_POST['c']."&d=".$_POST['d']."&p=".$p;
       header("location: $redirect");
       exit;
     }
   }
 }
 
-
 $title = "Administration";
 pageHeader($title);
 echo "<h2>$title</h2>\n";
 echo "<p class=\"introtext\">This is an administration page which contains all necessary utility tools which are used for managing clients effectively.</p>\n";
-
-if ($_GET['m'] == "0") { $message = mksuccess("You have successfully created a new company."); echo "<p>$message</p>\n"; }
-else { echo "<p></p>\n"; }
-
 echo "<hr>\n";
 echo "<h3>Client at a glance</h3>\n";
 echo "<p>Currently we have a total of $countcompany companies comprising of $allUsers users, $allProjects projects, and $allBoards messages.</p>\n";
+
+if ($_GET['m'] == "0") { $message = mksuccess("A new company has been created successfully."); echo "<p>$message</p>\n"; }
+else { echo "<p></p>\n"; }
+
 echo "<div align=\"right\"><a class=\"btn btn-success btn-sm\" data-toggle=\"modal\" data-target=\"#addingcompany\"><i class=\"pe-plus-circle pe-lg pe-fw\"></i> Add a new company</a></div>\n";
 echo "<br>\n";
 echo $mm1;
 
 $mm2 .= "<hr>\n";
-if ($cfullname) { $mm2 .= "<h4>Editing $cfullname</h4>\n"; }
-else { $mm2 .= "<h4>Editing a company</h4>\n"; }
-$mm2 .= "<div class=\"row\">\n";
-$mm2 .= "  <div class=\"col-xs-4 col-sm-4 col-md-4 col-lg-4\">Select a company to edit:</div>\n";
-$mm2 .= "  <div class=\"col-xs-8 col-sm-8 col-md-8 col-lg-8\">\n";
+if ($_GET['p']) { $mm2 .= "<h4>Editing Project $ptitle</h4>\n"; }
+else if ($_GET['d']) { $mm2 .= "<h4>Editing $ufullname <small>($cfullname)</small></h4>\n"; }
+else if ($_GET['c']) { $mm2 .= "<h4>Editing $cfullname</h4>\n"; }
+else { $mm2 .= "<h4>Editing something</h4>\n"; }
+$mm2 .= "<div class=\"row bg-warning small\" style=\"margin:auto; width:95%; padding-top:10px; padding-bottom:10px; border: 1px dotted grey; border-radius:10px\">\n";
+$mm2 .= "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\"><p><strong>Select the element to edit</strong></p></div>\n";
+$mm2 .= "  <div class=\"col-xs-4 col-sm-4 col-md-4 col-lg-4\">Select a company or a user:</div>\n";
+$mm2 .= "  <div class=\"col-xs-4 col-sm-4 col-md-4 col-lg-4\">\n";
 $mm2 .= "    <form method=\"get\" action=\"$me\">\n";
 $mm2 .= "      <input type=\"hidden\" name=\"w\" value=\"admin\">\n";
-$mm2 .= "      <select class=\"form-control input-sm\" name=\"c\" onchange=\"this.form.submit()\">\n";
+$mm2 .= "      <select class=\"form-control input-sm\" name=\"c\" onchange=\"this.form.submit()\" id=\"selectcompany\" onChange=\"changecompany(this.value);\">\n";
 $mm2 .= "        <option value=\"\">-- select a company from this list --</option>\n";
 $mm2 .= $companylist;
 $mm2 .= "      </select>\n";
 $mm2 .= "    </form>\n";
 $mm2 .= "  </div>\n";
+$mm2 .= "  <div class=\"col-xs-4 col-sm-4 col-md-4 col-lg-4\">\n";
+$mm2 .= "    <form method=\"get\" action=\"$me\">\n";
+$mm2 .= "      <input type=\"hidden\" name=\"w\" value=\"admin\">\n";
+$mm2 .= "      <input type=\"hidden\" name=\"c\" value=\"$c\">\n";
+$mm2 .= "      <select class=\"form-control input-sm\" name=\"d\" id=\"selectuser\" onchange=\"this.form.submit()\">\n";
+if (($_GET['c']) || ($_GET['d'])) {
+  $mm2 .= "        <option value=\"\">-- select a user from this list --</option>\n";
+  $ulisting = json_decode($allListing, true);
+  foreach ($ulisting as $uuu) {
+    if ($uuu['companyid'] == $_GET['c']) {
+      foreach ($uuu['users'] as $u2) {
+        if ($u2['userid'] == $_GET['d']) { $mm2 .= "        <option value=\"".$u2['userid']."\" selected>".$u2['username']." (".$u2['useremail'].")</option>\n"; }
+        else { $mm2 .= "        <option value=\"".$u2['userid']."\">".$u2['username']." (".$u2['useremail'].")</option>\n"; }
+      }
+    }
+  }
+}
+else { $mm2 .= "        <option value=\"\" disabled selected>[[ Select a company first ]]</option>\n"; }
+$mm2 .= "      </select>\n";
+$mm2 .= "    </form>\n";
+$mm2 .= "  </div>\n";
+$mm2 .= "  <div class=\"col-xs-4 col-sm-4 col-md-4 col-lg-4\" style=\"margin-top: 10px\">Or select a project:</div>\n";
+$mm2 .= "  <div class=\"col-xs-8 col-sm-8 col-md-8 col-lg-8\" style=\"margin-top: 10px\">\n";
+$mm2 .= "    <form method=\"get\" action=\"$me\">\n";
+$mm2 .= "      <input type=\"hidden\" name=\"w\" value=\"admin\">\n";
+$mm2 .= "      <input type=\"hidden\" name=\"c\" value=\"$c\">\n";
+$mm2 .= "      <input type=\"hidden\" name=\"d\" value=\"$d\">\n";
+$mm2 .= "      <select class=\"form-control input-sm\" name=\"p\" onchange=\"this.form.submit()\">\n";
+if ($_GET['c']) {
+  if (empty($_GET['d'])) {
+    $mm2 .= "        <option value=\"\" disabled selected>[[ select a user to list the projects ]]</option>\n";
+  } else {
+    $mm2 .= "        <option value=\"\">-- select a project from this list --</option>\n";
+    $plisting = json_decode($allListing, true);
+    foreach ($plisting as $ppp) {
+      if ($ppp['companyid'] == $_GET['c']) {
+        foreach ($ppp['projects'] as $p2) {
+          if ($_GET['d']) {
+            if ($p2['userid'] == $_GET['d']) {
+              if ($p2['surveyid'] == $_GET['p']) { $mm2 .= "        <option value=\"".$p2['surveyid']."\" selected>[".$p2['surveyid']."] ".$p2['title']." (managed by ".$p2['owner'].")</option>\n"; }
+              else { $mm2 .= "        <option value=\"".$p2['surveyid']."\">[".$p2['surveyid']."] ".$p2['title']." (managed by ".$p2['owner'].")</option>\n"; }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+else { $mm2 .= "        <option value=\"\" disabled selected>[[ Select a company first ]]</option>\n"; }
+$mm2 .= "      </select>\n";
+$mm2 .= "    </form>\n";
+$mm2 .= "  </div>\n";
 $mm2 .= "</div>\n";
 $mm2 .= "<br>\n";
-//echo $mm2;
+$mm2 .= "<hr>\n";
+$check1 = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
+$check2 = parse_url($me, PHP_URL_QUERY);
+if ($check1 != $check2) { $mm2 .= "<div class=\"pull-right\"><a class=\"btn btn-danger btn-xs\" href=\"$me\"><i class=\"pe-times-circle-o pe-fw\"></i> Close</a></div>\n"; }
 
-if ($_GET['m'] == "1") { $message = mksuccess("You have successfully uploaded and replaced the company's logo."); $mm3 .= "<p>$message</p>\n"; }
-else if ($_GET['m'] == "2") { $message = mksuccess("You have successfully updated the company's information."); $mm3 .= "<p>$message</p>\n"; }
-else if ($_GET['m'] == "3") { $message = mkerror("All required fields cannot be blank, please fix and try again."); $mm3 .= "<p>$message</p>\n"; }
-else if ($_GET['m'] == "4") { $message = mkinfo("No changes detected. So no change has been made."); $mm3 .= "<p>$message</p>\n"; }
-else if ($_GET['m'] == "5") { $message = mkwarn("You have removed the company logo. Please upload a new one now."); $mm3 .= "<p>$message</p>\n"; }
-else { $mm3 .= "<p></p>\n"; }
-$mm3 .= "<br>\n";
+if ($_GET['m'] == "1") { $message = mksuccess("You have successfully uploaded and replaced the company's logo."); $mm2 .= "<p>$message</p>\n"; }
+else if ($_GET['m'] == "2") { $message = mksuccess("You have successfully updated the company's information."); $mm2 .= "<p>$message</p>\n"; }
+else if ($_GET['m'] == "3") { $message = mkerror("All required fields cannot be blank, please fix and try again."); $mm2 .= "<p>$message</p>\n"; }
+else if ($_GET['m'] == "4") { $message = mkinfo("No changes detected. So no change has been made."); $mm2 .= "<p>$message</p>\n"; }
+else if ($_GET['m'] == "5") { $message = mkwarn("You have removed the company logo. Please upload a new one now."); $mm2 .= "<p>$message</p>\n"; }
+else if ($_GET['m'] == "6") { $message = mksuccess("You have successfully updated the user's information."); $mm2 .= "<p>$message</p>\n"; }
+else if ($_GET['m'] == "7") { $message = mksuccess("You have successfully updated the user's information (and you are now editing the company this user has moved to)."); $mm2 .= "<p>$message</p>\n"; }
+else if ($_GET['m'] == "8") { $message = mksuccess("You have successfully updated the project's information."); $mm2 .= "<p>$message</p>\n"; }
+else { $mm2 .= "<p></p>\n"; }
+$mm2 .= "<br>\n";
 
 if ($logo) {
   if ($website) { $clientlogo = "<a href=\"$website\" title=\"$cfullname\" target=\"_blank\"><img src=\"$logo\" alt=\"$cfullname\" title=\"$cfullname\"></a>"; }
   else { $clientlogo = "<img src=\"$logo\" alt=\"$cfullname\" title=\"$cfullname\">"; }
-} else { $clientlogo = "<img src=\"http://placehold.it/135x135\">"; }
+}
+else { $clientlogo = "<img src=\"http://placehold.it/135x135\">"; }
 
 $mm3 .= "<form id=\"companyupdate\" action=\"$me\" method=\"post\">\n";
 $mm3 .= "  <div class=\"row\">\n";
@@ -756,46 +1045,14 @@ $mm3 .= "      }\n";
 $mm3 .= "    });\n";
 $mm3 .= "  }\n";
 $mm3 .= "  $('#savenewlogo').on('click', function() {\n";
-$mm3 .= "    var $this = $(this);\n";
-$mm3 .= "    $this.button('loading');\n";
-$mm3 .= "    setTimeout(function() { $this.button('reset'); }, 1000);\n";
+$mm3 .= "    var \$this = $(this);\n";
+$mm3 .= "    \$this.button('loading');\n";
+$mm3 .= "    setTimeout(function() { \$this.button('reset'); }, 1000);\n";
 $mm3 .= "    setTimeout(function() { $('#saveupload').submit(); }, 1200);\n";
 $mm3 .= "  });\n";
 $mm3 .= "</script>\n";
 
-if ($c) { echo $mm2; echo $mm3; }
-
 // --------------------
-
-$mm4 .= "<hr>\n";
-if ($ufullname) { $mm4 .= "<h4>Editing $ufullname</h4>\n"; }
-else { $mm4 .= "<h4>Editing a user</h4>\n"; }
-$mm4 .= "<div class=\"row\">\n";
-$mm4 .= "  <div class=\"col-xs-4 col-sm-4 col-md-4 col-lg-4\">Select a user to edit:</div>\n";
-$mm4 .= "  <div class=\"col-xs-4 col-sm-4 col-md-4 col-lg-4\">\n";
-$mm4 .= "    <select class=\"form-control input-sm\" name=\"selectcompany\" id=\"selectcompany\" onChange=\"changecompany(this.value);\">\n";
-$mm4 .= "      <option value=\"\" disabled selected>Select a company</option>\n";
-$mm4 .= $companylist;
-$mm4 .= "    </select>\n";
-$mm4 .= "  </div>\n";
-$mm4 .= "  <div class=\"col-xs-4 col-sm-4 col-md-4 col-lg-4\">\n";
-$mm4 .= "    <form method=\"get\" action=\"$me\">\n";
-$mm4 .= "      <input type=\"hidden\" name=\"w\" value=\"admin\">\n";
-$mm4 .= "      <select class=\"form-control input-sm\" name=\"d\" id=\"selectuser\" onchange=\"this.form.submit()\">\n";
-$mm4 .= "        <option value=\"\" disabled selected><< Select a company first</option>\n";
-// $mm4 .= "        <option></option>\n";
-$mm4 .= "      </select>\n";
-$mm4 .= "    </form>\n";
-$mm4 .= "  </div>\n";
-$mm4 .= "</div>\n";
-$mm4 .= "<br>\n";
-// echo $mm4;
-
-if ($_GET['m'] == "6") { $message = mkerror("All required fields cannot be blank, please fix and try again."); $mm5 .= "<p>$message</p>\n"; }
-else if ($_GET['m'] == "7") { $message = mkinfo("No changes detected. So no change has been made."); $mm5 .= "<p>$message</p>\n"; }
-else if ($_GET['m'] == "8") { $message = mksuccess("You have successfully updated the user's information."); $mm5 .= "<p>$message</p>\n"; }
-else { $mm5 .= "<p></p>\n"; }
-$mm5 .= "<br>\n";
 
 $mm5 .= "<form id=\"userupdate\" action=\"$me\" method=\"post\">\n";
 $mm5 .= "  <div class=\"row\">\n";
@@ -835,7 +1092,12 @@ $mm5 .= "        <label>Company</label> <span class=\"label label-red\">required
 $mm5 .= "        <span class=\"input-group\">\n";
 $mm5 .= "          <span class=\"input-group-addon\"><i class=\"pe-building pe-fw\"></i></span>\n";
 $mm5 .= "          <select class=\"form-control input-sm\" name=\"ucompanyid\">\n";
-$mm5 .= DDcompany($ucompanyid);
+// $mm5 .= "            <option value=\"\" selected>-- select a company --</option>\n";
+$clisting = json_decode($allListing, true);
+foreach ($clisting as $cc) {
+  if ($cc['companyid'] == $ucompanyid) { $mm5 .= "            <option value=\"".$cc['companyid']."\" selected>".$cc['companyfullname']."</option>\n"; }
+  else { $mm5 .= "            <option value=\"".$cc['companyid']."\">".$cc['companyfullname']."</option>\n"; }
+}
 $mm5 .= "          </select>\n";
 $mm5 .= "        </span>\n";
 $mm5 .= "        <span class=\"text-muted small\"><small>The company this user belongs to</small></span>\n";
@@ -845,7 +1107,11 @@ $mm5 .= "        <label>Role</label> <span class=\"label label-red\">required</s
 $mm5 .= "        <span class=\"input-group\">\n";
 $mm5 .= "          <span class=\"input-group-addon\"><i class=\"pe-flag pe-fw\"></i></span>\n";
 $mm5 .= "          <select class=\"form-control input-sm\" name=\"ulevel\">\n";
-$mm5 .= DDrole($ulevel);
+$lists = array("Administration" => "9", "System" => "8", "Manager" => "6", "User" => "5", "Guest" => "4");
+foreach($lists as $a => $b) {
+  if ($b == $ulevel) { $mm5 .= "            <option value=\"$b\" selected>$a</option>\n"; }
+  else { $mm5 .= "            <option value=\"$b\">$a</option>\n"; }
+}
 $mm5 .= "          </select>\n";
 $mm5 .= "        </span>\n";
 $mm5 .= "        <span class=\"text-muted small\"><small>The company this user belongs to</small></span>\n";
@@ -855,7 +1121,11 @@ $mm5 .= "        <label>Status</label> <span class=\"label label-red\">required<
 $mm5 .= "        <span class=\"input-group\">\n";
 $mm5 .= "          <span class=\"input-group-addon\"><i class=\"pe-lightbulb-o pe-fw\"></i></span>\n";
 $mm5 .= "          <select class=\"form-control input-sm\" name=\"ustatus\">\n";
-$mm5 .= DDstatus($ustatus);
+$lists = array("Active" => "5", "Inactive" => "4", "Locked" => "3", "Suspended" => "2", "Deleted" => "0");
+foreach($lists as $a => $b) {
+  if ($b == $ustatus) { $mm5 .= "            <option value=\"$b\" selected>$a</option>\n"; }
+  else { $mm5 .= "            <option value=\"$b\">$a</option>\n"; }
+}
 $mm5 .= "          </select>\n";
 $mm5 .= "        </span>\n";
 $mm5 .= "        <span class=\"text-muted small\"><small>The company this user belongs to</small></span>\n";
@@ -889,6 +1159,8 @@ $mm5 .= "          <thead>\n";
 $mm5 .= "            <tr class=\"bg-success small\"><th style=\"text-align:right\" width=\"40%\">Info</th><th style=\"text-align:right\" width=\"60%\">Timing</th></tr>\n";
 $mm5 .= "          </thead>\n";
 $mm5 .= "          <tbody>\n";
+$mm5 .= "            <tr class=\"small\"><td>Role:</td><td>".role($ulevel, true)."</td></tr>\n";
+$mm5 .= "            <tr class=\"small\"><td>Status:</td><td>".status_user($ustatus, true, true)."</td></tr>\n";
 $mm5 .= "            <tr class=\"small\"><td>Registered:</td><td>$ucreated</td></tr>\n";
 $mm5 .= "            <tr class=\"small\"><td>Last updated:</td><td>$uupdated</td></tr>\n";
 $mm5 .= "            <tr class=\"small\"><td>Last login:</td><td>$lastlogin2</td></tr>\n";
@@ -901,13 +1173,14 @@ $mm5 .= "  </div>\n";
 $mm5 .= "  <br>\n";
 $mm5 .= "  <p class=\"text-center\">\n";
 $mm5 .= "    <input type=\"hidden\" name=\"saveuserinfo\" value=\"1\">\n";
+$mm5 .= "    <input type=\"hidden\" name=\"c\" value=\"$c\">\n";
 $mm5 .= "    <input type=\"hidden\" name=\"userid\" value=\"$d\">\n";
 $mm5 .= "    <button type=\"submit\" class=\"btn btn-warning\">Save <i class=\"pe-check-circle-o\"></i></button>\n";
 $mm5 .= "    <button type=\"reset\" class=\"btn btn-default\">Cancel <i class=\"pe-times-circle-o\"></i></button>\n";
 $mm5 .= "  </p>\n";
 $mm5 .= "</form>\n";
 $mm5 .= "<script type=\"text/javascript\">\n";
-$mm5 .= "  var jsonData = $userListing;\n";
+$mm5 .= "  var jsonData = $allListing;\n";
 $mm5 .= "  function changecompany(value) {\n";
 $mm5 .= "    if (value.length == 0) document.getElementById(\"selectuser\").innerHTML = \"<option></option>\";\n";
 $mm5 .= "    else {\n";
@@ -923,9 +1196,173 @@ $mm5 .= "    });\n";
 $mm5 .= "  });\n";
 $mm5 .= "</script>\n";
 
-if ($d) { echo $mm4; echo $mm5; }
+// --------------------
+
+$mm6 .= "<form id=\"projectupdate\" action=\"$me\" method=\"post\">\n";
+$mm6 .= "  <div class=\"row\">\n";
+$mm6 .= "    <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
+$mm6 .= "      <p>\n";
+$mm6 .= "        <label>Project name</label> <span class=\"label label-red\">required</span>\n";
+$mm6 .= "        <span class=\"input-group\">\n";
+$mm6 .= "          <span class=\"input-group-addon\"><i class=\"pe-cube pe-fw\"></i></span>\n";
+$mm6 .= "          <input type=\"text\" class=\"form-control\" name=\"ptitle\" onclick=\"this.select()\" placeholder=\"Project name\"";
+if ($ptitle) { $mm6 .= " value=\"$ptitle\""; }
+$mm6 .= ">\n";
+$mm6 .= "        </span>\n";
+$mm6 .= "        <span class=\"text-muted small\"><small>Project name which is usually provided by clients</small></span>\n";
+$mm6 .= "      </p>\n";
+$mm6 .= "    </div>\n";
+$mm6 .= "    <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n";
+$mm6 .= "      <p>\n";
+$mm6 .= "        <label>Type</label> <span class=\"label label-red\">required</span>\n";
+$mm6 .= "        <span class=\"input-group\">\n";
+$mm6 .= "          <span class=\"input-group-addon\"><i class=\"pe-folder-o pe-fw\"></i></span>\n";
+$mm6 .= "          <select class=\"form-control input-sm\" name=\"pprivate\">\n";
+$lists = array("Private" => "1", "Public" => "0");
+foreach($lists as $a => $b) {
+  if ($b == $pprivate) { $mm6 .= "            <option value=\"$b\" selected>$a</option>\n"; }
+  else { $mm6 .= "            <option value=\"$b\">$a</option>\n"; }
+}
+$mm6 .= "          </select>\n";
+$mm6 .= "        </span>\n";
+$mm6 .= "        <span class=\"text-muted small\"><small>Project type of either Private or Public</small></span>\n";
+$mm6 .= "      </p>\n";
+$mm6 .= "    </div>\n";
+$mm6 .= "    <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n";
+$mm6 .= "      <p>\n";
+$mm6 .= "        <label>Status</label> <span class=\"label label-red\">required</span>\n";
+$mm6 .= "        <span class=\"input-group\">\n";
+$mm6 .= "          <span class=\"input-group-addon\"><i class=\"pe-lightbulb-o pe-fw\"></i></span>\n";
+$mm6 .= "          <select class=\"form-control input-sm\" name=\"pstatus\">\n";
+$lists = array("Set up" => "1", "Data-collection" => "2", "Completed" => "3", "Archived" => "4", "Deleted" => "0");
+foreach($lists as $a => $b) {
+  if ($b == $pstatus) { $mm6 .= "            <option value=\"$b\" selected>$a</option>\n"; }
+  else { $mm6 .= "            <option value=\"$b\">$a</option>\n"; }
+}
+$mm6 .= "          </select>\n";
+$mm6 .= "        </span>\n";
+$mm6 .= "        <span class=\"text-muted small\"><small>Current status of this project</small></span>\n";
+$mm6 .= "      </p>\n";
+$mm6 .= "    </div>\n";
+$mm6 .= "    <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
+$mm6 .= "      <p>\n";
+$mm6 .= "        <label>Description in Thai</label> <span class=\"label label-red\">required</span>\n";
+$mm6 .= "        <textarea class=\"form-control\" row=\"5\" name=\"pdescription\" onclick=\"this.select()\" style=\"height:120px\" placeholder=\"A short descrption about this project to be shown to respondents\" style=\"height:100px\">";
+if ($pdescription) { $mm6 .= $pdescription; }
+$mm6 .= "</textarea>\n";
+$mm6 .= "        <span class=\"text-muted small\"><small>A brief detail of this project in English</small></span>\n";
+$mm6 .= "      </p>\n";
+$mm6 .= "    </div>\n";
+$mm6 .= "    <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
+$mm6 .= "      <p>\n";
+$mm6 .= "        <label>Thank you message in Thai</label> <span class=\"label label-red\">required</span>\n";
+$mm6 .= "        <textarea class=\"form-control\" row=\"5\" name=\"pthankyou\" onclick=\"this.select()\" style=\"font-family:'boon'; font-size:1.1rem; color:black; height:120px\" placeholder=\"รายละเอียดสั้นๆเกี่ยวกับงานวิจัยชิ้นนี้ สำหรัับใช้แสดงให้ผู้ให้สัมภาษณ์ดู\" style=\"height:100px\">";
+if ($pthankyou) { $mm6 .= $pthankyou; }
+$mm6 .= "</textarea>\n";
+$mm6 .= "        <span class=\"text-muted small\"><small>A brief detail of this project in Thai</small></span>\n";
+$mm6 .= "      </p>\n";
+$mm6 .= "    </div>\n";
+$mm6 .= "  </div>\n";
+$mm6 .= "  <div class=\"row\">\n";
+$mm6 .= "    <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n";
+$mm6 .= "      <p>\n";
+$mm6 .= "        <label>Points</label> <span class=\"label label-blue\">optional</span>\n";
+$mm6 .= "        <span class=\"input-group\">\n";
+$mm6 .= "          <span class=\"input-group-addon\"><i class=\"pe-diamond pe-fw\"></i></span>\n";
+$mm6 .= "          <input type=\"text\" class=\"form-control\" name=\"ppoints\" onclick=\"this.select()\" placeholder=\"300\"";
+if ($ppoints) { $mm6 .= " value=\"$ppoints\""; }
+$mm6 .= ">\n";
+$mm6 .= "        </span>\n";
+$mm6 .= "        <span class=\"text-muted small\"><small>Points earned for participating with this project</small></span>\n";
+$mm6 .= "      </p>\n";
+$mm6 .= "    </div>\n";
+$mm6 .= "    <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n";
+$mm6 .= "      <p>\n";
+$mm6 .= "        <label>Point Bonus</label> <span class=\"label label-blue\">optional</span>\n";
+$mm6 .= "        <span class=\"input-group\">\n";
+$mm6 .= "          <span class=\"input-group-addon\"><i class=\"pe-diamond pe-fw\"></i></span>\n";
+$mm6 .= "          <input type=\"text\" class=\"form-control\" name=\"ppoints_bonus\" onclick=\"this.select()\" placeholder=\"300\"";
+if ($ppoints_bonus) { $mm6 .= " value=\"$ppoints_bonus\""; }
+$mm6 .= ">\n";
+$mm6 .= "        </span>\n";
+$mm6 .= "        <span class=\"text-muted small\"><small>Bonus points to encourage a greater level of participation</small></span>\n";
+$mm6 .= "      </p>\n";
+$mm6 .= "    </div>\n";
+$mm6 .= "  </div>\n";
+$mm6 .= "  <label>Change project owner</label> <span class=\"label label-red\">required</span>\n";
+$mm6 .= "  <div class=\"row\">\n";
+$mm6 .= "    <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n";
+$mm6 .= "      <p>\n";
+// $mm6 .= "        <label>Owner</label> <span class=\"label label-red\">required</span>\n";
+$mm6 .= "        <span class=\"input-group\">\n";
+$mm6 .= "          <span class=\"input-group-addon\">Company</span>\n";
+$mm6 .= "          <select class=\"form-control input-sm\" name=\"pcompanyid\" id=\"selectcompany\" onChange=\"changecompany(this.value);\">\n";
+// $mm6 .= "            <option value=\"\" disabled selected>Select a company</option>\n";
+$mm6 .= $companylist;
+$mm6 .= "          </select>\n";
+$mm6 .= "        </span>\n";
+$mm6 .= "        <span class=\"text-muted small\"><small>Only for changing the project owner (company)</small></span>\n";
+$mm6 .= "      </p>\n";
+$mm6 .= "    </div>\n";
+$mm6 .= "    <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n";
+$mm6 .= "      <p>\n";
+// $mm6 .= "        <label>Type</label> <span class=\"label label-red\">required</span>\n";
+$mm6 .= "        <span class=\"input-group\">\n";
+$mm6 .= "          <span class=\"input-group-addon\">User</span>\n";
+$mm6 .= "          <select class=\"form-control input-sm\" name=\"puserid\" id=\"selectuser1\">\n";
+$mm6 .= "            <option value=\"\" disabled>-- select a user from this list --</option>\n";
+$ulisting = json_decode($allListing, true);
+foreach ($ulisting as $uuu) {
+  if ($uuu['companyid'] == $_GET['c']) {
+    foreach ($uuu['users'] as $u2) {
+      if ($u2['userid'] == $_GET['d']) { $mm6 .= "        <option value=\"".$u2['userid']."\" selected>".$u2['username']." (".$u2['useremail'].")</option>\n"; }
+      else { $mm6 .= "        <option value=\"".$u2['userid']."\">".$u2['username']." (".$u2['useremail'].")</option>\n"; }
+    }
+  }
+}
+$mm6 .= "          </select>\n";
+$mm6 .= "        </span>\n";
+$mm6 .= "        <span class=\"text-muted small\"><small>Only for changing the project owner (user)</small></span>\n";
+$mm6 .= "      </p>\n";
+$mm6 .= "    </div>\n";
+$mm6 .= "  </div>\n";
+$mm6 .= "  <br>\n";
+$mm6 .= "  <p class=\"text-center\">\n";
+$mm6 .= "    <input type=\"hidden\" name=\"saveprojectinfo\" value=\"1\">\n";
+$mm6 .= "    <input type=\"hidden\" name=\"c\" value=\"$c\">\n";
+$mm6 .= "    <input type=\"hidden\" name=\"d\" value=\"$d\">\n";
+$mm6 .= "    <input type=\"hidden\" name=\"surveyid\" value=\"$p\">\n";
+$mm6 .= "    <button type=\"submit\" class=\"btn btn-warning\">Save <i class=\"pe-check-circle-o\"></i></button>\n";
+$mm6 .= "    <button type=\"reset\" class=\"btn btn-default\">Cancel <i class=\"pe-times-circle-o\"></i></button>\n";
+$mm6 .= "  </p>\n";
+$mm6 .= "</form>\n";
+$mm6 .= "<script type=\"text/javascript\">\n";
+$mm6 .= "  var jsonData = $allListing;\n";
+$mm6 .= "  function changecompany(value) {\n";
+$mm6 .= "    if (value.length == 0) document.getElementById(\"selectuser1\").innerHTML = \"<option></option>\";\n";
+$mm6 .= "    else {\n";
+$mm6 .= "      var userlist = \"<option value='' disabled selected>-- select a user from this list --</option>\";\n";
+$mm6 .= "      for (i in jsonData) { if (jsonData[i].companyid == value) { for (j in jsonData[i].users) { userlist += \"<option value=\" + jsonData[i].users[j].userid + \">\" + jsonData[i].users[j].username + \" (\" + jsonData[i].users[j].useremail + \")</option>\"; } } }\n";
+$mm6 .= "      document.getElementById(\"selectuser1\").innerHTML = userlist;\n";
+$mm6 .= "    }\n";
+$mm6 .= "  }\n";
+$mm6 .= "</script>\n";
+
+
+echo $mm2;
+if ($c) {
+  if ($d) {
+    if ($p) { echo $mm6; }
+    else { echo $mm5; }
+  }
+  else { echo $mm3; }
+}
+
 
 ?>
 
+<style>
+  .badge.smaller { font-size: 10px; padding: 3px 5px; }
+</style>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
