@@ -5,7 +5,7 @@ else if ($_GET['designer'] == "✓") { $mdesign = 1; $readonly = 1; }
 else { $mpilot = 2; $readonly = 0; }
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/themes.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/mobile.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/functions.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.login.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.imgresize.php';
