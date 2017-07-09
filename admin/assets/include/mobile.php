@@ -116,9 +116,9 @@ function navbarB() {
   else { $ww = "<span class=\"deepgreen\"><i class=\"pe-info-circle pe-fw\"></i> สำหรับผู้ที่เป็นสมาชิกเท่านั้น</span>"; }
   echo "    <nav class=\"navbar navbar-default navbar-static-top\">\n";
   echo "      <div class=\"container\">\n";
-  echo "        <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
-  echo "          <span class=\"nav navbar-nav navbar-right\">$ww</span>\n";
-  echo "        </div>\n";
+  // echo "        <div id=\"navbar\" class=\"navbar-collapse collapse\">\n";
+  echo "          <span class=\"pull-right\">$ww</span>\n";
+  // echo "        </div>\n";
   echo "      </div>\n";
   echo "    </nav>\n";
 }
@@ -126,15 +126,6 @@ function navbarB() {
 function pageFooter($project = null, $notes = null) {
   echo "</main>\n";
   echo "<footer>\n";
-  echo "  <div class=\"row footer-1\">\n";
-  echo "    <div class=\"container\">\n";
-  echo "      <div class=\"col-hidden-xs col-hidden-sm col-hidden-md col-hidden-lg footer-1A\"></div>\n";
-  echo "      <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-1B\">";
-  if ($project) { echo "Internal use only - P. ".$project." (PEB-".date("Ym")."W".str_pad($_GET['s'], 4, '0', STR_PAD_LEFT).")"; }
-  else { echo "Contact technical support <a href=\"http://www.siamsquare.org/members/contact/\"><i class=\"pe-envelope pe-fw\"></i></a>"; }
-  echo "</div>\n";
-  echo "    </div>\n";
-  echo "  </div>\n";
   echo "  <div class=\"row footer-2\">\n";
   echo "    <div class=\"container\">\n";
   echo "      <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
@@ -142,6 +133,15 @@ function pageFooter($project = null, $notes = null) {
   echo "        <a href=\"http://www.pebinary.com\" class=\"footerlogo\" title=\"PE BINARY CO., LTD.\">".peblogo()."</a><br>\n";
   echo "        <i class=\"pe-copyright\"></i> Copyright 2016, All rights reserved.<br>\n";
   echo "      </div>\n";
+  echo "    </div>\n";
+  echo "  </div>\n";
+  echo "  <div class=\"row footer-1\">\n";
+  echo "    <div class=\"container\">\n";
+  echo "      <div class=\"col-hidden-xs col-hidden-sm col-hidden-md col-hidden-lg footer-1A\"></div>\n";
+  echo "      <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-1B\">";
+  if ($project) { echo "<span class=\"hidden-xs\">Internal use only - </span>P. ".$project." (PEB-".date("Ym")."W".str_pad($_GET['s'], 4, '0', STR_PAD_LEFT).")"; }
+  else { echo "Contact technical support <a href=\"http://www.siamsquare.org/members/contact/\"><i class=\"pe-envelope pe-fw\"></i></a>"; }
+  echo "</div>\n";
   echo "    </div>\n";
   echo "  </div>\n";
   // echo "  <div class=\"row footer-3\">\n";
@@ -157,7 +157,7 @@ function pageFooter($project = null, $notes = null) {
   // echo "    </div>\n";
   // echo "  </div>\n";
   echo "</footer>\n";
-  echo "<div class=\"scroll-to-top\" style=\"display:block\"><i class=\"pe-arrow-up pe-lg white\"></i></div>\n";
+  // echo "<div class=\"scroll-to-top\" style=\"display:block\"><i class=\"pe-arrow-up pe-lg white\"></i></div>\n";
   echo "<script type=\"text/javascript\" src=\"/members/assets/js/etc.js\"></script>\n";
   if ($notes) { notify($notes); }
   //debugOutput();
