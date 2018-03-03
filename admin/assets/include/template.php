@@ -1,5 +1,13 @@
 <?php
 
+if (HTTP_PROTOCOL == "HTTPS") {
+  if (empty($_SERVER['HTTPS'])) {
+    $url = 'https://www.siamsquare.org'.$_SERVER['REQUEST_URI'];
+    header('location: '.$url);
+    exit;
+  }
+}
+
 function logo() {
   return "<img src=\"/admin/assets/img/ssq.svg\" alt=\"SiamSquare Survey Engine by PE BINARY CO., LTD.\">";
 }
@@ -26,6 +34,7 @@ function pageHeader($title) {
   header("Content-language: en");
   header("Content-type: text/html; charset=utf-8");
   meta($title);
+  facebookSDK();
   echo "<body>\n";
   echo "<header>\n";
   echo "  <div class=\"row\">\n";
@@ -188,5 +197,36 @@ function w($w = null) {
   if (!file_exists($filecheck)) { echo('Unable to open include file. Check INI settings. Aborting.'); exit; }
   return ($filecheck);
 }
+
+function facebookSDK() {
+  echo "<script>\n";
+  echo "  window.fbAsyncInit = function() {\n";
+  echo "    FB.init({\n";
+  echo "      appId      : '1354128044598714',\n";
+  echo "      cookie     : true,\n";
+  echo "      xfbml      : true,\n";
+  echo "      version    : '2.11'\n";
+  echo "    });\n";
+  echo "    FB.AppEvents.logPageView();\n";
+  echo "  };\n";
+  echo "  (function(d, s, id){\n";
+  echo "     var js, fjs = d.getElementsByTagName(s)[0];\n";
+  echo "     if (d.getElementById(id)) {return;}\n";
+  echo "     js = d.createElement(s); js.id = id;\n";
+  echo "     js.src = \"https://connect.facebook.net/en_US/sdk.js\";\n";
+  echo "     fjs.parentNode.insertBefore(js, fjs);\n";
+  echo "   }(document, 'script', 'facebook-jssdk'));\n";
+  echo "</script>\n";
+}
+
+function FBLoginStatus() {
+  echo "<script>\n";
+  echo "  FB.getLoginStatus(function(response) {\n";
+  echo "    statusChangeCallback(response);\n";
+  echo "  });\n";
+  echo "</script>\n";
+}
+
+
 
 ?>
