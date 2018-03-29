@@ -1,12 +1,12 @@
 <?php
 
-if (HTTP_PROTOCOL == "HTTPS") {
-  if (empty($_SERVER['HTTPS'])) {
-    $url = 'https://www.siamsquare.org'.$_SERVER['REQUEST_URI'];
-    header('location: '.$url);
-    exit;
-  }
-}
+// if (HTTP_PROTOCOL == "HTTPS") {
+//   if (empty($_SERVER['HTTPS'])) {
+//     $url = 'https://www.siamsquare.org'.$_SERVER['REQUEST_URI'];
+//     header('location: '.$url);
+//     exit;
+//   }
+// }
 
 function logo() {
   return "<img src=\"/admin/assets/img/ssq.svg\" alt=\"SiamSquare Survey Engine by PE BINARY CO., LTD.\">";

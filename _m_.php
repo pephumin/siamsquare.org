@@ -1,12 +1,11 @@
 <?php
 
-$mobile = 0; $mpilot = 0; $mdesign = 0; $readonly = 0;
-if ($_GET['mobile'] == "✓") { $mobile = 1; }
-else if ($_GET['pilot'] == "✓") { $mpilot = 1; }
-else if ($_GET['designer'] == "✓") { $mdesign = 1; $readonly = 1; }
+if ($_GET['pilot'] == "✓") { $mpilot = 1; $mdesign = 0; $readonly = 0; }
+else if ($_GET['designer'] == "✓") { $mpilot = 0; $mdesign = 1; $readonly = 1; }
+else { $mpilot = 2; $mdesign = 2; $readonly = 0; }
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-if ($mobile == 1) { require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/mobile.php'; }
+if ($_GET['mobile'] == "✓") { require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/mobile.php'; }
 else { require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/themes.php'; }
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/functions.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.login.php';
@@ -227,10 +226,10 @@ if ($showsurvey != 1) {
 $title = "ร่วมแสดงความคิดเห็น";
 pageHeader($title);
 
-if ($mpilot == 1) { echo "<div class='alert alert-warning'><i class='pe-exclamation-triangle pe-lg pe-fw'></i> <strong>Pilot test mode</strong> สามารถดูและตอบแบบสอบถามได้ครบถ้วน แต่ความคิดเห็นจะไม่ถูกนำไปประมวลผล</div>\n"; }
+if ($mpilot == 1) { echo "<div class='alert alert-warning'><i class='pe-exclamation-triangle pe-lg pe-fw'></i> You are in a pilot test mode where result will still be submitted but will not be included in the actual result.</div>\n"; }
 else if (($mpilot != 1) && ($readonly == 1)) {
-  if ($closed == 1) { echo "<div class='alert alert-warning'><i class='pe-clock-o pe-lg pe-fw'></i> <strong>งานวิจัยสิ้นสุดไปแล้ว</strong> สามารถดูแบบสอบถามได้ แต่ไม่สามารถส่งความคิดเห็นได้</div>\n"; }
-  else { echo "<div class='alert alert-warning'><i class='pe-exclamation-triangle pe-lg pe-fw'></i> <strong>Read-only mode</strong> สามารถดูแบบสอบถามได้ แต่ไม่สามารถส่งความคิดเห็นได้</div>\n"; }
+  if ($closed == 1) { echo "<div class='alert alert-warning'><h4><i class='pe-clock-o pe-lg pe-fw'></i> โครงงานวิจัยนี้ได้ปิดรับความคิดเห็นไปแล้ว</h4><span>เนื่องจากโครงงานวิจัยชิ้นนี้ได้ปิดรับความคิดเห็นไปเป็นที่เรียบร้อยแล้ว คุณจะสามารถดูแบบสอบถามได้ <strong>แต่คุณจะไม่สามารถส่งความคิดเห็นได้</strong></span></div>\n"; }
+  else { echo "<div class='alert alert-warning'><i class='pe-exclamation-triangle pe-lg pe-fw'></i> Non respondents only view questionnaire in <strong>read-only mode</strong> where result will not be submitted.</div>\n"; }
 }
 
 if ($showdetail == 2) {
@@ -244,7 +243,7 @@ if ($showdetail == 2) {
   echo "</div>\n";
 }
 
-echo "<div id=\"showupload\"></div><div id=\"showcompletion\"></div>\n";
+echo "<div id=\"showupload\"></div><div id=\"showcompletion\"></div><br>\n";
 echo "<div id=\"runsurvey\"></div><br>\n";
 echo "<div id=\"notification\"></div>\n";
 
@@ -471,68 +470,32 @@ echo "<div id=\"notification\"></div>\n";
 <?php
 
   if (($cdescription) && ($showabout == 2)) {
-    echo "<div class=\"row companydetail\" style=\"margin-top: 40px\">\n";
-    echo "  <div class=\"container\">\n";
-    echo "    <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
-    echo "      <h5 class=\"companydetailhead\">เกี่ยวกับบริษัท</h5>\n";
-    echo "    </div>\n";
-    echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6 companylogoboxA\">\n";
-    if ($language_credential == 1) {
-      if ($cwebsite) { echo "      <div class=\"companyname\"><a href=\"$cwebsite\" class=\"footerlogo\" title=\"$cfullname\" style=\"color:black; text-decoration:none\"><strong>$cfullname</strong></a></div>\n"; }
-      else { echo "      <div class=\"companyname\"><strong>$cfullname</strong></div>\n"; }
-    }
-    else {
-      if ($cwebsite) { echo "      <div class=\"companyname\"><a href=\"$cwebsite\" class=\"footerlogo\" title=\"$cfullname_th\" style=\"color:black; text-decoration:none\"><strong>$cfullname_th</strong></a></div>\n"; }
-      else { echo "      <div class=\"companyname\"><strong>$cfullname_th</strong></div>\n"; }
-    }
-    echo "    </div>\n";
-    if ($language_credential == 1) { echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6 companylogoboxB\">\n"; }
-    else { echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6 companylogoboxA\">\n"; }
-    if ($language_credential == 1) {
-      if ($cwebsite) { echo "      <div class=\"companylogo\"><a href=\"http://www.pebinary.com\" class=\"footerlogo\" title=\"PE BINARY CO., LTD.\" style=\"color:black; text-decoration:none\"><span class=\"logo1\"><i class=\"pe-logo\"></i></span>&nbsp;<span class=\"logo2\">pe</span><span class=\"logo3\">binary</span></a></div>\n"; }
-      else { echo "      <div class=\"companylogo\"><span class=\"logo1\"><i class=\"pe-logo\"></i></span>&nbsp;<span class=\"logo2\">pe</span><span class=\"logo3\">binary</span></div>\n"; }
-    }
-    else {
-      if ($cwebsite) { echo "      <div class=\"companyname\"><a href=\"http://www.pebinary.com\" class=\"footerlogo\" title=\"บริษัท พีอี ไบนารี่ จำกัด\" style=\"color:black; text-decoration:none\"><strong>บริษัท พีอี ไบนารี่ จำกัด</strong></a></div>\n"; }
-      else { echo "      <div class=\"companyname\"><strong>บริษัท พีอี ไบนารี่ จำกัด</strong></div>\n"; }
-    }
-    echo "    </div>\n";
-    echo "  </div>\n";
+    echo "<div class=\"row companydetail container\" style=\"margin-top: 40px\">\n";
     echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
-    echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
-    if ($language_credential== 1) { echo "      <p class=\"companydescription\">".$cdescription."</p>"; }
-    else { echo "      <p class=\"companydescriptionth\">".$cdescription_th."</p>"; }
-    echo "    </div>\n";
-    echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
-    if ($language_credential== 1) { echo "      <p class=\"companydescription\">A revolutionary market research company founded in 2016 with a vision to help clients changing the way they access consumer insights. The company provides accurate and more responsive consumer insights allowing business decisions to be made quicker.</p>"; }
-    else { echo "      <p class=\"companydescriptionth\">บริษัทวิจัยการตลาดที่มุ่งเน้นการสร้างธุรกิจกับการทำวิจัยผ่านสื่อออนไลน์เป็นหลัก เพื่อยกระดับให้ธุรกิจการทำวิจัยตลาดให้มีความทันสมัยและสามารถตอบโจทย์และความต้องการในยุคดิจิตัลได้เป็นอย่างดี</p>"; }
-    echo "    </div>\n";
-    echo "  </div>\n";
-    echo "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
-    echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
-    echo "      <p class=\"companydescription\">\n";
-    if ($cwebsite) {
-      if ($language_credential== 1) { echo "        <i class=\"pe-globe pe-fw\"></i> <a href=\"$cwebsite\" title=\"$cfullname\" target=\"_blank\">$cwebsite</a><br>\n"; }
-      else { echo "        <i class=\"pe-globe pe-fw\"></i> <a href=\"$cwebsite\" title=\"$cfullname_th\" target=\"_blank\">$cwebsite</a><br>\n"; }
-    } else { echo "        <br>"; }
-    if ($cemail) {
-      if ($language_credential== 1) { echo "        <i class=\"pe-envelope pe-fw\"></i> <a href=\"mailto:$cemail\" title=\"Contact $cfullname\" target=\"_blank\">$cemail</a><br>\n"; }
-      else { echo "        <i class=\"pe-envelope pe-fw\"></i> <a href=\"mailto:$cemail\" title=\"ติดต่อ $cfullname_th\" target=\"_blank\">$cemail</a><br>\n"; }
-    } else { echo "        <br>"; }
-    echo "      </p>\n";
-    echo "    </div>\n";
-    echo "    <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n";
-    echo "      <p class=\"companydescription\" style=\"margin-bottom:20px !important\">\n";
-    if ($language_credential== 1) {
-      echo "        <i class=\"pe-globe pe-fw\"></i> <a href=\"http://www.pebinary.com\" title=\"PE BINARY CO., LTD.\" target=\"_blank\">http://www.pebinary.com</a><br>\n";
-      echo "        <i class=\"pe-envelope pe-fw\"></i> <a href=\"mailto:info@pebinary.com\" title=\"Contact PE BINARY CO., LTD.\" target=\"_blank\">info@pebinary.com</a><br>\n";
+    echo "    <h5 class=\"companydetailhead\">เกี่ยวกับบริษัท</h5>\n";
+    if ($language_credential == 1) {
+      if ($cwebsite) { echo "    <p class=\"companyname\"><a href=\"$cwebsite\" class=\"footerlogo\" title=\"$cfullname\" style=\"color:black; text-decoration:none\"><strong>$cfullname</strong></a></p>\n"; }
+      else { echo "    <p class=\"companyname\"><strong>$cfullname</strong></p>\n"; }
+      echo "    <p class=\"companydescription\">".$cdescription."</p>";
+      // echo "      <p class=\"companydescription\">A revolutionary market research company founded in 2016 with a vision to help clients changing the way they access consumer insights. The company provides accurate and more responsive consumer insights allowing business decisions to be made quicker.</p>";
+      echo "    <p class=\"companydescription\">\n";
+      if ($cwebsite) { echo "      <i class=\"pe-globe pe-fw\"></i> <a href=\"$cwebsite\" title=\"$cfullname\" target=\"_blank\">$cwebsite</a><br>\n"; }
+      else { echo "      <br>"; }
+      if ($cemail) { echo "      <i class=\"pe-envelope pe-fw\"></i> <a href=\"mailto:$cemail\" title=\"Contact $cfullname\" target=\"_blank\">$cemail</a><br>\n"; }
+      else { echo "      <br>"; }
+      echo "    </p>\n";
+    } else {
+      if ($cwebsite) { echo "    <div class=\"companyname\"><a href=\"$cwebsite\" class=\"footerlogo\" title=\"$cfullname_th\" style=\"color:black; text-decoration:none\"><strong>$cfullname_th</strong></a></p>\n"; }
+      else { echo "    <div class=\"companyname\"><strong>$cfullname_th</strong></div>\n"; }
+      echo "    <p class=\"companydescriptionth\">".$cdescription_th."</p>";
+      // echo "      <p class=\"companydescriptionth\">บริษัทวิจัยการตลาดที่มุ่งเน้นการสร้างธุรกิจกับการทำวิจัยผ่านสื่อออนไลน์เป็นหลัก เพื่อยกระดับให้ธุรกิจการทำวิจัยตลาดให้มีความทันสมัยและสามารถตอบโจทย์และความต้องการในยุคดิจิตัลได้เป็นอย่างดี</p>";
+      echo "    <p class=\"companydescriptionth\">\n";
+      if ($cwebsite) { echo "      <i class=\"pe-globe pe-fw\"></i> <a href=\"$cwebsite\" title=\"$cfullname_th\" target=\"_blank\">$cwebsite</a><br>\n"; }
+      else { echo "      <br>"; }
+      if ($cemail) { echo "      <i class=\"pe-envelope pe-fw\"></i> <a href=\"mailto:$cemail\" title=\"ติดต่อ $cfullname_th\" target=\"_blank\">$cemail</a><br>\n"; }
+      else { echo "      <br>"; }
+      echo "    </p>\n";
     }
-    else {
-      echo "        <i class=\"pe-globe pe-fw\"></i> <a href=\"http://www.pebinary.com\" title=\"บริษัท พีอี ไบนารี่ จำกัด\" target=\"_blank\">http://www.pebinary.com</a><br>\n";
-      echo "        <i class=\"pe-envelope pe-fw\"></i> <a href=\"mailto:info@pebinary.com\" title=\"ติดต่อ บริษัท พีอี ไบนารี่ จำกัด\" target=\"_blank\">info@pebinary.com</a><br>\n";
-    }
-    echo "      </p>\n";
-    echo "    </div>\n";
     echo "  </div>\n";
     echo "</div>\n";
   }

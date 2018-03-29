@@ -130,7 +130,7 @@ $userlist .= "    ]";
           <strong>Created:</strong> <span data-bind="text: created"></span><br>
           <strong>Updated:</strong> <span data-bind="text: updated"></span><br>
           <strong>Type:</strong> <span><span data-bind="text: pp"></span> <i class="pe-folder-o" data-bind="visible: pp == 'Private'"></i><i class="pe-folder-open-o" data-bind="visible: pp == 'Public'"></i></span>
-          <a class="btn btn-default btn-tiny pull-right" data-bind="attr: { href: '/admin/?w=respondents&amp;s=' + id }, visible: pp == 'Private', css: { 'btn-primary': rD() > 0, 'disabled': $parent.showActive() == 'C' || $parent.showActive() == 'D' || $parent.showActive() == 'E' }"><span data-bind="text: rDFormatted(rD)"></span> respondent(s) <i class="pe-users"></i></a>
+          <a class="btn btn-default btn-tiny pull-right" data-bind="attr: { href: '/admin/?w=respondents&amp;s=' + id }, visible: pp == 'Private', css: { 'btn-primary': rD() > 0, 'disabled': $parent.showActive() == 'C' || $parent.showActive() == 'D' || $parent.showActive() == 'E' }"><span data-bind="text: rD"></span> respondent(s) <i class="pe-users"></i></a>
         </div>
         <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/admin/?w=design&amp;s=' + id }, visible: $parent.showActive() == 'A'" title="Edit the questionnaire">Questionnaire design <i class="pe-edit"></i></a>
         <a class="btn btn-default btn-tiny" data-bind="attr: { href: '/r.php?pilot=✓&amp;s=' + id }, visible: $parent.showActive() == 'A'" target="_blank" title="Conduct a pilot test on the questionnaire">Pilot test <i class="pe-paper-plane"></i></a>
@@ -214,7 +214,7 @@ $userlist .= "    ]";
   $('#showalert-reowner').html("<div class='alert alert-info'><i class='pe-users pe-fw'></i> The project has been changed in its owner</div>").hide();
   $('#showalert-move').html("<div class='alert alert-info'><i class='pe-exchange pe-fw'></i> The project has been moved to a different stage</div>").hide();
   $('#showalert-pp').html("<div class='alert alert-info'><i class='pe-exchange pe-fw'></i> The project scope has been changed between Public vs. Private</div>").hide();
-  Date.prototype.toMysqlFormat = function () {
+  Date.prototype.toMysqlFormat = function() {
     function pad(n) { return n < 10 ? '0' + n : n }
     return this.getFullYear() + "-" + pad(1 + this.getMonth()) + "-" + pad(this.getDate()) + " " + pad(this.getHours()) + ":" + pad(this.getMinutes()) + ":" + pad(this.getSeconds());
   };
@@ -228,7 +228,7 @@ $userlist .= "    ]";
     this.list1 = ko.computed(function() { return this.company() + " (companyid=" + this.companyid() + ")" + " - " + this.fullname() + " (userid=" + this.uid() + ") - " + this.email() ; }, this);
     this.list2 = ko.computed(function() { return this.fullname() + " (" + this.email() + ")"; }, this);
   }
-  var Listing = function (title, description, userid, created, updated, id, email, fullname, company, companyid, private, canedit, owner, admin, rD, UserListing, DT) {
+  var Listing = function(title, description, userid, created, updated, id, email, fullname, company, companyid, private, canedit, owner, admin, rD, UserListing, DT) {
     this.title = ko.observable(title);
     this.editingOwner = ko.observable(userid);
     this.editingName = ko.observable(title);
@@ -240,7 +240,8 @@ $userlist .= "    ]";
     this.updated = updated;
     this.id = id;
     this.rD = ko.observable(rD);
-    this.rDFormatted = function (obs) { if (typeof (obs) === 'function') return obs().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+    // this.rDFormatted = ko.computed(function() { var newRD = this.rD.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); return newRD; }, this);
+    this.rDFormatted = function(obs) { if (typeof(obs) === 'function') { return obs().replace(/\B(?=(\d{3})+(?!\d))/g, ','); } }
     this.email = email;
     this.fullname = fullname;
     this.company = company;
@@ -262,14 +263,14 @@ $userlist .= "    ]";
     this.canclick = ko.observable();
     this.DT = ko.observable(DT);
   }
-  var ViewModel = function () {
+  var ViewModel = function() {
     var self = this;
     this.surveys = ko.observableArray([]);
     this.url = api;
     this.showActive = ko.observable(true);
     this.isNewSurveyCreating = ko.observable(false);
     this.newSurveyName = ko.observable("New project");
-    this.loadData = function (i) {
+    this.loadData = function(i) {
       self.showActive(i);
       // if (level == 9) { var url = "/all/" + i; }
       // else { var url = "/company/" + companyid + "/" + i; }
@@ -279,29 +280,29 @@ $userlist .= "    ]";
         type: 'get',
         dataType: 'json',
         contentType: 'application/json; charset=utf-8',
-        success: function (data) {
+        success: function(data) {
           var list = [];
-          for (var i = 0; i < data.length; i++) { list.push(self.createSurveyObject(data[i])); }
+          for (var i=0; i<data.length; i++) { list.push(self.createSurveyObject(data[i])); }
           self.surveys(list);
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
     }
-    this.loadA = function () { self.loadData("A"); }
-    this.loadB = function () { self.loadData("B"); }
-    this.loadC = function () { self.loadData("C"); }
-    this.loadD = function () { self.loadData("D"); }
-    this.loadE = function () { self.loadData("E"); }
-    this.archive = function (survey) {
+    this.loadA = function() { self.loadData("A"); }
+    this.loadB = function() { self.loadData("B"); }
+    this.loadC = function() { self.loadData("C"); }
+    this.loadD = function() { self.loadData("D"); }
+    this.loadE = function() { self.loadData("E"); }
+    this.archive = function(survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/archive',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "status": 4, "L3": "' + TimeNow + '" }',
-        success: function (data) {
+        success: function(data) {
           $('#showalert-archive').show();
-          window.setTimeout(function () { $("#showalert-archive").slideUp(500, function () { $("#showalert-archive").hide(); }); }, 3000);
+          window.setTimeout(function() { $("#showalert-archive").slideUp(500, function() { $("#showalert-archive").hide(); }); }, 3000);
           self.removeSurvey(survey);
           $.ajax({
             url: api + '/log/' + userid + '/' + survey.id,
@@ -312,19 +313,19 @@ $userlist .= "    ]";
             success: function(data) { result = data; }
           });
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
     }
-    this.restore = function (survey) {
+    this.restore = function(survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/restore',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "status": 3, "L3": NULL }',
-        success: function (data) {
+        success: function(data) {
           $('#showalert-restore').show();
-          window.setTimeout(function () { $("#showalert-restore").slideUp(500, function () { $("#showalert-restore").hide(); }); }, 3000);
+          window.setTimeout(function() { $("#showalert-restore").slideUp(500, function() { $("#showalert-restore").hide(); }); }, 3000);
           self.removeSurvey(survey);
           $.ajax({
             url: api + '/log/' + userid + '/' + survey.id,
@@ -335,19 +336,19 @@ $userlist .= "    ]";
             success: function(data) { result = data; }
           });
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
     }
-    this.delete = function (survey) {
+    this.delete = function(survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/delete',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "status": 0 }',
-        success: function (data) {
+        success: function(data) {
           $('#showalert-delete').show();
-          window.setTimeout(function () { $("#showalert-delete").slideUp(500, function () { $("#showalert-delete").hide(); }); }, 3000);
+          window.setTimeout(function() { $("#showalert-delete").slideUp(500, function() { $("#showalert-delete").hide(); }); }, 3000);
           self.removeSurvey(survey);
           $.ajax({
             url: api + '/log/' + userid + '/' + survey.id,
@@ -358,19 +359,19 @@ $userlist .= "    ]";
             success: function(data) { result = data; }
           });
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
     }
-    this.undelete = function (survey) {
+    this.undelete = function(survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/undelete',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "status": 4 }',
-        success: function (data) {
+        success: function(data) {
           $('#showalert-restore').show();
-          window.setTimeout(function () { $("#showalert-restore").slideUp(500, function () { $("#showalert-restore").hide(); }); }, 3000);
+          window.setTimeout(function() { $("#showalert-restore").slideUp(500, function() { $("#showalert-restore").hide(); }); }, 3000);
           self.removeSurvey(survey);
           $.ajax({
             url: api + '/log/' + userid + '/' + survey.id,
@@ -381,139 +382,139 @@ $userlist .= "    ]";
             success: function(data) { result = data; }
           });
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
     }
-    this.one2two = function (survey) {
+    this.one2two = function(survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/one2two',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "status": 2, "L1": "' + TimeNow + '" }',
-        success: function (data) {
+        success: function(data) {
           $('#showalert-move').show();
-          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
+          window.setTimeout(function() { $("#showalert-move").slideUp(500, function() { $("#showalert-move").hide(); }); }, 3000);
           self.removeSurvey(survey);
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
     }
-    this.two2three = function (survey) {
+    this.two2three = function(survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/two2three',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "status": 3, "L2": "' + TimeNow + '" }',
-        success: function (data) {
+        success: function(data) {
           $('#showalert-move').show();
-          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
+          window.setTimeout(function() { $("#showalert-move").slideUp(500, function() { $("#showalert-move").hide(); }); }, 3000);
           self.removeSurvey(survey);
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
     }
-    this.two2one = function (survey) {
+    this.two2one = function(survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/two2one',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "status": 1, "L1": NULL }',
-        success: function (data) {
+        success: function(data) {
           $('#showalert-move').show();
-          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
+          window.setTimeout(function() { $("#showalert-move").slideUp(500, function() { $("#showalert-move").hide(); }); }, 3000);
           self.removeSurvey(survey);
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
     }
-    this.three2four = function (survey) {
+    this.three2four = function(survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/three2four',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "status": 4, "L3": "' + TimeNow + '" }',
-        success: function (data) {
+        success: function(data) {
           $('#showalert-move').show();
-          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
+          window.setTimeout(function() { $("#showalert-move").slideUp(500, function() { $("#showalert-move").hide(); }); }, 3000);
           self.removeSurvey(survey);
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
     }
-    this.three2two = function (survey) {
+    this.three2two = function(survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/three2two',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "status": 2, "L2": NULL }',
-        success: function (data) {
+        success: function(data) {
           $('#showalert-move').show();
-          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
+          window.setTimeout(function() { $("#showalert-move").slideUp(500, function() { $("#showalert-move").hide(); }); }, 3000);
           self.removeSurvey(survey);
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
     }
-    this.four2zero = function (survey) {
+    this.four2zero = function(survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/four2zero',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "status": 0 }',
-        success: function (data) {
+        success: function(data) {
           $('#showalert-move').show();
-          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
+          window.setTimeout(function() { $("#showalert-move").slideUp(500, function() { $("#showalert-move").hide(); }); }, 3000);
           self.removeSurvey(survey);
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
     }
-    this.four2three = function (survey) {
+    this.four2three = function(survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/four2three',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "status": 3, "L3": NULL }',
-        success: function (data) {
+        success: function(data) {
           $('#showalert-move').show();
-          window.setTimeout(function () { $("#showalert-move").slideUp(500, function () { $("#showalert-move").hide(); }); }, 3000);
+          window.setTimeout(function() { $("#showalert-move").slideUp(500, function() { $("#showalert-move").hide(); }); }, 3000);
           self.removeSurvey(survey);
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
     }
-    this.zero2four = function (survey) {
+    this.zero2four = function(survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/zero2four',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "status": 4 }',
-        success: function (data) {
+        success: function(data) {
           $('#showalert-restore').show();
-          window.setTimeout(function () { $("#showalert-restore").slideUp(500, function () { $("#showalert-restore").hide(); }); }, 3000);
+          window.setTimeout(function() { $("#showalert-restore").slideUp(500, function() { $("#showalert-restore").hide(); }); }, 3000);
           self.removeSurvey(survey);
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
     }
-    this.change2public = function (survey) {
+    this.change2public = function(survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/change2public',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "private": 0 }',
-        success: function (data) {
+        success: function(data) {
           $('#showalert-pp').show();
-          window.setTimeout(function () { $("#showalert-pp").slideUp(500, function () { $("#showalert-pp").hide(); }); }, 3000);
+          window.setTimeout(function() { $("#showalert-pp").slideUp(500, function() { $("#showalert-pp").hide(); }); }, 3000);
           $.ajax({
             url: api + '/log',
             dataType: 'json',
@@ -523,20 +524,20 @@ $userlist .= "    ]";
             success: function(data) { result = data; }
           });
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
-      window.setTimeout(function () { window.location.reload(); }, 3300);
+      window.setTimeout(function() { window.location.reload(); }, 3300);
     }
-    this.change2private = function (survey) {
+    this.change2private = function(survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/change2private',
         dataType: 'json',
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "private": 1 }',
-        success: function (data) {
+        success: function(data) {
           $('#showalert-pp').show();
-          window.setTimeout(function () { $("#showalert-pp").slideUp(500, function () { $("#showalert-pp").hide(); }); }, 3000);
+          window.setTimeout(function() { $("#showalert-pp").slideUp(500, function() { $("#showalert-pp").hide(); }); }, 3000);
           $.ajax({
             url: api + '/log',
             dataType: 'json',
@@ -546,55 +547,57 @@ $userlist .= "    ]";
             success: function(data) { result = data; }
           });
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
-      window.setTimeout(function () { window.location.reload(); }, 3300);
+      window.setTimeout(function() { window.location.reload(); }, 3300);
     }
-    this.removeSurvey = function (survey) {
+    this.removeSurvey = function(survey) {
       var index = self.surveys.indexOf(survey);
       if (index > -1) { self.surveys.splice(index, 1); }
     }
-    this.createNew = function () {
+    this.createNew = function() {
       self.isNewSurveyCreating(true);
       self.newSurveyName("My new project");
     }
-    this.cancelNew = function () {
+    this.cancelNew = function() {
       self.isNewSurveyCreating(false);
     }
-    this.postNew = function () {
+    this.postNew = function() {
       self.cancelNew();
       $.ajax({
         url: api + '/user/' + companyid + '/' + userid + '/new?name=' + self.newSurveyName(),
         dataType: 'json',
         type: 'get',
         contentType: 'application/json; charset=utf-8',
-        success: function (data) {
-          self.surveys.splice(0, 0, self.createSurveyObject(data));
+        success: function(data) {
+          console.log(data);
+          // self.surveys.splice(0, 0, self.createSurveyObject(data));
           $.ajax({
-            url: api + '/log/' + userid + '/' + survey.id,
+            url: api + '/log/' + userid + '/' + data.id,
             dataType: 'json',
             type: 'post',
             contentType: 'application/json; charset=utf-8',
-            data: '{ "surveyid": "' + survey.id + '", "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' created a new survey named ' + self.newSurveyName() + '", "critical": "3" }',
+            data: '{ "surveyid": "' + data.id + '", "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' created a new survey named ' + self.newSurveyName() + '", "critical": "3" }',
             success: function(data) { result = data; }
           });
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
+      // window.setTimeout(function () { window.location.reload(); }, 3300);
     }
-    this.startEditOwner = function (survey) {
+    this.startEditOwner = function(survey) {
       survey.editingOwner(survey.userid());
       survey.isEditingOwner(true);
     }
-    this.postEditOwner = function (survey) {
+    this.postEditOwner = function(survey) {
       self.cancelEditOwner(survey);
     }
-    this.cancelEditOwner = function (survey) { survey.isEditingOwner(false); }
-    this.startEdit = function (survey) {
+    this.cancelEditOwner = function(survey) { survey.isEditingOwner(false); }
+    this.startEdit = function(survey) {
       survey.editingName(survey.title());
       survey.isEditing(true);
     }
-    this.postEdit = function (survey) {
+    this.postEdit = function(survey) {
       self.cancelEdit(survey);
       $.ajax({
         url: api + '/survey/' + survey.id + '/rename',
@@ -602,7 +605,7 @@ $userlist .= "    ]";
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "title": "' + survey.editingName() + '" }',
-        success: function (data) {
+        success: function(data) {
           survey.title(survey.editingName());
           $.ajax({
             url: api + '/log/' + userid + '/' + survey.id,
@@ -613,15 +616,15 @@ $userlist .= "    ]";
             success: function(data) { result = data; }
           });
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
     }
-    this.cancelEdit = function (survey) { survey.isEditing(false); }
-    this.startEditDescription = function (survey) {
+    this.cancelEdit = function(survey) { survey.isEditing(false); }
+    this.startEditDescription = function(survey) {
       survey.editingDescription(survey.description());
       survey.isEditingDescription(true);
     }
-    this.postEditDescription = function (survey) {
+    this.postEditDescription = function(survey) {
       self.cancelEditDescription(survey);
       $.ajax({
         url: api + '/survey/' + survey.id + '/redescription',
@@ -629,7 +632,7 @@ $userlist .= "    ]";
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "description": "' + survey.editingDescription() + '" }',
-        success: function (data) {
+        success: function(data) {
           survey.description(survey.editingDescription());
           $.ajax({
             url: api + '/log/' + userid + '/' + survey.id,
@@ -640,18 +643,18 @@ $userlist .= "    ]";
             success: function(data) { result = data; }
           });
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
     }
-    this.cancelEditDescription = function (survey) { survey.isEditingDescription(false); }
-    this.startEditPP = function (survey) {
+    this.cancelEditDescription = function(survey) { survey.isEditingDescription(false); }
+    this.startEditPP = function(survey) {
       survey.editingPP(survey.private());
       survey.isEditingPP(true);
     }
-    this.postEditPP = function (survey) {
+    this.postEditPP = function(survey) {
       self.cancelEditPP(survey);
     }
-    this.cancelEditPP = function (survey) { survey.isEditingPP(false); }
+    this.cancelEditPP = function(survey) { survey.isEditingPP(false); }
     this.changingowner = function(survey) {
       $.ajax({
         url: api + '/survey/' + survey.id + '/reowner',
@@ -659,9 +662,9 @@ $userlist .= "    ]";
         type: 'put',
         contentType: 'application/json; charset=utf-8',
         data: '{ "userid": ' + survey.selectedUser() + ' }',
-        success: function (data) {
+        success: function(data) {
           $('#showalert-reowner').show();
-          window.setTimeout(function () { $("#showalert-reowner").slideUp(500, function () { $("#showalert-reowner").hide(); }); }, 3000);
+          window.setTimeout(function() { $("#showalert-reowner").slideUp(500, function() { $("#showalert-reowner").hide(); }); }, 3000);
           $.ajax({
             url: api + '/log',
             dataType: 'json',
@@ -671,11 +674,11 @@ $userlist .= "    ]";
             success: function(data) { result = data; }
           });
         },
-        error: function (error) { self.onFail(error); }
+        error: function(error) { self.onFail(error); }
       });
-      window.setTimeout(function () { window.location.reload(); }, 3300);
+      window.setTimeout(function() { window.location.reload(); }, 3300);
     }
-    this.createSurveyObject = function (data) {
+    this.createSurveyObject = function(data) {
       var canedit = false; var owner = false; var admin = false;
       if (userid == data.userid) { owner = true; }
       if (level == 9) { canedit = true; admin = true; } else if (level == 6) { canedit = true; }
@@ -685,8 +688,8 @@ $userlist .= "    ]";
       var t1 = moment(data.updated).fromNow(); var t2 = moment(data.updated).format("D MMM YYYY"); updated = t2 + ' (' + t1 + ')';
       return new Listing(data.title, data.description, data.userid, created, updated, data.id, data.email, data.fullname, data.company, data.companyid, data.private, canedit, owner, admin, data.rD, UserListing, data.data);
     }
-    this.onFail = function (error) { alert(JSON.stringify(error)); }
-    this.showInfo = function (survey) { survey.showInfo(!survey.showInfo()); }
+    this.onFail = function(error) { alert(JSON.stringify(error)); }
+    this.showInfo = function(survey) { survey.showInfo(!survey.showInfo()); }
     <?php
     if ($_GET['c'] == "A") { echo "this.loadA();"; }
     else if ($_GET['c'] == "B") { echo "this.loadB();"; }
@@ -696,7 +699,7 @@ $userlist .= "    ]";
     else { echo "this.loadA();"; }
     ?>
   }
-  jQuery(document).ready(function () { ko.applyBindings(new ViewModel()); });
+  jQuery(document).ready(function() { ko.applyBindings(new ViewModel()); });
 </script>
 
 <br>
