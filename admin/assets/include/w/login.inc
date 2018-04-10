@@ -44,7 +44,7 @@ if (isset($login)) {
   </div>
   <br>
   <p class="text-center">
-    <button class="btn btn-warning" id="btn-login" data-loading-text="Loggin in..." data-reset-text="Completed" name="login" value="1" type="submit">Log in <i class="pe-check-circle-o"></i></button>
+    <button class="btn btn-warning" id="btn-login" data-loading-text="<i class='pe-circle-o-notch pe-spin pe-fw'></i> Loggin in..." data-reset-text="Completed" name="login" value="1" type="submit" disabled="disabled">Log in <i class="pe-check-circle-o"></i></button>
     <button class="btn btn-default" name="cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
   <br>

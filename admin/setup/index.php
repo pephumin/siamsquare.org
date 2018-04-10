@@ -75,7 +75,7 @@ if ($login->passwordResetWasSuccessful() == true && $login->passwordResetLinkIsV
   </div>
   <hr>
   <p class="text-center">
-    <button class="btn btn-warning" name="submit_new_password" type="submit">Set my password <i class="pe-check-circle-o"></i></button>
+    <button class="btn btn-warning" name="submit_new_password" type="submit disabled="disabled"">Set my password <i class="pe-check-circle-o"></i></button>
     <button class="btn btn-default" name="Cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
 </form>
@@ -161,7 +161,7 @@ if ($login->passwordResetWasSuccessful() == true && $login->passwordResetLinkIsV
   <hr>
   <p class="text-center">
     <input type="hidden" name="d" value="<?php echo $d; ?>">
-    <button class="btn btn-warning" name="request_password_reset" type="submit">Send my request <i class="pe-check-circle-o"></i></button>
+    <button class="btn btn-warning" name="request_password_reset" type="submit" disabled="disabled">Send my request <i class="pe-check-circle-o"></i></button>
     <button class="btn btn-default" name="Cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
 </form>

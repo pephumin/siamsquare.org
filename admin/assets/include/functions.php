@@ -466,6 +466,7 @@ function meta($title) {
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-csv.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-bar-rating.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/imagepicker.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery.inputmask.bundle.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\">\n";
   echo "    $.widget.bridge('uibutton', $.ui.button);\n";
   echo "    $.widget.bridge('uitooltip', $.ui.tooltip);\n";

@@ -1,5 +1,6 @@
 <?php
 
+$excerptRows = "50";
 // $c_target = 300;
 
 $today['year'] = date("Y"); $today['month'] = date("m"); $today['day'] = date("d");
@@ -30,8 +31,14 @@ while ($row = $q1->fetchObject()) {
   $project = $row->title;
   $status = $row->status;
   $private = $row->private;
+  $sample_size = $row->sample;
   if ($row->userid == $_SESSION['userid']) { $owner = 1; } else { $owner = 0; }
-  if ($row->created) { $L0 = date_parse_from_format("Y-m-d H:i:s", $row->created); if ($L0['month'] == "01") { $L0['month'] = "12"; $L0['year'] = $L0['year']-1; } else { $L0['month'] = $L0['month']-1; } $created = ago($row->created); }
+  if ($row->created) {
+    $L0 = date_parse_from_format("Y-m-d H:i:s", $row->created);
+    if ($L0['month'] == "01") { $L0['month'] = "12"; $L0['year'] = $L0['year']-1; } else { $L0['month'] = $L0['month']-1; }
+    $created = ago($row->created);
+    $LLL0 = $row->created;
+  } else { $LL0 = "-"; }
   if ($row->L1) {
     $L1 = date_parse_from_format("Y-m-d H:i:s", $row->L1);
     if ($L1['month'] == "01") { $L1['month'] = "12"; $L1['year'] = $L1['year']-1; } else { $L1['month'] = $L1['month']-1; }
@@ -50,16 +57,16 @@ while ($row = $q1->fetchObject()) {
     $LL3 = ago($row->L3);
     $LLL3 = $row->L3;
   } else { $LL3 = "-"; }
-  if ($row->status == 1) {
+  if ($status == 1) {
     $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-  } else if ($row->status == 2) {
+  } else if ($status == 2) {
     $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
     $timelinedata .= "[ '".$project."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#00E600', ";
-  } else if ($row->status == 3) {
+  } else if ($status == 3) {
     $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
     $timelinedata .= "[ '".$project."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
     $timelinedata .= "[ '".$project."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#009900', ";
-  } else if ($row->status == 4) {
+  } else if ($status == 4) {
     $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
     $timelinedata .= "[ '".$project."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
     $timelinedata .= "[ '".$project."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day'].") ], \n"; $colordata .= "'#009900', ";
@@ -118,26 +125,228 @@ else {
 $area .= "      ]";
 
 // Data for fieldwork summary boxes
-if ($LLL1) {
+
+if ($status > "2") {
+  $stage = "3";
+  $a = date_parse_from_format("Y-m-d H:i:s", $LLL0);
+  $ac = $a['year']."-".$a['month']."-".$a['day'];
+  $begindate0 = $a['day']." ".fullmonth($a['month'], "short");
   $b = date_parse_from_format("Y-m-d H:i:s", $LLL1);
   $bc = $b['year']."-".$b['month']."-".$b['day'];
-  $begindate = $b['day']." ".fullmonth($b['month'], "short");
-  $from = strtotime($bc);
+  $begindate1 = $b['day']." ".fullmonth($b['month'], "short");
+  $c = date_parse_from_format("Y-m-d H:i:s", $LLL2);
+  $cc = $c['year']."-".$c['month']."-".$c['day'];
+  $begindate2 = $c['day']." ".fullmonth($c['month'], "short");
+  $from0 = strtotime($ac);
+  $from1 = strtotime($bc);
+  $from2 = strtotime($cc);
   $today = time();
-  $difference = $today - $from;
+  $difference1 = $from1 - $from0;
+  $dd1 = floor($difference1 / 86400);
+  if ($dd1 == "1") { $daysofsetup = "$dd1 day"; } else { $daysofsetup = "$dd1 days"; }
+  $difference2 = $from2 - $from1;
+  $dd2 = floor($difference2 / 86400);
+  if ($dd2 == "1") { $daysoffieldwork = "$dd2 day"; } else { $daysoffieldwork = "$dd2 days"; }
+  $difference3 = $today - $from2;
+  $dd3 = floor($difference3 / 86400);
+  if ($dd3 == "1") { $daysoffieldworkcompletion = "$dd3 day"; } else { $daysoffieldworkcompletion = "$dd3 days"; }
+  $setuptiming = "$begindate0 to $begindate1";
+  $fieldworktiming = "$begindate1 to $begindate2";
+  $fieldworkstatus = "<font color=\"blue\">Fieldwork was completed</font>";
+  $dcupdateinsert .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Sample achieved</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$SSCOUNT1</strong></h4></div>\n";
+  $dcupdateinsert .= "    <br>\n";
+  $dcupdateinsert .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Setup ($setuptiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysofsetup</strong></h4></div>\n";
+  $dcupdateinsert .= "    <br>\n";
+  $dcupdateinsert .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork ($fieldworktiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork</strong></h4></div>\n";
+} else if ($status == "2") {
+  $stage = "2";
+  $a = date_parse_from_format("Y-m-d H:i:s", $LLL0);
+  $ac = $a['year']."-".$a['month']."-".$a['day'];
+  $begindate0 = $a['day']." ".fullmonth($a['month'], "short");
+  $b = date_parse_from_format("Y-m-d H:i:s", $LLL1);
+  $bc = $b['year']."-".$b['month']."-".$b['day'];
+  $begindate1 = $b['day']." ".fullmonth($b['month'], "short");
+  $from0 = strtotime($ac);
+  $from1 = strtotime($bc);
+  $today = time();
+  $difference1 = $from1 - $from0;
+  $dd1 = floor($difference1 / 86400);
+  if ($dd1 == "1") { $daysofsetup = "$dd1 day"; } else { $daysofsetup = "$dd1 days"; }
+  $difference2 = $today - $from1;
+  $dd2 = floor($difference2 / 86400);
+  if ($dd2 == "1") { $daysoffieldwork = "$dd2 day"; } else { $daysoffieldwork = "$dd2 days"; }
+  $setuptiming = "$begindate0 to $begindate1";
+  $fieldworktiming = "since $begindate1";
+  $fieldworkstatus = "<font color=\"green\">Fieldwork is still on-going</font>";
+  $dcupdateinsert .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Sample achieved</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$SSCOUNT1</strong></h4></div>\n";
+  $dcupdateinsert .= "    <br>\n";
+  $dcupdateinsert .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Setup ($setuptiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysofsetup</strong></h4></div>\n";
+  $dcupdateinsert .= "    <br>\n";
+  $dcupdateinsert .= "    <div class=\"bg-primary text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork ($fieldworktiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork</strong></h4></div>\n";
+} else if ($status == "1") {
+  $stage = "1";
+  $b = date_parse_from_format("Y-m-d H:i:s", $LLL0);
+  $bc = $b['year']."-".$b['month']."-".$b['day'];
+  $begindate0 = $b['day']." ".fullmonth($b['month'], "short");
+  $from0 = strtotime($bc);
+  $today = time();
+  $difference = $today - $from0;
   $daysoffieldwork = floor($difference / 86400);
+  $begindate = $begindate0;
+  $fieldworkstatus = "<font color=\"orange\">Fieldwork has not been started</font>";
+  $fieldworktiming = "since $begindate";
+  $a = date_parse_from_format("Y-m-d H:i:s", $LLL0);
+  $ac = $a['year']."-".$a['month']."-".$a['day'];
+  $begindate0 = $a['day']." ".fullmonth($a['month'], "short");
+  $from0 = strtotime($ac);
+  $today = time();
+  $difference1 = $today - $from0;
+  $dd1 = floor($difference1 / 86400);
+  if ($dd1 == "1") { $daysofsetup = "$dd1 day"; } else { $daysofsetup = "$dd1 days"; }
+  $setuptiming = "since $begindate0";
+  $fieldworkstatus = "<font color=\"orange\">Fieldwork has not started</font>";
+  $dcupdateinsert .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Sample achieved</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$SSCOUNT1</strong></h4></div>\n";
+  $dcupdateinsert .= "    <br>\n";
+  $dcupdateinsert .= "    <div class=\"bg-primary text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Setup ($setuptiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysofsetup</strong></h4></div>\n";
 } else {
   $begindate = "-";
   $daysoffieldwork = "0";
+  $stage = "0";
 }
-$dcupdate = "<h4>Data collection up-to-date</h4>\n";
+
+$q2S = $db->prepare("SELECT COUNT(*) as q2S1, SUM(status='0') AS q2S2, SUM(status='1') AS q2S3, SUM(status='2') AS q2S4 FROM j_results WHERE surveyid = :surveyid");
+$q2S->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q2S->execute();
+while ($row = $q2S->fetchObject()) {
+  $RDall = $row->q2S1;
+  $RDterminated = $row->q2S2;
+  $RDpilot = $row->q2S3;
+  $RDsuccess = $row->q2S4;
+}
+
+$summaryofsample = "<ul class=\"progress-tracker progress-tracker--text progress-tracker--center\">\n";
+$summaryofsample .= "  <li class=\"progress-step\">\n";
+$summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+$summaryofsample .= "    <span class=\"progress-text\">\n";
+$summaryofsample .= "      <span class=\"progress-title\">Total</span> (n=$RDall)\n";
+$summaryofsample .= "    </span></a>\n";
+$summaryofsample .= "  </li>\n";
+if ($stage == "1") {
+  $summaryofsample .= "  <li class=\"progress-step\">\n";
+  $summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+  $summaryofsample .= "    <span class=\"progress-text\">\n";
+  $summaryofsample .= "      <span class=\"progress-title\">Pilot tests</span> ($RDpilot)\n";
+  $summaryofsample .= "    </span></a>\n";
+  $summaryofsample .= "  </li>\n";
+  $summaryofsample .= "  <li class=\"progress-step\">\n";
+  $summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+  $summaryofsample .= "    <span class=\"progress-text\">\n";
+  $summaryofsample .= "      <span class=\"progress-title\">Terminated</span> (n=$RDterminated)</p>\n";
+  $summaryofsample .= "    </span></a>\n";
+  $summaryofsample .= "  </li>\n";
+  $summaryofsample .= "  <li class=\"progress-step\">\n";
+  $summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+  $summaryofsample .= "    <span class=\"progress-text\">\n";
+  $summaryofsample .= "      <span class=\"progress-title\">Completion</span> (n=$RDsuccess)</p>\n";
+  $summaryofsample .= "    </span></a>\n";
+  $summaryofsample .= "  </li>\n";
+  $summaryofsample .= "  <li class=\"progress-step\">\n";
+  $summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+  $summaryofsample .= "    <span class=\"progress-text\">\n";
+  $summaryofsample .= "      <span class=\"progress-title\">Target</span> (n=$sample_size)</p>\n";
+  $summaryofsample .= "    </span></a>\n";
+  $summaryofsample .= "  </li>\n";
+} else if ($stage == "2") {
+  $summaryofsample .= "  <li class=\"progress-step is-active\">\n";
+  $summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+  $summaryofsample .= "    <span class=\"progress-text\">\n";
+  $summaryofsample .= "      <span class=\"progress-title\">Pilot tests</span> ($RDpilot)\n";
+  $summaryofsample .= "    </span></a>\n";
+  $summaryofsample .= "  </li>\n";
+  $summaryofsample .= "  <li class=\"progress-step is-active\">\n";
+  $summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+  $summaryofsample .= "    <span class=\"progress-text\">\n";
+  $summaryofsample .= "      <span class=\"progress-title\">Terminated</span> (n=$RDterminated)</p>\n";
+  $summaryofsample .= "    </span></a>\n";
+  $summaryofsample .= "  </li>\n";
+  $summaryofsample .= "  <li class=\"progress-step is-active\">\n";
+  $summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+  $summaryofsample .= "    <span class=\"progress-text\">\n";
+  $summaryofsample .= "      <span class=\"progress-title\">Completion</span> (n=$RDsuccess)</p>\n";
+  $summaryofsample .= "    </span></a>\n";
+  $summaryofsample .= "  </li>\n";
+  $summaryofsample .= "  <li class=\"progress-step\">\n";
+  $summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+  $summaryofsample .= "    <span class=\"progress-text\">\n";
+  $summaryofsample .= "      <span class=\"progress-title\">Target</span> (n=$sample_size)</p>\n";
+  $summaryofsample .= "    </span></a>\n";
+  $summaryofsample .= "  </li>\n";
+} else if ($stage == "3") {
+  $summaryofsample .= "  <li class=\"progress-step\">\n";
+  $summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+  $summaryofsample .= "    <span class=\"progress-text\">\n";
+  $summaryofsample .= "      <span class=\"progress-title\">Pilot tests</span> ($RDpilot)\n";
+  $summaryofsample .= "    </span></a>\n";
+  $summaryofsample .= "  </li>\n";
+  $summaryofsample .= "  <li class=\"progress-step\">\n";
+  $summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+  $summaryofsample .= "    <span class=\"progress-text\">\n";
+  $summaryofsample .= "      <span class=\"progress-title\">Terminated</span> (n=$RDterminated)</p>\n";
+  $summaryofsample .= "    </span></a>\n";
+  $summaryofsample .= "  </li>\n";
+  $summaryofsample .= "  <li class=\"progress-step\">\n";
+  $summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+  $summaryofsample .= "    <span class=\"progress-text\">\n";
+  $summaryofsample .= "      <span class=\"progress-title\">Completion</span> (n=$RDsuccess)</p>\n";
+  $summaryofsample .= "    </span></a>\n";
+  $summaryofsample .= "  </li>\n";
+  $summaryofsample .= "  <li class=\"progress-step is-active\">\n";
+  $summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+  $summaryofsample .= "    <span class=\"progress-text\">\n";
+  $summaryofsample .= "      <span class=\"progress-title\">Target</span> (n=$sample_size)</p>\n";
+  $summaryofsample .= "    </span></a>\n";
+  $summaryofsample .= "  </li>\n";
+} else {
+  $summaryofsample .= "  <li class=\"progress-step\">\n";
+  $summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+  $summaryofsample .= "    <span class=\"progress-text\">\n";
+  $summaryofsample .= "      <span class=\"progress-title\">Pilot tests</span> ($RDpilot)\n";
+  $summaryofsample .= "    </span></a>\n";
+  $summaryofsample .= "  </li>\n";
+  $summaryofsample .= "  <li class=\"progress-step\">\n";
+  $summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+  $summaryofsample .= "    <span class=\"progress-text\">\n";
+  $summaryofsample .= "      <span class=\"progress-title\">Terminated</span> (n=$RDterminated)</p>\n";
+  $summaryofsample .= "    </span></a>\n";
+  $summaryofsample .= "  </li>\n";
+  $summaryofsample .= "  <li class=\"progress-step\">\n";
+  $summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+  $summaryofsample .= "    <span class=\"progress-text\">\n";
+  $summaryofsample .= "      <span class=\"progress-title\">Completion</span> (n=$RDsuccess)</p>\n";
+  $summaryofsample .= "    </span></a>\n";
+  $summaryofsample .= "  </li>\n";
+  $summaryofsample .= "  <li class=\"progress-step\">\n";
+  $summaryofsample .= "    <span class=\"progress-marker\"></span>\n";
+  $summaryofsample .= "    <span class=\"progress-text\">\n";
+  $summaryofsample .= "      <span class=\"progress-title\">Target</span> (n=$sample_size)</p>\n";
+  $summaryofsample .= "    </span></a>\n";
+  $summaryofsample .= "  </li>\n";
+}
+$summaryofsample .= "</ul>";
+
+$RDsuccess_percent = percent($RDsuccess / $sample_size);
+if ($RDsuccess) { $RDsuccess_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDsuccess_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDsuccess_percent\">$RDsuccess_percent</div></div>"; } //else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
+
+$dcupdate = "<h4>Status: $fieldworkstatus</h4>\n";
 $dcupdate .= "<div class=\"row\">\n";
-$dcupdate .= "  <div class=\"col-xs-12 col-sm-3 col-md-3 col-lg-3\">\n";
-$dcupdate .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork (since $begindate)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork days</strong></h4></div>\n";
-$dcupdate .= "    <br>\n";
-$dcupdate .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Sample achieved</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$SSCOUNT1</strong></h4></div>\n";
+$dcupdate .= "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
+$dcupdate .= "    <div style=\"width:100%; height:100%\"><center>$summaryofsample</center></div>\n";
 $dcupdate .= "  </div>\n";
-$dcupdate .= "  <div class=\"col-xs-12 col-sm-9 col-md-9 col-lg-9\">\n";
+$dcupdate .= "  <div class=\"col-xs-12 col-sm-3 col-md-3 col-lg-3\">\n";
+$dcupdate .= "    $RDsuccess_bar\n";
+$dcupdate .= "    $dcupdateinsert\n";
+$dcupdate .= "  </div>\n";
+$dcupdate .= "  <div class=\"col-xs-12 col-sm-9 col-md-9 col-lg-9\" style=\"padding:0\">\n";
 $dcupdate .= "    <div style=\"width:100%; height:100%\"><center><div id=\"areachart\"></div></center></div>\n";
 $dcupdate .= "  </div>\n";
 $dcupdate .= "</div>\n";
@@ -265,7 +474,7 @@ if ($valid > 0) {
   $last = 0; $first = ($q->rowCount()-1);
   while ($row = $q->fetchAll(PDO::FETCH_ASSOC)) {
     $ee = $row;
-    for ($i=0;$i<count($ee);$i++) {
+    for ($i=0; $i<count($ee); $i++) {
       $removeKeys = array('rd', 'email', 'ip', 'surveyid', 'status');
       foreach($removeKeys as $key) {
         unset($ee[$i][$key]);
@@ -275,6 +484,7 @@ if ($valid > 0) {
     }
   }
   $datafortable = json_encode($ee);
+  // print_r($datafortable);
   echo "<h4>Interim data</h4>\n";
   echo "<div class=\"alert alert-warning\" role=\"alert\">\n";
   echo "  <h4>Important note</h4>\n";
@@ -283,9 +493,8 @@ if ($valid > 0) {
   echo "</div>\n";
   echo "<div id=\"showalert-delete\"></div>\n";
   echo "<div class=\"csv\">\n";
-  // echo "  <h4>Showing data ordered by the most recent response (total of <span class=\"rows count\"></span> records)</h4>\n";
-  echo "  <p>Table below shows the interim data ordered by the most recent response (total of <span class=\"rows count\"></span> records).</p>\n";
-  echo "  <p>In order to view all responses, you would need to either <a download=\"result.csv\" class=\"download\"><i class=\"pe-download pe-fw\"></i> download the data file</a> or <a class=\"raw\"><i class=\"pe-desktop pe-fw\"></i> view the data file online</a>.</p>\n";
+  echo "  <p>Table below shows the interim data which is <strong>the most recent <span class=\"excerpt\"></span> records</strong> of this survey which you can view the initial feedback plus an ability to delete should you need to.</p>\n";
+  echo "  <p>But in order to work with the data in a more effective way, we would suggst you <a class=\"download\"><i class=\"pe-download pe-fw\"></i> download the data file</a> or alternatively <a class=\"raw\"><i class=\"pe-desktop pe-fw\"></i> view the data online</a> in a Comma Separated Values (CSV) format if there are not many questions (e.g. less than 10 questions).</p>\n";
   echo "  <textarea class=\"editing form-control\" readonly></textarea>\n";
   echo "  <div class=\"table rendered\"><table class=\"table\"></table></div>\n";
   echo "  <span class=\"tablenotice\">You may need to scroll right if there are many columns <i class=\"pe-hand-o-right\"></i></span>\n";
@@ -355,22 +564,19 @@ if ($valid > 0) {
   }
   function renderCSV(objects) {
     var rows = $.csv.fromObjects(objects, {justArrays: true}); //console.log(rows);
-    if (rows.length < 1) return;
-
+    if (rows.length < 1) { return; }
     var table = $(".csv table")[0];
     $(table).html("").attr("id", "interimtable").addClass("table table-condensed");
-
     var thead = document.createElement("thead");
     var tr = document.createElement("tr");
     var header = rows[0];
-      for (field in header) {
-        var th = document.createElement("th");
-        $(th).html(header[field]).addClass("bg-primary small");
-        tr.appendChild(th);
-      }
+    for (field in header) {
+      var th = document.createElement("th");
+      $(th).html(header[field]).addClass("bg-primary small");
+      tr.appendChild(th);
+    }
     thead.appendChild(tr);
     $(thead).find('th:first-child').css("background", "#555"); $(thead).find('th:nth-child(2)').css("background", "#555");
-
     var tbody = document.createElement("tbody");
     for (var i=1; i<rows.length; i++) {
       resultid = getColumn(rows,0)
@@ -403,14 +609,12 @@ if ($valid > 0) {
     table.appendChild(thead);
     table.appendChild(tbody);
   }
-
   String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
   };
-
   $(document).ready(function () {
-    var excerptRows = 50;
+    var excerptRows = <?php echo $excerptRows; ?>;
     <?php if ($valid == 0) { echo "var tt = [];"; } else { echo "var tt = $datafortable;"; } ?>
     <?php if ($valid == 0) { echo "var ttt = [];"; } else { echo "var ttt = $datafortable;"; } ?>
     for(var k in tt) {
@@ -430,14 +634,20 @@ if ($valid > 0) {
     var outArray1 = []; var outArray2 = [];
     for (var row in inArray1) { outArray1[outArray1.length] = parse_object(inArray1[row]); }
     for (var row in inArray2) { outArray2[outArray2.length] = parse_object(inArray2[row]); }
-    $("span.rows.count").text("" + outArray1.length);
-    $("span.rows.count").text("" + outArray2.length);
-    var csv1 = $.csv.fromObjects(outArray1); var csv2 = $.csv.fromObjects(outArray2);
+    $(".excerpt").text("" + excerptRows);
+    // $("span.rows.count").text("" + outArray1.length);
+    // $("span.rows.count").text("" + outArray2.length);
+    var csv1 = "\ufeff"+$.csv.fromObjects(outArray1); var csv2 = "\ufeff"+$.csv.fromObjects(outArray2);
     renderCSV(outArray1.slice(0, excerptRows), this.id);
     showCSV(true);
     $(".csv textarea").val(csv2);
-    var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(csv2);
-    $(".csv a.download").attr("href", uri);
+    var blob = new Blob([csv2], { type: ' type: "text/csv;charset=UTF-8"' });
+    var csvUrl = window.URL.createObjectURL(blob);
+    var todayDate = new Date().toISOString().slice(0,10);
+    var filename = "<?php echo $project; ?>" + "_data_" + todayDate + '.csv';
+    $(".csv a.download").attr({'download': filename, 'href': csvUrl });
+    // var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(csv2);
+    // $(".csv a.download").attr("href", uri);
     $(".csv textarea").blur(function() { showCSV(true); })
     $(".csv .raw").click(function() {
       showCSV(false);

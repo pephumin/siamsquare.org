@@ -15,7 +15,6 @@ $login = new Login();
 
 if (empty($_SESSION["captcha"])) { $clength = 8; $rText = generateRandom($clength); session_start(); $_SESSION["captcha"] = $rText; }
 
-
 if ((empty($_GET['d'])) || ($_GET['d'] == "contact")) {
   // contact us
   $title = "Contact us";
@@ -146,12 +145,12 @@ if ((empty($_GET['d'])) || ($_GET['d'] == "contact")) {
 <?php } ?>
   <p class="text-center">
 <?php if ($sent) { ?>
-    <button type="submit" class="btn btn-warning" disabled>Send <i class="pe-paper-plane"></i></button>
+    <button type="submit" class="btn btn-warning" disabled="disabled">Send <i class="pe-paper-plane"></i></button>
 <?php } else { ?>
-    <button type="submit" class="btn btn-warning">Send <i class="pe-paper-plane"></i></button>
+    <button type="submit" class="btn btn-warning" disabled="disabled">Send <i class="pe-paper-plane"></i></button>
     <input type="hidden" name="d" value="contact">
 <?php } ?>
-    <button type="submit" class="btn btn-default">Cancel <i class="pe-times-circle-o"></i></button>
+    <button type="reset" class="btn btn-default">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
 </form>
 <script>
@@ -296,12 +295,12 @@ if ((empty($_GET['d'])) || ($_GET['d'] == "contact")) {
   <hr>
   <p class="text-center">
 <?php if ($sent || $disable) { ?>
-    <button type="submit" class="btn btn-warning" disabled>Send my request <i class="pe-paper-plane"></i></button>
+    <button type="submit" class="btn btn-warning" disabled="disabled">Send my request <i class="pe-paper-plane"></i></button>
 <?php } else { ?>
-    <button type="submit" class="btn btn-warning">Send my request <i class="pe-paper-plane"></i></button>
+    <button type="submit" class="btn btn-warning" disabled="disabled">Send my request <i class="pe-paper-plane"></i></button>
     <input type="hidden" name="d" value="request">
 <?php } ?>
-    <button type="submit" class="btn btn-default">Cancel <i class="pe-times-circle-o"></i></button>
+    <button type="reset" class="btn btn-default">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
 </form>
 <script>

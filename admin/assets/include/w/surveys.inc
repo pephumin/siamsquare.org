@@ -124,7 +124,7 @@ $userlist .= "    ]";
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 projects-body">
         <div class="pull-right">
           <span data-bind="if: canedit"><a class="btn btn-default btn-tiny" data-bind="click: $parent.showInfo" title="Show the detailed information of this project">Info <i class="" data-bind="css: { 'pe-chevron-down': !showInfo(), 'pe-chevron-up': showInfo() }"></i></a></span>
-          <span data-bind=""><a class="btn btn-success btn-tiny" data-bind="attr: { href: '/r.php?designer=✓&amp;s=' + id, title: 'View the actual questionnaire', target: '_blank' }, css: { 'disabled': DT() == null }">View <i class="pe-plane"></i></a></span>
+          <span data-bind=""><a class="btn btn-success btn-tiny" data-bind="attr: { href: '/r.php?s=' + id, title: 'View the actual questionnaire', target: '_blank' }, css: { 'disabled': DT() == null }">View <i class="pe-plane"></i></a></span>
         </div>
         <div class="projectinfo">
           <strong>Created:</strong> <span data-bind="text: created"></span><br>
@@ -583,7 +583,7 @@ $userlist .= "    ]";
         },
         error: function(error) { self.onFail(error); }
       });
-      // window.setTimeout(function () { window.location.reload(); }, 3300);
+      window.setTimeout(function() { window.location.reload(); }, 3300);
     }
     this.startEditOwner = function(survey) {
       survey.editingOwner(survey.userid());

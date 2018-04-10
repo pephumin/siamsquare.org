@@ -34,7 +34,7 @@ function pageHeader($title) {
   header("Content-language: en");
   header("Content-type: text/html; charset=utf-8");
   meta($title);
-  facebookSDK();
+  // facebookSDK();
   echo "<body>\n";
   echo "<header>\n";
   echo "  <div class=\"row\">\n";

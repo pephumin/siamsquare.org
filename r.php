@@ -49,6 +49,7 @@ while ($r = $q1->fetchObject()) {
   $status = $r->status;
   if ($status == 3) { $readonly = 1; $closed = 1; }
   else if ($status > 3) { $readonly = 1; }
+  $poptions = $r->options;
   $cwebsite = $r->website;
   $cemail = $r->email;
   $ccompany = $r->company;
@@ -204,7 +205,12 @@ while ($r = $q1->fetchObject()) {
 //   $email = "CNT@siamsquare.org";
 // }
 
-$showsurvey = 1;
+$showsurvey = 0;
+
+// only for project Flakes (temporary)
+if (($_GET["s"] == "28") || ($_GET["s"] == "29")) {
+  $showsurvey = 1;
+}
 
 if ($_SESSION["level"] == 9) {
   $email = $_SESSION["email"];
@@ -264,16 +270,28 @@ echo "<div id=\"notification\"></div>\n";
     });
     return result;
   }
+  function getsurveyoptions(id) {
+    var result = "";
+    $.ajax({
+      url: api + '/survey/' + id + '/options',
+      dataType: 'json',
+      type: 'get',
+      cache: false,
+      async: false,
+      success: function(data) { result = data; }
+    });
+    return result;
+  }
   function postsurveydata(cid, cip, email, id, data, etitle, pilot) {
     var result = "";
-    if (pilot == 1) { logger = "/log/" + cid; logmessage = '"userid": "' + cid + '"'; loglevel = 2; }
-    else { logger = "/rlog/" + email; logmessage = '"email": "' + email + '"'; loglevel = 1; }
+    if (pilot == 1) { logger = "/log/" + cid; logmessage = '"userid": "' + cid + '"'; loglevel = 2; resultstatus = 1; }
+    else { logger = "/rlog/" + email; logmessage = '"email": "' + email + '"'; loglevel = 1; resultstatus = 2; }
     $.ajax({
       url: api + '/submit',
       dataType: 'json',
       type: 'post',
       contentType: 'application/json; charset=utf-8',
-      data: '{"rd": "' + cid + '", "ip": "' + cip + '", "email": "' + email + '", "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ', "status": ' + pilot + ' }',
+      data: '{"rd": "' + cid + '", "ip": "' + cip + '", "email": "' + email + '", "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ', "status": ' + resultstatus + ' }',
       success: function(data) {
         $('#showcompletion').show();
         $.ajax({
@@ -318,7 +336,7 @@ echo "<div id=\"notification\"></div>\n";
         });
       }
     });
-    // window.setTimeout(function () { window.location.reload(); }, 1500);
+    // window.setTimeout(function() { window.location.reload(); }, 1500);
     return result;
   }
   function autosavesurveydata(cid, cip, email, id, data, etitle) {
@@ -341,7 +359,7 @@ echo "<div id=\"notification\"></div>\n";
   var email = "<?php echo $email; ?>";
   var title = "Project <?php echo $project; ?>";
   var ip = "<?php echo getip(); ?>";
-  var pilot = <?php echo $mpilot; ?>;
+  var pilot = <?php if (($mpilot == "1") || ($mdesign == "1") || ($closed == "1")) { echo "1"; } else { echo "0"; } ?>;
   var readonly = <?php echo $readonly; ?>;
   var colour = <?php echo $showcolour; ?>;
   $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
@@ -355,8 +373,6 @@ echo "<div id=\"notification\"></div>\n";
   else if (colour == 8) { Survey.defaultBootstrapCss.navigationButton = "btn btn-info"; Survey.defaultBootstrapCss.progressBar = "progress-bar progress-bar-info progress-bar-striped active"; }
   else { Survey.defaultBootstrapCss.navigationButton = "btn btn-info"; Survey.defaultBootstrapCss.progressBar = "progress-bar progress-bar-info progress-bar-striped active"; }
   Survey.Survey.cssType = "bootstrap";
-  // if (readonly == 1) { survey.mode = "display"; $(function () { $('#pageComplete').attr('disabled', 'disabled'); }); } else if (readonly == 0) { survey.mode = "edit"; }
-  if (readonly == 1) { $(function () { $('#pageComplete').attr('disabled', 'disabled'); }); }
 
   Survey.JsonObject.metaData.addProperty("text", { name: "dateFormat", default: "d MM yy", choices: ["d MM yy", "dd-mm-yy", "dd/mm/yy", "dd.mm.yy", "M d, yy", "DD d MM yy"] });
   Survey.JsonObject.metaData.addProperty("dropdown", { name: "renderAs", default: "standard", choices: ["standard", "barrating", "imagepicker"] });
@@ -370,7 +386,7 @@ echo "<div id=\"notification\"></div>\n";
     afterRender: function(question, el) {
       if (question.dateFormat) { dateFormat = question.dateFormat; } else { dateFormat = 'd MM yy'; }
       var widget1 = $(el).datepicker({ dateFormat: dateFormat });
-      widget1.on("change", function (e) { question.value = $(this).val(); });
+      widget1.on("change", function(e) { question.value = $(this).val(); });
       question.valueChangedCallback = function() { widget1.datepicker('setDate', new Date(question.value)); }
       widget1.datepicker('setDate', new Date(question.value || Date.now));
     }
@@ -434,7 +450,7 @@ echo "<div id=\"notification\"></div>\n";
   }
   Survey.CustomWidgetCollection.Instance.addCustomWidget(widget4);
 
-  var survey = new Survey.Model (getsurveydata(surveyid));
+  var survey = new Survey.Model(getsurveydata(surveyid));
   if (pilot != 1) {
     var checksave = getsavesurveydata(surveyid, email);
     if ((checksave.data == null) || (checksave.data == "")) { resultid = null; }
@@ -447,13 +463,146 @@ echo "<div id=\"notification\"></div>\n";
     }
   }
 
+  function Subset(leader, follower, key) {
+    survey.onValueChanged.add(function(survey, options) {
+      if (options.name !== leader) { return; }
+      largerSet = options.question.choices;
+      var choices = [];
+      for (var i=0; i<largerSet.length; i++) {
+        var item = largerSet[i];
+        if (key == "keep") { if (options.value.indexOf(item.value) >= 0) { choices.push(item); } }
+        else if (key == "delete") { if (options.value.indexOf(item.value) < 0) { choices.push(item); } }
+      }
+      var smallerSet = survey.getQuestionByName(follower);
+      smallerSet.choices = choices;
+      smallerSet.visible = choices.length > 0;
+    });
+  }
+  function PSM(leader, follower, key) {
+    survey.onValueChanged.add(function(survey, options) {
+      if (options.name !== leader) { return; }
+      largerSet = options.question.choices;
+      var choices = [];
+      for (var i=0; i<largerSet.length; i++) {
+        var item = largerSet[i];
+        choices.push(item);
+        if (options.value.indexOf(item.value) >= 0) {
+          newchoices = choices.splice(0, i+1);
+          if (key == "up") { output = choices; }
+          else if (key == "down") { output = newchoices; }
+        }
+      }
+      var smallerSet = survey.getQuestionByName(follower);
+      smallerSet.choices = output;
+      smallerSet.visible = choices.length > 0;
+    });
+  }
+  function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+    while (0 !== currentIndex) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+    return array;
+  }
+  function maketotal(questionname, array) {
+    survey.onValueChanged.add(function(survey, options) {
+      if (options.name !== questionname) { return; }
+      var total = 0;
+      for (var i=0; i<array.length; i++) {
+        var ff = parseInt(array[i].value);
+        if (!isFinite(ff)) { ff = 0; }
+        total += ff;
+      }
+      var myElem = document.getElementById("sumtotal");
+      if (myElem != null) { myElem.parentElement.removeChild(myElem); }
+      var table = $(".table")[0];
+      var tbody = document.createElement("tbody");
+      var tr = document.createElement("tr");
+      var td1 = document.createElement("td");
+      var td2 = document.createElement("td");
+      $(tbody).attr("id", "sumtotal");
+      td1.innerHTML = "<strong>รวมทั้งสิ้น (Total)</strong>";
+      td2.innerHTML = "<strong>" + total + "</strong>";
+      tr.appendChild(td1);
+      tr.appendChild(td2);
+      tbody.appendChild(tr);
+      table.appendChild(tbody);
+    });
+  }
+
+  var optionsout = getsurveyoptions(surveyid);
+
+  if (optionsout.keep) {
+    for (var i=0; i<optionsout.keep.length; i++) {
+      Subset(optionsout.keep[i].leader, optionsout.keep[i].follower, "keep");
+    }
+  }
+  if (optionsout.delete) {
+    for (var i=0; i<optionsout.delete.length; i++) {
+      Subset(optionsout.delete[i].leader, optionsout.delete[i].follower, "delete");
+    }
+  }
+  if (optionsout.PSM) {
+    for (var i=0; i<optionsout.PSM.length; i++) {
+      PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].expensive, "up");
+      PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].tooexpensive, "up");
+      PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].toocheap, "down");
+      PSM(optionsout.PSM[i].expensive, optionsout.PSM[i].tooexpensive, "up");
+    }
+  }
+  if (optionsout.shuffle) {
+    for (var i=0; i<optionsout.shuffle.length; i++) {
+      var matrix = survey.getQuestionByName(optionsout.shuffle[i].questionname);
+      shuffle(matrix.rows);
+    }
+  }
+  if (optionsout.maketotal) {
+    for (i=0; i<optionsout.maketotal.length; i++) {
+      var makingtotal = survey.getQuestionByName(optionsout.maketotal[i].questionname);
+      maketotal(makingtotal.name, makingtotal.itemsValues);
+    }
+  }
+
+  // var isUpdatingValues = false;
+  // survey.onValueChanged.add(function(survey, options) {
+  //   if (isUpdatingValues) { return; }
+  //   if (options.name != "items") { return; }
+  //   isUpdatingValues = true;
+  //   var items = options.value;
+  //   if (items && Array.isArray(items)) {
+  //     var totalQuantity = 0;
+  //     var totalCost = 0;
+  //     for (var i=0; i<items.length; i++) {
+  //       var quantity = parseInt(items[i].quantity);
+  //       if(!quantity) quantity = 0;
+  //       var cost = parseInt(items[i].cost);
+  //       if(!cost) cost = 0;
+  //       totalQuantity += quantity;
+  //       items[i].total = quantity*cost;
+  //       totalCost += items[i].total;
+  //     }
+  //     survey.setValue("items", items);
+  //     survey.setValue("totalQuantity", totalQuantity);
+  //     survey.setValue("totalCost", totalCost);
+  //   }
+  //   isUpdatingValues = false;
+  // });
+  // survey.data = {totalQuantity: 0, totalCost: 0, items: [{total: 0}] };
+
+
   survey.render("runsurvey");
   $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> ระบบกำลังอัพโหลดรูปของคุณ ระหว่างนี้คุณสามารถทำรายการต่อได้ทันที และอีกสักครู่เมื่อระบบทำงานในส่วนนี้เสร็จ ข้อความนี้จะหายไปเอง</div>").hide();
   $('#showcompletion').html("<div class='alert alert-success'><i class='pe-check-square-o pe-lg pe-fw'></i> เราได้ทำการจัดเก็บความคิดเห็นของคุณลงระบบเป็นที่เรียบร้อยแล้ว</div>").hide();
   $('#resetsave').on('click', function() { clearsavesurveydata(resultid, ip, email, surveyid, title); });
-  survey.onComplete.add(function (s) { postsurveydata(cid, ip, email, surveyid, survey.data, title, pilot); });
-  survey.onUploadFile.add(function (data) { $('#showupload').show(); setTimeout(function () { $("#showupload").slideUp(500, function () { $("#showupload").hide(); }); }, 6000); });
-  if (pilot != 1) { survey.onCurrentPageChanged.add(function (data) { autosavesurveydata(cid, ip, email, surveyid, survey.data, title); }); }
+  survey.onComplete.add(function(s) { postsurveydata(cid, ip, email, surveyid, survey.data, title, pilot); });
+  survey.onUploadFile.add(function(data) { $('#showupload').show(); setTimeout(function() { $("#showupload").slideUp(500, function() { $("#showupload").hide(); }); }, 6000); });
+  if (pilot != 1) { survey.onCurrentPageChanged.add(function(data) { autosavesurveydata(cid, ip, email, surveyid, survey.data, title); }); }
+  if (readonly == 1) { survey.mode = "display"; $(function() { $('#runsurvey').attr('disabled', 'disabled'); }); } else if (readonly == 0) { survey.mode = "edit"; }
+
   // survey.onComplete
   // survey.onCurrentPageChanged
   // survey.onValueChanged

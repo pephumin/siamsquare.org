@@ -35,165 +35,200 @@ for ($i = 0; $i < count($questions); $i++) {
   if ($questions[$i]["choicesByUrl"]["url"]) { $url = $questions[$i]["choicesByUrl"]["url"]; }
   if ($questions[$i]["choicesByUrl"]["path"]) { $path = $questions[$i]["choicesByUrl"]["path"]; }
   if ($questions[$i]["choicesByUrl"]["valueName"]) { $valueName = $questions[$i]["choicesByUrl"]["valueName"]; }
-  if ($qrequired) { $add = " <sup>(*)</sup>\n"; } else { $add = ""; }
+  if ($qrequired) { $add = " <sup>(*)</sup>"; } else { $add = ""; }
 
   if ($qname == $show) {
     $qe = iconize($qtype);
     $qout .= "<small class='pull-right' style='padding:10px 5px'>".$qe."</small>\n";
-    $qout .= "<h4 style=\"font-family:boon;font-size:140%\">".$qname.$add.": ".$qtitle."</h4>\n";
-    if ($qvisibleIf) { $qout .= "    <p class=\"grey small\"><em>Only ask when <u>".$qvisibleIf."</u></em></p>\n"; } else { $qout .= "    <p class=\"grey small\"><em>Ask all respondents</em></p>\n"; }
-    if ($qtype == "radiogroup") {
-      $qout .= "<ul>\n";
+    $qout .= "      <h4 style=\"font-family:boon;font-size:140%\">".$qname.$add.": ".$qtitle."</h4>\n";
+    if ($qvisibleIf) { $qout .= "      <p class=\"grey small\"><em>Only ask when <u>".$qvisibleIf."</u></em></p>\n"; } else { $qout .= "      <p class=\"grey small\"><em>Ask all respondents</em></p>\n"; }
+    if (($qtype == "radiogroup") || ($qtype == "radiogrouphtml")) {
+      $qout .= "      <ul>\n";
       foreach ($choices as $k4 => $p4) {
         $choice_text = $p4['text']; $c_text[] = $p4['text'];
         $choice_code = $p4['value']; $c_code[] = $p4['value'];
-        $qout .= "<div class=\"radio\" style=\"font-family:boon;font-size:120%\"><label><input type=\"radio\" name=\"radiogroup\" style=\"position:relative;margin-right:10px\" disabled>$choice_text ($choice_code)</label></div>\n";
+        $qout .= "        <div class=\"radio\" style=\"font-family:boon;font-size:120%\"><label><input type=\"radio\" name=\"radiogroup\" style=\"position:relative;margin-right:10px\" disabled>$choice_text ($choice_code)</label></div>\n";
       }
-      $qout .= "</ul>\n";
+      $qout .= "      </ul>\n";
     }
-    else if ($qtype == "checkbox") {
-      $qout .= "<ul>\n";
+    else if (($qtype == "checkbox") || ($qtype == "checkboxhtml")) {
+      $qout .= "      <ul>\n";
       foreach ($choices as $k5 => $p5) {
         $choice_text = $p5['text']; $c_text[] = $p5['text'];
         $choice_code = $p5['value']; $c_code[] = $p5['value'];
-        $qout .= "<div class=\"checkbox\" style=\"font-family:boon;font-size:120%\"><label><input type=\"checkbox\" style=\"position:relative;margin-right:10px\">$choice_text ($choice_code)</label></div>\n";
+        $qout .= "        <div class=\"checkbox\" style=\"font-family:boon;font-size:120%\"><label><input type=\"checkbox\" style=\"position:relative;margin-right:10px\">$choice_text ($choice_code)</label></div>\n";
       }
-      $qout .= "</ul>\n";
+      $qout .= "      </ul>\n";
     }
     else if ($qtype == "dropdown") {
       if ($choicesByUrl) {
         list($path1, $path2) = explode(';', $path);
         $array = json_decode(file_get_contents($url));
-        $qout .= "<div class=\"row\"><div class=\"col-sm-6\" style=\"font-family:boon;font-size:120%\">\n";
-        $qout .= "<select class=\"form-control\">";
+        $qout .= "      <div class=\"row\"><div class=\"col-sm-6\" style=\"font-family:boon;font-size:120%\">\n";
+        $qout .= "        <select class=\"form-control\">\n";
         foreach ($array->$path1->$path2 as $p1=>$q1) {
           $q11 = $q1->$valueName;
-          $qout .= "<option>$q11</option>";
+          $qout .= "          <option>$q11</option>\n";
         }
-        $qout .= "</select>";
-        $qout .= "</div></div>\n";
+        $qout .= "        </select>\n";
+        $qout .= "      </div></div>\n";
       } else {
-        $qout .= "<div class=\"row\"><div class=\"col-sm-6\" style=\"font-family:boon;font-size:120%\">\n";
-        $qout .= "<select class=\"form-control\">";
+        $qout .= "      <div class=\"row\"><div class=\"col-sm-6\" style=\"font-family:boon;font-size:120%\">\n";
+        $qout .= "        <select class=\"form-control\">\n";
         foreach ($choices as $k6 => $p6) {
           $choice_text = $p6['text']; $c_text[] = $p6['text'];
           $choice_code = $p6['value']; $c_code[] = $p6['value'];
-          $qout .= "<option>$choice_text ($choice_code)</option>";
+          $qout .= "          <option>$choice_text ($choice_code)</option>\n";
         }
-        $qout .= "</select>";
-        $qout .= "</div></div>\n";
+        $qout .= "        </select>\n";
+        $qout .= "      </div></div>\n";
       }
     }
     else if ($qtype == "rating") {
       $mininumRateDescription = $questions[$i]["mininumRateDescription"];
       $maximumRateDescription = $questions[$i]["maximumRateDescription"];
-      $qout .= "<table class=\"table table-bordered bg-primary\" style=\"width:50%;font-family:boon;font-size:120%\">\n";
-      $qout .= "<tr>\n";
-      $qout .= "<td width=\"35%\" align=\"left\"><i class=\"pe-arrow-circle-left pe-lg\"></i> $mininumRateDescription (1)</td>\n";
-      $qout .= "<td width=\"10%\" align=\"center\">(2)</td>\n";
-      $qout .= "<td width=\"10%\" align=\"center\">(3)</td>\n";
-      $qout .= "<td width=\"10%\" align=\"center\">(4)</td>\n";
-      $qout .= "<td width=\"35%\" align=\"right\">$maximumRateDescription (5) <i class=\"pe-arrow-circle-right pe-lg\"></i></td>\n";
-      $qout .= "</tr>\n";
-      $qout .= "</table>\n";
+      $qout .= "      <table class=\"table table-bordered bg-primary\" style=\"width:50%;font-family:boon;font-size:120%\">\n";
+      $qout .= "        <tr>\n";
+      $qout .= "          <td width=\"35%\" align=\"left\"><i class=\"pe-arrow-circle-left pe-lg\"></i> $mininumRateDescription (1)</td>\n";
+      $qout .= "          <td width=\"10%\" align=\"center\">(2)</td>\n";
+      $qout .= "          <td width=\"10%\" align=\"center\">(3)</td>\n";
+      $qout .= "          <td width=\"10%\" align=\"center\">(4)</td>\n";
+      $qout .= "          <td width=\"35%\" align=\"right\">$maximumRateDescription (5) <i class=\"pe-arrow-circle-right pe-lg\"></i></td>\n";
+      $qout .= "        </tr>\n";
+      $qout .= "      </table>\n";
+      $qout .= "      <ul>\n";
       foreach ($choices as $k7 => $p7) {
         $choice_text = $p7['text']; $c_text[] = $p7['text'];
         $choice_code = $p7['value']; $c_code[] = $p7['value'];
-        $qout .= "<li>$choice_text ($choice_code)</li>\n";
+        $qout .=         "<li>$choice_text ($choice_code)</li>\n";
       }
-      $qout .= "</ul>\n";
+      $qout .= "      </ul>\n";
     }
     else if ($qtype == "comment") {
-      $qout .= "<textarea rows=\"5\" class=\"form-control\" disabled></textarea><br>\n";
+      $qout .= "      <textarea rows=\"5\" class=\"form-control\" disabled></textarea><br>\n";
     }
     else if (($qtype == "text") || ($qtype == "multipletext")) {
-      $qout .= "<input type=\"text\" class=\"form-control\" disabled><br>\n";
+      $qout .= "      <input type=\"text\" class=\"form-control\" disabled><br>\n";
     }
     else if ($qtype == "html") {
-      $qout .= "<div style=\"font-family:boon;font-size:110%\">\n";
+      $qout .= "      <div style=\"font-family:boon;font-size:110%\">\n";
       $qout .= $html."<br>";
-      $qout .= "</div>\n";
+      $qout .= "      </div>\n";
     }
     else if ($qtype == "matrix") {
-      $qout .= "<table class=\"table\" style=\"font-family:boon;font-size:110%\">\n";
-      $qout .= "<thead><tr class=\"bg-primary\">\n";
-      $qout .= "<th width=\"20%\"></th>\n";
+      $qout .= "      <table class=\"table\" style=\"font-family:boon;font-size:110%\">\n";
+      $qout .= "        <thead><tr class=\"bg-primary\">\n";
+      $qout .= "          <th width=\"20%\"></th>\n";
       $a = 0;
       foreach ($questions[$i]["columns"] as $k8 => $p8) {
         $column_text = $p8['text']; $c_text[] = $p8['text'];
         $column_code = $p8['value']; $c_code[] = $p8['value'];
         $column_link[] = $p8['text']." (".$p8['value'].")";
-        $qout .= "<th style=\"text-align:right\">$column_text ($column_code)</th>\n";
+        $qout .= "          <th style=\"text-align:right\">$column_text ($column_code)</th>\n";
         $a++;
       }
-      $qout .= "</tr></thead>\n";
-      $qout .= "<tbody><tr>\n";
+      $qout .= "        </tr></thead>\n";
+      $qout .= "      <tbody><tr>\n";
       foreach ($questions[$i]["rows"] as $k9 => $p9) {
         $row_text = $p9['text']; $r_text[] = $p9['text'];
         $row_code = $p9['value']; $r_code[] = $p9['value'];
         $row_link[] = $p9['text']." (".$p9['value'].")";
         $qout .= "<td align=\"right\">$row_text ($row_code)</td>\n";
-        for ($b=0; $b < $a; $b++) { $qout .= "<td align=\"right\"><div class=\"radio\"><input type=\"radio\" name=\"$row_code\" style=\"position:relative;margin:0px\" disabled></div></td>\n"; }
-        $qout .= "</tr>";
+        for ($b=0; $b < $a; $b++) { $qout .= "          <td align=\"right\"><div class=\"radio\"><input type=\"radio\" name=\"$row_code\" style=\"position:relative;margin:0px\" disabled></div></td>\n"; }
+        $qout .= "        </tr>";
       }
-      $qout .= "</tbody>\n";
-      $qout .= "</table>\n";
+      $qout .= "        </tbody>\n";
+      $qout .= "      </table>\n";
     }
     else if ($qtype == "matrixdropdown") {
-      $qout .= "<table class=\"table\" style=\"font-family:boon;font-size:110%\">\n";
-      $qout .= "<thead><tr class=\"bg-primary\">\n";
-      $qout .= "<th width=\"20%\"></th>\n";
+      $qout .= "      <table class=\"table\" style=\"font-family:boon;font-size:110%\">\n";
+      $qout .= "        <thead><tr class=\"bg-primary\">\n";
+      $qout .= "          <th width=\"20%\"></th>\n";
       $c = 0;
       foreach ($questions[$i]["columns"] as $k10 => $p10) {
         $column_name = $p10['name'];
         $column_title = $p10['title'];
-        $qout .= "<th style=\"text-align:right\">$column_name<br>($column_title)</th>\n";
+        $qout .= "          <th style=\"text-align:right\">$column_name<br>($column_title)</th>\n";
         $c++;
       }
-      $qout .= "</tr></thead>\n";
-      $cc = "<select class=\"form-control input-sm\">";
+      $qout .= "        </tr></thead>\n";
+      $cc = "          <select class=\"form-control input-sm\">";
       foreach ($questions[$i]["choices"] as $k11 => $p11) {
         $choice_text = $p11['text'];
         $choice_code = $p11['value'];
-        $cc .= "<option>$choice_text ($choice_code)</option>";
+        $cc .= "            <option>$choice_text ($choice_code)</option>";
       }
-      $cc .= "</select>";
-      $qout .= "<tbody><tr>\n";
+      $cc .= "          </select>";
+      $qout .= "        <tbody><tr>\n";
       foreach ($questions[$i]["rows"] as $k12 => $p12) {
         $row_text = $p12['text'];
         $row_code = $p12['value'];
-        $qout .= "<td align=\"right\">$row_text<br>($row_code)</td>\n";
-        for ($d=0; $d < $c; $d++) { $qout .= "<td align=\"right\">$cc</td>\n"; }
-        $qout .= "</tr>";
+        $qout .= "          <td align=\"right\">$row_text<br>($row_code)</td>\n";
+        for ($d=0; $d < $c; $d++) { $qout .= "          <td align=\"right\">$cc</td>\n"; }
+        $qout .= "        </tr>";
       }
       $qout .= "</tbody>\n";
-      $qout .= "</table>\n";
+      $qout .= "      </table>\n";
     }
-    $qout .= "    <br>\n";
+    $qout .= "      <br>\n";
   }
 }
 
 
 // ------- Questionnaire navigator --------------------------------------------------------------------------
 
+$perpage = "10";
 $sid = $_GET["s"]; $qid = $_GET["q"];
-$questionlisting = "<ul class=\"progress-tracker progress-tracker--text progress-tracker--center\">\n";
 $numberofquestions = count($questions);
-for ($i = 0; $i < $numberofquestions; $i++) {
-  $qname1 = $questions[$i]["name"];
-  if ($questions[$i]["html"]) { $qtitle1 = "HTML"; }
-  else { $qtitle1 = $questions[$i]["title"]; }
-  $qtype1 = $questions[$i]["type"];
-  if ($qname1 == $_GET['q']) { $questionlisting .= "  <li class=\"progress-step is-active\">\n"; }
-  else { $questionlisting .= "  <li class=\"progress-step\">\n"; }
-  $questionlisting .= "    <span class=\"progress-marker\"></span>\n";
-  $questionlisting .= "    <a href=\"/admin/?w=result&s=$sid&q=$qname1\"><span class=\"progress-text\">\n";
-  $questionlisting .= "      <span class=\"progress-title\">$qname1 <small style='font-weight:normal'>[$qtype1]</small></span>\n";
-  $questionlisting .= "      <p style=\"font-family:boon;font-size:140%;margin-top:10px\">$qtitle1</p>\n";
-  $questionlisting .= "    </span></a>\n";
-  $questionlisting .= "  </li>\n";
+for ($i=0; $i<$numberofquestions; $i++) {
+  $qname = $questions[$i]["name"];
+  if ($qname == $_GET['q']) { $here = floor($i/$perpage)*10; }
 }
-$questionlisting .= "</ul>";
+$navtab = "<nav>\n";
+$navtab .= "  <ul class=\"nav nav-tabs\">\n";
+$questionlisting = "<div class=\"tab-content\">\n";
+if ($here == "0") {
+  $navtab .= "    <li class=\"active\"><a data-toggle=\"tab\" href=\"#0\"><i class=\"pe-folder-open-o pe-fw\"></i> 0</a></li>\n";
+  $questionlisting .= "  <div id=\"0\" class=\"tab-pane fade in active\">\n";
+} else {
+  $navtab .= "    <li><a data-toggle=\"tab\" href=\"#0\"><i class=\"pe-folder-o pe-fw\"></i> 0</a></li>\n";
+  $questionlisting .= "  <div id=\"0\" class=\"tab-pane fade\">\n";
+}
+$questionlisting .= "    <ul class=\"progress-tracker progress-tracker--text progress-tracker--center\">\n";
+for ($i=0; $i<$numberofquestions; $i++) {
+  $thispage = $i+1;
+  $qname = $questions[$i]["name"];
+  if ($questions[$i]["html"]) { $qtitle = "HTML"; }
+  else { $qtitle = $questions[$i]["title"]; }
+  $qtype = $questions[$i]["type"];
+  if ($qname == $_GET['q']) { $questionlisting .= "      <li id=\"listing-$i\" class=\"progress-step is-active\">\n"; }
+  else { $questionlisting .= "      <li id=\"listing-$i\" class=\"progress-step\">\n"; }
+  $questionlisting .= "        <span class=\"progress-marker\"></span>\n";
+  $questionlisting .= "        <a href=\"/admin/?w=result&s=$sid&q=$qname\"><span class=\"progress-text\">\n";
+  $questionlisting .= "          <span class=\"progress-title\">$qname <small style='font-weight:normal'>[$qtype]</small></span>\n";
+  $questionlisting .= "          <p style=\"font-family:boon;font-size:140%;margin-top:10px\">$qtitle</p>\n";
+  $questionlisting .= "        </span></a>\n";
+  $questionlisting .= "      </li>\n";
+  $counter++;
+  if ($thispage % $perpage == 0) {
+    $questionlisting .= "    </ul>\n";
+    $questionlisting .= "  </div>\n";
+    if ($here == $thispage) {
+      $navtab .= "    <li class=\"active\"><a data-toggle=\"tab\" href=\"#$thispage\"><i class=\"pe-folder-open-o pe-fw\"></i> $thispage</a></li>\n";
+      $questionlisting .= "  <div id=\"$thispage\" class=\"tab-pane fade in active\">\n";
+    } else {
+      $navtab .= "    <li><a data-toggle=\"tab\" href=\"#$thispage\"><i class=\"pe-folder-o pe-fw\"></i> $thispage</a></li>\n";
+      $questionlisting .= "  <div id=\"$thispage\" class=\"tab-pane fade\">\n";
+    }
+    $questionlisting .= "    <ul class=\"progress-tracker progress-tracker--text progress-tracker--center\">\n";
+  }
+}
+$questionlisting .= "    </ul>\n";
+$questionlisting .= "  </div>\n";
+$navtab .= "  </ul>\n";
+$navtab .= "</nav>\n";
+
+
 
 
 
@@ -213,12 +248,30 @@ $bx = array_combine($pname, $ptitle);
 $bdx = $bx[$qq];
 
 $alldata = "[ ";
-for ($f=0; $f < count($r); $f++) {
+for ($f=0; $f<count($r); $f++) {
   if ($f == (count($r)-1)) { $alldata .= $r[$f]["data"]; }
   else { $alldata .= $r[$f]["data"].", \n"; }
+  // $removeKeys = array('rd', 'email', 'ip', 'surveyid', 'status');
+  // foreach($removeKeys as $key) {
+  //   unset($r[$f][$key]);
+  // }
+  // $r[$f]['data'] = json_decode($r[$f]['data'], true);
+  // $r[$f]['submitted'] = $r[$f]['submitted'];
 }
 $alldata .= " ]\n";
 // print_r($alldata);
+
+$ee = $r;
+for ($i=0; $i<count($ee); $i++) {
+  $removeKeys = array('rd', 'email', 'ip', 'surveyid', 'status');
+  foreach($removeKeys as $key) {
+    unset($ee[$i][$key]);
+  }
+  $ee[$i]['data'] = json_decode($ee[$i]['data'], true);
+  $ee[$i]['submitted'] = $ee[$i]['submitted'];
+}
+$datafortable = json_encode($ee);
+// print_r($datafortable);
 
 // Generate download file automatically
 if ($_GET["download"] == "json") {
@@ -270,7 +323,7 @@ if ($_GET["download"] == "json") {
 }
 
 
-if ($cd == "checkbox") {
+if (($cd == "checkbox") || ($cd == "checkboxhtml")) {
   $k = array();
   for ($i=0; $i < count($r); $i++) {
     $j = $r[$i]["data"];
@@ -465,7 +518,7 @@ else if ($cd == "file") {
     $outdirect .= $pagination."\n<br>\n";
   }
 }
-else if (($cd == "radiogroup") || ($cd == "dropdown") || ($cd == "rating")) {
+else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "rating")) {
   $x = "[";
   for ($i=0; $i < count($r); $i++) { if ($i != (count($r)-1)) { $x .= $r[$i]["data"].","; } else { $x .= $r[$i]["data"]; } }
   $x .= "]";
@@ -513,19 +566,30 @@ else if ($cd == "matrix") {
   }
   // print_r(($dc));
 
-  foreach ($dc as $q => $r) { $dd[] = percentile($dc[$q]); $de[] = array_sum($r); $cmax[] = count($dc[$q]); }
+  foreach ($dc as $q => $r) {
+    $dd[] = percentile($dc[$q]);
+    $de[] = array_sum($r);
+    $cmax[] = count($dc[$q]);
+  }
   $totalresponses = array_sum($de);
   $c1 = array_combine($db, $dd);
   $c2 = array_combine($db, $average);
-  if (max($cmax) == 3) { $color = "colors: ['#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 1, type: 'line' } },\n"; }
-  else if (max($cmax) == 4) { $color = "colors: ['#CC0000', '#FF4444', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 1, type: 'line' } },\n"; }
-  else if (max($cmax) == 5) { $color = "colors: ['#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 1, type: 'line' } },\n"; }
+  $ccmax = count($column_link);
+  if ($ccmax == 2) { $color = "colors: ['#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 1 }, type: 'line' } },\n"; }
+  else if ($ccmax == 3) { $color = "colors: ['#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 1, type: 'line' } },\n"; }
+  else if ($ccmax == 4) { $color = "colors: ['#CC0000', '#FF4444', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 1, type: 'line' } },\n"; }
+  else if ($ccmax == 5) { $color = "colors: ['#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 1, type: 'line' } },\n"; }
+  else if ($ccmax == 6) { $color = "colors: ['#820000', '#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 0 }, 6: { targetAxisIndex: 1, type: 'line' } },\n"; }
+  else if ($ccmax == 7) { $color = "colors: ['#530000', '#820000', '#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 0 }, 6: { targetAxisIndex: 0 }, 7: { targetAxisIndex: 1, type: 'line' } },\n"; }
+  else if ($ccmax == 8) { $color = "colors: ['#350000', '#530000', '#820000', '#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 0 }, 6: { targetAxisIndex: 0 }, 7: { targetAxisIndex: 0 }, 8: { targetAxisIndex: 1, type: 'line' } },\n"; }
+  else if ($ccmax == 9) { $color = "colors: ['#220000', '#350000', '#530000', '#820000', '#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 0 }, 6: { targetAxisIndex: 0 }, 7: { targetAxisIndex: 0 }, 8: { targetAxisIndex: 0 }, 9: { targetAxisIndex: 1, type: 'line' } },\n"; }
+  else if ($ccmax == 10) { $color = "colors: ['#160000', '#220000', '#350000', '#530000', '#820000', '#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 0 }, 6: { targetAxisIndex: 0 }, 7: { targetAxisIndex: 0 }, 8: { targetAxisIndex: 0 }, 9: { targetAxisIndex: 0 }, 10: { targetAxisIndex: 1, type: 'line' } },\n"; }
   $out = "[ 'Attribute', ";
   foreach ($column_link as $a) { $out .= "'".$a."', "; } // label
   if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $out .= " 'Mean' ],\n"; $color .= "'#000000' ],\n"; } else { $out .= " ],\n"; $color .= " ],\n"; }
   foreach ($r_code as $b) {
     if (json_decode(str_replace($r_code, $r_text, json_encode($b)), true)) { $bb = json_decode(str_replace($r_code, $r_text, json_encode($b)), true); }
-    $out .= "[ '".($bb)."', ";
+    $out .= "      [ '".($bb)."', ";
     foreach ($c_code as $c) { $out .= $c1[$b][$c].", "; } // data for each scale
     // $c3 = $c2[$b]+1;
     if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $out .= " $c2[$b] ],\n"; } else { $out .= " ],\n"; }
@@ -545,9 +609,9 @@ else if ($cd == "matrix") {
 // ------- Output --------------------------------------------------------------------------
 
 $title = "Survey result";
-$getcsv = "/admin/?w=result&s=".$_GET['s']."&download=csv";
-$getjson = "/admin/?w=result&s=".$_GET['s']."&download=json";
-$getxls = "/admin/?w=result&s=".$_GET['s']."&download=xls";
+// $getcsv = "/admin/?w=result&s=".$_GET['s']."&download=csv";
+// $getjson = "/admin/?w=result&s=".$_GET['s']."&download=json";
+// $getxls = "/admin/?w=result&s=".$_GET['s']."&download=xls";
 pageHeader($title);
 echo "<h2>$title</h2>\n";
 echo "<p class=\"introtext\">This is a tool that helps you view the survey result whenever you need. Result is generated by pulling the data from our server in <em>real time</em>.</p>\n";
@@ -562,17 +626,29 @@ echo "  </div>\n";
 echo "  <div class=\"col-sm-3\" style=\"padding:10px;margin-top:20px\">\n";
 echo "    <div class=\"list-group small\">\n";
 echo "      <li class=\"list-group-item list-group-item-info\"><strong><i class=\"pe-download pe-fw\"></i> Data download</strong></li>\n";
-echo "      <a href=\"$getcsv\" class=\"list-group-item\"><i class=\"pe-file-text-o pe-fw\"></i> All questions in CSV</a>\n";
-echo "      <a href=\"$getxls\" class=\"list-group-item\"><i class=\"pe-file-excel-o pe-fw\"></i> All questions in Excel</a>\n";
-echo "      <a href=\"$getjson\" class=\"list-group-item\"><i class=\"pe-file-code-o pe-fw\"></i> All questions in JSON</a>\n";
+// echo "      <a href=\"$getcsv\" class=\"list-group-item download\"><i class=\"pe-file-text-o pe-fw\"></i> All questions in CSV</a>\n";
+echo "      <a class=\"list-group-item exceldownload\"><i class=\"pe-file-text-o pe-fw\"></i> Data of all questions in CSV (Spreadsheet) format</a>\n";
+// echo "      <a href=\"$getxls\" class=\"list-group-item\"><i class=\"pe-file-excel-o pe-fw\"></i> All questions in Excel</a>\n";
+// echo "      <a href=\"$getjson\" class=\"list-group-item\"><i class=\"pe-file-code-o pe-fw\"></i> All questions in JSON</a>\n";
 // echo "      <a href=\"\" class=\"list-group-item\"><i class=\"pe-file-pdf-o pe-fw\"></i> Get PDF</a>\n";
 echo "    </div>\n";
 echo "  </div>\n";
 echo "</div>\n";
 
+echo $navtab;
+echo $navtabcontent;
 echo $questionlisting;
 
-$answers = "<p><em>A total of $totalresponses responses answered by $totalrecords respondents</em></p>\n";
+if ($totalresponses > $totalrecords) {
+  $responseperrecord = number_format($totalresponses/$totalrecords, '1');
+  $answers = "<p align=\"right\" class=\"small\"><em>A total of $totalresponses responses answered by $totalrecords respondents (average of $responseperrecord responses per respondent)</em></p>\n";
+} else if ($totalresponses < $totalrecords) {
+  $responsepercent = number_format(($totalresponses/$totalrecords)*100, '1');
+  $answers = "<p align=\"right\" class=\"small\"><em>A total of $totalresponses responses answered by $totalrecords respondents ($responsepercent%)</em></p>\n";
+} else {
+  $answers = "<p align=\"right\" class=\"small\"><em>A total of $totalresponses responses answered by $totalrecords respondents</em></p>\n";
+}
+
 
 $openendquery = "<div style=\"text-align:right\">\n";
 $openendquery .= "<p>Custom key words centering tool</p>\n";
@@ -725,7 +801,7 @@ $openendquery .= "</div>\n";
 <?php } ?>
 
 
-<?php } else if ($cd == "checkbox") { ?>
+<?php } else if (($cd == "checkbox") || ($cd == "checkboxhtml")) { ?>
 
 <?php if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { ?>
 
@@ -977,6 +1053,28 @@ $openendquery .= "</div>\n";
 <?php } ?>
 
 <br>
+
+<script type="text/javascript">
+  String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+  };
+  $(document).ready(function () {
+    var ttt = <?php echo $datafortable; ?>;
+    var ttt = JSON.stringify(ttt);
+    ttt = ttt.replaceAll("data", ""); ttt = ttt.replaceAll("upload/", "");
+    var inArray = JSON.parse(ttt);
+    var outArray = [];
+    for (var row in inArray) { outArray[outArray.length] = parse_object(inArray[row]); }
+    // $("span.rows.count").text("" + outArray.length);
+    var csv = "\ufeff"+$.csv.fromObjects(outArray);
+    var blob = new Blob([csv], { type: ' type: "text/csv;charset=UTF-8"' });
+    var csvUrl = window.URL.createObjectURL(blob);
+    var todayDate = new Date().toISOString().slice(0,10);
+    var filename = "<?php echo $project; ?>" + "_data_" + todayDate + '.csv';
+    $("a.exceldownload").attr({'download': filename, 'href': csvUrl });
+  });
+</script>
 
 <?php backButton("/admin/?w=surveys", "Back to the main page", "danger"); ?>
 

@@ -80,6 +80,10 @@ textarea, div.panel-body {
 .dropdown-menu {
   padding: 0px !important; }
 
+img.picpost {
+  padding: 1px;
+  border: 1px solid #021a40; }
+
 #surveyquestioneditorwindow input[type="text"].form-control {
   font-family: "boon";
   font-size: 1rem; }
@@ -317,50 +321,62 @@ textarea, div.panel-body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale; }
 
-.icon-panel::before {
-  content: ""; }
-
 .icon-checkbox:before {
-  content: ""; }
+  content: "\e900"; }
+
+.icon-checkboxhtml:before {
+  content: "\e901"; }
 
 .icon-comment:before {
-  content: ""; }
+  content: "\e902"; }
 
 .icon-dropdown:before {
-  content: ""; }
+  content: "\e903"; }
 
 .icon-file:before {
-  content: ""; }
+  content: "\e904"; }
 
 .icon-html:before {
-  content: ""; }
-
-.icon-date:before {
-  content: ""; }
-
-.icon-default:before {
-  content: ""; }
-
-.icon-matrixdynamic:before {
-  content: ""; }
-
-.icon-matrixdropdown:before {
-  content: ""; }
+  content: "\e905"; }
 
 .icon-matrix:before {
-  content: ""; }
+  content: "\e906"; }
+
+.icon-matrixdynamic:before {
+  content: "\e907"; }
+
+.icon-matrixdropdown:before {
+  content: "\e908"; }
 
 .icon-multipletext:before {
-  content: ""; }
+  content: "\e909"; }
 
 .icon-radiogroup:before {
-  content: ""; }
+  content: "\e90a"; }
+
+.icon-radiogrouphtml:before {
+  content: "\e90b"; }
 
 .icon-rating:before {
-  content: ""; }
+  content: "\e90c"; }
 
 .icon-text:before {
-  content: ""; }
+  content: "\e90d"; }
+
+.icon-date:before {
+  content: "\e90e"; }
+
+.icon-picture:before {
+  content: "\e910"; }
+
+.icon-icon:before {
+  content: "\e911"; }
+
+.icon-country:before {
+  content: "\e912"; }
+
+.icon-nps:before {
+  content: "\e913"; }
 
 .sv_window {
   position: fixed;

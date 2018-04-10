@@ -198,3 +198,16 @@ hljs.initHighlightingOnLoad();
 //   topbar.show();
 //   setTimeout(function() { topbar.hide() }, 1500);
 // });
+
+// Open a new window.
+function openNewWin(desktopURL, alternateWidth, alternateHeight, noScrollbars) {
+	if ((alternateWidth && self.screen.availWidth * 0.8 < alternateWidth) || (alternateHeight && self.screen.availHeight * 0.8 < alternateHeight)) {
+    noScrollbars = false;
+		alternateWidth = Math.min(alternateWidth, self.screen.availWidth * 0.8);
+		alternateHeight = Math.min(alternateHeight, self.screen.availHeight * 0.8);
+	} else {
+    noScrollbars = typeof(noScrollbars) == 'boolean' && noScrollbars == true;
+  }
+	window.open(desktopURL, 'requested_popup', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=' + (noScrollbars ? 'no' : 'yes') + ',width=' + (alternateWidth ? alternateWidth : 480) + ',height=' + (alternateHeight ? alternateHeight : 220) + ',resizable=no');
+	return false;
+}
