@@ -11,6 +11,8 @@ $rolelist = "[ ";
 $rolelist .= "new RoleListing(6, \"Manager\"), ";
 $rolelist .= "new RoleListing(5, \"User\"), ";
 $rolelist .= "new RoleListing(4, \"Guest\"), ";
+$rolelist .= "new RoleListing(3, \"Dta processing\"), ";
+$rolelist .= "new RoleListing(2, \"Interviewer\"), ";
 $rolelist .= " ]";
 
 ?>
@@ -157,9 +159,9 @@ $rolelist .= " ]";
   $('#showalert-create').html("<div class='alert alert-success'><i class='pe-save pe-fw'></i> A new user has been created</div>").hide();
   $('#showalert-delete').html("<div class='alert alert-danger'><i class='pe-trash pe-fw'></i> The user has been deleted</div>").hide();
   $('#showalert-edit').html("<div class='alert alert-success'><i class='pe-edit pe-fw'></i> The user information has been edited</div>").hide();
-  $('#showalert-suspend').html("<div class='alert alert-warning'><i class='pe-pause-circle pe-fw'></i> The user has been suspended</div>").hide();
-  $('#showalert-reactivate').html("<div class='alert alert-success'><i class='pe-check-square-o pe-fw'></i> The user has been reactivated</div>").hide();
-  $('#showalert-changerole').html("<div class='alert alert-info'><i class='pe-cog pe-fw'></i> You have successfully changed this user's role</div>").hide();
+  $('#showalert-suspend').html("<div class='alert alert-warning'><i class='pe-pause-circle pe-fw'></i> The user has been suspended. Please wait for a few seconds as we are refreshing this page.</div>").hide();
+  $('#showalert-reactivate').html("<div class='alert alert-success'><i class='pe-check-square-o pe-fw'></i> The user has been reactivated. Please wait for a few seconds as we are refreshing this page.</div>").hide();
+  $('#showalert-changerole').html("<div class='alert alert-info'><i class='pe-cog pe-fw'></i> Th role of this user has been changed. Please wait for a few seconds as we are refreshing this page.</div>").hide();
   var RoleListing = function(level, role) {
     this.level = ko.observable(level);
     this.role = ko.observable(role);
@@ -469,7 +471,7 @@ $rolelist .= " ]";
         else { candeletemember = true; }
       }
       else if (level < 6) { candeletemember = false; }
-      if (data.level == 9) { role = "Administrator"; } else if (data.level == 8) { role = "Support"; } else if (data.level == 6) { role = "Manager"; } else if (data.level == 5) { role = "User"; } else if (data.level == 4) { role = "Guest"; }
+      if (data.level == 9) { role = "Administrator"; } else if (data.level == 8) { role = "Support"; } else if (data.level == 6) { role = "Manager"; } else if (data.level == 5) { role = "User"; } else if (data.level == 4) { role = "Guest"; } else if (data.level == 3) { role = "Data processing"; } else if (data.level == 2) { role = "Interviewer"; }
       return new Listing (data.id, data.userid, data.email, data.fullname, data.mobile, avatar, companyid, data.status, role, data.level, created, updated, lastlogin, lastlogin2, data.counts, RoleListing, issuspended, islocked, candeletemember);
     }
     this.onFail = function (error) { alert(JSON.stringify(error)); }

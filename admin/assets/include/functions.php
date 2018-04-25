@@ -149,8 +149,10 @@ function ago2($datetime, $depth=1) {
 function iconize($data) {
   if ($data == "rating") { $insert = "<span class=\"icon-rating\" style=\"font-size:0.7rem\"></span>"; }
   else if ($data == "radiogroup") { $insert = "<span class=\"icon-radiogroup\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "radiogrouphtml") { $insert = "<span class=\"icon-radiogrouphtml\" style=\"font-size:0.7rem\"></span>"; }
   else if ($data == "dropdown") { $insert = "<span class=\"icon-dropdown\" style=\"font-size:0.7rem\"></span>"; }
   else if ($data == "checkbox") { $insert = "<span class=\"icon-checkbox\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "checkboxhtml") { $insert = "<span class=\"icon-checkboxhtml\" style=\"font-size:0.7rem\"></span>"; }
   else if ($data == "text") { $insert = "<span class=\"icon-text\" style=\"font-size:0.7rem\"></span>"; }
   else if ($data == "mutipletext") { $insert = "<span class=\"icon-mutipletext\" style=\"font-size:0.7rem\"></span>"; }
   else if ($data == "comment") { $insert = "<span class=\"icon-comment\" style=\"font-size:0.7rem\"></span>"; }
@@ -159,6 +161,12 @@ function iconize($data) {
   else if ($data == "matrixdropdown") { $insert = "<span class=\"icon-matrixdropdown\" style=\"font-size:0.7rem\"></span>"; }
   else if ($data == "matrixdynamic") { $insert = "<span class=\"icon-matrixdynamic\" style=\"font-size:0.7rem\"></span>"; }
   else if ($data == "html") { $insert = "<span class=\"icon-html\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "date") { $insert = "<span class=\"icon-date\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "picture") { $insert = "<span class=\"icon-picture\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "barrating") { $insert = "<span class=\"icon-icon\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "country") { $insert = "<span class=\"icon-country\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "NPS") { $insert = "<span class=\"icon-nps\" style=\"font-size:0.7rem\"></span>"; }
+  else if ($data == "signaturepad") { $insert = "<span class=\"icon-signature\" style=\"font-size:0.7rem\"></span>"; }
   else if (preg_match("/pilot test/i", $data)) { $insert = "<i class=\"pe-paper-plane pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/edited and saved/i", $data)) { $insert = "<i class=\"pe-save pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/conducted a survey/i", $data)) { $insert = "<i class=\"pe-plane pe-fw\"></i> &nbsp; "; }
@@ -466,7 +474,9 @@ function meta($title) {
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-csv.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery-bar-rating.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/imagepicker.js\"></script>\n";
-  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery.inputmask.bundle.min.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/signature_pad.min.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/nouislider.js\"></script>\n";
+  // echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery.inputmask.bundle.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\">\n";
   echo "    $.widget.bridge('uibutton', $.ui.button);\n";
   echo "    $.widget.bridge('uitooltip', $.ui.tooltip);\n";
@@ -474,6 +484,7 @@ function meta($title) {
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/bootstrap.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery.steps.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/moment.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/numbers.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/csv.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/highlight.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/lightbox.js\"></script>\n";

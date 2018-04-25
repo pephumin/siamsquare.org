@@ -47,8 +47,6 @@ if ($q1->rowCount() == 0) {
 while ($r = $q1->fetchObject()) {
   $project = $r->title;
   $status = $r->status;
-  if ($status == 3) { $readonly = 1; $closed = 1; }
-  else if ($status > 3) { $readonly = 1; }
   $poptions = $r->options;
   $cwebsite = $r->website;
   $cemail = $r->email;
@@ -58,6 +56,7 @@ while ($r = $q1->fetchObject()) {
   $cdescription = strip_tags($r->DD);
   $cdescription_th = strip_tags($r->DD_th);
   $private = $r->private;
+  $pincode = $r->pin;
   $language_credential = $r->language_credential;
   // if ($r->logo) {
   //   if ($cwebsite) { $clientlogo = "<a href=\"$cwebsite\" title=\"$ccompany\" target=\"_blank\"><img src=\"admin/$r->logo\" title=\"$ccompany\"></a>"; }
@@ -206,17 +205,14 @@ while ($r = $q1->fetchObject()) {
 // }
 
 $showsurvey = 0;
+if (($status == 1) && ($_GET['pilot'] == "✓")) { $showsurvey = 1; }
+else if ($status == 2) { $showsurvey = 1; }
+else if ($status == 3) { $readonly = 1; $closed = 1; }
+else if ($status > 3) { $readonly = 1; }
 
-// only for project Flakes (temporary)
-if (($_GET["s"] == "28") || ($_GET["s"] == "29")) {
-  $showsurvey = 1;
-}
+if ($_SESSION["level"] == 9) { $email = $_SESSION["email"]; $userid = $_SESSION["userid"]; $showsurvey = 1; }
 
-if ($_SESSION["level"] == 9) {
-  $email = $_SESSION["email"];
-  $userid = $_SESSION["userid"];
-  $showsurvey = 1;
-}
+// if (($_GET["s"] == "28") || ($_GET["s"] == "29") || ($_GET["s"] == "31")) { $showsurvey = 1; }
 
 if ($showsurvey != 1) {
   $title = "เกิดข้อผิดพลาด";
@@ -253,6 +249,37 @@ if ($showdetail == 2) {
 echo "<div id=\"showupload\"></div><div id=\"showcompletion\"></div>\n";
 echo "<div id=\"runsurvey\"></div><br>\n";
 echo "<div id=\"notification\"></div>\n";
+
+// get interviewer names for auto-completion
+
+function array_remove_empty($arr) {
+  $narr = array();
+  while (list($key, $val) = each($arr)) {
+    if (is_array($val)) { $val = array_remove_empty($val); if (count($val) != 0) { $narr[$key] = $val; } }
+    else { if (trim($val) != "") { $narr[$key] = $val; } }
+  }
+  unset($arr);
+  return $narr;
+}
+
+$sql = "SELECT * FROM j_results WHERE surveyid = :surveyid ORDER BY submitted DESC";
+$q = $db->prepare($sql);
+$q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q->execute();
+$totalrecords = $q->rowCount();
+$r = $q->fetchAll(PDO::FETCH_ASSOC);
+$qq = "Interviewer";
+$out = "[ ";
+for ($i=0; $i < count($r); $i++) {
+  $j = $r[$i]["data"];
+  $j = json_decode($j, true);
+  $out .= "{ \"interviewer\": \"".addslashes($j[$qq])."\" }, ";
+}
+$out = rtrim($out, ', ');
+$out .= " ]";
+$out = json_decode($out, true);
+$out = array_remove_empty($out);
+$out = json_encode($out);
 
 ?>
 
@@ -362,6 +389,8 @@ echo "<div id=\"notification\"></div>\n";
   var pilot = <?php if (($mpilot == "1") || ($mdesign == "1") || ($closed == "1")) { echo "1"; } else { echo "0"; } ?>;
   var readonly = <?php echo $readonly; ?>;
   var colour = <?php echo $showcolour; ?>;
+  var pincode = "<?php echo $pincode; ?>";
+  var terminated = "<h2><i class='pe-ban pe-fw red'></i> ยุติการสัมภาษณ์</h2>\n\n<p>ระบบได้ทำการยุติการสัมภาษณ์สืบเนื่องมาจากคุณใส่รหัส pin code ไม่ถูกต้อง</p>\n\n<p>กรุณาลองใหม่อีกครั้งโดยการกลับไปเริ่มที่หน้าแรกอีกครั้ง หรือกดที่นี่ <a href='' class='btn btn-xs btn-warning' type='button' onClick='window.location.reload()'><i class='pe-undo pe-fw'></i> Refresh</a></p>\n\n<p>และหลังจากที่คุณใส่รหัส pincode ที่ถูกต้อง ระบบจะนำคุณเข้าสู่แบบสอบถามหลักในทันที</p>";
   $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
   if (colour == 1) { Survey.defaultBootstrapCss.navigationButton = "btn btn-primary"; Survey.defaultBootstrapCss.progressBar = "progress-bar progress-bar-primary progress-bar-striped active"; }
   else if (colour == 2) { Survey.defaultBootstrapCss.navigationButton = "btn btn-danger"; Survey.defaultBootstrapCss.progressBar = "progress-bar progress-bar-danger progress-bar-striped active"; }
@@ -375,9 +404,12 @@ echo "<div id=\"notification\"></div>\n";
   Survey.Survey.cssType = "bootstrap";
 
   Survey.JsonObject.metaData.addProperty("text", { name: "dateFormat", default: "d MM yy", choices: ["d MM yy", "dd-mm-yy", "dd/mm/yy", "dd.mm.yy", "M d, yy", "DD d MM yy"] });
-  Survey.JsonObject.metaData.addProperty("dropdown", { name: "renderAs", default: "standard", choices: ["standard", "barrating", "imagepicker"] });
+  Survey.JsonObject.metaData.addProperty("dropdown", { name: "renderAs", default: "standard", choices: ["standard", "barrating", "NPS", "imagepicker"] });
   Survey.JsonObject.metaData.addProperty("dropdown", { name: "ratingTheme", default: "star", choices: ["star", "heart", "thumb", "check", "bell", "flag", "user", "square-1", "square-2", "square-3"] });
   Survey.JsonObject.metaData.addProperty("dropdown", { name: "showValues:boolean", default: false });
+  Survey.JsonObject.metaData.addProperty("text", { name: "renderAs", default: "standard", choices: ["standard", "signaturepad"]});
+  Survey.JsonObject.metaData.addProperty("questionbase", { name: "tooltip" });
+  Survey.JsonObject.metaData.addProperty("radiogroup", { name: "renderAs", default: "standard", choices: ["standard", "slider"] });
 
   var widget1 = {
     name: "datepicker",
@@ -386,6 +418,7 @@ echo "<div id=\"notification\"></div>\n";
     afterRender: function(question, el) {
       if (question.dateFormat) { dateFormat = question.dateFormat; } else { dateFormat = 'd MM yy'; }
       var widget1 = $(el).datepicker({ dateFormat: dateFormat });
+      // var widget1 = $(el).datepicker({ dateFormat: dateFormat, onSelect: function(dateText) { question.value = dateText; } });
       widget1.on("change", function(e) { question.value = $(this).val(); });
       question.valueChangedCallback = function() { widget1.datepicker('setDate', new Date(question.value)); }
       widget1.datepicker('setDate', new Date(question.value || Date.now));
@@ -415,7 +448,7 @@ echo "<div id=\"notification\"></div>\n";
   Survey.CustomWidgetCollection.Instance.addCustomWidget(widget2);
   var widget3 = {
     name: "NPS",
-    isFit: function(question) { return question["renderAs"] === 'barrating'; },
+    isFit: function(question) { return question["renderAs"] === 'NPS'; },
     isDefaultRender: true,
     afterRender: function(question, el) {
       var $el = $(el);
@@ -449,6 +482,92 @@ echo "<div id=\"notification\"></div>\n";
     }
   }
   Survey.CustomWidgetCollection.Instance.addCustomWidget(widget4);
+  var widget5 = {
+    name: "signaturepad",
+    htmlTemplate: "<div class='wrapper' style='position:relative; width:500px; height:300px; user-select:none;'><canvas width='500' height='300' style='width:500px; height:300px; border:1px solid lightgrey;'></canvas><button id='clear' class='btn btn-xs btn-danger' style='position:absolute; right:0; top:0;'>Clear</button></div>",
+    isFit : function(question) { return question["renderAs"] === 'signaturepad'; },
+    afterRender: function(question, el) {
+      var me = this;
+      var canvas = el.getElementsByTagName("canvas")[0];
+      question.signaturePad = signaturePad;
+      var signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(255, 255, 255)', penColor: 'rgb(0, 0, 0)' });
+      if (question.isReadOnly) { signaturePad.off(); }
+      function resizeCanvas(canvas) {
+        var context = canvas.getContext("2d");
+        var devicePixelRatio = window.devicePixelRatio || 1;
+        var backingStoreRatio = context.webkitBackingStorePixelRatio || context.mozBackingStorePixelRatio || context.msBackingStorePixelRatio || context.oBackingStorePixelRatio || context.backingStorePixelRatio || 1;
+        var ratio = devicePixelRatio / backingStoreRatio;
+        var oldWidth = canvas.width;
+        var oldHeight = canvas.height;
+        canvas.width = oldWidth * ratio;
+        canvas.height = oldHeight * ratio;
+        canvas.style.width = oldWidth + "px";
+        canvas.style.height = oldHeight + "px";
+        context.scale(ratio, ratio);
+      }
+      window.onresize = resizeCanvas;
+      resizeCanvas(canvas);
+      signaturePad.onEnd = function() { var data = signaturePad.toDataURL(); question.value = data; };
+      var buttonEl = el.getElementsByTagName("button")[0];
+      buttonEl.onclick = function() { var data = signaturePad.clear(); question.value = data; };
+    },
+  }
+  Survey.CustomWidgetCollection.Instance.addCustomWidget(widget5);
+  var widget6 = {
+    name: "slider",
+    htmlTemplate: "<div id='slider'></div>",
+    isFit: function(question) { return question["renderAs"] === 'slider'; },
+    afterRender: function(question, el) {
+      var options = question["choices"];
+      var range = []; var vrange = [];
+      for (var i=0; i<options.length; i++) { range.push(parseInt(options[i].value)); var proportion = 100/(options.length-1); vrange.push(proportion*i); }
+      rangeAll = vrange; rangeLength = range.length; rangeMin = range[0]; rangeMax = range[range.length-1];
+      if (!question.value) { question.value = 0; }
+      if (!question.step) { if (rangeMax <= 50) { question.step = 1; } else { question.step = 5; } }
+      el.style.marginBottom = "50px";
+      var slider = noUiSlider.create(el, {
+        start: question.value,
+        connect: [true, false],
+        step: question.step,
+        tooltips: true,
+        pips: { mode: "positions", values: rangeAll, density: 100/(rangeLength-1) },
+        range: { min: [rangeMin], max: [rangeMax] }
+      });
+      slider.on("set", function() { question.value = slider.get(); });
+      var updateValueHandler = function() { slider.set(question.value); };
+      question.noUiSlider = slider;
+      question.valueChangedCallback = updateValueHandler;
+    },
+  }
+  Survey.CustomWidgetCollection.Instance.addCustomWidget(widget6);
+  var widget7 = {
+    name: "autocomplete",
+    htmlTemplate: "<input id='autocomplete' type='text' style='width:100%;'>",
+    isFit: function(question) { return question["renderAs"] === 'autocomplete'; },
+    afterRender: function(question, el) {
+      var $el = $(el).is("input") ? $(el) : $(el).find("input");
+      var options = {
+        data: <?php echo $out; ?>,
+        getValue: "interviewer",
+        adjustWidth: false,
+        list: {
+          sort: { enabled: true },
+          match: { enabled: true },
+          showAnimation: { type: "fade", time: 400, callback: function() {} },
+          hideAnimation: { type: "slide",  time: 400, callback: function() {} },
+        },
+        theme: "bootstrap",
+        placeholder: question.placeholder
+      };
+      if (!!question.choicesByUrl) {
+        options.url = function(phrase) { return question.choicesByUrl.url; };
+        options.getValue = question.choicesByUrl.valueName;
+        // options.ajaxSettings = { dataType: "jsonp" };
+      }
+      $el.easyAutocomplete(options);
+    }
+  }
+  Survey.CustomWidgetCollection.Instance.addCustomWidget(widget7);
 
   var survey = new Survey.Model(getsurveydata(surveyid));
   if (pilot != 1) {
@@ -463,7 +582,19 @@ echo "<div id=\"notification\"></div>\n";
     }
   }
 
-  function Subset(leader, follower, key) {
+  function tooltip() {
+    survey.onAfterRenderQuestion.add(function(survey, options) {
+      if (!options.question.tooltip) { return; }
+      var header = options.htmlElement.querySelector("h5");
+      header.title = options.question.tooltip;
+      var span = document.createElement("span");
+      span.innerText = "?";
+      span.className = "survey-tooltip";
+      header.appendChild(span);
+    });
+  }
+
+  function subset(leader, follower, key) {
     survey.onValueChanged.add(function(survey, options) {
       if (options.name !== leader) { return; }
       largerSet = options.question.choices;
@@ -525,80 +656,36 @@ echo "<div id=\"notification\"></div>\n";
       var td1 = document.createElement("td");
       var td2 = document.createElement("td");
       $(tbody).attr("id", "sumtotal");
-      td1.innerHTML = "<strong>รวมทั้งสิ้น (Total)</strong>";
-      td2.innerHTML = "<strong>" + total + "</strong>";
+      if (total > 100) { td1.innerHTML = "<strong class='red'>รวมทั้งสิ้น</strong> (จะต้องเป็น 100 พอดี)"; td2.innerHTML = "<strong class='red'>" + total + "</strong>"; }
+      else if (total == 100) { td1.innerHTML = "<strong class='green'>รวมทั้งสิ้น</strong> (จะต้องเป็น 100 พอดี)"; td2.innerHTML = "<strong class='green'>" + total + "</strong> <i class='pe-check green'></i>"; }
+      else { td1.innerHTML = "<strong>รวมทั้งสิ้น</strong> (จะต้องเป็น 100 พอดี)"; td2.innerHTML = "<strong>" + total + "</strong>"; }
       tr.appendChild(td1);
       tr.appendChild(td2);
       tbody.appendChild(tr);
       table.appendChild(tbody);
     });
   }
+  function pin(mypin) {
+    survey.onValueChanged.add(function (survey, options) {
+      if (survey.data.PIN != mypin) { survey.completedHtml = terminated; }
+      else { return; }
+    });
+  }
 
   var optionsout = getsurveyoptions(surveyid);
-
-  if (optionsout.keep) {
-    for (var i=0; i<optionsout.keep.length; i++) {
-      Subset(optionsout.keep[i].leader, optionsout.keep[i].follower, "keep");
-    }
-  }
-  if (optionsout.delete) {
-    for (var i=0; i<optionsout.delete.length; i++) {
-      Subset(optionsout.delete[i].leader, optionsout.delete[i].follower, "delete");
-    }
-  }
-  if (optionsout.PSM) {
-    for (var i=0; i<optionsout.PSM.length; i++) {
-      PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].expensive, "up");
-      PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].tooexpensive, "up");
-      PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].toocheap, "down");
-      PSM(optionsout.PSM[i].expensive, optionsout.PSM[i].tooexpensive, "up");
-    }
-  }
-  if (optionsout.shuffle) {
-    for (var i=0; i<optionsout.shuffle.length; i++) {
-      var matrix = survey.getQuestionByName(optionsout.shuffle[i].questionname);
-      shuffle(matrix.rows);
-    }
-  }
-  if (optionsout.maketotal) {
-    for (i=0; i<optionsout.maketotal.length; i++) {
-      var makingtotal = survey.getQuestionByName(optionsout.maketotal[i].questionname);
-      maketotal(makingtotal.name, makingtotal.itemsValues);
-    }
-  }
-
-  // var isUpdatingValues = false;
-  // survey.onValueChanged.add(function(survey, options) {
-  //   if (isUpdatingValues) { return; }
-  //   if (options.name != "items") { return; }
-  //   isUpdatingValues = true;
-  //   var items = options.value;
-  //   if (items && Array.isArray(items)) {
-  //     var totalQuantity = 0;
-  //     var totalCost = 0;
-  //     for (var i=0; i<items.length; i++) {
-  //       var quantity = parseInt(items[i].quantity);
-  //       if(!quantity) quantity = 0;
-  //       var cost = parseInt(items[i].cost);
-  //       if(!cost) cost = 0;
-  //       totalQuantity += quantity;
-  //       items[i].total = quantity*cost;
-  //       totalCost += items[i].total;
-  //     }
-  //     survey.setValue("items", items);
-  //     survey.setValue("totalQuantity", totalQuantity);
-  //     survey.setValue("totalCost", totalCost);
-  //   }
-  //   isUpdatingValues = false;
-  // });
-  // survey.data = {totalQuantity: 0, totalCost: 0, items: [{total: 0}] };
-
+  if (optionsout.keep) { for (var i=0; i<optionsout.keep.length; i++) { subset(optionsout.keep[i].leader, optionsout.keep[i].follower, "keep"); } }
+  if (optionsout.delete) { for (var i=0; i<optionsout.delete.length; i++) { subset(optionsout.delete[i].leader, optionsout.delete[i].follower, "delete"); } }
+  if (optionsout.shuffle) { for (var i=0; i<optionsout.shuffle.length; i++) { var matrix = survey.getQuestionByName(optionsout.shuffle[i].questionname); shuffle(matrix.rows); } }
+  if (optionsout.maketotal) { for (i=0; i<optionsout.maketotal.length; i++) { var makingtotal = survey.getQuestionByName(optionsout.maketotal[i].questionname); maketotal(makingtotal.name, makingtotal.itemsValues); } }
+  if (optionsout.PSM) { for (var i=0; i<optionsout.PSM.length; i++) { PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].expensive, "up"); PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].tooexpensive, "up"); PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].toocheap, "down"); PSM(optionsout.PSM[i].expensive, optionsout.PSM[i].tooexpensive, "up"); } }
+  tooltip();
+  pin(pincode);
 
   survey.render("runsurvey");
   $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> ระบบกำลังอัพโหลดรูปของคุณ ระหว่างนี้คุณสามารถทำรายการต่อได้ทันที และอีกสักครู่เมื่อระบบทำงานในส่วนนี้เสร็จ ข้อความนี้จะหายไปเอง</div>").hide();
   $('#showcompletion').html("<div class='alert alert-success'><i class='pe-check-square-o pe-lg pe-fw'></i> เราได้ทำการจัดเก็บความคิดเห็นของคุณลงระบบเป็นที่เรียบร้อยแล้ว</div>").hide();
   $('#resetsave').on('click', function() { clearsavesurveydata(resultid, ip, email, surveyid, title); });
-  survey.onComplete.add(function(s) { postsurveydata(cid, ip, email, surveyid, survey.data, title, pilot); });
+  survey.onComplete.add(function(data) { postsurveydata(cid, ip, email, surveyid, survey.data, title, pilot); });
   survey.onUploadFile.add(function(data) { $('#showupload').show(); setTimeout(function() { $("#showupload").slideUp(500, function() { $("#showupload").hide(); }); }, 6000); });
   if (pilot != 1) { survey.onCurrentPageChanged.add(function(data) { autosavesurveydata(cid, ip, email, surveyid, survey.data, title); }); }
   if (readonly == 1) { survey.mode = "display"; $(function() { $('#runsurvey').attr('disabled', 'disabled'); }); } else if (readonly == 0) { survey.mode = "edit"; }
@@ -615,6 +702,7 @@ echo "<div id=\"notification\"></div>\n";
   // survey.onSendResult
   // survey.onGetResult
   // survey.onUploadFile
+
 </script>
 
 <?php
