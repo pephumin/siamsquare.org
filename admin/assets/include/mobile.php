@@ -158,7 +158,7 @@ function pageFooter($project = null, $notes = null) {
   // echo "  </div>\n";
   echo "</footer>\n";
   // echo "<div class=\"scroll-to-top\" style=\"display:block\"><i class=\"pe-arrow-up pe-lg white\"></i></div>\n";
-  echo "<script type=\"text/javascript\" src=\"/members/assets/js/etc.js\"></script>\n";
+  echo "<script type=\"text/javascript\" src=\"/admin/assets/js/etc.js\"></script>\n";
   if ($notes) { notify($notes); }
   //debugOutput();
   echo "</body>\n";

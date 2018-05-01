@@ -6,7 +6,7 @@ else if ($_GET['pilot'] == "✓") { $mpilot = 1; }
 else if ($_GET['designer'] == "✓") { $mdesign = 1; $readonly = 1; }
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-if ($mobile == 1) { require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/mobile.php'; }
+if ($mobile == 1) { require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/incslude/mobile.php'; }
 else { require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/themes.php'; }
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/functions.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.login.php';
@@ -279,7 +279,28 @@ $out = rtrim($out, ', ');
 $out .= " ]";
 $out = json_decode($out, true);
 $out = array_remove_empty($out);
-$out = json_encode($out);
+$out = json_encode($out, JSON_UNESCAPED_UNICODE);
+
+// while ($ee = $q->fetchAll(PDO::FETCH_ASSOC)) {
+//   for ($i=0; $i<count($ee); $i++) {
+//     $removeKeys = array('rd', 'email', 'ip', 'surveyid', 'status', 'interviewer');
+//     foreach($removeKeys as $key) {
+//       unset($ee[$i][$key]);
+//     }
+//     $ee[$i]['data'] = json_decode($ee[$i]['data'], true);
+//   }
+// }
+// // $datafortable = json_encode($ee);
+// for ($i=0; $i<count($ee); $i++) {
+//   $interviewerlist[] = $ee[$i]['data']['Interviewer'];
+// }
+// $interviewerlist = array_count_values($interviewerlist);
+// print_r($interviewerlist);
+// $cc = json_encode(array_keys($interviewerlist));
+// print_r($cc);
+
+
+
 
 ?>
 

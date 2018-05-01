@@ -198,34 +198,34 @@ function w($w = null) {
   return ($filecheck);
 }
 
-function facebookSDK() {
-  echo "<script>\n";
-  echo "  window.fbAsyncInit = function() {\n";
-  echo "    FB.init({\n";
-  echo "      appId      : '1354128044598714',\n";
-  echo "      cookie     : true,\n";
-  echo "      xfbml      : true,\n";
-  echo "      version    : '2.11'\n";
-  echo "    });\n";
-  echo "    FB.AppEvents.logPageView();\n";
-  echo "  };\n";
-  echo "  (function(d, s, id){\n";
-  echo "     var js, fjs = d.getElementsByTagName(s)[0];\n";
-  echo "     if (d.getElementById(id)) {return;}\n";
-  echo "     js = d.createElement(s); js.id = id;\n";
-  echo "     js.src = \"https://connect.facebook.net/en_US/sdk.js\";\n";
-  echo "     fjs.parentNode.insertBefore(js, fjs);\n";
-  echo "   }(document, 'script', 'facebook-jssdk'));\n";
-  echo "</script>\n";
-}
-
-function FBLoginStatus() {
-  echo "<script>\n";
-  echo "  FB.getLoginStatus(function(response) {\n";
-  echo "    statusChangeCallback(response);\n";
-  echo "  });\n";
-  echo "</script>\n";
-}
+// function facebookSDK() {
+//   echo "<script>\n";
+//   echo "  window.fbAsyncInit = function() {\n";
+//   echo "    FB.init({\n";
+//   echo "      appId      : '1354128044598714',\n";
+//   echo "      cookie     : true,\n";
+//   echo "      xfbml      : true,\n";
+//   echo "      version    : '2.11'\n";
+//   echo "    });\n";
+//   echo "    FB.AppEvents.logPageView();\n";
+//   echo "  };\n";
+//   echo "  (function(d, s, id){\n";
+//   echo "     var js, fjs = d.getElementsByTagName(s)[0];\n";
+//   echo "     if (d.getElementById(id)) {return;}\n";
+//   echo "     js = d.createElement(s); js.id = id;\n";
+//   echo "     js.src = \"https://connect.facebook.net/en_US/sdk.js\";\n";
+//   echo "     fjs.parentNode.insertBefore(js, fjs);\n";
+//   echo "   }(document, 'script', 'facebook-jssdk'));\n";
+//   echo "</script>\n";
+// }
+//
+// function FBLoginStatus() {
+//   echo "<script>\n";
+//   echo "  FB.getLoginStatus(function(response) {\n";
+//   echo "    statusChangeCallback(response);\n";
+//   echo "  });\n";
+//   echo "</script>\n";
+// }
 
 
 

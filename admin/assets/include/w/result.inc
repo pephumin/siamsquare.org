@@ -412,7 +412,31 @@ else if ($cd == "comment") {
     $out2 .= "      data.setCell($m, 1, $B[$m]);\n";
     $out2 .= "      data.setCell($m, 2, $BB[$m]);\n";
   }
-
+}
+else if ($cd == "text") {
+  for ($i=0; $i < count($r); $i++) {
+    $j = $r[$i]["data"];
+    $j = json_decode($j, true);
+    $k[] = $j[$qq];
+  }
+  $c = array_count_values($k);
+  arsort($c);
+  $totalresponses = array_sum($c);
+  $A = array_keys($c); $B = array_values($c); //print_r($c);
+  $C = count($c);
+  $out = "";
+  $out .= "      data.addRows($C);\n";
+  for ($m=0; $m < count($c); $m++) {
+    // if ($A[$m] == $choice_code[$m]) { $A[$m] == $choice_text[$m]; }
+    $BB[$m] = number_format(($B[$m]/$totalrecords)*100, 2);
+    $m1 = $m+1; $m2 = $m1+1;
+    $out .= "      data.setCell($m, 0, '$A[$m]');\n";
+    $out .= "      data.setCell($m, 1, $B[$m]);\n";
+    $out .= "      data.setCell($m, 2, $BB[$m]);\n";
+  }
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
+  else if ($_GET['type'] == "bar-V") { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
 }
 else if (($cd == "file") || ($cd == "signaturepad")) {
   $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q']."&size=".$_GET['size'];
@@ -430,7 +454,6 @@ else if (($cd == "file") || ($cd == "signaturepad")) {
     array_push($k2, $j2[$qq]);
   }
   $c = array_count_values($k2); arsort($c);
-  //$totalresponses = array_sum($c);
   $totalresponses = count(array_filter($k2));
   $total = ceil($totalresponses/$limit);
 
@@ -725,7 +748,7 @@ $openendquery .= "</div>\n";
 <?php if ((empty($_GET['type'])) || ($_GET['type'] == "pie")) { ?>
 
 <script type="text/javascript">
-  google.charts.load('current', {'packages': ['table', 'corechart']});
+  google.charts.load('current', { 'packages': ['table', 'corechart'] });
   google.charts.setOnLoadCallback(drawSort);
   function drawSort() {
     var data = new google.visualization.DataTable();
@@ -735,7 +758,7 @@ $openendquery .= "</div>\n";
 <?php echo $out; ?>
     var view = new google.visualization.DataView(data);
     view.setColumns([0, 1, 2]);
-    var formatter = new google.visualization.NumberFormat({suffix: '%'});
+    var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
     formatter.format(data, 2);
     var options = { title: '<?php echo $bdx; ?>', is3D: true, width: '100%', height: '400' };
     var chart = new google.visualization.PieChart(document.getElementById('chart'));
@@ -743,7 +766,7 @@ $openendquery .= "</div>\n";
     var table = new google.visualization.Table(document.getElementById('table'));
     table.draw(view, {width: '100%', height: '100%'});
     google.visualization.events.addListener(table, 'sort', function(event) {
-      data.sort([{column: event.column, desc: !event.ascending}]);
+      data.sort([{ column: event.column, desc: !event.ascending }]);
       chart.draw(view);
     });
   }
@@ -753,7 +776,7 @@ $openendquery .= "</div>\n";
 <?php } else if ($_GET['type'] == "donut") { ?>
 
 <script type="text/javascript">
-  google.charts.load('current', {'packages': ['table', 'corechart']});
+  google.charts.load('current', { 'packages': ['table', 'corechart'] });
   google.charts.setOnLoadCallback(drawSort);
   function drawSort() {
     var data = new google.visualization.DataTable();
@@ -763,7 +786,7 @@ $openendquery .= "</div>\n";
 <?php echo $out; ?>
     var view = new google.visualization.DataView(data);
     view.setColumns([0, 1, 2]);
-    var formatter = new google.visualization.NumberFormat({suffix: '%'});
+    var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
     formatter.format(data, 2);
     var options = { title: '<?php echo $bdx; ?>', pieHole: 0.4, width: '100%', height: '400' };
     var chart = new google.visualization.PieChart(document.getElementById('chart'));
@@ -771,7 +794,7 @@ $openendquery .= "</div>\n";
     var table = new google.visualization.Table(document.getElementById('table'));
     table.draw(view, {width: '100%', height: '100%'});
     google.visualization.events.addListener(table, 'sort', function(event) {
-      data.sort([{column: event.column, desc: !event.ascending}]);
+      data.sort([{ column: event.column, desc: !event.ascending }]);
       chart.draw(view);
     });
   }
@@ -781,7 +804,7 @@ $openendquery .= "</div>\n";
 <?php } else if ($_GET['type'] == "bar-H") { ?>
 
 <script type="text/javascript">
-  google.charts.load('current', {'packages': ['table', 'corechart']});
+  google.charts.load('current', { 'packages': ['table', 'corechart'] });
   google.charts.setOnLoadCallback(drawSort);
   function drawSort() {
     var data = new google.visualization.DataTable();
@@ -793,7 +816,7 @@ $openendquery .= "</div>\n";
     viewTable.setColumns([0, 1, 2]);
     var viewChart = new google.visualization.DataView(data);
     viewChart.setColumns([0, 2]);
-    var formatter = new google.visualization.NumberFormat({suffix: '%'});
+    var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
     formatter.format(data, 2);
     var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth:  '60%' }, legend: { position: 'none' } };
     var chart = new google.visualization.BarChart(document.getElementById('chart'));
@@ -801,7 +824,7 @@ $openendquery .= "</div>\n";
     var table = new google.visualization.Table(document.getElementById('table'));
     table.draw(viewTable, {width: '100%', height: '100%'});
     google.visualization.events.addListener(table, 'sort', function(event) {
-      data.sort([{column: event.column, desc: !event.ascending}]);
+      data.sort([{ column: event.column, desc: !event.ascending }]);
       chart.draw(viewChart);
     });
   }
@@ -811,7 +834,7 @@ $openendquery .= "</div>\n";
 <?php } else if ($_GET['type'] == "bar-V") { ?>
 
 <script type="text/javascript">
-  google.charts.load('current', {'packages': ['table', 'corechart']});
+  google.charts.load('current', { 'packages': ['table', 'corechart'] });
   google.charts.setOnLoadCallback(drawSort);
   function drawSort() {
     var data = new google.visualization.DataTable();
@@ -823,7 +846,7 @@ $openendquery .= "</div>\n";
     viewTable.setColumns([0, 1, 2]);
     var viewChart = new google.visualization.DataView(data);
     viewChart.setColumns([0, 2]);
-    var formatter = new google.visualization.NumberFormat({suffix: '%'});
+    var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
     formatter.format(data, 2);
     var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth:  '60%' }, legend: { position: 'none' } };
     var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
@@ -831,7 +854,7 @@ $openendquery .= "</div>\n";
     var table = new google.visualization.Table(document.getElementById('table'));
     table.draw(viewTable, {width: '100%', height: '100%'});
     google.visualization.events.addListener(table, 'sort', function(event) {
-      data.sort([{column: event.column, desc: !event.ascending}]);
+      data.sort([{ column: event.column, desc: !event.ascending }]);
       chart.draw(viewChart);
     });
   }
@@ -841,12 +864,12 @@ $openendquery .= "</div>\n";
 <?php } ?>
 
 
-<?php } else if (($cd == "checkbox") || ($cd == "checkboxhtml")) { ?>
+<?php } else if (($cd == "checkbox") || ($cd == "checkboxhtml") || ($cd == "text")) { ?>
 
 <?php if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { ?>
 
 <script type="text/javascript">
-  google.charts.load('current', {'packages': ['table', 'corechart']});
+  google.charts.load('current', { 'packages': ['table', 'corechart'] });
   google.charts.setOnLoadCallback(drawSort);
   function drawSort() {
     var data = new google.visualization.DataTable();
@@ -858,15 +881,15 @@ $openendquery .= "</div>\n";
     viewTable.setColumns([0, 1, 2]);
     var viewChart = new google.visualization.DataView(data);
     viewChart.setColumns([0, 2]);
-    var formatter = new google.visualization.NumberFormat({suffix: '%'});
+    var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
     formatter.format(data, 2);
-    var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: {groupWidth: '60%' }, legend: {position: 'none' } };
+    var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth: '60%' }, legend: { position: 'none' } };
     var chart = new google.visualization.BarChart(document.getElementById('chart'));
     chart.draw(viewChart, options);
     var table = new google.visualization.Table(document.getElementById('table'));
     table.draw(viewTable, {width: '100%', height: '100%'});
     google.visualization.events.addListener(table, 'sort', function(event) {
-      data.sort([{column: event.column, desc: !event.ascending}]);
+      data.sort([{ column: event.column, desc: !event.ascending }]);
       chart.draw(viewChart);
     });
   }
@@ -889,7 +912,7 @@ $openendquery .= "</div>\n";
     var viewChart = new google.visualization.DataView(data);
     viewChart.setColumns([0, 2]);
     // view.setColumns([0, 1, { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation" }, 2]);
-    var formatter = new google.visualization.NumberFormat({suffix: '%'});
+    var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
     formatter.format(data, 2);
     var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth: '60%' }, legend: { position: 'none' }, bars: 'horizontal' };
     var chart = new google.charts.Bar(document.getElementById('chart'));
@@ -897,7 +920,7 @@ $openendquery .= "</div>\n";
     var table = new google.visualization.Table(document.getElementById('table'));
     table.draw(viewTable, {width: '100%', height: '100%'});
     google.visualization.events.addListener(table, 'sort', function(event) {
-      data.sort([{column: event.column, desc: !event.ascending}]);
+      data.sort([{ column: event.column, desc: !event.ascending }]);
       chart.draw(viewChart);
     });
   }
@@ -907,7 +930,7 @@ $openendquery .= "</div>\n";
 <?php } else if ($_GET['type'] == "bar-V") { ?>
 
 <script type="text/javascript">
-  google.charts.load('current', {'packages': ['table', 'corechart']});
+  google.charts.load('current', { 'packages': ['table', 'corechart'] });
   google.charts.setOnLoadCallback(drawSort);
   function drawSort() {
     var data = new google.visualization.DataTable();
@@ -919,7 +942,7 @@ $openendquery .= "</div>\n";
     viewTable.setColumns([0, 1, 2]);
     var viewChart = new google.visualization.DataView(data);
     viewChart.setColumns([0, 2]);
-    var formatter = new google.visualization.NumberFormat({suffix: '%'});
+    var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
     formatter.format(data, 2);
     var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth:  '60%' }, legend: { position: 'none' } };
     var chart = new google.visualization.ColumnChart(document.getElementById('chart'));
@@ -927,7 +950,7 @@ $openendquery .= "</div>\n";
     var table = new google.visualization.Table(document.getElementById('table'));
     table.draw(viewTable, {width: '100%', height: '100%'});
     google.visualization.events.addListener(table, 'sort', function(event) {
-      data.sort([{column: event.column, desc: !event.ascending}]);
+      data.sort([{ column: event.column, desc: !event.ascending }]);
       chart.draw(viewChart);
     });
   }
@@ -952,7 +975,7 @@ $openendquery .= "</div>\n";
     viewTable.setColumns([0, 1, 2]);
     var viewChart = new google.visualization.DataView(data);
     viewChart.setColumns([0, 2]);
-    var formatter = new google.visualization.NumberFormat({suffix: '%'});
+    var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
     formatter.format(data, 2);
     var data = google.visualization.arrayToDataTable(<?php print_r($out); ?>);
     var root = document.getElementById('root').value || '';
@@ -964,7 +987,7 @@ $openendquery .= "</div>\n";
     var table = new google.visualization.Table(document.getElementById('table'));
     table.draw(viewTable, {width: '100%', height: '100%'});
     google.visualization.events.addListener(table, 'sort', function(event) {
-      data.sort([{column: event.column, desc: !event.ascending}]);
+      data.sort([{ column: event.column, desc: !event.ascending }]);
       chart.draw(viewChart);
     });
   }

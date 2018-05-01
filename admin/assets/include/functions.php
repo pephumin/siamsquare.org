@@ -301,6 +301,16 @@ function is_guest() {
   else { return false; }
 }
 
+function is_dp() {
+  if (($_SESSION['logged_in'] == 1) && ($_SESSION['level'] == 3)) { return true; }
+  else { return false; }
+}
+
+function is_interviewer() {
+  if (($_SESSION['logged_in'] == 1) && ($_SESSION['level'] == 2)) { return true; }
+  else { return false; }
+}
+
 function status_company($status, $icon = false, $colour = false) {
   if ($icon == true) {
     if ($colour == true) {
@@ -442,7 +452,7 @@ function meta($title) {
   echo "  <title>".MYTITLE.": ".$title."</title>\n";
   if (strpos($_SERVER['REQUEST_URI'], "admin") !== false) {
     echo "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/admin.css\">\n";
-    if (($_REQUEST["w"] == "design") || ($_REQUEST["w"] == "result")) { echo "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/survey.css\">"; }
+    if (($_REQUEST["w"] == "design") || ($_REQUEST["w"] == "progress") || ($_REQUEST["w"] == "result")) { echo "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/survey.css\">\n"; }
   } else if (strpos($_SERVER['REQUEST_URI'], "members") !== false) {
     echo "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/members/assets/css/members.css\">\n";
     echo "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/admin/assets/css/survey.css\">\n";
@@ -494,7 +504,6 @@ function meta($title) {
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/knockout-3.4.2.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/survey.ko.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/surveyeditor.min.js\"></script>\n";
-  echo "  <script type=\"text/javascript\" src=\"https://www.gstatic.com/firebasejs/3.4.1/firebase.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"></script>\n";
   echo "</head>\n";
 }

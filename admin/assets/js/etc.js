@@ -6,23 +6,8 @@ $(document).ready(function() {
     if ($(this).scrollTop() > 100) { $(".scroll-to-top").fadeIn() }
     else { $(".scroll-to-top").fadeOut() }
   });
-  $(".scroll-to-top").click(function() {
-    $("html, body").animate({ scrollTop: 0 }, 800);
-    return false
-  })
+  $(".scroll-to-top").click(function() { $("html, body").animate({ scrollTop: 0 }, 800); return false })
 });
-
-
-// firebase
-
-var config = {
-  apiKey: "AIzaSyBhLjEc1SwSq06Pg494R6pdM2NqLHF8Ag0",
-  authDomain: "siamsquare-6f543.firebaseapp.com",
-  databaseURL: "https://siamsquare-6f543.firebaseio.com",
-  storageBucket: "siamsquare-6f543.appspot.com",
-  messagingSenderId: "485767684184"
-};
-firebase.initializeApp(config);
 
 
 // google analytics

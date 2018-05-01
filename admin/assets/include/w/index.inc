@@ -29,8 +29,8 @@ if (isset($login)) {
 ?>
 <nav>
   <ul class="nav nav-tabs">
-    <li class="active"><a href="#one" data-toggle="tab"><i class="pe-user pe-fw"></i> Summary of your projects</a></li>
-    <li><a href="#two" data-toggle="tab"><i class="pe-building pe-fw"></i> Summary of all company's projects</a></li>
+    <li class="active"><a href="#one" data-toggle="tab" id='first-tab-trigger'><i class="pe-user pe-fw"></i> Summary of your projects</a></li>
+    <li><a href="#two" data-toggle="tab" id='second-tab-trigger'><i class="pe-building pe-fw"></i> Summary of all company's projects</a></li>
   </ul>
 </nav>
 <br>
@@ -110,7 +110,7 @@ if ($totalALL == 0) {
 $i = 0;
 $today['year'] = date("Y"); $today['month'] = date("m"); $today['day'] = date("d");
 if ($today['month'] == "01") { $today['month'] = "12"; $today['year'] = $today['year']-1; } else { $today['month'] = $today['month']-1; }
-$utimelinedata = "[ \n"; $colordata = "[ ";
+$utimelinedata1 = "[ \n"; $utimelinedata2 = "[ \n"; $colordata = "[ ";
 // Pull survey information for this user
 $q2 = $db->prepare("SELECT * FROM j_projects WHERE companyid = :companyid AND userid = :userid AND status >= 1 ORDER BY status ASC, created DESC");
 $q2->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
@@ -127,38 +127,44 @@ foreach ($rows as $row) {
   if ($row['status'] == 1) {
     $ss = " <i class=\"pe-hourglass-start pe-fw\"></i> Set-up (since: ".ago($row['created']).")";
     $ustatus = "Set-up";
-    $utimelinedata .= "      [ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $utimelinedata1 .= "      [ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
   } else if ($row['status'] == 2) {
     $ss = "<i class=\"pe-hourglass-half pe-fw\"></i> Data-collection (since: ".ago($row['L1']).")";
     $ustatus = "Data-collection";
-    $utimelinedata .= "      [ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $utimelinedata .= "      [ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#00C851', ";
+    $utimelinedata1 .= "      [ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $utimelinedata1 .= "      [ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#00C851', ";
   } else if ($row['status'] == 3) {
     $ss = "<i class=\"pe-hourglass-end pe-fw\"></i> Completed (since: ".ago($row['L2']).")";
     $ustatus = "Completed";
-    $utimelinedata .= "      [ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $utimelinedata .= "      [ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00C851', ";
-    $utimelinedata .= "      [ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#007E33', ";
+    $utimelinedata1 .= "      [ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $utimelinedata1 .= "      [ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00C851', ";
+    $utimelinedata1 .= "      [ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#007E33', ";
   } else if ($row['status'] == 4) {
     $ss = "<i class=\"pe-archive pe-fw\"></i> Archived (since: ".ago($row['L3']).")";
     $ustatus = "Archived";
-    $utimelinedata .= "      [ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $utimelinedata .= "      [ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00C851', ";
-    $utimelinedata .= "      [ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day'].") ], \n"; $colordata .= "'#007E33', ";
-    $utimelinedata .= "      [ '".$title."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
+    $utimelinedata2 .= "      [ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $utimelinedata2 .= "      [ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00C851', ";
+    $utimelinedata2 .= "      [ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day'].") ], \n"; $colordata .= "'#007E33', ";
+    // $utimelinedata2 .= "      [ '".$title."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
   }
   $updated = ago($row['updated']);
   if ($row['private'] == 1) { $private = "<span class=\"label label-success\">PRIVATE</span>"; } else { $private = ""; }
   $i++;
 }
-$utimelinedata .= "    ]";
+$utimelinedata1 .= "    ]"; $utimelinedata2 .= "    ]";
 $colordata = substr($colordata, 0, -2);
 $colordata .= " ]";
 ?>
-    <h4>Timing of your projects</h4>
-    <p>Please note that below timing is shown for all your projects excluding the ones are deleted.</p>
+<?php if ($ustatus1 + $ustatus2 + $ustatus3 > 0) { ?>
+    <h4>Timing of your active projects</h4>
+    <p>Below is a list of your current active project(s).</p>
     <div id="timeline1"></div>
-    <br>
+<?php } ?>
+<?php if ($ustatus4 + $ustatus5 > 0) { ?>
+    <h4>Timing of your inactive projects</h4>
+    <p>Below is a list of your projects that are already archieved.</p>
+    <div id="timeline2"></div>
+<?php } ?>
 <?php } ?>
   </div>
   <div id="two" class="tab-pane fade">
@@ -173,11 +179,11 @@ $ssActive = $ss1 + $ss2 + $ss3; $ssInactive = $ss4 + $ss5;
 $percentActive = percent($ssActive / $sstotal);
 $percentInactive = percent($ssInactive / $sstotal);
 $pss1 = percent($ss1 / $sstotal); $pss2 = percent($ss2 / $sstotal); $pss3 = percent($ss3 / $sstotal); $pss4 = percent($ss4 / $sstotal); $pss5 = percent($ss5 / $sstotal);
-$q4 = $db->prepare("SELECT SUM(level='3') AS q4A, SUM(level='4') AS q4B, SUM(level='5') AS q4C, SUM(level='6') AS q4D, SUM(level='7') AS q4E, SUM(level='8') AS q4F, SUM(level='9') AS q4G FROM j_users WHERE companyid = :companyid");
+$q4 = $db->prepare("SELECT SUM(level='2') AS q4A, SUM(level='3') AS q4B, SUM(level='4') AS q4C, SUM(level='5') AS q4D, SUM(level='6') AS q4E, SUM(level='7') AS q4F, SUM(level='8') AS q4G, SUM(level='9') AS q4H FROM j_users WHERE companyid = :companyid");
 $q4->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
 $q4->execute();
-while ($row = $q4->fetchObject()) { $st3 = $row->q4A; $st4 = $row->q4B; $st5 = $row->q4C; $st6 = $row->q4D; $st7 = $row->q4E; $st8 = $row->q4F; $st9 = $row->q4G; }
-$sttotal = $st3 + $st4 + $st5 + $st6;
+while ($row = $q4->fetchObject()) { $st2 = $row->q4A; $st3 = $row->q4B; $st4 = $row->q4C; $st5 = $row->q4D; $st6 = $row->q4E; $st7 = $row->q4F; $st8 = $row->q4G; $st9 = $row->q4H; }
+$sttotal = $st2 + $st3 + $st4 + $st5 + $st6;
 // $pst3 = percent($st3/$sttotal); $pst4 = percent($st4/$sttotal); $pst5 = percent($st5/$sttotal); $pst6 = percent($st6/$sttotal);
 // $pst7 = percent($st7/$sttotal); $pst8 = percent($st8/$sttotal); $pst9 = percent($st9/$sttotal);
 $levellist = "";
@@ -187,11 +193,12 @@ $levellist = "";
 if ($st6) { $levellist .= "<strong>$st6 Manager(s)</strong> "; } else { $levellist .= ""; }
 if ($st5) { $levellist .= "<strong>$st5 User(s)</strong> "; } else { $levellist .= ""; }
 if ($st4) { $levellist .= "<strong>$st4 Guest(s)</strong> "; } else { $levellist .= ""; }
-// if ($st3) { $levellist .= "<strong>$st3 person(s)</strong> "; } else { $levellist .= ""; }
+if ($st3) { $levellist .= "<strong>$st3 DP(s)</strong> "; } else { $levellist .= ""; }
+if ($st2) { $levellist .= "<strong>$st2 Fieldwork(s)</strong> "; } else { $levellist .= ""; }
 $i = 0;
 $today['year'] = date("Y"); $today['month'] = date("m"); $today['day'] = date("d");
 if ($today['month'] == "01") { $today['month'] = "12"; $today['year'] = $today['year']-1; } else { $today['month'] = $today['month']-1; }
-$ctimelinedata = "[ \n"; $colordata = "[ "; $tabledata = ""; $AA = array();
+$ctimelinedata1 = "[ \n"; $ctimelinedata2 = "[ \n"; $colordata = "[ "; $tabledata = ""; $AA = array();
 // Pull survey information for this company
 $q5 = $db->prepare("SELECT P.*, U.fullname, U.email, U.level FROM j_projects P, j_users U WHERE P.userid = U.id AND P.companyid = :companyid ORDER BY P.status ASC, P.created DESC ");
 $q5->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
@@ -212,28 +219,28 @@ foreach ($rows as $row) {
     $ss = "  <i class=\"pe-hourglass-start pe-fw\"></i> Set-up";
     $since = ago($row['created']);
     $status = "Set-up";
-    $ctimelinedata .= "      [ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $ctimelinedata1 .= "      [ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
   } else if ($row['status'] == 2) {
     $ss = "<i class=\"pe-hourglass-half pe-fw\"></i> Data-collection";
     $since = ago($row['L1']);
     $status = "Data-collection";
-    $ctimelinedata .= "      [ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $ctimelinedata .= "      [ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#00C851', ";
+    $ctimelinedata1 .= "      [ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $ctimelinedata1 .= "      [ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#00C851', ";
   } else if ($row['status'] == 3) {
     $ss = "<i class=\"pe-hourglass-end pe-fw\"></i> Completed";
     $since = ago($row['L2']);
     $status = "Completed";
-    $ctimelinedata .= "      [ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $ctimelinedata .= "      [ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00C851', ";
-    $ctimelinedata .= "      [ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#007E33', ";
+    $ctimelinedata1 .= "      [ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $ctimelinedata1 .= "      [ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00C851', ";
+    $ctimelinedata1 .= "      [ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#007E33', ";
   } else if ($row['status'] == 4) {
     $ss = "<i class=\"pe-archive pe-fw\"></i> Archived";
     $since = ago($row['L3']);
     $status = "Archived";
-    $ctimelinedata .= "      [ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $ctimelinedata .= "      [ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00C851', ";
-    $ctimelinedata .= "      [ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day'].") ], \n"; $colordata .= "'#007E33', ";
-    $ctimelinedata .= "      [ '".$title."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
+    $ctimelinedata2 .= "      [ '".$title."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+    $ctimelinedata2 .= "      [ '".$title."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00C851', ";
+    $ctimelinedata2 .= "      [ '".$title."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day'].") ], \n"; $colordata .= "'#007E33', ";
+    // $ctimelinedata2 .= "      [ '".$title."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
   }
   $updated = ago($row['updated']);
   $t2 = date_parse_from_format("Y-m-d H:i:s", $row['updated']);
@@ -247,7 +254,8 @@ foreach ($rows as $row) {
   $tabledata .= "    </tr>\n";
   $i++;
 }
-$ctimelinedata .= "    ]";
+$ctimelinedata1 .= "    ]";
+$ctimelinedata2 .= "    ]";
 $colordata = substr($colordata, 0, -2);
 $colordata .= " ]";
 $tabledata .= "";
@@ -365,32 +373,30 @@ if ($sstotal == 0) {
         <div id="barchart"></div>
       </div>
     </div>
-    <!-- <h4 id="timeline2heading">Timings of all projects</h4>
-    <p id="timeline2description">This shows the timing for all projects giving you a good helicopter view of all projects.</p>
-    <div id="timeline2"></div> -->
+<?php if ($ss1 + $ss2 + $ss3 > 0) { ?>
+    <h4>Timings of all active projects</h4>
+    <p>Below is a list of all active projects for your company.</p>
+    <div id="timeline3"></div>
+<?php } ?>
+<?php if ($ss4 + $ss5 > 0) { ?>
+    <h4>Timings of all inactive projects</h4>
+    <p>Below is a list of all projects for your company that are already archieved.</p>
+    <div id="timeline4"></div>
+<?php } ?>
   </div>
-</div>
-
-<!-- <div id="tabone">
-  <h4 id="timeline1heading">Timing of your projects</h4>
-  <p id="timeline1description">Please note that below timing is shown for all your projects excluding the ones are deleted.</p>
-  <div id="timeline1"></div>
-</div> -->
-<!-- <br> -->
-<div id="tabtwo">
-  <h4 id="timeline2heading">Timings of all projects</h4>
-  <p id="timeline2description">This shows the timing for all projects giving you a good helicopter view of all projects.</p>
-  <div id="timeline2"></div>
 </div>
 
 <script type="text/javascript">
   var totalAll = <?php echo $totalALL; ?>;
+  var utimelinedata2 = <?php echo $utimelinedata2; ?>;
   google.charts.load('current', {'packages': ['corechart', 'timeline'] });
   if (totalAll != 0) { google.charts.setOnLoadCallback(drawPieChart1); }
   if (totalAll != 0) { google.charts.setOnLoadCallback(drawTimelineChart1); }
   google.charts.setOnLoadCallback(drawPieChart2);
   google.charts.setOnLoadCallback(drawBarChart);
   google.charts.setOnLoadCallback(drawTimelineChart2);
+  google.charts.setOnLoadCallback(drawTimelineChart3);
+  google.charts.setOnLoadCallback(drawTimelineChart4);
   function drawPieChart1() {
     var data = google.visualization.arrayToDataTable([
       [ 'Stage', 'No. of project' ],
@@ -420,9 +426,28 @@ if ($sstotal == 0) {
     data.addColumn({ type: 'string', id: 'Status' });
     data.addColumn({ type: 'date', id: 'Start' });
     data.addColumn({ type: 'date', id: 'End' });
-    data.addRows(<?php echo $utimelinedata; ?>);
+    data.addRows(<?php echo $utimelinedata1; ?>);
     chart.draw(data, options);
     var newheight = parseInt($("#timeline1 div:first-child div:first-child div:first-child div svg").attr( "height"))+70;
+    var options = {
+      height: newheight,
+      colors: [ '#B3FFB3', '#00C851', '#007E33', '#AAAAAA' ],
+      avoidOverlappingGridLines: false,
+      timeline: { groupByRowLabel: true, colorByRow: true, }
+    };
+    chart.draw(data, options);
+  }
+  function drawTimelineChart2() {
+    var container = document.getElementById('timeline2');
+    var chart = new google.visualization.Timeline(container);
+    var data = new google.visualization.DataTable();
+    data.addColumn({ type: 'string', id: 'Project' });
+    data.addColumn({ type: 'string', id: 'Status' });
+    data.addColumn({ type: 'date', id: 'Start' });
+    data.addColumn({ type: 'date', id: 'End' });
+    data.addRows(<?php echo $utimelinedata2; ?>);
+    chart.draw(data, options);
+    var newheight = parseInt($("#timeline2 div:first-child div:first-child div:first-child div svg").attr( "height"))+70;
     var options = {
       height: newheight,
       colors: [ '#B3FFB3', '#00C851', '#007E33', '#AAAAAA' ],
@@ -468,17 +493,39 @@ if ($sstotal == 0) {
     };
     chart.draw(data, options);
   }
-  function drawTimelineChart2() {
-    var container = document.getElementById('timeline2');
+  function drawTimelineChart3() {
+    var container = document.getElementById('timeline3');
     var chart = new google.visualization.Timeline(container);
     var data = new google.visualization.DataTable();
     data.addColumn({ type: 'string', id: 'Project' });
     data.addColumn({ type: 'string', id: 'Status' });
     data.addColumn({ type: 'date', id: 'Start' });
     data.addColumn({ type: 'date', id: 'End' });
-    data.addRows(<?php echo $ctimelinedata; ?>);
+    data.addRows(<?php echo $ctimelinedata1; ?>);
     chart.draw(data, options);
-    var newheight = parseInt($("#timeline2 div:first-child div:first-child div:first-child div svg").attr( "height"))+70;
+    var newheight = parseInt($("#timeline3 div:first-child div:first-child div:first-child div svg").attr( "height"))+70;
+    // var newwidth = parseInt($("#timeline2 div:first-child div:first-child div:first-child div svg").attr( "width"))+540;
+    var options = {
+      height: newheight,
+      // width: newwidth,
+      colors: [ '#B3FFB3', '#00C851', '#007E33', '#AAAAAA' ],
+      avoidOverlappingGridLines: false,
+      timeline: { groupByRowLabel: true, colorByRow: true, },
+      chartArea: { left: 0, right: 0 },
+    };
+    chart.draw(data, options);
+  }
+  function drawTimelineChart4() {
+    var container = document.getElementById('timeline4');
+    var chart = new google.visualization.Timeline(container);
+    var data = new google.visualization.DataTable();
+    data.addColumn({ type: 'string', id: 'Project' });
+    data.addColumn({ type: 'string', id: 'Status' });
+    data.addColumn({ type: 'date', id: 'Start' });
+    data.addColumn({ type: 'date', id: 'End' });
+    data.addRows(<?php echo $ctimelinedata2; ?>);
+    chart.draw(data, options);
+    var newheight = parseInt($("#timeline4 div:first-child div:first-child div:first-child div svg").attr( "height"))+70;
     // var newwidth = parseInt($("#timeline2 div:first-child div:first-child div:first-child div svg").attr( "width"))+540;
     var options = {
       height: newheight,
@@ -492,18 +539,19 @@ if ($sstotal == 0) {
   }
   $(window).resize(function() {
     if (totalALL != 0) { drawPieChart1(); }
-    if (totalALL != 0) { drawTimelineChart1(); }
+    if (totalALL != 0) { drawTimelineChart1(); drawTimelineChart2(); }
+    if (utimelinedata1 != "[ ]") { drawTimelineChart1(); }
+    if (utimelinedata2 != "[ ]") { drawTimelineChart2(); }
+    if (ctimelinedata1 != "[ ]") { drawTimelineChart3(); }
+    if (ctimelinedata2 != "[ ]") { drawTimelineChart4(); }
     drawPieChart2();
     drawBarChart();
-    drawTimelineChart2();
+    drawTimelineChart3();
   });
 
-  $('.nav-tabs a').click(function (e) {
-    e.preventDefault();
-    $(this).tab('show');
-    if ($(this).attr("href") == "#one") { $("#tabone").css({ 'display': 'block' }); $("#tabtwo").css({ 'display': 'none' }); }
-    else if ($(this).attr("href") == "#two") { $("#tabone").css({ 'display': 'none' }); $("#tabtwo").css({ 'display': 'block' }); }
-    else { $("#tabone").css({ 'display': 'block' }); $("#tabtwo").css({ 'display': 'none' }); }
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    if($(e.target).attr('id') == 'first-tab-trigger') {  }
+    if($(e.target).attr('id') == 'second-tab-trigger') { drawTimelineChart3(); drawTimelineChart4(); }
   })
 
 </script>
