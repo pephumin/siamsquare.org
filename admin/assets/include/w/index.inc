@@ -49,7 +49,7 @@ $percentActive = percent($totalActive / $totalALL); $percentInactive = percent($
 $percentStatus1 = percent($ustatus1 / $totalALL); $percentStatus2 = percent($ustatus2 / $totalALL);
 $percentStatus3 = percent($ustatus3 / $totalALL); $percentStatus4 = percent($ustatus4 / $totalALL);
 $percentStatus5 = percent($ustatus5 / $totalALL);
-if ($_SESSION['avatar']) { echo "    <div class=\"pull-right\" style=\"margin-top:0px\"><img src=\"assets/img/u/".$_SESSION['avatar'].".svg\" class=\"img-circle members-photo\"></div>\n"; }
+if ($_SESSION["avatar"] != "00") { echo "    <div class=\"pull-right\"><img src=\"assets/img/u/" . $_SESSION["avatar"] . ".svg\" class=\"img-circle members-photo\" alt=\"Avatar\"></div>\n"; }
 echo "    <h3>".$_SESSION['fullname']." <small>&laquo; ".$_SESSION['email']." &raquo;</small></h3>\n";
 echo "    <h4>Summary of your projects</h4>\n";
 if ($totalALL == 0) {
@@ -550,7 +550,7 @@ if ($sstotal == 0) {
   });
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    if($(e.target).attr('id') == 'first-tab-trigger') {  }
+    if($(e.target).attr('id') == 'first-tab-trigger') { drawTimelineChart1(); drawTimelineChart2(); }
     if($(e.target).attr('id') == 'second-tab-trigger') { drawTimelineChart3(); drawTimelineChart4(); }
   })
 

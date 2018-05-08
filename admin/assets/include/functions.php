@@ -1,5 +1,15 @@
 <?php
 
+function array_remove_empty($arr) {
+  $narr = array();
+  while (list($key, $val) = each($arr)) {
+    if (is_array($val)) { $val = array_remove_empty($val); if (count($val) != 0) { $narr[$key] = $val; } }
+    else { if (trim($val) != "") { $narr[$key] = $val; } }
+  }
+  unset($arr);
+  return $narr;
+}
+
 function mksuccess($msg) {
   return("<div class=\"alert alert-success alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a><i class=\"pe-check-square-o\"></i>&nbsp; ${msg}</div>\n");
 }
@@ -501,6 +511,8 @@ function meta($title) {
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/jquery.easyautocomplete.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/fv/formValidation.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/fv/bootstrap.min.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/dataTables/jquery.dataTables.js\"></script>\n";
+  echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/dataTables/dataTables.bootstrap.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/knockout-3.4.2.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/survey.ko.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/surveyeditor.min.js\"></script>\n";

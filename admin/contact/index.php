@@ -214,7 +214,7 @@ if ((empty($_GET['d'])) || ($_GET['d'] == "contact")) {
   }
   pageHeader($title);
   echo "<h2>$title</h2>\n";
-  echo "<p>Whether you are current or future client, it is possible to request for an access to our system.</p>\n";
+  echo "<p>Whether you are current or future client, it is possible to request for a free access to our system.</p>\n";
   echo "<p>And you will see how easy you can use our system for managing your projects starting from questionnaire design, fieldwork monitoring, and result visualisation in both graph and table.</p>\n";
   if ($msg) { echo $msg; }
   echo "<br>\n";
@@ -303,6 +303,7 @@ if ((empty($_GET['d'])) || ($_GET['d'] == "contact")) {
     <button type="reset" class="btn btn-default">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
 </form>
+<br>
 <script>
   $(document).ready(function() {
     $('#requestaccess').formValidation({

@@ -33,6 +33,8 @@ while ($row = $q1->fetchObject()) {
   $status = $row->status;
   $private = $row->private;
   $sample_size = $row->sample;
+  $options = $row->options;
+  $monitor = $row->QC;
   if ($row->pin) { $pinnumber = $row->pin; }
   if ($row->userid == $_SESSION['userid']) { $owner = 1; } else { $owner = 0; }
   if ($row->created) {
@@ -96,7 +98,7 @@ if ($_SESSION['level'] != "9") {
 }
 
 if ($_POST['m'] == "fixerrors") {
-  $clause = implode(',', array_fill(0, count($_POST["errorids"]), '?'));
+  $clause = implode(', ', array_fill(0, count($_POST["errorids"]), '?'));
   $execinput = array_merge([$_GET['s']], $_POST["errorids"]);
   $q2A = $db->prepare("UPDATE j_results SET status = 0 WHERE surveyid = ? AND id IN ($clause) ");
   $q2A->execute($execinput);
@@ -105,9 +107,49 @@ if ($_POST['m'] == "fixerrors") {
   $ql2->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
   $ql2->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql2->execute();
-  // $redirect = $base."&m=1";
-  // header("location: $redirect");
-  // exit;
+  $redirect = $base."&m=1";
+  header("location: $redirect");
+  exit;
+} else if ($_POST['m'] == "updatesettings") {
+  // print_r($_POST);
+  $add = "";
+  if (isset($_POST["totalsample"]) && ($_POST["totalsample"] != $sample_size)) { $add = ", sample = :sample"; } else { $add = ""; }
+  foreach ($_POST as $k => $v) { }
+  foreach (array_keys($_POST) as $key) {
+    list($a, $b, $c) = split('_', $key);
+    if ($a == "quota") { $qqq[$b][] = $_POST[$key]; }
+    else if ($a == "QC") { $qqc[$b][] = $_POST[$key]; }
+  }
+  $newquota = array_map(function ($quota, $subgroup, $samplesize) { return array('question' => $quota, 'details' => array('subgroup' => $subgroup, 'samplesize' => $samplesize)); }, $qqq["quota"], $qqq["subgroup"], $qqq["samplesize"]);
+  $newQC = array_map(function ($interviewer) { return array('questionname' => $interviewer); }, $qqc["questionname"]);
+  // print_r($newquota);
+  for ($i=0; $i<count($newquota); $i++) {
+    for ($j=0; $j<count($newquota[$i]["details"]["subgroup"]); $j++) {
+      $pB[] = array('subgroup' => $newquota[$i]["details"]["subgroup"][$j], 'samplesize' => $newquota[$i]["details"]["samplesize"][$j]);
+    }
+    $pC[] = array('question' => $newquota[$i]["question"], 'details' => array_splice($pB, 0));
+  }
+  // print_r($pC);
+
+  $all = [];
+  array_push($all, $pC); $all["quota"] = $all["0"]; unset($all["0"]);
+  array_push($all, $newQC); $all["QC"] = $all["1"]; unset($all["1"]);
+
+  // print_r($all);
+  $all = array_remove_empty($all);
+  $json = json_encode($all, JSON_PRETTY_PRINT);
+  // print_r($json);
+
+  $query = "QC = :QC";
+  if ($add != "") { $query .= $query.$add; }
+  $qG = $db->prepare("UPDATE j_projects SET ".$query." WHERE id = :surveyid");
+  $qG->bindValue(':surveyid', $_POST["surveyid"], PDO::PARAM_INT);
+  $qG->bindValue(':QC', $json, PDO::PARAM_STR);
+  if ($add != "") { $qG->bindValue(':sample', $_POST["totalsample"], PDO::PARAM_INT); }
+  $qG->execute();
+  $redirect = $base."&m=2";
+  header("location: $redirect");
+  exit;
 }
 
 $title = "Job monitoring";
@@ -118,7 +160,31 @@ echo "<p class=\"introtext\">This page gives a real time update on the progress 
 echo "<p class=\"introtext\">Kidnly note the interim data should be used for data-checking only, and <strong>must not be used for business decision</strong>. If you would like to see the result, please use <a href=\"$result\">the result page</a> where the analysis of each question is displayed with a full graphic visualisation.</p>";
 echo "<hr>\n";
 echo "<h3>Project $project</h3>\n";
+echo "<p>Click these tabs below to choose on what you would like to view. And the last tab is where you can set specific questions which are only unique for this study.</p>";
 
+if (($_GET['m'] == "1") || ($m == 1)) { $message = mksuccess("You have successfully clean the incorrect termination from this survey. You can notice a better matching in number of responses vs. number of respondents."); echo "<p>$message</p>\n"; }
+else if ($_GET['m'] == "2") { $message = mksuccess("You have successfully updated all the monitoring settings for this survey."); echo "<p>$message</p>\n"; }
+else if ($_GET['m'] == "3") { $message = mkinfo("No changes detected. So no change has been made."); echo "<p>$message</p>\n"; }
+else { echo "<p></p>\n"; }
+echo "<br>\n";
+
+
+?>
+
+<nav>
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#first" data-toggle="tab" id="first-tab-trigger"><i class="pe-flask pe-fw"></i> Progress</a></li>
+    <li><a href="#second" data-toggle="tab" id="second-tab-trigger"><i class="pe-check pe-fw"></i> Quality control</a></li>
+    <li><a href="#third" data-toggle="tab" id="third-tab-trigger"><i class="pe-check-circle-o pe-fw"></i> Quota</a></li>
+    <li><a href="#fourth" data-toggle="tab" id="fourth-tab-trigger"><i class="pe-table pe-fw"></i> Interim data</a></li>
+    <li><a href="#fifth" data-toggle="tab" id="fifth-tab-trigger"><i class="pe-wrench pe-fw"></i> Settings</a></li>
+  </ul>
+</nav>
+<br>
+<div class="tab-content">
+  <div id="first" class="tab-pane fade in active">
+
+<?php
 // Data for area chart
 $q2C = $db->prepare("SELECT SSDATE, SUM(SSCOUNT1) as SSCOUNT1, SUM(SSCOUNT2) as SSCOUNT2 FROM ((SELECT COUNT(*) AS SSCOUNT1, NULL AS SSCOUNT2, DATE(submitted) as SSDATE FROM j_results WHERE surveyid = :surveyid AND status = 2 GROUP BY DATE(submitted)) UNION ALL (SELECT NULL AS SSCOUNT1, SUM(if (invitation IS NOT NULL AND participation IS NOT NULL, 1, 0)) AS SSCOUNT2, DATE(participation) as SSDATE FROM j_respondents WHERE surveyid = :surveyid GROUP BY DATE(participation))) t GROUP BY SSDATE");
 $q2C->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
@@ -142,7 +208,6 @@ else {
 $area .= "      ]";
 
 // Data for fieldwork summary boxes
-
 if ($status > "2") {
   $stage = "3";
   $a = date_parse_from_format("Y-m-d H:i:s", $LLL0);
@@ -225,7 +290,7 @@ if ($status > "2") {
   $stage = "0";
 }
 
-
+// data for showing the real-time results
 if ($status >= 2) { $sql3 = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 2 ORDER BY submitted DESC"; }
 else if ($status == 1) { $sql3 = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 1 ORDER BY submitted DESC"; }
 $q = $db->prepare($sql3);
@@ -235,17 +300,14 @@ $last = 0; $first = ($q->rowCount()-1);
 while ($row = $q->fetchAll(PDO::FETCH_ASSOC)) {
   $ee = $row;
   for ($i=0; $i<count($ee); $i++) {
-    // $interviewerID[] = $ee[$i]['interviewer'];
     $removeKeys = array('rd', 'email', 'ip', 'surveyid', 'status', 'interviewer');
     foreach($removeKeys as $key) {
       unset($ee[$i][$key]);
-      // array_push($ee[$i]['data'], $interviewerID);
     }
     $ee[$i]['data'] = json_decode($ee[$i]['data'], true);
   }
 }
 $datafortable = json_encode($ee);
-// print_r($datafortable);
 
 $pinerror = 0;
 $pincheck = json_decode($datafortable, true);
@@ -256,11 +318,14 @@ $errorinput = "";
 $pin_error = "<div class=\"alert alert-danger alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\n";
 $pin_error .= "  <h4><i class=\"pe-exclamation-triangle pe-fw pe-lg\"></i> Found terminated respondents</h4>\n";
 $pin_error .= "  <p>We detect <strong>$terminatedsize respondents</strong> who were actually terminated but they are incorrectly coded as successful.</p>\n";
-$pin_error .= "  <p>You can just <a data-toggle=\"collapse\" href=\"#showerrors\" aria-expanded=\"false\" class=\"alert-link\">click here <i class=\"pe-arrow-circle-down pe-fw\"></i></a> to see their IDs (click again to close).</p>\n";
-$pin_error .= "  <div class=\"collapse\" id=\"showerrors\"><div class=\"well small\">";
-for($x = 0; $x < count($errorlist); $x++) { $pin_error .= $errorlist[$x].", "; $errorinput .= "<input type=\"hidden\" name=\"errorids[]\" value=\"$errorlist[$x]\">"; }
-$pin_error .= "</div></div>\n";
-$pin_error .= "  <form action=\"$base\" method=\"post\"><button type=\"submit\" name=\"m\" value=\"fixerrors\" class=\"btn btn-danger\">$errorinput Fix this error</button></form>\n";
+// $pin_error .= "  <p>You can just <a data-toggle=\"collapse\" href=\"#showerrors\" aria-expanded=\"false\" class=\"alert-link\">click here <i class=\"pe-arrow-circle-down pe-fw\"></i></a> to see their IDs (click again to close).</p>\n";
+// $pin_error .= "  <div class=\"collapse\" id=\"showerrors\"><div class=\"well small\">";
+// for($x = 0; $x < count($errorlist); $x++) { $pin_error .= $errorlist[$x].", "; $errorinput .= "<input type=\"hidden\" name=\"errorids[]\" value=\"$errorlist[$x]\">"; }
+// $pin_error .= "</div></div>\n";
+$pin_error .= "  <div class=\"well small\">";
+for ($x = 0; $x < count($errorlist); $x++) { $pin_error .= $errorlist[$x].", "; $errorinput .= "<input type=\"hidden\" name=\"errorids[]\" value=\"$errorlist[$x]\">"; }
+$pin_error .= "  </div>\n";
+$pin_error .= "  <form action=\"$base\" method=\"post\">$errorinput<button type=\"submit\" name=\"m\" value=\"fixerrors\" class=\"btn btn-danger\">Fix this error</button></form>\n";
 $pin_error .= "</div>\n";
 
 if ($pinerror == 1) { $dcupdate = $pin_error; } else { $dcupdate = ""; }
@@ -275,7 +340,7 @@ $dcupdate .= "  </div>\n";
 $dcupdate .= "</div>\n";
 $dcupdate .= "<br>\n";
 
-// Get stats
+// Get stats for private projects e.g. projects with name list upload
 $q2A = $db->prepare("SELECT COUNT(*) as q2A1, SUM(status = '0') AS q2A2, SUM(if (invitation IS NOT NULL, 1, 0)) AS q2A3, SUM(if (invitation IS NULL, 1, 0)) AS q2A4, SUM(if (invitation IS NOT NULL AND participation IS NOT NULL, 1, 0)) AS q2A5, SUM(if (invitation IS NOT NULL AND participation IS NULL, 1, 0)) AS q2A6 FROM j_respondents WHERE surveyid = :surveyid");
 $q2A->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2A->execute();
@@ -307,7 +372,7 @@ $notparticipated_percent = percent($notparticipated / $invited);
 if ($notparticipated || $notparticipated == 0) { $notparticipated_bar = "<div class=\"progress progress-inbox\"><div class=\"progress-bar progress-bar-inbox progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$notparticipated_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width:2em; width:$notparticipated_percent\">$notparticipated_percent</div></div>"; } else { $notparticipated_bar = "<div class=\"progress progress-inbox\"></div>"; }
 $strikerate = number_format(($participated / $invited) * 100, 1);
 
-// Get stats
+// Get stats for public project e.g. project wothout any name list upload.
 $q2B = $db->prepare("SELECT SUM(status = :S1) AS q2B1, SUM(status = :S2) AS q2B2, SUM(status = :S3) AS q2B3 FROM j_results WHERE surveyid = :surveyid ");
 $q2B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2B->bindValue(':S1', '2', PDO::PARAM_INT);
@@ -335,11 +400,11 @@ if ($invalid) { $invalid_bar = "<div class=\"progress progress-inbox\"><div clas
 $successrate = number_format(($valid / $participated) * 100, 1);
 
 $RDpilot_percent = percent($RDpilot/$sample_size); //print_r($RDpilot_percent);
-if ($RDpilot || $RDpilot == 0) { $RDpilot_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDpilot_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDpilot_percent\">$RDpilot_percent</div></div>"; } //else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
+if ($RDpilot || $RDpilot == 0) { $RDpilot_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-warning progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDpilot_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDpilot_percent\">$RDpilot_percent</div></div>"; } else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
 $RDterminated_percent = percent($RDterminated/$sample_size); //print_r($RDterminated_percent);
-if ($RDterminated || $RDterminated == 0) { $RDterminated_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDterminated_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDterminated_percent\">$RDterminated_percent</div></div>"; } //else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
+if ($RDterminated || $RDterminated == 0) { $RDterminated_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-danger progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDterminated_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDterminated_percent\">$RDterminated_percent</div></div>"; } else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
 $RDsuccess_percent = percent($RDsuccess/$sample_size); //print_r($RDsuccess_percent);
-if ($RDsuccess || $RDsuccess == 0) { $RDsuccess_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDsuccess_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDsuccess_percent\">$RDsuccess_percent</div></div>"; } //else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
+if ($RDsuccess || $RDsuccess == 0) { $RDsuccess_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDsuccess_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDsuccess_percent\">$RDsuccess_percent</div></div>"; } else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
 
 // Contact sheet for Private project
 $mainrespondent = "/admin/?w=respondents&s=".$_GET['s'];
@@ -423,25 +488,71 @@ if ($private == 1) {
   echo "<hr>\n";
 }
 
+// $input = array(
+//   "Location" => array("data", array("Location", "Region")),
+//   "Gender" => array("data", array("Gender", "Demographic", array("Record", array("Gender")))),
+//   "Age" => array("data", array("Age", "Demographic", array("Record", array("Age")))),
+//   "SES" => array("data", array("SES", "Demographic", array("Record", array("SES")))),
+//   "Education" => array("data", array("Education", "Demographic", array("Record", array("Education")))),
+//   "Occupation" => array("data", array("Occupation", "Demographic", array("Record", array("Occupation")))),
+//   "MaritalStatus" => array("data", array("MaritalStatus", "Demographic", array("Record", array("MaritalStatus")))),
+//   "Residence" => array("data", array("Residence", "Demographic", array("Record", array("Residence")))),
+// );
+//
+// print_r($input["Location"]);
+// print_r($input["Gender"]);
+
+$empty = array();
 for ($i=0; $i<count($ee); $i++) {
-  $interviewer[] = $ee[$i]['data']['Interviewer'];
-  if ($ee[$i]['data']['Region']) { $region[] = $ee[$i]['data']['Region']; }
-  else if ($ee[$i]['data']['Location']) { $region[] = $ee[$i]['data']['Location']; }
+  $id[] = $ee[$i]['id'];
+  $submitted[] = $ee[$i]['submitted'];
+  // $interviewer[] = $ee[$i]['data']['Interviewer'];
+  if ($ee[$i]['data']['Region']) { $region[] = $ee[$i]['data']['Region']; $interviewerbyregion[] = array('region' => $ee[$i]['data']['Region'], array('interviewer' => $ee[$i]['data']['Interviewer'])); }
+  else if ($ee[$i]['data']['Location']) { $region[] = $ee[$i]['data']['Location']; $interviewerbyregion[] = array('region' => $ee[$i]['data']['Region'], array('interviewer' => $ee[$i]['data']['Interviewer'])); }
+  else { $region[] = ""; $Y1[] = $ee[$i]['id']; $empty[] = array('missing' => 'Location', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
+  if ($ee[$i]['data']['Interviewer']) { $interviewer[] = $ee[$i]['data']['Interviewer']; }
+  else if ($ee[$i]['data']['Interviewer']) { $interviewer[] = $ee[$i]['data']['Interviewer']; }
+  else { $interviewer[] = ""; $Y2[] = $ee[$i]['id']; $empty[] = array('missing' => 'Interviewer', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
   if ($ee[$i]['data']['Gender']) { $gender[] = $ee[$i]['data']['Gender']; }
   else if ($ee[$i]['data']['Demographic']['Record']['Gender']) { $gender[] = $ee[$i]['data']['Demographic']['Record']['Gender']; }
+  else { $gender[] = ""; $Y3[] = $ee[$i]['id']; $empty[] = array('missing' => 'Gender', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
   if ($ee[$i]['data']['Age']) { $age[] = $ee[$i]['data']['Age']; }
   else if ($ee[$i]['data']['Demographic']['Record']['Age']) { $age[] = $ee[$i]['data']['Demographic']['Record']['Age']; }
+  else { $age[] = ""; $Y4[] = $ee[$i]['id']; $empty[] = array('missing' => 'Age', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
   if ($ee[$i]['data']['SES']) { $SES[] = $ee[$i]['data']['SES']; }
   else if ($ee[$i]['data']['Demographic']['Record']['SES']) { $SES[] = $ee[$i]['data']['Demographic']['Record']['SES']; }
+  else { $SES[] = ""; $Y5[] = $ee[$i]['id']; $empty[] = array('missing' => 'SES', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
   if ($ee[$i]['data']['Education']) { $education[] = $ee[$i]['data']['Education']; }
   else if ($ee[$i]['data']['Demographic']['Record']['Education']) { $education[] = $ee[$i]['data']['Demographic']['Record']['Education']; }
+  else { $education[] = ""; $Y6[] = $ee[$i]['id']; $empty[] = array('missing' => 'Education', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
   if ($ee[$i]['data']['Occupation']) { $occupation[] = $ee[$i]['data']['Occupation']; }
   else if ($ee[$i]['data']['Demographic']['Record']['Occupation']) { $occupation[] = $ee[$i]['data']['Demographic']['Record']['Occupation']; }
+  else { $occupation[] = ""; $Y7[] = $ee[$i]['id']; $empty[] = array('missing' => 'Occupation', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
   if ($ee[$i]['data']['MaritalStatus']) { $marital[] = $ee[$i]['data']['MaritalStatus']; }
   else if ($ee[$i]['data']['Demographic']['Record']['MaritalStatus']) { $marital[] = $ee[$i]['data']['Demographic']['Record']['MaritalStatus']; }
+  else { $marital[] = ""; $Y8[] = $ee[$i]['id']; $empty[] = array('missing' => 'Marital', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
   if ($ee[$i]['data']['Residence']) { $residence[] = $ee[$i]['data']['Residence']; }
   else if ($ee[$i]['data']['Demographic']['Record']['Residence']) { $residence[] = $ee[$i]['data']['Demographic']['Record']['Residence']; }
+  else { $residence[] = ""; $Y9[] = $ee[$i]['id']; $empty[] = array('missing' => 'Residence', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
+  // $checkings[] = array($ee[$i]['submitted'], $ee[$i]['data']['Interviewer'], $ee[$i]['data']['Region'], $ee[$i]['data']['Demographic']['Record']['Gender'], $ee[$i]['data']['Demographic']['Record']['Age'], $ee[$i]['data']['Demographic']['Record']['SES'], $ee[$i]['data']['Education'], $ee[$i]['data']['Occupation'], $ee[$i]['data']['MaritalStatus'], $ee[$i]['data']['Residence']);
 }
+
+// $checkings = array_combine($id, $checkings);
+// print_r($checkings);
+// print_r($empty);
+
+function html_table($data = array()) {
+  $rows = array();
+  foreach ($data as $row) {
+    $cells = array();
+    foreach ($row as $cell) { $cells[] = "<td>{$cell}</td>"; }
+    $rows[] = "<tr>" . implode('', $cells) . "</tr>";
+  }
+  return "<table class='table table-hover small' id='missing'><thead><tr class='bg-primary'><th>What is missing?</th><th>Questionnaire No.</th><th colspan='3'>Respondent's information</th><th>Location</th><th>Interviewer</th><th>Since</th></tr></thead>" . implode('', $rows) . "</table>";
+}
+
+// print_r($empty);
+
 $region = array_count_values($region); arsort($region);
 $Z1 = array_sum($region); $A1 = array_keys($region); $B1 = array_values($region); $C1 = count($region);
 $cout1 = "";
@@ -464,6 +575,7 @@ for ($m=0; $m < $C2; $m++) {
   $cout2 .= "      data.setCell($m, 1, $B2[$m]);\n";
   $cout2 .= "      data.setCell($m, 2, $BB[$m]);\n";
 }
+$gender = array_remove_empty($gender); $Y3 = implode(', ', $Y3);
 $gender = array_count_values($gender); krsort($gender);
 $Z3 = array_sum($gender); $A3 = array_keys($gender); $B3 = array_values($gender); $C3 = count($gender);
 $cout3 = "";
@@ -475,6 +587,7 @@ for ($m=0; $m < $C3; $m++) {
   $cout3 .= "      data.setCell($m, 1, $B3[$m]);\n";
   $cout3 .= "      data.setCell($m, 2, $BB[$m]);\n";
 }
+$age = array_remove_empty($age); $Y4 = implode(', ', $Y4);
 $age = array_count_values($age); ksort($age);
 $Z4 = array_sum($age); $A4 = array_keys($age); $B4 = array_values($age); $C4 = count($age);
 $cout4 = "";
@@ -486,6 +599,7 @@ for ($m=0; $m < $C4; $m++) {
   $cout4 .= "      data.setCell($m, 1, $B4[$m]);\n";
   $cout4 .= "      data.setCell($m, 2, $BB[$m]);\n";
 }
+$SES = array_remove_empty($SES); $Y5 = implode(', ', $Y5);
 $SES = array_count_values($SES); ksort($SES);
 $Z5 = array_sum($SES); $A5 = array_keys($SES); $B5 = array_values($SES); $C5 = count($SES);
 $cout5 = "";
@@ -497,6 +611,7 @@ for ($m=0; $m < $C5; $m++) {
   $cout5 .= "      data.setCell($m, 1, $B5[$m]);\n";
   $cout5 .= "      data.setCell($m, 2, $BB[$m]);\n";
 }
+$education = array_remove_empty($education); $Y6 = implode(', ', $Y6);
 $education = array_count_values($education); //ksort($education);
 $Z6 = array_sum($education); $A6 = array_keys($education); $B6 = array_values($education); $C6 = count($education);
 $cout6 = "";
@@ -508,6 +623,7 @@ for ($m=0; $m < $C6; $m++) {
   $cout6 .= "      data.setCell($m, 1, $B6[$m]);\n";
   $cout6 .= "      data.setCell($m, 2, $BB[$m]);\n";
 }
+$occupation = array_remove_empty($occupation); $Y7 = implode(', ', $Y7);
 $occupation = array_count_values($occupation); ksort($occupation);
 $Z7 = array_sum($occupation); $A7 = array_keys($occupation); $B7 = array_values($occupation); $C7 = count($occupation);
 $cout7 = "";
@@ -519,6 +635,7 @@ for ($m=0; $m < $C7; $m++) {
   $cout7 .= "      data.setCell($m, 1, $B7[$m]);\n";
   $cout7 .= "      data.setCell($m, 2, $BB[$m]);\n";
 }
+$marital = array_remove_empty($marital); $Y58 = implode(', ', $Y58);
 $marital = array_count_values($marital); ksort($marital);
 $Z8 = array_sum($marital); $A8 = array_keys($marital); $B8 = array_values($marital); $C8 = count($marital);
 $cout8 = "";
@@ -530,6 +647,7 @@ for ($m=0; $m < $C8; $m++) {
   $cout8 .= "      data.setCell($m, 1, $B8[$m]);\n";
   $cout8 .= "      data.setCell($m, 2, $BB[$m]);\n";
 }
+$residence = array_remove_empty($residence); $Y9 = implode(', ', $Y9);
 $residence = array_count_values($residence); arsort($residence);
 $Z9 = array_sum($residence); $A9 = array_keys($residence); $B9 = array_values($residence); $C9 = count($residence);
 $cout9 = "";
@@ -542,22 +660,53 @@ for ($m=0; $m < $C9; $m++) {
   $cout9 .= "      data.setCell($m, 2, $BB[$m]);\n";
 }
 
-// print_r($cc);
+// function do_offset($level) {
+//   $offset = "";
+//   for ($i=1; $i<$level;$i++) { $offset = $offset . "<td></td>"; }
+//   return $offset;
+// }
+//
+// function show_array($array, $level, $sub) {
+//   if (is_array($array) == 1) {
+//     foreach($array as $key_val => $value) {
+//       $offset = "";
+//       if (is_array($value) == 1) {
+//         echo "<tr>";
+//         $offset = do_offset($level);
+//         echo $offset . "<td>" . $key_val . "</td>";
+//         show_array($value, $level+1, 1);
+//       } else {
+//         if ($sub != 1) { echo "<tr nosub>"; $offset = do_offset($level); }
+//         $sub = 0;
+//         echo $offset . "<td main ".$sub." width=\"120\">" . $key_val . "</td><td width=\"120\">" . $value . "</td>";
+//         echo "</tr>\n";
+//       }
+//     }
+//   }
+//   else { return; }
+// }
+//
+// function html_show_array($array) {
+//   echo "<table cellspacing=\"0\" border=\"2\">\n";
+//   show_array($array, 1, 0);
+//   echo "</table>\n";
+// }
+//
+// html_show_array($interviewerbyregion);
+// $out = array();
+// foreach ($interviewerbyregion as $k => $v) {
+//   foreach ($v as $k2 => $v2) {
+//     $out[$k2][$v2]++;
+//   }
+// }
+// print_r($out);
+
 ?>
 
-<br>
+  </div>
 <?php if (($Z1 > 0) || ($Z2 > 0)) { ?>
-<h4>Quality control</h4>
-<nav>
-  <ul class="nav nav-tabs">
-    <li class="active"><a href="#one" data-toggle="tab" id="first-tab-trigger"><i class="pe-check-circle pe-fw"></i> By location</a></li>
-    <li><a href="#two" data-toggle="tab" id="second-tab-trigger"><i class="pe-check-circle pe-fw"></i> By interviewer</a></li>
-  </ul>
-</nav>
-<br>
-<div class="tab-content">
-  <div id="one" class="tab-pane fade in active">
-    <p>Data broken down by location</p>
+  <div id="second" class="tab-pane fade">
+    <h4>Successful interviews by location <small>(<?php echo $C1; ?> groups)</small></h4>
     <p class="small grey">Click the table header <i class="pe-hand-o-down"></i> to sort the data by column</p>
     <div class="row">
 <?php if ($Z1 == 0) { ?>
@@ -570,9 +719,9 @@ for ($m=0; $m < $C9; $m++) {
       </div>
       <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
 <?php if ($Z1 == $RDsuccess) { ?>
-        <p class="green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z1; ?>) matches exactly to the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). So the data is good for this particular aspect.</p>
+        <p class="small green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z1; ?>) matches exactly to the number of sample (n=<?php echo $RDsuccess; ?>). So the data is good.</p>
 <?php } else { ?>
-        <p class="red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z1; ?>) is lower than the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). This means there are some respondents who did not answer this aspect.</p>
+        <p class="small red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z1; ?>) is lower than the number of sample (n=<?php echo $RDsuccess; ?>).</p><p class="small red">Questionnaire no. with missing answers: <?php echo $Y1; ?></p>
 <?php } ?>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -580,9 +729,7 @@ for ($m=0; $m < $C9; $m++) {
       </div>
 <?php } ?>
     </div>
-  </div>
-  <div id="two" class="tab-pane fade">
-    <p>Data broken down by interviewer</p>
+    <h4>Successful interviews by interviewers <small>(<?php echo $C2; ?> groups)</small></h4>
     <p class="small grey">Click the table header <i class="pe-hand-o-down"></i> to sort the data by column</p>
     <div class="row">
 <?php if ($Z2 == 0) { ?>
@@ -595,9 +742,9 @@ for ($m=0; $m < $C9; $m++) {
       </div>
       <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
 <?php if ($Z2 == $RDsuccess) { ?>
-        <p class="green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z2; ?>) matches exactly to the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). So the data is good for this particular aspect.</p>
+        <p class="small green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z2; ?>) matches exactly to the number of sample (n=<?php echo $RDsuccess; ?>). So the data is good.</p>
 <?php } else { ?>
-        <p class="red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z2; ?>) is lower than the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). This means there are some respondents who did not answer this aspect.</p>
+        <p class="small red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z2; ?>) is lower than the number of sample (n=<?php echo $RDsuccess; ?>).</p><p class="small red">Questionnaire no. with missing answers: <?php echo $Y2; ?></p>
 <?php } ?>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -606,40 +753,12 @@ for ($m=0; $m < $C9; $m++) {
 <?php } ?>
     </div>
   </div>
-</div>
-<hr>
 <?php } ?>
 
-<br>
-<?php if (($Z3 > 0) || ($Z4 > 0) || ($Z5 > 0)) { ?>
-<h4>Checking quota</h4>
-<nav>
-  <ul class="nav nav-tabs">
-    <li class="active"><a href="#three" data-toggle="tab" id="third-tab-trigger"><i class="pe-user-circle pe-fw"></i> Gender</a></li>
-<?php if ($Z4 > 0) { ?>
-    <li><a href="#four" data-toggle="tab" id="fourth-tab-trigger"><i class="pe-user-circle pe-fw"></i> Age</a></li>
-<?php } ?>
-<?php if ($Z5 > 0) { ?>
-    <li><a href="#five" data-toggle="tab" id="fifth-tab-trigger"><i class="pe-user-circle pe-fw"></i> Social grade</a></li>
-<?php } ?>
-<?php if ($Z6 > 0) { ?>
-    <li><a href="#six" data-toggle="tab" id="sixth-tab-trigger"><i class="pe-user-circle pe-fw"></i> Education</a></li>
-<?php } ?>
-<?php if ($Z7 > 0) { ?>
-    <li><a href="#seven" data-toggle="tab" id="seventh-tab-trigger"><i class="pe-user-circle pe-fw"></i> Occupation</a></li>
-<?php } ?>
-<?php if ($Z8 > 0) { ?>
-    <li><a href="#eight" data-toggle="tab" id="eighth-tab-trigger"><i class="pe-user-circle pe-fw"></i> Marital Status</a></li>
-<?php } ?>
-<?php if ($Z9 > 0) { ?>
-    <li><a href="#nine" data-toggle="tab" id="ninth-tab-trigger"><i class="pe-user-circle pe-fw"></i> Residence</a></li>
-<?php } ?>
-  </ul>
-</nav>
-<br>
-<div class="tab-content">
-  <div id="three" class="tab-pane fade in active">
-    <p>Data broken down by gender</p>
+
+  <div id="third" class="tab-pane fade">
+<?php if ($Z3 > 0) { ?>
+    <h4>Quota by gender <small>(<?php echo $C3; ?> groups)</small></h4>
     <p class="small grey">Click the table header <i class="pe-hand-o-down"></i> to sort the data by column</p>
     <div class="row">
       <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
@@ -647,19 +766,18 @@ for ($m=0; $m < $C9; $m++) {
       </div>
       <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
 <?php if ($Z3 == $RDsuccess) { ?>
-        <p class="green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z3; ?>) matches exactly to the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). So the data is good for this particular aspect.</p>
+        <p class="small green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z3; ?>) matches exactly to the number of sample (n=<?php echo $RDsuccess; ?>). So the data is good.</p>
 <?php } else { ?>
-        <p class="red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z3; ?>) is lower than the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). This means there are some respondents who did not answer this aspect.</p>
+        <p class="small red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z3; ?>) is lower than the number of sample (n=<?php echo $RDsuccess; ?>).</p><p class="small red">Questionnaire no. with missing answers: <?php echo $Y3; ?></p>
 <?php } ?>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <div id="sortchart3"></div>
       </div>
     </div>
-  </div>
+<?php } ?>
 <?php if ($Z4 > 0) { ?>
-  <div id="four" class="tab-pane fade">
-    <p>Data broken down by age</p>
+    <h4>Quota by age <small>(<?php echo $C4; ?> groups)</small></h4>
     <p class="small grey">Click the table header <i class="pe-hand-o-down"></i> to sort the data by column</p>
     <div class="row">
       <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
@@ -667,20 +785,18 @@ for ($m=0; $m < $C9; $m++) {
       </div>
       <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
 <?php if ($Z4 == $RDsuccess) { ?>
-        <p class="green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z4; ?>) matches exactly to the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). So the data is good for this particular aspect.</p>
+        <p class="small green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z4; ?>) matches exactly to the number of sample (n=<?php echo $RDsuccess; ?>). So the data is good.</p>
 <?php } else { ?>
-        <p class="red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z4; ?>) is lower than the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). This means there are some respondents who did not answer this aspect.</p>
+        <p class="small red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z4; ?>) is lower than the number of sample (n=<?php echo $RDsuccess; ?>).</p><p class="small red">Questionnaire no. with missing answers: <?php echo $Y4; ?></p>
 <?php } ?>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <div id="sortchart4"></div>
       </div>
     </div>
-  </div>
 <?php } ?>
 <?php if ($Z5 > 0) { ?>
-  <div id="five" class="tab-pane fade">
-    <p>Data broken down by social grade</p>
+    <h4>Quota by social class <small>(<?php echo $C5; ?> groups)</small></h4>
     <p class="small grey">Click the table header <i class="pe-hand-o-down"></i> to sort the data by column</p>
     <div class="row">
       <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
@@ -688,20 +804,18 @@ for ($m=0; $m < $C9; $m++) {
       </div>
       <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
 <?php if ($Z5 == $RDsuccess) { ?>
-        <p class="green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z5; ?>) matches exactly to the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). So the data is good for this particular aspect.</p>
+        <p class="small green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z5; ?>) matches exactly to the number of sample (n=<?php echo $RDsuccess; ?>). So the data is good.</p>
 <?php } else { ?>
-        <p class="red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z5; ?>) is lower than the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). This means there are some respondents who did not answer this aspect.</p>
+        <p class="small red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z5; ?>) is lower than the number of sample (n=<?php echo $RDsuccess; ?>).</p><p class="small red">Questionnaire no. with missing answers: <?php echo $Y5; ?></p>
 <?php } ?>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <div id="sortchart5"></div>
       </div>
     </div>
-  </div>
 <?php } ?>
 <?php if ($Z6 > 0) { ?>
-  <div id="six" class="tab-pane fade">
-    <p>Data broken down by education</p>
+    <h4>Quota by educations <small>(<?php echo $C6; ?> groups)</small></h4>
     <p class="small grey">Click the table header <i class="pe-hand-o-down"></i> to sort the data by column</p>
     <div class="row">
       <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
@@ -709,20 +823,18 @@ for ($m=0; $m < $C9; $m++) {
       </div>
       <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
 <?php if ($Z6 == $RDsuccess) { ?>
-        <p class="green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z6; ?>) matches exactly to the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). So the data is good for this particular aspect.</p>
+        <p class="small green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z6; ?>) matches exactly to the number of sample (n=<?php echo $RDsuccess; ?>). So the data is good.</p>
 <?php } else { ?>
-        <p class="red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z6; ?>) is lower than the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). This means there are some respondents who did not answer this aspect.</p>
+        <p class="small red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z6; ?>) is lower than the number of sample (n=<?php echo $RDsuccess; ?>).</p><p class="small red">Questionnaire no. with missing answers: <?php echo $Y6; ?></p>
 <?php } ?>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <div id="sortchart6"></div>
       </div>
     </div>
-  </div>
 <?php } ?>
 <?php if ($Z7 > 0) { ?>
-  <div id="seven" class="tab-pane fade">
-    <p>Data broken down by occupation</p>
+    <h4>Quota by occupation <small>(<?php echo $C7; ?> groups)</small></h4>
     <p class="small grey">Click the table header <i class="pe-hand-o-down"></i> to sort the data by column</p>
     <div class="row">
       <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
@@ -730,20 +842,18 @@ for ($m=0; $m < $C9; $m++) {
       </div>
       <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
 <?php if ($Z7 == $RDsuccess) { ?>
-        <p class="green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z7; ?>) matches exactly to the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). So the data is good for this particular aspect.</p>
+        <p class="small green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z7; ?>) matches exactly to the number of sample (n=<?php echo $RDsuccess; ?>). So the data is good.</p>
 <?php } else { ?>
-        <p class="red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z7; ?>) is lower than the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). This means there are some respondents who did not answer this aspect.</p>
+        <p class="small red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z7; ?>) is lower than the number of sample (n=<?php echo $RDsuccess; ?>).</p><p class="small red">Questionnaire no. with missing answers: <?php echo $Y7; ?></p>
 <?php } ?>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <div id="sortchart7"></div>
       </div>
     </div>
-  </div>
 <?php } ?>
 <?php if ($Z8 > 0) { ?>
-  <div id="eight" class="tab-pane fade">
-    <p>Data broken down by marital status</p>
+    <h4>Quota by marital status <small>(<?php echo $C8; ?> groups)</small></h4>
     <p class="small grey">Click the table header <i class="pe-hand-o-down"></i> to sort the data by column</p>
     <div class="row">
       <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
@@ -751,20 +861,18 @@ for ($m=0; $m < $C9; $m++) {
       </div>
       <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
 <?php if ($Z8 == $RDsuccess) { ?>
-        <p class="green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z8; ?>) matches exactly to the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). So the data is good for this particular aspect.</p>
+        <p class="small green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z8; ?>) matches exactly to the number of sample (n=<?php echo $RDsuccess; ?>). So the data is good.</p>
 <?php } else { ?>
-        <p class="red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z8; ?>) is lower than the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). This means there are some respondents who did not answer this aspect.</p>
+        <p class="small red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z8; ?>) is lower than the number of sample (n=<?php echo $RDsuccess; ?>).</p><p class="small red">Questionnaire no. with missing answers: <?php echo $Y8; ?></p>
 <?php } ?>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <div id="sortchart8"></div>
       </div>
     </div>
-  </div>
 <?php } ?>
 <?php if ($Z9 > 0) { ?>
-  <div id="nine" class="tab-pane fade">
-    <p>Data broken down by house type</p>
+    <h4>Quota by house type <small>(<?php echo $C9; ?> groups)</small></h4>
     <p class="small grey">Click the table header <i class="pe-hand-o-down"></i> to sort the data by column</p>
     <div class="row">
       <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
@@ -772,40 +880,102 @@ for ($m=0; $m < $C9; $m++) {
       </div>
       <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
 <?php if ($Z9 == $RDsuccess) { ?>
-        <p class="green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z9; ?>) matches exactly to the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). So the data is good for this particular aspect.</p>
+        <p class="small green"><i class="pe-check pe-lg"></i> The number of responses for this question (n=<?php echo $Z9; ?>) matches exactly to the number of sample (n=<?php echo $RDsuccess; ?>). So the data is good.</p>
 <?php } else { ?>
-        <p class="red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z9; ?>) is lower than the number of sample we have achieved so far (n=<?php echo $RDsuccess; ?>). This means there are some respondents who did not answer this aspect.</p>
+        <p class="small red"><i class="pe-exclamation-triangle pe-lg"></i> The number of responses for this question (n=<?php echo $Z9; ?>) is lower than the number of sample (n=<?php echo $RDsuccess; ?>).</p><p class="small red">Questionnaire no. with missing answers: <?php echo $Y9; ?></p>
 <?php } ?>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <div id="sortchart9"></div>
       </div>
     </div>
+<?php } ?>
+<?php if (!empty($empty)) { ?>
+    <h4>Summary of missing data</h4>
+    <p>We detect there <?php $ccc = count($empty); if ($ccc == 1) { echo "is <strong>$ccc record</strong>"; } else { echo "are <strong>$ccc records</strong>"; } ?> that still missing out with the important piece of data. A fix may be required.</p>
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <?php echo html_table($empty); ?>
+      </div>
+    </div>
+<?php } ?>
+
+
   </div>
-<?php } ?>
-</div>
-<hr>
-<?php } ?>
+  <div id="fourth" class="tab-pane fade">
 
 <?php
-if ($status >= 2) { echo "<h4>Interim data <small>(based on successful interviews)</small></h4>\n"; }
-else if ($status == 1) { echo "<h4>Interim data <small>(based on pilot interviews)</small></h4>\n"; }
-echo "<div class=\"alert alert-warning\" role=\"alert\">\n";
-echo "  <h4>Important note</h4>\n";
-echo "  <p>This data should only be used as a sanitary check rather than using it as result for analysis. Interim data is not a true reflection of the final result and the final result can very different from the interim data depending on several factors such as the sample size, sample composition, etc.</p>\n";
-echo "  <p><strong>It is imperative that business decision must not be made based on the interim result</strong>. We hereby take no responsibility on any damages to the business caused by the usage of interim result. You must use it at your own risk.</p>\n";
-echo "</div>\n";
-echo "<div id=\"showalert-delete\"></div>\n";
+if ($status >= 2) { echo "    <h4>Interim data <small>(based on successful interviews)</small></h4>\n"; } else if ($status == 1) { echo "    <h4>Interim data <small>(based on pilot interviews)</small></h4>\n"; }
+echo "    <div class=\"alert alert-warning\" role=\"alert\">\n";
+echo "      <h4>Important note</h4>\n";
+echo "      <p>This data should only be used as a sanitary check rather than using it as result for analysis. Interim data is not a true reflection of the final result and the final result can very different from the interim data depending on several factors such as the sample size, sample composition, etc.</p>\n";
+echo "      <p><strong>It is imperative that business decision must not be made based on the interim result</strong>. We hereby take no responsibility on any damages to the business caused by the usage of interim result. You must use it at your own risk.</p>\n";
+echo "    </div>\n";
+echo "    <div id=\"showalert-delete\"></div>\n";
 if ($q->rowCount() < $excerptRows) { $outrecords = $q->rowCount(); } else { $outrecords = $excerptRows; }
-echo "<div class=\"csv\">\n";
-echo "  <p>Table below shows the interim data which is <strong>the most recent $outrecords records</strong> of this survey which you can view the initial feedback plus an ability to delete should you need to.</p>\n";
-echo "  <p>But in order to work with the data in a more effective way, we would suggst you <a class=\"download\"><i class=\"pe-download pe-fw\"></i> download the data file</a> or alternatively <a class=\"raw\"><i class=\"pe-desktop pe-fw\"></i> view the data online</a> in a Comma Separated Values (CSV) format if there are not many questions (e.g. less than 10 questions).</p>\n";
-echo "  <textarea class=\"editing form-control\" readonly></textarea>\n";
-echo "  <div class=\"table rendered\"><table class=\"table\"></table></div>\n";
-echo "  <span class=\"tablenotice\">You may need to scroll right if there are many columns <i class=\"pe-hand-o-right\"></i></span>\n";
-echo "</div>\n";
+echo "    <div class=\"csv\">\n";
+echo "      <p>Table below shows the interim data which is <strong>the most recent $outrecords records</strong> of this survey which you can view the initial feedback plus an ability to delete should you need to.</p>\n";
+echo "      <p>But in order to work with the data in a more effective way, we would suggst you <a class=\"download\"><i class=\"pe-download pe-fw\"></i> download the data file</a> or alternatively <a class=\"raw\"><i class=\"pe-desktop pe-fw\"></i> view the data online</a> in a Comma Separated Values (CSV) format if there are not many questions (e.g. less than 10 questions).</p>\n";
+echo "      <textarea class=\"editing form-control\" readonly></textarea>\n";
+echo "      <div class=\"table rendered\"><table class=\"table\"></table></div>\n";
+echo "      <span class=\"tablenotice\">You may need to scroll right if there are many columns <i class=\"pe-hand-o-right\"></i></span>\n";
+echo "    </div>\n";
 
 ?>
+
+  </div>
+  <div id="fifth" class="tab-pane fade">
+    <h4>The total sample</h4>
+    <p>This section is for setting the sample size including the total sample size and the sample size quota breakdown by different subgroups e.g. geographic, demographic, etc.</p>
+    <form id="updatesettings" method="post" action="<?php echo $base; ?>">
+      <div class="row">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+          <table class="table table-hover table-condensed small">
+            <tbody>
+              <tr class="bg-primary">
+                <td width="70%">Total sample</td>
+                <td width="30%"><input class="form-control input-sm" type="text" name="totalsample" value="<?php if ($sample_size) { echo $sample_size; } ?>"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <br>
+      <h4>Quota by subgroups</h4>
+      <p>This section is used for setting a standard quota to the sample size including geographic and demographic.</p>
+      <div class="row" id="display">
+      </div>
+      <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newquota"><i class="pe-plus pe-fw"></i>Add new</button></p>
+      <br>
+      <h4>Key questions for QC & checking</h4>
+      <p>Below is a list of key questions for QC during the fieldwork period. While it will show with the real time results, focus is instead on the correction of answers, completion of all responses, cross-checking among different interviewers, etc.</p>
+      <div class="row">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+          <table class="table table-hover table-condensed small" id="tableQC">
+            <thead>
+              <tr class="bg-success">
+                <th width="5%"></th>
+                <th width="85%">Question name</th>
+                <th width="10%"></th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+          <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newkeyquestion"><i class="pe-plus pe-fw"></i>Add new</button></p>
+        </div>
+      </div>
+      <br>
+      <hr>
+      <p class="text-center">
+        <input type="hidden" name="surveyid" value="<?php echo $_GET['s']; ?>">
+        <button type="submit" class="btn btn-success" name="m" value="updatesettings">Save <i class="pe-check-circle-o"></i></button>
+        <button type="reset" class="btn btn-default">Cancel <i class="pe-times-circle-o"></i></button>
+      </p>
+      <br>
+    </form>
+  </div>
+
 
 <script type="text/javascript">
 
@@ -934,7 +1104,7 @@ echo "</div>\n";
     renderCSV(outArray1.slice(0, excerptRows), this.id);
     showCSV(true);
     $(".csv textarea").val(csv2);
-    var blob = new Blob([csv2], { type: ' type: "text/csv;charset=UTF-8"' });
+    var blob = new Blob([csv2], { type: 'type: "text/csv;charset=UTF-8"' });
     var csvUrl = window.URL.createObjectURL(blob);
     var todayDate = new Date().toISOString().slice(0,10);
     var filename = "<?php echo $project; ?>" + "_data_" + todayDate + '.csv';
@@ -1272,16 +1442,110 @@ echo "</div>\n";
   }
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    if ($(e.target).attr('id') == 'first-tab-trigger') { drawLocation(); }
-    if ($(e.target).attr('id') == 'second-tab-trigger') { drawInterviewer(); }
-    if ($(e.target).attr('id') == 'third-tab-trigger') { drawGender(); }
-    if ($(e.target).attr('id') == 'fourth-tab-trigger') { drawAge(); }
-    if ($(e.target).attr('id') == 'fifth-tab-trigger') { drawSES(); }
-    if ($(e.target).attr('id') == 'sixth-tab-trigger') { drawEducation(); }
-    if ($(e.target).attr('id') == 'seventh-tab-trigger') { drawOccupation(); }
-    if ($(e.target).attr('id') == 'eighth-tab-trigger') { drawMaritalStatus(); }
-    if ($(e.target).attr('id') == 'ninth-tab-trigger') { drawResidence(); }
+    if ($(e.target).attr('id') == 'first-tab-trigger') { drawOrgChart1(); drawOrgChart2(); drawGaugeChart1(); drawGaugeChart2(); drawAreaChart(); }
+    if ($(e.target).attr('id') == 'second-tab-trigger') { drawLocation(); drawInterviewer(); }
+    if ($(e.target).attr('id') == 'third-tab-trigger') { drawGender(); drawAge(); drawSES(); drawEducation(); drawOccupation(); drawMaritalStatus(); drawResidence(); }
   })
+
+  $("#missing").find('th:first-child').css("background", "#555");
+  $("#missing").find('td:first-child').css("background", "#eee");
+
+
+<?php if ($monitor) { echo "var monitor = $monitor;\n"; } else { echo "var monitor = { \"quota\": [], \"QC\": [] } ]};\n"; } ?>
+  var counter = 0;
+  if (typeof(monitor.quota) === 'undefined') {
+    var currentcontent = "        <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n" +
+      "          <p>No data.</p>\n" +
+      "          <p>Click button below to add one.</p>\n" +
+      "        </div>\n";
+    $('div#display').append(currentcontent);
+  } else {
+    while (counter<monitor.quota.length) {
+      var currentcontent = "        <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\" id=\"quota" + counter + "set\">\n" +
+        "          <div class=\"input-group input-group-sm\">\n" +
+        "            <input class=\"form-control input-sm\" type=\"text\" name=\"quota_quota_" + counter + "\" value=\"" + monitor.quota[counter].question + "\">\n" +
+        "            <span class=\"input-group-btn\">\n" +
+        // "              <button type=\"button\" class=\"btn btn-success\" id=\"quota" + counter + "btn\">Generate <i class=\"pe-check-circle-o pe-fw\"></i></button>\n" +
+        "              <button type=\"button\" class=\"btn btn-danger\" id=\"quota" + counter + "btndelete\"><i class=\"pe-trash pe-fw\"></i> Delete</button>\n" +
+        "            </span>\n" +
+        "          </div>\n" +
+        "          <br>\n" +
+        "          <table class=\"table table-hover table-condensed small\" id=\"quota" + counter + "table\">\n" +
+        "            <thead>\n" +
+        "              <tr class=\"bg-success\">\n" +
+        "                <th width=\"70%\"></th>\n" +
+        "                <th width=\"30%\">Sample size</th>\n" +
+        "              </tr>\n" +
+        "            </thead>\n" +
+        "            <tbody>\n" +
+        "            </tbody>\n" +
+        "          </table>\n" +
+        "        </div>\n";
+        "      <br>\n";
+      $('div#display').append(currentcontent);
+      var total = 0;
+      for (var i = 0; i < monitor.quota[counter].details.length; i++) {
+        var detailcurrentcontent = "              <tr>\n" +
+          "                <td valign=\"middle\"><input type=\"hidden\" name=\"quota_subgroup_" + counter + "[]\" placeholder=\"QuotaQuestion" + counter + "\" value=\"" + monitor.quota[counter].details[i].subgroup + "\">" + monitor.quota[counter].details[i].subgroup + "</td>\n" +
+          "                <td valign=\"middle\"><input class=\"form-control input-sm\" type=\"text\" name=\"quota_samplesize_" + counter + "[]\" value=\"" + monitor.quota[counter].details[i].samplesize + "\"></td>\n" +
+          "              </tr>\n";
+        $("table#quota" + counter + "table").find("tbody").append(detailcurrentcontent);
+        total += parseInt(monitor.quota[counter].details[i].samplesize);
+        var totalcurrentcontent = "              <tr>\n" +
+          "                <td valign=\"middle\"><strong>Total</strong></td>\n" +
+          "                <td valign=\"middle\"><strong><span id=\"totalsum" + counter + "\">" + total + "</span></strong></td>\n" +
+          "              </tr>\n";
+      }
+      // $("table#quota" + counter + "table").find("tbody").append(totalcurrentcontent);
+      counter++;
+    }
+  }
+  // $(document.body).delegate("#quotabtndelete", "click", function() { $(this).parents().remove(); });
+  $('#quota'+counter+'btndelete').click(function() { $('#quota'+counter+'set').remove(); });
+  $('#newquota').click(function() {
+    var newcontent = "        <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n" +
+      "          <div class=\"input-group input-group-sm\">\n" +
+      "            <input class=\"form-control input-sm\" type=\"text\" name=\"quota" + counter + "\" placeholder=\"QuotaQuestion" + counter + "\">\n" +
+      "            <span class=\"input-group-btn\">\n" +
+      "              <button type=\"button\" class=\"btn btn-success\" id=\"quota" + counter + "btnokay\"><i class=\"pe-check-circle-o pe-fw\"></i> Okay</button>\n" +
+      // "              <button type=\"button\" class=\"btn btn-danger\" id=\"quota" + counter + "btn\"><i class=\"pe-trash pe-fw\"></i> Delete</button>\n" +
+      "            </span>\n" +
+      "          </div>\n" +
+      "          <br>\n" +
+      "          <table class=\"table table-hover table-condensed small\" id=\"quota" + counter + "table\"></table>\n" +
+      "        </div>\n";
+    $('div#display').append(newcontent);
+    counter++;
+  });
+
+  var counter2 = 0, counter2z = counter2 + 1;
+  if (typeof(monitor.QC) === 'undefined') {
+    var QCrow = "              <tr>\n" +
+      "                <td></td><td colspan=\"2\"><small><strong><br>No data.</strong><br>Click button below to add one.</small></td>\n" +
+      "              </tr>\n";
+    $('#tableQC').find('tbody').append(QCrow);
+  } else {
+    while (counter2<monitor.QC.length) {
+      var QCrow = "              <tr>\n" +
+        "                <td valign=\"middle\">" + counter2z + "</td>\n" +
+        "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" name=\"QC_questionname_" + counter2z + "\" value=\"" + monitor.QC[counter2].questionname + "\"></td>\n" +
+        "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+        "              </tr>\n";
+      $('#tableQC').find('tbody').append(QCrow);
+      counter2++;
+      counter2z++;
+    }
+  }
+  $('#newkeyquestion').click(function() {
+    var newQCrow = "              <tr>\n" +
+      "                <td valign=\"middle\">" + counter2z + "</td>\n" +
+      "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"QC_questionname_" + counter2z + "\"></td>\n" +
+      "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+      "              </tr>\n";
+    $('#tableQC').find('tbody').append(newQCrow);
+    counter2z++;
+  });
+  $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
 
 
 </script>

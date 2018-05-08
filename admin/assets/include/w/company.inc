@@ -35,6 +35,7 @@ while ($row = $q1->fetchObject()) {
   $email = $row->email;
   $telephone = $row->telephone;
   $fax = $row->fax;
+  $tax = $row->tax;
   $created = ago($row->created);
   $updated = ago($row->updated);
 }
@@ -88,6 +89,7 @@ if ($_POST['savethisinfo'] == 1) {
     if ($_POST['email'] != $email) { $add .= "email = :email, "; $move = 1; }
     if ($_POST['telephone'] != $telephone) { $add .= "telephone = :telephone, "; $move = 1; }
     if ($_POST['fax'] != $fax) { $add .= "fax = :fax, "; $move = 1; }
+    if ($_POST['tax'] != $tax) { $add .= "tax = :tax, "; $move = 1; }
     $add = substr_replace($add, '', -2);
     if ($move == 0) {
       $redirect = $me."&m=4";
@@ -105,6 +107,7 @@ if ($_POST['savethisinfo'] == 1) {
       if ($_POST['email'] != $email) { $q2B->bindValue(':email', $_POST['email'], PDO::PARAM_STR); }
       if ($_POST['telephone'] != $telephone) { $q2B->bindValue(':telephone', $_POST['telephone'], PDO::PARAM_STR); }
       if ($_POST['fax'] != $fax) { $q2B->bindValue(':fax', $_POST['fax'], PDO::PARAM_STR); }
+      if ($_POST['tax'] != $tax) { $q2B->bindValue(':tax', $_POST['tax'], PDO::PARAM_STR); }
       $q2B->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
       $q2B->execute();
       $ql2 = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." edited the company info for $name', '3')");
@@ -173,6 +176,14 @@ if ($logo) {
         </span>
         <span class="text-muted small"><small>The full company name in Thai based on official company registration</small></span>
       </p>
+      <p>
+        <label>Tax ID</label> <span class="label label-blue">optional</span><br>
+        <span class="input-group">
+          <span class="input-group-addon"><i class="pe-building pe-fw"></i></span>
+          <input type="text" class="form-control" name="tax" onclick="this.select()" placeholder="0107536000595"<?php if ($tax) { echo " value=\"$tax\""; } ?>>
+        </span>
+        <span class="text-muted small"><small>Tax ID (registration with Department of Business Development, Ministry of Finance)</small></span>
+      </p>
     </div>
     <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3" style="text-align:right">
       <p></p>
@@ -204,7 +215,7 @@ if ($logo) {
     </div>
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
       <p>
-        <label>Billing address in Thai</label> <span class="label label-blue">optional</span>
+        <label>Billing address in Thai</label> <span class="label label-red">required</span>
         <textarea class="form-control" row="5" name="address_th" onclick="this.select()" style="font-family:'boon'; font-size:1.1rem; color:black; height:135px" placeholder="ที่อยู่บริษัทเป็นภาษาไทยอย่างเต็มรูปแบบ สามารถบันทึกได้หลายบรรทัด"><?php if ($address_th) { echo $address_th; } ?></textarea>
         <span class="text-muted small"><small class="orange"><strong>Only for client based in Thailand, others please skip this.</strong></small></span>
       </p>
@@ -245,6 +256,54 @@ if ($logo) {
           <input type="text" class="form-control" name="fax" onclick="this.select()" placeholder="+662 3334444"<?php if ($fax) { echo " value=\"$fax\""; } ?>>
         </span>
         <span class="text-muted small"><small>An optional fax number for the company following the same format as telephone</small></span>
+      </p>
+    </div>
+  </div>
+
+<?php
+
+$banks = array(
+  "B01" => "Bangkok Bank PCL", "B02" => "Bank for Agriculture and Agricultural Co-Operatives", "B03" => "Bank of America NT&amp;SA",
+  "B04" => "Bank of Ayudhaya PCL", "B05" => "Bank of China (Thai) PCL", "B06" => "BNP Paribas Thailand",
+  "B07" => "CIMB Thai Bank PCL", "B08" => "Citi Bank N.A.", "B09" => "Deutsche Bank Aktiengeselischart",
+  "B10" => "Government Housing Bank", "B11" => "Industrial and Commercial Bank of China (Thai) PCL", "B12" => "Islamic Bank of Thailand",
+  "B13" => "JPMorgan Chase Bank Bangkok Branch", "B14" => "Kasikornbank PCL", "B15" => "Kiatnakin Bank PCL",
+  "B16" => "Krung Thai Bank PCL", "B17" => "Land and Houses Bank", "B18" => "Mega International Commercial Bank",
+  "B19" => "Mizuho Corporate Bank", "B20" => "Standard Chartered Bank Thai PCL", "B21" => "Thanachart Bank PCL",
+  "B22" => "The Government Saving Bank", "B23" => "The Hong Kong &amp; Shanghai Corporation Ltd.", "B24" => "The Siam Commercial Bank PCL",
+  "B25" => "The Sumitomo Mitsu Banking Corporation", "B26" => "The Thai Credit Retail Bank", "B27" => "Tisco Bank PCL",
+  "B28" => "TMB Bank PCL", "B29" => "United Overseas Bank (Thai) PCL"
+);
+
+$bank = "";
+foreach($banks as $a => $b) {
+  if ($b == $bank) { $bank .= "                    <option value=\"$b\" selected>$a</option>\n"; }
+  else { $bank .= "                    <option value=\"$b\">$a</option>\n"; }
+}
+
+
+
+?>
+
+  <div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <p>
+        <label>Bank Account</label> <span class="label label-blue">optional</span>
+        <div class="input-group">
+          <div class="input-group-addon"><i class="pe-dollar pe-fw"></i></div>
+          <div class="input-group-btn">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select your bank <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+              <li><a href="#">Action</a></li>
+              <li><a href="#">Another action</a></li>
+              <li><a href="#">Something else here</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="#">Separated link</a></li>
+            </ul>
+          </div>
+          <input type="text" class="form-control" name="bankaccount" onclick="this.select()" placeholder="000-0-00000-0"<?php if ($bankaccount) { echo " value=\"$bankaccount\""; } ?>>
+        </div>
+        <span class="text-muted small"><small>This should be a generic email contact rather than specific to a person</small></span>
       </p>
     </div>
   </div>

@@ -13195,9 +13195,9 @@ ul.google-visualization-tooltip-item-list > li > span {
 ul.google-visualization-tooltip-action-list > li > span {
   font-size: 11px !important; }
 
-#timeline1 svg g:first-of-type path, #timeline2 svg g:first-of-type path, #timeline3 svg g:first-of-type path {
+#timeline1 svg g:first-of-type path, #timeline2 svg g:first-of-type path, #timeline3 svg g:first-of-type path, #timeline4 svg g:first-of-type path {
   stroke: #E6E6E6; }
-#timeline1 svg g:first-of-type rect:not(:last-child), #timeline2 svg g:first-of-type rect:not(:last-child), #timeline3 svg g:first-of-type rect:not(:last-child) {
+#timeline1 svg g:first-of-type rect:not(:last-child), #timeline2 svg g:first-of-type rect:not(:last-child), #timeline3 svg g:first-of-type rect:not(:last-child), #timeline4 svg g:first-of-type rect:not(:last-child) {
   fill: #FFFFFF; }
 
 .reveal-if-active {

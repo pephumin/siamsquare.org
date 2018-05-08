@@ -20,7 +20,7 @@ $rolelist .= " ]";
 <div class="rows">
   <?php if ($_SESSION['level'] >= "6") { ?>
   <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="text-align:right">
-    <p class="pull-right"><a class="btn btn-success" data-bind="click: createNew, enable: !isNewMemberCreating()" href=""><i class="pe-user-plus pe-fw"></i> New member</a></p>
+    <p class="pull-right"><a class="btn btn-success" data-bind="click: function() { showDialog(true) }, enable: !isNewMemberCreating()" href=""><i class="pe-user-plus pe-fw"></i> New member</a></p>
   </div>
   <?php } ?>
   <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -29,26 +29,6 @@ $rolelist .= " ]";
 </div>
 <br>
 <div class="row">
-<?php if ($_SESSION['level'] >= "6") { ?>
-  <div data-bind="visible: isNewMemberCreating" class="col-xs-12 col-sm-6 col-md-4 col-lg-4" style="margin-bottom:20px">
-    <div class="members">
-      <div class="opq">
-        <div class="members-header-new"></div>
-        <div class="members-body">
-          <h4 class="fullname">Create a new member</h4>
-          <div class="email small">(Using the below avatar as a default)</div>
-          <p><img src="/admin/assets/img/u/M10.svg" class="img-circle members-photo" alt="Avatar"></p>
-          <div class="input-group"><span class="input-group-addon"><small>Name:</small></span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberName" onclick="this.select()" placeholder="Enter first and last name"></div><br>
-          <div class="input-group"><span class="input-group-addon"><small>Email</small>:</span><input type="text" class="form-control input-sm" data-bind="textInput: newMemberEmail" onclick="this.select()" placeholder="Enter email address"></div><br>
-          <a class="btn btn-primary btn-tiny" data-bind="click: postNew, enable: newMemberName() != '', enable: newMemberEmail() != ''" href=""><i class="pe-user-plus"></i> Create</a>
-          <a class="btn btn-default btn-tiny" data-bind="click: cancelNew" href=""><i class="pe-times-circle-o"></i> Cancel</a><br><br>
-          <small class="red">Only create using a working email</small>
-          <br><br>
-        </div>
-      </div>
-    </div>
-  </div>
-<?php } ?>
   <!-- ko foreach: members -->
   <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4" style="margin-bottom:20px">
     <div class="members">
@@ -136,6 +116,25 @@ $rolelist .= " ]";
   <!-- /ko -->
 </div>
 
+<div class="modal fade" id="newmember" aria-labelledby="newmember" tabindex="-1" role="dialog" data-bind="modal: showDialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Add a new team member</h4>
+      </div>
+      <div class="modal-body">
+        <p>Please enter a new user name and his/her email address below. You need to make sure that you only use a valid (working) email otherwise this new user will not be able to set up his/her account properly.</p>
+        <div class="input-group"><span class="input-group-addon"><i class="pe-user-o pe-fw"></i> Name:</span><input id="newname" type="text" class="form-control" data-bind="textInput: newMemberName" onclick="this.select()" placeholder="Enter the first and last name"></div><br>
+        <div class="input-group"><span class="input-group-addon"><i class="pe-envelope-o pe-fw"></i> Email:</span><input id="newname" type="text" class="form-control" data-bind="textInput: newMemberEmail" onclick="this.select()" placeholder="Enter the valid email address"></div><br>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-success" data-bind="click: postNew, enable: newMemberName() != '', enable: newMemberEmail() != ''" href="" id="submitnewuser"><i class="pe-user-plus"></i> Create</a>
+        <a class="btn btn-default" data-bind="click: cancelNew" href="" data-dismiss="modal"><i class="pe-times-circle-o"></i> Cancel</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script type="text/javascript">
 
@@ -156,12 +155,24 @@ $rolelist .= " ]";
   var ip = "<?php echo getip(); ?>";
   var api = "http://www.siamsquare.org.uk";
   $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
-  $('#showalert-create').html("<div class='alert alert-success'><i class='pe-save pe-fw'></i> A new user has been created</div>").hide();
+  $('#showalert-create').html("<div class='alert alert-success'><i class='pe-save pe-fw'></i> A new user has been created. Please wait for a few seconds as we are refreshing this page.</div>").hide();
   $('#showalert-delete').html("<div class='alert alert-danger'><i class='pe-trash pe-fw'></i> The user has been deleted</div>").hide();
   $('#showalert-edit').html("<div class='alert alert-success'><i class='pe-edit pe-fw'></i> The user information has been edited</div>").hide();
   $('#showalert-suspend').html("<div class='alert alert-warning'><i class='pe-pause-circle pe-fw'></i> The user has been suspended. Please wait for a few seconds as we are refreshing this page.</div>").hide();
   $('#showalert-reactivate').html("<div class='alert alert-success'><i class='pe-check-square-o pe-fw'></i> The user has been reactivated. Please wait for a few seconds as we are refreshing this page.</div>").hide();
   $('#showalert-changerole').html("<div class='alert alert-info'><i class='pe-cog pe-fw'></i> Th role of this user has been changed. Please wait for a few seconds as we are refreshing this page.</div>").hide();
+  ko.bindingHandlers.modal = {
+    init: function (element, valueAccessor) {
+      $(element).modal({ show: false });
+      var value = valueAccessor();
+      if (ko.isObservable(value)) { $(element).on('hidden.bs.modal', function() { value(false); }); }
+    },
+    update: function (element, valueAccessor) {
+      var value = valueAccessor();
+      if (ko.utils.unwrapObservable(value)) { $(element).modal('show'); }
+      else { $(element).modal('hide'); }
+    }
+  }
   var RoleListing = function(level, role) {
     this.level = ko.observable(level);
     this.role = ko.observable(role);
@@ -209,6 +220,7 @@ $rolelist .= " ]";
     this.isNewMemberCreating = ko.observable(false);
     this.newMemberName = ko.observable("");
     this.newMemberEmail = ko.observable("");
+    this.showDialog = ko.observable(false);
     this.loadData = function (i) {
       $.ajax({
         url: api + '/member/' + companyid,
@@ -322,13 +334,14 @@ $rolelist .= " ]";
       var index = self.members.indexOf(member);
       if (index > -1) { self.members.splice(index, 1); }
     }
-    this.createNew = function () {
-      self.isNewMemberCreating(true);
-      self.newMemberName("My new member");
-      self.newMemberEmail("user@my-company.com");
-    }
+    // this.createNew = function () {
+    //   self.isNewMemberCreating(true);
+    //   self.newMemberName("My new member");
+    //   self.newMemberEmail("user@my-company.com");
+    // }
     this.cancelNew = function () {
-      self.isNewMemberCreating(false);
+      self.showDialog(false);
+      // self.isNewMemberCreating(false);
     }
     this.postNew = function () {
       self.cancelNew();
@@ -352,6 +365,7 @@ $rolelist .= " ]";
         },
         error: function (error) { self.onFail(error); }
       });
+      window.setTimeout(function() { window.location.reload(); }, 3300);
     }
     this.startEditFullName = function (member) {
       member.editingFullName(member.fullname());
@@ -488,6 +502,15 @@ $rolelist .= " ]";
       }
     }
     ko.applyBindings(new ViewModel());
+  });
+  $('#submitnewuser').attr('disabled', true);
+  $('.input-group input').keyup(function() {
+    var empty = false;
+    $('.input-group input').each(function() {
+      if ($(this).val().length == 0) { empty = true; }
+    });
+    if (empty) { $('#submitnewuser').attr('disabled', true); }
+    else { $('#submitnewuser').removeAttr('disabled'); }
   });
 
 </script>

@@ -251,56 +251,24 @@ echo "<div id=\"runsurvey\"></div><br>\n";
 echo "<div id=\"notification\"></div>\n";
 
 // get interviewer names for auto-completion
-
-function array_remove_empty($arr) {
-  $narr = array();
-  while (list($key, $val) = each($arr)) {
-    if (is_array($val)) { $val = array_remove_empty($val); if (count($val) != 0) { $narr[$key] = $val; } }
-    else { if (trim($val) != "") { $narr[$key] = $val; } }
-  }
-  unset($arr);
-  return $narr;
-}
-
-$sql = "SELECT * FROM j_results WHERE surveyid = :surveyid ORDER BY submitted DESC";
+$sql = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 2 ORDER BY submitted DESC";
 $q = $db->prepare($sql);
 $q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q->execute();
 $totalrecords = $q->rowCount();
 $r = $q->fetchAll(PDO::FETCH_ASSOC);
 $qq = "Interviewer";
-$out = "[ ";
 for ($i=0; $i < count($r); $i++) {
   $j = $r[$i]["data"];
   $j = json_decode($j, true);
-  $out .= "{ \"interviewer\": \"".addslashes($j[$qq])."\" }, ";
+  $nn[] = $j[$qq];
 }
+asort($nn);
+$nnn = array_remove_empty(array_unique($nn));
+$out = "[";
+foreach ($nnn as $k => $v) { $out .= "{ \"interviewer\": \"".addslashes($nnn[$k])."\" }, "; }
 $out = rtrim($out, ', ');
-$out .= " ]";
-$out = json_decode($out, true);
-$out = array_remove_empty($out);
-$out = json_encode($out, JSON_UNESCAPED_UNICODE);
-
-// while ($ee = $q->fetchAll(PDO::FETCH_ASSOC)) {
-//   for ($i=0; $i<count($ee); $i++) {
-//     $removeKeys = array('rd', 'email', 'ip', 'surveyid', 'status', 'interviewer');
-//     foreach($removeKeys as $key) {
-//       unset($ee[$i][$key]);
-//     }
-//     $ee[$i]['data'] = json_decode($ee[$i]['data'], true);
-//   }
-// }
-// // $datafortable = json_encode($ee);
-// for ($i=0; $i<count($ee); $i++) {
-//   $interviewerlist[] = $ee[$i]['data']['Interviewer'];
-// }
-// $interviewerlist = array_count_values($interviewerlist);
-// print_r($interviewerlist);
-// $cc = json_encode(array_keys($interviewerlist));
-// print_r($cc);
-
-
-
+$out .= "]";
 
 ?>
 
@@ -428,7 +396,14 @@ $out = json_encode($out, JSON_UNESCAPED_UNICODE);
   Survey.JsonObject.metaData.addProperty("dropdown", { name: "renderAs", default: "standard", choices: ["standard", "barrating", "NPS", "imagepicker"] });
   Survey.JsonObject.metaData.addProperty("dropdown", { name: "ratingTheme", default: "star", choices: ["star", "heart", "thumb", "check", "bell", "flag", "user", "square-1", "square-2", "square-3"] });
   Survey.JsonObject.metaData.addProperty("dropdown", { name: "showValues:boolean", default: false });
-  Survey.JsonObject.metaData.addProperty("text", { name: "renderAs", default: "standard", choices: ["standard", "signaturepad"]});
+  Survey.JsonObject.metaData.addProperty("text", { name: "renderAs", default: "standard", choices: ["standard", "signaturepad", "autocomplete"]});
+  // Survey.JsonObject.metaData.addProperty("text", {
+  //   name: "choices:itemvalues",
+  //   onGetValue: function(obj) { return Survey.ItemValue.getData(obj.choices || []); },
+  //   // onSetValue: function(obj, value) { if (!obj.choices) { obj.choices = obj.createItemValues("choices"); } obj.choices = value; }
+  //   onSetValue: function(obj, value) { obj.choices = value; }
+  // });
+  // Survey.JsonObject.metaData.addProperty("text", { name: "choicesByUrl:restfull", className: "ChoicesRestfull", onGetValue: function(obj) { return obj && obj.choicesByUrl && obj.choicesByUrl.getData(); }, onSetValue: function(obj, value) { if (!obj.choicesByUrl) { obj.choicesByUrl = new Survey.ChoicesRestfull(); } obj.choicesByUrl.setData(value); } });
   Survey.JsonObject.metaData.addProperty("questionbase", { name: "tooltip" });
   Survey.JsonObject.metaData.addProperty("radiogroup", { name: "renderAs", default: "standard", choices: ["standard", "slider"] });
 
@@ -512,6 +487,7 @@ $out = json_encode($out, JSON_UNESCAPED_UNICODE);
       var canvas = el.getElementsByTagName("canvas")[0];
       question.signaturePad = signaturePad;
       var signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(255, 255, 255)', penColor: 'rgb(0, 0, 0)' });
+      signaturePad.fromDataURL(question.value);
       if (question.isReadOnly) { signaturePad.off(); }
       function resizeCanvas(canvas) {
         var context = canvas.getContext("2d");
@@ -561,34 +537,34 @@ $out = json_encode($out, JSON_UNESCAPED_UNICODE);
     },
   }
   Survey.CustomWidgetCollection.Instance.addCustomWidget(widget6);
-  var widget7 = {
-    name: "autocomplete",
-    htmlTemplate: "<input id='autocomplete' type='text' style='width:100%;'>",
-    isFit: function(question) { return question["renderAs"] === 'autocomplete'; },
-    afterRender: function(question, el) {
-      var $el = $(el).is("input") ? $(el) : $(el).find("input");
-      var options = {
-        data: <?php echo $out; ?>,
-        getValue: "interviewer",
-        adjustWidth: false,
-        list: {
-          sort: { enabled: true },
-          match: { enabled: true },
-          showAnimation: { type: "fade", time: 400, callback: function() {} },
-          hideAnimation: { type: "slide",  time: 400, callback: function() {} },
-        },
-        theme: "bootstrap",
-        placeholder: question.placeholder
-      };
-      if (!!question.choicesByUrl) {
-        options.url = function(phrase) { return question.choicesByUrl.url; };
-        options.getValue = question.choicesByUrl.valueName;
-        // options.ajaxSettings = { dataType: "jsonp" };
-      }
-      $el.easyAutocomplete(options);
-    }
-  }
-  Survey.CustomWidgetCollection.Instance.addCustomWidget(widget7);
+  // var widget7 = {
+  //   name: "autocomplete",
+  //   htmlTemplate: "<input id='autocomplete' type='text' class='form-control' style='width:100%;'>",
+  //   isFit: function(question) { return question["renderAs"] === 'autocomplete'; },
+  //   afterRender: function(question, el) {
+  //     var $el = $(el).is("input") ? $(el) : $(el).find("input");
+  //     if (!question.choices) { question.choices = <?php echo $out; ?>; }
+  //     var options = {
+  //       data: question.choices,
+  //       getValue: "interviewer",
+  //       list: {
+  //         sort: { enabled: true },
+  //         match: { enabled: true },
+  //         showAnimation: { type: "fade", time: 400, callback: function() {} },
+  //         hideAnimation: { type: "slide",  time: 400, callback: function() {} },
+  //         maxNumberOfElements: 10,
+  //         // onSelectItemEvent: function() {
+  //         //   // var index = $("#autocomplete").getSelectedItemIndex();
+  //         //   // var value = $("#autocomplete").getItemData(index);
+  //         //   $("#autocomplete").val(question.value).trigger("change");
+  //         // }
+  //       },
+  //       placeholder: question.placeHolder
+  //     }
+  //     $el.easyAutocomplete(options);
+  //   }
+  // }
+  // Survey.CustomWidgetCollection.Instance.addCustomWidget(widget7);
 
   var survey = new Survey.Model(getsurveydata(surveyid));
   if (pilot != 1) {
@@ -700,7 +676,7 @@ $out = json_encode($out, JSON_UNESCAPED_UNICODE);
   if (optionsout.maketotal) { for (i=0; i<optionsout.maketotal.length; i++) { var makingtotal = survey.getQuestionByName(optionsout.maketotal[i].questionname); maketotal(makingtotal.name, makingtotal.itemsValues); } }
   if (optionsout.PSM) { for (var i=0; i<optionsout.PSM.length; i++) { PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].expensive, "up"); PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].tooexpensive, "up"); PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].toocheap, "down"); PSM(optionsout.PSM[i].expensive, optionsout.PSM[i].tooexpensive, "up"); } }
   tooltip();
-  pin(pincode);
+  if (pincode) { pin(pincode); }
 
   survey.render("runsurvey");
   $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> ระบบกำลังอัพโหลดรูปของคุณ ระหว่างนี้คุณสามารถทำรายการต่อได้ทันที และอีกสักครู่เมื่อระบบทำงานในส่วนนี้เสร็จ ข้อความนี้จะหายไปเอง</div>").hide();

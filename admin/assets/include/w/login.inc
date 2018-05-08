@@ -4,7 +4,7 @@ $me = "/admin/";
 $title = "Welcome to SiamSquare";
 pageHeader($title);
 echo "<h2>Welcome to <span class=\"ssqlogo1\">Siam</span><span class=\"ssqlogo2\">Square</span></h2>\n";
-echo "<p>We are a market research service platform which is built from an intention to help clients changing the way they access consumer insights. We believe consumer insights should be accurate and more responsive in order to allow a quicker business decision to be made and being ahead of competition.</p>\n";
+echo "<p>We are a market research service platform which is built from an intention to help clients changing the way they access consumer insights. We believe consumer insights should be accurate and responsive allowing a quicker business decision to be made and being ahead of competition.</p>\n";
 echo "<p>Only registered clients can access to our service. Feel free to contact us for more infomation or send us a request for an access.</p>\n";
 echo "<br>\n";
 
@@ -51,7 +51,6 @@ if (isset($login)) {
   <p class="text-center">
     <strong>[</strong> <i class="pe-flag-o pe-fw"></i> <a href="/admin/setup/" title="Account activation">Account activation</a>
     <strong>&middot;</strong> <i class="pe-life-ring pe-fw"></i> <a href="/admin/setup/?d=recovery" title="Reset password">Forgot password?</a>
-    <strong>&middot;</strong> <i class="pe-envelope-o pe-fw"></i> <a href="/admin/contact/" title="Contact us">Contact us</a>
     <strong>]</strong>
   </p>
 </form>

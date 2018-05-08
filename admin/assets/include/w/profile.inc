@@ -28,20 +28,20 @@ if ($_GET["m"] == "tips") {
 <?php
 } else {
 
-  $sql = "SELECT id, title, created FROM j_projects WHERE userid = :userid AND companyid = :companyid AND status >= 0 ORDER BY id DESC";
-  $q = $db->prepare($sql);
-  $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
-  $q->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
-  $q->execute();
-  $counts = $q->rowCount();
-  $output = "              <select id=\"projectlist\" multiple class=\"form-control\" readonly>\n";
-  while ($row = $q->fetchObject()) {
-    $id = $row->id;
-    $title = $row->title;
-    $created = ago($row->created);
-    $output .= "                <option>Project $title</option>\n";
-  }
-  $output .= "              </select>\n";
+  // $sql = "SELECT id, title, created FROM j_projects WHERE userid = :userid AND companyid = :companyid AND status >= 0 ORDER BY id DESC";
+  // $q = $db->prepare($sql);
+  // $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+  // $q->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+  // $q->execute();
+  // $counts = $q->rowCount();
+  // $output = "              <select id=\"projectlist\" multiple class=\"form-control\" readonly>\n";
+  // while ($row = $q->fetchObject()) {
+  //   $id = $row->id;
+  //   $title = $row->title;
+  //   $created = ago($row->created);
+  //   $output .= "                <option>Project $title</option>\n";
+  // }
+  // $output .= "              </select>\n";
 
   if ($_SESSION["lastlogin2"]) { $lastlogin = ago($_SESSION["lastlogin2"]); } else { $lastlogin = "Never"; }
   $registersince = ago($_SESSION["created"]);
@@ -73,7 +73,7 @@ if ($_GET["m"] == "tips") {
     <br>
     <div class="tab-content">
       <div id="one" class="tab-pane in active fade">
-        <p class="pull-right"><img src="assets/img/u/<?php if ($_SESSION["avatar"]) { echo $_SESSION["avatar"]; } else { echo "M10"; } ?>.svg" id="avatar1" class="img-circle members-photo" alt="Avatar"></p>
+<?php if ($_SESSION["avatar"] != "00") { echo "        <p id=\"avatar1\" class=\"pull-right\"><img src=\"assets/img/u/" . $_SESSION["avatar"] . ".svg\" class=\"img-circle members-photo\" alt=\"Avatar\"></p>\n"; } else { echo "        <p id=\"avatar1\" class=\"pull-right\"></p>\n"; } ?>
         <h4>Welcome to your profile page</h4>
         <p>Below shows the summary of your profile in a <em>read-only</em> mode.</p>
         <br>
@@ -98,6 +98,28 @@ if ($_GET["m"] == "tips") {
                 <input type="email" name="email" class="form-control" value="<?php echo $_SESSION["email"]; ?>" onclick="this.select()" readonly>
               </div>
               <span class="text-muted small"><small>Contact us if you want to change this information</small></span>
+            </td>
+          </tr>
+          <tr>
+            <td width="25%" style="text-align:right">Mobile No.</td>
+            <td width="5%"></td>
+            <td width="70%">
+              <div class="input-group">
+                <span class="input-group-addon"><i class="pe-mobile pe-fw"></i></span>
+                <input type="text" name="mobile" class="form-control" value="<?php echo $_SESSION["mobile"]; // $mm = implode("-", str_split($_SESSION["mobile"], 3)); echo $mm; ?>" onclick="this.select()" readonly>
+              </div>
+              <span class="text-muted small"><small>Your mobile number that was registered with your system</small></span>
+            </td>
+          </tr>
+          <tr>
+            <td width="25%" style="text-align:right">Tax ID</td>
+            <td width="5%"></td>
+            <td width="70%">
+              <div class="input-group">
+                <span class="input-group-addon"><i class="pe-building pe-fw"></i></span>
+                <input type="text" name="tax" class="form-control" value="<?php if ($_SESSION["tax"]) { echo $_SESSION["tax"]; } else { echo "N/A"; } ?>" onclick="this.select()" readonly>
+              </div>
+              <span class="text-muted small"><small>Your ID card to be used only for taxation purpose</small></span>
             </td>
           </tr>
           <tr>
@@ -138,18 +160,10 @@ if ($_GET["m"] == "tips") {
               <span class="text-muted small"><small>Cannot be changed</small></span>
             </td>
           </tr>
-          <tr>
-            <td width="25%" style="text-align:right">Projects handled<br><small>(Total of <?php echo $counts; ?> projects)</small></td>
-            <td width="5%"></td>
-            <td width="70%">
-<?php echo $output; ?>
-              <span class="text-muted small"><small>Can be changed only by Manager (project section)</small></span>
-            </td>
-          </tr>
         </table>
       </div>
       <div id="two" class="tab-pane fade">
-        <p class="pull-right"><img src="assets/img/u/<?php if ($_SESSION["avatar"]) { echo $_SESSION["avatar"]; } else { echo "M10"; } ?>.svg" id="avatar2" class="img-circle members-photo" alt="Avatar"></p>
+<?php if ($_SESSION["avatar"] != "00") { echo "        <p id=\"avatar2\" class=\"pull-right\"><img src=\"assets/img/u/" . $_SESSION["avatar"] . ".svg\" class=\"img-circle members-photo\" alt=\"Avatar\"></p>\n"; } else { echo "        <p id=\"avatar1\" class=\"pull-right\"></p>\n"; } ?>
         <h4>Update your profile</h4>
         <p>You can easily update your profile from the text boxes below.</p>
         <br>
@@ -178,7 +192,18 @@ if ($_GET["m"] == "tips") {
               </td>
             </tr>
             <tr>
-              <td width="25%" style="text-align:right">Picture <span class="label label-blue">optional</span></td>
+              <td width="25%" style="text-align:right">Tax ID <span class="label label-blue">optional</span></td>
+              <td width="5%"></td>
+              <td width="70%">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="pe-building pe-fw"></i></span>
+                  <input type="text" name="tax" class="form-control" placeholder="0000000000000" value="<?php echo $_SESSION["tax"]; ?>">
+                </div>
+                <span class="text-muted small"><small>Your ID card to be used only for taxation purpose</small></span>
+              </td>
+            </tr>
+            <tr>
+              <td width="25%" style="text-align:right">Icon <span class="label label-blue">optional</span></td>
               <td width="5%"></td>
               <td width="70%">
                 <div class="input-group">
@@ -186,7 +211,7 @@ if ($_GET["m"] == "tips") {
                   <select id="select-avatar" name="avatar" class="form-control">
                     <option value="">-- select --</option>
 <?php
-  $pictures = array("Male #1" => "M1", "Male #2" => "M2", "Male #3" => "M3", "Male #4" => "M4", "Male #5" => "M5",
+  $pictures = array("None" => "00", "Male #1" => "M1", "Male #2" => "M2", "Male #3" => "M3", "Male #4" => "M4", "Male #5" => "M5",
                     "Male #6" => "M6", "Male #7" => "M7", "Male #8" => "M8", "Male #9" => "M9", "Male #10" => "M10",
                     "Female #1" => "F1", "Female #2" => "F2", "Female #3" => "F3", "Female #4" => "F4", "Female #5" => "F5",
                     "Female #6" => "F6", "Female #7" => "F7", "Female #8" => "F8", "Female #9" => "F9", "Female #10" => "F10");
@@ -217,6 +242,7 @@ if ($_GET["m"] == "tips") {
               excluded: [':disabled'],
               fields: {
                 fullname: { validators: { notEmpty: { message: 'Please enter your first and last name' } } },
+                tax: { validators: { notEmpty: { message: 'Please enter your ID card numbere', stringLength: { min: 13, message: 'It has to be 13 digits only' }, regexp: { regexp: /^[0-9]+$/, message: 'Only numbers are allowed' } } }
                 // mobile: { validators: { notEmpty: { message: 'Please enter your mobie number' }, stringLength: { min: 10, message: 'It has to be 10 digits only' }, regexp: { regexp: /^[0-9]+$/, message: 'Only numbers are allowed' } } }
               }
             })
@@ -331,11 +357,20 @@ if ($_GET["m"] == "tips") {
 <script type="text/javascript">
   $(document).ready(function() {
     $("#select-avatar").change(function() {
-      $("#avatar1").attr("src", "assets/img/u/" + $(this).val() + ".svg");
-      $("#avatar2").attr("src", "assets/img/u/" + $(this).val() + ".svg");
+      if ($(this).val() !== "") {
+        if ($(this).val() !== "00") {
+          if ($("p#avatar1 img").length >= 1) { $("p#avatar1 img").attr("src", "assets/img/u/" + $(this).val() + ".svg"); }
+          else { $("p#avatar1").append('<img>'); $("p#avatar1 img").attr("src", "assets/img/u/" + $(this).val() + ".svg").attr("class", "img-circle members-photo").attr("alt", "Avatar"); }
+          if ($("p#avatar2 img").length >= 1) { $("p#avatar2 img").attr("src", "assets/img/u/" + $(this).val() + ".svg"); }
+          else { $("p#avatar2").append('<img>'); $("p#avatar2 img").attr("src", "assets/img/u/" + $(this).val() + ".svg").attr("class", "img-circle members-photo").attr("alt", "Avatar"); }
+        } else {
+          if ($("p#avatar1 img").length >= 1) { $("p#avatar1 img").remove(); }
+          if ($("p#avatar2 img").length >= 1) { $("p#avatar2 img").remove(); }
+        }
+      }
     });
   });
-  $(function () { $("#projectlist").css("height", parseInt($("#projectlist option").length) * 25); });
+  // $(function () { $("#projectlist").css("height", parseInt($("#projectlist option").length) * 25); });
 </script>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>

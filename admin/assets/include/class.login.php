@@ -28,7 +28,7 @@ class Login {
       $this->loginWithPostData($_POST['email'], $_POST['password'], $_POST['rememberme'], $ref);
     }
     if ($_POST["w"] == "changepass") { $this->editUserPassword($_POST['oldpass'], $_POST['newpass1'], $_POST['newpass2']); }
-    elseif ($_POST["w"] == "updateinfo") { $this->editUserInfo($_POST['fullname'], $_POST['mobile'], $_POST['avatar']); }
+    elseif ($_POST["w"] == "updateinfo") { $this->editUserInfo($_POST['fullname'], $_POST['mobile'], $_POST['tax'], $_POST['avatar']); }
     elseif (isset($_POST["request_password_reset"]) && isset($_POST['email'])) { $this->setPasswordResetDatabaseTokenAndSendMail($_POST['email'], $_POST['d']); }
     elseif (isset($_GET["email"]) && isset($_GET["verification"])) { $this->checkIfEmailVerificationCodeIsValid($_GET["email"], $_GET["verification"]); }
     elseif (isset($_POST["submit_new_password"])) { $this->editNewPassword($_POST['email'], $_POST['password_reset'], $_POST['newpass1'], $_POST['newpass2']); }
@@ -113,6 +113,7 @@ class Login {
       $_SESSION['cfullname_th'] = $resulty->cfullname_th;  $this->cfullname_th = $resulty->cfullname_th;
       $_SESSION['fullname'] = $resulty->fullname;          $this->fullname = $resulty->fullname;
       $_SESSION['mobile'] = $resulty->mobile;              $this->mobile = $resulty->mobile;
+      $_SESSION['tax'] = $resulty->tax;                    $this->tax = $resulty->tax;
       $_SESSION['avatar'] = $resulty->avatar;              $this->avatar = $resulty->avatar;
       $_SESSION['status'] = $resulty->status;              $this->status = $resulty->status;
       $_SESSION['level'] = $resulty->level;                $this->level = $resulty->level;
@@ -183,6 +184,7 @@ class Login {
               $_SESSION['userid'] = $resulty->id;             $this->userid = $resulty->id;
               $_SESSION['fullname'] = $resulty->fullname;     $this->fullname = $resulty->fullname;
               $_SESSION['mobile'] = $resulty->mobile;         $this->mobile = $resulty->mobile;
+              $_SESSION['tax'] = $resulty->tax;               $this->tax = $resulty->tax;
               $_SESSION['avatar'] = $resulty->avatar;         $this->avatar = $resulty->avatar;
               $_SESSION['created'] = $resulty->created;       $this->created = $resulty->created;
               $_SESSION['updated'] = $resulty->updated;       $this->updated = $resulty->updated;
@@ -297,7 +299,7 @@ class Login {
     }
   }
 
-  public function editUserInfo($fullname, $mobile, $avatar) {
+  public function editUserInfo($fullname, $mobile, $tax, $avatar) {
     // if (empty($fullname) || empty($mobile)) { $this->errors[] = mkerror("You have not entered all required fields"); }
     if (empty($fullname)) { $this->errors[] = mkerror("You have not entered your name!"); }
     // elseif (strlen($mobile) < 10) { $this->errors[] = mkerror("Your mobile number has to be 10 digits only"); }
@@ -305,6 +307,7 @@ class Login {
     $add = ""; $move = 0;
     if ($fullname != $_SESSION['fullname']) { $add .= "fullname = :fullname, "; $move = 1; }
     if ($mobile != $_SESSION['mobile']) { $add .= "mobile = :mobile, "; $move = 1; }
+    if ($tax != $_SESSION['tax']) { $add .= "tax = :tax, "; $move = 1; }
     if ($avatar != $_SESSION['avatar']) { $add .= "avatar = :avatar, "; $move = 1; }
     $add = substr_replace($add, '', -2);
     if ($move == 0) { $this->errors[] = mkerror("Nothing has changed therefore we did not update anything"); }
@@ -314,6 +317,7 @@ class Login {
         $query_update = $this->db->prepare("UPDATE j_users SET ".$add." WHERE email = :email");
         if ($fullname != $_SESSION['fullname']) { $query_update->bindValue(':fullname', $fullname, PDO::PARAM_STR); }
         if ($mobile != $_SESSION['mobile']) { $query_update->bindValue(':mobile', $mobile, PDO::PARAM_STR); }
+        if ($tax != $_SESSION['tax']) { $query_update->bindValue(':tax', $tax, PDO::PARAM_STR); }
         if ($avatar != $_SESSION['avatar']) { $query_update->bindValue(':avatar', $avatar, PDO::PARAM_STR); }
         $query_update->bindValue(':email', $_SESSION["email"], PDO::PARAM_STR);
         $query_update->execute();
