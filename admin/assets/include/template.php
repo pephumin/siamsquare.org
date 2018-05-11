@@ -77,19 +77,19 @@ function pageHeader($title) {
     }
     echo "                </ul>\n";
     echo "              </li>\n";
+    if ($_SESSION['level'] >= "8") {
     echo "              <li class=\"dropdown\">\n";
     echo "                <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\"><i class=\"pe-wrench pe-fw\"></i> Tools <span class=\"caret\"></span></a>\n";
     echo "                <ul class=\"dropdown-menu\">\n";
-    echo "                  <li><a href=\"".ADMIN."?w=board"."\" title=\"Message board\"><i class=\"pe-comments-o pe-fw\"></i> Message board</a></li>\n";
+    echo "                  <li><a href=\"".ADMIN."?w=support"."\" title=\"Support\"><i class=\"pe-comments-o pe-fw\"></i> Support</a></li>\n";
     echo "                  <li><a href=\"".ADMIN."?w=activity"."\" title=\"Activity\"><i class=\"pe-map-o pe-fw\"></i> Activity log</a></li>\n";
-    if ($_SESSION['level'] >= "8") {
-      echo "                  <li role=\"separator\" class=\"divider\"></li>\n";
-      echo "                  <li><a href=\"".ADMIN."?w=admin"."\" title=\"Administration\"><span style=\"color:red\"><i class=\"pe-gamepad pe-fw\"></i> Administration</span></a></li>\n";
-    }
+    echo "                  <li role=\"separator\" class=\"divider\"></li>\n";
+    echo "                  <li><a href=\"".ADMIN."?w=admin"."\" title=\"Administration\"><span style=\"color:red\"><i class=\"pe-gamepad pe-fw\"></i> Administration</span></a></li>\n";
     echo "                  <li role=\"separator\" class=\"divider\"></li>\n";
     echo "                  <li><a href=\"".ADMIN."contact/"."\" title=\"Contact us\"><i class=\"pe-envelope-o pe-fw\"></i> Contact us</a></li>\n";
     echo "                </ul>\n";
     echo "              </li>\n";
+    }
   } else {
     echo "              <li><a href=\"".ADMIN."\" title=\"".MYDESC."\"><i class=\"pe-home pe-fw\"></i> Home</a></i>\n";
     echo "              <li><a href=\"".ADMIN."contact/?d=request"."\" title=\"Request for an access\"><i class=\"pe-credit-card pe-fw\"></i> Request for an access</a></li>\n";

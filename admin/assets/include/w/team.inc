@@ -11,9 +11,19 @@ $rolelist = "[ ";
 $rolelist .= "new RoleListing(6, \"Manager\"), ";
 $rolelist .= "new RoleListing(5, \"User\"), ";
 $rolelist .= "new RoleListing(4, \"Guest\"), ";
-$rolelist .= "new RoleListing(3, \"Dta processing\"), ";
+$rolelist .= "new RoleListing(3, \"Data processing\"), ";
 $rolelist .= "new RoleListing(2, \"Interviewer\"), ";
 $rolelist .= " ]";
+
+// Level 9 = (Global) Admin
+// Level 8 = (Global) Support
+// Level 7 = (Global) Fieldwork
+// Level 6 = (Global) DP
+// Level 5 = (Global) Interviewer
+// Level 4 = (Global) Guest
+// Level 3 = (Company) Manager
+// Level 2 = (Company) User
+// Level 1 = (Company) Guest
 
 ?>
 

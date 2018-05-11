@@ -8,7 +8,7 @@ if ($p == '') { $p = "1"; }
 
 if ($_POST['newpost'] == 1) {
   if (($_POST['head']) || ($_POST['body'])) {
-    $q0A = $db->prepare("INSERT INTO j_board (head, body, userid, companyid) VALUES (:head, :body, :userid, :companyid)");
+    $q0A = $db->prepare("INSERT INTO j_support (head, body, userid, companyid) VALUES (:head, :body, :userid, :companyid)");
     $q0A->bindValue(':head', $_POST['head'], PDO::PARAM_STR);
     $q0A->bindValue(':body', $_POST['body'], PDO::PARAM_STR);
     $q0A->bindValue(':userid', $_POST['userid'], PDO::PARAM_INT);
@@ -19,7 +19,7 @@ if ($_POST['newpost'] == 1) {
   header("location: $redirect");
   exit;
 } else if ($_GET['d']) {
-  $q0B = $db->prepare("UPDATE j_board SET status = 0 WHERE id = :id");
+  $q0B = $db->prepare("UPDATE j_support SET status = 0 WHERE id = :id");
   $q0B->bindValue(':id', base64_decode($_GET["d"]), PDO::PARAM_INT);
   $q0B->execute();
   $q0C = $db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '" . $_SESSION["email"] . " deleted a post in " . $_SESSION["company"] . " board', '3')");
@@ -44,7 +44,7 @@ $to_record = $start + $limit;
 $add = " LIMIT $start, $limit ";
 
 // Get stats
-$q1A = $db->prepare("SELECT COUNT(*) AS iA, SUM(companyid = '0') AS iB, SUM(companyid = :companyid) AS iC FROM j_board WHERE status > 0 AND (companyid = 0 OR companyid = :companyid)");
+$q1A = $db->prepare("SELECT COUNT(*) AS iA, SUM(companyid = '0') AS iB, SUM(companyid = :companyid) AS iC FROM j_support WHERE status > 0 AND (companyid = 0 OR companyid = :companyid)");
 $q1A->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
 $q1A->execute();
 // $rows = $q1A->rowCount();
@@ -102,7 +102,7 @@ else { echo "<p></p>\n"; }
       </div>
     </form>
 <?php
-$q1C = $db->prepare("SELECT B.*, U.fullname, U.email, U.level, U.avatar FROM j_board B, j_users U WHERE B.status > 0 AND B.userid = U.id AND B.companyid = :companyid ORDER BY B.created DESC".$add);
+$q1C = $db->prepare("SELECT B.*, U.fullname, U.email, U.level, U.avatar FROM j_support B, j_users U WHERE B.status > 0 AND B.userid = U.id AND B.companyid = :companyid ORDER BY B.created DESC".$add);
 $q1C->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
 $q1C->execute();
 while ($row = $q1C->fetchObject()) {
@@ -140,7 +140,7 @@ echo "    </nav>\n";
     <div class="list-group">
       <div class="list-group-item small active"><strong><i class="pe-level-down pe-flip-horizontal pe-fw"></i> System annoucement</strong></div>
 <?php
-$q1B = $db->prepare("SELECT B.*, U.fullname, U.email, U.level FROM j_board B, j_users U WHERE B.status > 0 AND B.userid = U.id AND B.companyid = 0 ORDER BY B.created DESC");
+$q1B = $db->prepare("SELECT B.*, U.fullname, U.email, U.level FROM j_support B, j_users U WHERE B.status > 0 AND B.userid = U.id AND B.companyid = 0 ORDER BY B.created DESC");
 $q1B->execute();
 $i = 0;
 while ($row = $q1B->fetchObject()) {

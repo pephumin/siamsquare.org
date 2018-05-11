@@ -38,26 +38,35 @@ if (isset($login)) {
   <div id="one" class="tab-pane fade in active">
 <?php
 // Count different project status for this user
-$q1 = $db->prepare("SELECT SUM(status='1') AS q1A, SUM(status='2') AS q1B, SUM(status='3') AS q1C, SUM(status='4') AS q1D, SUM(status='0') AS q1E FROM j_projects WHERE companyid = :companyid AND userid = :userid");
-$q1->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+$q1 = $db->prepare("SELECT SUM(status='1') AS q1A, SUM(status='2') AS q1B, SUM(status='3') AS q1C, SUM(status='4') AS q1D, SUM(status='0') AS q1E, SUM(P.userid='12') AS q1F FROM j_projects P INNER JOIN j_access A ON A.projectid = P.id AND A.userid = :userid ");
+// $q1->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
 $q1->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
 $q1->execute();
-while ($row = $q1->fetchObject()) { $ustatus1 = $row->q1A; $ustatus2 = $row->q1B; $ustatus3 = $row->q1C; $ustatus4 = $row->q1D; $ustatus5 = $row->q1E; }
-$totalALL = $ustatus1 + $ustatus2 + $ustatus3 + $ustatus4 + $ustatus5; $percentTotal = percent($totalALL / $totalALL);
-$totalActive = $ustatus1 + $ustatus2 + $ustatus3; $totalInactive = $ustatus4 + $ustatus5;
-$percentActive = percent($totalActive / $totalALL); $percentInactive = percent($totalInactive / $totalALL);
-$percentStatus1 = percent($ustatus1 / $totalALL); $percentStatus2 = percent($ustatus2 / $totalALL);
-$percentStatus3 = percent($ustatus3 / $totalALL); $percentStatus4 = percent($ustatus4 / $totalALL);
-$percentStatus5 = percent($ustatus5 / $totalALL);
+$mine = array();
+while ($row = $q1->fetchObject()) { array_push($mine, $row->userid); $ustatus1 = $row->q1A; $ustatus2 = $row->q1B; $ustatus3 = $row->q1C; $ustatus4 = $row->q1D; $ustatus5 = $row->q1E; $ustatus6 = $row->q1F; }
+$totalALL = $ustatus1+$ustatus2+$ustatus3+$ustatus4+$ustatus5; $percentTotal = percent($totalALL/$totalALL);
+$totalActive = $ustatus1+$ustatus2+$ustatus3; $percentActive = percent($totalActive/$totalALL);
+$totalInactive = $ustatus4+$ustatus5; $percentInactive = percent($totalInactive/$totalALL);
+$totalMine = $ustatus6; $percentMine = percent($totalMine/$totalALL);
+$percentStatus1 = percent($ustatus1/$totalALL); $percentStatus2 = percent($ustatus2/$totalALL);
+$percentStatus3 = percent($ustatus3/$totalALL); $percentStatus4 = percent($ustatus4/$totalALL);
+$percentStatus5 = percent($ustatus5/$totalALL);
 if ($_SESSION["avatar"] != "00") { echo "    <div class=\"pull-right\"><img src=\"assets/img/u/" . $_SESSION["avatar"] . ".svg\" class=\"img-circle members-photo\" alt=\"Avatar\"></div>\n"; }
 echo "    <h3>".$_SESSION['fullname']." <small>&laquo; ".$_SESSION['email']." &raquo;</small></h3>\n";
 echo "    <h4>Summary of your projects</h4>\n";
 if ($totalALL == 0) {
-  echo "    <p>Currently you do <u>not</u> have any survey projects under your direct management so there is no stats to be shown here.</p>\n";
-  echo "    <p>You can create a new project at anytime by clicking <a class=\"btn btn-success\"><i class=\"pe-cube pe-fw\"></i> New project</a> which can be found in <a href=\"/admin/?w=surveys\" title=\"The main survey page\">the main survey page</a>.\n";
+  echo "    <p>Currently you do <u>not</u> have access to any of the existing projects. Let us know if your current projects do not show up.</p>\n";
+  echo "    <p>You can create a new project by clicking <a class=\"btn btn-success\"><i class=\"pe-cube pe-fw\"></i> New project</a> which can be found in <a href=\"/admin/?w=surveys\" title=\"The main survey page\">the main survey page</a>.\n";
 } else {
-  if ($totalALL == 1) { echo "    <p>You directly manage <strong>$totalALL project</strong>"; if ($totalActive == 1) { echo " and it is an active project.</p>\n"; } else if ($totalInactive == 1) { echo " and it is an inactive project.</p>\n"; } }
-  else if ($totalALL > 1) { echo "    <p>You directly manage <strong>$totalALL projects</strong> including <strong>$totalActive</strong> active and <strong>$totalInactive</strong> inactive respectively.</p>\n"; }
+  if ($totalALL == 1) {
+    echo "    <p>You have access to <strong>$totalALL project</strong>";
+    if ($totalActive == 1) { echo " and it is an active project.</p>\n"; } else if ($totalInactive == 1) { echo " and it is an inactive project.</p>\n"; } }
+  else if ($totalALL > 1) {
+    echo "    <p>You have access to <strong>$totalALL projects</strong> which are a combination of <strong>$totalActive active</strong> and <strong>$totalInactive inactive</strong> projects respectively.</p>\n";
+    if ($totalMine == 0) { echo "    <p>None of these <strong>$totalALL projects</strong> is managed directly by you.</p>\n"; }
+    else if ($totalMine == 1) { echo "    <p>Within these <strong>$totalALL projects</strong>, you directly manage <strong>$totalMine project</strong>.</p>\n"; }
+    else { echo "    <p>Within these <strong>$totalALL projects</strong>, you directly manage a total of <strong>$totalMine projects</strong>.</p>\n"; }
+  }
   echo "    <br>\n";
 ?>
     <div class="row">
@@ -112,8 +121,8 @@ $today['year'] = date("Y"); $today['month'] = date("m"); $today['day'] = date("d
 if ($today['month'] == "01") { $today['month'] = "12"; $today['year'] = $today['year']-1; } else { $today['month'] = $today['month']-1; }
 $utimelinedata1 = "[ \n"; $utimelinedata2 = "[ \n"; $colordata = "[ ";
 // Pull survey information for this user
-$q2 = $db->prepare("SELECT * FROM j_projects WHERE companyid = :companyid AND userid = :userid AND status >= 1 ORDER BY status ASC, created DESC");
-$q2->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+$q2 = $db->prepare("SELECT P.* FROM j_projects P INNER JOIN j_access A ON A.projectid = P.id AND A.userid = :userid WHERE P.status >= 1 ORDER BY P.status ASC, P.created DESC");
+// $q2->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
 $q2->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
 $q2->execute();
 $rows = $q2->fetchAll(PDO::FETCH_ASSOC);
@@ -390,13 +399,7 @@ if ($sstotal == 0) {
   var totalAll = <?php echo $totalALL; ?>;
   var utimelinedata2 = <?php echo $utimelinedata2; ?>;
   google.charts.load('current', {'packages': ['corechart', 'timeline'] });
-  if (totalAll != 0) { google.charts.setOnLoadCallback(drawPieChart1); }
-  if (totalAll != 0) { google.charts.setOnLoadCallback(drawTimelineChart1); }
-  google.charts.setOnLoadCallback(drawPieChart2);
-  google.charts.setOnLoadCallback(drawBarChart);
-  google.charts.setOnLoadCallback(drawTimelineChart2);
-  google.charts.setOnLoadCallback(drawTimelineChart3);
-  google.charts.setOnLoadCallback(drawTimelineChart4);
+  google.charts.setOnLoadCallback(drawPieChart1);
   function drawPieChart1() {
     var data = google.visualization.arrayToDataTable([
       [ 'Stage', 'No. of project' ],
@@ -418,6 +421,8 @@ if ($sstotal == 0) {
     var chart = new google.visualization.PieChart(document.getElementById('piechart1'));
     chart.draw(data, options);
   }
+<?php if ($ustatus1 + $ustatus2 + $ustatus3 > 0) { ?>
+  google.charts.setOnLoadCallback(drawTimelineChart1);
   function drawTimelineChart1() {
     var container = document.getElementById('timeline1');
     var chart = new google.visualization.Timeline(container);
@@ -437,6 +442,9 @@ if ($sstotal == 0) {
     };
     chart.draw(data, options);
   }
+<?php } ?>
+<?php if ($ustatus4 + $ustatus5 > 0) { ?>
+  google.charts.setOnLoadCallback(drawTimelineChart2);
   function drawTimelineChart2() {
     var container = document.getElementById('timeline2');
     var chart = new google.visualization.Timeline(container);
@@ -456,6 +464,8 @@ if ($sstotal == 0) {
     };
     chart.draw(data, options);
   }
+<?php } ?>
+  google.charts.setOnLoadCallback(drawPieChart2);
   function drawPieChart2() {
     var data = google.visualization.arrayToDataTable([
       [ 'Stage', 'No. of project' ],
@@ -477,6 +487,7 @@ if ($sstotal == 0) {
     var chart = new google.visualization.PieChart(document.getElementById('piechart2'));
     chart.draw(data, options);
   }
+  google.charts.setOnLoadCallback(drawBarChart);
   function drawBarChart() {
     var container = document.getElementById('barchart');
     var chart = new google.visualization.BarChart(container);
@@ -493,6 +504,8 @@ if ($sstotal == 0) {
     };
     chart.draw(data, options);
   }
+<?php if ($ss1 + $ss2 + $ss3 > 0) { ?>
+  google.charts.setOnLoadCallback(drawTimelineChart3);
   function drawTimelineChart3() {
     var container = document.getElementById('timeline3');
     var chart = new google.visualization.Timeline(container);
@@ -504,10 +517,8 @@ if ($sstotal == 0) {
     data.addRows(<?php echo $ctimelinedata1; ?>);
     chart.draw(data, options);
     var newheight = parseInt($("#timeline3 div:first-child div:first-child div:first-child div svg").attr( "height"))+70;
-    // var newwidth = parseInt($("#timeline2 div:first-child div:first-child div:first-child div svg").attr( "width"))+540;
     var options = {
       height: newheight,
-      // width: newwidth,
       colors: [ '#B3FFB3', '#00C851', '#007E33', '#AAAAAA' ],
       avoidOverlappingGridLines: false,
       timeline: { groupByRowLabel: true, colorByRow: true, },
@@ -515,6 +526,9 @@ if ($sstotal == 0) {
     };
     chart.draw(data, options);
   }
+<?php } ?>
+<?php if ($ss4 + $ss5 > 0) { ?>
+  google.charts.setOnLoadCallback(drawTimelineChart4);
   function drawTimelineChart4() {
     var container = document.getElementById('timeline4');
     var chart = new google.visualization.Timeline(container);
@@ -526,10 +540,8 @@ if ($sstotal == 0) {
     data.addRows(<?php echo $ctimelinedata2; ?>);
     chart.draw(data, options);
     var newheight = parseInt($("#timeline4 div:first-child div:first-child div:first-child div svg").attr( "height"))+70;
-    // var newwidth = parseInt($("#timeline2 div:first-child div:first-child div:first-child div svg").attr( "width"))+540;
     var options = {
       height: newheight,
-      // width: newwidth,
       colors: [ '#B3FFB3', '#00C851', '#007E33', '#AAAAAA' ],
       avoidOverlappingGridLines: false,
       timeline: { groupByRowLabel: true, colorByRow: true, },
@@ -537,21 +549,20 @@ if ($sstotal == 0) {
     };
     chart.draw(data, options);
   }
-  $(window).resize(function() {
-    if (totalALL != 0) { drawPieChart1(); }
-    if (totalALL != 0) { drawTimelineChart1(); drawTimelineChart2(); }
-    if (utimelinedata1 != "[ ]") { drawTimelineChart1(); }
-    if (utimelinedata2 != "[ ]") { drawTimelineChart2(); }
-    if (ctimelinedata1 != "[ ]") { drawTimelineChart3(); }
-    if (ctimelinedata2 != "[ ]") { drawTimelineChart4(); }
-    drawPieChart2();
-    drawBarChart();
-    drawTimelineChart3();
-  });
+<?php } ?>
+  // $(window).resize(function() {
+  //   if (totalALL != 0) { drawPieChart1(); drawTimelineChart1(); drawTimelineChart2(); }
+  //   if (utimelinedata1 != "[ ]") { drawTimelineChart1(); }
+  //   if (utimelinedata2 != "[ ]") { drawTimelineChart2(); }
+  //   if (ctimelinedata1 != "[ ]") { drawTimelineChart3(); }
+  //   if (ctimelinedata2 != "[ ]") { drawTimelineChart4(); }
+  //   drawPieChart2();
+  //   drawBarChart();
+  // });
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    if($(e.target).attr('id') == 'first-tab-trigger') { drawTimelineChart1(); drawTimelineChart2(); }
-    if($(e.target).attr('id') == 'second-tab-trigger') { drawTimelineChart3(); drawTimelineChart4(); }
+    if ($(e.target).attr('id') == 'first-tab-trigger') { drawPieChart1(); drawPieChart2(); drawBarChart(); <?php if ($ustatus1 + $ustatus2 + $ustatus3 > 0) { ?>drawTimelineChart1();<?php } ?> <?php if ($ustatus4 + $ustatus5 > 0) { ?>drawTimelineChart2();<?php } ?> }
+    if ($(e.target).attr('id') == 'second-tab-trigger') { <?php if ($ss1 + $ss2 + $ss3 > 0) { ?>drawTimelineChart3();<?php } ?>  <?php if ($ss4 + $ss5 > 0) { ?>drawTimelineChart4();<?php } ?> }
   })
 
 </script>

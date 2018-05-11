@@ -287,9 +287,9 @@ $userlist .= "    ]";
     // }
     this.loadData = function(i) {
       self.showActive(i);
-      if (level == 9) { var url = "/all/" + i; }
-      else { var url = "/company/" + companyid + "/" + i; }
-      // var url = "/company/" + companyid + "/" + i;
+      // if (level == 9) { var url = "/all/" + i; }
+      // else { var url = "/company/" + companyid + "/" + i; }
+      var url = "/access/" + i + "/for/user/" + userid;
       $.ajax({
         url: api + url,
         type: 'get',
