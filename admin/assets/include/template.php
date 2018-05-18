@@ -67,13 +67,20 @@ function pageHeader($title) {
   if ($_SESSION['logged_in'] == 1) {
     echo "              <li><a href=\"".ADMIN."\" title=\"".MYDESC."\"><i class=\"pe-home pe-fw\"></i> Home</a></i>\n";
     echo "              <li><a href=\"".ADMIN."?w=surveys"."\" title=\"Projects\"><i class=\"pe-cubes pe-fw\"></i> Projects</a></i>\n";
-    echo "              <li class=\"dropdown\">\n";
-    echo "                <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\"><i class=\"pe-cog pe-spin pe-fw\"></i> Setting <span class=\"caret\"></span></a>\n";
-    echo "                <ul class=\"dropdown-menu\">\n";
-    echo "                  <li><a href=\"".ADMIN."?w=profile"."\" title=\"Profile\"><i class=\"pe-user pe-fw\"></i> Profile</a></li>\n";
-    echo "                  <li><a href=\"".ADMIN."?w=team"."\" title=\"Team members\"><i class=\"pe-graduation-cap pe-fw\"></i> Team members</a></li>\n";
-    if ($_SESSION['level'] >= "6") {
+    if (($_SESSION['level'] == "4") || ($_SESSION['level'] == "9")) {
+      echo "              <li class=\"dropdown\">\n";
+      echo "                <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\"><i class=\"pe-cog pe-spin pe-fw\"></i> Setting <span class=\"caret\"></span></a>\n";
+      echo "                <ul class=\"dropdown-menu\">\n";
+      echo "                  <li><a href=\"".ADMIN."?w=profile"."\" title=\"Profile\"><i class=\"pe-user pe-fw\"></i> Profile</a></li>\n";
+      echo "                  <li><a href=\"".ADMIN."?w=team"."\" title=\"Team members\"><i class=\"pe-graduation-cap pe-fw\"></i> Team members</a></li>\n";
       echo "                  <li><a href=\"".ADMIN."?w=company"."\" title=\"Company\"><i class=\"pe-building pe-fw\"></i> Company</a></li>\n";
+    } else {
+      echo "              <li class=\"dropdown\">\n";
+      echo "                <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\"><i class=\"pe-cog pe-spin pe-fw\"></i> Setting <span class=\"caret\"></span></a>\n";
+      echo "                <ul class=\"dropdown-menu\">\n";
+      echo "                  <li><a href=\"".ADMIN."?w=profile"."\" title=\"Profile\"><i class=\"pe-user pe-fw\"></i> Profile</a></li>\n";
+      // echo "                  <li><a href=\"".ADMIN."?w=team"."\" title=\"Team members\"><i class=\"pe-graduation-cap pe-fw\"></i> Team members</a></li>\n";
+      // echo "                  <li><a href=\"".ADMIN."?w=company"."\" title=\"Company\"><i class=\"pe-building pe-fw\"></i> Company</a></li>\n";
     }
     echo "                </ul>\n";
     echo "              </li>\n";
@@ -85,6 +92,7 @@ function pageHeader($title) {
     echo "                  <li><a href=\"".ADMIN."?w=activity"."\" title=\"Activity\"><i class=\"pe-map-o pe-fw\"></i> Activity log</a></li>\n";
     echo "                  <li role=\"separator\" class=\"divider\"></li>\n";
     echo "                  <li><a href=\"".ADMIN."?w=admin"."\" title=\"Administration\"><span style=\"color:red\"><i class=\"pe-gamepad pe-fw\"></i> Administration</span></a></li>\n";
+    echo "                  <li><a href=\"".ADMIN."?w=permission"."\" title=\"User access\"><i class=\"pe-graduation-cap pe-fw\"></i> User access</a></li>\n";
     echo "                  <li role=\"separator\" class=\"divider\"></li>\n";
     echo "                  <li><a href=\"".ADMIN."contact/"."\" title=\"Contact us\"><i class=\"pe-envelope-o pe-fw\"></i> Contact us</a></li>\n";
     echo "                </ul>\n";

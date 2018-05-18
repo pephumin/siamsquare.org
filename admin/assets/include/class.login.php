@@ -101,7 +101,8 @@ class Login {
       $q2->bindValue(':ip', $ip, PDO::PARAM_STR);
       $q2->bindValue(':email', $result_row->email, PDO::PARAM_STR);
       $q2->execute();
-      $q3 = $this->db->prepare("SELECT U.*, C.fullname as cfullname, C.fullname_th as cfullname_th FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.email = :email");
+      // $q3 = $this->db->prepare("SELECT U.*, C.fullname as cfullname, C.fullname_th as cfullname_th FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.email = :email");
+      $q3 = $this->db->prepare("SELECT U.*, R.role FROM j_users U, j_roles R WHERE U.level = R.id AND U.email = :email");
       $q3->bindValue(':email', $result_row->email, PDO::PARAM_STR);
       $q3->execute();
       $resulty = $q3->fetchObject();
@@ -124,7 +125,7 @@ class Login {
       $_SESSION['ip'] = $ip;                               $this->ip = $ip;
       $_SESSION['lastip'] = $resulty->lastip;              $this->lastip = $resulty->lastip;
       $_SESSION['lastip2'] = $resulty->lastip2;            $this->lastip2 = $resulty->lastip2;
-      $_SESSION['role'] = role($resulty->level);           $this->role = role($resulty->level);
+      $_SESSION['role'] = $resulty->role;                  $this->role = $resulty->role;
       $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$result_row->email." logged in', '1')");
       $q4->bindValue(':userid', $resulty->id, PDO::PARAM_INT);
       $q4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
@@ -144,7 +145,8 @@ class Login {
       list ($userid, $token, $hash) = explode(':', $_COOKIE['siamsquare']);
       if ($hash == hash('sha256', $userid . ':' . $token . COOKIE_KEY) && !empty($token)) {
         if ($this->dbconnect()) {
-          $q0 = $this->db->prepare("SELECT U.id, U.email, U.companyid, C.fullname as cfullname, C.fullname_th as cfullname_th, U.status, U.level, U.fails, U.fails_last, U.fails_ip FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.id = :userid AND U.token = :token AND U.token IS NOT NULL");
+          // $q0 = $this->db->prepare("SELECT U.id, U.email, U.companyid, C.fullname as cfullname, C.fullname_th as cfullname_th, U.status, U.level, U.fails, U.fails_last, U.fails_ip FROM j_users U, j_companies C WHERE U.companyid = C.id AND U.id = :userid AND U.token = :token AND U.token IS NOT NULL");
+          $q0 = $this->db->prepare("SELECT U.*, R.role FROM j_users U, j_roles R WHERE U.level = R.id AND U.id = :userid AND U.token = :token AND U.token IS NOT NULL");
           $q0->bindValue(':userid', $userid, PDO::PARAM_INT);
           $q0->bindValue(':token', $token, PDO::PARAM_STR);
           $q0->execute();
@@ -159,14 +161,14 @@ class Login {
           }
           else if ($result->status == 4) { $this->errors[] = mkerror("This account in currently set to be inactive, please contact your Manager to reactivate it."); }
           else if (($result->status == 5) && (isset($result->email))) {
-            $_SESSION['logged_in'] = 1;                         $this->logged_in = true;
-            $_SESSION['email'] = $result->email;                $this->email = $result->email;
-            $_SESSION['companyid'] = $result->companyid;        $this->companyid = $result->companyid;
-            $_SESSION['cfullname'] = $result->cfullname;        $this->cfullname = $result->cfullname;
-            $_SESSION['cfullname_th'] = $result->cfullname_th;  $this->cfullname_th = $result->cfullname_th;
-            $_SESSION['status'] = $result->status;              $this->status = $result->status;
-            $_SESSION['level'] = $result->level;                $this->level = $result->level;
-            $_SESSION['role'] = role($result->level);           $this->role = role($result->level);
+            $_SESSION['logged_in'] = 1;                            $this->logged_in = true;
+            $_SESSION['email'] = $result->email;                   $this->email = $result->email;
+            $_SESSION['companyid'] = $result->companyid;           $this->companyid = $result->companyid;
+            $_SESSION['cfullname'] = $result->cfullname;           $this->cfullname = $result->cfullname;
+            $_SESSION['cfullname_th'] = $result->cfullname_th;     $this->cfullname_th = $result->cfullname_th;
+            $_SESSION['status'] = $result->status;                 $this->status = $result->status;
+            $_SESSION['level'] = $result->level;                   $this->level = $result->level;
+            $_SESSION['role'] = $result->role;                     $this->role = $result->role;
             $q1 = $this->db->prepare("UPDATE j_users SET lastlogin2 = lastlogin, lastip2 = lastip WHERE email = :email");
             $q1->bindValue(':email', $_SESSION['email'], PDO::PARAM_STR);
             $q1->execute();
@@ -176,22 +178,23 @@ class Login {
             $q2->execute();
             $_SESSION['ip'] = $ip;
             $this->ip = $ip;
-            $q3 = $this->db->prepare("SELECT * FROM j_users WHERE email = :email");
+            $q3 = $this->db->prepare("SELECT U.*, R.role FROM j_users U, j_roles R WHERE U.level = R.id AND U.email = :email");
             $q3->bindValue(':email', $_SESSION['email'], PDO::PARAM_STR);
             $q3->execute();
             $resulty = $q3->fetchObject();
             if (isset($resulty->id)) {
-              $_SESSION['userid'] = $resulty->id;             $this->userid = $resulty->id;
-              $_SESSION['fullname'] = $resulty->fullname;     $this->fullname = $resulty->fullname;
-              $_SESSION['mobile'] = $resulty->mobile;         $this->mobile = $resulty->mobile;
-              $_SESSION['tax'] = $resulty->tax;               $this->tax = $resulty->tax;
-              $_SESSION['avatar'] = $resulty->avatar;         $this->avatar = $resulty->avatar;
-              $_SESSION['created'] = $resulty->created;       $this->created = $resulty->created;
-              $_SESSION['updated'] = $resulty->updated;       $this->updated = $resulty->updated;
-              $_SESSION['lastlogin'] = $resulty->lastlogin;   $this->lastlogin = $resulty->lastlogin;
-              $_SESSION['lastlogin2'] = $resulty->lastlogin2; $this->lastlogin2 = $resulty->lastlogin2;
-              $_SESSION['lastip'] = $resulty->lastip;         $this->lastip = $resulty->lastip;
-              $_SESSION['lastip2'] = $resulty->lastip2;       $this->lastip2 = $resulty->lastip2;
+              $_SESSION['userid'] = $resulty->id;                    $this->userid = $resulty->id;
+              $_SESSION['fullname'] = $resulty->fullname;            $this->fullname = $resulty->fullname;
+              $_SESSION['mobile'] = $resulty->mobile;                $this->mobile = $resulty->mobile;
+              $_SESSION['tax'] = $resulty->tax;                      $this->tax = $resulty->tax;
+              $_SESSION['avatar'] = $resulty->avatar;                $this->avatar = $resulty->avatar;
+              $_SESSION['created'] = $resulty->created;              $this->created = $resulty->created;
+              $_SESSION['updated'] = $resulty->updated;              $this->updated = $resulty->updated;
+              $_SESSION['lastlogin'] = $resulty->lastlogin;          $this->lastlogin = $resulty->lastlogin;
+              $_SESSION['lastlogin2'] = $resulty->lastlogin2;        $this->lastlogin2 = $resulty->lastlogin2;
+              $_SESSION['lastip'] = $resulty->lastip;                $this->lastip = $resulty->lastip;
+              $_SESSION['lastip2'] = $resulty->lastip2;              $this->lastip2 = $resulty->lastip2;
+              $_SESSION['role'] = $resulty->role;                    $this->role = $resulty->role;
               $this->newRememberMeCookie();
               $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." re-logged in', '1')");
               $q4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);

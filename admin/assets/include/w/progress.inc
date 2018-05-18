@@ -3,10 +3,12 @@
 $excerptRows = "50";
 // $c_target = 300;
 $base = "/admin/?w=progress&s=".$_GET['s'];
+$result = "/admin/?w=result&s=".$_GET['s'];
+$respondent = "/admin/?w=respondents&s=".$_GET['s'];
 
 $today['year'] = date("Y"); $today['month'] = date("m"); $today['day'] = date("d");
 if ($today['month'] == "01") { $today['month'] = "12"; $today['year'] = $today['year']-1; } else { $today['month'] = $today['month']-1; }
-$timelinedata = "[ \n"; $colordata = "[ ";
+// $timelinedata = "[ \n"; $colordata = "[ ";
 
 // Get projcet info
 $q1 = $db->prepare("SELECT * FROM j_projects WHERE id = :surveyid");
@@ -37,47 +39,27 @@ while ($row = $q1->fetchObject()) {
   $monitor = $row->QC;
   if ($row->pin) { $pinnumber = $row->pin; }
   if ($row->userid == $_SESSION['userid']) { $owner = 1; } else { $owner = 0; }
-  if ($row->created) {
-    $L0 = date_parse_from_format("Y-m-d H:i:s", $row->created);
-    if ($L0['month'] == "01") { $L0['month'] = "12"; $L0['year'] = $L0['year']-1; } else { $L0['month'] = $L0['month']-1; }
-    $created = ago($row->created);
-    $LLL0 = $row->created;
-  } else { $LL0 = "-"; }
-  if ($row->L1) {
-    $L1 = date_parse_from_format("Y-m-d H:i:s", $row->L1);
-    if ($L1['month'] == "01") { $L1['month'] = "12"; $L1['year'] = $L1['year']-1; } else { $L1['month'] = $L1['month']-1; }
-    $LL1 = ago($row->L1);
-    $LLL1 = $row->L1;
-  } else { $LL1 = "-"; }
-  if ($row->L2) {
-    $L2 = date_parse_from_format("Y-m-d H:i:s", $row->L2);
-    if ($L2['month'] == "01") { $L2['month'] = "12"; $L2['year'] = $L2['year']-1; } else { $L2['month'] = $L2['month']-1; }
-    $LL2 = ago($row->L2);
-    $LLL2 = $row->L2;
-  } else { $LL2 = "-"; }
-  if ($row->L3) {
-    $L3 = date_parse_from_format("Y-m-d H:i:s", $row->L3);
-    if ($L3['month'] == "01") { $L3['month'] = "12"; $L3['year'] = $L3['year']-1; } else { $L3['month'] = $L3['month']-1; }
-    $LL3 = ago($row->L3);
-    $LLL3 = $row->L3;
-  } else { $LL3 = "-"; }
-  if ($status == 1) {
-    $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-  } else if ($status == 2) {
-    $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $timelinedata .= "[ '".$project."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#00E600', ";
-  } else if ($status == 3) {
-    $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $timelinedata .= "[ '".$project."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
-    $timelinedata .= "[ '".$project."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#009900', ";
-  } else if ($status == 4) {
-    $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
-    $timelinedata .= "[ '".$project."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
-    $timelinedata .= "[ '".$project."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day'].") ], \n"; $colordata .= "'#009900', ";
-    $timelinedata .= "[ '".$project."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
-  }
+  if ($row->created) { $L0 = date_parse_from_format("Y-m-d H:i:s", $row->created); if ($L0['month'] == "01") { $L0['month'] = "12"; $L0['year'] = $L0['year']-1; } else { $L0['month'] = $L0['month']-1; } $created = ago($row->created); $LLL0 = $row->created; } else { $LL0 = "-"; }
+  if ($row->L1) { $L1 = date_parse_from_format("Y-m-d H:i:s", $row->L1); if ($L1['month'] == "01") { $L1['month'] = "12"; $L1['year'] = $L1['year']-1; } else { $L1['month'] = $L1['month']-1; } $LL1 = ago($row->L1); $LLL1 = $row->L1; } else { $LL1 = "-"; }
+  if ($row->L2) { $L2 = date_parse_from_format("Y-m-d H:i:s", $row->L2); if ($L2['month'] == "01") { $L2['month'] = "12"; $L2['year'] = $L2['year']-1; } else { $L2['month'] = $L2['month']-1; } $LL2 = ago($row->L2); $LLL2 = $row->L2; } else { $LL2 = "-"; }
+  if ($row->L3) { $L3 = date_parse_from_format("Y-m-d H:i:s", $row->L3); if ($L3['month'] == "01") { $L3['month'] = "12"; $L3['year'] = $L3['year']-1; } else { $L3['month'] = $L3['month']-1; } $LL3 = ago($row->L3); $LLL3 = $row->L3; } else { $LL3 = "-"; }
+  // if ($status == 1) {
+  //   $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+  // } else if ($status == 2) {
+  //   $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+  //   $timelinedata .= "[ '".$project."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#00E600', ";
+  // } else if ($status == 3) {
+  //   $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+  //   $timelinedata .= "[ '".$project."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
+  //   $timelinedata .= "[ '".$project."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#009900', ";
+  // } else if ($status == 4) {
+  //   $timelinedata .= "[ '".$project."', 'Set-up', new Date(".$L0['year'].", ".$L0['month'].", ".$L0['day']."), new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day'].") ], \n"; $colordata .= "'#B3FFB3', ";
+  //   $timelinedata .= "[ '".$project."', 'Data-collection', new Date(".$L1['year'].", ".$L1['month'].", ".$L1['day']."), new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day'].") ], \n"; $colordata .= "'#00E600', ";
+  //   $timelinedata .= "[ '".$project."', 'Completed', new Date(".$L2['year'].", ".$L2['month'].", ".$L2['day']."), new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day'].") ], \n"; $colordata .= "'#009900', ";
+  //   $timelinedata .= "[ '".$project."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
+  // }
 }
-$timelinedata .= " ]";
+// $timelinedata .= " ]";
 if ($_SESSION['level'] != "9") {
   if ($status < 1 || $status > 3) {
     $title = "An error has been found";
@@ -133,17 +115,14 @@ if ($_POST['m'] == "fixerrors") {
     $pC[] = array('question' => $newquota[$i]["question"], 'details' => array_splice($pB, 0));
   }
   // print_r($pC);
-
   $all = [];
   array_push($all, $pC); $all["quota"] = $all["0"]; unset($all["0"]);
   array_push($all, $newQC); $all["QC"] = $all["1"]; unset($all["1"]);
   array_push($all, $newmonitor); $all["monitor"] = $all["2"]; unset($all["2"]);
-
   // print_r($all);
   $all = array_remove_empty($all);
   $json = json_encode($all, JSON_PRETTY_PRINT);
   // print_r($json);
-
   $query = "QC = :QC";
   if ($add != "") { $query .= $query.$add; }
   $qG = $db->prepare("UPDATE j_projects SET ".$query." WHERE id = :surveyid");
@@ -156,8 +135,51 @@ if ($_POST['m'] == "fixerrors") {
   exit;
 }
 
+// Data for fieldwork summary boxes
+if ($status == "1") {
+  $stage = "1";
+  $a = date_parse_from_format("Y-m-d H:i:s", $LLL0); $ac = $a['year']."-".$a['month']."-".$a['day']; $begindate0 = $a['day']." ".fullmonth($a['month'], "short");
+  $from0 = strtotime($ac); $today = time();
+  $difference1 = $today-$from0; $dd1 = floor($difference1/86400); if ($dd1 == "1") { $daysofsetup = "$dd1 day"; } else { $daysofsetup = "$dd1 days"; }
+  $setuptiming = "since $begindate0";
+  $fieldworkstatus = "<font color=\"orange\">Still at the set-up stage</font>";
+  $dcupdateinsert .= "    <div class=\"bg-primary text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Setup ($setuptiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysofsetup</strong></h4></div>\n";
+} else if ($status == "2") {
+  $stage = "2";
+  $a = date_parse_from_format("Y-m-d H:i:s", $LLL0); $ac = $a['year']."-".$a['month']."-".$a['day']; $begindate0 = $a['day']." ".fullmonth($a['month'], "short");
+  $b = date_parse_from_format("Y-m-d H:i:s", $LLL1); $bc = $b['year']."-".$b['month']."-".$b['day']; $begindate1 = $b['day']." ".fullmonth($b['month'], "short");
+  $from0 = strtotime($ac); $from1 = strtotime($bc); $today = time();
+  $difference1 = $from1-$from0; $dd1 = floor($difference1/86400); if ($dd1 == "1") { $daysofsetup = "$dd1 day"; } else { $daysofsetup = "$dd1 days"; }
+  $difference2 = $today-$from1; $dd2 = floor($difference2/86400); if ($dd2 == "1") { $daysoffieldwork = "$dd2 day"; } else { $daysoffieldwork = "$dd2 days"; }
+  $setuptiming = "$begindate0 to $begindate1";
+  $fieldworktiming = "since $begindate1";
+  $fieldworkstatus = "<font color=\"green\">Fieldwork is still on-going</font>";
+  $dcupdateinsert .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Setup ($setuptiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysofsetup</strong></h4></div>\n";
+  $dcupdateinsert .= "    <br>\n";
+  $dcupdateinsert .= "    <div class=\"bg-primary text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork ($fieldworktiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork</strong></h4></div>\n";
+} else if ($status > "2") {
+  $stage = "3";
+  $a = date_parse_from_format("Y-m-d H:i:s", $LLL0); $ac = $a['year']."-".$a['month']."-".$a['day']; $begindate0 = $a['day']." ".fullmonth($a['month'], "short");
+  $b = date_parse_from_format("Y-m-d H:i:s", $LLL1); $bc = $b['year']."-".$b['month']."-".$b['day']; $begindate1 = $b['day']." ".fullmonth($b['month'], "short");
+  $c = date_parse_from_format("Y-m-d H:i:s", $LLL2); $cc = $c['year']."-".$c['month']."-".$c['day']; $begindate2 = $c['day']." ".fullmonth($c['month'], "short");
+  $from0 = strtotime($ac); $from1 = strtotime($bc); $from2 = strtotime($cc); $today = time();
+  $difference1 = $from1-$from0; $dd1 = floor($difference1/86400); if ($dd1 == "1") { $daysofsetup = "$dd1 day"; } else { $daysofsetup = "$dd1 days"; }
+  $difference2 = $from2-$from1; $dd2 = floor($difference2/86400); if ($dd2 == "1") { $daysoffieldwork = "$dd2 day"; } else { $daysoffieldwork = "$dd2 days"; }
+  $difference3 = $today-$from2; $dd3 = floor($difference3/86400); if ($dd3 == "1") { $daysoffieldworkcompletion = "$dd3 day"; } else { $daysoffieldworkcompletion = "$dd3 days"; }
+  $setuptiming = "$begindate0 to $begindate1";
+  $fieldworktiming = "$begindate1 to $begindate2";
+  $fieldworkstatus = "<font color=\"blue\">Fieldwork was completed</font>";
+  $dcupdateinsert .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Setup ($setuptiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysofsetup</strong></h4></div>\n";
+  $dcupdateinsert .= "    <br>\n";
+  $dcupdateinsert .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork ($fieldworktiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork</strong></h4></div>\n";
+} else {
+  $begindate = "-";
+  $daysoffieldwork = "0";
+  $stage = "0";
+}
+
+
 $title = "Job monitoring";
-$result = "/admin/?w=result&s=".$_GET['s'];
 pageHeader($title);
 echo "<h2>$title</h2>";
 echo "<p class=\"introtext\">This page gives a real time update on the progress of data collection. An additional of the interim tabulation is also shown for project with valid responses.</p>";
@@ -178,7 +200,7 @@ echo "<br>\n";
   <ul class="nav nav-tabs">
     <li class="active"><a href="#first" data-toggle="tab" id="first-tab-trigger"><i class="pe-flask pe-fw"></i> Progress</a></li>
     <li><a href="#second" data-toggle="tab" id="second-tab-trigger"><i class="pe-check pe-fw"></i> Quality control</a></li>
-    <li><a href="#third" data-toggle="tab" id="third-tab-trigger"><i class="pe-check-circle-o pe-fw"></i> Quota</a></li>
+    <li><a href="#third" data-toggle="tab" id="third-tab-trigger"><i class="pe-desktop pe-fw"></i> Monitor</a></li>
     <li><a href="#fourth" data-toggle="tab" id="fourth-tab-trigger"><i class="pe-table pe-fw"></i> Interim data</a></li>
     <li><a href="#fifth" data-toggle="tab" id="fifth-tab-trigger"><i class="pe-wrench pe-fw"></i> Settings</a></li>
   </ul>
@@ -193,7 +215,7 @@ $q2C = $db->prepare("SELECT SSDATE, SUM(SSCOUNT1) as SSCOUNT1, SUM(SSCOUNT2) as 
 $q2C->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2C->execute();
 $area = "[\n";
-$areacount = 0;
+// $areacount = 0;
 if ($q2C->rowCount() < 1) { $SSCOUNT1 = "0"; $SSCOUNT2 = "0"; $NEWSSDATE = "-"; }
 else {
   while ($row = $q2C->fetchObject()) {
@@ -205,93 +227,11 @@ else {
     $SSCOUNT2 += $row->SSCOUNT2;
     if ($private == 1) { $area .= "        [\"".$NEWSSDATE."\", ".$SSCOUNT2.", ".$SSCOUNT1."], \n"; }
     else { $area .= "        [\"".$NEWSSDATE."\", ".$SSCOUNT1."], \n"; }
-    $areacount++;
+    // $areacount++;
   }
 }
 $area .= "      ]";
-
-// Data for fieldwork summary boxes
-if ($status > "2") {
-  $stage = "3";
-  $a = date_parse_from_format("Y-m-d H:i:s", $LLL0);
-  $ac = $a['year']."-".$a['month']."-".$a['day'];
-  $begindate0 = $a['day']." ".fullmonth($a['month'], "short");
-  $b = date_parse_from_format("Y-m-d H:i:s", $LLL1);
-  $bc = $b['year']."-".$b['month']."-".$b['day'];
-  $begindate1 = $b['day']." ".fullmonth($b['month'], "short");
-  $c = date_parse_from_format("Y-m-d H:i:s", $LLL2);
-  $cc = $c['year']."-".$c['month']."-".$c['day'];
-  $begindate2 = $c['day']." ".fullmonth($c['month'], "short");
-  $from0 = strtotime($ac);
-  $from1 = strtotime($bc);
-  $from2 = strtotime($cc);
-  $today = time();
-  $difference1 = $from1 - $from0;
-  $dd1 = floor($difference1 / 86400);
-  if ($dd1 == "1") { $daysofsetup = "$dd1 day"; } else { $daysofsetup = "$dd1 days"; }
-  $difference2 = $from2 - $from1;
-  $dd2 = floor($difference2 / 86400);
-  if ($dd2 == "1") { $daysoffieldwork = "$dd2 day"; } else { $daysoffieldwork = "$dd2 days"; }
-  $difference3 = $today - $from2;
-  $dd3 = floor($difference3 / 86400);
-  if ($dd3 == "1") { $daysoffieldworkcompletion = "$dd3 day"; } else { $daysoffieldworkcompletion = "$dd3 days"; }
-  $setuptiming = "$begindate0 to $begindate1";
-  $fieldworktiming = "$begindate1 to $begindate2";
-  $fieldworkstatus = "<font color=\"blue\">Fieldwork was completed</font>";
-  $dcupdateinsert .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Setup ($setuptiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysofsetup</strong></h4></div>\n";
-  $dcupdateinsert .= "    <br>\n";
-  $dcupdateinsert .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork ($fieldworktiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork</strong></h4></div>\n";
-} else if ($status == "2") {
-  $stage = "2";
-  $a = date_parse_from_format("Y-m-d H:i:s", $LLL0);
-  $ac = $a['year']."-".$a['month']."-".$a['day'];
-  $begindate0 = $a['day']." ".fullmonth($a['month'], "short");
-  $b = date_parse_from_format("Y-m-d H:i:s", $LLL1);
-  $bc = $b['year']."-".$b['month']."-".$b['day'];
-  $begindate1 = $b['day']." ".fullmonth($b['month'], "short");
-  $from0 = strtotime($ac);
-  $from1 = strtotime($bc);
-  $today = time();
-  $difference1 = $from1 - $from0;
-  $dd1 = floor($difference1 / 86400);
-  if ($dd1 == "1") { $daysofsetup = "$dd1 day"; } else { $daysofsetup = "$dd1 days"; }
-  $difference2 = $today - $from1;
-  $dd2 = floor($difference2 / 86400);
-  if ($dd2 == "1") { $daysoffieldwork = "$dd2 day"; } else { $daysoffieldwork = "$dd2 days"; }
-  $setuptiming = "$begindate0 to $begindate1";
-  $fieldworktiming = "since $begindate1";
-  $fieldworkstatus = "<font color=\"green\">Fieldwork is still on-going</font>";
-  $dcupdateinsert .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Setup ($setuptiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysofsetup</strong></h4></div>\n";
-  $dcupdateinsert .= "    <br>\n";
-  $dcupdateinsert .= "    <div class=\"bg-primary text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork ($fieldworktiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork</strong></h4></div>\n";
-} else if ($status == "1") {
-  $stage = "1";
-  $b = date_parse_from_format("Y-m-d H:i:s", $LLL0);
-  $bc = $b['year']."-".$b['month']."-".$b['day'];
-  $begindate0 = $b['day']." ".fullmonth($b['month'], "short");
-  $from0 = strtotime($bc);
-  $today = time();
-  $difference = $today - $from0;
-  $daysoffieldwork = floor($difference / 86400);
-  $begindate = $begindate0;
-  $fieldworkstatus = "<font color=\"orange\">Fieldwork has not been started</font>";
-  $fieldworktiming = "since $begindate";
-  $a = date_parse_from_format("Y-m-d H:i:s", $LLL0);
-  $ac = $a['year']."-".$a['month']."-".$a['day'];
-  $begindate0 = $a['day']." ".fullmonth($a['month'], "short");
-  $from0 = strtotime($ac);
-  $today = time();
-  $difference1 = $today - $from0;
-  $dd1 = floor($difference1 / 86400);
-  if ($dd1 == "1") { $daysofsetup = "$dd1 day"; } else { $daysofsetup = "$dd1 days"; }
-  $setuptiming = "since $begindate0";
-  $fieldworkstatus = "<font color=\"orange\">Fieldwork has not started</font>";
-  $dcupdateinsert .= "    <div class=\"bg-primary text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Setup ($setuptiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysofsetup</strong></h4></div>\n";
-} else {
-  $begindate = "-";
-  $daysoffieldwork = "0";
-  $stage = "0";
-}
+// print_r($area);
 
 // data for showing the real-time results
 if ($status >= 2) { $sql3 = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 2 ORDER BY submitted DESC"; }
@@ -312,19 +252,15 @@ while ($row = $q->fetchAll(PDO::FETCH_ASSOC)) {
 }
 $datafortable = json_encode($ee);
 
+// pin error, hence "those who are terminated"
 $pinerror = 0;
 $pincheck = json_decode($datafortable, true);
 foreach ($pincheck as $k1 => $p1) { if ($p1["data"]["PIN"] != $pinnumber) { $errorlist[] = $p1["id"]; $pinerror = 1; } }
 $terminatedsize = count($errorlist);
-
 $errorinput = "";
 $pin_error = "<div class=\"alert alert-danger alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\n";
 $pin_error .= "  <h4><i class=\"pe-exclamation-triangle pe-fw pe-lg\"></i> Found terminated respondents</h4>\n";
 $pin_error .= "  <p>We detect <strong>$terminatedsize respondents</strong> who were actually terminated but they are incorrectly coded as successful.</p>\n";
-// $pin_error .= "  <p>You can just <a data-toggle=\"collapse\" href=\"#showerrors\" aria-expanded=\"false\" class=\"alert-link\">click here <i class=\"pe-arrow-circle-down pe-fw\"></i></a> to see their IDs (click again to close).</p>\n";
-// $pin_error .= "  <div class=\"collapse\" id=\"showerrors\"><div class=\"well small\">";
-// for($x = 0; $x < count($errorlist); $x++) { $pin_error .= $errorlist[$x].", "; $errorinput .= "<input type=\"hidden\" name=\"errorids[]\" value=\"$errorlist[$x]\">"; }
-// $pin_error .= "</div></div>\n";
 $pin_error .= "  <div class=\"well small\">";
 for ($x = 0; $x < count($errorlist); $x++) { $pin_error .= $errorlist[$x].", "; $errorinput .= "<input type=\"hidden\" name=\"errorids[]\" value=\"$errorlist[$x]\">"; }
 $pin_error .= "  </div>\n";
@@ -375,7 +311,7 @@ $notparticipated_percent = percent($notparticipated / $invited);
 if ($notparticipated || $notparticipated == 0) { $notparticipated_bar = "<div class=\"progress progress-inbox\"><div class=\"progress-bar progress-bar-inbox progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$notparticipated_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width:2em; width:$notparticipated_percent\">$notparticipated_percent</div></div>"; } else { $notparticipated_bar = "<div class=\"progress progress-inbox\"></div>"; }
 $strikerate = number_format(($participated / $invited) * 100, 1);
 
-// Get stats for public project e.g. project wothout any name list upload.
+// Get stats for public projects e.g. projects wothout name list upload.
 $q2B = $db->prepare("SELECT SUM(status = :S1) AS q2B1, SUM(status = :S2) AS q2B2, SUM(status = :S3) AS q2B3 FROM j_results WHERE surveyid = :surveyid ");
 $q2B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2B->bindValue(':S1', '2', PDO::PARAM_INT);
@@ -409,15 +345,15 @@ if ($RDterminated || $RDterminated == 0) { $RDterminated_bar = "<div class=\"pro
 $RDsuccess_percent = percent($RDsuccess/$sample_size); //print_r($RDsuccess_percent);
 if ($RDsuccess || $RDsuccess == 0) { $RDsuccess_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDsuccess_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDsuccess_percent\">$RDsuccess_percent</div></div>"; } else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
 
-// Contact sheet for Private project
-$mainrespondent = "/admin/?w=respondents&s=".$_GET['s'];
+// Contact sheet summary
 $showdc = false;
 if ($private == 1) {
+  // for private projects
   if ($all == 0) {
     echo "<p>This project currently has <strong>no respondent</strong> stored in the database.</p>\n";
     echo "<p>Please upload respondent's emails using a Comma Separated Value (CSV) file and our system will enable the email function allowing you to send invitation / reminder to respondents accordingly.</p>\n";
     echo "<div id=\"gauge1\" style=\"display:none\"></div><div id=\"gauge2\" style=\"display:none\"></div><div id=\"orgchart1\" style=\"display:none\"></div>\n";
-    echo "<p>The upload function can be found in the <a href=\"$mainrespondent\">respondent's main page</a>, and it looks like below example <i class=\"pe-arrow-down\"></i>.</p>\n";
+    echo "<p>The upload function can be found in the <a href=\"$respondent\">respondent's main page</a>, and it looks like below example <i class=\"pe-arrow-down\"></i>.</p>\n";
     echo "<div align=\"right\"><a class=\"btn btn-info\"><i class=\"pe-upload pe-fw\"></i> Upload a new name list</a> <a class=\"btn btn-info\"><i class=\"pe-user-plus pe-fw\"></i> Manually add new respondents</a></div>\n";
     echo "<br>\n";
     if ($valid > 0) { echo $dcupdate; }
@@ -425,7 +361,7 @@ if ($private == 1) {
     echo "<p>Although you have uploaded some respondents to the database (n=$all_format), <strong>none of them</strong> appears to be good to use.</p>\n";
     echo "<p>This is because their emails appears to be in an incorrect format. To fix this, you have to delete them from the database, and upload a new list making sure the right column on your Comma Separated Value (CSV) file is selected.</p>\n";
     echo "<div id=\"gauge1\" style=\"display:none\"></div><div id=\"gauge2\" style=\"display:none\"></div><div id=\"orgchart1\" style=\"display:none\"></div>\n";
-    echo "<p>The upload function can be found in the <a href=\"$mainrespondent\">respondent's main page</a>, and it looks like below example <i class=\"pe-arrow-down\"></i>.</p>\n";
+    echo "<p>The upload function can be found in the <a href=\"$respondent\">respondent's main page</a>, and it looks like below example <i class=\"pe-arrow-down\"></i>.</p>\n";
     echo "<div align=\"right\"><a class=\"btn btn-info\"><i class=\"pe-upload pe-fw\"></i> Upload a new name list</a> <a class=\"btn btn-info\"><i class=\"pe-user-plus pe-fw\"></i> Manually add new respondents</a></div>\n";
     echo "<br>\n";
     if ($valid > 0) { echo $dcupdate; }
@@ -433,7 +369,7 @@ if ($private == 1) {
     echo "<p>Although you have uploaded valid respondents to the database (n=$allgood_format valid from a total upload of n=$all_format), <strong>none of them</strong> has been sent with an invitation to your survey, and therefore <strong>no participation</strong>.</p>\n";
     echo "<p>We therefore strongly suggest you start inviting your respondents to this survey to start the data collection process.</p>\n";
     echo "<div id=\"gauge1\" style=\"display:none\"></div><div id=\"gauge2\" style=\"display:none\"></div><div id=\"orgchart1\" style=\"display:none\"></div>\n";
-    echo "<p>The invitation function can be found in the <a href=\"$mainrespondent\">respondent's main page</a>, and it looks like below examples <i class=\"pe-arrow-down\"></i>.</p>\n";
+    echo "<p>The invitation function can be found in the <a href=\"$respondent\">respondent's main page</a>, and it looks like below examples <i class=\"pe-arrow-down\"></i>.</p>\n";
     echo "<div align=\"right\"><a class=\"btn btn-warning\"><i class=\"pe-envelope pe-fw\"></i> Send an invitation email</a> <a class=\"btn btn-warning\"><i class=\"pe-envelope pe-fw\"></i> Send a reminder email</a></div>\n";
     echo "<br>\n";
     if ($valid > 0) { echo $dcupdate; }
@@ -463,11 +399,11 @@ if ($private == 1) {
     echo "    $text\n";
     echo "  </div>\n";
     echo "</div>\n";
-    // echo "<hr>\n";
     echo $dcupdate;
     echo "<hr>\n";
   }
 } else {
+  // for public projects
   if ($RDsuccess > 0) {
     $average = number_format($RDsuccess / $daysoffieldwork, 1);
     $togo = number_format(($sample_size - $RDsuccess) / $average, 1);
@@ -488,60 +424,46 @@ if ($private == 1) {
   echo "    $text\n";
   echo "  </div>\n";
   echo "</div>\n";
-  // echo "<hr>\n";
   echo $dcupdate;
   echo "<hr>\n";
 }
 
-// $input = array(
-//   "Location" => array("data", array("Location", "Region")),
-//   "Gender" => array("data", array("Gender", "Demographic", array("Record", array("Gender")))),
-//   "Age" => array("data", array("Age", "Demographic", array("Record", array("Age")))),
-//   "SES" => array("data", array("SES", "Demographic", array("Record", array("SES")))),
-//   "Education" => array("data", array("Education", "Demographic", array("Record", array("Education")))),
-//   "Occupation" => array("data", array("Occupation", "Demographic", array("Record", array("Occupation")))),
-//   "MaritalStatus" => array("data", array("MaritalStatus", "Demographic", array("Record", array("MaritalStatus")))),
-//   "Residence" => array("data", array("Residence", "Demographic", array("Record", array("Residence")))),
-// );
-//
-// print_r($input["Location"]);
-// print_r($input["Gender"]);
-
 function checkingQuestion($input, $ee = array()) {
   for ($i=0; $i<count($ee); $i++) {
     $alt1 = ""; $alt2 = "";
-    if (($input == "Region") || ($input == "Location")) { $alt1 = "Region"; $alt2 = "Location"; }
+    if (($input == "Region") || ($input == "Location")) { $alt1 = "Region"; $alt2 = "Location"; $interviewerbylocation = 1; }
     else if (($input == "Gender") || ($input == "Sex")) { $alt1 = "Gender"; $alt2 = "Sex"; }
     else if (($input == "SES") || ($input == "SocialClass")) { $alt1 = "SES"; $alt2 = "SocialClass"; }
     else { $alt2 = $input; }
     if ($alt1) {
-      if ($ee[$i]['data'][$alt1]) { $output[] = $ee[$i]['data'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; }
-      else if ($ee[$i]['data']['Demographic'][$alt1]) { $output[] = $ee[$i]['data']['Demographic'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; }
-      else if ($ee[$i]['data']['Demographic']['Record'][$alt1]) { $output[] = $ee[$i]['data']['Demographic']['Record'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; }
-      else if ($ee[$i]['data']['Respondent'][$alt1]) { $output[] = $ee[$i]['data']['Respondent'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; }
-      else if ($ee[$i]['data']['Respondent']['Record'][$alt1]) { $output[] = $ee[$i]['data']['Respondent']['Record'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; }
-      else if ($ee[$i]['data']['RespondentInformation'][$alt1]) { $output[] = $ee[$i]['data']['RespondentInformation'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; }
-      else if ($ee[$i]['data']['RespondentInformation']['Record'][$alt1]) { $output[] = $ee[$i]['data']['RespondentInformation']['Record'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; }
-      else { $output[] = ""; $missing_id[] = $ee[$i]['id']; $missing_info[] = array('id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
+      if ($ee[$i]['data'][$alt1]) { $output[] = $ee[$i]['data'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['Demographic'][$alt1]) { $output[] = $ee[$i]['data']['Demographic'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Demographic'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['Demographic']['Record'][$alt1]) { $output[] = $ee[$i]['data']['Demographic']['Record'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Demographic']['Record'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['Respondent'][$alt1]) { $output[] = $ee[$i]['data']['Respondent'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Respondent'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['Respondent']['Record'][$alt1]) { $output[] = $ee[$i]['data']['Respondent']['Record'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Respondent']['Record'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['RespondentInformation'][$alt1]) { $output[] = $ee[$i]['data']['RespondentInformation'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['RespondentInformation'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['RespondentInformation']['Record'][$alt1]) { $output[] = $ee[$i]['data']['RespondentInformation']['Record'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['RespondentInformation']['Record'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else { $output[] = ""; $missing_id[] = $ee[$i]['id']; $missing_info[] = array('missing' => $alt1, 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
     } else if ($alt2) {
-      if ($ee[$i]['data'][$alt2]) { $output[] = $ee[$i]['data'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; }
-      else if ($ee[$i]['data']['Demographic'][$alt2]) { $output[] = $ee[$i]['data']['Demographic'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; }
-      else if ($ee[$i]['data']['Demographic']['Record'][$alt2]) { $output[] = $ee[$i]['data']['Demographic']['Record'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; }
-      else if ($ee[$i]['data']['Respondent'][$alt2]) { $output[] = $ee[$i]['data']['Respondent'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; }
-      else if ($ee[$i]['data']['Respondent']['Record'][$alt2]) { $output[] = $ee[$i]['data']['Respondent']['Record'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; }
-      else if ($ee[$i]['data']['RespondentInformation'][$alt2]) { $output[] = $ee[$i]['data']['RespondentInformation'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; }
-      else if ($ee[$i]['data']['RespondentInformation']['Record'][$alt2]) { $output[] = $ee[$i]['data']['RespondentInformation']['Record'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; }
-      else { $output[] = ""; $missing_id[] = $ee[$i]['id']; $missing_info[] = array('id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
+      if ($ee[$i]['data'][$alt2]) { $output[] = $ee[$i]['data'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['Demographic'][$alt2]) { $output[] = $ee[$i]['data']['Demographic'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Demographic'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['Demographic']['Record'][$alt2]) { $output[] = $ee[$i]['data']['Demographic']['Record'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Demographic']['Record'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['Respondent'][$alt2]) { $output[] = $ee[$i]['data']['Respondent'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Respondent'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['Respondent']['Record'][$alt2]) { $output[] = $ee[$i]['data']['Respondent']['Record'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Respondent']['Record'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['RespondentInformation'][$alt2]) { $output[] = $ee[$i]['data']['RespondentInformation'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['RespondentInformation'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['RespondentInformation']['Record'][$alt2]) { $output[] = $ee[$i]['data']['RespondentInformation']['Record'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['RespondentInformation']['Record'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else { $output[] = ""; $missing_id[] = $ee[$i]['id']; $missing_info[] = array('missing' => $alt2, 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
     }
   }
   $alloutput = [];
   array_push($alloutput, $output);
   array_push($alloutput, $missing_id);
-  array_push($alloutput, $missing_info);
+  array_push($alloutput, array_remove_empty($missing_info, "no"));
+  array_push($alloutput, $interviewerbylocationdata);
   return $alloutput;
 }
 
-function getResultJS($input = array(), $sort, $chart, $keyword) {
+function getResultJS($input = array(), $RD, $sort, $keyword) {
   $input = array_remove_empty($input["0"]);
   $input = array_count_values($input);
   if ($sort == "1") { arsort($input); }
@@ -551,7 +473,6 @@ function getResultJS($input = array(), $sort, $chart, $keyword) {
   $A = array_keys($input);
   $B = array_values($input);
   $C = count($input);
-  if ($C < 15) { $height = '500'; } else if ($C >= 15) { $height = '700'; }
   $draw = "draw$keyword();";
   $output = "";
   if ($Z > 0) {
@@ -563,7 +484,7 @@ function getResultJS($input = array(), $sort, $chart, $keyword) {
     $output .= "    data.addColumn('number', 'Percentage');\n";
     $output .= "    data.addRows($C);\n";
     for ($m=0; $m<$C; $m++) {
-      $BB[$m] = number_format(($B[$m]/$Z)*100, 2);
+      $BB[$m] = number_format(($B[$m]/$RD)*100, 2);
       $m1 = $m+1; $m2 = $m1+1;
       $output .= "    data.setCell($m, 0, '$A[$m]');\n";
       $output .= "    data.setCell($m, 1, $B[$m]);\n";
@@ -575,14 +496,21 @@ function getResultJS($input = array(), $sort, $chart, $keyword) {
     $output .= "    viewChart.setColumns([0, 2]);\n";
     $output .= "    var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });\n";
     $output .= "    formatter.format(data, 2);\n";
+    if ($C < 15) { $height = '500'; } else if (($C >= 15) && ($C < 30)) { $height = '700'; } else if ($C >= 30) { $height = '1000'; }
+    if (($Z > $RD) || ($C > 7)) { $tt = array('bar', 'column'); } else if (($Z <= $RD) && ($C <= 3)) { $tt = array('pie', 'donut'); } else if ($C > 15) { $tt = array('column'); } else { $tt = array('bar', 'column', 'pie', 'donut'); }
+    if (($keyword == "Region") || ($keyword == "Location")) { $chart = 'column'; } else if ($keyword == "Interviewer") { $chart = 'bar'; } else if ($C > 8) { $chart = 'bar'; } else { $chart = $tt[array_rand($tt)]; }
     if ($chart == "pie") {
+      $output .= "    var options = { width: '100%', height: '500' };\n";
+      $output .= "    var chart = new google.visualization.PieChart(document.getElementById('sortchart-$keyword'));\n";
+    } else if ($chart == "donut") {
       $output .= "    var options = { pieHole: 0.4, width: '100%', height: '500' };\n";
       $output .= "    var chart = new google.visualization.PieChart(document.getElementById('sortchart-$keyword'));\n";
     } else if ($chart == "column") {
       $output .= "    var options = { width: '100%', height: '500', bar: { groupWidth: '60%' }, legend: { position: 'none' } };\n";
       $output .= "    var chart = new google.visualization.ColumnChart(document.getElementById('sortchart-$keyword'));\n";
     } else if ($chart == "bar") {
-      $output .= "    var options = { width: '100%', height: $height, bar: { groupWidth: '60%' }, legend: { position: 'none' } };\n";
+      if ($C >= 15) { $output .= "    var options = { width: '100%', height: $height, vAxis: { textStyle: { fontSize: 10 } }, hAxis: { textStyle: { fontSize: 14 } }, bar: { groupWidth: '60%' }, legend: { position: 'none' } };\n"; }
+      else { $output .= "    var options = { width: '100%', height: $height, bar: { groupWidth: '60%' }, legend: { position: 'none' } };\n"; }
       $output .= "    var chart = new google.visualization.BarChart(document.getElementById('sortchart-$keyword'));\n";
     }
     $output .= "    chart.draw(viewChart, options);\n";
@@ -631,219 +559,95 @@ function getResultHTML($input = array(), $RD, $keyword) {
   return $output;
 }
 
-function getMissingInfo($input = array()) {
-  $input = array_remove_empty($input["2"]);
-  $output = implode(', ', $input);
+function getMissingTable($input = array()) {
+  $records = count($input);
+  $output = "      <h4>Missing Information <small>($records records)</small></h4>\n";
+  $rows = array();
+  foreach ($input as $row) {
+    $cells = array();
+    foreach ($row as $cell) { $cells[] = "<td>{$cell}</td>"; }
+    $rows[] = "<tr>" . implode('', $cells) . "</tr>";
+  }
+  $output .= "      <table class='table table-hover small' id='missing'><thead><tr class='bg-primary'><th>What is missing?</th><th>Questionnaire No.</th><th colspan='3'>Respondent's information</th><th>Location</th><th>Interviewer</th><th>Since</th></tr></thead><tbody>" . implode('', $rows) . "</tbody></table>";
   return $output;
 }
 
 $ff = json_decode($monitor, true);
 foreach ($ff["QC"] as $fff) { foreach ($fff as $ffe) { $mn1[] = $ffe; } } // print_r($mn1);
 foreach ($ff["monitor"] as $ffd) { foreach ($ffd as $ffc) { $mn2[] = $ffc; } } // print_r($mn2);
+// $mn = array_merge($mn1, $mn2); // print_r($mn);
 
+// if ($mn1["0"]) { $A1A = checkingQuestion($mn1["0"], $ee); $A1B = getResultHTML($A1A, $RDsuccess, $mn1["0"]); $A1C = getResultJS($A1A, $RDsuccess, "1", $mn1["0"]); }
+// if ($mn1["1"]) { $A2A = checkingQuestion($mn1["1"], $ee); $A2B = getResultHTML($A2A, $RDsuccess, $mn1["1"]); $A2C = getResultJS($A2A, $RDsuccess, "1", $mn1["1"]); }
+// if ($mn1["2"]) { $A3A = checkingQuestion($mn1["2"], $ee); $A3B = getResultHTML($A3A, $RDsuccess, $mn1["2"]); $A3C = getResultJS($A3A, $RDsuccess, "2", $mn1["2"]); }
+// if ($mn1["3"]) { $A4A = checkingQuestion($mn1["3"], $ee); $A4B = getResultHTML($A4A, $RDsuccess, $mn1["3"]); $A4C = getResultJS($A4A, $RDsuccess, "3", $mn1["3"]); }
+// if ($mn1["4"]) { $A5A = checkingQuestion($mn1["4"], $ee); $A5B = getResultHTML($A5A, $RDsuccess, $mn1["4"]); $A5C = getResultJS($A5A, $RDsuccess, "4", $mn1["4"]); }
+// if ($mn1["5"]) { $A6A = checkingQuestion($mn1["5"], $ee); $A6B = getResultHTML($A6A, $RDsuccess, $mn1["5"]); $A6C = getResultJS($A6A, $RDsuccess, "5", $mn1["5"]); }
+// if ($mn1["6"]) { $A7A = checkingQuestion($mn1["6"], $ee); $A7B = getResultHTML($A7A, $RDsuccess, $mn1["6"]); $A7C = getResultJS($A7A, $RDsuccess, "6", $mn1["6"]); }
+// if ($mn1["7"]) { $A8A = checkingQuestion($mn1["7"], $ee); $A8B = getResultHTML($A8A, $RDsuccess, $mn1["7"]); $A8C = getResultJS($A8A, $RDsuccess, "7", $mn1["7"]); }
+// if ($mn1["8"]) { $A9A = checkingQuestion($mn1["8"], $ee); $A9B = getResultHTML($A9A, $RDsuccess, $mn1["8"]); $A9C = getResultJS($A9A, $RDsuccess, "8", $mn1["8"]); }
+//
+// if ($mn2["0"]) { $B1A = checkingQuestion($mn2["0"], $ee); $B1B = getResultHTML($B1A, $RDsuccess, $mn2["0"]); $B1C = getResultJS($B1A, $RDsuccess, "0", $mn2["0"]); }
+// if ($mn2["1"]) { $B2A = checkingQuestion($mn2["1"], $ee); $B2B = getResultHTML($B2A, $RDsuccess, $mn2["1"]); $B2C = getResultJS($B2A, $RDsuccess, "3", $mn2["1"]); }
+// if ($mn2["2"]) { $B3A = checkingQuestion($mn2["2"], $ee); $B3B = getResultHTML($B3A, $RDsuccess, $mn2["2"]); $B3C = getResultJS($B3A, $RDsuccess, "3", $mn2["2"]); }
+// if ($mn2["3"]) { $B4A = checkingQuestion($mn2["3"], $ee); $B4B = getResultHTML($B4A, $RDsuccess, $mn2["3"]); $B4C = getResultJS($B4A, $RDsuccess, "1", $mn2["3"]); }
+// if ($mn2["4"]) { $B5A = checkingQuestion($mn2["4"], $ee); $B5B = getResultHTML($B5A, $RDsuccess, $mn2["4"]); $B5C = getResultJS($B5A, $RDsuccess, "1", $mn2["4"]); }
+// if ($mn2["5"]) { $B6A = checkingQuestion($mn2["5"], $ee); $B6B = getResultHTML($B6A, $RDsuccess, $mn2["5"]); $B6C = getResultJS($B6A, $RDsuccess, "2", $mn2["5"]); }
+// if ($mn2["6"]) { $B7A = checkingQuestion($mn2["6"], $ee); $B7B = getResultHTML($B7A, $RDsuccess, $mn2["6"]); $B7C = getResultJS($B7A, $RDsuccess, "1", $mn2["6"]); }
+// if ($mn2["7"]) { $B8A = checkingQuestion($mn2["7"], $ee); $B8B = getResultHTML($B8A, $RDsuccess, $mn2["7"]); $B8C = getResultJS($B8A, $RDsuccess, "1", $mn2["7"]); }
+// if ($mn2["8"]) { $B9A = checkingQuestion($mn2["8"], $ee); $B9B = getResultHTML($B9A, $RDsuccess, $mn2["8"]); $B9C = getResultJS($B9A, $RDsuccess, "1", $mn2["8"]); }
 
-$A1A = checkingQuestion('Region', $ee);
-$A1B = getResultHTML($A1A, $RDsuccess, 'Region');
-$A1C = getResultJS($A1A, "1", 'column', 'Region');
+$A1A = checkingQuestion($mn1["0"], $ee);
+$A1B = getResultHTML($A1A, $RDsuccess, $mn1["0"]);
+$A1C = getResultJS($A1A, $RDsuccess, "1", $mn1["0"]);
 
-$A2A = checkingQuestion('Interviewer', $ee);
-$A2B = getResultHTML($A2A, $RDsuccess, 'Interviewer');
-$A2C = getResultJS($A2A, "1", 'bar', 'Interviewer');
+$A2A = checkingQuestion($mn1["1"], $ee);
+$A2B = getResultHTML($A2A, $RDsuccess, $mn1["1"]);
+$A2C = getResultJS($A2A, $RDsuccess, "1", $mn1["1"]);
 
-$A3A = checkingQuestion('Gender', $ee);
-$A3B = getResultHTML($A3A, $RDsuccess, 'Gender');
-$A3C = getResultJS($A3A, "0", 'pie', 'Gender');
+$A3A = checkingQuestion($mn2["0"], $ee);
+$A3B = getResultHTML($A3A, $RDsuccess, $mn2["0"]);
+$A3C = getResultJS($A3A, $RDsuccess, "0", $mn2["0"]);
 
-$A4A = checkingQuestion('Age', $ee);
-$A4B = getResultHTML($A4A, $RDsuccess, 'Age');
-$A4C = getResultJS($A4A, "3", 'column', 'Age');
+$A4A = checkingQuestion($mn2["1"], $ee);
+$A4B = getResultHTML($A4A, $RDsuccess, $mn2["1"]);
+$A4C = getResultJS($A4A, $RDsuccess, "3", $mn2["1"]);
 
-$A5A = checkingQuestion('SES', $ee);
-$A5B = getResultHTML($A5A, $RDsuccess, 'SES');
-$A5C = getResultJS($A5A, "3", 'column', 'SES');
+$A5A = checkingQuestion($mn2["2"], $ee);
+$A5B = getResultHTML($A5A, $RDsuccess, $mn2["2"]);
+$A5C = getResultJS($A5A, $RDsuccess, "3", $mn2["2"]);
 
-$A6A = checkingQuestion('Education', $ee);
-$A6B = getResultHTML($A6A, $RDsuccess, 'Education');
-$A6C = getResultJS($A6A, "1", 'column', 'Education');
+$A6A = checkingQuestion($mn2["3"], $ee);
+$A6B = getResultHTML($A6A, $RDsuccess, $mn2["3"]);
+$A6C = getResultJS($A6A, $RDsuccess, "1", $mn2["3"]);
 
-$A7A = checkingQuestion('Occupation', $ee);
-$A7B = getResultHTML($A7A, $RDsuccess, 'Occupation');
-$A7C = getResultJS($A7A, "1", 'bar', 'Occupation');
+$A7A = checkingQuestion($mn2["4"], $ee);
+$A7B = getResultHTML($A7A, $RDsuccess, $mn2["4"]);
+$A7C = getResultJS($A7A, $RDsuccess, "1", $mn2["4"]);
 
-$A8A = checkingQuestion('MaritalStatus', $ee);
-$A8B = getResultHTML($A8A, $RDsuccess, 'MaritalStatus');
-$A8C = getResultJS($A8A, "2", 'pie', 'MaritalStatus');
+$A8A = checkingQuestion($mn2["5"], $ee);
+$A8B = getResultHTML($A8A, $RDsuccess, $mn2["5"]);
+$A8C = getResultJS($A8A, $RDsuccess, "2", $mn2["5"]);
 
-$A9A = checkingQuestion('Residence', $ee);
-$A9B = getResultHTML($A9A, $RDsuccess, 'Residence');
-$A9C = getResultJS($A9A, "1", 'bar', 'Residence');
-
-
-$empty = array();
-for ($i=0; $i<count($ee); $i++) {
-  $id[] = $ee[$i]['id'];
-  $submitted[] = $ee[$i]['submitted'];
-  // $pe = checkingQuestion('SES'); //print_r($pe);
-  // $interviewer[] = $ee[$i]['data']['Interviewer'];
-  if ($ee[$i]['data']['Region']) { $region[] = $ee[$i]['data']['Region']; $interviewerbyregion[] = array('region' => $ee[$i]['data']['Region'], array('interviewer' => $ee[$i]['data']['Interviewer'])); }
-  else if ($ee[$i]['data']['Location']) { $region[] = $ee[$i]['data']['Location']; $interviewerbyregion[] = array('region' => $ee[$i]['data']['Region'], array('interviewer' => $ee[$i]['data']['Interviewer'])); }
-  else { $region[] = ""; $Y1[] = $ee[$i]['id']; $empty[] = array('missing' => 'Location', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
-
-  // if ($ee[$i]['data']['Interviewer']) { $interviewer[] = $ee[$i]['data']['Interviewer']; }
-  // else if ($ee[$i]['data']['Interviewer']) { $interviewer[] = $ee[$i]['data']['Interviewer']; }
-  // else { $interviewer[] = ""; $Y2[] = $ee[$i]['id']; $empty[] = array('missing' => 'Interviewer', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
-  //
-  // if ($ee[$i]['data']['Gender']) { $gender[] = $ee[$i]['data']['Gender']; }
-  // else if ($ee[$i]['data']['Demographic']['Record']['Gender']) { $gender[] = $ee[$i]['data']['Demographic']['Record']['Gender']; }
-  // else { $gender[] = ""; $Y3[] = $ee[$i]['id']; $empty[] = array('missing' => 'Gender', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
-  //
-  // if ($ee[$i]['data']['Age']) { $age[] = $ee[$i]['data']['Age']; }
-  // else if ($ee[$i]['data']['Demographic']['Record']['Age']) { $age[] = $ee[$i]['data']['Demographic']['Record']['Age']; }
-  // else { $age[] = ""; $Y4[] = $ee[$i]['id']; $empty[] = array('missing' => 'Age', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
-  //
-  // if ($ee[$i]['data']['SES']) { $SES[] = $ee[$i]['data']['SES']; }
-  // else if ($ee[$i]['data']['Demographic']['Record']['SES']) { $SES[] = $ee[$i]['data']['Demographic']['Record']['SES']; }
-  // else { $SES[] = ""; $Y5[] = $ee[$i]['id']; $empty[] = array('missing' => 'SES', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
-  //
-  // if ($ee[$i]['data']['Education']) { $education[] = $ee[$i]['data']['Education']; }
-  // else if ($ee[$i]['data']['Demographic']['Record']['Education']) { $education[] = $ee[$i]['data']['Demographic']['Record']['Education']; }
-  // else { $education[] = ""; $Y6[] = $ee[$i]['id']; $empty[] = array('missing' => 'Education', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
-  //
-  // if ($ee[$i]['data']['Occupation']) { $occupation[] = $ee[$i]['data']['Occupation']; }
-  // else if ($ee[$i]['data']['Demographic']['Record']['Occupation']) { $occupation[] = $ee[$i]['data']['Demographic']['Record']['Occupation']; }
-  // else { $occupation[] = ""; $Y7[] = $ee[$i]['id']; $empty[] = array('missing' => 'Occupation', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
-  //
-  // if ($ee[$i]['data']['MaritalStatus']) { $marital[] = $ee[$i]['data']['MaritalStatus']; }
-  // else if ($ee[$i]['data']['Demographic']['Record']['MaritalStatus']) { $marital[] = $ee[$i]['data']['Demographic']['Record']['MaritalStatus']; }
-  // else { $marital[] = ""; $Y8[] = $ee[$i]['id']; $empty[] = array('missing' => 'Marital', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
-  //
-  // if ($ee[$i]['data']['Residence']) { $residence[] = $ee[$i]['data']['Residence']; }
-  // else if ($ee[$i]['data']['Demographic']['Record']['Residence']) { $residence[] = $ee[$i]['data']['Demographic']['Record']['Residence']; }
-  // else { $residence[] = ""; $Y9[] = $ee[$i]['id']; $empty[] = array('missing' => 'Residence', 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
-  // $checkings[] = array($ee[$i]['submitted'], $ee[$i]['data']['Interviewer'], $ee[$i]['data']['Region'], $ee[$i]['data']['Demographic']['Record']['Gender'], $ee[$i]['data']['Demographic']['Record']['Age'], $ee[$i]['data']['Demographic']['Record']['SES'], $ee[$i]['data']['Education'], $ee[$i]['data']['Occupation'], $ee[$i]['data']['MaritalStatus'], $ee[$i]['data']['Residence']);
-}
-// print_r(array_remove_empty($pe));
-// $checkings = array_combine($id, $checkings);
-// print_r($checkings);
-// print_r($empty);
-
-function html_table($data = array()) {
-  $rows = array();
-  foreach ($data as $row) {
-    $cells = array();
-    foreach ($row as $cell) { $cells[] = "<td>{$cell}</td>"; }
-    $rows[] = "<tr>" . implode('', $cells) . "</tr>";
-  }
-  return "<table class='table table-hover small' id='missing'><thead><tr class='bg-primary'><th>What is missing?</th><th>Questionnaire No.</th><th colspan='3'>Respondent's information</th><th>Location</th><th>Interviewer</th><th>Since</th></tr></thead>" . implode('', $rows) . "</table>";
-}
-
-// print_r($empty);
-
-// $region = array_count_values($region); arsort($region);
-// $Z1 = array_sum($region); $A1 = array_keys($region); $B1 = array_values($region); $C1 = count($region);
-// $cout1 = "";
-// $cout1 .= "      data.addRows($C1);\n";
-// for ($m=0; $m < $C1; $m++) {
-//   $BB[$m] = number_format(($B1[$m]/$Z1)*100, 2);
-//   $m1 = $m+1; $m2 = $m1+1;
-//   $cout1 .= "      data.setCell($m, 0, '$A1[$m]');\n";
-//   $cout1 .= "      data.setCell($m, 1, $B1[$m]);\n";
-//   $cout1 .= "      data.setCell($m, 2, $BB[$m]);\n";
-// }
-// $interviewer = array_count_values($interviewer); arsort($interviewer);
-// $Z2 = array_sum($interviewer); $A2 = array_keys($interviewer); $B2 = array_values($interviewer); $C2 = count($interviewer);
-// $cout2 = "";
-// $cout2 .= "      data.addRows($C2);\n";
-// for ($m=0; $m < $C2; $m++) {
-//   $BB[$m] = number_format(($B2[$m]/$Z2)*100, 2);
-//   $m1 = $m+1; $m2 = $m1+1;
-//   $cout2 .= "      data.setCell($m, 0, '$A2[$m]');\n";
-//   $cout2 .= "      data.setCell($m, 1, $B2[$m]);\n";
-//   $cout2 .= "      data.setCell($m, 2, $BB[$m]);\n";
-// }
-// $gender = array_remove_empty($gender); $Y3 = implode(', ', $Y3);
-// $gender = array_count_values($gender); krsort($gender);
-// $Z3 = array_sum($gender); $A3 = array_keys($gender); $B3 = array_values($gender); $C3 = count($gender);
-// $cout3 = "";
-// $cout3 .= "      data.addRows($C3);\n";
-// for ($m=0; $m < $C3; $m++) {
-//   $BB[$m] = number_format(($B3[$m]/$Z3)*100, 2);
-//   $m1 = $m+1; $m2 = $m1+1;
-//   $cout3 .= "      data.setCell($m, 0, '$A3[$m]');\n";
-//   $cout3 .= "      data.setCell($m, 1, $B3[$m]);\n";
-//   $cout3 .= "      data.setCell($m, 2, $BB[$m]);\n";
-// }
-// $age = array_remove_empty($age); $Y4 = implode(', ', $Y4);
-// $age = array_count_values($age); ksort($age);
-// $Z4 = array_sum($age); $A4 = array_keys($age); $B4 = array_values($age); $C4 = count($age);
-// $cout4 = "";
-// $cout4 .= "      data.addRows($C4);\n";
-// for ($m=0; $m < $C4; $m++) {
-//   $BB[$m] = number_format(($B4[$m]/$Z4)*100, 2);
-//   $m1 = $m+1; $m2 = $m1+1;
-//   $cout4 .= "      data.setCell($m, 0, '$A4[$m]');\n";
-//   $cout4 .= "      data.setCell($m, 1, $B4[$m]);\n";
-//   $cout4 .= "      data.setCell($m, 2, $BB[$m]);\n";
-// }
-// $education = array_remove_empty($education); $Y6 = implode(', ', $Y6);
-// $education = array_count_values($education); //ksort($education);
-// $Z6 = array_sum($education); $A6 = array_keys($education); $B6 = array_values($education); $C6 = count($education);
-// $cout6 = "";
-// $cout6 .= "      data.addRows($C6);\n";
-// for ($m=0; $m < $C6; $m++) {
-//   $BB[$m] = number_format(($B6[$m]/$Z6)*100, 2);
-//   $m1 = $m+1; $m2 = $m1+1;
-//   $cout6 .= "      data.setCell($m, 0, '$A6[$m]');\n";
-//   $cout6 .= "      data.setCell($m, 1, $B6[$m]);\n";
-//   $cout6 .= "      data.setCell($m, 2, $BB[$m]);\n";
-// }
-// $occupation = array_remove_empty($occupation); $Y7 = implode(', ', $Y7);
-// $occupation = array_count_values($occupation); ksort($occupation);
-// $Z7 = array_sum($occupation); $A7 = array_keys($occupation); $B7 = array_values($occupation); $C7 = count($occupation);
-// $cout7 = "";
-// $cout7 .= "      data.addRows($C7);\n";
-// for ($m=0; $m < $C7; $m++) {
-//   $BB[$m] = number_format(($B7[$m]/$Z7)*100, 2);
-//   $m1 = $m+1; $m2 = $m1+1;
-//   $cout7 .= "      data.setCell($m, 0, '$A7[$m]');\n";
-//   $cout7 .= "      data.setCell($m, 1, $B7[$m]);\n";
-//   $cout7 .= "      data.setCell($m, 2, $BB[$m]);\n";
-// }
-// $marital = array_remove_empty($marital); $Y58 = implode(', ', $Y58);
-// $marital = array_count_values($marital); ksort($marital);
-// $Z8 = array_sum($marital); $A8 = array_keys($marital); $B8 = array_values($marital); $C8 = count($marital);
-// $cout8 = "";
-// $cout8 .= "      data.addRows($C8);\n";
-// for ($m=0; $m < $C8; $m++) {
-//   $BB[$m] = number_format(($B8[$m]/$Z8)*100, 2);
-//   $m1 = $m+1; $m2 = $m1+1;
-//   $cout8 .= "      data.setCell($m, 0, '$A8[$m]');\n";
-//   $cout8 .= "      data.setCell($m, 1, $B8[$m]);\n";
-//   $cout8 .= "      data.setCell($m, 2, $BB[$m]);\n";
-// }
-// $residence = array_remove_empty($residence); $Y9 = implode(', ', $Y9);
-// $residence = array_count_values($residence); arsort($residence);
-// $Z9 = array_sum($residence); $A9 = array_keys($residence); $B9 = array_values($residence); $C9 = count($residence);
-// $cout9 = "";
-// $cout9 .= "      data.addRows($C9);\n";
-// for ($m=0; $m < $C9; $m++) {
-//   $BB[$m] = number_format(($B9[$m]/$Z9)*100, 2);
-//   $m1 = $m+1; $m2 = $m1+1;
-//   $cout9 .= "      data.setCell($m, 0, '$A9[$m]');\n";
-//   $cout9 .= "      data.setCell($m, 1, $B9[$m]);\n";
-//   $cout9 .= "      data.setCell($m, 2, $BB[$m]);\n";
-// }
+$A9A = checkingQuestion($mn2["6"], $ee);
+$A9B = getResultHTML($A9A, $RDsuccess, $mn2["6"]);
+$A9C = getResultJS($A9A, $RDsuccess, "1", $mn2["6"]);
 
 ?>
 
   </div>
   <div id="second" class="tab-pane fade">
+
 <?php
 print_r($A1B);
 print_r($A2B);
+$missing = array_merge($A1A["2"], $A2A["2"], $A3A["2"], $A4A["2"], $A5A["2"], $A6A["2"], $A7A["2"], $A8A["2"], $A9A["2"]);
+print_r(getMissingTable($missing));
 ?>
+
   </div>
   <div id="third" class="tab-pane fade">
+
 <?php
 print_r($A3B);
 print_r($A4B);
@@ -871,7 +675,6 @@ echo "      <textarea class=\"editing form-control\" readonly></textarea>\n";
 echo "      <div class=\"table rendered\"><table class=\"table\"></table></div>\n";
 echo "      <span class=\"tablenotice\">You may need to scroll right if there are many columns <i class=\"pe-hand-o-right\"></i></span>\n";
 echo "    </div>\n";
-
 ?>
 
   </div>
@@ -1096,66 +899,67 @@ echo "    </div>\n";
   });
 
   google.charts.load('current', {'packages': ['corechart', 'orgchart', 'gauge', 'table'] });
-  if (private) { google.charts.setOnLoadCallback(drawOrgChart1); } else { google.charts.setOnLoadCallback(drawOrgChart2); }
-  google.charts.setOnLoadCallback(drawGaugeChart1);
-  google.charts.setOnLoadCallback(drawGaugeChart2);
+  if (private) {
+    google.charts.setOnLoadCallback(drawOrgChart1);
+    function drawOrgChart1() {
+      var chart = new google.visualization.OrgChart(document.getElementById('orgchart1'));
+      var dataTable = new google.visualization.DataTable();
+      dataTable.addColumn('string', 'Status');
+      dataTable.addColumn('string', 'Sample');
+      dataTable.addColumn('string', 'ToolTip');
+      dataTable.addRows([
+        <?php echo "[{ v:'Invited', f:'<div class=\"small\">Invited</div><div style=\"font-size:1.5rem\">n=".$invited_format."</div>$invited_bar' }, '', 'Those who have been invited' ],\n"; ?>
+        <?php echo "[{ v:'Participated', f:'<div class=\"small\">Participated</div><div style=\"font-size:1.5rem\">n=".$participated_format."</div>$participated_bar' }, 'Invited', 'Those who have participated in this project' ],\n"; ?>
+        <?php echo "[{ v:'Not participated', f:'<div class=\"small\">Not participated</div><div style=\"font-size:1.5rem\">n=".$notparticipated_format."</div>$notparticipated_bar' }, 'Invited', 'Those who have not participated in this study' ],\n"; ?>
+        <?php echo "[{ v:'Valid', f:'<div class=\"small\">Valid</div><div style=\"font-size:1.5rem\">n=".$valid_format."</div>$valid_bar' }, 'Participated', 'Those who have completed and results are valid' ],\n"; ?>
+        <?php echo "[{ v:'Invalid', f:'<div class=\"small\">Invalid</div><div style=\"font-size:1.5rem\">n=".$invalid_format."</div>$invalid_bar' }, 'Participated', 'Those who have completed but results are invalid' ],\n"; ?>
+      ]);
+      dataTable.setRowProperty(3, 'style', 'background: #d9edf7; border: 3px solid #31708f');
+      var options = { allowHtml: true, nodeClass: "nodeClass", selectedNodeClass: "selectedNodeClass", size: "large" };
+      chart.draw(dataTable, options);
+    }
+    google.charts.setOnLoadCallback(drawGaugeChart1);
+    function drawGaugeChart1() {
+      var chart = new google.visualization.Gauge(document.getElementById('gauge1'));
+      var dataTable = new google.visualization.DataTable();
+      dataTable.addColumn('number', 'Strike rate');
+      dataTable.addRows(1);
+      dataTable.setCell(0, 0, <?php echo $strikerate; ?>);
+      var options = { width: 120, height: 400, redFrom: 0, redTo: 10, yellowFrom:10, yellowTo: 30, greenFrom:30, greenTo: 100, minorTicks: 5 };
+      chart.draw(dataTable, options);
+    }
+
+    google.charts.setOnLoadCallback(drawGaugeChart2);
+    function drawGaugeChart2() {
+      var chart = new google.visualization.Gauge(document.getElementById('gauge2'));
+      var dataTable = new google.visualization.DataTable();
+      dataTable.addColumn('number', 'Success rate');
+      dataTable.addRows(1);
+      dataTable.setCell(0, 0, <?php echo $successrate; ?>);
+      var options = { width: 120, height: 400, redFrom: 0, redTo: 10, yellowFrom:10, yellowTo: 30, greenFrom:30, greenTo: 100, minorTicks: 5 };
+      chart.draw(dataTable, options);
+    }
+  } else {
+    google.charts.setOnLoadCallback(drawOrgChart2);
+    function drawOrgChart2() {
+      var chart = new google.visualization.OrgChart(document.getElementById('orgchart2'));
+      var dataTable = new google.visualization.DataTable();
+      dataTable.addColumn('string', 'Status');
+      dataTable.addColumn('string', 'Sample');
+      dataTable.addColumn('string', 'ToolTip');
+      dataTable.addRows([
+        <?php echo "[{ v:'Total', f:'<div class=\"small\">Total</div><div style=\"font-size:1.5rem\">n=".$RDall."</div>' }, '', 'Total interviews so far' ],\n"; ?>
+        <?php echo "[{ v:'Pilot', f:'<div class=\"small\">Pilot</div><div style=\"font-size:1.5rem\">n=".$RDpilot."</div>$RDpilot_bar' }, 'Total', 'Pilot interviews' ],\n"; ?>
+        <?php echo "[{ v:'Terminated', f:'<div class=\"small\">Terminated</div><div style=\"font-size:1.5rem\">n=".$RDterminated."</div>$RDterminated_bar' }, 'Total', 'Terminated interviews' ],\n"; ?>
+        <?php echo "[{ v:'Successful', f:'<div class=\"small\">Successful</div><div style=\"font-size:1.5rem\">n=".$RDsuccess."</div>$RDsuccess_bar' }, 'Total', 'Successful interviews' ],\n"; ?>
+      ]);
+      dataTable.setRowProperty(3, 'style', 'background: #d9edf7; border: 3px solid #31708f');
+      var options = { allowHtml: true, nodeClass: "nodeClass", selectedNodeClass: "selectedNodeClass", size: "large" };
+      chart.draw(dataTable, options);
+    }
+  }
+
   google.charts.setOnLoadCallback(drawAreaChart);
-
-  function drawOrgChart1() {
-    var chart = new google.visualization.OrgChart(document.getElementById('orgchart1'));
-    var dataTable = new google.visualization.DataTable();
-    dataTable.addColumn('string', 'Status');
-    dataTable.addColumn('string', 'Sample');
-    dataTable.addColumn('string', 'ToolTip');
-    dataTable.addRows([
-      <?php echo "[{ v:'Invited', f:'<div class=\"small\">Invited</div><div style=\"font-size:1.5rem\">n=".$invited_format."</div>$invited_bar' }, '', 'Those who have been invited' ],\n"; ?>
-      <?php echo "[{ v:'Participated', f:'<div class=\"small\">Participated</div><div style=\"font-size:1.5rem\">n=".$participated_format."</div>$participated_bar' }, 'Invited', 'Those who have participated in this project' ],\n"; ?>
-      <?php echo "[{ v:'Not participated', f:'<div class=\"small\">Not participated</div><div style=\"font-size:1.5rem\">n=".$notparticipated_format."</div>$notparticipated_bar' }, 'Invited', 'Those who have not participated in this study' ],\n"; ?>
-      <?php echo "[{ v:'Valid', f:'<div class=\"small\">Valid</div><div style=\"font-size:1.5rem\">n=".$valid_format."</div>$valid_bar' }, 'Participated', 'Those who have completed and results are valid' ],\n"; ?>
-      <?php echo "[{ v:'Invalid', f:'<div class=\"small\">Invalid</div><div style=\"font-size:1.5rem\">n=".$invalid_format."</div>$invalid_bar' }, 'Participated', 'Those who have completed but results are invalid' ],\n"; ?>
-    ]);
-    dataTable.setRowProperty(3, 'style', 'background: #d9edf7; border: 3px solid #31708f');
-    var options = { allowHtml: true, nodeClass: "nodeClass", selectedNodeClass: "selectedNodeClass", size: "large" };
-    chart.draw(dataTable, options);
-  }
-
-  function drawOrgChart2() {
-    var chart = new google.visualization.OrgChart(document.getElementById('orgchart2'));
-    var dataTable = new google.visualization.DataTable();
-    dataTable.addColumn('string', 'Status');
-    dataTable.addColumn('string', 'Sample');
-    dataTable.addColumn('string', 'ToolTip');
-    dataTable.addRows([
-      <?php echo "[{ v:'Total', f:'<div class=\"small\">Total</div><div style=\"font-size:1.5rem\">n=".$RDall."</div>' }, '', 'Total interviews so far' ],\n"; ?>
-      <?php echo "[{ v:'Pilot', f:'<div class=\"small\">Pilot</div><div style=\"font-size:1.5rem\">n=".$RDpilot."</div>$RDpilot_bar' }, 'Total', 'Pilot interviews' ],\n"; ?>
-      <?php echo "[{ v:'Terminated', f:'<div class=\"small\">Terminated</div><div style=\"font-size:1.5rem\">n=".$RDterminated."</div>$RDterminated_bar' }, 'Total', 'Terminated interviews' ],\n"; ?>
-      <?php echo "[{ v:'Successful', f:'<div class=\"small\">Successful</div><div style=\"font-size:1.5rem\">n=".$RDsuccess."</div>$RDsuccess_bar' }, 'Total', 'Successful interviews' ],\n"; ?>
-    ]);
-    dataTable.setRowProperty(3, 'style', 'background: #d9edf7; border: 3px solid #31708f');
-    var options = { allowHtml: true, nodeClass: "nodeClass", selectedNodeClass: "selectedNodeClass", size: "large" };
-    chart.draw(dataTable, options);
-  }
-
-  function drawGaugeChart1() {
-    var chart = new google.visualization.Gauge(document.getElementById('gauge1'));
-    var dataTable = new google.visualization.DataTable();
-    dataTable.addColumn('number', 'Strike rate');
-    dataTable.addRows(1);
-    dataTable.setCell(0, 0, <?php echo $strikerate; ?>);
-    var options = { width: 120, height: 400, redFrom: 0, redTo: 10, yellowFrom:10, yellowTo: 30, greenFrom:30, greenTo: 100, minorTicks: 5 };
-    chart.draw(dataTable, options);
-  }
-
-  function drawGaugeChart2() {
-    var chart = new google.visualization.Gauge(document.getElementById('gauge2'));
-    var dataTable = new google.visualization.DataTable();
-    dataTable.addColumn('number', 'Success rate');
-    dataTable.addRows(1);
-    dataTable.setCell(0, 0, <?php echo $successrate; ?>);
-    var options = { width: 120, height: 400, redFrom: 0, redTo: 10, yellowFrom:10, yellowTo: 30, greenFrom:30, greenTo: 100, minorTicks: 5 };
-    chart.draw(dataTable, options);
-  }
-
   function drawAreaChart() {
     var container = document.getElementById('areachart');
     var chart = new google.visualization.AreaChart(container);
@@ -1292,10 +1096,10 @@ print_r($A9C["0"]);
     counter++;
   });
 
-  var counter1 = 0, counter1z = counter1 + 1;
+  var counter1 = 0, counter1z = counter1 + 1, counter1zz = counter1z + 1;
   if (typeof(monitor.QC) === 'undefined') {
     var QCrow1 = "              <tr>\n" +
-      "                <td></td><td colspan=\"2\"><small><strong><br>No data.</strong><br>Click button below to add one.</small></td>\n" +
+      // "                <td></td><td colspan=\"2\"><small><strong><br>No data.</strong><br>Click button below to add one.</small></td>\n" +
       "              </tr>\n";
     $('#tableQC').find('tbody').append(QCrow1);
   } else {

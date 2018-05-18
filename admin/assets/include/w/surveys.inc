@@ -49,7 +49,7 @@ $userlist .= "    ]";
         <li data-bind="css: { active: showActive() == 'B' }"><a data-bind="click: loadB" style="cursor: pointer"><i class="pe-hourglass-half pe-fw"></i> <?php echo $titleB; ?></a></li>
         <li data-bind="css: { active: showActive() == 'C' }"><a data-bind="click: loadC" style="cursor: pointer"><i class="pe-hourglass-end pe-fw"></i> <?php echo $titleC; ?></a></li>
         <li data-bind="css: { active: showActive() == 'D' }"><a data-bind="click: loadD" style="cursor: pointer"><i class="pe-archive pe-fw"></i> <?php echo $titleD; ?></a></li>
-<?php if ($_SESSION['level'] >= 6) { ?>
+<?php if ($_SESSION['level'] == 9) { ?>
         <li data-bind="css: { active: showActive() == 'E' }"><a data-bind="click: loadE" style="cursor: pointer"><i class="pe-trash pe-fw"></i> <?php echo $titleE; ?></a></li>
 <?php } ?>
       </ul>
@@ -60,7 +60,7 @@ $userlist .= "    ]";
     <p data-bind="visible: showActive() == 'B'" class="text-muted"><?php echo $detailsB; ?></p>
     <p data-bind="visible: showActive() == 'C'" class="text-muted"><?php echo $detailsC; ?></p>
     <p data-bind="visible: showActive() == 'D'" class="text-muted"><?php echo $detailsD; ?></p>
-<?php if ($_SESSION['level'] >= 6) { ?>
+<?php if ($_SESSION['level'] == 9) { ?>
     <p data-bind="visible: showActive() == 'E'" class="text-muted"><?php echo $detailsE; ?></p>
 <?php } ?>
   </div>
@@ -68,7 +68,7 @@ $userlist .= "    ]";
 <?php } ?>
 
 <div class="rows">
-  <?php if ($_SESSION['level'] >= "5") { ?>
+  <?php if ($_SESSION['level'] >= "2") { ?>
   <div class="col-sm-12" style="text-align:right">
     <p class="pull-right"><a href="" class="btn btn-success" data-bind="click: function() { showDialog(true) }, visible: showActive() == 'A', enable: !showDialog()"><i class="pe-cube pe-fw"></i> New project</a></p>
   </div>
@@ -121,7 +121,7 @@ $userlist .= "    ]";
         <a class="btn btn-tiny pull-right disabled" data-bind="click: $parent.undelete, visible: $parent.showActive() == 'E', css: { 'disabled': !owner }" title="Undelete this project">Undelete <i class="pe-undo"></i></a>
       </div>
 
-<?php if ($_SESSION['level'] >= "5") { ?>
+<?php if ($_SESSION['level'] >= "2") { ?>
       <div class="projects-footer" data-bind="visible: showInfo()">
         <table class="table">
           <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-showinfo': showInfo() }">
@@ -144,7 +144,7 @@ $userlist .= "    ]";
             <td style="border-top: none">Owner <a data-bind="if: canedit, click: $parent.startEditOwner, visible: $parent.showActive() == 'A' && !isEditingOwner()" title="Change project owner"> <i class="pe-edit"></i></a><a data-bind="click: $parent.cancelEditOwner, visible: isEditingOwner()"><i class="pe-times-circle-o"></i></a></td>
             <td style="border-top: none" colspan="2">
               <span data-bind="visible: !isEditingOwner()"><strong><span data-bind="text: fullname"></span></strong> (<span data-bind="text: email, visible: !isEditingOwner()"></span>)</span>
-              <span data-bind="visible: isEditingOwner()"><div class="col-sm-6" style="padding:0px"><select data-bind="options: ulist, optionsText: '<?php if ($_SESSION['level'] == "9") { ?>list1<?php } else { ?>list2<?php }?>', optionsValue: userid, value: selectedUser, event: { change: $parent.changingowner }" class="form-control input-sm"></select></div></span>
+              <span data-bind="visible: isEditingOwner()"><div class="col-sm-6" style="padding:0px"><select data-bind="options: ulist, optionsText: '<?php if (($_SESSION['level'] == "9") || ($_SESSION['level'] == "4")) { ?>list1<?php } else { ?>list2<?php }?>', optionsValue: userid, value: selectedUser, event: { change: $parent.changingowner }" class="form-control input-sm"></select></div></span>
             </td>
           </tr>
           <tr data-bind="visible: showInfo, css: { 'bg-blue': owner , 'bg-showinfo': showInfo() }">
@@ -699,8 +699,8 @@ $userlist .= "    ]";
     this.createSurveyObject = function(data) {
       var canedit = false; var owner = false; var admin = false;
       if (userid == data.userid) { owner = true; }
-      if (level == 9) { canedit = true; admin = true; } else if (level == 6) { canedit = true; }
-      else if (level == 5) { if (owner == true) { canedit = true; } } else if (level == 4) { canedit = false; }
+      if (level == 9) { canedit = true; admin = true; } else if (level == 4) { canedit = true; }
+      else if (level == 3) { if (owner == true) { canedit = true; } } else if (level == 2) { canedit = false; }
       moment.locale('en');
       var s1 = moment(data.created).fromNow(); var s2 = moment(data.created).format("D MMM YYYY"); created = s2 + ' (' + s1 + ')';
       var t1 = moment(data.updated).fromNow(); var t2 = moment(data.updated).format("D MMM YYYY"); updated = t2 + ' (' + t1 + ')';

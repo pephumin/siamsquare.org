@@ -30,7 +30,7 @@ $q1 = $db->prepare("SELECT C.*,
                     (SELECT COUNT(*) FROM j_projects AS P WHERE P.companyid = C.id) AS nProjects,
                     (SELECT COUNT(*) FROM j_projects AS P WHERE P.companyid = C.id AND P.status IN (1,2,3)) AS nProjectActives,
                     (SELECT COUNT(*) FROM j_projects AS P WHERE P.companyid = C.id AND P.status IN (4,0)) AS nProjectInactives,
-                    (SELECT COUNT(*) FROM j_board AS B WHERE B.companyid = C.id) AS nBoards
+                    (SELECT COUNT(*) FROM j_support AS B WHERE B.companyid = C.id) AS nBoards
                   FROM j_companies AS C ORDER BY C.id DESC");
 $q1->execute();
 $countcompany = $q1->rowCount();
@@ -348,7 +348,7 @@ while ($row = $q1->fetchObject()) {
   $mm1 .= "      </div>\n";
   $mm1 .= "      <div id=\"4-$companyid\" class=\"tab-pane fade\" style=\"padding:20px;\">\n";
   // Get message list
-  $q4 = $db->prepare("SELECT B.*, U.fullname, U.email FROM j_board B, j_users U WHERE B.userid = U.id AND B.companyid = :companyid ORDER BY B.created DESC");
+  $q4 = $db->prepare("SELECT B.*, U.fullname, U.email FROM j_support B, j_users U WHERE B.userid = U.id AND B.companyid = :companyid ORDER BY B.created DESC");
   $q4->bindValue(':companyid', $companyid, PDO::PARAM_INT);
   $q4->execute();
   $mm1 .= "      <div class=\"pull-right\"><a class=\"btn btn-success btn-sm\" data-toggle=\"modal\" data-target=\"#addingmessage\"><i class=\"pe-plus-circle pe-lg pe-fw\"></i> Post a new message</a></div>\n";
@@ -572,7 +572,7 @@ if ($_POST['addingcompany'] == 1) {
     $q5B->bindValue(':level', '6', PDO::PARAM_INT);
     $q5B->execute();
     // Post a new welcome message on the board
-    $q5C = $db->prepare("INSERT INTO j_board (head, body, userid, companyid) VALUES (:head, :body, :userid, :companyid)");
+    $q5C = $db->prepare("INSERT INTO j_support (head, body, userid, companyid) VALUES (:head, :body, :userid, :companyid)");
     $q5C->bindValue(':head', 'Welcome to your message board', PDO::PARAM_STR);
     $q5C->bindValue(':body', $_POST['body'], PDO::PARAM_STR);
     $q5C->bindValue(':userid', '000002', PDO::PARAM_INT);

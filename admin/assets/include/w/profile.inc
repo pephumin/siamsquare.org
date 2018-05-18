@@ -75,7 +75,7 @@ if ($_GET["m"] == "tips") {
       <div id="one" class="tab-pane in active fade">
 <?php if ($_SESSION["avatar"] != "00") { echo "        <p id=\"avatar1\" class=\"pull-right\"><img src=\"assets/img/u/" . $_SESSION["avatar"] . ".svg\" class=\"img-circle members-photo\" alt=\"Avatar\"></p>\n"; } else { echo "        <p id=\"avatar1\" class=\"pull-right\"></p>\n"; } ?>
         <h4>Welcome to your profile page</h4>
-        <p>Below shows the summary of your profile in a <em>read-only</em> mode.</p>
+        <p>Below shows the summary of your profile in a <em>read-only</em> mode. You can update your profile and change your password by clicking the next two tabs respectively.</p>
         <br>
         <table class="table">
           <tr>
@@ -86,7 +86,7 @@ if ($_GET["m"] == "tips") {
                 <span class="input-group-addon"><i class="pe-user pe-fw"></i></span>
                 <input type="text" name="fullname" class="form-control" value="<?php echo $_SESSION["fullname"]; ?>" onclick="this.select()" readonly>
               </div>
-              <span class="text-muted small"><small>Can be changed by each User (profile setting) or Manager (team member setting)</small></span>
+              <span class="text-muted small"><small>Your fullname including first name and surname</small></span>
             </td>
           </tr>
           <tr>
@@ -97,7 +97,7 @@ if ($_GET["m"] == "tips") {
                 <span class="input-group-addon"><i class="pe-envelope pe-fw"></i></span>
                 <input type="email" name="email" class="form-control" value="<?php echo $_SESSION["email"]; ?>" onclick="this.select()" readonly>
               </div>
-              <span class="text-muted small"><small>Contact us if you want to change this information</small></span>
+              <span class="text-muted small"><small>Email used for your registration (contact us if you want to change)</small></span>
             </td>
           </tr>
           <tr>
@@ -108,7 +108,7 @@ if ($_GET["m"] == "tips") {
                 <span class="input-group-addon"><i class="pe-mobile pe-fw"></i></span>
                 <input type="text" name="mobile" class="form-control" value="<?php echo $_SESSION["mobile"]; // $mm = implode("-", str_split($_SESSION["mobile"], 3)); echo $mm; ?>" onclick="this.select()" readonly>
               </div>
-              <span class="text-muted small"><small>Your mobile number that was registered with your system</small></span>
+              <span class="text-muted small"><small>Mobile number, enter without any spaces or symbols</small></span>
             </td>
           </tr>
           <tr>
@@ -119,9 +119,10 @@ if ($_GET["m"] == "tips") {
                 <span class="input-group-addon"><i class="pe-building pe-fw"></i></span>
                 <input type="text" name="tax" class="form-control" value="<?php if ($_SESSION["tax"]) { echo $_SESSION["tax"]; } else { echo "N/A"; } ?>" onclick="this.select()" readonly>
               </div>
-              <span class="text-muted small"><small>Your ID card to be used only for taxation purpose</small></span>
+              <span class="text-muted small"><small>Your ID card number for taxation only, enter without any spaces or symbols</small></span>
             </td>
           </tr>
+<?php if ($_SESSION["cfullname"] || $_SESSION["cfullname_th"]) { ?>
           <tr>
             <td width="25%" style="text-align:right">Company</td>
             <td width="5%"></td>
@@ -138,6 +139,7 @@ if ($_GET["m"] == "tips") {
               <span class="text-muted small"><small>Can be changed only by Manager (company setting)</small></span>
             </td>
           </tr>
+<?php } ?>
           <tr>
             <td width="25%" style="text-align:right">Role</td>
             <td width="5%"></td>
@@ -146,7 +148,7 @@ if ($_GET["m"] == "tips") {
                 <span class="input-group-addon"><i class="pe-flag pe-fw"></i></span>
                 <input type="text" name="role" class="form-control" value="<?php echo $_SESSION["role"]; ?>" onclick="this.select()" readonly>
               </div>
-              <span class="text-muted small"><small>Can be changed only by Manager (team member setting)</small></span>
+              <span class="text-muted small"><small>Can only be changed by Admin</small></span>
             </td>
           </tr>
           <tr>
@@ -155,7 +157,7 @@ if ($_GET["m"] == "tips") {
             <td width="70%">
               <div class="input-group">
                 <span class="input-group-addon"><i class="pe-calendar pe-fw"></i></span>
-                <input type="text" name="created" class="form-control" value="<?php echo shortdate($_SESSION["created"]); ?> (<?php echo ago($_SESSION["created"]); ?>)" onclick="this.select()" readonly>
+                <input type="text" name="created" class="form-control" value="<?php echo shortdate($_SESSION["created"]); ?>" onclick="this.select()" readonly>
               </div>
               <span class="text-muted small"><small>Cannot be changed</small></span>
             </td>
@@ -188,7 +190,7 @@ if ($_GET["m"] == "tips") {
                   <span class="input-group-addon"><i class="pe-mobile pe-fw"></i></span>
                   <input type="text" name="mobile" class="form-control" placeholder="0814447777" value="<?php echo $_SESSION["mobile"]; ?>">
                 </div>
-                <span class="text-muted small"><small>Please entetr contactable mobile number following the example format</small></span>
+                <span class="text-muted small"><small>Your mobile number, enter without any spaces or symbols</small></span>
               </td>
             </tr>
             <tr>
@@ -199,7 +201,7 @@ if ($_GET["m"] == "tips") {
                   <span class="input-group-addon"><i class="pe-building pe-fw"></i></span>
                   <input type="text" name="tax" class="form-control" placeholder="0000000000000" value="<?php echo $_SESSION["tax"]; ?>">
                 </div>
-                <span class="text-muted small"><small>Your ID card to be used only for taxation purpose</small></span>
+                <span class="text-muted small"><small>Your ID card number, enter without any spaces or symbols</small></span>
               </td>
             </tr>
             <tr>

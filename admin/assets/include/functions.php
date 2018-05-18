@@ -1,9 +1,9 @@
 <?php
 
-function array_remove_empty($arr) {
+function array_remove_empty($arr, $recursive = "yes") {
   $narr = array();
   while (list($key, $val) = each($arr)) {
-    if (is_array($val)) { $val = array_remove_empty($val); if (count($val) != 0) { $narr[$key] = $val; } }
+    if (is_array($val)) { if ($recursive == "yes") { $val = array_remove_empty($val); } if (count($val) != 0) { $narr[$key] = $val; } }
     else { if (trim($val) != "") { $narr[$key] = $val; } }
   }
   unset($arr);
@@ -229,6 +229,7 @@ function iconize($data) {
   else if (preg_match("/edited the company info/i", $data)) { $insert = "<i class=\"pe-edit pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/changed the company logo/i", $data)) { $insert = "<i class=\"pe-photo pe-fw\"></i> &nbsp; "; }
   else if (preg_match("/removed the company logo/i", $data)) { $insert = "<i class=\"pe-photo pe-fw\"></i> &nbsp; "; }
+  else if (preg_match("/fixed terminated respondents/i", $data)) { $insert = "<i class=\"pe-check-circle pe-fw\"></i> &nbsp; "; }
   else { $insert = ""; }
   if ($insert) { $data = $insert." ".$data; } else { $data = $data; }
   return $data;
@@ -269,22 +270,22 @@ function fullmonth($month, $format = "long") {
   return $month;
 }
 
-function role($level, $icon = false) {
-  if ($icon == true) {
-    if ($level == 9) { $role = "<i class='pe-flag-checkered pe-fw'></i> Administrator"; }
-    else if ($level == 8) { $role = "<i class='pe-flag pe-fw'></i> System"; }
-    else if ($level == 6) { $role = "<i class='pe-user-secret pe-fw'></i> Manager"; }
-    else if ($level == 5) { $role = "<i class='pe-user pe-fw'></i> User"; }
-    else if ($level == 4) { $role = "<i class='pe-user-md pe-fw'></i> Guest"; }
-  } else {
-    if ($level == 9) { $role = "Administrator"; }
-    else if ($level == 8) { $role = "System"; }
-    else if ($level == 6) { $role = "Manager"; }
-    else if ($level == 5) { $role = "User"; }
-    else if ($level == 4) { $role = "Guest"; }
-  }
-  return $role;
-}
+// function role($level, $icon = false) {
+//   if ($icon == true) {
+//     if ($level == 9) { $role = "<i class='pe-flag-checkered pe-fw'></i> Administrator"; }
+//     else if ($level == 8) { $role = "<i class='pe-flag pe-fw'></i> System"; }
+//     else if ($level == 6) { $role = "<i class='pe-user-secret pe-fw'></i> Manager"; }
+//     else if ($level == 5) { $role = "<i class='pe-user pe-fw'></i> User"; }
+//     else if ($level == 4) { $role = "<i class='pe-user-md pe-fw'></i> Guest"; }
+//   } else {
+//     if ($level == 9) { $role = "Administrator"; }
+//     else if ($level == 8) { $role = "System"; }
+//     else if ($level == 6) { $role = "Manager"; }
+//     else if ($level == 5) { $role = "User"; }
+//     else if ($level == 4) { $role = "Guest"; }
+//   }
+//   return $role;
+// }
 
 function is_admin() {
   if (($_SESSION['logged_in'] == 1) && ($_SESSION['level'] == 9)) { return true; }
