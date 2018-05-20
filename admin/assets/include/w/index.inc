@@ -204,6 +204,7 @@ function getWho($surveyid) {
 
 function getStats($surveyid) {
   global $db;
+  // $sample_size = 500;
   $q3 = $db->prepare("SELECT SUM(R.status='2') AS q2B1, SUM(R.status='1') AS q2B2, SUM(R.status='0') AS q2B3, P.id, P.title, P.sample, P.status, P.created, P.L1, P.L2, P.L3 FROM j_results R, j_projects P WHERE R.surveyid = P.id AND R.surveyid = :surveyid ");
   $q3->bindValue(':surveyid', $surveyid, PDO::PARAM_INT);
   $q3->execute();
@@ -255,10 +256,19 @@ function getStats($surveyid) {
       $insert1 .= "<br><div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork ($fieldworktiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork</strong></h4></div>\n";
       $insert2 .= "<div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Target sample</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$sample_size</strong></h4></div>\n";
       if ($RDsuccess) {
-        if ($RDsuccess == $sample_size) { $nn = " <i class=\"pe-check-circle-o pe-lg green\"></i>"; $ss1 = "bg-default"; $ss2 = ""; } else if ($RDsuccess > $sample_size) { $nn = " <i class=\"pe-check-circle-o pe-lg orange\"></i>"; $ss1 = "bg-warning"; $ss2 = ""; } else { $nn = ""; $ss1 = "bg-info"; $ss2 = "bg-primary"; }
-        $insert2 .= "<br><div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">So far</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$RDsuccess$nn</strong></h4></div>\n";
-        $insert2 .= "<br><div class=\"$ss1 text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Progression</p><h4 style=\"margin-bottom:10px !important\"><strong>$RDsuccess_percent</strong></h4></div><br>\n";
-        $insert1 .= "<br><div class=\"$ss2 text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Expected to end in</p><h4 style=\"margin-bottom:10px !important\"><strong>$stilltodo days</strong></h4></div>\n";
+        if ($RDsuccess == $sample_size) {
+          $insert2 .= "<br><div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">So far</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$RDsuccess <i class=\"pe-check-circle-o pe-lg green\"></i></strong></h4></div>\n";
+          $insert2 .= "<br><div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Progression</p><h4 style=\"margin-bottom:10px !important\"><strong>$RDsuccess_percent</strong></h4></div><br>\n";
+          $insert1 .= "<br><div class=\"text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Expected to end in</p><h4 style=\"margin-bottom:10px !important\"><strong>$stilltodo days</strong></h4></div>\n";
+        } else if ($RDsuccess > $sample_size) {
+          $insert2 .= "<br><div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">So far</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$RDsuccess <i class=\"pe-check-circle-o pe-lg orange\"></i></strong></h4></div>\n";
+          $insert2 .= "<br><div class=\"bg-warning text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Progression</p><h4 style=\"margin-bottom:10px !important\"><strong>$RDsuccess_percent</strong></h4></div><br>\n";
+          // $insert1 .= "<br><div class=\"text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Expected to end in</p><h4 style=\"margin-bottom:10px !important\"><strong>$stilltodo days</strong></h4></div>\n";
+        } else {
+          $insert2 .= "<br><div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">So far</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$RDsuccess</strong></h4></div>\n";
+          $insert2 .= "<br><div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Progression</p><h4 style=\"margin-bottom:10px !important\"><strong>$RDsuccess_percent</strong></h4></div><br>\n";
+          $insert1 .= "<br><div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Expected to end in</p><h4 style=\"margin-bottom:10px !important\"><strong>$stilltodo days</strong></h4></div>\n";
+        }
       }
       $menu = "    <a href=\"/r.php?s=$newsurveyid\" class=\"btn btn-tiny btn-success\">Live <i class=\"pe-plane\"></i></a>\n";
       $menu .= "    <a href=\"/admin/?w=progress&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-default\">Progress <i class=\"pe-flask\"></i></a>\n";
