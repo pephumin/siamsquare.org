@@ -582,6 +582,7 @@ $out .= "]";
   function tooltip() {
     survey.onAfterRenderQuestion.add(function(survey, options) {
       if (!options.question.tooltip) { return; }
+      // var header = options.getElementsByTagName("h5")[0];
       var header = options.htmlElement.querySelector("h5");
       header.title = options.question.tooltip;
       var span = document.createElement("span");
@@ -616,6 +617,7 @@ $out .= "]";
         choices.push(item);
         if (options.value.indexOf(item.value) >= 0) {
           newchoices = choices.splice(0, i+1);
+          newchoices.splice(-1, 1);
           if (key == "up") { output = choices; }
           else if (key == "down") { output = newchoices; }
         }
@@ -675,7 +677,7 @@ $out .= "]";
   if (optionsout.shuffle) { for (var i=0; i<optionsout.shuffle.length; i++) { var matrix = survey.getQuestionByName(optionsout.shuffle[i].questionname); shuffle(matrix.rows); } }
   if (optionsout.maketotal) { for (i=0; i<optionsout.maketotal.length; i++) { var makingtotal = survey.getQuestionByName(optionsout.maketotal[i].questionname); maketotal(makingtotal.name, makingtotal.itemsValues); } }
   if (optionsout.PSM) { for (var i=0; i<optionsout.PSM.length; i++) { PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].expensive, "up"); PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].tooexpensive, "up"); PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].toocheap, "down"); PSM(optionsout.PSM[i].expensive, optionsout.PSM[i].tooexpensive, "up"); } }
-  tooltip();
+  // tooltip();
   if (pincode) { pin(pincode); }
 
   survey.render("runsurvey");

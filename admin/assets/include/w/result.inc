@@ -51,7 +51,7 @@ for ($i = 0; $i < count($questions); $i++) {
       foreach ($choices as $k4 => $p4) {
         $choice_text = $p4['text']; $c_text[] = $p4['text'];
         $choice_code = $p4['value']; $c_code[] = $p4['value'];
-        $qout .= "        <div class=\"radio\" style=\"font-family:boon;font-size:120%\"><label><input type=\"radio\" name=\"radiogroup\" style=\"position:relative;margin-right:10px\" disabled>$choice_text ($choice_code)</label></div>\n";
+        $qout .= "        <div class=\"radio\" style=\"font-family:boon;font-size:120%\"><label style=\"display:inline\"><input type=\"radio\" name=\"radiogroup\" style=\"position:relative;margin-right:10px\" disabled>$choice_text ($choice_code)</label></div>\n";
       }
       $qout .= "      </ul>\n";
     }
@@ -60,7 +60,7 @@ for ($i = 0; $i < count($questions); $i++) {
       foreach ($choices as $k5 => $p5) {
         $choice_text = $p5['text']; $c_text[] = $p5['text'];
         $choice_code = $p5['value']; $c_code[] = $p5['value'];
-        $qout .= "        <div class=\"checkbox\" style=\"font-family:boon;font-size:120%\"><label><input type=\"checkbox\" style=\"position:relative;margin-right:10px\">$choice_text ($choice_code)</label></div>\n";
+        $qout .= "        <div class=\"checkbox\" style=\"font-family:boon;font-size:120%\"><label style=\"display:inline\"><input type=\"checkbox\" style=\"position:relative;margin-right:10px\">$choice_text ($choice_code)</label></div>\n";
       }
       $qout .= "      </ul>\n";
     }

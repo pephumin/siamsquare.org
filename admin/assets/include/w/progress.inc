@@ -244,13 +244,14 @@ while ($row = $q->fetchAll(PDO::FETCH_ASSOC)) {
   $ee = $row;
   for ($i=0; $i<count($ee); $i++) {
     $removeKeys = array('rd', 'email', 'ip', 'surveyid', 'status', 'interviewer');
-    foreach($removeKeys as $key) {
-      unset($ee[$i][$key]);
-    }
+    foreach($removeKeys as $key) { unset($ee[$i][$key]); }
+    // $ee[$i]['data'] = ksort($ee[$i]['data']);
     $ee[$i]['data'] = json_decode($ee[$i]['data'], true);
   }
 }
+ksort($ee);
 $datafortable = json_encode($ee);
+// print_r($ee);
 
 // pin error, hence "those who are terminated"
 $pinerror = 0;
@@ -338,12 +339,21 @@ $invalid_percent = percent($invalid / $invited);
 if ($invalid) { $invalid_bar = "<div class=\"progress progress-inbox\"><div class=\"progress-bar progress-bar-inbox progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$invalid_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width:2em; width:$invalid_percent\">$invalid_percent</div></div>"; } else { $invalid_bar = "<div class=\"progress progress-inbox\"></div>"; }
 $successrate = number_format(($valid / $participated) * 100, 1);
 
-$RDpilot_percent = percent($RDpilot/$sample_size); //print_r($RDpilot_percent);
-if ($RDpilot || $RDpilot == 0) { $RDpilot_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-warning progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDpilot_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDpilot_percent\">$RDpilot_percent</div></div>"; } else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
-$RDterminated_percent = percent($RDterminated/$sample_size); //print_r($RDterminated_percent);
-if ($RDterminated || $RDterminated == 0) { $RDterminated_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-danger progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDterminated_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDterminated_percent\">$RDterminated_percent</div></div>"; } else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
-$RDsuccess_percent = percent($RDsuccess/$sample_size); //print_r($RDsuccess_percent);
-if ($RDsuccess || $RDsuccess == 0) { $RDsuccess_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDsuccess_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDsuccess_percent\">$RDsuccess_percent</div></div>"; } else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
+if ($sample_size) {
+  $RDpilot_percent = percent($RDpilot/$sample_size); //print_r($RDpilot_percent);
+  if ($RDpilot || $RDpilot == 0) { $RDpilot_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-warning progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDpilot_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDpilot_percent\">$RDpilot_percent</div></div>"; } else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
+  $RDterminated_percent = percent($RDterminated/$sample_size); //print_r($RDterminated_percent);
+  if ($RDterminated || $RDterminated == 0) { $RDterminated_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-danger progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDterminated_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDterminated_percent\">$RDterminated_percent</div></div>"; } else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
+  $RDsuccess_percent = percent($RDsuccess/$sample_size); //print_r($RDsuccess_percent);
+  if ($RDsuccess || $RDsuccess == 0) { $RDsuccess_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDsuccess_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDsuccess_percent\">$RDsuccess_percent</div></div>"; } else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
+} else {
+  $RDpilot_percent = "";
+  if ($RDpilot || $RDpilot == 0) { $RDpilot_bar = ""; } else { $RDsuccess_bar = ""; }
+  $RDterminated_percent = "";
+  if ($RDterminated || $RDterminated == 0) { $RDterminated_bar = ""; } else { $RDsuccess_bar = ""; }
+  $RDsuccess_percent = "";
+  if ($RDsuccess || $RDsuccess == 0) { $RDsuccess_bar = ""; } else { $RDsuccess_bar = ""; }
+}
 
 // Contact sheet summary
 $showdc = false;
@@ -408,8 +418,10 @@ if ($private == 1) {
     $average = number_format($RDsuccess / $daysoffieldwork, 1);
     $togo = number_format(($sample_size - $RDsuccess) / $average, 1);
     $text .= "<p>Within a period of <strong>$daysoffieldwork</strong> of fieldwork, we have achieved a total of <strong>n=$RDsuccess</strong> successful interviews <small class=\"grey\">(an average of $average interviews per day)</small>.</p>\n";
-    $text .= "<p>From the required total sample of <strong>n=$sample_size</strong> we have so far achieved <strong>$RDsuccess_percent</strong>.</p>\n";
-    $text .= "<p>With this rate of progression, the data collection is estimated to end in <strong>$togo</strong> days.</p>\n";
+    if ($sample_size) {
+      $text .= "<p>From the required total sample of <strong>n=$sample_size</strong> we have so far achieved <strong>$RDsuccess_percent</strong>.</p>\n";
+      $text .= "<p>With this rate of progression, the data collection is estimated to end in <strong>$togo</strong> days.</p>\n";
+    }
   } else {
     $text .= "<p>Within a period of <strong>$daysoffieldwork</strong> of fieldwork, there is still no successful interviews to be seen at all.</p>\n";
     $text .= "<p>Please revisit this page again in the next day or so. If this page is not moving for many days, please contact us for support.</p>\n";
@@ -771,6 +783,33 @@ echo "    </div>\n";
     document.getElementById("rowhide" + rowIndex).style.display = show ? "" : "none";
     document.getElementById("rowshow" + rowIndex).style.display =  show ? "none" : "";
   }
+  function sortObject(object) {
+    var sortedObj = {}, keys = Object.keys(object);
+    keys.sort(function(key1, key2) {
+      key1 = key1.toLowerCase(), key2 = key2.toLowerCase();
+      if (key1 < key2) return -1;
+      if (key1 > key2) return 1;
+      return 0;
+    });
+    for (var index in keys) {
+      var key = keys[index];
+      if (typeof object[key] == 'object' && !(object[key] instanceof Array)) { sortedObj[key] = sortObject(object[key]); }
+      else { sortedObj[key] = object[key]; }
+    }
+    return sortedObj;
+  }
+  function getdatafortable(id) {
+    var result = "";
+    $.ajax({
+      url: api + '/result/datafortable/' + id ,
+      dataType: 'json',
+      type: 'get',
+      cache: false,
+      async: false,
+      success: function(data) { result = data; }
+    });
+    return result;
+  }
   function deleteSurveyResult(id) {
     $.ajax({
       url: api + '/delete/result/' + surveyid + '/' + id,
@@ -851,8 +890,8 @@ echo "    </div>\n";
   };
   $(document).ready(function () {
     var excerptRows = <?php echo $excerptRows; ?>;
-<?php if ($datafortable) { echo "    var tt = $datafortable\n"; } else { echo "    var tt = []\n"; } ?>
-<?php if ($datafortable) { echo "    var ttt = $datafortable\n"; } else { echo "    var ttt = []\n"; } ?>
+    var tt = getdatafortable(surveyid); var ttt = getdatafortable(surveyid);
+    // console.log(tt);
     for (var k in tt) {
       var o = tt[k];
       moment.locale('en');
@@ -870,10 +909,13 @@ echo "    </div>\n";
     var outArray1 = []; var outArray2 = [];
     for (var row in inArray1) { outArray1[outArray1.length] = parse_object(inArray1[row]); }
     for (var row in inArray2) { outArray2[outArray2.length] = parse_object(inArray2[row]); }
+    // console.log(sortObject(outArray2));
+    // outArray2.sort();
     // $(".excerpt").text("" + excerptRows);
     // $("span.rows.count").text("" + outArray1.length);
     // $("span.rows.count").text("" + outArray2.length);
     var csv1 = "\ufeff"+$.csv.fromObjects(outArray1); var csv2 = "\ufeff"+$.csv.fromObjects(outArray2);
+    // console.log(sortObject(csv2));
     renderCSV(outArray1.slice(0, excerptRows), this.id);
     showCSV(true);
     $(".csv textarea").val(csv2);
