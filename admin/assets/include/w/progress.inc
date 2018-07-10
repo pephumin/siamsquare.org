@@ -37,6 +37,8 @@ while ($row = $q1->fetchObject()) {
   $sample_size = $row->sample;
   $options = $row->options;
   $monitor = $row->QC;
+  $rr1 = json_decode($row->data, true);
+  $rr2 = $rr1['pages'];
   if ($row->pin) { $pinnumber = $row->pin; }
   if ($row->userid == $_SESSION['userid']) { $owner = 1; } else { $owner = 0; }
   if ($row->created) { $L0 = date_parse_from_format("Y-m-d H:i:s", $row->created); if ($L0['month'] == "01") { $L0['month'] = "12"; $L0['year'] = $L0['year']-1; } else { $L0['month'] = $L0['month']-1; } $created = ago($row->created); $LLL0 = $row->created; } else { $LL0 = "-"; }
@@ -92,43 +94,47 @@ if ($_POST['m'] == "fixerrors") {
   $redirect = $base."&m=1";
   header("location: $redirect");
   exit;
-} else if ($_POST['m'] == "updatesettings") {
+} else if (($_POST['m'] == "updatesettings") || isset($_POST["totalsamplebysubgroup"])) {
+  // print_r("<pre>");
   // print_r($_POST);
-  $add = "";
-  if (isset($_POST["totalsample"]) && ($_POST["totalsample"] != $sample_size)) { $add = ", sample = :sample"; } else { $add = ""; }
-  foreach ($_POST as $k => $v) { }
+  // print_r("</pre>");
+  $addtype = "0";
+  if (isset($_POST["totalsample"]) && ($_POST["totalsample"] != $sample_size)) { $add = "sample = :sample, "; $addtype = "1"; }
+  else if (isset($_POST["totalsamplebysubgroup"]) && ($_POST["totalsamplebysubgroup"] != $sample_size)) { $add = "sample = :sample, "; $addtype = "2"; }
+  else { $addtype = "0"; }
   foreach (array_keys($_POST) as $key) {
-    list($a, $b, $c) = split('_', $key);
-    if ($a == "quota") { $qqq[$b][] = $_POST[$key]; }
-    else if ($a == "QC") { $qqc[$b][] = $_POST[$key]; }
-    else if ($a == "monitor") { $qqd[$b][] = $_POST[$key]; }
-  }
-  // print_r();
-  $newquota = array_map(function ($quota, $subgroup, $samplesize) { return array('question' => $quota, 'details' => array('subgroup' => $subgroup, 'samplesize' => $samplesize)); }, $qqq["quota"], $qqq["subgroup"], $qqq["samplesize"]);
-  $newQC = array_map(function ($input) { return array('questionname' => $input); }, $qqc["questionname"]);
-  $newmonitor = array_map(function ($input) { return array('questionname' => $input); }, $qqd["questionname"]);
-  // print_r($newquota); print_r($newmonitor);
-  for ($i=0; $i<count($newquota); $i++) {
-    for ($j=0; $j<count($newquota[$i]["details"]["subgroup"]); $j++) {
-      $pB[] = array('subgroup' => $newquota[$i]["details"]["subgroup"][$j], 'samplesize' => $newquota[$i]["details"]["samplesize"][$j]);
+    if (substr($key, 0, 5) === "quota") {
+      list($a, $b, $c, $d) = split('_', $key);
+      $qq1[$b][$c][] = $_POST[$key];
+    } else {
+      list($x, $y, $z) = split('_', $key);
+      if ($x == "QC") { $qq2[$y][] = $_POST[$key]; }
+      else if ($x == "monitor") { $qq3[$y][] = $_POST[$key]; }
     }
-    $pC[] = array('question' => $newquota[$i]["question"], 'details' => array_splice($pB, 0));
   }
-  // print_r($pC);
+  for ($i=0; $i<count($qq1); $i++) {
+    $c1 = array_map(function ($m, $n) { return array('subgroup' => $m, 'samplesize' => $n); }, $qq1[$i]["subgroup"], $qq1[$i]["samplesize"]);
+    $qq1[$i]["details"] = $c1;
+    unset($qq1[$i]["subgroup"]);
+    unset($qq1[$i]["samplesize"]);
+  }
+  $newqq2 = array_map(function ($input) { return array('questionname' => $input); }, $qq2["questionname"]);
+  $newqq3 = array_map(function ($input) { return array('questionname' => $input); }, $qq3["questionname"]);
   $all = [];
-  array_push($all, $pC); $all["quota"] = $all["0"]; unset($all["0"]);
-  array_push($all, $newQC); $all["QC"] = $all["1"]; unset($all["1"]);
-  array_push($all, $newmonitor); $all["monitor"] = $all["2"]; unset($all["2"]);
-  // print_r($all);
+  array_push($all, $qq1); $all["quota"] = $all["0"]; unset($all["0"]);
+  array_push($all, $newqq2); $all["QC"] = $all["1"]; unset($all["1"]);
+  array_push($all, $newqq3); $all["monitor"] = $all["2"]; unset($all["2"]);
   $all = array_remove_empty($all);
   $json = json_encode($all, JSON_PRETTY_PRINT);
-  // print_r($json);
-  $query = "QC = :QC";
-  if ($add != "") { $query .= $query.$add; }
+  $query = "QC = :QC, ";
+  if (($addtype == "1") || ($addtype == "2")) { $query = $query.$add; }
+  $query = substr($query, 0, -2);
   $qG = $db->prepare("UPDATE j_projects SET ".$query." WHERE id = :surveyid");
   $qG->bindValue(':surveyid', $_POST["surveyid"], PDO::PARAM_INT);
   $qG->bindValue(':QC', $json, PDO::PARAM_STR);
-  if ($add != "") { $qG->bindValue(':sample', $_POST["totalsample"], PDO::PARAM_INT); }
+  if ($addtype == "1") { $qG->bindValue(':sample', $_POST["totalsample"], PDO::PARAM_INT); }
+  else if ($addtype == "2") { $qG->bindValue(':sample', $_POST["totalsamplebysubgroup"], PDO::PARAM_INT); }
+  // print_r($qG);
   $qG->execute();
   $redirect = $base."&m=2";
   header("location: $redirect");
@@ -198,16 +204,28 @@ echo "<br>\n";
 
 <nav>
   <ul class="nav nav-tabs">
+<?php if (($_GET["m"] == "2") || ($_GET["m"] == "3")) { ?>
+    <li><a href="#first" data-toggle="tab" id="first-tab-trigger"><i class="pe-flask pe-fw"></i> Progress</a></li>
+    <li><a href="#second" data-toggle="tab" id="second-tab-trigger"><i class="pe-check pe-fw"></i> Quality control</a></li>
+    <li><a href="#third" data-toggle="tab" id="third-tab-trigger"><i class="pe-desktop pe-fw"></i> Monitor</a></li>
+    <li><a href="#fourth" data-toggle="tab" id="fourth-tab-trigger"><i class="pe-table pe-fw"></i> Interim data</a></li>
+    <li class="active"><a href="#fifth" data-toggle="tab" id="fifth-tab-trigger"><i class="pe-wrench pe-fw"></i> Settings</a></li>
+<?php } else { ?>
     <li class="active"><a href="#first" data-toggle="tab" id="first-tab-trigger"><i class="pe-flask pe-fw"></i> Progress</a></li>
     <li><a href="#second" data-toggle="tab" id="second-tab-trigger"><i class="pe-check pe-fw"></i> Quality control</a></li>
     <li><a href="#third" data-toggle="tab" id="third-tab-trigger"><i class="pe-desktop pe-fw"></i> Monitor</a></li>
     <li><a href="#fourth" data-toggle="tab" id="fourth-tab-trigger"><i class="pe-table pe-fw"></i> Interim data</a></li>
     <li><a href="#fifth" data-toggle="tab" id="fifth-tab-trigger"><i class="pe-wrench pe-fw"></i> Settings</a></li>
+<?php } ?>
   </ul>
 </nav>
 <br>
 <div class="tab-content">
+<?php if (($_GET["m"] == "2") || ($_GET["m"] == "3")) { ?>
+  <div id="first" class="tab-pane fade">
+<?php } else { ?>
   <div id="first" class="tab-pane fade in active">
+<?php } ?>
 
 <?php
 // Data for area chart
@@ -231,7 +249,42 @@ else {
   }
 }
 $area .= "      ]";
-// print_r($area);
+
+
+
+// ----------------- QUESTIONS ----------------------
+
+for ($i=0; $i<count($rr2); $i++) { $rr3[] = $rr2[$i]['questions']; }
+$rr3 = call_user_func_array('array_merge', $rr3);
+$rr4 = $rr3;
+
+for ($i=0; $i<count($rr3); $i++) {
+  $moveKeys = array('hasOther', 'visibleIf', 'colCount');
+  foreach($moveKeys as $k1) {
+    $bb = $rr3[$i][$k1];
+    if ($bb) { unset($rr3[$i][$k1]); $rr3[$i][$k1] = $bb; }
+  }
+  $removeKeys = array('isRequired', 'visible', 'choicesOrder', 'placeHolder', 'renderAs', 'ratingTheme', 'showValues', 'cellType', 'itemSize');
+  foreach($removeKeys as $k2) { unset($rr3[$i][$k2]); }
+}
+
+for ($i=0; $i<count($rr4); $i++) {
+  $moveKeys = array('html', 'hasOther', 'visibleIf');
+  foreach($moveKeys as $k1) {
+    $bb = $rr4[$i][$k1];
+    if ($bb) { unset($rr4[$i][$k1]); $rr4[$i][$k1] = $bb; }
+  }
+  $removeKeys1 = array('isRequired', 'visible', 'choicesOrder', 'placeHolder', 'renderAs', 'ratingTheme', 'showValues', 'cellType', 'inputType', 'colCount', 'itemSize');
+  foreach($removeKeys1 as $rm1) {
+    unset($rr4[$i][$rm1]);
+  }
+  $removeKeys2 = array('cellType', 'optionsCaption');
+  foreach($removeKeys2 as $rm2) {
+    for ($j=0; $j<count($rr4[$i]['columns']); $j++) { unset($rr4[$i]['columns'][$j][$rm2]); }
+  }
+}
+
+// ----------------- RESULT ----------------------
 
 // data for showing the real-time results
 if ($status >= 2) { $sql3 = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 2 ORDER BY submitted DESC"; }
@@ -245,13 +298,34 @@ while ($row = $q->fetchAll(PDO::FETCH_ASSOC)) {
   for ($i=0; $i<count($ee); $i++) {
     $removeKeys = array('rd', 'email', 'ip', 'surveyid', 'status', 'interviewer');
     foreach($removeKeys as $key) { unset($ee[$i][$key]); }
-    // $ee[$i]['data'] = ksort($ee[$i]['data']);
     $ee[$i]['data'] = json_decode($ee[$i]['data'], true);
   }
 }
-ksort($ee);
-$datafortable = json_encode($ee);
+// ksort($ee);
+// $datafortable = json_encode($ee);
 // print_r($ee);
+
+// ----------------- COMBINING ----------------------
+
+for ($i=0; $i<count($rr4); $i++) { $rr5[] = $rr4[$i]["name"]; }
+
+$rr5 = array_flip($rr5);
+foreach ($rr5 as $key => $value) {
+  if (preg_match("/^+Text$/", $key)) { unset($rr5[$key]); }
+}
+remove_array_value($rr5);
+
+for ($i=0; $i<count($ee); $i++) {
+  $ee[$i]["data"] = array_merge($rr5, array_diff($ee[$i]["data"], $rr5));
+  foreach ($ee[$i]["data"] as $k1 => $v1) {
+    if (preg_match("/zText/", $k1)) { unset($ee[$i]["data"][$k1]); }
+  }
+}
+
+// ksort($ee);
+
+// print_r($ee);
+$resultformattedJSON = json_encode($ee);
 
 // pin error, hence "those who are terminated"
 $pinerror = 0;
@@ -346,6 +420,7 @@ if ($sample_size) {
   if ($RDterminated || $RDterminated == 0) { $RDterminated_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-danger progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDterminated_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDterminated_percent\">$RDterminated_percent</div></div>"; } else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
   $RDsuccess_percent = percent($RDsuccess/$sample_size); //print_r($RDsuccess_percent);
   if ($RDsuccess || $RDsuccess == 0) { $RDsuccess_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDsuccess_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDsuccess_percent\">$RDsuccess_percent</div></div>"; } else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
+  $oversuccess = $RDsuccess - $sample_size; $oversuccess_percent = percent($oversuccess/$sample_size);
 } else {
   $RDpilot_percent = "";
   if ($RDpilot || $RDpilot == 0) { $RDpilot_bar = ""; } else { $RDsuccess_bar = ""; }
@@ -414,17 +489,26 @@ if ($private == 1) {
   }
 } else {
   // for public projects
-  if ($RDsuccess > 0) {
-    $average = number_format($RDsuccess / $daysoffieldwork, 1);
-    $togo = number_format(($sample_size - $RDsuccess) / $average, 1);
-    $text .= "<p>Within a period of <strong>$daysoffieldwork</strong> of fieldwork, we have achieved a total of <strong>n=$RDsuccess</strong> successful interviews <small class=\"grey\">(an average of $average interviews per day)</small>.</p>\n";
-    if ($sample_size) {
-      $text .= "<p>From the required total sample of <strong>n=$sample_size</strong> we have so far achieved <strong>$RDsuccess_percent</strong>.</p>\n";
-      $text .= "<p>With this rate of progression, the data collection is estimated to end in <strong>$togo</strong> days.</p>\n";
+  $average = number_format($RDsuccess / $daysoffieldwork, 1);
+  if ($sample_size) {
+    if ($RDsuccess > 0) {
+      $togo = number_format(($sample_size - $RDsuccess) / $average, 1);
+      $text .= "<p>Within a period of <strong>$daysoffieldwork</strong> of fieldwork, we have achieved a total of <strong>n=$RDsuccess</strong> successful interviews <small class=\"grey\">(an average of $average interviews per day)</small>.</p>\n";
+      if ($RDsuccess < $sample_size) {
+        $text .= "<p>From the required total sample of <strong>n=$sample_size</strong> we have so far achieved <strong>$RDsuccess_percent</strong>.</p>\n";
+        $text .= "<p>With this rate of progression, the data collection is estimated to end in <strong>$togo</strong> days.</p>\n";
+      } else {
+        $text .= "<p>From the required total sample of <strong>n=$sample_size</strong> we have achived more than the required sample size at <strong>+$oversuccess_percent</strong>.</p>\n";
+        $text .= "<p>Now it's time for result analysis.</p>\n";
+      }
+    } else {
+      $text .= "<p>Within a period of <strong>$daysoffieldwork</strong> of fieldwork, there is still no successful interviews to be seen at all.</p>\n";
+      $text .= "<p>Please revisit this page again in the next day or so. If this page is not moving for many days, please contact us for support.</p>\n";
     }
   } else {
-    $text .= "<p>Within a period of <strong>$daysoffieldwork</strong> of fieldwork, there is still no successful interviews to be seen at all.</p>\n";
-    $text .= "<p>Please revisit this page again in the next day or so. If this page is not moving for many days, please contact us for support.</p>\n";
+    if ($RDsuccess) {
+      $text .= "<p>Within a period of <strong>$daysoffieldwork</strong> of fieldwork, we have achieved a total of <strong>n=$RDsuccess</strong> successful interviews <small class=\"grey\">(an average of $average interviews per day)</small>.</p>\n";
+    }
   }
   $text .= "<div class=\"row\"><div class=\"col-xs-6\"><div id=\"gauge1\" style=\"display:none\"></div></div><div class=\"col-xs-6\"><div id=\"gauge2\" style=\"display:none\"></div></div></div>\n";
   echo "<h4>Status: $fieldworkstatus</h4>\n";
@@ -476,67 +560,69 @@ function checkingQuestion($input, $ee = array()) {
 }
 
 function getResultJS($input = array(), $RD, $sort, $keyword) {
-  $input = array_remove_empty($input["0"]);
-  $input = array_count_values($input);
-  if ($sort == "1") { arsort($input); }
-  else if ($sort == "2") { krsort($input); }
-  else if ($sort == "3") { ksort($input); }
-  $Z = array_sum($input);
-  $A = array_keys($input);
-  $B = array_values($input);
-  $C = count($input);
-  $draw = "draw$keyword();";
-  $output = "";
-  if ($Z > 0) {
-    $output .= "  google.charts.setOnLoadCallback(draw$keyword);\n";
-    $output .= "  function draw$keyword() {\n";
-    $output .= "    var data = new google.visualization.DataTable();\n";
-    $output .= "    data.addColumn('string', 'Answer');\n";
-    $output .= "    data.addColumn('number', 'Count');\n";
-    $output .= "    data.addColumn('number', 'Percentage');\n";
-    $output .= "    data.addRows($C);\n";
-    for ($m=0; $m<$C; $m++) {
-      $BB[$m] = number_format(($B[$m]/$RD)*100, 2);
-      $m1 = $m+1; $m2 = $m1+1;
-      $output .= "    data.setCell($m, 0, '$A[$m]');\n";
-      $output .= "    data.setCell($m, 1, $B[$m]);\n";
-      $output .= "    data.setCell($m, 2, $BB[$m]);\n";
+  if ($keyword) {
+    $input = array_remove_empty($input["0"]);
+    $input = array_count_values($input);
+    if ($sort == "1") { arsort($input); }
+    else if ($sort == "2") { krsort($input); }
+    else if ($sort == "3") { ksort($input); }
+    $Z = array_sum($input);
+    $A = array_keys($input);
+    $B = array_values($input);
+    $C = count($input);
+    $draw = "draw$keyword();";
+    $output = "";
+    if ($Z > 0) {
+      $output .= "  google.charts.setOnLoadCallback(draw$keyword);\n";
+      $output .= "  function draw$keyword() {\n";
+      $output .= "    var data = new google.visualization.DataTable();\n";
+      $output .= "    data.addColumn('string', 'Answer');\n";
+      $output .= "    data.addColumn('number', 'Count');\n";
+      $output .= "    data.addColumn('number', 'Percentage');\n";
+      $output .= "    data.addRows($C);\n";
+      for ($m=0; $m<$C; $m++) {
+        $BB[$m] = number_format(($B[$m]/$RD)*100, 2);
+        $m1 = $m+1; $m2 = $m1+1;
+        $output .= "    data.setCell($m, 0, '$A[$m]');\n";
+        $output .= "    data.setCell($m, 1, $B[$m]);\n";
+        $output .= "    data.setCell($m, 2, $BB[$m]);\n";
+      }
+      $output .= "    var viewTable = new google.visualization.DataView(data);\n";
+      $output .= "    viewTable.setColumns([0, 1, 2]);\n";
+      $output .= "    var viewChart = new google.visualization.DataView(data);\n";
+      $output .= "    viewChart.setColumns([0, 2]);\n";
+      $output .= "    var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });\n";
+      $output .= "    formatter.format(data, 2);\n";
+      if ($C < 15) { $height = '500'; } else if (($C >= 15) && ($C < 30)) { $height = '700'; } else if ($C >= 30) { $height = '1000'; }
+      if (($Z > $RD) || ($C > 7)) { $tt = array('bar', 'column'); } else if (($Z <= $RD) && ($C <= 3)) { $tt = array('pie', 'donut'); } else if ($C > 15) { $tt = array('column'); } else { $tt = array('bar', 'column', 'pie', 'donut'); }
+      if (($keyword == "Region") || ($keyword == "Location")) { $chart = 'column'; } else if ($keyword == "Interviewer") { $chart = 'bar'; } else if ($C > 8) { $chart = 'bar'; } else { $chart = $tt[array_rand($tt)]; }
+      if ($chart == "pie") {
+        $output .= "    var options = { width: '100%', height: '500' };\n";
+        $output .= "    var chart = new google.visualization.PieChart(document.getElementById('sortchart-$keyword'));\n";
+      } else if ($chart == "donut") {
+        $output .= "    var options = { pieHole: 0.4, width: '100%', height: '500' };\n";
+        $output .= "    var chart = new google.visualization.PieChart(document.getElementById('sortchart-$keyword'));\n";
+      } else if ($chart == "column") {
+        $output .= "    var options = { width: '100%', height: '500', bar: { groupWidth: '60%' }, legend: { position: 'none' } };\n";
+        $output .= "    var chart = new google.visualization.ColumnChart(document.getElementById('sortchart-$keyword'));\n";
+      } else if ($chart == "bar") {
+        if ($C >= 15) { $output .= "    var options = { width: '100%', height: $height, vAxis: { textStyle: { fontSize: 10 } }, hAxis: { textStyle: { fontSize: 14 } }, bar: { groupWidth: '60%' }, legend: { position: 'none' } };\n"; }
+        else { $output .= "    var options = { width: '100%', height: $height, bar: { groupWidth: '60%' }, legend: { position: 'none' } };\n"; }
+        $output .= "    var chart = new google.visualization.BarChart(document.getElementById('sortchart-$keyword'));\n";
+      }
+      $output .= "    chart.draw(viewChart, options);\n";
+      $output .= "    var table = new google.visualization.Table(document.getElementById('sorttable-$keyword'));\n";
+      $output .= "    table.draw(viewTable, { width: '100%', height: '100%' });\n";
+      $output .= "    google.visualization.events.addListener(table, 'sort', function(event) {\n";
+      $output .= "      data.sort([{ column: event.column, desc: !event.ascending }]);\n";
+      $output .= "      chart.draw(viewChart);\n";
+      $output .= "    });\n";
+      $output .= "  }\n";
     }
-    $output .= "    var viewTable = new google.visualization.DataView(data);\n";
-    $output .= "    viewTable.setColumns([0, 1, 2]);\n";
-    $output .= "    var viewChart = new google.visualization.DataView(data);\n";
-    $output .= "    viewChart.setColumns([0, 2]);\n";
-    $output .= "    var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });\n";
-    $output .= "    formatter.format(data, 2);\n";
-    if ($C < 15) { $height = '500'; } else if (($C >= 15) && ($C < 30)) { $height = '700'; } else if ($C >= 30) { $height = '1000'; }
-    if (($Z > $RD) || ($C > 7)) { $tt = array('bar', 'column'); } else if (($Z <= $RD) && ($C <= 3)) { $tt = array('pie', 'donut'); } else if ($C > 15) { $tt = array('column'); } else { $tt = array('bar', 'column', 'pie', 'donut'); }
-    if (($keyword == "Region") || ($keyword == "Location")) { $chart = 'column'; } else if ($keyword == "Interviewer") { $chart = 'bar'; } else if ($C > 8) { $chart = 'bar'; } else { $chart = $tt[array_rand($tt)]; }
-    if ($chart == "pie") {
-      $output .= "    var options = { width: '100%', height: '500' };\n";
-      $output .= "    var chart = new google.visualization.PieChart(document.getElementById('sortchart-$keyword'));\n";
-    } else if ($chart == "donut") {
-      $output .= "    var options = { pieHole: 0.4, width: '100%', height: '500' };\n";
-      $output .= "    var chart = new google.visualization.PieChart(document.getElementById('sortchart-$keyword'));\n";
-    } else if ($chart == "column") {
-      $output .= "    var options = { width: '100%', height: '500', bar: { groupWidth: '60%' }, legend: { position: 'none' } };\n";
-      $output .= "    var chart = new google.visualization.ColumnChart(document.getElementById('sortchart-$keyword'));\n";
-    } else if ($chart == "bar") {
-      if ($C >= 15) { $output .= "    var options = { width: '100%', height: $height, vAxis: { textStyle: { fontSize: 10 } }, hAxis: { textStyle: { fontSize: 14 } }, bar: { groupWidth: '60%' }, legend: { position: 'none' } };\n"; }
-      else { $output .= "    var options = { width: '100%', height: $height, bar: { groupWidth: '60%' }, legend: { position: 'none' } };\n"; }
-      $output .= "    var chart = new google.visualization.BarChart(document.getElementById('sortchart-$keyword'));\n";
-    }
-    $output .= "    chart.draw(viewChart, options);\n";
-    $output .= "    var table = new google.visualization.Table(document.getElementById('sorttable-$keyword'));\n";
-    $output .= "    table.draw(viewTable, { width: '100%', height: '100%' });\n";
-    $output .= "    google.visualization.events.addListener(table, 'sort', function(event) {\n";
-    $output .= "      data.sort([{ column: event.column, desc: !event.ascending }]);\n";
-    $output .= "      chart.draw(viewChart);\n";
-    $output .= "    });\n";
-    $output .= "  }\n";
+    $alloutput = [];
+    array_push($alloutput, $output);
+    array_push($alloutput, $draw);
   }
-  $alloutput = [];
-  array_push($alloutput, $output);
-  array_push($alloutput, $draw);
   return $alloutput;
 }
 
@@ -584,9 +670,6 @@ function getMissingTable($input = array()) {
   return $output;
 }
 
-$ff = json_decode($monitor, true);
-foreach ($ff["QC"] as $fff) { foreach ($fff as $ffe) { $mn1[] = $ffe; } } // print_r($mn1);
-foreach ($ff["monitor"] as $ffd) { foreach ($ffd as $ffc) { $mn2[] = $ffc; } } // print_r($mn2);
 // $mn = array_merge($mn1, $mn2); // print_r($mn);
 
 // if ($mn1["0"]) { $A1A = checkingQuestion($mn1["0"], $ee); $A1B = getResultHTML($A1A, $RDsuccess, $mn1["0"]); $A1C = getResultJS($A1A, $RDsuccess, "1", $mn1["0"]); }
@@ -609,9 +692,36 @@ foreach ($ff["monitor"] as $ffd) { foreach ($ffd as $ffc) { $mn2[] = $ffc; } } /
 // if ($mn2["7"]) { $B8A = checkingQuestion($mn2["7"], $ee); $B8B = getResultHTML($B8A, $RDsuccess, $mn2["7"]); $B8C = getResultJS($B8A, $RDsuccess, "1", $mn2["7"]); }
 // if ($mn2["8"]) { $B9A = checkingQuestion($mn2["8"], $ee); $B9B = getResultHTML($B9A, $RDsuccess, $mn2["8"]); $B9C = getResultJS($B9A, $RDsuccess, "1", $mn2["8"]); }
 
+$ff = json_decode($monitor, true); //print_r($ff);
+foreach ($ff["QC"] as $fA) { foreach ($fA as $fB) { $mn1[] = $fB; } } // print_r($mn1);
+foreach ($ff["monitor"] as $fC) { foreach ($fC as $fD) { $mn2[] = $fD; } } // print_r($mn2);
+foreach ($ff["quota"] as $fE) { foreach ($fE as $fF) { $mn3[] = $fF; } } // print_r($mn3);
+
+// for ($i = 0; $i < count($mn1); $i++) {
+//   $AA = checkingQuestion($mn1[$i], $ee);
+//   $AB = getResultHTML($v1, $RDsuccess, $mn1[$i]);
+//   // print_r($AA["0"]);
+//   // foreach ($AA["0"] as $k1 => $v1) {
+//   //   print_r($v1);
+//   //   $AB = getResultHTML($v1, $RDsuccess, $mn1[$i]);
+//   // }
+//   print_r($AB);
+//   $AC = getResultJS($AA, $RDsuccess, "1", $mn1[$i]);
+//   $ab .= $AB;
+//   $ac .= $AC["2"];
+//   $missing = array_merge($missing, $AA["2"]);
+//
+// }
+
+// print_r($AA);
+
 $A1A = checkingQuestion($mn1["0"], $ee);
 $A1B = getResultHTML($A1A, $RDsuccess, $mn1["0"]);
 $A1C = getResultJS($A1A, $RDsuccess, "1", $mn1["0"]);
+
+// print_r("<pre>\n");
+// print_r($A1B["0"]);
+// print_r("</pre>");
 
 $A2A = checkingQuestion($mn1["1"], $ee);
 $A2B = getResultHTML($A2A, $RDsuccess, $mn1["1"]);
@@ -651,8 +761,12 @@ $A9C = getResultJS($A9A, $RDsuccess, "1", $mn2["6"]);
   <div id="second" class="tab-pane fade">
 
 <?php
-print_r($A1B);
-print_r($A2B);
+
+
+// echo "pepepepepe";
+// echo $ab;
+if ($A1B) { print_r($A1B); }
+if ($A2B) { print_r($A2B); }
 $missing = array_merge($A1A["2"], $A2A["2"], $A3A["2"], $A4A["2"], $A5A["2"], $A6A["2"], $A7A["2"], $A8A["2"], $A9A["2"]);
 print_r(getMissingTable($missing));
 ?>
@@ -661,13 +775,13 @@ print_r(getMissingTable($missing));
   <div id="third" class="tab-pane fade">
 
 <?php
-print_r($A3B);
-print_r($A4B);
-print_r($A5B);
-print_r($A6B);
-print_r($A7B);
-print_r($A8B);
-print_r($A9B);
+if ($A3B) { print_r($A3B); }
+if ($A4B) { print_r($A4B); }
+if ($A5B) { print_r($A5B); }
+if ($A6B) { print_r($A6B); }
+if ($A7B) { print_r($A7B); }
+if ($A8B) { print_r($A8B); }
+if ($A9B) { print_r($A9B); }
 ?>
   </div>
   <div id="fourth" class="tab-pane fade">
@@ -690,73 +804,101 @@ echo "    </div>\n";
 ?>
 
   </div>
+<?php if (($_GET["m"] == "2") || ($_GET["m"] == "3")) { ?>
+  <div id="fifth" class="tab-pane fade in active">
+<?php } else { ?>
   <div id="fifth" class="tab-pane fade">
-    <h4>The total sample</h4>
-    <p>This section is for setting the sample size including the total sample size and the sample size quota breakdown by different subgroups e.g. geographic, demographic, etc.</p>
-    <form id="updatesettings" method="post" action="<?php echo $base; ?>">
-      <div class="row">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-          <table class="table table-hover table-condensed small">
-            <tbody>
-              <tr class="bg-primary">
-                <td width="70%">Total sample</td>
-                <td width="30%"><input class="form-control input-sm" type="text" name="totalsample" value="<?php if ($sample_size) { echo $sample_size; } ?>"></td>
-              </tr>
-            </tbody>
-          </table>
+<?php } ?>
+
+  <h3>Specific settings</h3>
+  <p>This page contains all advanced settings for accurately monitoring this survey such as getting the quota correctly on the sample size and track some questions along with the data collection in order to ensure the work will be done correctly in within the timeline..</p>
+  <form id="updatesettings" method="post" action="<?php echo $base; ?>">
+    <div class="row">
+      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+        <h4>Total sample size</h4>
+        <p>The total sample size for this study.</p>
+        <table class="table table-hover table-condensed small" id="tabletotalsamplesize">
+          <thead>
+            <tr>
+              <th width="70%"></th>
+              <th width="10%"></th>
+              <th width="20%"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="bg-primary">
+              <td width="70%">Total sample</td>
+              <td width="30%" colspan="2"><input class="form-control input-sm" type="text" name="totalsample" id="totalsamplesize" value="<?php if ($sample_size) { echo $sample_size; } ?>"></td>
+            </tr>
+            <tr>
+              <td colspan="3">Choose one from below subgroups</td>
+            </tr>
+            <tr>
+              <td colspan="3">
+                <div class="form-group">
+                  <select class="form-control input-sm" id="selecting">
+                    <option name="" value="">--- select one ---</option>
+                  </select>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <h4>Quota by subgroups</h4>
+        <p>The sample size broken down by subgroups.</p>
+        <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newsample" onClick="newTable();"><i class="pe-plus pe-fw"></i>Add new</button></p>
+        <div class="row" id="tablesamplewrap">
         </div>
       </div>
-      <br>
-      <h4>Data monitoring</h4>
-      <p>These are the list of key questions for both QC/Editing and monitoring purpose during the data collection period. It is for ensuring the data collection is conducted correctly so there might still be some errors during this period. Results from this page must not be used for any business decisions at all.</p>
-      <div class="row">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-          <p><strong>QC/Editing</strong></p>
-          <table class="table table-hover table-condensed small" id="tableQC">
-            <thead>
-              <tr class="bg-success">
-                <th width="5%"></th>
-                <th width="85%">Question name</th>
-                <th width="10%"></th>
-              </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
-          <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newkeyquestion1"><i class="pe-plus pe-fw"></i>Add new</button></p>
-        </div>
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-          <p><strong>Monitoring</strong></p>
-          <table class="table table-hover table-condensed small" id="tableMonitor">
-            <thead>
-              <tr class="bg-success">
-                <th width="5%"></th>
-                <th width="85%">Question name</th>
-                <th width="10%"></th>
-              </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
-          <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newkeyquestion2"><i class="pe-plus pe-fw"></i>Add new</button></p>
-        </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+        <h4>QC/Edit <small>(for fieldwork)</small></h4>
+        <p>Specific questions to monitor for purpose of QC/Edit.</p>
+        <table class="table table-hover table-condensed small" id="tableQC">
+          <thead>
+            <tr class="bg-success">
+              <th width="5%"></th>
+              <th width="85%">Question name</th>
+              <th width="10%"></th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+        <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newkeyquestion1"><i class="pe-plus pe-fw"></i>Add new</button></p>
       </div>
-      <br>
-      <h4>Quota by subgroups</h4>
-      <p>This section is used for setting a standard quota to the sample size including geographic and demographic.</p>
-      <div class="row" id="display">
+      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+        <h4>Data monitoring <small>(for researcher)</small></h4>
+        <p>Specific quesrions to monitor for researcher.</p>
+        <table class="table table-hover table-condensed small" id="tableMonitor">
+          <thead>
+            <tr class="bg-success">
+              <th width="5%"></th>
+              <th width="85%">Question name</th>
+              <th width="10%"></th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+        <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newkeyquestion2"><i class="pe-plus pe-fw"></i>Add new</button></p>
       </div>
-      <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newquota"><i class="pe-plus pe-fw"></i>Add new</button></p>
-      <br>
-      <hr>
-      <p class="text-center">
-        <input type="hidden" name="surveyid" value="<?php echo $_GET['s']; ?>">
-        <button type="submit" class="btn btn-success" name="m" value="updatesettings">Save <i class="pe-check-circle-o"></i></button>
-        <button type="reset" class="btn btn-default">Cancel <i class="pe-times-circle-o"></i></button>
-      </p>
-      <br>
-    </form>
-  </div>
+    </div>
+    <hr>
+    <p class="text-center">
+      <input type="hidden" name="surveyid" value="<?php echo $_GET['s']; ?>">
+      <button type="submit" class="btn btn-success" name="m" value="updatesettings">Save <i class="pe-check-circle-o"></i></button>
+      <button type="reset" class="btn btn-default">Cancel <i class="pe-times-circle-o"></i></button>
+    </p>
+  </form>
+</div>
 
 
 <script type="text/javascript">
@@ -838,7 +980,7 @@ echo "    </div>\n";
     else { $(".csv .rendered").hide(); $(".csv .editing").show().focus(); }
   }
   function renderCSV(objects) {
-    var rows = $.csv.fromObjects(objects, {justArrays: true}); //console.log(rows);
+    var rows = $.csv.fromObjects(objects, { justArrays: true }); //console.log(rows);
     if (rows.length < 1) { return; }
     var table = $(".csv table")[0];
     $(table).html("").attr("id", "interimtable").addClass("table table-condensed");
@@ -884,6 +1026,13 @@ echo "    </div>\n";
     table.appendChild(thead);
     table.appendChild(tbody);
   }
+  Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+      if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+  };
   String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
@@ -891,41 +1040,32 @@ echo "    </div>\n";
   $(document).ready(function () {
     var excerptRows = <?php echo $excerptRows; ?>;
     var tt = getdatafortable(surveyid); var ttt = getdatafortable(surveyid);
-    // console.log(tt);
     for (var k in tt) {
       var o = tt[k];
       moment.locale('en');
-      var s1 = moment(o.submitted).fromNow();
-      var s2 = moment(o.submitted).format("D MMM YYYY");
-      newsubmitted = s1; //newsubmitted = s2 + ' (' + s1 + ')';
+      var newsubmitted = moment(o.submitted).fromNow();
       o.submitted = newsubmitted;
     }
     var tt = JSON.stringify(tt); var ttt = JSON.stringify(ttt);
-    tt = tt.replaceAll("data", ""); tt = tt.replaceAll("upload/", "");
-    ttt = ttt.replaceAll("data", ""); ttt = ttt.replaceAll("upload/", "");
-    // tt = tt.replaceAll("upload/", "http://www.siamsquare.org/members/assets/upload/");
-    // ttt = ttt.replaceAll("upload/", "http://www.siamsquare.org/members/assets/upload/");
+    tt = tt.replaceAll("data", ""); ttt = ttt.replaceAll("data", "");
+    tt = tt.replaceAll("Record", ""); ttt = ttt.replaceAll("Record", "");
+    tt = tt.replaceAll("upload/", "http://www.siamsquare.org/members/assets/upload/");
+    ttt = ttt.replaceAll("upload/", "http://www.siamsquare.org/members/assets/upload/");
     var inArray1 = JSON.parse(tt); var inArray2 = JSON.parse(ttt);
     var outArray1 = []; var outArray2 = [];
     for (var row in inArray1) { outArray1[outArray1.length] = parse_object(inArray1[row]); }
     for (var row in inArray2) { outArray2[outArray2.length] = parse_object(inArray2[row]); }
-    // console.log(sortObject(outArray2));
-    // outArray2.sort();
-    // $(".excerpt").text("" + excerptRows);
-    // $("span.rows.count").text("" + outArray1.length);
-    // $("span.rows.count").text("" + outArray2.length);
-    var csv1 = "\ufeff"+$.csv.fromObjects(outArray1); var csv2 = "\ufeff"+$.csv.fromObjects(outArray2);
-    // console.log(sortObject(csv2));
+    var csv1 = "\ufeff"+$.csv.fromObjects(outArray1);
+    var csv2 = "\ufeff"+$.csv.fromObjects(outArray2);
+
     renderCSV(outArray1.slice(0, excerptRows), this.id);
     showCSV(true);
-    $(".csv textarea").val(csv2);
+    $(".csv textarea").val(csv1);
     var blob = new Blob([csv2], { type: 'type: "text/csv;charset=UTF-8"' });
     var csvUrl = window.URL.createObjectURL(blob);
     var todayDate = new Date().toISOString().slice(0,10);
     var filename = "<?php echo $project; ?>" + "_data_" + todayDate + '.csv';
     $(".csv a.download").attr({'download': filename, 'href': csvUrl });
-    // var uri = "data:text/csv;charset=utf-8," + encodeURIComponent(csv2);
-    // $(".csv a.download").attr("href", uri);
     $(".csv textarea").blur(function() { showCSV(true); })
     $(".csv .raw").click(function() {
       showCSV(false);
@@ -939,6 +1079,159 @@ echo "    </div>\n";
     });
     $(".csv textarea").click(function() {$(this).focus().select();});
   });
+
+
+<?php if ($monitor) { echo "var monitor = $monitor;\n"; } else { echo "var monitor = { \"quota\": [], \"QC\": [], \"monitor\": [] };\n"; } ?>
+
+  var counter0 = 0; var counter0z = counter0 + 1; var counter0zz = counter0z + 1;
+  if (typeof(monitor.QC) === 'undefined') {
+    var row1 = "              <tr>\n" +
+      "              </tr>\n";
+    $('#tableQC').find('tbody').append(row1);
+  } else {
+    while (counter0<monitor.QC.length) {
+      var row1 = "              <tr>\n" +
+        "                <td valign=\"middle\">" + counter0z + "</td>\n" +
+        "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"QC_questionname_" + counter0z + "\" value=\"" + monitor.QC[counter0].questionname + "\"></td>\n" +
+        "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+        "              </tr>\n";
+      $('#tableQC').find('tbody').append(row1);
+      counter0++;
+      counter0z++;
+    }
+  }
+  $('#newkeyquestion1').click(function() {
+    var newrow1 = "              <tr>\n" +
+      "                <td valign=\"middle\">" + counter0z + "</td>\n" +
+      "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"QC_questionname_" + counter0z + "\"></td>\n" +
+      "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+      "              </tr>\n";
+    $('#tableQC').find('tbody').append(newrow1);
+    counter0z++;
+  });
+  $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
+
+  var counter1 = 0; var counter1z = counter1 + 1;
+  if (typeof(monitor.monitor) === 'undefined') {
+    var row2 = "              <tr>\n" +
+      "              </tr>\n";
+    $('#tableMonitor').find('tbody').append(row2);
+  } else {
+    while (counter1<monitor.monitor.length) {
+      var row2 = "              <tr>\n" +
+        "                <td valign=\"middle\">" + counter1z + "</td>\n" +
+        "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"monitor_questionname_" + counter1z + "\" value=\"" + monitor.monitor[counter1].questionname + "\"></td>\n" +
+        "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+        "              </tr>\n";
+      $('#tableMonitor').find('tbody').append(row2);
+      counter1++;
+      counter1z++;
+    }
+  }
+  $('#newkeyquestion2').click(function() {
+    var newrow2 = "              <tr>\n" +
+      "                <td valign=\"middle\">" + counter1z + "</td>\n" +
+      "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"monitor_questionname_" + counter1z + "\"></td>\n" +
+      "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+      "              </tr>\n";
+    $('#tableMonitor').find('tbody').append(newrow2);
+    counter1z++;
+  });
+  $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
+
+  var counter2a = 0, counter2b = 0, combinedtotalsample = 0;
+  var checkcombinedtotalsample = $('#totalsamplesize').val();
+  if (typeof(monitor.quota) === 'undefined') {
+    var row3 = "              <tr>\n" +
+      "              </tr>\n";
+    $('#tablesamplewrap').find('tbody').append(row3);
+  } else {
+    for (var counter2a in monitor.quota) {
+      listTable(counter2a, monitor.quota[counter2a].questionname);
+      for (var counter2b in monitor.quota[counter2a].details) {
+        listRow(parseInt(counter2b)+1, counter2a, monitor.quota[counter2a].details[counter2b].subgroup, monitor.quota[counter2a].details[counter2b].samplesize);
+        combinedtotalsample += parseInt(monitor.quota[counter2a].details[counter2b].samplesize);
+      }
+      suggestedTotalsample(counter2a, monitor.quota[counter2a].questionname, combinedtotalsample);
+      addRow(parseInt(counter2b)+2, counter2a);
+    }
+  }
+  function suggestedTotalsample(l, m, n) {
+    var currenttotalsamplesize = $('#totalsamplesize').val();
+    var newrow3FB = "                <option name=\"" + m + " (n=" + n + ")\" value=\"" + n + "\" selected>" + m + " (n=" + n + ")</option>\n";
+    var newrow3FC = "                <option name=\"" + m + " (n=" + n + ")\" value=\"" + n + "\">" + m + " (n=" + n + ")</option>\n";
+    if (n == currenttotalsamplesize) { $('#selecting').append(newrow3FB); }
+    else { $('#selecting').append(newrow3FC); }
+  }
+  $("#selecting").change(function() {
+    var checking = $("#selecting").val();
+    if (checking != "") { $("#totalsamplesize").val($(this).val()); }
+  }).change();
+  function listTable(m, n) {
+    var newrow3A = "        <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n" +
+      "          <table class=\"table table-hover table-condensed small\" id=\"tablesample" + m + "\">\n" +
+      "            <thead>\n" +
+      "              <tr class=\"bg-success\">\n" +
+      "                <th width=\"5%\"><a class=\"btn btn-xs\" id=\"mynewrow" + m + "\"><i class=\"pe-plus-circle pe-lg green\"></i></a></th>\n" +
+      "                <th width=\"85%\" colspan=\"2\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"quota_" + m + "_questionname_1\" value=\"" + n + "\"></th>\n" +
+      "                <th width=\"10%\"><i class=\"pe-trash pe-fw red deletethistable\"></i></th>\n" +
+      "                <th width=\"10%\"></th>\n" +
+      "              </tr>\n" +
+      "            </thead>\n" +
+      "            <tbody>\n" +
+      "            </tbody>\n" +
+      "          </table>\n" +
+      "        </div>\n";
+    $('#tablesamplewrap').append(newrow3A);
+  }
+  function listRow(l, m, n, o) {
+    var newrow3B = "              <tr>\n" +
+      "                <td width=\"5%\" valign=\"middle\">" + l + "</td>\n" +
+      "                <td width=\"85%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup\" name=\"quota_" + m + "_subgroup_" + l + "\" value=\"" + n + "\"></td>\n" +
+      "                <td width=\"10%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + m + "_samplesize_" + l + "\" value=\"" + o + "\"></td>\n" +
+      "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+      "              </tr>\n";
+    $('#tablesamplewrap').find('#tablesample'+m).find('tbody').append(newrow3B);
+  }
+  function newTable() {
+    var lastid = $('#tablesamplewrap table:last').attr('id');
+    if (lastid) { var m = parseInt(lastid.substring(11))+1; }
+    else { var m = 0; }    
+    var l = 1;
+    var newrow3A = "        <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n" +
+      "          <table class=\"table table-hover table-condensed small\" id=\"tablesample" + m + "\">\n" +
+      "            <thead>\n" +
+      "              <tr class=\"bg-success\">\n" +
+      "                <th width=\"5%\"></th>\n" +
+      "                <th width=\"85%\" colspan=\"2\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"quota_" + m + "_questionname_1\"></th>\n" +
+      "                <th width=\"10%\"><i class=\"pe-trash pe-fw red deletethistable\"></i></th>\n" +
+      "                <th width=\"10%\"></th>\n" +
+      "              </tr>\n" +
+      "            </thead>\n" +
+      "            <tbody>\n" +
+      "              <tr>\n" +
+      "                <td width=\"5%\" valign=\"middle\">" + l + "</td>\n" +
+      "                <td width=\"85%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup\" name=\"quota_" + m + "_subgroup_" + l + "\"></td>\n" +
+      "                <td width=\"10%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + m + "_samplesize_" + l + "\"></td>\n" +
+      "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+      "              </tr>\n";
+      "            </tbody>\n" +
+      "          </table>\n" +
+      "        </div>\n";
+    $('#tablesamplewrap').append(newrow3A);
+  }
+  function addRow(l, m) {
+    var newrow3C = "              <tr id=\"insert" + m + "\" style=\"display:none\">\n" +
+      "                <td width=\"5%\" valign=\"middle\">Add</td>\n" +
+      "                <td width=\"85%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup\" name=\"quota_" + m + "_subgroup_" + l + "\"></td>\n" +
+      "                <td width=\"10%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + m + "_samplesize_" + l + "\"></td>\n" +
+      "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+      "              </tr>\n";
+    $('#tablesample'+m).find('tbody').append(newrow3C);
+    $('#mynewrow'+m).click(function() { $('#insert'+m).toggle('slow'); });
+  }
+  $(document.body).delegate(".deletethistable", "click", function() { $(this).closest("table").remove(); });
+  $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
 
   google.charts.load('current', {'packages': ['corechart', 'orgchart', 'gauge', 'table'] });
   if (private) {
@@ -1050,6 +1343,15 @@ echo "    </div>\n";
     chart.draw(dataTable, options);
   }
 <?php
+// if ($A1C["0"]) { print_r($A1C["0"]); }
+// if ($A2C["0"]) { print_r($A2C["0"]); }
+// if ($A3C["0"]) { print_r($A3C["0"]); }
+// if ($A4C["0"]) { print_r($A4C["0"]); }
+// if ($A5C["0"]) { print_r($A5C["0"]); }
+// if ($A6C["0"]) { print_r($A6C["0"]); }
+// if ($A7C["0"]) { print_r($A7C["0"]); }
+// if ($A8C["0"]) { print_r($A8C["0"]); }
+// if ($A9C["0"]) { print_r($A9C["0"]); }
 print_r($A1C["0"]);
 print_r($A2C["0"]);
 print_r($A3C["0"]);
@@ -1059,142 +1361,22 @@ print_r($A6C["0"]);
 print_r($A7C["0"]);
 print_r($A8C["0"]);
 print_r($A9C["0"]);
+// print_r("<pre>\n");
+// print_r($A1C["0"]);
+// print_r("</pre>");
+
+// echo $ac;
 ?>
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     if ($(e.target).attr('id') == 'first-tab-trigger') { drawOrgChart1(); drawOrgChart2(); drawGaugeChart1(); drawGaugeChart2(); drawAreaChart(); }
-    if ($(e.target).attr('id') == 'second-tab-trigger') { <?php print_r($A1C["1"]); print_r($A2C["1"]); ?> }
-    if ($(e.target).attr('id') == 'third-tab-trigger') { <?php print_r($A3C["1"]); print_r($A4C["1"]); print_r($A5C["1"]); print_r($A6C["1"]); print_r($A7C["1"]); print_r($A8C["1"]); print_r($A9C["1"]); ?> }
+    if ($(e.target).attr('id') == 'second-tab-trigger') { <?php if ($A1C["1"]) { print_r($A1C["1"]); } ?> <?php if ($A2C["1"]) { print_r($A2C["1"]); } ?> }
+    if ($(e.target).attr('id') == 'third-tab-trigger') { <?php if ($A3C["1"]) { print_r($A3C["1"]); } ?> <?php if ($A4C["1"]) { print_r($A4C["1"]); } ?> <?php if ($A5C) { print_r($A5C["1"]); } ?> <?php if ($A6C) { print_r($A6C["1"]); } ?> <?php if ($A7C) { print_r($A7C["1"]); } ?> <?php if ($A8C) { print_r($A8C["1"]); } ?> <?php if ($A9C) { print_r($A9C["1"]); } ?> }
   })
 
   $("#missing").find('th:first-child').css("background", "#555");
   $("#missing").find('td:first-child').css("background", "#eee");
 
-
-<?php if ($monitor) { echo "var monitor = $monitor;\n"; } else { echo "var monitor = { \"quota\": [], \"QC\": [], \"monitor\": [] };\n"; } ?>
-  var counter = 0;
-  if (typeof(monitor.quota) === 'undefined') {
-    var currentcontent = "        <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n" +
-      "          <p>No data.</p>\n" +
-      "          <p>Click button below to add one.</p>\n" +
-      "        </div>\n";
-    $('div#display').append(currentcontent);
-  } else {
-    while (counter<monitor.quota.length) {
-      var currentcontent = "        <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\" id=\"quota" + counter + "set\">\n" +
-        "          <div class=\"input-group input-group-sm\">\n" +
-        "            <input class=\"form-control input-sm\" type=\"text\" name=\"quota_quota_" + counter + "\" value=\"" + monitor.quota[counter].question + "\">\n" +
-        "            <span class=\"input-group-btn\">\n" +
-        // "              <button type=\"button\" class=\"btn btn-success\" id=\"quota" + counter + "btn\">Generate <i class=\"pe-check-circle-o pe-fw\"></i></button>\n" +
-        "              <button type=\"button\" class=\"btn btn-danger\" id=\"quota" + counter + "btndelete\"><i class=\"pe-trash pe-fw\"></i> Delete</button>\n" +
-        "            </span>\n" +
-        "          </div>\n" +
-        "          <br>\n" +
-        "          <table class=\"table table-hover table-condensed small\" id=\"quota" + counter + "table\">\n" +
-        "            <thead>\n" +
-        "              <tr class=\"bg-success\">\n" +
-        "                <th width=\"70%\"></th>\n" +
-        "                <th width=\"30%\">Sample size</th>\n" +
-        "              </tr>\n" +
-        "            </thead>\n" +
-        "            <tbody>\n" +
-        "            </tbody>\n" +
-        "          </table>\n" +
-        "        </div>\n";
-        "      <br>\n";
-      $('div#display').append(currentcontent);
-      var total = 0;
-      for (var i = 0; i < monitor.quota[counter].details.length; i++) {
-        var detailcurrentcontent = "              <tr>\n" +
-          "                <td valign=\"middle\"><input type=\"hidden\" name=\"quota_subgroup_" + counter + "[]\" placeholder=\"QuotaQuestion" + counter + "\" value=\"" + monitor.quota[counter].details[i].subgroup + "\">" + monitor.quota[counter].details[i].subgroup + "</td>\n" +
-          "                <td valign=\"middle\"><input class=\"form-control input-sm\" type=\"text\" name=\"quota_samplesize_" + counter + "[]\" value=\"" + monitor.quota[counter].details[i].samplesize + "\"></td>\n" +
-          "              </tr>\n";
-        $("table#quota" + counter + "table").find("tbody").append(detailcurrentcontent);
-        total += parseInt(monitor.quota[counter].details[i].samplesize);
-        var totalcurrentcontent = "              <tr>\n" +
-          "                <td valign=\"middle\"><strong>Total</strong></td>\n" +
-          "                <td valign=\"middle\"><strong><span id=\"totalsum" + counter + "\">" + total + "</span></strong></td>\n" +
-          "              </tr>\n";
-      }
-      // $("table#quota" + counter + "table").find("tbody").append(totalcurrentcontent);
-      counter++;
-    }
-  }
-  // $(document.body).delegate("#quotabtndelete", "click", function() { $(this).parents().remove(); });
-  $('#quota'+counter+'btndelete').click(function() { $('#quota'+counter+'set').remove(); });
-  $('#newquota').click(function() {
-    var newcontent = "        <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6\">\n" +
-      "          <div class=\"input-group input-group-sm\">\n" +
-      "            <input class=\"form-control input-sm\" type=\"text\" name=\"quota" + counter + "\" placeholder=\"QuotaQuestion" + counter + "\">\n" +
-      "            <span class=\"input-group-btn\">\n" +
-      "              <button type=\"button\" class=\"btn btn-success\" id=\"quota" + counter + "btnokay\"><i class=\"pe-check-circle-o pe-fw\"></i> Okay</button>\n" +
-      // "              <button type=\"button\" class=\"btn btn-danger\" id=\"quota" + counter + "btn\"><i class=\"pe-trash pe-fw\"></i> Delete</button>\n" +
-      "            </span>\n" +
-      "          </div>\n" +
-      "          <br>\n" +
-      "          <table class=\"table table-hover table-condensed small\" id=\"quota" + counter + "table\"></table>\n" +
-      "        </div>\n";
-    $('div#display').append(newcontent);
-    counter++;
-  });
-
-  var counter1 = 0, counter1z = counter1 + 1, counter1zz = counter1z + 1;
-  if (typeof(monitor.QC) === 'undefined') {
-    var QCrow1 = "              <tr>\n" +
-      // "                <td></td><td colspan=\"2\"><small><strong><br>No data.</strong><br>Click button below to add one.</small></td>\n" +
-      "              </tr>\n";
-    $('#tableQC').find('tbody').append(QCrow1);
-  } else {
-    while (counter1<monitor.QC.length) {
-      var QCrow1 = "              <tr>\n" +
-        "                <td valign=\"middle\">" + counter1z + "</td>\n" +
-        "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" name=\"QC_questionname_" + counter1z + "\" value=\"" + monitor.QC[counter1].questionname + "\"></td>\n" +
-        "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
-        "              </tr>\n";
-      $('#tableQC').find('tbody').append(QCrow1);
-      counter1++;
-      counter1z++;
-    }
-  }
-  $('#newkeyquestion1').click(function() {
-    var newQCrow1 = "              <tr>\n" +
-      "                <td valign=\"middle\">" + counter1z + "</td>\n" +
-      "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"QC_questionname_" + counter1z + "\"></td>\n" +
-      "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
-      "              </tr>\n";
-    $('#tableQC').find('tbody').append(newQCrow1);
-    counter1z++;
-  });
-  $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
-
-  var counter2 = 0, counter2z = counter2 + 1;
-  if (typeof(monitor.monitor) === 'undefined') {
-    var QCrow2 = "              <tr>\n" +
-      "                <td></td><td colspan=\"2\"><small><strong><br>No data.</strong><br>Click button below to add one.</small></td>\n" +
-      "              </tr>\n";
-    $('#tableMonitor').find('tbody').append(QCrow2);
-  } else {
-    while (counter2<monitor.monitor.length) {
-      var QCrow2 = "              <tr>\n" +
-        "                <td valign=\"middle\">" + counter2z + "</td>\n" +
-        "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" name=\"monitor_questionname_" + counter2z + "\" value=\"" + monitor.monitor[counter2].questionname + "\"></td>\n" +
-        "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
-        "              </tr>\n";
-      $('#tableMonitor').find('tbody').append(QCrow2);
-      counter2++;
-      counter2z++;
-    }
-  }
-  $('#newkeyquestion2').click(function() {
-    var newQCrow2 = "              <tr>\n" +
-      "                <td valign=\"middle\">" + counter2z + "</td>\n" +
-      "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"monitor_questionname_" + counter2z + "\"></td>\n" +
-      "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
-      "              </tr>\n";
-    $('#tableMonitor').find('tbody').append(newQCrow2);
-    counter2z++;
-  });
-  $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
 
 <?php if (($_GET['m'] == "1") || ($m == 1)) { ?>
   $('#showalert-m1').show();
@@ -1210,6 +1392,12 @@ print_r($A9C["0"]);
 </script>
 
 <br>
+
+<?php
+// print_r("<pre>");
+// print_r($monitor);
+// print_r("</pre>");
+?>
 
 <?php backButton("/admin/?w=surveys", "Back to the main page", "danger"); ?>
 

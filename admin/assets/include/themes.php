@@ -49,8 +49,9 @@ function topheader() {
 }
 
 function navbarA() {
-  $user = $_SESSION['email']; $avatar = $_SESSION['avatar'];
-  if (isset($avatar)) { $show = "<img src=\"/admin/assets/img/u/$avatar.svg\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
+  $user = $_SESSION['email']; // $avatar = $_SESSION['avatar'];
+  // if (isset($avatar)) { $show = "<img src=\"/admin/assets/img/u/$avatar.svg\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
+  $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>";
   if ($_SESSION['logged_in'] == 1) { $ww = "บัญชีของคุณคือ $show"; }
   else { $ww = "<span class=\"deepgreen\"><i class=\"pe-info-circle pe-fw\"></i> สำหรับผู้ที่เป็นสมาชิกเท่านั้น</span>"; }
   echo "    <nav class=\"navbar navbar-default navbar-static-top\">\n";
@@ -110,8 +111,9 @@ function navbarA() {
 }
 
 function navbarB() {
-  $user = $_SESSION['email']; $avatar = $_SESSION['avatar'];
-  if (isset($avatar)) { $show = "<img src=\"/admin/assets/img/u/$avatar.svg\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
+  $user = $_SESSION['email']; // $avatar = $_SESSION['avatar'];
+  // if (isset($avatar)) { $show = "<img src=\"/admin/assets/img/u/$avatar.svg\" class=\"img-circle members-photo-tiny\" alt=\"Avatar\"> <kbd>$user</kbd>"; } else { $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>"; }
+  $show = "<i class=\"pe-street-view pe-fw\"></i> <kbd>$user</kbd>";
   if ($_SESSION['logged_in'] == 1) { $ww = "บัญชีของคุณคือ $show"; }
   else { $ww = "<span class=\"deepgreen\"><i class=\"pe-info-circle pe-fw\"></i> สำหรับผู้ที่เป็นสมาชิกเท่านั้น</span>"; }
   echo "    <nav class=\"navbar navbar-default navbar-static-top\">\n";
@@ -124,11 +126,26 @@ function navbarB() {
 }
 
 function pageFooter($project = null, $notes = null) {
+  global $db;
   echo "</main>\n";
   echo "<footer>\n";
   echo "  <div class=\"row footer-1\">\n";
   echo "    <div class=\"container\">\n";
-  echo "      <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6 footer-1A\"></div>\n";
+  echo "      <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6 footer-1A\">";
+  if ($_SESSION["level"] == 9) {
+    $q = $db->prepare("SELECT * FROM j_sessions");
+    $q->execute();
+    $found = $q->rowCount();
+    echo "<span class=\"pull-left small lightgrey\">User online: $found</span>";
+    // $name = "";
+    // while ($r = $q->fetchObject()) {
+    //   if ($r->email) { $name .= $r->fullname . " (" . $r->email . "), "; }
+    //   else { $name .= "Anonymous - " . $r->ip . ", "; }
+    // }
+    // $name = substr_replace($name, '', -2);
+    // echo "<a href=\"\" data-toggle=\"tooltip\" title=\"$name\" class=\"lightgrey\">User online: $found</a>";
+  }
+  echo "</div>\n";
   echo "      <div class=\"col-xs-6 col-sm-6 col-md-6 col-lg-6 footer-1B\">";
   if ($project) { echo "Internal use only - P. ".$project." (PEB-".date("Ym")."W".str_pad($_GET['s'], 4, '0', STR_PAD_LEFT).")"; }
   else { echo "Contact technical support <a href=\"http://www.siamsquare.org/members/contact/\"><i class=\"pe-envelope pe-fw\"></i></a>"; }
@@ -158,7 +175,7 @@ function pageFooter($project = null, $notes = null) {
   echo "  </div>\n";
   echo "</footer>\n";
   echo "<div class=\"scroll-to-top\" style=\"display:block\"><i class=\"pe-arrow-up pe-lg white\"></i></div>\n";
-  echo "<script type=\"text/javascript\" src=\"/members/assets/js/etc.js\"></script>\n";
+  echo "<script type=\"text/javascript\" src=\"/admin/assets/js/etc.js\"></script>\n";
   if ($notes) { notify($notes); }
   //debugOutput();
   echo "</body>\n";

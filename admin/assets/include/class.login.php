@@ -32,6 +32,7 @@ class Login {
     elseif (isset($_POST["request_password_reset"]) && isset($_POST['email'])) { $this->setPasswordResetDatabaseTokenAndSendMail($_POST['email'], $_POST['d']); }
     elseif (isset($_GET["email"]) && isset($_GET["verification"])) { $this->checkIfEmailVerificationCodeIsValid($_GET["email"], $_GET["verification"]); }
     elseif (isset($_POST["submit_new_password"])) { $this->editNewPassword($_POST['email'], $_POST['password_reset'], $_POST['newpass1'], $_POST['newpass2']); }
+    $this->setSession();
   }
 
   private function dbconnect() {
@@ -41,6 +42,42 @@ class Login {
       catch (PDOException $e) { $this->errors[] = "Error connecting to the database: " . $e->getMessage(); }
     }
     return false;
+  }
+
+  private function setSession() {
+    $ip = getip();
+    $session_id = session_id();
+    $mytime = time();
+    $time_check = $mytime-600; // 10 minutes
+    if ($this->dbconnect()) {
+      $query_user = $this->db->prepare('SELECT * FROM j_sessions WHERE session_id = :session_id');
+      $query_user->bindValue(':session_id', $session_id, PDO::PARAM_INT);
+      $query_user->execute();
+      $found = $query_user->rowCount();
+      if ($found == 0) {
+        if ($_SESSION["userid"]) {
+          $q = $this->db->prepare('INSERT INTO j_sessions (session_id, userid, ip, time) VALUES (:session_id, :userid, :ip, :time)');
+          $q->bindValue(':session_id', $session_id, PDO::PARAM_INT);
+          $q->bindValue(':time', $mytime, PDO::PARAM_INT);
+          $q->bindValue(':ip', $ip, PDO::PARAM_STR);
+          $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+        } else {
+          $q = $this->db->prepare('INSERT INTO j_sessions (session_id, userid, ip, time) VALUES (:session_id, 0, :ip, :time)');
+          $q->bindValue(':session_id', $session_id, PDO::PARAM_INT);
+          $q->bindValue(':time', $mytime, PDO::PARAM_INT);
+          $q->bindValue(':ip', $ip, PDO::PARAM_STR);
+        }
+      } else {
+        $q = $this->db->prepare('UPDATE j_sessions SET time = :time WHERE session_id = :session_id');
+        $q->bindValue(':session_id', $session_id, PDO::PARAM_INT);
+        $q->bindValue(':time', $mytime, PDO::PARAM_INT);
+      }
+      $q->execute();
+      $q2 = $this->db->prepare('DELETE FROM j_sessions WHERE time < :time_check');
+      $q2->bindValue(':time_check', $time_check, PDO::PARAM_INT);
+      $q2->execute();
+    }
+    else { return false; }
   }
 
   private function getUserData($email) {

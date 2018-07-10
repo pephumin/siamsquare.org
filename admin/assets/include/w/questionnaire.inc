@@ -131,30 +131,36 @@ foreach ($rr3 as $question) {
     } else if ($question['type'] == "matrixdropdown") {
       $out .= "    <table class=\"table table-hover\">\n";
       $out .= "      <thead><tr class=\"bg-primary\">\n";
-      $out .= "        <th width=\"10%\"></th>\n";
-      $dd = "      <tr>\n";
+      $out .= "        <th width=\"20%\"></th>\n";
+      // $dd = "      <tr>\n";
+      $counting1 = count($question['columns']);
+      $width = 80/$counting1;
+      $dd2 = "";
+      for ($i=0; $i<$counting1; $i++) {
+        $out .= "        <th style=\"text-align:right\" width=\"$width%\">".$question['columns'][$i]['title']." (".$question['columns'][$i]['name'].")</th>\n";
+        $counting2 = count($question['columns'][$i]['choices']);
+        $dd2 .= "        <td>\n";
+        $dd2 .= "          <select class=\"form-control\">\n";
+        if ($question['columns'][$i]['optionsCaption']) { $dd2 .= "            <option>".$question['columns'][$i]['optionsCaption']."</option>\n"; }
+        else { $dd2 .= "            <option>---</option>\n"; }
+        for ($j=0; $j<$counting2; $j++) {
+          $dd2 .= "            <option>".$question['columns'][$i]['choices'][$j]['text']." (".$question['columns'][$i]['choices'][$j]['value'].")</option>\n";
+        }
+        $dd2 .= "          </select>\n";
+        $dd2 .= "        </td>\n";
+      }
+      $dd1 = "";
       $counting3 = count($question['rows']);
       for ($i=0; $i<$counting3; $i++) {
-        $dd .= "        <td align=\"right\">".$question['rows'][$i]['text']."<br>".$question['rows'][$i]['value']."</td>\n";
+        $dd1 .= "      <tr>\n";
+        $dd1 .= "        <td align=\"right\">".$question['rows'][$i]['text']."<br>".$question['rows'][$i]['value']."</td>\n";
+        $dd1 .= $dd2;
+        $dd1 .= "      </tr>\n";
       }
-      $counting1 = count($question['columns']);
-      for ($i=0; $i<$counting1; $i++) {
-        $out .= "        <th style=\"text-align:right\">".$question['columns'][$i]['title']."<br>".$question['columns'][$i]['name']."</th>\n";
-        $counting2 = count($question['columns'][$i]['choices']);
-        $dd .= "        <td>\n";
-        $dd .= "          <select class=\"form-control\">\n";
-        if ($question['columns'][$i]['optionsCaption']) { $dd .= "            <option>".$question['columns'][$i]['optionsCaption']."</option>\n"; }
-        else { $dd .= "            <option>---</option>\n"; }
-        for ($j=0; $j<$counting2; $j++) {
-          $dd .= "            <option>".$question['columns'][$i]['choices'][$j]['text']." (".$question['columns'][$i]['choices'][$j]['value'].")</option>\n";
-        }
-        $dd .= "          </select>\n";
-        $dd .= "        </td>\n";
-      }
-      $dd .= "      </tr>\n";
+      // $dd .= "      </tr>\n";
       $out .= "      </tr></thead>\n";
       $out .= "      <tbody>\n";
-      $out .= $dd;
+      $out .= $dd1;
       $out .= "      </tbody>\n";
       $out .= "    </table>\n";
     } else if ($question['type'] == "radiogrouphtml") {

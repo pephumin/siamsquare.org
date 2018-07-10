@@ -6,12 +6,14 @@ else if ($_GET['pilot'] == "✓") { $mpilot = 1; }
 else if ($_GET['designer'] == "✓") { $mdesign = 1; $readonly = 1; }
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
-if ($mobile == 1) { require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/incslude/mobile.php'; }
-else { require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/themes.php'; }
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/functions.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.login.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.imgresize.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.phpmailer.php';
+if ($mobile == 1) { require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/incslude/mobile.php'; }
+else { require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/themes.php'; }
+
+$login = new Login();
 
 if (empty($_GET['s'])) {
   $target = "/";
@@ -579,19 +581,6 @@ $out .= "]";
     }
   }
 
-  function tooltip() {
-    survey.onAfterRenderQuestion.add(function(survey, options) {
-      if (!options.question.tooltip) { return; }
-      // var header = options.getElementsByTagName("h5")[0];
-      var header = options.htmlElement.querySelector("h5");
-      header.title = options.question.tooltip;
-      var span = document.createElement("span");
-      span.innerText = "?";
-      span.className = "survey-tooltip";
-      header.appendChild(span);
-    });
-  }
-
   function subset(leader, follower, key) {
     survey.onValueChanged.add(function(survey, options) {
       if (options.name !== leader) { return; }
@@ -670,7 +659,18 @@ $out .= "]";
       else { return; }
     });
   }
-
+  // function tooltip() {
+  //   survey.onAfterRenderQuestion.add(function(survey, options) {
+  //     if (!options.question.tooltip) { return; }
+  //     // var header = options.getElementsByTagName("h5")[0];
+  //     var header = options.htmlElement.querySelector("h5");
+  //     header.title = options.question.tooltip;
+  //     var span = document.createElement("span");
+  //     span.innerText = "?";
+  //     span.className = "survey-tooltip";
+  //     header.appendChild(span);
+  //   });
+  // }
   var optionsout = getsurveyoptions(surveyid);
   if (optionsout.keep) { for (var i=0; i<optionsout.keep.length; i++) { subset(optionsout.keep[i].leader, optionsout.keep[i].follower, "keep"); } }
   if (optionsout.delete) { for (var i=0; i<optionsout.delete.length; i++) { subset(optionsout.delete[i].leader, optionsout.delete[i].follower, "delete"); } }

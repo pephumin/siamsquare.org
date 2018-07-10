@@ -19,9 +19,99 @@ $created = $rows[0]["created"];
 $updated = $rows[0]["updated"];
 $userid = $rows[0]["userid"];
 
+$rr1 = json_decode($rows['0']['data'], true);
+$rr2 = $rr1['pages'];
+
+// ----------------- QUESTIONS ----------------------
+
+for ($i=0; $i<count($rr2); $i++) { $rr3[] = $rr2[$i]['questions']; }
+$rr3 = call_user_func_array('array_merge', $rr3);
+$rr4 = $rr3;
+
+for ($i=0; $i<count($rr3); $i++) {
+  $moveKeys = array('hasOther', 'visibleIf', 'colCount');
+  foreach($moveKeys as $k1) {
+    $bb = $rr3[$i][$k1];
+    if ($bb) { unset($rr3[$i][$k1]); $rr3[$i][$k1] = $bb; }
+  }
+  $removeKeys = array('isRequired', 'visible', 'choicesOrder', 'placeHolder', 'renderAs', 'ratingTheme', 'showValues', 'cellType', 'itemSize');
+  foreach($removeKeys as $k2) { unset($rr3[$i][$k2]); }
+}
+
+for ($i=0; $i<count($rr4); $i++) {
+  $moveKeys = array('html', 'hasOther', 'visibleIf');
+  foreach($moveKeys as $k1) {
+    $bb = $rr4[$i][$k1];
+    if ($bb) { unset($rr4[$i][$k1]); $rr4[$i][$k1] = $bb; }
+  }
+  $removeKeys1 = array('isRequired', 'visible', 'choicesOrder', 'placeHolder', 'renderAs', 'ratingTheme', 'showValues', 'cellType', 'inputType', 'colCount', 'itemSize');
+  foreach($removeKeys1 as $rm1) {
+    unset($rr4[$i][$rm1]);
+  }
+  $removeKeys2 = array('cellType', 'optionsCaption');
+  foreach($removeKeys2 as $rm2) {
+    for ($j=0; $j<count($rr4[$i]['columns']); $j++) { unset($rr4[$i]['columns'][$j][$rm2]); }
+  }
+  if ($rr4[$i]['type'] == "html") { $rr4[$i]['html'] = strip_tags($rr4[$i]['html']); }
+  if ($rr4[$i]['type'] == "matrixdropdown") { unset($rr4[$i]['rows']); unset($rr4[$i]['choices']); }
+  if (($rr4[$i]['type'] == "checkboxhtml") || ($rr4[$i]['type'] == "radiogrouphtml")) {
+    for ($j=0; $j<count($rr4[$i]['choices']); $j++) { $rr4[$i]['choices'][$j]['text'] = strip_tags($rr4[$i]['choices'][$j]['text']); }
+  }
+  if (($rr4[$i]['type'] == "radiogroup") || ($rr4[$i]['type'] == "radiogrouphtml") || ($rr4[$i]['type'] == "dropdown") || ($rr4[$i]['type'] == "matrix") || ($rr4[$i]['type'] == "matrixdropdown")) { unset($rr4[$i]['type']); $rr4[$i]['accept'] = "Single answer"; }
+  else if (($rr4[$i]['type'] == "checkbox") || ($rr4[$i]['type'] == "checkboxhtml")) { unset($rr4[$i]['type']); $rr4[$i]['accept'] = "Multiple answer"; }
+  else if (($rr4[$i]['type'] == "text") || ($rr4[$i]['type'] == "multipletext") || ($rr4[$i]['type'] == "comment")) { unset($rr4[$i]['type']); $rr4[$i]['accept'] = "Open-ended"; }
+  else if ($rr4[$i]['type'] == "html") { unset($rr4[$i]['type']); }
+}
+
+$json = json_encode($rr4);
+
+// ----------------- RESULT ----------------------
+
+if ($status >= 2) { $sql3 = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 2 ORDER BY submitted DESC"; }
+else if ($status == 1) { $sql3 = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 1 ORDER BY submitted DESC"; }
+$q = $db->prepare($sql3);
+$q->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+$q->execute(); // print_r($q->rowCount());
+$last = 0; $first = ($q->rowCount()-1);
+while ($row = $q->fetchAll(PDO::FETCH_ASSOC)) {
+  $ee = $row;
+  for ($i=0; $i<count($ee); $i++) {
+    $removeKeys = array('rd', 'email', 'ip', 'surveyid', 'status', 'interviewer');
+    foreach($removeKeys as $key) { unset($ee[$i][$key]); }
+    $ee[$i]['data'] = json_decode($ee[$i]['data'], true);
+  }
+}
+// ksort($ee);
+
+
+// ----------------- COMBINING ----------------------
+
+for ($i=0; $i<count($rr4); $i++) { $rr5[] = $rr4[$i]["name"]; }
+$rr5 = array_flip($rr5);
+remove_array_value($rr5);
+
+for ($i=0; $i<count($ee); $i++) {
+  $ee[$i]["data"] = array_merge($rr5, array_diff($ee[$i]["data"], $rr5));
+  foreach ($ee[$i]["data"] as $k1 => $v1) {
+    if (preg_match("/zText/", $k1)) { unset($ee[$i]["data"][$k1]); }
+  }
+}
+
+$datafordownload = json_encode($ee);
+
+
+// ----------------- ORIGINAL ----------------------
+
 $a = json_decode($rows[0]["data"], true);
 foreach ($a["pages"] as $k1 => $p1) { foreach ($p1 as $k2 => $p2) { foreach ($p2 as $k3 => $p3) { $questions[] = $p3; } } }
 // print_r($questions);
+
+// for ($i = 0; $i < count($questions); $i++) {
+//   if (preg_match("/zText/", $questions[$i]["name"])) { unset($questions[$i]); }
+//   if ($questions[$i]["type"] == "html") { unset($questions[$i]); }
+// }
+// $questions = array_values($questions);
+
 $qout = "";
 for ($i = 0; $i < count($questions); $i++) {
   $qname = $questions[$i]["name"]; $pname[] = $questions[$i]["name"];
@@ -123,24 +213,29 @@ for ($i = 0; $i < count($questions); $i++) {
       $qout .= "      </div>\n";
     }
     else if ($qtype == "matrix") {
-      $qout .= "      <table class=\"table\" style=\"font-family:boon;font-size:110%\">\n";
+      $qout .= "      <table class=\"table\" style=\"font-family:boon\">\n";
       $qout .= "        <thead><tr class=\"bg-primary\">\n";
       $qout .= "          <th width=\"20%\"></th>\n";
       $a = 0;
+      $nocols = count($questions[$i]["columns"]);
+      $cwidth = 80/$nocols;
+      // print_r($nocols);
       foreach ($questions[$i]["columns"] as $k8 => $p8) {
         $column_text = $p8['text']; $c_text[] = $p8['text'];
         $column_code = $p8['value']; $c_code[] = $p8['value'];
         $column_link[] = $p8['text']." (".$p8['value'].")";
-        $qout .= "          <th style=\"text-align:right\">$column_text ($column_code)</th>\n";
+        $column_link1[] = $p8['value'];
+        $qout .= "          <th width=\"$cwidth%\" style=\"text-align:right\">$column_text<br>$column_code</th>\n";
         $a++;
       }
       $qout .= "        </tr></thead>\n";
-      $qout .= "      <tbody><tr>\n";
+      $qout .= "      <tbody>\n";
       foreach ($questions[$i]["rows"] as $k9 => $p9) {
         $row_text = $p9['text']; $r_text[] = $p9['text'];
         $row_code = $p9['value']; $r_code[] = $p9['value'];
         $row_link[] = $p9['text']." (".$p9['value'].")";
-        $qout .= "<td align=\"right\">$row_text ($row_code)</td>\n";
+        $qout .= "        <tr>\n";
+        $qout .= "          <td align=\"right\">$row_text<br>$row_code</td>\n";
         for ($b=0; $b < $a; $b++) { $qout .= "          <td align=\"right\"><div class=\"radio\"><input type=\"radio\" name=\"$row_code\" style=\"position:relative;margin:0px\" disabled></div></td>\n"; }
         $qout .= "        </tr>";
       }
@@ -148,7 +243,7 @@ for ($i = 0; $i < count($questions); $i++) {
       $qout .= "      </table>\n";
     }
     else if ($qtype == "matrixdropdown") {
-      $qout .= "      <table class=\"table\" style=\"font-family:boon;font-size:110%\">\n";
+      $qout .= "      <table class=\"table\" style=\"font-family:boon\">\n";
       $qout .= "        <thead><tr class=\"bg-primary\">\n";
       $qout .= "          <th width=\"20%\"></th>\n";
       $c = 0;
@@ -307,54 +402,56 @@ for ($i=0; $i<count($ee); $i++) {
 $datafortable = json_encode($ee);
 // print_r($datafortable);
 
-// Generate download file automatically
-if ($_GET["download"] == "json") {
-  $filedownload = "data_".$project."_".date('Y-m-d').".json";
-  header("Content-Disposition: attachment; filename=$filedownload");
-  header('Content-type: application/json');
-  echo $alldata;
-  exit;
-} else if ($_GET["download"] == "csv") {
-  $filedownload = "data_".$project."_".date('Y-m-d').".csv";
-  $out = json_decode($alldata, 1);
-  // foreach(array_keys($out[0]) as $key){ $keys[0][$key] = $key; }
-  foreach(reset($out) as $k1 => $v1) {
-    if (!is_array($v1)) { $kk = $k1; $n[0][$kk] = $kk; }
-    else if (is_array($v1)) { foreach($v1 as $k2 => $v2) { $kk = $k1."/".$k2; $n[0][$k2] = $kk; } }
-  }
-  // $out = array_merge($keys, $out);
-  $out = array_merge($n, $out);
-  header("Content-Type: application/csv; charset=utf-8");
-  header("Content-Disposition: attachment; filename=$filedownload");
-  $output = fopen("php://output", "w");
-  foreach ($out as $items) {
-    $flatData = array();
-    $fields = new RecursiveIteratorIterator(new RecursiveArrayIterator($items));
-    foreach($fields as $value) { array_push($flatData, $value); }
-    fputcsv($output, $flatData, ",", '"');
-  }
-  exit;
-} else if ($_GET["download"] == "xls") {
-  $filedownload = "data_".$project."_".date('Y-m-d').".xls";
-  $out = json_decode($alldata, 1);
-  // foreach(array_keys($out[0]) as $key){ $keys[0][$key] = $key; }
-  foreach(reset($out) as $k1 => $v1) {
-    if (!is_array($v1)) { $kk = $k1; $n[0][$kk] = $kk; }
-    else if (is_array($v1)) { foreach($v1 as $k2 => $v2) { $kk = $k1."/".$k2; $n[0][$k2] = $kk; } }
-  }
-  // $out = array_merge($keys, $out);
-  $out = array_merge($n, $out);
-  header("Content-Type: application/csv; charset=utf-8");
-  header("Content-Disposition: attachment; filename=$filedownload");
-  $output = fopen("php://output", "w");
-  foreach ($out as $items) {
-    $flatData = array();
-    $fields = new RecursiveIteratorIterator(new RecursiveArrayIterator($items));
-    foreach($fields as $value) { array_push($flatData, $value); }
-    fputcsv($output, $flatData, "\t", '"');
-  }
-  exit;
-}
+// // Generate download file automatically
+// if ($_GET["download"] == "json") {
+//   $filedownload = "data_".$project."_".date('Y-m-d').".json";
+//   header("Content-Disposition: attachment; filename=$filedownload");
+//   header('Content-type: application/json');
+//   echo $datafordownload;
+//   // echo $alldata;
+//   exit;
+// } else if ($_GET["download"] == "csv") {
+//   $filedownload = "data_".$project."_".date('Y-m-d').".csv";
+//   // $out = json_decode($alldata, 1);
+//   $out = json_decode($datafordownload, 1);
+//   // foreach(array_keys($out[0]) as $key){ $keys[0][$key] = $key; }
+//   foreach(reset($out) as $k1 => $v1) {
+//     if (!is_array($v1)) { $kk = $k1; $n[0][$kk] = $kk; }
+//     else if (is_array($v1)) { foreach($v1 as $k2 => $v2) { $kk = $k1."/".$k2; $n[0][$k2] = $kk; } }
+//   }
+//   // $out = array_merge($keys, $out);
+//   $out = array_merge($n, $out);
+//   header("Content-Type: application/csv; charset=utf-8");
+//   header("Content-Disposition: attachment; filename=$filedownload");
+//   $output = fopen("php://output", "w");
+//   foreach ($out as $items) {
+//     $flatData = array();
+//     $fields = new RecursiveIteratorIterator(new RecursiveArrayIterator($items));
+//     foreach($fields as $value) { array_push($flatData, $value); }
+//     fputcsv($output, $flatData, ",", '"');
+//   }
+//   exit;
+// } else if ($_GET["download"] == "xls") {
+//   $filedownload = "data_".$project."_".date('Y-m-d').".xls";
+//   $out = json_decode($alldata, 1);
+//   // foreach(array_keys($out[0]) as $key){ $keys[0][$key] = $key; }
+//   foreach(reset($out) as $k1 => $v1) {
+//     if (!is_array($v1)) { $kk = $k1; $n[0][$kk] = $kk; }
+//     else if (is_array($v1)) { foreach($v1 as $k2 => $v2) { $kk = $k1."/".$k2; $n[0][$k2] = $kk; } }
+//   }
+//   // $out = array_merge($keys, $out);
+//   $out = array_merge($n, $out);
+//   header("Content-Type: application/csv; charset=utf-8");
+//   header("Content-Disposition: attachment; filename=$filedownload");
+//   $output = fopen("php://output", "w");
+//   foreach ($out as $items) {
+//     $flatData = array();
+//     $fields = new RecursiveIteratorIterator(new RecursiveArrayIterator($items));
+//     foreach($fields as $value) { array_push($flatData, $value); }
+//     fputcsv($output, $flatData, "\t", '"');
+//   }
+//   exit;
+// }
 
 // echo $cd;
 
@@ -627,16 +724,17 @@ else if ($cd == "matrix") {
     $dc[] = $yy;
   }
   // print_r(($dc));
-
   foreach ($dc as $q => $r) {
     $dd[] = percentile($dc[$q]);
+    $dd1[] = $dc[$q];
     $de[] = array_sum($r);
-    $cmax[] = count($dc[$q]);
   }
   $totalresponses = array_sum($de);
-  $c1 = array_combine($db, $dd);
+  $c1 = array_combine($db, $dd); // percentage
+  $c1a = array_combine($db, $dd); // absolute
   $c2 = array_combine($db, $average);
-  $ccmax = count($column_link);
+  // print_r($dd);
+  $ccmax = count($column_link); //print_r($ccmax);
   if ($ccmax == 2) { $color = "colors: ['#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 1 }, type: 'line' } },\n"; }
   else if ($ccmax == 3) { $color = "colors: ['#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 1, type: 'line' } },\n"; }
   else if ($ccmax == 4) { $color = "colors: ['#CC0000', '#FF4444', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 1, type: 'line' } },\n"; }
@@ -646,18 +744,39 @@ else if ($cd == "matrix") {
   else if ($ccmax == 8) { $color = "colors: ['#350000', '#530000', '#820000', '#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 0 }, 6: { targetAxisIndex: 0 }, 7: { targetAxisIndex: 0 }, 8: { targetAxisIndex: 1, type: 'line' } },\n"; }
   else if ($ccmax == 9) { $color = "colors: ['#220000', '#350000', '#530000', '#820000', '#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 0 }, 6: { targetAxisIndex: 0 }, 7: { targetAxisIndex: 0 }, 8: { targetAxisIndex: 0 }, 9: { targetAxisIndex: 1, type: 'line' } },\n"; }
   else if ($ccmax == 10) { $color = "colors: ['#160000', '#220000', '#350000', '#530000', '#820000', '#CC0000', '#FF4444', '#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 0 }, 5: { targetAxisIndex: 0 }, 6: { targetAxisIndex: 0 }, 7: { targetAxisIndex: 0 }, 8: { targetAxisIndex: 0 }, 9: { targetAxisIndex: 0 }, 10: { targetAxisIndex: 1, type: 'line' } },\n"; }
+  $tableout1 = "  <table class=\"table\" style=\"font-family:boon\">\n";
+  $tableout1 .= "    <thead>\n";
+  $tableout1 .= "      <tr class=\"bg-primary\">\n";
+  $tableout1 .= "        <th width=\"20%\"></th>\n";
+  if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $cwidth = 80/($ccmax+1); } else { $cwidth = 80/($ccmax); }
   $out = "[ 'Attribute', ";
-  foreach ($column_link as $a) { $out .= "'".$a."', "; } // label
-  if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $out .= " 'Mean' ],\n"; $color .= "'#000000' ],\n"; } else { $out .= " ],\n"; $color .= " ],\n"; }
+  foreach ($column_link as $a) { $out .= "{ label: '".$a."', type: 'number' }, "; } // label
+  foreach ($column_link1 as $a1) { $tableout1 .= "        <th style=\"text-align:right\" width=\"$cwidth%\">$a1</th>\n"; } // label
+  if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $out .= " { label: 'Mean', type: 'number' } ],\n"; $color .= "'#000000' ],\n"; $tableout1 .= "        <th style=\"text-align:right\" width=\"$cwidth%\">Mean</th>\n"; } else { $out .= " ],\n"; $color .= " ],\n"; }
+  $tableout1 .= "      </tr>\n";
+  $tableout1 .= "    </thead>\n";
+  $tableout1 .= "    <tbody>\n";
   foreach ($r_code as $b) {
     if (json_decode(str_replace($r_code, $r_text, json_encode($b)), true)) { $bb = json_decode(str_replace($r_code, $r_text, json_encode($b)), true); }
+    $bb1 = json_decode(json_encode($b), true);
     $out .= "      [ '".($bb)."', ";
-    foreach ($c_code as $c) { $out .= $c1[$b][$c].", "; } // data for each scale
-    // $c3 = $c2[$b]+1;
-    if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $out .= " $c2[$b] ],\n"; } else { $out .= " ],\n"; }
+    $tableout1 .= "      <tr>\n";
+    $tableout1 .= "        <td align=\"right\">$bb1</td>\n";
+    $jj = array(); $jjj = array();
+    foreach ($c_code as $c) {
+      if (empty($c1[$b][$c])) { $ccc = 0; } else { $ccc = round($c1[$b][$c]); }
+      array_push($jj, $c1[$b][$c]);
+      $out .= $ccc.", ";
+      $tableout1 .= "        <td align=\"right\">".$ccc."</td>\n";
+    } // data for each scale
+    $mean = number_format(meanCalculation($jj), 1); //print_r($mean);
+    if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $out .= " $mean ],\n"; $tableout1 .= "        <td align=\"right\">".$mean."</td>\n"; } else { $out .= " ],\n"; }
+    $tableout1 .= "      </tr>\n";
   }
+  $tableout1 .= "    </tbody>\n";
+  $tableout1 .= "  </table>\n";
   $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
-  if (count($dc[$q]) == 5) {
+  if ($ccmax == 5) {
     if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H-mean")."\">Bar Horizontal with Mean</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V-mean")."\">Bar Vertical with Mean</a> <strong>]</strong></p><br>\n"; }
     else if ($_GET['type'] == "bar-H-mean") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Horizontal with Mean</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V-mean")."\">Bar Vertical with Mean</a> <strong>]</strong></p><br>\n"; }
     else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H-mean")."\">Bar Horizontal with Mean</a> <strong>:</strong> <u>Bar Vertical</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V-mean")."\">Bar Vertical with Mean</a> <strong>]</strong></p><br>\n"; }
@@ -1038,6 +1157,14 @@ $openendquery .= "</div>\n";
       isStacked: true,
       <?php echo $color; ?>
       seriesType: 'bars',
+      series: {
+        0: {  type: 'bar', targetAxisIndex: 0 },
+        1: {  type: 'bar', targetAxisIndex: 0 },
+        2: {  type: 'bar', targetAxisIndex: 0 },
+        3: {  type: 'bar', targetAxisIndex: 0 },
+        4: {  type: 'bar', targetAxisIndex: 0 },
+        5: {  type: 'line', targetAxisIndex: 1 }
+      },
       hAxes: {
         0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
         1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
@@ -1091,6 +1218,14 @@ $openendquery .= "</div>\n";
       isStacked: true,
       <?php echo $color; ?>
       seriesType: 'bars',
+      series: {
+        0: {  type: 'bar', targetAxisIndex: 0 },
+        1: {  type: 'bar', targetAxisIndex: 0 },
+        2: {  type: 'bar', targetAxisIndex: 0 },
+        3: {  type: 'bar', targetAxisIndex: 0 },
+        4: {  type: 'bar', targetAxisIndex: 0 },
+        5: {  type: 'line', targetAxisIndex: 1 }
+      },
       vAxes: {
         0: { title: 'Percentage', viewWindowMode:'explicit', viewWindow: { max:100, min:0 }, gridlines: { color: 'transparent' } },
         1: { title: 'Mean score', viewWindowMode:'explicit', viewWindow: { max:5, min:1 }, gridlines: { color: 'transparent' } },
@@ -1123,9 +1258,11 @@ $openendquery .= "</div>\n";
     return target.replace(new RegExp(search, 'g'), replacement);
   };
   $(document).ready(function () {
-    var ttt = <?php echo $datafortable; ?>;
+    var ttt = <?php echo $datafordownload; ?>;
     var ttt = JSON.stringify(ttt);
-    ttt = ttt.replaceAll("data", ""); ttt = ttt.replaceAll("upload/", "");
+    ttt = ttt.replaceAll("data", "");
+    ttt = ttt.replaceAll("upload/", "");
+    // ttt = ttt.replaceAll("upload/", "http://www.siamsquare.org/members/assets/upload/");
     var inArray = JSON.parse(ttt);
     var outArray = [];
     for (var row in inArray) { outArray[outArray.length] = parse_object(inArray[row]); }
@@ -1138,6 +1275,15 @@ $openendquery .= "</div>\n";
     $("a.exceldownload").attr({'download': filename, 'href': csvUrl });
   });
 </script>
+
+<?php
+if ($tableout1) {
+  echo "<p align=\"right\"><a class=\"grey small\" data-toggle=\"collapse\" href=\"#showtable\">Click to show table</a></p>\n";
+  echo "<div class=\"collapse\" id=\"showtable\">\n";
+  echo $tableout1;
+  echo "</div>\n";
+}
+?>
 
 <?php backButton("/admin/?w=surveys", "Back to the main page", "danger"); ?>
 

@@ -113,6 +113,7 @@ function pageHeader($title) {
 }
 
 function pageFooter($notes = null) {
+  global $db;
   echo "</main>\n";
   echo "<footer>\n";
   echo "  <div class=\"row\">\n";
@@ -136,6 +137,19 @@ function pageFooter($notes = null) {
   echo "    </div>\n";
   echo "    <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12 footer-3\">\n";
   echo "      <div class=\"container\">\n";
+  if ($_SESSION["level"] == 9) {
+    $q = $db->prepare("SELECT * FROM j_sessions");
+    $q->execute();
+    $found = $q->rowCount();
+    echo "<span class=\"pull-left small lightgrey\">User online: $found</span>";
+    // $name = "";
+    // while ($r = $q->fetchObject()) {
+    //   if ($r->email) { $name .= $r->fullname . " (" . $r->email . "), "; }
+    //   else { $name .= "Anonymous - " . $r->ip . ", "; }
+    // }
+    // $name = substr_replace($name, '', -2);
+    // echo "<a href=\"\" data-toggle=\"tooltip\" title=\"$name\" class=\"pull-left small lightgrey\">User online: $found</a>";
+  }
   echo "        <h4 class=\"avatar\">&#9836; &#9819; &#9962; &#10000; &#9820; &#9822; &#9973;</h4>\n";
   echo "      </div>\n";
   echo "    </div>\n";

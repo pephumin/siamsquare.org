@@ -1,5 +1,24 @@
 <?php
 
+function meanCalculation($n) {
+  if (is_array($n) && (count($n) == "5")) {
+    return((($n["0"]*1)+($n["1"]*2)+($n["2"]*3)+($n["3"]*4)+($n["4"]*5))/100);
+  }
+}
+
+function userOnline() {
+  global $db;
+  $q = $db->prepare("SELECT * FROM j_sessions");
+  $q->execute();
+  $found = $q->rowCount();
+  $out = "User online: $found";
+  return $out;
+}
+
+function remove_array_value(&$myarr) {
+  $myarr = array_map(create_function('$n', 'return null;'), $myarr);
+}
+
 function array_remove_empty($arr, $recursive = "yes") {
   $narr = array();
   while (list($key, $val) = each($arr)) {
