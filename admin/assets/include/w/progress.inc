@@ -794,13 +794,26 @@ echo "      <p>This data should only be used as a sanitary check rather than usi
 echo "      <p><strong>It is imperative that business decision must not be made based on the interim result</strong>. We hereby take no responsibility on any damages to the business caused by the usage of interim result. You must use it at your own risk.</p>\n";
 echo "    </div>\n";
 if ($q->rowCount() < $excerptRows) { $outrecords = $q->rowCount(); } else { $outrecords = $excerptRows; }
-echo "    <div class=\"csv\">\n";
+echo "    <div class=\"row csv\">\n";
+echo "      <div class=\"col-xs-12 col-sm-9 col-md-9 col-lg-9\">\n";
 echo "      <p>Table below shows the interim data which is <strong>the most recent $outrecords records</strong> of this survey which you can view the initial feedback plus an ability to delete should you need to.</p>\n";
-echo "      <p>But in order to work with the data in a more effective way, we would suggst you <a class=\"download\"><i class=\"pe-download pe-fw\"></i> download the data file</a> or alternatively <a class=\"raw\"><i class=\"pe-desktop pe-fw\"></i> view the data online</a> in a Comma Separated Values (CSV) format if there are not many questions (e.g. less than 10 questions).</p>\n";
-echo "      <textarea class=\"editing form-control\" readonly></textarea>\n";
-echo "      <div class=\"table rendered\"><table class=\"table\"></table></div>\n";
-echo "      <span class=\"tablenotice\">You may need to scroll right if there are many columns <i class=\"pe-hand-o-right\"></i></span>\n";
+echo "      <p>If you have a very short survey e.g. not more than 10 questions, you can <a class=\"raw\"><i class=\"pe-desktop pe-fw\"></i> click here</a> to view the real time data in a Comma Separated Values (CSV) format.</p>\n";
+echo "      <p>Otherwise, we would strongly suggest you download the data file so working with the data will be more effective. The data is self-explanatory so even non-DP person can understand it.</p>\n";
+echo "      </div>\n";
+echo "      <div class=\"col-xs-12 col-sm-3 col-md-3 col-lg-3\">\n";
+echo "        <div class=\"list-group small\">\n";
+echo "          <li class=\"list-group-item list-group-item-info\"><strong><i class=\"pe-info-circle pe-fw\"></i> Menu</strong></li>\n";
+echo "          <a class=\"list-group-item download\"><i class=\"pe-download pe-fw\"></i> Download data of all questions in CSV format</a>\n";
+echo "          <a href=\"$result\" class=\"list-group-item\"><i class=\"pe-line-chart pe-fw\"></i> View the real-time survey results</a>\n";
+echo "        </div>\n";
+echo "      </div>\n";
+echo "      <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
+echo "        <textarea class=\"editing form-control\" readonly></textarea>\n";
+echo "        <div class=\"table rendered\"><table class=\"table\"></table></div>\n";
+echo "        <span class=\"tablenotice\">You may need to scroll right if there are many columns <i class=\"pe-hand-o-right\"></i></span>\n";
+echo "      </div>\n";
 echo "    </div>\n";
+
 ?>
 
   </div>
@@ -1072,13 +1085,14 @@ echo "    </div>\n";
       $(".csv textarea").focus().select();
       return false;
     })
-    $(".csv a.download").click(function() {
-      var data = $(".csv textarea").val();
-      if (data) { Events.download(data.length); return true; }
-      else { return false; }
-    });
+    // $(".csv a.download").click(function() {
+    //   var data = $(".csv textarea").val();
+    //   if (data) { Events.download(data.length); return true; }
+    //   else { return false; }
+    // });
     $(".csv textarea").click(function() {$(this).focus().select();});
   });
+
 
 
 <?php if ($monitor) { echo "var monitor = $monitor;\n"; } else { echo "var monitor = { \"quota\": [], \"QC\": [], \"monitor\": [] };\n"; } ?>
@@ -1196,7 +1210,7 @@ echo "    </div>\n";
   function newTable() {
     var lastid = $('#tablesamplewrap table:last').attr('id');
     if (lastid) { var m = parseInt(lastid.substring(11))+1; }
-    else { var m = 0; }    
+    else { var m = 0; }
     var l = 1;
     var newrow3A = "        <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n" +
       "          <table class=\"table table-hover table-condensed small\" id=\"tablesample" + m + "\">\n" +

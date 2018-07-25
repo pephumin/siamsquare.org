@@ -23,6 +23,7 @@ if ($today['month'] == "01") { $today['month'] = "12"; $today['year'] = $today['
 // DROP TABLE tmp;
 
 // UPDATE `j_results` SET data = REPLACE(data, 'โปรโมชั่นชิงโชค แจกทอง และท่องเที่ยว', 'Gold and travel') WHERE data LIKE '%โปรโมชั่นชิงโชค แจกทอง และท่องเที่ยว%' AND surveyid = 36;
+// UPDATE `j_results` SET data = REPLACE(data, 'Online ', 'Online') WHERE data LIKE '%Online %' AND surveyid = 33;
 
 // Get projcet info
 $q1 = $db->prepare("SELECT * FROM j_projects WHERE id = :surveyid");
