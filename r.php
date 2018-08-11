@@ -73,6 +73,18 @@ while ($r = $q1->fetchObject()) {
   if ($_showcolour) { $showcolour = $_showcolour; } else { $showcolour = $r->show_colour; }
 }
 
+if (!empty($_GET['rd'])) {
+  $q2 = $db->prepare("SELECT data FROM j_results WHERE id = :id AND surveyid = :surveyid");
+  $q2->bindValue(':id', $_GET["rd"], PDO::PARAM_INT);
+  $q2->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
+  $q2->execute();
+  while ($r = $q2->fetchObject()) {
+    $resultdata = $r->data;
+  }
+  $readonly = 0;
+}
+
+
 // $showsurvey = 0;
 //
 // // Check email and token if it is a private survey
@@ -395,6 +407,7 @@ $out .= "]";
   Survey.Survey.cssType = "bootstrap";
 
   Survey.JsonObject.metaData.addProperty("text", { name: "dateFormat", default: "d MM yy", choices: ["d MM yy", "dd-mm-yy", "dd/mm/yy", "dd.mm.yy", "M d, yy", "DD d MM yy"] });
+  Survey.JsonObject.metaData.addProperty("html", { name: "colourFormat", default: "info", choices: ["info", "success", "warning", "danger"] });
   Survey.JsonObject.metaData.addProperty("dropdown", { name: "renderAs", default: "standard", choices: ["standard", "barrating", "NPS", "imagepicker"] });
   Survey.JsonObject.metaData.addProperty("dropdown", { name: "ratingTheme", default: "star", choices: ["star", "heart", "thumb", "check", "bell", "flag", "user", "square-1", "square-2", "square-3"] });
   Survey.JsonObject.metaData.addProperty("dropdown", { name: "showValues:boolean", default: false });
@@ -539,6 +552,21 @@ $out .= "]";
     },
   }
   Survey.CustomWidgetCollection.Instance.addCustomWidget(widget6);
+  var widget7 = {
+    name: "colourFormat",
+    htmlTemplate: "<input id='widget-datepicker' type='text' style='width:100%;'>",
+    isFit: function(question) { return question.inputType == 'date'; },
+    afterRender: function(question, el) {
+      if (question.dateFormat) { dateFormat = question.dateFormat; } else { dateFormat = 'd MM yy'; }
+      var widget7 = $(el).datepicker({ dateFormat: dateFormat });
+      // var widget1 = $(el).datepicker({ dateFormat: dateFormat, onSelect: function(dateText) { question.value = dateText; } });
+      widget1.on("change", function(e) { question.value = $(this).val(); });
+      question.valueChangedCallback = function() { widget1.datepicker('setDate', new Date(question.value)); }
+      widget1.datepicker('setDate', new Date(question.value || Date.now));
+    }
+  }
+  Survey.CustomWidgetCollection.Instance.addCustomWidget(widget7);
+
   // var widget7 = {
   //   name: "autocomplete",
   //   htmlTemplate: "<input id='autocomplete' type='text' class='form-control' style='width:100%;'>",
@@ -567,6 +595,8 @@ $out .= "]";
   //   }
   // }
   // Survey.CustomWidgetCollection.Instance.addCustomWidget(widget7);
+  <?php //print_r("hehehehe"); ?>
+  <?php //print_r($resultdata); ?>
 
   var survey = new Survey.Model(getsurveydata(surveyid));
   if (pilot != 1) {
@@ -580,6 +610,7 @@ $out .= "]";
       survey.onCurrentPageChanged.add(function(data) { $('#notification').hide(); });
     }
   }
+  <?php if ($resultdata) { echo "survey.data = $resultdata; "; } ?>
 
   function subset(leader, follower, key) {
     survey.onValueChanged.add(function(survey, options) {
@@ -777,6 +808,7 @@ $out .= "]";
 echo "<style>\n";
 echo "  header .header-2, footer .footer-2 { ".themeBG($showcolour)." }\n";
 echo "</style>\n";
+
 
 if ($project || $notes) { pageFooter($project, $notes); } else { pageFooter(); }
 

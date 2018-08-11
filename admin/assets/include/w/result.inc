@@ -2,6 +2,10 @@
 
 $limit = 20;
 $show = $_GET["q"];
+$base = "/admin/?w=result&s=".$_GET['s'];
+$progress = "/admin/?w=progress&s=".$_GET['s'];
+$questionnaire = "/admin/?w=questionnaire&s=".$_GET['s'];
+$respondent = "/admin/?w=respondents&s=".$_GET['s'];
 
 // ------- Show question --------------------------------------------------------------------------
 
@@ -807,12 +811,11 @@ echo "    <p>Should you need to see more details such as subgroup analysis, you 
 echo "  </div>\n";
 echo "  <div class=\"col-sm-3\" style=\"padding:10px;margin-top:20px\">\n";
 echo "    <div class=\"list-group small\">\n";
-echo "      <li class=\"list-group-item list-group-item-info\"><strong><i class=\"pe-download pe-fw\"></i> Data download</strong></li>\n";
-// echo "      <a href=\"$getcsv\" class=\"list-group-item download\"><i class=\"pe-file-text-o pe-fw\"></i> All questions in CSV</a>\n";
-echo "      <a class=\"list-group-item exceldownload\"><i class=\"pe-file-text-o pe-fw\"></i> Data of all questions in CSV (Spreadsheet) format</a>\n";
-// echo "      <a href=\"$getxls\" class=\"list-group-item\"><i class=\"pe-file-excel-o pe-fw\"></i> All questions in Excel</a>\n";
-// echo "      <a href=\"$getjson\" class=\"list-group-item\"><i class=\"pe-file-code-o pe-fw\"></i> All questions in JSON</a>\n";
-// echo "      <a href=\"\" class=\"list-group-item\"><i class=\"pe-file-pdf-o pe-fw\"></i> Get PDF</a>\n";
+echo "      <li class=\"list-group-item list-group-item-info\"><strong><i class=\"pe-file-o pe-fw\"></i> Menu</strong></li>\n";
+echo "      <a href=\"$questionnaire\" class=\"list-group-item\"><i class=\"pe-file-o pe-fw\"></i> View the original questinnaire online</a>\n";
+echo "      <a href=\"$result\" class=\"list-group-item\"><i class=\"pe-line-chart pe-fw\"></i> View real-time results in a graphical interface</a>\n";
+echo "      <a href=\"$progress\" class=\"list-group-item\"><i class=\"pe-flask pe-fw\"></i> View progress of this project</a>\n";
+echo "      <a class=\"list-group-item exceldownload\"><i class=\"pe-download pe-fw\"></i> Download all data for all questions in one CSV (Spreadsheet format) file</a>\n";
 echo "    </div>\n";
 echo "  </div>\n";
 echo "</div>\n";

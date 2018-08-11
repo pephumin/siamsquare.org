@@ -1014,7 +1014,9 @@ echo "    </div>\n";
       var a1 = document.createElement('a'); a1.innerHTML = ' <i class="pe-chevron-down"></i>'; a1.setAttribute('id', 'rowshow' + i); a1.setAttribute('href', ''); a1.setAttribute('onclick', 'return showRow(event, ' + i + ')');
       var a2 = document.createElement('a'); a2.innerHTML = ' <i class="pe-chevron-up"></i>'; a2.setAttribute('id', 'rowhide' + i); a2.setAttribute('href', ''); a2.setAttribute('onclick', 'return hideRow(event, ' + i + ')'); a2.setAttribute('style', 'display:none');
 <?php if (($_SESSION["level"] >= "6") || ($owner == 1)) { ?>
-      var bb1 = document.createElement('button'); bb1.innerHTML = 'Delete <i class="pe-trash"></i>'; bb1.setAttribute('class', 'btn btn-danger btn-tiny'); bb1.setAttribute('onclick', "deleteSurveyResult('" + resultid[i] + "')");
+      var bbspace =document.createTextNode(" ");
+      var bb3 = document.createElement('a'); bb3.innerHTML = '<i class="pe-edit"></i>'; bb3.setAttribute('class', 'btn btn-warning btn-tiny'); bb3.setAttribute('href', "/r.php?s=" + surveyid + "&rd=" + resultid[i] + ""); bb3.setAttribute('title', "Edit this survey");
+      var bb1 = document.createElement('button'); bb1.innerHTML = '<i class="pe-trash"></i>'; bb1.setAttribute('class', 'btn btn-danger btn-tiny'); bb1.setAttribute('onclick', "deleteSurveyResult('" + resultid[i] + "')");
       var bb2 = document.createElement('button'); bb2.innerHTML = 'Undelete <i class="pe-undo"></i>'; bb2.setAttribute('class', 'btn btn-warning btn-tiny'); bb2.setAttribute('onclick', "undeleteSurveyResult('" + resultid[i] + "')");
 <?php } ?>
       var td2 = document.createElement("td"); td2.setAttribute('colspan', '2'); td2.setAttribute('style', 'border-top-style:none');
@@ -1028,6 +1030,8 @@ echo "    </div>\n";
       }
       tbody.appendChild(tr);
 <?php if (($_SESSION["level"] >= "6") || ($owner == 1)) { ?>
+      td2.appendChild(bb3);
+      td2.appendChild(bbspace);
       td2.appendChild(bb1);
       td2.append(" ");
       // td2.appendChild(bb2);
@@ -1406,12 +1410,6 @@ print_r($A9C["0"]);
 </script>
 
 <br>
-
-<?php
-// print_r("<pre>");
-// print_r($monitor);
-// print_r("</pre>");
-?>
 
 <?php backButton("/admin/?w=surveys", "Back to the main page", "danger"); ?>
 

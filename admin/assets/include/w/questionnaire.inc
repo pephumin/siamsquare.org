@@ -3,7 +3,7 @@
 $excerptRows = "50";
 // $c_target = 300;
 $base = "/admin/?w=progress&amp;s=".$_GET['s'];
-$result = "/admin/?w=result&amp;s=".$_GET['s'];
+$edit = "/admin/?w=design&amp;s=".$_GET['s'];
 $dpspec = "/admin/?w=dpspec&amp;s=".$_GET['s'];
 
 $today['year'] = date("Y"); $today['month'] = date("m"); $today['day'] = date("d");
@@ -312,6 +312,7 @@ echo "<p>$fieldworkstatus</p>";
     <li class="active"><a href="#one" data-toggle="tab" id='first-tab-trigger'><i class="pe-edit pe-fw"></i> Questionnaire</a></li>
     <li><a href="#two" data-toggle="tab" id='second-tab-trigger'><i class="pe-database pe-fw"></i> Data specification</a></li>
     <li><a href="#three" data-toggle="tab" id='third-tab-trigger'><i class="pe-code pe-fw"></i> Raw codes</a></li>
+    <li><a href="<?php echo $edit; ?>"><i class="pe-edit pe-fw"></i> Edit</a></li>
   </ul>
 </nav>
 <br>

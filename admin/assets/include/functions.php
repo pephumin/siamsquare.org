@@ -1,5 +1,12 @@
 <?php
 
+function get_next_id($con) {
+    $sql = "SELECT MAX(id) AS last_id FROM Table";
+    $last_id_query = mysql_query($sql, $con);
+    $last_id_result = mysql_fetch_array($last_id_query);
+    $last_id = $last_id_result['last_id'];
+    return ($last_id == NULL) ? 1 : ($last_id + 1);
+}
 function meanCalculation($n) {
   if (is_array($n) && (count($n) == "5")) {
     return((($n["0"]*1)+($n["1"]*2)+($n["2"]*3)+($n["3"]*4)+($n["4"]*5))/100);

@@ -252,6 +252,19 @@ function w($w = null) {
 //   echo "</script>\n";
 // }
 
+function floatingMenu($surveyid) {
+  if (empty($surveyid) && isset($_GET['s'])) { $surveyid = $_GET['s']; } else die("No survey ID specified");
+  $base = "/admin/?w=progress&s=".$surveyid;
+  $result = "/admin/?w=result&s=".$surveyid;
+  $respondent = "/admin/?w=respondents&s=".$surveyid;
+  echo "      <div class=\"col-xs-12 col-sm-3 col-md-3 col-lg-3\">\n";
+  echo "        <div class=\"list-group small\">\n";
+  echo "          <li class=\"list-group-item list-group-item-info\"><strong><i class=\"pe-comments pe-fw\"></i> Floating Menu</strong></li>\n";
+  echo "          <a class=\"list-group-item download\"><i class=\"pe-download pe-fw\"></i> Download data of all questions in CSV format</a>\n";
+  echo "          <a href=\"$result\" class=\"list-group-item\"><i class=\"pe-line-chart pe-fw\"></i> View the real-time survey results</a>\n";
+  echo "        </div>\n";
+  echo "      </div>\n";
+}
 
 
 ?>
