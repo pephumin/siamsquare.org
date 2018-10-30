@@ -1,5 +1,6 @@
 <?php
 
+
 $mobile = 0; $mpilot = 0; $mdesign = 0; $readonly = 0;
 if ($_GET['mobile'] == "✓") { $mobile = 1; }
 else if ($_GET['pilot'] == "✓") { $mpilot = 1; }
@@ -59,6 +60,7 @@ while ($r = $q1->fetchObject()) {
   $cdescription_th = strip_tags($r->DD_th);
   $private = $r->private;
   $pincode = $r->pin;
+  $precodes = $r->precodes;
   $language_credential = $r->language_credential;
   // if ($r->logo) {
   //   if ($cwebsite) { $clientlogo = "<a href=\"$cwebsite\" title=\"$ccompany\" target=\"_blank\"><img src=\"admin/$r->logo\" title=\"$ccompany\"></a>"; }
@@ -292,6 +294,18 @@ $out .= "]";
     var result = "";
     $.ajax({
       url: api + '/survey/' + id + '/data',
+      dataType: 'json',
+      type: 'get',
+      cache: false,
+      async: false,
+      success: function(data) { result = data; }
+    });
+    return result;
+  }
+  function getsurveyprecodes(id) {
+    var result = "";
+    $.ajax({
+      url: api + '/survey/' + id + '/precodes',
       dataType: 'json',
       type: 'get',
       cache: false,
@@ -598,6 +612,8 @@ $out .= "]";
   <?php //print_r("hehehehe"); ?>
   <?php //print_r($resultdata); ?>
 
+  <?php if ($resultdata) { echo "survey.data = ; "; } ?>
+
   var survey = new Survey.Model(getsurveydata(surveyid));
   if (pilot != 1) {
     var checksave = getsavesurveydata(surveyid, email);
@@ -610,7 +626,29 @@ $out .= "]";
       survey.onCurrentPageChanged.add(function(data) { $('#notification').hide(); });
     }
   }
-  <?php if ($resultdata) { echo "survey.data = $resultdata; "; } ?>
+
+  <?php
+
+  // $new = array();
+  // foreach $precodes["group1"] as $question => $answer) {
+  //   array_push($new, $precodes["group1"]);
+  //   $pp = array_map(function ($question, $answer) { return array('question' => $question, '$nswer' => $answer); }
+  // }
+  // print_r($new);
+  // print_r($pp);
+
+
+  ?>
+
+  var newpre = new Array();
+  <?php if ($precodes) { echo "var pre = $precodes\n"; }?>
+  var group1 = pre.group1;
+  for (var i=0; i<group1.length; i++) {
+    newpre.push(group1[i]);
+  }
+  console.log(newpre);
+
+
 
   function subset(leader, follower, key) {
     survey.onValueChanged.add(function(survey, options) {
@@ -715,6 +753,8 @@ $out .= "]";
   $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> ระบบกำลังอัพโหลดรูปของคุณ ระหว่างนี้คุณสามารถทำรายการต่อได้ทันที และอีกสักครู่เมื่อระบบทำงานในส่วนนี้เสร็จ ข้อความนี้จะหายไปเอง</div>").hide();
   $('#showcompletion').html("<div class='alert alert-success'><i class='pe-check-square-o pe-lg pe-fw'></i> เราได้ทำการจัดเก็บความคิดเห็นของคุณลงระบบเป็นที่เรียบร้อยแล้ว</div>").hide();
   $('#resetsave').on('click', function() { clearsavesurveydata(resultid, ip, email, surveyid, title); });
+  // var precodeout = getsurveyprecodes(surveyid);
+  //survey.data = {"Wave": "W5" };
   survey.onComplete.add(function(data) { postsurveydata(cid, ip, email, surveyid, survey.data, title, pilot); });
   survey.onUploadFile.add(function(data) { $('#showupload').show(); setTimeout(function() { $("#showupload").slideUp(500, function() { $("#showupload").hide(); }); }, 6000); });
   if (pilot != 1) { survey.onCurrentPageChanged.add(function(data) { autosavesurveydata(cid, ip, email, surveyid, survey.data, title); }); }

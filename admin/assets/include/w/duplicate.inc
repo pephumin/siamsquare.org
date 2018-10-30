@@ -98,17 +98,17 @@ if ($_SESSION['level'] != "9") {
   }
 }
 
-// CREATE TEMPORARY TABLE tmp1 SELECT * FROM j_projects WHERE id = 33;
-// UPDATE tmp1 SET id=NULL;
-// INSERT INTO j_projects SELECT * FROM tmp1;
-// UPDATE j_projects SET title = "Healthy New" WHERE id = LAST_INSERT_ID();
-// DROP TABLE tmp1;
-//
-// CREATE TEMPORARY TABLE tmp2 SELECT * from j_results WHERE surveyid = 33 AND status = 2;
-// UPDATE tmp2 SET id=NULL;
-// UPDATE tmp2 SET surveyid = LAST_INSERT_ID();
-// INSERT INTO j_results SELECT * FROM tmp2;
-// DROP TABLE tmp2;
+CREATE TEMPORARY TABLE tmp1 SELECT * FROM j_projects WHERE id = 41;
+UPDATE tmp1 SET id=NULL;
+INSERT INTO j_projects SELECT * FROM tmp1;
+UPDATE j_projects SET title = "Healthy NEB W3" WHERE id = LAST_INSERT_ID();
+DROP TABLE tmp1;
+
+CREATE TEMPORARY TABLE tmp2 SELECT * from j_results WHERE surveyid = 47 AND status = 0;
+UPDATE tmp2 SET id=NULL;
+UPDATE tmp2 SET surveyid = 48;
+INSERT INTO j_results SELECT * FROM tmp2;
+DROP TABLE tmp2;
 
 
 

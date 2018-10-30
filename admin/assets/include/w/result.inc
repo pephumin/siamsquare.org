@@ -22,6 +22,10 @@ $status = $rows[0]["status"];
 $created = $rows[0]["created"];
 $updated = $rows[0]["updated"];
 $userid = $rows[0]["userid"];
+$private = $rows[0]["private"];
+$sample_size = $rows[0]["sample"];
+$options = $rows[0]["options"];
+$monitor = $rows[0]["QC"];
 
 $rr1 = json_decode($rows['0']['data'], true);
 $rr2 = $rr1['pages'];
@@ -116,6 +120,10 @@ foreach ($a["pages"] as $k1 => $p1) { foreach ($p1 as $k2 => $p2) { foreach ($p2
 // }
 // $questions = array_values($questions);
 
+$qoutadd = "<select class=\"form-control\" id=\"subgroupselect\">\n";
+$qoutadd .= "  <option>Select a target group</option>\n";
+$qoutadd .= "</select>\n";
+
 $qout = "";
 for ($i = 0; $i < count($questions); $i++) {
   $qname = $questions[$i]["name"]; $pname[] = $questions[$i]["name"];
@@ -140,6 +148,7 @@ for ($i = 0; $i < count($questions); $i++) {
     $qout .= "<small class='pull-right' style='padding:10px 5px'>".$qe."</small>\n";
     $qout .= "      <h4 style=\"font-family:boon;font-size:140%\">".$qname.$add.": ".$qtitle."</h4>\n";
     if ($qvisibleIf) { $qout .= "      <p class=\"grey small\"><em>Only ask when <u>".$qvisibleIf."</u></em></p>\n"; } else { $qout .= "      <p class=\"grey small\"><em>Ask all respondents</em></p>\n"; }
+    $qout .= $qoutadd;
     if (($qtype == "radiogroup") || ($qtype == "radiogrouphtml")) {
       $qout .= "      <ul>\n";
       foreach ($choices as $k4 => $p4) {
@@ -404,60 +413,6 @@ for ($i=0; $i<count($ee); $i++) {
   $ee[$i]['submitted'] = $ee[$i]['submitted'];
 }
 $datafortable = json_encode($ee);
-// print_r($datafortable);
-
-// // Generate download file automatically
-// if ($_GET["download"] == "json") {
-//   $filedownload = "data_".$project."_".date('Y-m-d').".json";
-//   header("Content-Disposition: attachment; filename=$filedownload");
-//   header('Content-type: application/json');
-//   echo $datafordownload;
-//   // echo $alldata;
-//   exit;
-// } else if ($_GET["download"] == "csv") {
-//   $filedownload = "data_".$project."_".date('Y-m-d').".csv";
-//   // $out = json_decode($alldata, 1);
-//   $out = json_decode($datafordownload, 1);
-//   // foreach(array_keys($out[0]) as $key){ $keys[0][$key] = $key; }
-//   foreach(reset($out) as $k1 => $v1) {
-//     if (!is_array($v1)) { $kk = $k1; $n[0][$kk] = $kk; }
-//     else if (is_array($v1)) { foreach($v1 as $k2 => $v2) { $kk = $k1."/".$k2; $n[0][$k2] = $kk; } }
-//   }
-//   // $out = array_merge($keys, $out);
-//   $out = array_merge($n, $out);
-//   header("Content-Type: application/csv; charset=utf-8");
-//   header("Content-Disposition: attachment; filename=$filedownload");
-//   $output = fopen("php://output", "w");
-//   foreach ($out as $items) {
-//     $flatData = array();
-//     $fields = new RecursiveIteratorIterator(new RecursiveArrayIterator($items));
-//     foreach($fields as $value) { array_push($flatData, $value); }
-//     fputcsv($output, $flatData, ",", '"');
-//   }
-//   exit;
-// } else if ($_GET["download"] == "xls") {
-//   $filedownload = "data_".$project."_".date('Y-m-d').".xls";
-//   $out = json_decode($alldata, 1);
-//   // foreach(array_keys($out[0]) as $key){ $keys[0][$key] = $key; }
-//   foreach(reset($out) as $k1 => $v1) {
-//     if (!is_array($v1)) { $kk = $k1; $n[0][$kk] = $kk; }
-//     else if (is_array($v1)) { foreach($v1 as $k2 => $v2) { $kk = $k1."/".$k2; $n[0][$k2] = $kk; } }
-//   }
-//   // $out = array_merge($keys, $out);
-//   $out = array_merge($n, $out);
-//   header("Content-Type: application/csv; charset=utf-8");
-//   header("Content-Disposition: attachment; filename=$filedownload");
-//   $output = fopen("php://output", "w");
-//   foreach ($out as $items) {
-//     $flatData = array();
-//     $fields = new RecursiveIteratorIterator(new RecursiveArrayIterator($items));
-//     foreach($fields as $value) { array_push($flatData, $value); }
-//     fputcsv($output, $flatData, "\t", '"');
-//   }
-//   exit;
-// }
-
-// echo $cd;
 
 if (($cd == "checkbox") || ($cd == "checkboxhtml")) {
   $k = array();
@@ -1277,6 +1232,27 @@ $openendquery .= "</div>\n";
     var filename = "<?php echo $project; ?>" + "_data_" + todayDate + '.csv';
     $("a.exceldownload").attr({'download': filename, 'href': csvUrl });
   });
+</script>
+
+
+
+<script type="text/javascript">
+  <?php if ($monitor) { echo "var monitor = $monitor;\n"; } else { echo "var monitor = { \"quota\": [], \"QC\": [], \"monitor\": [] };\n"; } ?>
+  var counter2a = 0, counter2b = 0;
+  function dropdownA(l, m, n, o) {
+    var newrow3FA = "                <option>Total sample (n=" + o + ")</option>\n";
+    $('#subgroupselect').append(newrow3FA);
+  }
+  function dropdownB(l, m, n, o) {
+    var newrow3FB = "                <option>" + n + " (n=" + o + ")</option>\n";
+    $('#subgroupselect').append(newrow3FB);
+  }
+  for (var counter2a in monitor.quota) {
+    dropdownA(parseInt(counter2b)+1, counter2a, monitor.quota[counter2a].details[counter2b].subgroup, <?php echo $totalrecords;?>);
+    for (var counter2b in monitor.quota[counter2a].details) {
+      dropdownB(parseInt(counter2b)+1, counter2a, monitor.quota[counter2a].details[counter2b].subgroup, monitor.quota[counter2a].details[counter2b].samplesize);
+    }
+  }
 </script>
 
 <?php
