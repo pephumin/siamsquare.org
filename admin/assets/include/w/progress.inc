@@ -255,7 +255,7 @@ $area .= "      ]";
 // ----------------- QUESTIONS ----------------------
 
 for ($i=0; $i<count($rr2); $i++) { $rr3[] = $rr2[$i]['questions']; }
-$rr3 = call_user_func_array('array_merge', $rr3);
+// $rr3 = call_user_func_array('array_merge', $rr3);
 $rr4 = $rr3;
 
 for ($i=0; $i<count($rr3); $i++) {
@@ -306,8 +306,9 @@ while ($row = $q->fetchAll(PDO::FETCH_ASSOC)) {
 // print_r($ee);
 
 // ----------------- COMBINING ----------------------
-
+// print_r($rr4);
 for ($i=0; $i<count($rr4); $i++) { $rr5[] = $rr4[$i]["name"]; }
+
 
 $rr5 = array_flip($rr5);
 foreach ($rr5 as $key => $value) {
@@ -528,9 +529,10 @@ function checkingQuestion($input, $ee = array()) {
   for ($i=0; $i<count($ee); $i++) {
     $alt1 = ""; $alt2 = "";
     if (($input == "Region") || ($input == "Location")) { $alt1 = "Region"; $alt2 = "Location"; $interviewerbylocation = 1; }
+    else if ($input == "Interviewer") { $alt1 = "Interviewer"; $alt2 = "Interviewer"; }
     else if (($input == "Gender") || ($input == "Sex")) { $alt1 = "Gender"; $alt2 = "Sex"; }
     else if (($input == "SES") || ($input == "SocialClass")) { $alt1 = "SES"; $alt2 = "SocialClass"; }
-    else { $alt2 = $input; }
+    else { $alt1 = $input; $alt2 = $input; }
     if ($alt1) {
       if ($ee[$i]['data'][$alt1]) { $output[] = $ee[$i]['data'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
       else if ($ee[$i]['data']['Demographic'][$alt1]) { $output[] = $ee[$i]['data']['Demographic'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Demographic'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
@@ -659,39 +661,31 @@ function getResultHTML($input = array(), $RD, $keyword) {
 
 function getMissingTable($input = array()) {
   $records = count($input);
-  $output = "      <h4>Missing Information <small>($records records)</small></h4>\n";
-  $rows = array();
-  foreach ($input as $row) {
-    $cells = array();
-    foreach ($row as $cell) { $cells[] = "<td>{$cell}</td>"; }
-    $rows[] = "<tr>" . implode('', $cells) . "</tr>";
+  if ($records > "0") {
+    $output = "      <h4>Missing Information <small>($records records)</small></h4>\n";
+    $rows = array();
+    foreach ($input as $row) {
+      $cells = array();
+      foreach ($row as $cell) { $cells[] = "<td>{$cell}</td>"; }
+      $rows[] = "<tr>" . implode('', $cells) . "</tr>";
+    }
+    $output .= "      <table class='table table-hover small' id='missing'><thead><tr class='bg-primary'><th>What is missing?</th><th>Questionnaire No.</th><th colspan='3'>Respondent's information</th><th>Location</th><th>Interviewer</th><th>Since</th></tr></thead><tbody>" . implode('', $rows) . "</tbody></table>";
   }
-  $output .= "      <table class='table table-hover small' id='missing'><thead><tr class='bg-primary'><th>What is missing?</th><th>Questionnaire No.</th><th colspan='3'>Respondent's information</th><th>Location</th><th>Interviewer</th><th>Since</th></tr></thead><tbody>" . implode('', $rows) . "</tbody></table>";
   return $output;
 }
 
-// $mn = array_merge($mn1, $mn2); // print_r($mn);
+// function utf8_converter($array) {
+//   array_walk_recursive($array, function(&$item, $key) {
+//     if(!mb_detect_encoding($item, 'utf-8', true)) {
+//       $item = utf8_encode($item);
+//     }
+//   });
+//   return $array;
+// }
 
-// if ($mn1["0"]) { $A1A = checkingQuestion($mn1["0"], $ee); $A1B = getResultHTML($A1A, $RDsuccess, $mn1["0"]); $A1C = getResultJS($A1A, $RDsuccess, "1", $mn1["0"]); }
-// if ($mn1["1"]) { $A2A = checkingQuestion($mn1["1"], $ee); $A2B = getResultHTML($A2A, $RDsuccess, $mn1["1"]); $A2C = getResultJS($A2A, $RDsuccess, "1", $mn1["1"]); }
-// if ($mn1["2"]) { $A3A = checkingQuestion($mn1["2"], $ee); $A3B = getResultHTML($A3A, $RDsuccess, $mn1["2"]); $A3C = getResultJS($A3A, $RDsuccess, "2", $mn1["2"]); }
-// if ($mn1["3"]) { $A4A = checkingQuestion($mn1["3"], $ee); $A4B = getResultHTML($A4A, $RDsuccess, $mn1["3"]); $A4C = getResultJS($A4A, $RDsuccess, "3", $mn1["3"]); }
-// if ($mn1["4"]) { $A5A = checkingQuestion($mn1["4"], $ee); $A5B = getResultHTML($A5A, $RDsuccess, $mn1["4"]); $A5C = getResultJS($A5A, $RDsuccess, "4", $mn1["4"]); }
-// if ($mn1["5"]) { $A6A = checkingQuestion($mn1["5"], $ee); $A6B = getResultHTML($A6A, $RDsuccess, $mn1["5"]); $A6C = getResultJS($A6A, $RDsuccess, "5", $mn1["5"]); }
-// if ($mn1["6"]) { $A7A = checkingQuestion($mn1["6"], $ee); $A7B = getResultHTML($A7A, $RDsuccess, $mn1["6"]); $A7C = getResultJS($A7A, $RDsuccess, "6", $mn1["6"]); }
-// if ($mn1["7"]) { $A8A = checkingQuestion($mn1["7"], $ee); $A8B = getResultHTML($A8A, $RDsuccess, $mn1["7"]); $A8C = getResultJS($A8A, $RDsuccess, "7", $mn1["7"]); }
-// if ($mn1["8"]) { $A9A = checkingQuestion($mn1["8"], $ee); $A9B = getResultHTML($A9A, $RDsuccess, $mn1["8"]); $A9C = getResultJS($A9A, $RDsuccess, "8", $mn1["8"]); }
-//
-// if ($mn2["0"]) { $B1A = checkingQuestion($mn2["0"], $ee); $B1B = getResultHTML($B1A, $RDsuccess, $mn2["0"]); $B1C = getResultJS($B1A, $RDsuccess, "0", $mn2["0"]); }
-// if ($mn2["1"]) { $B2A = checkingQuestion($mn2["1"], $ee); $B2B = getResultHTML($B2A, $RDsuccess, $mn2["1"]); $B2C = getResultJS($B2A, $RDsuccess, "3", $mn2["1"]); }
-// if ($mn2["2"]) { $B3A = checkingQuestion($mn2["2"], $ee); $B3B = getResultHTML($B3A, $RDsuccess, $mn2["2"]); $B3C = getResultJS($B3A, $RDsuccess, "3", $mn2["2"]); }
-// if ($mn2["3"]) { $B4A = checkingQuestion($mn2["3"], $ee); $B4B = getResultHTML($B4A, $RDsuccess, $mn2["3"]); $B4C = getResultJS($B4A, $RDsuccess, "1", $mn2["3"]); }
-// if ($mn2["4"]) { $B5A = checkingQuestion($mn2["4"], $ee); $B5B = getResultHTML($B5A, $RDsuccess, $mn2["4"]); $B5C = getResultJS($B5A, $RDsuccess, "1", $mn2["4"]); }
-// if ($mn2["5"]) { $B6A = checkingQuestion($mn2["5"], $ee); $B6B = getResultHTML($B6A, $RDsuccess, $mn2["5"]); $B6C = getResultJS($B6A, $RDsuccess, "2", $mn2["5"]); }
-// if ($mn2["6"]) { $B7A = checkingQuestion($mn2["6"], $ee); $B7B = getResultHTML($B7A, $RDsuccess, $mn2["6"]); $B7C = getResultJS($B7A, $RDsuccess, "1", $mn2["6"]); }
-// if ($mn2["7"]) { $B8A = checkingQuestion($mn2["7"], $ee); $B8B = getResultHTML($B8A, $RDsuccess, $mn2["7"]); $B8C = getResultJS($B8A, $RDsuccess, "1", $mn2["7"]); }
-// if ($mn2["8"]) { $B9A = checkingQuestion($mn2["8"], $ee); $B9B = getResultHTML($B9A, $RDsuccess, $mn2["8"]); $B9C = getResultJS($B9A, $RDsuccess, "1", $mn2["8"]); }
-
+// echo phpinfo();
+print_r("<pre>\n");
+// print_r($ee);
 $ff = json_decode($monitor, true); //print_r($ff);
 foreach ($ff["QC"] as $fA) { foreach ($fA as $fB) { $mn1[] = $fB; } } // print_r($mn1);
 foreach ($ff["monitor"] as $fC) { foreach ($fC as $fD) { $mn2[] = $fD; } } // print_r($mn2);
@@ -713,15 +707,24 @@ foreach ($ff["quota"] as $fE) { foreach ($fE as $fF) { $mn3[] = $fF; } } // prin
 //
 // }
 
-// print_r($AA);
+// function is_multibyte($s) {
+//   return mb_strlen($s,'utf-8') < strlen($s);
+// }
+
+// print_r($mn1["0"]);
+// print_r($mn1["1"]);
+// print_r($mn2["0"]);
+// print_r($mn2["1"]);
 
 $A1A = checkingQuestion($mn1["0"], $ee);
+// if(is_multibyte($A1A)) { echo "Yes"; } else { echo "NO"; }
+// echo utf8_encode($A1A);
+// echo mb_detect_encoding($A1A, 'UTF-8');
+print_r($A1A);
+print_r("</pre>");
+
 $A1B = getResultHTML($A1A, $RDsuccess, $mn1["0"]);
 $A1C = getResultJS($A1A, $RDsuccess, "1", $mn1["0"]);
-
-// print_r("<pre>\n");
-// print_r($A1B["0"]);
-// print_r("</pre>");
 
 $A2A = checkingQuestion($mn1["1"], $ee);
 $A2B = getResultHTML($A2A, $RDsuccess, $mn1["1"]);

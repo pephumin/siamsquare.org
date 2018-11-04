@@ -10,6 +10,9 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/class.phpmailer.ph
 
 $db = new PDO('mysql:host='. DB_HOST .';dbname='. DB_DATABASE . ';charset=utf8', DB_USER, DB_PASS);
 
+$db->exec("set names utf8");
+// $db->set_charset("utf8");
+
 $login = new Login();
 
 if ($login->isUserLoggedIn() != true) { include $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/w/login.inc'; }
