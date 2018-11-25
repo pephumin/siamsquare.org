@@ -529,7 +529,7 @@ function checkingQuestion($input, $ee = array()) {
   for ($i=0; $i<count($ee); $i++) {
     $alt1 = ""; $alt2 = "";
     if (($input == "Region") || ($input == "Location")) { $alt1 = "Region"; $alt2 = "Location"; $interviewerbylocation = 1; }
-    else if ($input == "Interviewer") { $alt1 = "Interviewer"; $alt2 = "Interviewer"; }
+    else if (($input == "Interviewer") || ($input == "Interviewers")) { $alt1 = "Interviewer"; $alt2 = "Interviewer"; }
     else if (($input == "Gender") || ($input == "Sex")) { $alt1 = "Gender"; $alt2 = "Sex"; }
     else if (($input == "SES") || ($input == "SocialClass")) { $alt1 = "SES"; $alt2 = "SocialClass"; }
     else { $alt1 = $input; $alt2 = $input; }
@@ -638,7 +638,7 @@ function getResultHTML($input = array(), $RD, $keyword) {
   $Y = implode(', ', $inputB);
   $output = "";
   if ($Z > 0) {
-    $output .= "      <h4>Quota by $keyword <small>($C groups)</small></h4>\n";
+    $output .= "      <h4>Sample size broken down by $keyword <small>($C groups)</small></h4>\n";
     $output .= "      <p class=\"small grey\">Click the table header <i class=\"pe-hand-o-down\"></i> to sort the data by column</p>\n";
     $output .= "      <div class=\"row\">\n";
     $output .= "        <div class=\"col-xs-7 col-sm-7 col-md-7 col-lg-7\">\n";
@@ -684,10 +684,9 @@ function getMissingTable($input = array()) {
 // }
 
 // echo phpinfo();
-print_r("<pre>\n");
 // print_r($ee);
 $ff = json_decode($monitor, true); //print_r($ff);
-foreach ($ff["QC"] as $fA) { foreach ($fA as $fB) { $mn1[] = $fB; } } // print_r($mn1);
+foreach ($ff["QC"] as $fA) { foreach ($fA as $fB) { $mn1[] = $fB; } } print_r($mn1);
 foreach ($ff["monitor"] as $fC) { foreach ($fC as $fD) { $mn2[] = $fD; } } // print_r($mn2);
 foreach ($ff["quota"] as $fE) { foreach ($fE as $fF) { $mn3[] = $fF; } } // print_r($mn3);
 
@@ -716,13 +715,14 @@ foreach ($ff["quota"] as $fE) { foreach ($fE as $fF) { $mn3[] = $fF; } } // prin
 // print_r($mn2["0"]);
 // print_r($mn2["1"]);
 
-$A1A = checkingQuestion($mn1["0"], $ee);
 // if(is_multibyte($A1A)) { echo "Yes"; } else { echo "NO"; }
 // echo utf8_encode($A1A);
 // echo mb_detect_encoding($A1A, 'UTF-8');
-print_r($A1A);
-print_r("</pre>");
+// print_r("<pre>\n");
+// print_r($A1A);
+// print_r("</pre>");
 
+$A1A = checkingQuestion($mn1["0"], $ee);
 $A1B = getResultHTML($A1A, $RDsuccess, $mn1["0"]);
 $A1C = getResultJS($A1A, $RDsuccess, "1", $mn1["0"]);
 
@@ -730,33 +730,45 @@ $A2A = checkingQuestion($mn1["1"], $ee);
 $A2B = getResultHTML($A2A, $RDsuccess, $mn1["1"]);
 $A2C = getResultJS($A2A, $RDsuccess, "1", $mn1["1"]);
 
-$A3A = checkingQuestion($mn2["0"], $ee);
-$A3B = getResultHTML($A3A, $RDsuccess, $mn2["0"]);
-$A3C = getResultJS($A3A, $RDsuccess, "0", $mn2["0"]);
+$A3A = checkingQuestion($mn1["2"], $ee);
+$A3B = getResultHTML($A3A, $RDsuccess, $mn1["2"]);
+$A3C = getResultJS($A3A, $RDsuccess, "1", $mn1["2"]);
 
-$A4A = checkingQuestion($mn2["1"], $ee);
-$A4B = getResultHTML($A4A, $RDsuccess, $mn2["1"]);
-$A4C = getResultJS($A4A, $RDsuccess, "3", $mn2["1"]);
+$A4A = checkingQuestion($mn1["3"], $ee);
+$A4B = getResultHTML($A4A, $RDsuccess, $mn1["3"]);
+$A4C = getResultJS($A4A, $RDsuccess, "1", $mn1["3"]);
 
-$A5A = checkingQuestion($mn2["2"], $ee);
-$A5B = getResultHTML($A5A, $RDsuccess, $mn2["2"]);
-$A5C = getResultJS($A5A, $RDsuccess, "3", $mn2["2"]);
+// print_r("<pre>\n");
+// print_r($A3A);
+// print_r("</pre>");
 
-$A6A = checkingQuestion($mn2["3"], $ee);
-$A6B = getResultHTML($A6A, $RDsuccess, $mn2["3"]);
-$A6C = getResultJS($A6A, $RDsuccess, "1", $mn2["3"]);
+$A5A = checkingQuestion($mn2["0"], $ee);
+$A5B = getResultHTML($A5A, $RDsuccess, $mn2["0"]);
+$A5C = getResultJS($A5A, $RDsuccess, "0", $mn2["0"]);
 
-$A7A = checkingQuestion($mn2["4"], $ee);
-$A7B = getResultHTML($A7A, $RDsuccess, $mn2["4"]);
-$A7C = getResultJS($A7A, $RDsuccess, "1", $mn2["4"]);
+$A6A = checkingQuestion($mn2["1"], $ee);
+$A6B = getResultHTML($A6A, $RDsuccess, $mn2["1"]);
+$A6C = getResultJS($A6A, $RDsuccess, "3", $mn2["1"]);
 
-$A8A = checkingQuestion($mn2["5"], $ee);
-$A8B = getResultHTML($A8A, $RDsuccess, $mn2["5"]);
-$A8C = getResultJS($A8A, $RDsuccess, "2", $mn2["5"]);
+$A7A = checkingQuestion($mn2["2"], $ee);
+$A7B = getResultHTML($A7A, $RDsuccess, $mn2["2"]);
+$A7C = getResultJS($A7A, $RDsuccess, "3", $mn2["2"]);
 
-$A9A = checkingQuestion($mn2["6"], $ee);
-$A9B = getResultHTML($A9A, $RDsuccess, $mn2["6"]);
-$A9C = getResultJS($A9A, $RDsuccess, "1", $mn2["6"]);
+$A8A = checkingQuestion($mn2["3"], $ee);
+$A8B = getResultHTML($A8A, $RDsuccess, $mn2["3"]);
+$A8C = getResultJS($A8A, $RDsuccess, "1", $mn2["3"]);
+
+$A9A = checkingQuestion($mn2["4"], $ee);
+$A9B = getResultHTML($A9A, $RDsuccess, $mn2["4"]);
+$A9C = getResultJS($A9A, $RDsuccess, "1", $mn2["4"]);
+
+$A10A = checkingQuestion($mn2["5"], $ee);
+$A10B = getResultHTML($A10A, $RDsuccess, $mn2["5"]);
+$A10C = getResultJS($A10A, $RDsuccess, "2", $mn2["5"]);
+
+$A11A = checkingQuestion($mn2["6"], $ee);
+$A11B = getResultHTML($A11A, $RDsuccess, $mn2["6"]);
+$A11C = getResultJS($A11A, $RDsuccess, "1", $mn2["6"]);
 
 ?>
 
@@ -770,7 +782,9 @@ $A9C = getResultJS($A9A, $RDsuccess, "1", $mn2["6"]);
 // echo $ab;
 if ($A1B) { print_r($A1B); }
 if ($A2B) { print_r($A2B); }
-$missing = array_merge($A1A["2"], $A2A["2"], $A3A["2"], $A4A["2"], $A5A["2"], $A6A["2"], $A7A["2"], $A8A["2"], $A9A["2"]);
+if ($A3B) { print_r($A3B); }
+if ($A4B) { print_r($A4B); }
+$missing = array_merge($A1A["2"], $A2A["2"], $A3A["2"], $A4A["2"], $A5A["2"], $A6A["2"], $A7A["2"], $A8A["2"], $A9A["2"], $A10A["2"], $A11A["2"]);
 print_r(getMissingTable($missing));
 ?>
 
@@ -778,13 +792,15 @@ print_r(getMissingTable($missing));
   <div id="third" class="tab-pane fade">
 
 <?php
-if ($A3B) { print_r($A3B); }
-if ($A4B) { print_r($A4B); }
+// if ($A3B) { print_r($A3B); }
+// if ($A4B) { print_r($A4B); }
 if ($A5B) { print_r($A5B); }
 if ($A6B) { print_r($A6B); }
 if ($A7B) { print_r($A7B); }
 if ($A8B) { print_r($A8B); }
 if ($A9B) { print_r($A9B); }
+if ($A10B) { print_r($A10B); }
+if ($A11B) { print_r($A11B); }
 ?>
   </div>
   <div id="fourth" class="tab-pane fade">
@@ -1364,24 +1380,28 @@ echo "    </div>\n";
     chart.draw(dataTable, options);
   }
 <?php
-// if ($A1C["0"]) { print_r($A1C["0"]); }
-// if ($A2C["0"]) { print_r($A2C["0"]); }
-// if ($A3C["0"]) { print_r($A3C["0"]); }
-// if ($A4C["0"]) { print_r($A4C["0"]); }
-// if ($A5C["0"]) { print_r($A5C["0"]); }
-// if ($A6C["0"]) { print_r($A6C["0"]); }
-// if ($A7C["0"]) { print_r($A7C["0"]); }
-// if ($A8C["0"]) { print_r($A8C["0"]); }
-// if ($A9C["0"]) { print_r($A9C["0"]); }
-print_r($A1C["0"]);
-print_r($A2C["0"]);
-print_r($A3C["0"]);
-print_r($A4C["0"]);
-print_r($A5C["0"]);
-print_r($A6C["0"]);
-print_r($A7C["0"]);
-print_r($A8C["0"]);
-print_r($A9C["0"]);
+if ($A1C["0"]) { print_r($A1C["0"]); }
+if ($A2C["0"]) { print_r($A2C["0"]); }
+if ($A3C["0"]) { print_r($A3C["0"]); }
+if ($A4C["0"]) { print_r($A4C["0"]); }
+if ($A5C["0"]) { print_r($A5C["0"]); }
+if ($A6C["0"]) { print_r($A6C["0"]); }
+if ($A7C["0"]) { print_r($A7C["0"]); }
+if ($A8C["0"]) { print_r($A8C["0"]); }
+if ($A9C["0"]) { print_r($A9C["0"]); }
+if ($A10C["0"]) { print_r($A10C["0"]); }
+if ($A11C["0"]) { print_r($A11C["0"]); }
+// print_r($A1C["0"]);
+// print_r($A2C["0"]);
+// print_r($A3C["0"]);
+// print_r($A4C["0"]);
+// print_r($A5C["0"]);
+// print_r($A6C["0"]);
+// print_r($A7C["0"]);
+// print_r($A8C["0"]);
+// print_r($A9C["0"]);
+// print_r($A10C["0"]);
+// print_r($A11C["0"]);
 // print_r("<pre>\n");
 // print_r($A1C["0"]);
 // print_r("</pre>");
@@ -1391,8 +1411,21 @@ print_r($A9C["0"]);
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     if ($(e.target).attr('id') == 'first-tab-trigger') { drawOrgChart1(); drawOrgChart2(); drawGaugeChart1(); drawGaugeChart2(); drawAreaChart(); }
-    if ($(e.target).attr('id') == 'second-tab-trigger') { <?php if ($A1C["1"]) { print_r($A1C["1"]); } ?> <?php if ($A2C["1"]) { print_r($A2C["1"]); } ?> }
-    if ($(e.target).attr('id') == 'third-tab-trigger') { <?php if ($A3C["1"]) { print_r($A3C["1"]); } ?> <?php if ($A4C["1"]) { print_r($A4C["1"]); } ?> <?php if ($A5C) { print_r($A5C["1"]); } ?> <?php if ($A6C) { print_r($A6C["1"]); } ?> <?php if ($A7C) { print_r($A7C["1"]); } ?> <?php if ($A8C) { print_r($A8C["1"]); } ?> <?php if ($A9C) { print_r($A9C["1"]); } ?> }
+    if ($(e.target).attr('id') == 'second-tab-trigger') {
+      <?php if ($A1C["1"]) { print_r($A1C["1"]); } ?>
+      <?php if ($A2C["1"]) { print_r($A2C["1"]); } ?>
+      <?php if ($A3C["1"]) { print_r($A3C["1"]); } ?>
+      <?php if ($A4C["1"]) { print_r($A4C["1"]); } ?>
+    }
+    if ($(e.target).attr('id') == 'third-tab-trigger') {
+      <?php if ($A5C["1"]) { print_r($A5C["1"]); } ?>
+      <?php if ($A6C["1"]) { print_r($A6C["1"]); } ?>
+      <?php if ($A7C["1"]) { print_r($A7C["1"]); } ?>
+      <?php if ($A8C["1"]) { print_r($A8C["1"]); } ?>
+      <?php if ($A9C["1"]) { print_r($A9C["1"]); } ?>
+      <?php if ($A10C["1"]) { print_r($A10C["1"]); } ?>
+      <?php if ($A11C["1"]) { print_r($A11C["1"]); } ?>
+    }
   })
 
   $("#missing").find('th:first-child').css("background", "#555");
