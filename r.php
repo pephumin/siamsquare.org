@@ -592,7 +592,6 @@ echo "<div id=\"notification\"></div>\n";
     }
   }
   Survey.CustomWidgetCollection.Instance.addCustomWidget(widget7);
-
   var widget8 = {
     name: "autocomplete",
     htmlTemplate: "<input id='autocomplete' type='text' class='form-control' style='width:100%;'>",
@@ -600,7 +599,7 @@ echo "<div id=\"notification\"></div>\n";
     afterRender: function(question, el) {
       var $el = $(el).is("input") ? $(el) : $(el).find("input");
       if (!question.choices) { question.choices = getinterviewers(surveyid); }
-      console.log(question.choices);
+      // console.log(question.choices);
       var options = {
         data: question.choices,
         getValue: "interviewer",
@@ -746,7 +745,7 @@ echo "<div id=\"notification\"></div>\n";
   if (pincode) { pin(pincode); }
 
   <?php if ($resultdata) { echo "survey.data = $resultdata"; } ?>
-  // console.log(getinterviewers(surveyid));
+  console.log(getinterviewers(surveyid));
 
   survey.render("runsurvey");
   $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> ระบบกำลังอัพโหลดรูปของคุณ ระหว่างนี้คุณสามารถทำรายการต่อได้ทันที และอีกสักครู่เมื่อระบบทำงานในส่วนนี้เสร็จ ข้อความนี้จะหายไปเอง</div>").hide();
