@@ -544,6 +544,7 @@ function meta($title) {
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/survey.ko.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"/admin/assets/js/survey/surveyeditor.min.js\"></script>\n";
   echo "  <script type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"></script>\n";
+  // echo "  <script src=\"https://maps.googleapis.com/maps/api/js\"></script>";
   echo "</head>\n";
 }
 

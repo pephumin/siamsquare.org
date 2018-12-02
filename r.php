@@ -744,8 +744,47 @@ echo "<div id=\"notification\"></div>\n";
   if (optionsout.PSM) { for (var i=0; i<optionsout.PSM.length; i++) { PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].expensive, "up"); PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].tooexpensive, "up"); PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].toocheap, "down"); PSM(optionsout.PSM[i].expensive, optionsout.PSM[i].tooexpensive, "up"); } }
   if (pincode) { pin(pincode); }
 
+
+  var tryAPIGeolocation = function() {
+    jQuery.post( "https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyA0MZthPLSO48HzjyPNXY9125WpbURDXVU", function(success) {
+      apiGeolocationSuccess({ coords: { latitude: success.location.lat, longitude: success.location.lng } });
+    })
+    .fail(function(err) {
+      console.log("API Geolocation error! \n\n"+err);
+    });
+  };
+  var browserGeolocationSuccess = function(position) {
+      console.log("Browser geolocation success!\n\nlat = " + position.coords.latitude + "\nlng = " + position.coords.longitude);
+  };
+  var browserGeolocationFail = function(error) {
+    switch (error.code) {
+      case error.TIMEOUT:
+        console.log("Browser geolocation error !\n\nTimeout.");
+        break;
+      case error.PERMISSION_DENIED:
+        if (error.message.indexOf("Only secure origins are allowed") == 0) { tryAPIGeolocation(); }
+        break;
+      case error.POSITION_UNAVAILABLE:
+        // dirty hack for safari
+        if (error.message.indexOf("Origin does not have permission to use Geolocation service") == 0) { tryAPIGeolocation(); }
+        else { alert("Browser geolocation error !\n\nPosition unavailable."); }
+        break;
+    }
+  };
+  var tryGeolocation = function() {
+    if (navigator.geolocation) { navigator.geolocation.getCurrentPosition(browserGeolocationSuccess, browserGeolocationFail, { maximumAge: 50000, timeout: 20000, enableHighAccuracy: true }); }
+  };
+  var apiGeolocationSuccess = function(position) {
+    var geolocation = "{ \"Geolocation\": { \"Latitude\": \"" + position.coords.latitude +"\", \"Longitude\": \"" + position.coords.longitude + "\"} }";
+    var A = survey.data;
+    var B = JSON.parse(geolocation);
+    if (survey.data) { for (var AA in B) { A[AA] = B[AA]; } survey.data = A; }
+    else { survey.data = geolocation; }
+    return survey.data;
+  };
+
   <?php if ($resultdata) { echo "survey.data = $resultdata"; } ?>
-  console.log(getinterviewers(surveyid));
+  // console.log(getinterviewers(surveyid));
 
   survey.render("runsurvey");
   $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> ระบบกำลังอัพโหลดรูปของคุณ ระหว่างนี้คุณสามารถทำรายการต่อได้ทันที และอีกสักครู่เมื่อระบบทำงานในส่วนนี้เสร็จ ข้อความนี้จะหายไปเอง</div>").hide();
@@ -753,6 +792,8 @@ echo "<div id=\"notification\"></div>\n";
   $('#resetsave').on('click', function() { clearsavesurveydata(resultid, ip, email, surveyid, title); });
   <?php if ($precodes) { echo "var pre = $precodes\n"; } else { echo "var pre = \"\";\n"; }?>
   survey.data = precoding(pre);
+  tryGeolocation();
+  // console.log(survey.data);
   // console.log(precoding(pre));
   survey.onComplete.add(function(data) { postsurveydata(cid, ip, email, surveyid, survey.data, title, pilot); });
   survey.onUploadFile.add(function(data) { $('#showupload').show(); setTimeout(function() { $("#showupload").slideUp(500, function() { $("#showupload").hide(); }); }, 6000); });
@@ -847,6 +888,10 @@ echo "<div id=\"notification\"></div>\n";
 echo "<style>\n";
 echo "  header .header-2, footer .footer-2 { ".themeBG($showcolour)." }\n";
 echo "</style>\n";
+
+// echo "<p>Click the button to get your coordinates.</p>\n";
+// echo "<button onclick=\"getLocation()\">Try It</button>\n";
+// echo "<p id=\"demo\"></p>\n";
 
 
 if ($project || $notes) { pageFooter($project, $notes); } else { pageFooter(); }

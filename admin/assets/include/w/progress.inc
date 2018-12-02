@@ -209,13 +209,15 @@ echo "<br>\n";
     <li><a href="#second" data-toggle="tab" id="second-tab-trigger"><i class="pe-check pe-fw"></i> Quality control</a></li>
     <li><a href="#third" data-toggle="tab" id="third-tab-trigger"><i class="pe-desktop pe-fw"></i> Monitor</a></li>
     <li><a href="#fourth" data-toggle="tab" id="fourth-tab-trigger"><i class="pe-table pe-fw"></i> Interim data</a></li>
-    <li class="active"><a href="#fifth" data-toggle="tab" id="fifth-tab-trigger"><i class="pe-wrench pe-fw"></i> Settings</a></li>
+    <li><a href="#fifth" data-toggle="tab" id="fourth-tab-trigger"><i class="pe-map-marker pe-fw"></i> Interview Map</a></li>
+    <li class="active"><a href="#sixth" data-toggle="tab" id="sixth-tab-trigger"><i class="pe-wrench pe-fw"></i> Settings</a></li>
 <?php } else { ?>
     <li class="active"><a href="#first" data-toggle="tab" id="first-tab-trigger"><i class="pe-flask pe-fw"></i> Progress</a></li>
     <li><a href="#second" data-toggle="tab" id="second-tab-trigger"><i class="pe-check pe-fw"></i> Quality control</a></li>
     <li><a href="#third" data-toggle="tab" id="third-tab-trigger"><i class="pe-desktop pe-fw"></i> Monitor</a></li>
     <li><a href="#fourth" data-toggle="tab" id="fourth-tab-trigger"><i class="pe-table pe-fw"></i> Interim data</a></li>
-    <li><a href="#fifth" data-toggle="tab" id="fifth-tab-trigger"><i class="pe-wrench pe-fw"></i> Settings</a></li>
+    <li><a href="#fifth" data-toggle="tab" id="fifth-tab-trigger"><i class="pe-map-marker pe-fw"></i> InterviewMap</a></li>
+    <li><a href="#sixth" data-toggle="tab" id="sixth-tab-trigger"><i class="pe-wrench pe-fw"></i> Settings</a></li>
 <?php } ?>
   </ul>
 </nav>
@@ -255,6 +257,7 @@ $area .= "      ]";
 // ----------------- QUESTIONS ----------------------
 
 for ($i=0; $i<count($rr2); $i++) { $rr3[] = $rr2[$i]['questions']; }
+
 // $rr3 = call_user_func_array('array_merge', $rr3);
 $rr4 = $rr3;
 
@@ -309,6 +312,7 @@ while ($row = $q->fetchAll(PDO::FETCH_ASSOC)) {
 // print_r($rr4);
 for ($i=0; $i<count($rr4); $i++) { $rr5[] = $rr4[$i]["name"]; }
 
+// print_r($rr5);
 
 $rr5 = array_flip($rr5);
 foreach ($rr5 as $key => $value) {
@@ -330,8 +334,33 @@ $resultformattedJSON = json_encode($ee);
 
 // pin error, hence "those who are terminated"
 $pinerror = 0;
-$pincheck = json_decode($datafortable, true);
-foreach ($pincheck as $k1 => $p1) { if ($p1["data"]["PIN"] != $pinnumber) { $errorlist[] = $p1["id"]; $pinerror = 1; } }
+$geoout = "[\n";
+$geoout .= "      [ 'Lat', 'Long', 'Name' ],\n";
+
+$pincheck = json_decode($resultformattedJSON, true);
+// print_r($pincheck);
+foreach ($pincheck as $k1 => $p1) {
+  // print_r($p1["Interviewer"]);
+  if (($p1["data"]["RespondentInfo1"]) || ($p1["data"]["RespondentInfo"])) {
+    if ($p1["data"]["Region"]) {
+      $info = $p1["data"]["RespondentInfo1"]["First name"] . " " . $p1["data"]["RespondentInfo1"]["Surname"] . " (" . $p1["data"]["Region"] . ")";
+    } else {
+      $info = $p1["data"]["RespondentInfo1"]["First name"] . " " . $p1["data"]["RespondentInfo1"]["Surname"] . " (ID: " . $p1["id"] . ")";
+    }
+  } else if ($p1["data"]["Interviewer"]) {
+    $info = "ID: " . $p1["id"] . " (by " . $p1["Interviewer"] . ")";
+  } else {
+    $info = "ID: " . $p1["id"];
+  }
+  if (isset($p1["data"]["Geolocation"]["Latitude"]) && isset($p1["data"]["Geolocation"]["Longitude"])) {
+    $geoout .= "      [ " . $p1["data"]["Geolocation"]["Latitude"] . ", " . $p1["data"]["Geolocation"]["Longitude"] . ", '$info' ],\n";
+  }
+  if ($p1["data"]["PIN"] != $pinnumber) {
+    $errorlist[] = $p1["id"]; $pinerror = 1;
+  }
+}
+$geoout .= "    ]";
+// print_r($geoout);
 $terminatedsize = count($errorlist);
 $errorinput = "";
 $pin_error = "<div class=\"alert alert-danger alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\n";
@@ -686,7 +715,7 @@ function getMissingTable($input = array()) {
 // echo phpinfo();
 // print_r($ee);
 $ff = json_decode($monitor, true); //print_r($ff);
-foreach ($ff["QC"] as $fA) { foreach ($fA as $fB) { $mn1[] = $fB; } } print_r($mn1);
+foreach ($ff["QC"] as $fA) { foreach ($fA as $fB) { $mn1[] = $fB; } } //print_r($mn1);
 foreach ($ff["monitor"] as $fC) { foreach ($fC as $fD) { $mn2[] = $fD; } } // print_r($mn2);
 foreach ($ff["quota"] as $fE) { foreach ($fE as $fF) { $mn3[] = $fF; } } // print_r($mn3);
 
@@ -835,11 +864,31 @@ echo "    </div>\n";
 
 ?>
 
+</div>
+<div id="fifth" class="tab-pane fade">
+
+  <h3>Map of interviews</h3>
+  <p>This page shows the map of all interviews taken place for this study which was automatrically recorded by the system.</p>
+
+  <div id="map" style="width: 400px; height: 300px"></div>
+
+  <script type="text/javascript">
+    google.charts.load("current", { "packages":["map"], "mapsApiKey": "AIzaSyA0MZthPLSO48HzjyPNXY9125WpbURDXVU" });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable( <?php echo $geoout; ?>);
+      var map = new google.visualization.Map(document.getElementById('map'));
+      map.draw(data, { zoomLevel: 6.5, mapType: 'terrain', howTooltip: true, useMapTypeControl: true, showInfoWindow: true });
+  }
+
+  </script>
+
   </div>
 <?php if (($_GET["m"] == "2") || ($_GET["m"] == "3")) { ?>
-  <div id="fifth" class="tab-pane fade in active">
+  <div id="sixth" class="tab-pane fade in active">
 <?php } else { ?>
-  <div id="fifth" class="tab-pane fade">
+  <div id="sixth" class="tab-pane fade">
 <?php } ?>
 
   <h3>Specific settings</h3>
