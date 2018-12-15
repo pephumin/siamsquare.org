@@ -120,8 +120,9 @@ foreach ($a["pages"] as $k1 => $p1) { foreach ($p1 as $k2 => $p2) { foreach ($p2
 // }
 // $questions = array_values($questions);
 
-$qoutadd = "<select class=\"form-control\" id=\"subgroupselect\">\n";
-$qoutadd .= "  <option>Select a target group</option>\n";
+$qoutadd = "<p align=\"right\" class=\"lightgrey\"><strong>Select the target group below:</strong></p>\n";
+$qoutadd .= "<select class=\"form-control\" id=\"subgroupselect\">\n";
+$qoutadd .= "  <option value=\"All\">Total sample</option>\n";
 $qoutadd .= "</select>\n";
 
 $qout = "";
@@ -148,7 +149,8 @@ for ($i = 0; $i < count($questions); $i++) {
     $qout .= "<small class='pull-right' style='padding:10px 5px'>".$qe."</small>\n";
     $qout .= "      <h4 style=\"font-family:boon;font-size:140%\">".$qname.$add.": ".$qtitle."</h4>\n";
     if ($qvisibleIf) { $qout .= "      <p class=\"grey small\"><em>Only ask when <u>".$qvisibleIf."</u></em></p>\n"; } else { $qout .= "      <p class=\"grey small\"><em>Ask all respondents</em></p>\n"; }
-    $qout .= $qoutadd;
+    $qout .= "<div class=\"row\"><div class=\"col-lg-9 col-md-9 col-sm-9 col-xs-9\">\n";
+    // $qout .= $qoutadd;
     if (($qtype == "radiogroup") || ($qtype == "radiogrouphtml")) {
       $qout .= "      <ul>\n";
       foreach ($choices as $k4 => $p4) {
@@ -244,8 +246,8 @@ for ($i = 0; $i < count($questions); $i++) {
       $qout .= "        </tr></thead>\n";
       $qout .= "      <tbody>\n";
       foreach ($questions[$i]["rows"] as $k9 => $p9) {
-        $row_text = $p9['text']; $r_text[] = $p9['text'];
-        $row_code = $p9['value']; $r_code[] = $p9['value'];
+        $row_text = $p9['text']; $ee_text[] = $p9['text'];
+        $row_code = $p9['value']; $ee_code[] = $p9['value'];
         $row_link[] = $p9['text']." (".$p9['value'].")";
         $qout .= "        <tr>\n";
         $qout .= "          <td align=\"right\">$row_text<br>$row_code</td>\n";
@@ -307,6 +309,9 @@ for ($i = 0; $i < count($questions); $i++) {
       $qout .= "        </div></div>\n";
       $qout .= "      </div></div>\n";
     }
+    $qout .= "</div><div class=\"col-lg-3 col-md-3 col-sm-3 col-xs-3\">\n";
+    $qout .= $qoutadd;
+    $qout .= "</div></div><br>\n";
     $qout .= "      <br>\n";
   }
 }
@@ -374,36 +379,32 @@ $navtab .= "</nav>\n";
 
 // ------- Show data --------------------------------------------------------------------------
 // echo $status;
-if ($status >= 2) { $sql = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 2 ORDER BY submitted DESC"; }
-else if ($status == 1) { $sql = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 1 ORDER BY submitted DESC"; }
+if ($search == "yes") {
+  if ($status >= 2) { $sql = "SELECT * FROM j_results WHERE data LIKE CONCAT('%', :query, '%') AND surveyid = :surveyid AND status = 2 ORDER BY submitted DESC"; }
+  else if ($status == 1) { $sql = "SELECT * FROM j_results WHERE data LIKE CONCAT('%', :query, '%') AND surveyid = :surveyid AND status = 1 ORDER BY submitted DESC"; }
+} else {
+  if ($status >= 2) { $sql = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 2 ORDER BY submitted DESC"; }
+  else if ($status == 1) { $sql = "SELECT * FROM j_results WHERE surveyid = :surveyid AND status = 1 ORDER BY submitted DESC"; }
+}
 
 $q = $db->prepare($sql);
 $q->bindValue(':surveyid', $surveyid, PDO::PARAM_INT);
+if ($search == "yes") {
+  $q->bindValue(':query', "\"Region\":\"North (Chiang Mai)\"", PDO::PARAM_STR );
+}
 $q->execute();
-$totalrecords = $q->rowCount();
 $r = $q->fetchAll(PDO::FETCH_ASSOC);
-
+$ee = $r;
 $qq = $_GET['q'];
 $cc = array_combine($pname, $ptype);
 $cd = $cc[$qq]; //print_r($cd);
 $bx = array_combine($pname, $ptitle);
 $bdx = $bx[$qq];
 
-$alldata = "[ ";
-for ($f=0; $f<count($r); $f++) {
-  if ($f == (count($r)-1)) { $alldata .= $r[$f]["data"]; }
-  else { $alldata .= $r[$f]["data"].", \n"; }
-  // $removeKeys = array('rd', 'email', 'ip', 'surveyid', 'status');
-  // foreach($removeKeys as $key) {
-  //   unset($r[$f][$key]);
-  // }
-  // $r[$f]['data'] = json_decode($r[$f]['data'], true);
-  // $r[$f]['submitted'] = $r[$f]['submitted'];
-}
-$alldata .= " ]\n";
-// print_r($alldata);
+$subgroupquestion = "Region";
+$subgroupanswer = "All";
 
-$ee = $r;
+$k = array();
 for ($i=0; $i<count($ee); $i++) {
   $removeKeys = array('rd', 'email', 'ip', 'surveyid', 'status');
   foreach($removeKeys as $key) {
@@ -411,84 +412,84 @@ for ($i=0; $i<count($ee); $i++) {
   }
   $ee[$i]['data'] = json_decode($ee[$i]['data'], true);
   $ee[$i]['submitted'] = $ee[$i]['submitted'];
+  if ($ee[$i]['data'][$subgroupquestion] == $subgroupanswer) { array_push($k, $ee[$i]['data']); }
 }
-$datafortable = json_encode($ee);
+$subgrouprecords = sizeof($k);
+$totalrecords = sizeof($ee);
+if ($subgroupanswer != "All") { $records = $k; $basesize = $subgrouprecords; } else { $records = $ee; $basesize = $totalrecords; }
+
+// $datafortable = json_encode($j);
 
 if (($cd == "checkbox") || ($cd == "checkboxhtml")) {
-  $k = array();
-  for ($i=0; $i < count($r); $i++) {
-    $j = $r[$i]["data"];
-    $j = json_decode($j, true);
-    foreach ($j[$qq] as $m => $v) { array_push($k, $v); }
-  }
-  $c = array_count_values($k); //print_r($c);
+  $k1 = array();
+  for ($i=0; $i < count($records); $i++) { foreach ($records[$i]["data"][$qq] as $m => $v) { array_push($k1, $v); } }
+  // print_r($k1);
+  $c = array_count_values($k1); print_r($c1);
   if (json_decode(str_replace($c_code, $c_text, json_encode($c)), true)) { $c = json_decode(str_replace($c_code, $c_text, json_encode($c)), true); }
-  // arsort($c);
-  // print_r($c);
   $totalresponses = array_sum($c);
-  $A = array_keys($c); $B = array_values($c); //print_r($c);
+  $A = array_keys($c); $B = array_values($c);
   $C = count($c);
   $out = "";
-  $out .= "      data.addRows($C);\n";
+  $out .= "    data.addRows($C);\n";
   for ($m=0; $m < count($c); $m++) {
-    // if ($A[$m] == $choice_code[$m]) { $A[$m] == $choice_text[$m]; }
-    $BB[$m] = number_format(($B[$m]/$totalrecords)*100, 2);
+    $BB[$m] = number_format(($B[$m]/$basesize)*100, 2);
     $m1 = $m+1; $m2 = $m1+1;
-    $out .= "      data.setCell($m, 0, '$A[$m]');\n";
-    $out .= "      data.setCell($m, 1, $B[$m]);\n";
-    $out .= "      data.setCell($m, 2, $BB[$m]);\n";
+    $out .= "    data.setCell($m, 0, '$A[$m]');\n";
+    $out .= "    data.setCell($m, 1, $B[$m]);\n";
+    $out .= "    data.setCell($m, 2, $BB[$m]);\n";
   }
   $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
   if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
   else if ($_GET['type'] == "bar-V") { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
 }
-else if ($cd == "comment") {
-  $k = array();
-  $out = "[ ";
-  for ($i=0; $i < count($r); $i++) {
-    $j = $r[$i]["data"];
-    $j = json_decode($j, true);
-    $out .= "['".addslashes($j[$qq])."'],";
-    array_push($k, $j[$qq]);
-  }
-  $out .= " ]";
-  // print_r(array_count_values($k));
-  // echo $j[$qq];
-  // print_r ($k);
-  $cece = array_count_values($k); arsort($cece);
-  $totalresponses = array_sum($cece);
-  $A = array_keys($cece); $B = array_values($cece);
-  $C = count($cece);
-  $out2 = "";
-  $out2 .= "      data.addRows($C);\n";
-  for ($m=0; $m < $C; $m++) {
-    $BB[$m] = number_format(($B[$m]/$totalrecords)*100, 2);
-    $m1 = $m+1; $m2 = $m1+1;
-    $out2 .= "      data.setCell($m, 0, '".addslashes($A[$m])."');\n";
-    $out2 .= "      data.setCell($m, 1, $B[$m]);\n";
-    $out2 .= "      data.setCell($m, 2, $BB[$m]);\n";
-  }
-}
-else if ($cd == "text") {
-  for ($i=0; $i < count($r); $i++) {
-    $j = $r[$i]["data"];
-    $j = json_decode($j, true);
-    $k[] = $j[$qq];
-  }
+// else if ($cd == "comment") {
+//   foreach ($records as $k1 => $p1) { $jj[] = $p1; }
+//   for ($i=0; $i < count($jj); $i++) { $k[] = $jj[$i]["data"][$qq]; }
+//   // $k = array();
+//   // $out = "[ ";
+//   // for ($i=0; $i < count($records); $i++) {
+//   //   $j = $records[$i]["data"];
+//   //   $j = json_decode($j, true);
+//   //   $out .= "['".addslashes($j[$qq])."'],";
+//   //   array_push($k, $j[$qq]);
+//   // }
+//   // $out .= " ]";
+//   // print_r(array_count_values($k));
+//   // echo $j[$qq];
+//   // print_r ($k);
+//   $cece = array_count_values($k); arsort($cece);
+//   print_r($cece);
+//   $totalresponses = array_sum($cece);
+//   $A = array_keys($cece); $B = array_values($cece);
+//   $C = count($cece);
+//   $out2 = "";
+//   $out2 .= "    data.addRows($C);\n";
+//   for ($m=0; $m < $C; $m++) {
+//     $BB[$m] = number_format(($B[$m]/$basesize)*100, 2);
+//     $m1 = $m+1; $m2 = $m1+1;
+//     $out2 .= "    data.setCell($m, 0, '".addslashes($A[$m])."');\n";
+//     $out2 .= "    data.setCell($m, 1, $B[$m]);\n";
+//     $out2 .= "    data.setCell($m, 2, $BB[$m]);\n";
+//   }
+// }
+else if (($cd == "text" || $cd == "comment")) {
+  foreach ($records as $k1 => $p1) { $jj[] = $p1; }
+  for ($i=0; $i < count($jj); $i++) { $k[] = $jj[$i]["data"][$qq]; }
   $c = array_count_values($k);
   arsort($c);
   $totalresponses = array_sum($c);
   $A = array_keys($c); $B = array_values($c); //print_r($c);
   $C = count($c);
   $out = "";
-  $out .= "      data.addRows($C);\n";
+  $out .= "    data.addRows($C);\n";
   for ($m=0; $m < count($c); $m++) {
     // if ($A[$m] == $choice_code[$m]) { $A[$m] == $choice_text[$m]; }
-    $BB[$m] = number_format(($B[$m]/$totalrecords)*100, 2);
+    $newAM = trim(preg_replace('/\s+/', ' ', $A[$m]));
+    $BB[$m] = number_format(($B[$m]/$basesize)*100, 2);
     $m1 = $m+1; $m2 = $m1+1;
-    $out .= "      data.setCell($m, 0, '$A[$m]');\n";
-    $out .= "      data.setCell($m, 1, $B[$m]);\n";
-    $out .= "      data.setCell($m, 2, $BB[$m]);\n";
+    $out .= "    data.setCell($m, 0, '$newAM');\n";
+    $out .= "    data.setCell($m, 1, $B[$m]);\n";
+    $out .= "    data.setCell($m, 2, $BB[$m]);\n";
   }
   $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
   if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
@@ -501,31 +502,30 @@ else if (($cd == "file") || ($cd == "signaturepad")) {
   if (empty($start)) { $start = 0; }
   if (empty($limit)) { $limit = 20; }
   if ($p) { $start = ($p-1) * $limit; }
-  $rowss = count($r);
+  $rowss = count($records);
+  // print_r($records);
 
-  $k = array(); $k2 = array();
-  for ($i = 0; $i < $rowss; $i++) {
-    $j2 = $r[$i]["data"];
-    $j2 = json_decode($j2, true);
-    array_push($k2, $j2[$qq]);
-  }
-  $c = array_count_values($k2); arsort($c);
-  $totalresponses = count(array_filter($k2));
+  // $k = array(); $k2 = array();
+  foreach ($records as $k1 => $p1) { $jj[] = $p1; }
+  // print_r($jj);
+
+  for ($i=0; $i<count($records); $i++) { $k[] = $jj[$i]["data"][$qq]; }
+  // for ($i = 0; $i < $rowss; $i++) {
+  //   $j2 = $ee[$i]["data"];
+  //   $j2 = json_decode($j2, true);
+  //   array_push($k2, $j2[$qq]);
+  // }
+  // print_r($k);
+  $c = array_count_values($k); arsort($c); //print_r($c);
+  $totalresponses = count(array_filter($k)); //print_r($totalresponses);
   $total = ceil($totalresponses/$limit);
 
   $to_record = $start + $limit;
   if ($to_record > $totalresponses) { $to_record = $totalresponses; }
   $from_record = $start + 1;
 
-  for ($i = 0; $i < $rowss; $i++) {
-    if ($i >= $start && $i < $to_record) {
-      $j = $r[$i]["data"];
-      $j = json_decode($j, true);
-      array_push($k, $j[$qq]);
-    }
-  }
-
-  // print_r($k2);
+  for ($i=$start; $i<$to_record; $i++) { $kk[] = $jj[$i]["data"][$qq]; }
+  // print_r($kk);
   // print_r($k);
 
   // ############# Output for file upload ############# //
@@ -553,7 +553,7 @@ else if (($cd == "file") || ($cd == "signaturepad")) {
     $outdirect .= "    <p>Found $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
     $outdirect .= "    <table>\n";
     $outdirect .= "      <tr>\n";
-    foreach ($k as $A => $B) {
+    foreach ($kk as $A => $B) {
       if ($B) {
         // print_r($B);
         if (file_exists($basedir.'full/'.$B)) {
@@ -583,7 +583,7 @@ else if (($cd == "file") || ($cd == "signaturepad")) {
     $outdirect .= "    <p>Found $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
     $outdirect .= "    <table>\n";
     $outdirect .= "      <tr>\n";
-    foreach ($k as $A => $B) {
+    foreach ($kk as $A => $B) {
       if ($B) {
         if (file_exists($basedir.'full/'.$B)) {
           $mydir = $basedir.'resized_M/';
@@ -612,7 +612,7 @@ else if (($cd == "file") || ($cd == "signaturepad")) {
     $outdirect .= "    <p>Found $totalresponses records in our database (showing results $from_record to $to_record)</p>\n";
     $outdirect .= "    <table>\n";
     $outdirect .= "      <tr>\n";
-    foreach ($k as $A => $B) {
+    foreach ($kk as $A => $B) {
       if ($B) {
         if (file_exists($basedir.'full/'.$B)) {
           $mydir = $basedir.'resized_L/';
@@ -637,26 +637,23 @@ else if (($cd == "file") || ($cd == "signaturepad")) {
   }
 }
 else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating")) {
-  $x = "[";
-  for ($i=0; $i < count($r); $i++) { if ($i != (count($r)-1)) { $x .= $r[$i]["data"].","; } else { $x .= $r[$i]["data"]; } }
-  $x .= "]";
-  $j = json_decode($x, true);
-  foreach ($j as $k1 => $p1) { $jj[] = $p1; }
-  for ($i=0; $i < count($jj); $i++) { $k[] = $jj[$i][$qq]; }
-  $c = array_count_values($k);
+  foreach ($records as $k1 => $p1) { $jj[] = $p1; }
+  for ($i=0; $i < count($jj); $i++) { $k[] = $jj[$i]["data"][$qq]; }
+  $c = array_count_values($k); //print_r($k);
   if (json_decode(str_replace($c_code, $c_text, json_encode($c)), true)) { $c = json_decode(str_replace($c_code, $c_text, json_encode($c)), true); }
   // arsort($c);
   $totalresponses = array_sum($c);
   $A = array_keys($c); $B = array_values($c);
   $C = count($c);
+  // print_r($c);
   $out = "";
-  $out .= "      data.addRows($C);\n";
+  $out .= "    data.addRows($C);\n";
   for ($m=0; $m < count($c); $m++) {
-    $BB[$m] = number_format(($B[$m]/$totalrecords)*100, 2);
+    $BB[$m] = number_format(($B[$m]/$basesize)*100, 2);
     $m1 = $m+1; $m2 = $m1+1;
-    $out .= "      data.setCell($m, 0, '$A[$m]');\n";
-    $out .= "      data.setCell($m, 1, $B[$m]);\n";
-    $out .= "      data.setCell($m, 2, $BB[$m]);\n";
+    $out .= "    data.setCell($m, 0, '$A[$m]');\n";
+    $out .= "    data.setCell($m, 1, $B[$m]);\n";
+    $out .= "    data.setCell($m, 2, $BB[$m]);\n";
   }
   $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
   if ((empty($_GET['type'])) || ($_GET['type'] == "pie")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Pie</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
@@ -665,9 +662,9 @@ else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown
   else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
 }
 else if ($cd == "matrix") {
-  for ($i=0; $i < count($r); $i++) {
-    $j = $r[$i]["data"];
-    $j = json_decode($j, true);
+
+  for ($i=0; $i < count($records); $i++) {
+    $j = $records[$i]["data"];
     foreach ($j[$qq] as $m => $v) { $new[$m][] = $v; }
   }
   foreach ($r_code as $val) {
@@ -682,18 +679,66 @@ else if ($cd == "matrix") {
     $yy = array_count_values($vv); krsort($yy);
     $dc[] = $yy;
   }
-  // print_r(($dc));
   foreach ($dc as $q => $r) {
     $dd[] = percentile($dc[$q]);
     $dd1[] = $dc[$q];
     $de[] = array_sum($r);
   }
   $totalresponses = array_sum($de);
+  // print_r($totalresponses);
   $c1 = array_combine($db, $dd); // percentage
   $c1a = array_combine($db, $dd); // absolute
   $c2 = array_combine($db, $average);
   // print_r($dd);
   $ccmax = count($column_link); //print_r($ccmax);
+
+
+  // foreach ($records as $k1 => $p1) { $jj[] = $p1; }
+  // for ($i=0; $i < count($jj); $i++) { $new[] = $jj[$i]["data"][$qq]; }
+  // // for ($i=0; $i < count($records); $i++) {
+  // //   $j = $records[$i]["data"][$qq]; //print_r($j);
+  // //   // $j = json_decode($j, true);
+  // //   foreach ($j[$qq] as $m => $v) { $new[$m][] = $v; }
+  // // }
+  // // print_r($new);
+  // // foreach ($ee_code as $val) {
+  // //   print_r($val);
+  // //   $da[] = $val; //print_r($da);
+  // //   for ($i=0; $i<count($new); $i++) { $rrr = count($new[$i][$val]); }
+  // //   $rrr = count($new[$val]); //print_r($rrr);
+  // //   $average[] = array_sum($new[$val]) / $rrr;
+  // //   $db = $new[$da];
+  // // }
+  // // print_r($da);
+  // // print_r($average);
+  // $db = array();
+  // // print_r($new);
+  // foreach ($new as $kk => $vv) {
+  //   // print_r($kk . " ");
+  //   // print_r($vv);
+  //   array_push($db, $vv);
+  //   $yy = array_count_values($vv); krsort($yy);
+  //   $dc[] = $yy;
+  // }
+  // print_r(array_merge($db, $yy));
+  // // print_r($dc);
+  // print_r($db);
+  // foreach ($dc as $s => $t) {
+  //   $dd[] = percentile($dc[$s]);
+  //   $dd1[] = $dc[$s];
+  //   $de[] = array_sum($t);
+  // }
+  // print_r($dd);
+  // $totalresponses = array_sum($de); //print_r($totalresponses);
+  // $c1 = array_combine($db, $dd); // percentage
+  // // print_r($c1);
+  // $c1a = array_combine($db, $dc); // absolute
+  // // print_r($c1a);
+  // $c2 = array_combine($db, $average);
+  // // print_r($average);
+  // // print_r($db);
+  // $ccmax = count($column_link); //print_r($ccmax);
+
   if ($ccmax == 2) { $color = "colors: ['#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 1 }, type: 'line' } },\n"; }
   else if ($ccmax == 3) { $color = "colors: ['#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 1, type: 'line' } },\n"; }
   else if ($ccmax == 4) { $color = "colors: ['#CC0000', '#FF4444', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 1, type: 'line' } },\n"; }
@@ -715,14 +760,20 @@ else if ($cd == "matrix") {
   $tableout1 .= "      </tr>\n";
   $tableout1 .= "    </thead>\n";
   $tableout1 .= "    <tbody>\n";
-  foreach ($r_code as $b) {
-    if (json_decode(str_replace($r_code, $r_text, json_encode($b)), true)) { $bb = json_decode(str_replace($r_code, $r_text, json_encode($b)), true); }
+  $numberofattributes = count($ee_code);
+  foreach ($ee_code as $b) {
+    // print_r($b);
+    if (json_decode(str_replace($ee_code, $ee_text, json_encode($b)), true)) { $bb = json_decode(str_replace($ee_code, $ee_text, json_encode($b)), true); }
     $bb1 = json_decode(json_encode($b), true);
     $out .= "      [ '".($bb)."', ";
     $tableout1 .= "      <tr>\n";
     $tableout1 .= "        <td align=\"right\">$bb1</td>\n";
     $jj = array(); $jjj = array();
     foreach ($c_code as $c) {
+      // print_r($c1);
+      // foreach ($c1 as $CA => $CB) {
+      //   print_r($CB);
+      // }
       if (empty($c1[$b][$c])) { $ccc = 0; } else { $ccc = round($c1[$b][$c]); }
       array_push($jj, $c1[$b][$c]);
       $out .= $ccc.", ";
@@ -779,16 +830,26 @@ echo $navtab;
 echo $navtabcontent;
 echo $questionlisting;
 
-if ($totalresponses > $totalrecords) {
-  $responseperrecord = number_format($totalresponses/$totalrecords, '1');
-  $answers = "<p align=\"right\" class=\"small\"><em>A total of $totalresponses responses answered by $totalrecords respondents (average of $responseperrecord responses per respondent)</em></p>\n";
-} else if ($totalresponses < $totalrecords) {
-  $responsepercent = number_format(($totalresponses/$totalrecords)*100, '1');
-  $answers = "<p align=\"right\" class=\"small\"><em>A total of $totalresponses responses answered by $totalrecords respondents ($responsepercent%)</em></p>\n";
+if ($totalresponses) {
+  if ($totalresponses > $basesize) {
+    if ($cd == "matrix") {
+      $responseperattribute = number_format($totalresponses/$numberofattributes, '1');
+      $responseperrecord = number_format($totalresponses/$numberofattributes, '1');
+      $answers = "<p align=\"right\" class=\"small\"><em>A total of $totalresponses responses across $numberofattributes attiributes ($responseperattribute responses per attribute)</em></p>\n";
+    } else {
+      $responseperrecord = number_format($totalresponses/$basesize, '1');
+      $answers = "<p align=\"right\" class=\"small\"><em>A total of $totalresponses responses answered by $basesize respondents (average of $responseperrecord responses per respondent)</em></p>\n";
+    }
+  } else if ($totalresponses < $basesize) {
+    $responsepercent = number_format(($totalresponses/$basesize)*100, '1');
+    $answers = "<p align=\"right\" class=\"small\"><em>A total of $totalresponses responses answered by $basesize respondents ($responsepercent%)</em></p>\n";
+  } else {
+    $responsepercent = number_format(($totalresponses/$basesize)*100, '1');
+    $answers = "<p align=\"right\" class=\"small\"><em>A total of $totalresponses responses answered by $basesize respondents ($responsepercent%)</em></p>\n";
+  }
 } else {
-  $answers = "<p align=\"right\" class=\"small\"><em>A total of $totalresponses responses answered by $totalrecords respondents</em></p>\n";
+  $answers = "<p align=\"right\" class=\"small\"><em>Non-responsive format</em></p>\n";
 }
-
 
 $openendquery = "<div style=\"text-align:right\">\n";
 $openendquery .= "<p>Custom key words centering tool</p>\n";
@@ -807,10 +868,10 @@ $openendquery .= "</div>\n";
   </div>
   <div class="col-sm-12">
 <?php if (($cd == "file") || ($cd == "signaturepad")) { echo $outdirect; } else { ?>
-    <?php if ($cd == "comment") { echo $openendquery; } else { echo $menu; } ?>
+    <?php // if ($cd == "comment") { echo $openendquery; } else { echo $menu; } ?>
     <?php if (($cd != "matrix") && ($cd != "comment")) { echo "<p><small class=\"blue\">You can sort the results by clicking the table's headers</small></p>\n"; } ?>
     <div id="table" style="width:300px"></div>
-    <?php if ($cd == "comment") { echo "<br><br>"; } ?>
+    <?php // if ($cd == "comment") { echo "<br><br>"; } ?>
     <div id="chart"></div>
 <?php } ?>
   </div>
@@ -941,7 +1002,7 @@ $openendquery .= "</div>\n";
 <?php } ?>
 
 
-<?php } else if (($cd == "checkbox") || ($cd == "checkboxhtml") || ($cd == "text")) { ?>
+<?php } else if (($cd == "checkbox") || ($cd == "checkboxhtml") || ($cd == "text") || ($cd == "comment")) { ?>
 
 <?php if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { ?>
 
@@ -960,7 +1021,7 @@ $openendquery .= "</div>\n";
     viewChart.setColumns([0, 2]);
     var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
     formatter.format(data, 2);
-    var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth: '60%' }, legend: { position: 'none' } };
+    var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '<?php if ($C < 10) { echo 400; } else if (($C > 10) && ($C < 20)) { echo 800; } else if ($C > 20) { echo 800; } ?>', bar: { groupWidth: '60%' }, legend: { position: 'none' } };
     var chart = new google.visualization.BarChart(document.getElementById('chart'));
     chart.draw(viewChart, options);
     var table = new google.visualization.Table(document.getElementById('table'));
@@ -1037,9 +1098,9 @@ $openendquery .= "</div>\n";
 <?php } ?>
 
 
-<?php } else if ($cd == "comment") { ?>
+<?php // } else if ($cd == "comment") { ?>
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
   google.charts.load('current', {'packages': ['table', 'wordtree']});
   google.charts.setOnLoadCallback(drawSort);
   function drawSort() {
@@ -1047,14 +1108,14 @@ $openendquery .= "</div>\n";
     data.addColumn('string', 'Answer');
     data.addColumn('number', 'Count');
     data.addColumn('number', 'Percentage');
-<?php echo $out2; ?>
+<?php // echo $out2; ?>
     var viewTable = new google.visualization.DataView(data);
     viewTable.setColumns([0, 1, 2]);
     var viewChart = new google.visualization.DataView(data);
     viewChart.setColumns([0, 2]);
     var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
     formatter.format(data, 2);
-    var data = google.visualization.arrayToDataTable(<?php print_r($out); ?>);
+    var data = google.visualization.arrayToDataTable(<?php // print_r($out); ?>);
     var root = document.getElementById('root').value || '';
     if (root) { var options = { wordtree: { format: 'implicit', type: 'double', word: root }, title: '<?php echo $bdx; ?>', width: '100%', height: '600' }; }
     else { var options = { wordtree: { format: 'implicit', type: 'suffix', word: root }, title: '<?php echo $bdx; ?>', width: '100%', height: '600' }; }
@@ -1069,7 +1130,7 @@ $openendquery .= "</div>\n";
     });
   }
   $(window).resize(function() { drawSort(); });
-</script>
+</script> -->
 
 <?php } else if ($cd == "matrix") { ?>
 
@@ -1211,27 +1272,47 @@ $openendquery .= "</div>\n";
 <br>
 
 <script type="text/javascript">
+  var companyid = parseInt("<?php echo $_SESSION['companyid']; ?>");
+  var userid = parseInt("<?php echo $_SESSION['userid']; ?>");
+  var surveyid = <?php echo $_GET['s']; ?>;
+  var level = <?php echo $_SESSION['level']; ?>;
+  var email = "<?php echo $_SESSION['email']; ?>";
+  var ip = "<?php echo getip(); ?>";
+  var private = <?php echo $private; ?>;
+  var api = 'http://www.siamsquare.org.uk';
+  $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
+  function getdatafortable(id) {
+    var result = "";
+    $.ajax({
+      url: api + '/result/datafortable/' + id ,
+      dataType: 'json',
+      type: 'get',
+      cache: false,
+      async: false,
+      success: function(data) { result = data; }
+    });
+    return result;
+  }
   String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
   };
   $(document).ready(function () {
-    var ttt = <?php echo $datafordownload; ?>;
-    var ttt = JSON.stringify(ttt);
+    var ttt = JSON.stringify(getdatafortable(surveyid));
     ttt = ttt.replaceAll("data", "");
-    ttt = ttt.replaceAll("upload/", "");
-    // ttt = ttt.replaceAll("upload/", "http://www.siamsquare.org/members/assets/upload/");
-    var inArray = JSON.parse(ttt);
-    var outArray = [];
-    for (var row in inArray) { outArray[outArray.length] = parse_object(inArray[row]); }
-    // $("span.rows.count").text("" + outArray.length);
-    var csv = "\ufeff"+$.csv.fromObjects(outArray);
+    ttt = ttt.replaceAll("Record", "");
+    var inArray2 = JSON.parse(ttt);
+    var outArray2 = [];
+    for (var row in inArray2) { outArray2[outArray2.length] = parse_object(inArray2[row]); }
+    var csv = "\ufeff"+$.csv.fromObjects(outArray2);
     var blob = new Blob([csv], { type: ' type: "text/csv;charset=UTF-8"' });
     var csvUrl = window.URL.createObjectURL(blob);
     var todayDate = new Date().toISOString().slice(0,10);
     var filename = "<?php echo $project; ?>" + "_data_" + todayDate + '.csv';
     $("a.exceldownload").attr({'download': filename, 'href': csvUrl });
   });
+
+
 </script>
 
 
@@ -1248,7 +1329,7 @@ $openendquery .= "</div>\n";
     $('#subgroupselect').append(newrow3FB);
   }
   for (var counter2a in monitor.quota) {
-    dropdownA(parseInt(counter2b)+1, counter2a, monitor.quota[counter2a].details[counter2b].subgroup, <?php echo $totalrecords;?>);
+    dropdownA(parseInt(counter2b)+1, counter2a, monitor.quota[counter2a].details[counter2b].subgroup, <?php echo $basesize;?>);
     for (var counter2b in monitor.quota[counter2a].details) {
       dropdownB(parseInt(counter2b)+1, counter2a, monitor.quota[counter2a].details[counter2b].subgroup, monitor.quota[counter2a].details[counter2b].samplesize);
     }
