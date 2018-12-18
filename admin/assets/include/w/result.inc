@@ -120,10 +120,15 @@ foreach ($a["pages"] as $k1 => $p1) { foreach ($p1 as $k2 => $p2) { foreach ($p2
 // }
 // $questions = array_values($questions);
 
-$qoutadd = "<p align=\"right\" class=\"lightgrey\"><strong>Select the target group below:</strong></p>\n";
-$qoutadd .= "<select class=\"form-control\" id=\"subgroupselect\">\n";
-$qoutadd .= "  <option value=\"All\">Total sample</option>\n";
+$qoutadd = "<p align=\"right\" class=\"lightgrey\"><form action=\"\" method=\"get\" id=\"subgroups\">\n";
+$qoutadd .= "<strong>Select the target group below:</strong></p>\n";
+$qoutadd .= "<input type=\"hidden\" name=\"w\" value=\"result\">\n";
+$qoutadd .= "<input type=\"hidden\" name=\"s\" value=\"".$_GET['s']."\">\n";
+$qoutadd .= "<input type=\"hidden\" name=\"q\" value=\"".$_GET['q']."\">\n";
+$qoutadd .= "<select class=\"form-control\" id=\"subgroup\" name=\"subgroup\">\n";
+// $qoutadd .= "  <option value=\"All\">Total sample</option>\n";
 $qoutadd .= "</select>\n";
+$qoutadd .= "</form>\n";
 
 $qout = "";
 for ($i = 0; $i < count($questions); $i++) {
@@ -317,6 +322,17 @@ for ($i = 0; $i < count($questions); $i++) {
 }
 
 
+if ($_GET['subgroup']) { $ss1 = html_entity_decode($_GET['subgroup']); }
+$ss2 = explode(" ", $ss1);
+$ss3 = explode("-", $ss2[0]);
+$ss12 = str_replace('_', ' ', $ss3[0]);
+$ss22 = str_replace('_', ' ', $ss3[1]);
+if ($ss3[0]) { $subgroupquestion = mb_convert_case($ss12, MB_CASE_TITLE, "UTF-8"); } else { $subgroupquestion = "all"; } print_r($subgroupquestion);
+if ($ss3[1]) { $subgroupanswer = mb_convert_case($ss22, MB_CASE_TITLE, "UTF-8");; } else { $subgroupanswer = "all"; } print_r($subgroupanswer);
+// $subgroupquestion = "Region";
+// $subgroupanswer = "Greater Bangkok";
+
+
 // ------- Questionnaire navigator --------------------------------------------------------------------------
 
 $perpage = "10";
@@ -326,7 +342,6 @@ for ($i=0; $i<$numberofquestions; $i++) {
   $qname = $questions[$i]["name"];
   if ($qname == $_GET['q']) { $here = floor($i/$perpage)*10; }
 }
-// echo "pepepepepepe"; echo $here;
 $navtab = "<nav>\n";
 $navtab .= "  <ul class=\"nav nav-tabs\">\n";
 $questionlisting = "<div class=\"tab-content\">\n";
@@ -352,7 +367,7 @@ for ($i=0; $i<$numberofquestions; $i++) {
   if ($qname == $_GET['q']) { $questionlisting .= "      <li id=\"listing-$i\" class=\"progress-step is-active\">\n"; }
   else { $questionlisting .= "      <li id=\"listing-$i\" class=\"progress-step\">\n"; }
   $questionlisting .= "        <span class=\"progress-marker\"></span>\n";
-  $questionlisting .= "        <a href=\"/admin/?w=result&s=$sid&q=$qname\"><span class=\"progress-text\">\n";
+  $questionlisting .= "        <a href=\"/admin/?w=result&s=$sid&q=$qname&subgroup=$ss1\"><span class=\"progress-text\">\n";
   $questionlisting .= "          <span class=\"progress-title\">$qname <small style='font-weight:normal'>[$qtype]</small></span>\n";
   $questionlisting .= "          <p style=\"font-family:boon;font-size:140%;margin-top:10px\">$qtitle</p>\n";
   $questionlisting .= "        </span></a>\n";
@@ -389,9 +404,7 @@ if ($search == "yes") {
 
 $q = $db->prepare($sql);
 $q->bindValue(':surveyid', $surveyid, PDO::PARAM_INT);
-if ($search == "yes") {
-  $q->bindValue(':query', "\"Region\":\"North (Chiang Mai)\"", PDO::PARAM_STR );
-}
+// if ($search == "yes") { $q->bindValue(':query', "\"Region\":\"North (Chiang Mai)\"", PDO::PARAM_STR ); }
 $q->execute();
 $r = $q->fetchAll(PDO::FETCH_ASSOC);
 $ee = $r;
@@ -401,9 +414,6 @@ $cd = $cc[$qq]; //print_r($cd);
 $bx = array_combine($pname, $ptitle);
 $bdx = $bx[$qq];
 
-$subgroupquestion = "Region";
-$subgroupanswer = "All";
-
 $k = array();
 for ($i=0; $i<count($ee); $i++) {
   $removeKeys = array('rd', 'email', 'ip', 'surveyid', 'status');
@@ -412,14 +422,18 @@ for ($i=0; $i<count($ee); $i++) {
   }
   $ee[$i]['data'] = json_decode($ee[$i]['data'], true);
   $ee[$i]['submitted'] = $ee[$i]['submitted'];
-  if ($ee[$i]['data'][$subgroupquestion] == $subgroupanswer) { array_push($k, $ee[$i]['data']); }
+  if ($subgroupanswer != "All") {
+    if ($ee[$i]['data'][$subgroupquestion] == $subgroupanswer) { array_push($k, $ee[$i]); }
+  }
 }
-$subgrouprecords = sizeof($k);
-$totalrecords = sizeof($ee);
-if ($subgroupanswer != "All") { $records = $k; $basesize = $subgrouprecords; } else { $records = $ee; $basesize = $totalrecords; }
+
+$subgrouprecords = sizeof($k); //print_r($subgrouprecords."\n");
+$totalrecords = sizeof($ee); //print_r($totalrecords);
+if ($subgroupanswer == "All") { $records = $ee; $basesize = $totalrecords; } else { $records = $k; $basesize = $subgrouprecords; }
 
 // $datafortable = json_encode($j);
 
+// print_r($records);
 if (($cd == "checkbox") || ($cd == "checkboxhtml")) {
   $k1 = array();
   for ($i=0; $i < count($records); $i++) { foreach ($records[$i]["data"][$qq] as $m => $v) { array_push($k1, $v); } }
@@ -438,7 +452,7 @@ if (($cd == "checkbox") || ($cd == "checkboxhtml")) {
     $out .= "    data.setCell($m, 1, $B[$m]);\n";
     $out .= "    data.setCell($m, 2, $BB[$m]);\n";
   }
-  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q']."&subgroup=".$_GET['subgroup'];
   if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
   else if ($_GET['type'] == "bar-V") { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
 }
@@ -491,12 +505,12 @@ else if (($cd == "text" || $cd == "comment")) {
     $out .= "    data.setCell($m, 1, $B[$m]);\n";
     $out .= "    data.setCell($m, 2, $BB[$m]);\n";
   }
-  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q']."&subgroup=".$_GET['subgroup'];
   if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
   else if ($_GET['type'] == "bar-V") { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
 }
 else if (($cd == "file") || ($cd == "signaturepad")) {
-  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q']."&size=".$_GET['size'];
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q']."&subgroup=".$_GET['subgroup']."&size=".$_GET['size'];
   if ($_GET['p']) { $p = $_GET['p']; }
   if ($p == '') { $p = "1"; }
   if (empty($start)) { $start = 0; }
@@ -655,7 +669,7 @@ else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown
     $out .= "    data.setCell($m, 1, $B[$m]);\n";
     $out .= "    data.setCell($m, 2, $BB[$m]);\n";
   }
-  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q']."&subgroup=".$_GET['subgroup'];
   if ((empty($_GET['type'])) || ($_GET['type'] == "pie")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Pie</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
   else if ($_GET['type'] == "donut") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <u>Donut</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
   else if ($_GET['type'] == "bar-H") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
@@ -785,7 +799,7 @@ else if ($cd == "matrix") {
   }
   $tableout1 .= "    </tbody>\n";
   $tableout1 .= "  </table>\n";
-  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q']."&subgroup=".$_GET['subgroup'];
   if ($ccmax == 5) {
     if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H-mean")."\">Bar Horizontal with Mean</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V-mean")."\">Bar Vertical with Mean</a> <strong>]</strong></p><br>\n"; }
     else if ($_GET['type'] == "bar-H-mean") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Horizontal with Mean</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V-mean")."\">Bar Vertical with Mean</a> <strong>]</strong></p><br>\n"; }
@@ -868,7 +882,8 @@ $openendquery .= "</div>\n";
   </div>
   <div class="col-sm-12">
 <?php if (($cd == "file") || ($cd == "signaturepad")) { echo $outdirect; } else { ?>
-    <?php // if ($cd == "comment") { echo $openendquery; } else { echo $menu; } ?>
+  <?php // if ($cd == "comment") { echo $openendquery; } else { echo $menu; } ?>
+  <?php if ($cd != "comment") { echo $menu; }  else { echo $openendquery; } ?>
     <?php if (($cd != "matrix") && ($cd != "comment")) { echo "<p><small class=\"blue\">You can sort the results by clicking the table's headers</small></p>\n"; } ?>
     <div id="table" style="width:300px"></div>
     <?php // if ($cd == "comment") { echo "<br><br>"; } ?>
@@ -1021,7 +1036,7 @@ $openendquery .= "</div>\n";
     viewChart.setColumns([0, 2]);
     var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
     formatter.format(data, 2);
-    var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '<?php if ($C < 10) { echo 400; } else if (($C > 10) && ($C < 20)) { echo 800; } else if ($C > 20) { echo 800; } ?>', bar: { groupWidth: '60%' }, legend: { position: 'none' } };
+    var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '<?php if ($C <= 10) { echo 400; } else if (($C > 10) && ($C <= 20)) { echo 800; } else if ($C > 20) { echo 800; } ?>', bar: { groupWidth: '60%' }, legend: { position: 'none' } };
     var chart = new google.visualization.BarChart(document.getElementById('chart'));
     chart.draw(viewChart, options);
     var table = new google.visualization.Table(document.getElementById('table'));
@@ -1320,20 +1335,37 @@ $openendquery .= "</div>\n";
 <script type="text/javascript">
   <?php if ($monitor) { echo "var monitor = $monitor;\n"; } else { echo "var monitor = { \"quota\": [], \"QC\": [], \"monitor\": [] };\n"; } ?>
   var counter2a = 0, counter2b = 0;
-  function dropdownA(l, m, n, o) {
-    var newrow3FA = "                <option>Total sample (n=" + o + ")</option>\n";
-    $('#subgroupselect').append(newrow3FA);
+  var newrow300 = "                <option disabled>----------</option>\n";
+  function dropdownA(l, m, n, o, p, ssq, ssa) {
+    mn = n.toString().replace(/ /g,"_").toLowerCase(); mo = o.toString().replace(/ /g,"_").toLowerCase();
+    ssq = ssq.toString().replace(/ /g,"_").toLowerCase(); ssa = ssa.toString().replace(/ /g,"_").toLowerCase();
+    if (mn == ssq) { var newrow3FA = "                <option value=\"" + mn + "-all\" selected>" + n + ": Total sample (n=" + p + ")</option>\n"; }
+    else { var newrow3FA = "                <option value=\"" + mn + "-all\">" + n + ": Total sample (n=" + p + ")</option>\n"; }
+    $('#subgroup').append(newrow3FA);
   }
-  function dropdownB(l, m, n, o) {
-    var newrow3FB = "                <option>" + n + " (n=" + o + ")</option>\n";
-    $('#subgroupselect').append(newrow3FB);
+  function dropdownB(l, m, n, o, p, ssq, ssa) {
+    mn = n.toString().replace(/ /g,"_").toLowerCase(); mo = o.toString().replace(/ /g,"_").toLowerCase();
+    ssq = ssq.toString().replace(/ /g,"_").toLowerCase(); ssa = ssa.toString().replace(/ /g,"_").toLowerCase();
+    if (mo == ssa && mn == ssq) { var newrow3FB = "                <option value=\"" + mn + "-" + mo + "\" selected>" + n + ": " + o + " (n=" + p + ")</option>\n"; }
+    else { var newrow3FB = "                <option value=\"" + mn + "-" + mo + "\">" + n + ": " + o + " (n=" + p + ")</option>\n"; }
+    $('#subgroup').append(newrow3FB);
   }
-  for (var counter2a in monitor.quota) {
-    dropdownA(parseInt(counter2b)+1, counter2a, monitor.quota[counter2a].details[counter2b].subgroup, <?php echo $basesize;?>);
-    for (var counter2b in monitor.quota[counter2a].details) {
-      dropdownB(parseInt(counter2b)+1, counter2a, monitor.quota[counter2a].details[counter2b].subgroup, monitor.quota[counter2a].details[counter2b].samplesize);
+  var i; var j; var k = 0;
+  for (i=0; i<monitor.quota.length; i++) {
+    var combinedtotalsample = 0;
+    for (j=0; j<monitor.quota[i].details.length; j++) {
+      combinedtotalsample += parseInt(monitor.quota[i].details[j].samplesize);
+    }
+    $('#subgroup').append(newrow300);
+    dropdownA(parseInt(k)+1, counter2a, monitor.quota[i].questionname, monitor.quota[i].details[k].subgroup, combinedtotalsample, "<?php echo $subgroupquestion; ?>", "<?php echo $subgroupanswer; ?>");
+    $('#subgroup').append(newrow300);
+    for (j=0; j<monitor.quota[i].details.length; j++) {
+      dropdownB(parseInt(k)+1, j, monitor.quota[i].questionname, monitor.quota[i].details[j].subgroup, monitor.quota[i].details[j].samplesize, "<?php echo $subgroupquestion; ?>", "<?php echo $subgroupanswer; ?>");
     }
   }
+  $(document).ready(function() {
+    $('#subgroup').on('change', function() { this.form.submit(); });
+  });
 </script>
 
 <?php

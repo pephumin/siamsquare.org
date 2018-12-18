@@ -1165,8 +1165,6 @@ echo "    </div>\n";
     $(".csv textarea").click(function() {$(this).focus().select();});
   });
 
-
-
 <?php if ($monitor) { echo "var monitor = $monitor;\n"; } else { echo "var monitor = { \"quota\": [], \"QC\": [], \"monitor\": [] };\n"; } ?>
 
   var counter0 = 0; var counter0z = counter0 + 1; var counter0zz = counter0z + 1;
@@ -1225,21 +1223,24 @@ echo "    </div>\n";
   });
   $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
 
-  var counter2a = 0, counter2b = 0, combinedtotalsample = 0;
+  var counter2a = 0, counter2b = 0;
   var checkcombinedtotalsample = $('#totalsamplesize').val();
   if (typeof(monitor.quota) === 'undefined') {
     var row3 = "              <tr>\n" +
       "              </tr>\n";
     $('#tablesamplewrap').find('tbody').append(row3);
   } else {
-    for (var counter2a in monitor.quota) {
-      listTable(counter2a, monitor.quota[counter2a].questionname);
-      for (var counter2b in monitor.quota[counter2a].details) {
-        listRow(parseInt(counter2b)+1, counter2a, monitor.quota[counter2a].details[counter2b].subgroup, monitor.quota[counter2a].details[counter2b].samplesize);
-        combinedtotalsample += parseInt(monitor.quota[counter2a].details[counter2b].samplesize);
+    var i; var j;
+    for (i=0; i<monitor.quota.length; i++) {
+      var subTotal= 0, combinedtotalsample = 0; combinedtotalsample[i] = 0;
+      listTable(i, monitor.quota[i].questionname);
+      for (j=0; j<monitor.quota[i].details.length; j++) {
+        listRow(parseInt(j)+1, i, monitor.quota[i].details[j].subgroup, monitor.quota[i].details[j].samplesize);
+        combinedtotalsample += parseInt(monitor.quota[i].details[j].samplesize);
+        // combinedtotalsample[i] += parseInt(monitor.quota[i].details[j].samplesize);
       }
-      suggestedTotalsample(counter2a, monitor.quota[counter2a].questionname, combinedtotalsample);
-      addRow(parseInt(counter2b)+2, counter2a);
+      suggestedTotalsample(i, monitor.quota[i].questionname, combinedtotalsample);
+      addRow(parseInt(j)+2, i);
     }
   }
   function suggestedTotalsample(l, m, n) {

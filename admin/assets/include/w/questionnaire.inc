@@ -37,6 +37,7 @@ while ($rr = $q1->fetchAll(PDO::FETCH_ASSOC)) {
   $rr1 = json_decode($rr['0']['data'], true);
   $rr2 = $rr1['pages'];
 }
+// print_r($rr2);
 for ($i=0; $i<count($rr2); $i++) { $rr3[] = $rr2[$i]['questions']; }
 $rr3 = call_user_func_array('array_merge', $rr3);
 $rr4 = $rr3;
@@ -75,9 +76,9 @@ for ($i=0; $i<count($rr4); $i++) {
   else if (($rr4[$i]['type'] == "text") || ($rr4[$i]['type'] == "multipletext") || ($rr4[$i]['type'] == "comment")) { unset($rr4[$i]['type']); $rr4[$i]['accept'] = "Open-ended"; }
   else if ($rr4[$i]['type'] == "html") { unset($rr4[$i]['type']); }
 }
-
+print_r($rr3);
 $json = json_encode($rr4);
-
+$out = "";
 $seq = 1;
 foreach ($rr3 as $question) {
   if ($question['type'] == "html") {
@@ -318,7 +319,7 @@ echo "<p>$fieldworkstatus</p>";
 <br>
 <div class="tab-content">
   <div id="one" class="tab-pane fade in active">
-    <h4>Complete questionnaire</h4>
+    <h4>Final questionnaire</h4>
     <?php print_r($out); ?>
   </div>
   <div id="two" class="tab-pane fade">
