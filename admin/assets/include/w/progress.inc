@@ -204,7 +204,7 @@ echo "<br>\n";
 
 <nav>
   <ul class="nav nav-tabs">
-<?php if (($_GET["m"] == "2") || ($_GET["m"] == "3")) { ?>
+<?php if (($_GET["m"] == "2") || ($_GET["m"] == "3") || ($_GET["bpass"] == "1")) { ?>
     <li><a href="#first" data-toggle="tab" id="first-tab-trigger"><i class="pe-flask pe-fw"></i> Progress</a></li>
     <li><a href="#second" data-toggle="tab" id="second-tab-trigger"><i class="pe-check pe-fw"></i> Quality control</a></li>
     <li><a href="#third" data-toggle="tab" id="third-tab-trigger"><i class="pe-desktop pe-fw"></i> Monitor</a></li>
@@ -223,7 +223,7 @@ echo "<br>\n";
 </nav>
 <br>
 <div class="tab-content">
-<?php if (($_GET["m"] == "2") || ($_GET["m"] == "3")) { ?>
+<?php if (($_GET["m"] == "2") || ($_GET["m"] == "3") || ($_GET["bpass"] == "1")) { ?>
   <div id="first" class="tab-pane fade">
 <?php } else { ?>
   <div id="first" class="tab-pane fade in active">
@@ -885,7 +885,7 @@ echo "    </div>\n";
   </script>
 
   </div>
-<?php if (($_GET["m"] == "2") || ($_GET["m"] == "3")) { ?>
+<?php if (($_GET["m"] == "2") || ($_GET["m"] == "3") || ($_GET["bpass"] == "1")) { ?>
   <div id="sixth" class="tab-pane fade in active">
 <?php } else { ?>
   <div id="sixth" class="tab-pane fade">

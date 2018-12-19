@@ -3,7 +3,9 @@
 $limit = 20;
 $show = $_GET["q"];
 $base = "/admin/?w=result&s=".$_GET['s'];
+$result = "/admin/?w=result&s=".$_GET['s'];
 $progress = "/admin/?w=progress&s=".$_GET['s'];
+$subgroupsetting = "/admin/?w=progress&s=".$_GET['s']."&bpass=1";
 $questionnaire = "/admin/?w=questionnaire&s=".$_GET['s'];
 $respondent = "/admin/?w=respondents&s=".$_GET['s'];
 
@@ -112,13 +114,6 @@ $datafordownload = json_encode($ee);
 
 $a = json_decode($rows[0]["data"], true);
 foreach ($a["pages"] as $k1 => $p1) { foreach ($p1 as $k2 => $p2) { foreach ($p2 as $k3 => $p3) { $questions[] = $p3; } } }
-// print_r($questions);
-
-// for ($i = 0; $i < count($questions); $i++) {
-//   if (preg_match("/zText/", $questions[$i]["name"])) { unset($questions[$i]); }
-//   if ($questions[$i]["type"] == "html") { unset($questions[$i]); }
-// }
-// $questions = array_values($questions);
 
 $qoutadd = "<p align=\"right\" class=\"lightgrey\"><form action=\"\" method=\"get\" id=\"subgroups\">\n";
 $qoutadd .= "<strong>Select the target group below:</strong></p>\n";
@@ -126,7 +121,6 @@ $qoutadd .= "<input type=\"hidden\" name=\"w\" value=\"result\">\n";
 $qoutadd .= "<input type=\"hidden\" name=\"s\" value=\"".$_GET['s']."\">\n";
 $qoutadd .= "<input type=\"hidden\" name=\"q\" value=\"".$_GET['q']."\">\n";
 $qoutadd .= "<select class=\"form-control\" id=\"subgroup\" name=\"subgroup\">\n";
-// $qoutadd .= "  <option value=\"All\">Total sample</option>\n";
 $qoutadd .= "</select>\n";
 $qoutadd .= "</form>\n";
 
@@ -327,8 +321,8 @@ $ss2 = explode(" ", $ss1);
 $ss3 = explode("-", $ss2[0]);
 $ss12 = str_replace('_', ' ', $ss3[0]);
 $ss22 = str_replace('_', ' ', $ss3[1]);
-if ($ss3[0]) { $subgroupquestion = mb_convert_case($ss12, MB_CASE_TITLE, "UTF-8"); } else { $subgroupquestion = "all"; } print_r($subgroupquestion);
-if ($ss3[1]) { $subgroupanswer = mb_convert_case($ss22, MB_CASE_TITLE, "UTF-8");; } else { $subgroupanswer = "all"; } print_r($subgroupanswer);
+if ($ss3[0]) { $subgroupquestion = mb_convert_case($ss12, MB_CASE_TITLE, "UTF-8"); } else { $subgroupquestion = "all"; } //print_r($subgroupquestion);
+if ($ss3[1]) { $subgroupanswer = mb_convert_case($ss22, MB_CASE_TITLE, "UTF-8");; } else { $subgroupanswer = "all"; } //print_r($subgroupanswer);
 // $subgroupquestion = "Region";
 // $subgroupanswer = "Greater Bangkok";
 
@@ -367,7 +361,8 @@ for ($i=0; $i<$numberofquestions; $i++) {
   if ($qname == $_GET['q']) { $questionlisting .= "      <li id=\"listing-$i\" class=\"progress-step is-active\">\n"; }
   else { $questionlisting .= "      <li id=\"listing-$i\" class=\"progress-step\">\n"; }
   $questionlisting .= "        <span class=\"progress-marker\"></span>\n";
-  $questionlisting .= "        <a href=\"/admin/?w=result&s=$sid&q=$qname&subgroup=$ss1\"><span class=\"progress-text\">\n";
+  if ($_GET['subgroup']) { $questionlisting .= "        <a href=\"/admin/?w=result&s=$sid&q=$qname&subgroup=$ss1\"><span class=\"progress-text\">\n"; }
+  else { $questionlisting .= "        <a href=\"/admin/?w=result&s=$sid&q=$qname\"><span class=\"progress-text\">\n"; }
   $questionlisting .= "          <span class=\"progress-title\">$qname <small style='font-weight:normal'>[$qtype]</small></span>\n";
   $questionlisting .= "          <p style=\"font-family:boon;font-size:140%;margin-top:10px\">$qtitle</p>\n";
   $questionlisting .= "        </span></a>\n";
@@ -422,18 +417,14 @@ for ($i=0; $i<count($ee); $i++) {
   }
   $ee[$i]['data'] = json_decode($ee[$i]['data'], true);
   $ee[$i]['submitted'] = $ee[$i]['submitted'];
-  if ($subgroupanswer != "All") {
-    if ($ee[$i]['data'][$subgroupquestion] == $subgroupanswer) { array_push($k, $ee[$i]); }
-  }
+  if (isset($ss3[1]) && ($ss3[1] != "all")) { if ($ee[$i]['data'][$subgroupquestion] == $subgroupanswer) { array_push($k, $ee[$i]); } }
+  else { array_push($k, $ee[$i]); }
 }
 
 $subgrouprecords = sizeof($k); //print_r($subgrouprecords."\n");
 $totalrecords = sizeof($ee); //print_r($totalrecords);
-if ($subgroupanswer == "All") { $records = $ee; $basesize = $totalrecords; } else { $records = $k; $basesize = $subgrouprecords; }
+if ($subgroupanswer != "all") { $records = $k; $basesize = $subgrouprecords; } else { $records = $ee; $basesize = $totalrecords; }
 
-// $datafortable = json_encode($j);
-
-// print_r($records);
 if (($cd == "checkbox") || ($cd == "checkboxhtml")) {
   $k1 = array();
   for ($i=0; $i < count($records); $i++) { foreach ($records[$i]["data"][$qq] as $m => $v) { array_push($k1, $v); } }
@@ -452,7 +443,12 @@ if (($cd == "checkbox") || ($cd == "checkboxhtml")) {
     $out .= "    data.setCell($m, 1, $B[$m]);\n";
     $out .= "    data.setCell($m, 2, $BB[$m]);\n";
   }
-  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q']."&subgroup=".$_GET['subgroup'];
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  if ($_GET['subgroup']) { $ext1 = "&subgroup=".$_GET['subgroup']; } else { $ext1 = ""; }
+  if ($_GET['type']) { $ext2 = "&type=".$_GET['type']; } else { $ext2 = ""; }
+  if ($_GET['size']) { $ext3 = "&size=".$_GET['size']; } else { $ext3 = ""; }
+  $me = $me.$ext1.$ext2.$ext3;
+
   if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
   else if ($_GET['type'] == "bar-V") { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
 }
@@ -487,6 +483,15 @@ if (($cd == "checkbox") || ($cd == "checkboxhtml")) {
 //   }
 // }
 else if (($cd == "text" || $cd == "comment")) {
+  $tableout2 = "  <table class=\"table\" style=\"font-family:boon\">\n";
+  $tableout2 .= "    <thead>\n";
+  $tableout2 .= "      <tr class=\"bg-primary\">\n";
+  $tableout2 .= "        <th width=\"60%\"></th>\n";
+  $tableout2 .= "        <th style=\"text-align:right\" width=\"20%\">Count</th>\n";
+  $tableout2 .= "        <th style=\"text-align:right\" width=\"20%\">Percentage</th>\n";
+  $tableout2 .= "      </tr>\n";
+  $tableout2 .= "    </thead>\n";
+  $tableout2 .= "    <tbody>\n";
   foreach ($records as $k1 => $p1) { $jj[] = $p1; }
   for ($i=0; $i < count($jj); $i++) { $k[] = $jj[$i]["data"][$qq]; }
   $c = array_count_values($k);
@@ -494,42 +499,53 @@ else if (($cd == "text" || $cd == "comment")) {
   $totalresponses = array_sum($c);
   $A = array_keys($c); $B = array_values($c); //print_r($c);
   $C = count($c);
+  $vdata = "[";
   $out = "";
   $out .= "    data.addRows($C);\n";
   for ($m=0; $m < count($c); $m++) {
-    // if ($A[$m] == $choice_code[$m]) { $A[$m] == $choice_text[$m]; }
     $newAM = trim(preg_replace('/\s+/', ' ', $A[$m]));
     $BB[$m] = number_format(($B[$m]/$basesize)*100, 2);
     $m1 = $m+1; $m2 = $m1+1;
     $out .= "    data.setCell($m, 0, '$newAM');\n";
     $out .= "    data.setCell($m, 1, $B[$m]);\n";
     $out .= "    data.setCell($m, 2, $BB[$m]);\n";
+    $tableout2 .= "      <tr>\n";
+    $tableout2 .= "        <td align=\"right\">$newAM</td>\n";
+    $tableout2 .= "        <td align=\"right\">".$B[$m]."</td>\n";
+    $tableout2 .= "        <td align=\"right\">".$BB[$m]."%</td>\n";
+    $tableout2 .= "      </tr>\n";
+    $vdata .= "'".$newAM."', ";
   }
-  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q']."&subgroup=".$_GET['subgroup'];
+  $vdata .= "]";
+  $tableout2 .= "    </tbody>\n";
+  $tableout2 .= "  </table>\n";
+  // $tableout3 .= "  <div id=\"PEPE\"></div>\n";
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  if ($_GET['subgroup']) { $ext1 = "&subgroup=".$_GET['subgroup']; } else { $ext1 = ""; }
+  if ($_GET['type']) { $ext2 = "&type=".$_GET['type']; } else { $ext2 = ""; }
+  if ($_GET['size']) { $ext3 = "&size=".$_GET['size']; } else { $ext3 = ""; }
+  $me = $me.$ext1.$ext2.$ext3;
+
   if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
   else if ($_GET['type'] == "bar-V") { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
 }
 else if (($cd == "file") || ($cd == "signaturepad")) {
-  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q']."&subgroup=".$_GET['subgroup']."&size=".$_GET['size'];
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  if ($_GET['subgroup']) { $ext1 = "&subgroup=".$_GET['subgroup']; } else { $ext1 = ""; }
+  if ($_GET['type']) { $ext2 = "&type=".$_GET['type']; } else { $ext2 = ""; }
+  if ($_GET['size']) { $ext3 = "&size=".$_GET['size']; } else { $ext3 = ""; }
+  $me = $me.$ext1.$ext2.$ext3;
+
   if ($_GET['p']) { $p = $_GET['p']; }
   if ($p == '') { $p = "1"; }
   if (empty($start)) { $start = 0; }
   if (empty($limit)) { $limit = 20; }
   if ($p) { $start = ($p-1) * $limit; }
   $rowss = count($records);
-  // print_r($records);
 
-  // $k = array(); $k2 = array();
   foreach ($records as $k1 => $p1) { $jj[] = $p1; }
-  // print_r($jj);
 
   for ($i=0; $i<count($records); $i++) { $k[] = $jj[$i]["data"][$qq]; }
-  // for ($i = 0; $i < $rowss; $i++) {
-  //   $j2 = $ee[$i]["data"];
-  //   $j2 = json_decode($j2, true);
-  //   array_push($k2, $j2[$qq]);
-  // }
-  // print_r($k);
   $c = array_count_values($k); arsort($c); //print_r($c);
   $totalresponses = count(array_filter($k)); //print_r($totalresponses);
   $total = ceil($totalresponses/$limit);
@@ -539,8 +555,7 @@ else if (($cd == "file") || ($cd == "signaturepad")) {
   $from_record = $start + 1;
 
   for ($i=$start; $i<$to_record; $i++) { $kk[] = $jj[$i]["data"][$qq]; }
-  // print_r($kk);
-  // print_r($k);
+
 
   // ############# Output for file upload ############# //
 
@@ -669,21 +684,22 @@ else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown
     $out .= "    data.setCell($m, 1, $B[$m]);\n";
     $out .= "    data.setCell($m, 2, $BB[$m]);\n";
   }
-  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q']."&subgroup=".$_GET['subgroup'];
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  if ($_GET['subgroup']) { $ext1 = "&subgroup=".$_GET['subgroup']; } else { $ext1 = ""; }
+  if ($_GET['type']) { $ext2 = "&type=".$_GET['type']; } else { $ext2 = ""; }
+  if ($_GET['size']) { $ext3 = "&size=".$_GET['size']; } else { $ext3 = ""; }
+  $me = $me.$ext1.$ext2.$ext3;
+
   if ((empty($_GET['type'])) || ($_GET['type'] == "pie")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Pie</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
   else if ($_GET['type'] == "donut") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <u>Donut</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
   else if ($_GET['type'] == "bar-H") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
   else if ($_GET['type'] == "bar-V") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
 }
 else if ($cd == "matrix") {
-
-  for ($i=0; $i < count($records); $i++) {
-    $j = $records[$i]["data"];
-    foreach ($j[$qq] as $m => $v) { $new[$m][] = $v; }
-  }
-  foreach ($r_code as $val) {
+  for ($i=0; $i < count($records); $i++) { foreach ($records[$i]["data"][$qq] as $m => $v) { $new[$m][] = $v;} }
+  foreach ($ee_code as $val) {
     $da[] = $val;
-    $rrr = count($new[$val]);
+    $rrr = count($new[$val]); //print_r($rrr);
     $average[] = array_sum($new[$val]) / $rrr;
     $db = $new[$da];
   }
@@ -693,6 +709,7 @@ else if ($cd == "matrix") {
     $yy = array_count_values($vv); krsort($yy);
     $dc[] = $yy;
   }
+  $D = count($dc);
   foreach ($dc as $q => $r) {
     $dd[] = percentile($dc[$q]);
     $dd1[] = $dc[$q];
@@ -703,55 +720,8 @@ else if ($cd == "matrix") {
   $c1 = array_combine($db, $dd); // percentage
   $c1a = array_combine($db, $dd); // absolute
   $c2 = array_combine($db, $average);
-  // print_r($dd);
-  $ccmax = count($column_link); //print_r($ccmax);
-
-
-  // foreach ($records as $k1 => $p1) { $jj[] = $p1; }
-  // for ($i=0; $i < count($jj); $i++) { $new[] = $jj[$i]["data"][$qq]; }
-  // // for ($i=0; $i < count($records); $i++) {
-  // //   $j = $records[$i]["data"][$qq]; //print_r($j);
-  // //   // $j = json_decode($j, true);
-  // //   foreach ($j[$qq] as $m => $v) { $new[$m][] = $v; }
-  // // }
-  // // print_r($new);
-  // // foreach ($ee_code as $val) {
-  // //   print_r($val);
-  // //   $da[] = $val; //print_r($da);
-  // //   for ($i=0; $i<count($new); $i++) { $rrr = count($new[$i][$val]); }
-  // //   $rrr = count($new[$val]); //print_r($rrr);
-  // //   $average[] = array_sum($new[$val]) / $rrr;
-  // //   $db = $new[$da];
-  // // }
-  // // print_r($da);
-  // // print_r($average);
-  // $db = array();
-  // // print_r($new);
-  // foreach ($new as $kk => $vv) {
-  //   // print_r($kk . " ");
-  //   // print_r($vv);
-  //   array_push($db, $vv);
-  //   $yy = array_count_values($vv); krsort($yy);
-  //   $dc[] = $yy;
-  // }
-  // print_r(array_merge($db, $yy));
-  // // print_r($dc);
   // print_r($db);
-  // foreach ($dc as $s => $t) {
-  //   $dd[] = percentile($dc[$s]);
-  //   $dd1[] = $dc[$s];
-  //   $de[] = array_sum($t);
-  // }
-  // print_r($dd);
-  // $totalresponses = array_sum($de); //print_r($totalresponses);
-  // $c1 = array_combine($db, $dd); // percentage
-  // // print_r($c1);
-  // $c1a = array_combine($db, $dc); // absolute
-  // // print_r($c1a);
-  // $c2 = array_combine($db, $average);
-  // // print_r($average);
-  // // print_r($db);
-  // $ccmax = count($column_link); //print_r($ccmax);
+  $ccmax = count($column_link); //print_r($ccmax);
 
   if ($ccmax == 2) { $color = "colors: ['#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 1 }, type: 'line' } },\n"; }
   else if ($ccmax == 3) { $color = "colors: ['#AAAAAA', '#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 1, type: 'line' } },\n"; }
@@ -769,7 +739,7 @@ else if ($cd == "matrix") {
   if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $cwidth = 80/($ccmax+1); } else { $cwidth = 80/($ccmax); }
   $out = "[ 'Attribute', ";
   foreach ($column_link as $a) { $out .= "{ label: '".$a."', type: 'number' }, "; } // label
-  foreach ($column_link1 as $a1) { $tableout1 .= "        <th style=\"text-align:right\" width=\"$cwidth%\">$a1</th>\n"; } // label
+  foreach ($column_link1 as $a1) { $tableout1 .= "        <th style=\"text-align:right\" width=\"$cwidth%\">$a1 (%)</th>\n"; } // label
   if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $out .= " { label: 'Mean', type: 'number' } ],\n"; $color .= "'#000000' ],\n"; $tableout1 .= "        <th style=\"text-align:right\" width=\"$cwidth%\">Mean</th>\n"; } else { $out .= " ],\n"; $color .= " ],\n"; }
   $tableout1 .= "      </tr>\n";
   $tableout1 .= "    </thead>\n";
@@ -791,7 +761,7 @@ else if ($cd == "matrix") {
       if (empty($c1[$b][$c])) { $ccc = 0; } else { $ccc = round($c1[$b][$c]); }
       array_push($jj, $c1[$b][$c]);
       $out .= $ccc.", ";
-      $tableout1 .= "        <td align=\"right\">".$ccc."</td>\n";
+      $tableout1 .= "        <td align=\"right\">".$ccc."%</td>\n";
     } // data for each scale
     $mean = number_format(meanCalculation($jj), 1); //print_r($mean);
     if (($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $out .= " $mean ],\n"; $tableout1 .= "        <td align=\"right\">".$mean."</td>\n"; } else { $out .= " ],\n"; }
@@ -799,7 +769,12 @@ else if ($cd == "matrix") {
   }
   $tableout1 .= "    </tbody>\n";
   $tableout1 .= "  </table>\n";
-  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q']."&subgroup=".$_GET['subgroup'];
+  $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+  if ($_GET['subgroup']) { $ext1 = "&subgroup=".$_GET['subgroup']; } else { $ext1 = ""; }
+  if ($_GET['type']) { $ext2 = "&type=".$_GET['type']; } else { $ext2 = ""; }
+  if ($_GET['size']) { $ext3 = "&size=".$_GET['size']; } else { $ext3 = ""; }
+  $me = $me.$ext1.$ext2.$ext3;
+
   if ($ccmax == 5) {
     if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H-mean")."\">Bar Horizontal with Mean</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V-mean")."\">Bar Vertical with Mean</a> <strong>]</strong></p><br>\n"; }
     else if ($_GET['type'] == "bar-H-mean") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Horizontal with Mean</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V-mean")."\">Bar Vertical with Mean</a> <strong>]</strong></p><br>\n"; }
@@ -834,7 +809,7 @@ echo "    <div class=\"list-group small\">\n";
 echo "      <li class=\"list-group-item list-group-item-info\"><strong><i class=\"pe-file-o pe-fw\"></i> Menu</strong></li>\n";
 echo "      <a href=\"$questionnaire\" class=\"list-group-item\"><i class=\"pe-file-o pe-fw\"></i> View the original questinnaire online</a>\n";
 echo "      <a href=\"$result\" class=\"list-group-item\"><i class=\"pe-line-chart pe-fw\"></i> View real-time results in a graphical interface</a>\n";
-echo "      <a href=\"$progress\" class=\"list-group-item\"><i class=\"pe-flask pe-fw\"></i> View progress of this project</a>\n";
+echo "      <a href=\"$subgroupsetting\" class=\"list-group-item\"><i class=\"pe-cog pe-fw\"></i> Subgroup setting</a>\n";
 echo "      <a class=\"list-group-item exceldownload\"><i class=\"pe-download pe-fw\"></i> Download all data for all questions in one CSV (Spreadsheet format) file</a>\n";
 echo "    </div>\n";
 echo "  </div>\n";
@@ -865,11 +840,11 @@ if ($totalresponses) {
   $answers = "<p align=\"right\" class=\"small\"><em>Non-responsive format</em></p>\n";
 }
 
-$openendquery = "<div style=\"text-align:right\">\n";
-$openendquery .= "<p>Custom key words centering tool</p>\n";
-$openendquery .= "<input id=\"root\" value=\"\" placeholder=\"Enter key words\">\n";
-$openendquery .= "<input type=\"button\" id=\"go\" value=\"Re-center\" class=\"btn btn-info btn-xs\">\n";
-$openendquery .= "</div>\n";
+// $openendquery = "<div style=\"text-align:right\">\n";
+// $openendquery .= "<p>Custom key words centering tool</p>\n";
+// $openendquery .= "<input id=\"root\" value=\"\" placeholder=\"Enter key words\">\n";
+// $openendquery .= "<input type=\"button\" id=\"go\" value=\"Re-center\" class=\"btn btn-info btn-xs\">\n";
+// $openendquery .= "</div>\n";
 
 ?>
 
@@ -883,7 +858,7 @@ $openendquery .= "</div>\n";
   <div class="col-sm-12">
 <?php if (($cd == "file") || ($cd == "signaturepad")) { echo $outdirect; } else { ?>
   <?php // if ($cd == "comment") { echo $openendquery; } else { echo $menu; } ?>
-  <?php if ($cd != "comment") { echo $menu; }  else { echo $openendquery; } ?>
+  <?php if ($cd != "comment") { echo $menu; } ?>
     <?php if (($cd != "matrix") && ($cd != "comment")) { echo "<p><small class=\"blue\">You can sort the results by clicking the table's headers</small></p>\n"; } ?>
     <div id="table" style="width:300px"></div>
     <?php // if ($cd == "comment") { echo "<br><br>"; } ?>
@@ -1017,7 +992,7 @@ $openendquery .= "</div>\n";
 <?php } ?>
 
 
-<?php } else if (($cd == "checkbox") || ($cd == "checkboxhtml") || ($cd == "text") || ($cd == "comment")) { ?>
+<?php } else if (($cd == "checkbox") || ($cd == "checkboxhtml") || ($cd == "text")) { ?>
 
 <?php if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { ?>
 
@@ -1036,7 +1011,7 @@ $openendquery .= "</div>\n";
     viewChart.setColumns([0, 2]);
     var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
     formatter.format(data, 2);
-    var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '<?php if ($C <= 10) { echo 400; } else if (($C > 10) && ($C <= 20)) { echo 800; } else if ($C > 20) { echo 800; } ?>', bar: { groupWidth: '60%' }, legend: { position: 'none' } };
+    var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '<?php if ($C <= 10) { echo 400; } else if (($C > 10) && ($C <= 20)) { echo 800; } else if ($C > 20) { echo 1200; } ?>', bar: { groupWidth: '60%' }, legend: { position: 'none' } };
     var chart = new google.visualization.BarChart(document.getElementById('chart'));
     chart.draw(viewChart, options);
     var table = new google.visualization.Table(document.getElementById('table'));
@@ -1113,39 +1088,90 @@ $openendquery .= "</div>\n";
 <?php } ?>
 
 
-<?php // } else if ($cd == "comment") { ?>
+<?php  } else if ($cd == "comment") { ?>
 
-<!-- <script type="text/javascript">
-  google.charts.load('current', {'packages': ['table', 'wordtree']});
-  google.charts.setOnLoadCallback(drawSort);
-  function drawSort() {
-    var data = new google.visualization.DataTable();
-    data.addColumn('string', 'Answer');
-    data.addColumn('number', 'Count');
-    data.addColumn('number', 'Percentage');
-<?php // echo $out2; ?>
-    var viewTable = new google.visualization.DataView(data);
-    viewTable.setColumns([0, 1, 2]);
-    var viewChart = new google.visualization.DataView(data);
-    viewChart.setColumns([0, 2]);
-    var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
-    formatter.format(data, 2);
-    var data = google.visualization.arrayToDataTable(<?php // print_r($out); ?>);
-    var root = document.getElementById('root').value || '';
-    if (root) { var options = { wordtree: { format: 'implicit', type: 'double', word: root }, title: '<?php echo $bdx; ?>', width: '100%', height: '600' }; }
-    else { var options = { wordtree: { format: 'implicit', type: 'suffix', word: root }, title: '<?php echo $bdx; ?>', width: '100%', height: '600' }; }
-    var chart = new google.visualization.WordTree(document.getElementById('chart'));
-    chart.draw(viewChart, options);
-    document.getElementById('go').onclick = drawSort;
-    var table = new google.visualization.Table(document.getElementById('table'));
-    table.draw(viewTable, {width: '100%', height: '100%'});
-    google.visualization.events.addListener(table, 'sort', function(event) {
-      data.sort([{ column: event.column, desc: !event.ascending }]);
-      chart.draw(viewChart);
-    });
-  }
-  $(window).resize(function() { drawSort(); });
-</script> -->
+  <p>verbatims are shown in rotation:</p><div class="vcontainer"><div id="PEPE"></div></div>
+
+  <style>
+    .vcontainer {
+      background: #2754ba;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      align-items: center;
+    }
+    #PEPE {
+      font-weight: 100;
+      font-size: 40px;
+      height: 150px;
+      color: #fafafa;
+    }
+    .dud {
+      color: #808080;
+    }
+  </style>
+
+  <script type="text/javascript">
+  'use strict';
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+  var TextScramble = function () {
+    function TextScramble(el) {
+      _classCallCheck(this, TextScramble);
+      this.el = el;
+      // console.log(el);
+      this.chars = '!#@&%<>-_\\/[]{}—=+*^?#________';
+      this.update = this.update.bind(this);
+    }
+    TextScramble.prototype.setText = function setText(newText) {
+      var _this = this;
+      // console.log(_this);
+      var oldText = this.el.innerText;
+      var length = Math.max(oldText.length, newText.length);
+      var promise = new Promise(function (resolve) { return _this.resolve = resolve; });
+      this.queue = [];
+      for (var i = 0; i < length; i++) {
+        var from = oldText[i] || '';
+        var to = newText[i] || '';
+        var start = Math.floor(Math.random() * 80);
+        var end = start + Math.floor(Math.random() * 80);
+        this.queue.push({ from: from, to: to, start: start, end: end });
+      }
+      cancelAnimationFrame(this.frameRequest);
+      this.frame = 0;
+      this.update();
+      return promise;
+    };
+    TextScramble.prototype.update = function update() {
+      var output = '';
+      var complete = 0;
+      for (var i=0, n = this.queue.length; i<n; i++) {
+        var _queue$i = this.queue[i];
+        var from = _queue$i.from;
+        var to = _queue$i.to;
+        var start = _queue$i.start;
+        var end = _queue$i.end;
+        var char = _queue$i.char;
+        if (this.frame >= end) { complete++; output += to; }
+        else if (this.frame >= start) { if (!char || Math.random() < 0.28) { char = this.randomChar(); this.queue[i].char = char; } output += '<span class="dud">' + char + '</span>'; }
+        else { output += from; }
+      }
+      this.el.innerHTML = output;
+      if (complete === this.queue.length) { this.resolve(); }
+      else { this.frameRequest = requestAnimationFrame(this.update); this.frame++; }
+    };
+    TextScramble.prototype.randomChar = function randomChar() { return this.chars[Math.floor(Math.random() * this.chars.length)]; };
+    return TextScramble;
+  }();
+  var phrases = <?php echo $vdata; ?>;
+  var el = document.querySelector('div#PEPE');
+  var fx = new TextScramble(el);
+  var counter = 0;
+  var next = function next() { fx.setText(phrases[counter]).then(function () { setTimeout(next, 800); }); counter = (counter + 1) % phrases.length; };
+  next();
+  </script>
 
 <?php } else if ($cd == "matrix") { ?>
 
@@ -1159,7 +1185,7 @@ $openendquery .= "</div>\n";
     var view = new google.visualization.DataView(data);
     var options = {
       width: '100%',
-      height: '400',
+      height: '<?php if ($D <= 10) { echo 400; } else if (($D > 10) && ($D <= 20)) { echo 800; } else if ($D > 20) { echo 1200; } ?>',
       bar: { groupWidth: '60%' },
       legend: { position: 'top', textStyle: { color: '#000', fontSize: 10 } },
       isStacked: true,
@@ -1369,10 +1395,17 @@ $openendquery .= "</div>\n";
 </script>
 
 <?php
-if ($tableout1) {
+if ($tableout3) {
+  // echo "<p align=\"right\"><a class=\"grey small\" data-toggle=\"collapse\" href=\"#showverbatim\">Click to show animated verbatim</a></p>\n";
+  // echo "<br><div class=\"collapse\" id=\"showverbatim\">\n";
+  echo "<div class=\"well vcontainer\">\n";
+  echo $tableout3;
+  echo "</div>\n";
+}
+if ($tableout1 || $tableout2) {
   echo "<p align=\"right\"><a class=\"grey small\" data-toggle=\"collapse\" href=\"#showtable\">Click to show table</a></p>\n";
-  echo "<div class=\"collapse\" id=\"showtable\">\n";
-  echo $tableout1;
+  echo "<br><div class=\"collapse\" id=\"showtable\">\n";
+  if ($tableout1) { echo $tableout1; } else if ($tableout2) { echo $tableout2; }
   echo "</div>\n";
 }
 ?>
