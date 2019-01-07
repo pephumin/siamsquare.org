@@ -599,7 +599,7 @@ echo "<div id=\"notification\"></div>\n";
     afterRender: function(question, el) {
       var $el = $(el).is("input") ? $(el) : $(el).find("input");
       if (!question.choices) { question.choices = getinterviewers(surveyid); }
-      // console.log(question.choices);
+      console.log(question.choices);
       var options = {
         data: question.choices,
         getValue: "interviewer",

@@ -104,7 +104,7 @@ INSERT INTO j_projects SELECT * FROM tmp1;
 UPDATE j_projects SET title = "Healthy NEB W3" WHERE id = LAST_INSERT_ID();
 DROP TABLE tmp1;
 
-CREATE TEMPORARY TABLE tmp2 SELECT * from j_results WHERE surveyid IN (49, 51, 53);
+CREATE TEMPORARY TABLE tmp2 SELECT * from j_results WHERE surveyid IN (49, 51, 53, 54);
 UPDATE tmp2 SET id=NULL;
 UPDATE tmp2 SET surveyid = 55;
 INSERT INTO j_results SELECT * FROM tmp2;
