@@ -244,7 +244,7 @@ if ($_GET["m"] == "tips") {
               excluded: [':disabled'],
               fields: {
                 fullname: { validators: { notEmpty: { message: 'Please enter your first and last name' } } },
-                tax: { validators: { notEmpty: { message: 'Please enter your ID card numbere', stringLength: { min: 13, message: 'It has to be 13 digits only' }, regexp: { regexp: /^[0-9]+$/, message: 'Only numbers are allowed' } } }
+                tax: { validators: { notEmpty: { message: 'Please enter your ID card numbere', stringLength: { min: 13, message: 'It has to be 13 digits only' }, regexp: { regexp: /^[0-9]+$/, message: 'Only numbers are allowed' } } } }
                 // mobile: { validators: { notEmpty: { message: 'Please enter your mobie number' }, stringLength: { min: 10, message: 'It has to be 10 digits only' }, regexp: { regexp: /^[0-9]+$/, message: 'Only numbers are allowed' } } }
               }
             })
@@ -282,8 +282,10 @@ if ($_GET["m"] == "tips") {
               <td width="70%">
                 <div class="input-group">
                   <span class="input-group-addon"><i class="pe-key pe-fw"></i></span>
-                  <input type="password" name="newpass1" class="form-control" placeholder="New password">
+                  <input type="password" name="newpass1" id="strengthchecking" class="form-control" placeholder="New password">
                 </div>
+                <meter max="4" id="password-strength-meter"></meter>
+                <div id="password-strength-text"></div>
                 <span class="text-muted small"><small>Please enter the new password</small></span>
               </td>
             </tr>
@@ -299,6 +301,7 @@ if ($_GET["m"] == "tips") {
               </td>
             </tr>
           </table>
+          <div>Strength:<span id="strength_human">apples</span>(<span id="strength_score">bananas</span>)</div>
           <br>
           <p class="text-center">
             <input type="hidden" name="w" value="changepass">
@@ -306,7 +309,77 @@ if ($_GET["m"] == "tips") {
             <button class="btn btn-default" name="Cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
           </p>
         </form>
-        <script>
+        <style>
+          meter {
+            -webkit-appearance: none;
+               -moz-appearance: none;
+                    appearance: none;
+            margin: 0 auto 1em;
+            width: 100%;
+            height: 0.5em;
+            background: none;
+            background-color: rgba(0, 0, 0, 0.1);
+          }
+          meter::-webkit-meter-bar {
+            background: none;
+            background-color: rgba(0, 0, 0, 0.1);
+          }
+          meter[value="1"]::-webkit-meter-optimum-value { background: red; }
+          meter[value="2"]::-webkit-meter-optimum-value { background: yellow; }
+          meter[value="3"]::-webkit-meter-optimum-value { background: orange; }
+          meter[value="4"]::-webkit-meter-optimum-value { background: green; }
+          meter[value="1"]::-moz-meter-bar { background: red; }
+          meter[value="2"]::-moz-meter-bar { background: yellow; }
+          meter[value="3"]::-moz-meter-bar { background: orange; }
+          meter[value="4"]::-moz-meter-bar { background: green; }
+        </style>
+        <script type="text/javascript" src="/admin/assets/js/zxcvbn.js"></script>
+        <script type="text/javascript">
+          var strength = {
+            0: "Worst",
+            1: "Bad",
+            2: "Weak",
+            3: "Good",
+            4: "Strong"
+          }
+          var password = document.getElementById('strengthchecking');
+          var meter = document.getElementById('password-strength-meter');
+          var text = document.getElementById('password-strength-text');
+          password.addEventListener('input', function() {
+            var val = password.value;
+            var result = zxcvbn(val);
+            meter.value = result.score;
+            if (val !== "") { text.innerHTML = "Strength: " + strength[result.score]; }
+            else { text.innerHTML = ""; }
+          });
+          // function scorePassword(pass) {
+          //   var score = 0;
+          //   if (!pass) { return score; }
+          //   // award every unique letter until 5 repetitions
+          //   var letters = new Object();
+          //   for (var i=0; i<pass.length; i++) {
+          //       letters[pass[i]] = (letters[pass[i]] || 0) + 1;
+          //       score += 5.0 / letters[pass[i]];
+          //   }
+          //   // bonus points for mixing it up
+          //   var variations = {
+          //       digits: /\d/.test(pass),
+          //       lower: /[a-z]/.test(pass),
+          //       upper: /[A-Z]/.test(pass),
+          //       nonWords: /\W/.test(pass),
+          //   }
+          //   variationCount = 0;
+          //   for (var check in variations) { variationCount += (variations[check] == true) ? 1 : 0; }
+          //   score += (variationCount - 1) * 10;
+          //   return parseInt(score);
+          // }
+          // function checkPassStrength(pass) {
+          //   var score = scorePassword(pass);
+          //   if (score > 80) { return "strong"; }
+          //   if (score > 60) { return "good"; }
+          //   if (score >= 30) { return "weak"; }
+          //   return "";
+          // }
           $(document).ready(function() {
             $('#changepassword').formValidation({
               framework: 'bootstrap',
@@ -314,9 +387,9 @@ if ($_GET["m"] == "tips") {
               button: { selector: '[type="submit"]', disabled: '' },
               excluded: [':disabled'],
               fields: {
-                oldpass: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 6, message: 'Password must be more than 6 characters long' } } },
-                newpass1: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 6, message: 'Password must be more than 6 characters long' } } },
-                newpass2: { validators: { notEmpty: { message: 'The password is required' }, stringLength: { min: 6, message: 'Password must be more than 6 characters long' }, identical: { field: 'newpass1', message: 'The confirm password must be the same as the new one' } } }
+                oldpass: { validators: { notEmpty: { message: 'Your current password is required' }, stringLength: { min: 6, message: 'Your current password must be more than 6 characters long' } } },
+                newpass1: { validators: { notEmpty: { message: 'Your new password is required' }, stringLength: { min: 6, message: 'Your new password must be more than 6 characters long' } } },
+                newpass2: { validators: { notEmpty: { message: 'Your new confirmed password is required' }, stringLength: { min: 6, message: 'Your new confirmed password must be more than 6 characters long' }, identical: { field: 'newpass1', message: 'The confirmed password does not mnatch with the new password' } } }
               }
             })
             .on('err.field.fv', function(e, data) {
@@ -327,6 +400,11 @@ if ($_GET["m"] == "tips") {
               var isValidTab = data.fv.isValidContainer($tabPane);
               if (isValidTab !== null) { $icon.addClass(isValidTab ? 'pe-check' : 'pe-times'); }
             });
+            // $("#strengthchecking").on("keypress keyup keydown", function() {
+            //   var pass = $(this).val();
+            //   $("#strength_human").text(checkPassStrength(pass));
+            //   $("#strength_score").text(scorePassword(pass));
+            // });
           });
         </script>
       </div>

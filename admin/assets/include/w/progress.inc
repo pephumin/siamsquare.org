@@ -362,17 +362,44 @@ foreach ($pincheck as $k1 => $p1) {
 $geoout .= "    ]";
 // print_r($geoout);
 $terminatedsize = count($errorlist);
-$errorinput = "";
-$pin_error = "<div class=\"alert alert-danger alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\n";
-$pin_error .= "  <h4><i class=\"pe-exclamation-triangle pe-fw pe-lg\"></i> Found terminated respondents</h4>\n";
-$pin_error .= "  <p>We detect <strong>$terminatedsize respondents</strong> who were actually terminated but they are incorrectly coded as successful.</p>\n";
-$pin_error .= "  <div class=\"well small\">";
-for ($x = 0; $x < count($errorlist); $x++) { $pin_error .= $errorlist[$x].", "; $errorinput .= "<input type=\"hidden\" name=\"errorids[]\" value=\"$errorlist[$x]\">"; }
-$pin_error .= "  </div>\n";
-$pin_error .= "  <form action=\"$base\" method=\"post\">$errorinput<button type=\"submit\" name=\"m\" value=\"fixerrors\" class=\"btn btn-danger\">Fix this error</button></form>\n";
-$pin_error .= "</div>\n";
+if ($terminatedsize > 0) {
+  $errorinput = "";
+  $pin_error = "<div class=\"alert alert-danger alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\n";
+  $pin_error .= "  <h4><i class=\"pe-exclamation-triangle pe-fw pe-lg\"></i> Found terminated respondents</h4>\n";
+  $pin_error .= "  <p>We detect <strong>$terminatedsize respondents</strong> who were actually terminated but they are incorrectly coded as successful.</p>\n";
+  $pin_error .= "  <div class=\"well small\">";
+  for ($x = 0; $x < count($errorlist); $x++) { $pin_error .= $errorlist[$x].", "; $errorinput .= "<input type=\"hidden\" name=\"errorids[]\" value=\"$errorlist[$x]\">"; }
+  $pin_error .= "  </div>\n";
+  $pin_error .= "  <form action=\"$base\" method=\"post\">$errorinput<button type=\"submit\" name=\"m\" value=\"fixerrors\" class=\"btn btn-danger\">Fix this error</button></form>\n";
+  $pin_error .= "</div>\n";
+  if ($pinerror == 1) { $dcupdate = $pin_error; } else { $dcupdate = ""; }
+  $clause = implode(', ', array_fill(0, $terminatedsize, '?'));
+  $execinput = array_merge([$_GET['s']], $errorlist); //print_r($execinput);
+  $q2A = $db->prepare("UPDATE j_results SET status = 0 WHERE surveyid = ? AND id IN ($clause) ");
+  $q2A->execute($execinput);
+  $ql2 = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '".$_SESSION['email']." fixed terminated respondents for $project', '3')");
+  $ql2->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
+  $ql2->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
+  $ql2->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
+  $ql2->execute();
+  $dcupdateme = "";
+  $dcupdate .= "<div class=\"alert alert-success alert-dismissible\" role=\"alert\"><a class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\n";
+  $dcupdate .= "  <h4><i class=\"pe-check pe-fw pe-lg\"></i> Problems automatically fixed</h4>\n";
+  for ($x = 0; $x < count($errorlist); $x++) { $dcupdateme .= $errorlist[$x].", "; }
+  $dcupdate .= "  <p>We have fixed problems with <strong>$terminatedsize respondents</strong> automatically.</p>\n";
+  $dcupdate .= "  <div class=\"well small\">$dcupdateme</div>";
+  $dcupdate .= "  <p>Automatically reloading this page in a second.</p>\n";
+  $dcupdate .= "</div>\n";
+  $redirect = $base."&m=2";
+  $dcupdate .= "<script type=\"text/javascript\">";
+  $dcupdate .= "setTimeout(function () { window.location.href = \"$base\"; }, 10000);";
+  $dcupdate .= "</script>";
+  
+  // header('Refresh: 10; URL='.$redirect);
+  // header("location: $redirect");
+  // exit;
+}
 
-if ($pinerror == 1) { $dcupdate = $pin_error; } else { $dcupdate = ""; }
 $dcupdate .= "<hr>\n";
 $dcupdate .= "<div class=\"row\">\n";
 $dcupdate .= "  <div class=\"col-xs-12 col-sm-3 col-md-3 col-lg-3\">\n";
@@ -469,7 +496,7 @@ if ($private == 1) {
     echo "<p>Please upload respondent's emails using a Comma Separated Value (CSV) file and our system will enable the email function allowing you to send invitation / reminder to respondents accordingly.</p>\n";
     echo "<div id=\"gauge1\" style=\"display:none\"></div><div id=\"gauge2\" style=\"display:none\"></div><div id=\"orgchart1\" style=\"display:none\"></div>\n";
     echo "<p>The upload function can be found in the <a href=\"$respondent\">respondent's main page</a>, and it looks like below example <i class=\"pe-arrow-down\"></i>.</p>\n";
-    echo "<div align=\"right\"><a class=\"btn btn-info\"><i class=\"pe-upload pe-fw\"></i> Upload a new name list</a> <a class=\"btn btn-info\"><i class=\"pe-user-plus pe-fw\"></i> Manually add new respondents</a></div>\n";
+    echo "<div align=\"right\"><a class=\"btn btn-info\"><i class=\"pe-upload pe-fw\"></i> Upload a new name list</a> <a class=\"btn btn-info\" title=\"Add new respondents\"><i class=\"pe-user-plus pe-fw\"></i> Manually add new respondents</a></div>\n";
     echo "<br>\n";
     if ($valid > 0) { echo $dcupdate; }
   } else if (($all != 0) && ($allgood == 0)) {
@@ -477,7 +504,7 @@ if ($private == 1) {
     echo "<p>This is because their emails appears to be in an incorrect format. To fix this, you have to delete them from the database, and upload a new list making sure the right column on your Comma Separated Value (CSV) file is selected.</p>\n";
     echo "<div id=\"gauge1\" style=\"display:none\"></div><div id=\"gauge2\" style=\"display:none\"></div><div id=\"orgchart1\" style=\"display:none\"></div>\n";
     echo "<p>The upload function can be found in the <a href=\"$respondent\">respondent's main page</a>, and it looks like below example <i class=\"pe-arrow-down\"></i>.</p>\n";
-    echo "<div align=\"right\"><a class=\"btn btn-info\"><i class=\"pe-upload pe-fw\"></i> Upload a new name list</a> <a class=\"btn btn-info\"><i class=\"pe-user-plus pe-fw\"></i> Manually add new respondents</a></div>\n";
+    echo "<div align=\"right\"><a class=\"btn btn-info\"><i class=\"pe-upload pe-fw\"></i> Upload a new name list</a> <a class=\"btn btn-info\" title=\"Add new respondents\"><i class=\"pe-user-plus pe-fw\"></i> Manually add new respondents</a></div>\n";
     echo "<br>\n";
     if ($valid > 0) { echo $dcupdate; }
   } else if (($allgood != 0) && ($invited == 0)) {
@@ -485,7 +512,7 @@ if ($private == 1) {
     echo "<p>We therefore strongly suggest you start inviting your respondents to this survey to start the data collection process.</p>\n";
     echo "<div id=\"gauge1\" style=\"display:none\"></div><div id=\"gauge2\" style=\"display:none\"></div><div id=\"orgchart1\" style=\"display:none\"></div>\n";
     echo "<p>The invitation function can be found in the <a href=\"$respondent\">respondent's main page</a>, and it looks like below examples <i class=\"pe-arrow-down\"></i>.</p>\n";
-    echo "<div align=\"right\"><a class=\"btn btn-warning\"><i class=\"pe-envelope pe-fw\"></i> Send an invitation email</a> <a class=\"btn btn-warning\"><i class=\"pe-envelope pe-fw\"></i> Send a reminder email</a></div>\n";
+    echo "<div align=\"right\"><a class=\"btn btn-warning\"><i class=\"pe-envelope pe-fw\"></i> Send an invitation email</a> <a class=\"btn btn-warning\" title=\"Send a reminder email\"><i class=\"pe-envelope pe-fw\"></i> Send a reminder email</a></div>\n";
     echo "<br>\n";
     if ($valid > 0) { echo $dcupdate; }
   } else {
@@ -703,53 +730,10 @@ function getMissingTable($input = array()) {
   return $output;
 }
 
-// function utf8_converter($array) {
-//   array_walk_recursive($array, function(&$item, $key) {
-//     if(!mb_detect_encoding($item, 'utf-8', true)) {
-//       $item = utf8_encode($item);
-//     }
-//   });
-//   return $array;
-// }
-
-// echo phpinfo();
-// print_r($ee);
 $ff = json_decode($monitor, true); //print_r($ff);
 foreach ($ff["QC"] as $fA) { foreach ($fA as $fB) { $mn1[] = $fB; } } //print_r($mn1);
 foreach ($ff["monitor"] as $fC) { foreach ($fC as $fD) { $mn2[] = $fD; } } // print_r($mn2);
 foreach ($ff["quota"] as $fE) { foreach ($fE as $fF) { $mn3[] = $fF; } } // print_r($mn3);
-
-// for ($i = 0; $i < count($mn1); $i++) {
-//   $AA = checkingQuestion($mn1[$i], $ee);
-//   $AB = getResultHTML($v1, $RDsuccess, $mn1[$i]);
-//   // print_r($AA["0"]);
-//   // foreach ($AA["0"] as $k1 => $v1) {
-//   //   print_r($v1);
-//   //   $AB = getResultHTML($v1, $RDsuccess, $mn1[$i]);
-//   // }
-//   print_r($AB);
-//   $AC = getResultJS($AA, $RDsuccess, "1", $mn1[$i]);
-//   $ab .= $AB;
-//   $ac .= $AC["2"];
-//   $missing = array_merge($missing, $AA["2"]);
-//
-// }
-
-// function is_multibyte($s) {
-//   return mb_strlen($s,'utf-8') < strlen($s);
-// }
-
-// print_r($mn1["0"]);
-// print_r($mn1["1"]);
-// print_r($mn2["0"]);
-// print_r($mn2["1"]);
-
-// if(is_multibyte($A1A)) { echo "Yes"; } else { echo "NO"; }
-// echo utf8_encode($A1A);
-// echo mb_detect_encoding($A1A, 'UTF-8');
-// print_r("<pre>\n");
-// print_r($A1A);
-// print_r("</pre>");
 
 $A1A = checkingQuestion($mn1["0"], $ee);
 $A1B = getResultHTML($A1A, $RDsuccess, $mn1["0"]);
@@ -767,9 +751,7 @@ $A4A = checkingQuestion($mn1["3"], $ee);
 $A4B = getResultHTML($A4A, $RDsuccess, $mn1["3"]);
 $A4C = getResultJS($A4A, $RDsuccess, "1", $mn1["3"]);
 
-// print_r("<pre>\n");
-// print_r($A3A);
-// print_r("</pre>");
+// ----------------------------------------------------
 
 $A5A = checkingQuestion($mn2["0"], $ee);
 $A5B = getResultHTML($A5A, $RDsuccess, $mn2["0"]);
@@ -932,9 +914,8 @@ echo "    </div>\n";
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <h4>Quota by subgroups</h4>
         <p>The sample size broken down by subgroups.</p>
-        <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newsample" onClick="newTable();"><i class="pe-plus pe-fw"></i>Add new</button></p>
-        <div class="row" id="tablesamplewrap">
-        </div>
+        <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newsample" onClick="newTable();" title="Add a new subgroup"><i class="pe-plus pe-fw"></i>Add new</button></p>
+        <div class="row" id="tablesamplewrap"></div>
       </div>
     </div>
     <br>
@@ -953,7 +934,7 @@ echo "    </div>\n";
           <tbody>
           </tbody>
         </table>
-        <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newkeyquestion1"><i class="pe-plus pe-fw"></i>Add new</button></p>
+        <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newkeyquestion1" title="Add a new row"><i class="pe-plus pe-fw"></i>Add new</button></p>
       </div>
       <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
         <h4>Data monitoring <small>(for researcher)</small></h4>
@@ -969,7 +950,7 @@ echo "    </div>\n";
           <tbody>
           </tbody>
         </table>
-        <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newkeyquestion2"><i class="pe-plus pe-fw"></i>Add new</button></p>
+        <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newkeyquestion2" title="Add a new row"><i class="pe-plus pe-fw"></i>Add new</button></p>
       </div>
     </div>
     <hr>
@@ -999,9 +980,9 @@ echo "    </div>\n";
   $('#showalert-m3').html("<div class='alert alert-info'><i class='pe-exclamation-triangle pe-fw'></i> No changes detected. So no change has been made to this survey.</div><br>").hide();
 
   function getColumn(anArray, columnNumber) { return anArray.map(function(row) { return row[columnNumber]; }); }
-  function showRow(e, rowIndex) { showhideRow(rowIndex, true); e.preventDefault(); return false; }
-  function hideRow(e, rowIndex) { showhideRow(rowIndex, false); e.preventDefault(); return false; }
-  function showhideRow(rowIndex, show) {
+  function showRow(e, rowIndex) { showhiddenRow(rowIndex, true); e.preventDefault(); return false; }
+  function hideRow(e, rowIndex) { showhiddenRow(rowIndex, false); e.preventDefault(); return false; }
+  function showhiddenRow(rowIndex, show) {
     document.getElementById("row" + rowIndex).style.display = show ? "" : "none";
     document.getElementById("rowhide" + rowIndex).style.display = show ? "" : "none";
     document.getElementById("rowshow" + rowIndex).style.display =  show ? "none" : "";
@@ -1010,9 +991,7 @@ echo "    </div>\n";
     var sortedObj = {}, keys = Object.keys(object);
     keys.sort(function(key1, key2) {
       key1 = key1.toLowerCase(), key2 = key2.toLowerCase();
-      if (key1 < key2) return -1;
-      if (key1 > key2) return 1;
-      return 0;
+      if (key1 < key2) { return -1; } else if (key1 > key2) { return 1; } else { return 0; }
     });
     for (var index in keys) {
       var key = keys[index];
@@ -1177,9 +1156,12 @@ echo "    </div>\n";
       var row1 = "              <tr>\n" +
         "                <td valign=\"middle\">" + counter0z + "</td>\n" +
         "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"QC_questionname_" + counter0z + "\" value=\"" + monitor.QC[counter0].questionname + "\"></td>\n" +
-        "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+        "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
         "              </tr>\n";
-      $('#tableQC').find('tbody').append(row1);
+        // "              <tr><td colspan=\"3\">\n";
+        // "              <p align=\"center\"><button type=\"button\" class=\"btn btn-warning btn-xs\" id=\"newkeyquestion1\"><i class=\"pe-plus pe-fw\"></i>Add a new subgroup aspect</button></p>\n";       
+        // "              </td></tr>\n";
+        $('#tableQC').find('tbody').append(row1);
       counter0++;
       counter0z++;
     }
@@ -1188,7 +1170,7 @@ echo "    </div>\n";
     var newrow1 = "              <tr>\n" +
       "                <td valign=\"middle\">" + counter0z + "</td>\n" +
       "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"QC_questionname_" + counter0z + "\"></td>\n" +
-      "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+      "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
       "              </tr>\n";
     $('#tableQC').find('tbody').append(newrow1);
     counter0z++;
@@ -1205,7 +1187,7 @@ echo "    </div>\n";
       var row2 = "              <tr>\n" +
         "                <td valign=\"middle\">" + counter1z + "</td>\n" +
         "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"monitor_questionname_" + counter1z + "\" value=\"" + monitor.monitor[counter1].questionname + "\"></td>\n" +
-        "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+        "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
         "              </tr>\n";
       $('#tableMonitor').find('tbody').append(row2);
       counter1++;
@@ -1216,7 +1198,7 @@ echo "    </div>\n";
     var newrow2 = "              <tr>\n" +
       "                <td valign=\"middle\">" + counter1z + "</td>\n" +
       "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"monitor_questionname_" + counter1z + "\"></td>\n" +
-      "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+      "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
       "              </tr>\n";
     $('#tableMonitor').find('tbody').append(newrow2);
     counter1z++;
@@ -1259,9 +1241,9 @@ echo "    </div>\n";
       "          <table class=\"table table-hover table-condensed small\" id=\"tablesample" + m + "\">\n" +
       "            <thead>\n" +
       "              <tr class=\"bg-success\">\n" +
-      "                <th width=\"5%\"><a class=\"btn btn-xs\" id=\"mynewrow" + m + "\"><i class=\"pe-plus-circle pe-lg green\"></i></a></th>\n" +
-      "                <th width=\"85%\" colspan=\"2\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"quota_" + m + "_questionname_1\" value=\"" + n + "\"></th>\n" +
-      "                <th width=\"10%\"><i class=\"pe-trash pe-fw red deletethistable\"></i></th>\n" +
+      "                <th width=\"5%\"><a class=\"btn btn-xs\" id=\"mynewrow" + m + "\" title=\"Add a new subgroup aspects\"><i class=\"pe-plus-circle pe-lg green\"></i></a></th>\n" +
+      "                <th width=\"85%\" colspan=\"2\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup/Question name\" name=\"quota_" + m + "_questionname_1\" value=\"" + n + "\"></th>\n" +
+      "                <th width=\"10%\"><i class=\"pe-trash pe-fw red deletethistable\" title=\"Delete this table\"></i></th>\n" +
       "                <th width=\"10%\"></th>\n" +
       "              </tr>\n" +
       "            </thead>\n" +
@@ -1276,7 +1258,7 @@ echo "    </div>\n";
       "                <td width=\"5%\" valign=\"middle\">" + l + "</td>\n" +
       "                <td width=\"85%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup\" name=\"quota_" + m + "_subgroup_" + l + "\" value=\"" + n + "\"></td>\n" +
       "                <td width=\"10%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + m + "_samplesize_" + l + "\" value=\"" + o + "\"></td>\n" +
-      "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+      "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
       "              </tr>\n";
     $('#tablesamplewrap').find('#tablesample'+m).find('tbody').append(newrow3B);
   }
@@ -1291,7 +1273,7 @@ echo "    </div>\n";
       "              <tr class=\"bg-success\">\n" +
       "                <th width=\"5%\"></th>\n" +
       "                <th width=\"85%\" colspan=\"2\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"quota_" + m + "_questionname_1\"></th>\n" +
-      "                <th width=\"10%\"><i class=\"pe-trash pe-fw red deletethistable\"></i></th>\n" +
+      "                <th width=\"10%\"><i class=\"pe-trash pe-fw red deletethistable\" title=\"Delete this table\"></i></th>\n" +
       "                <th width=\"10%\"></th>\n" +
       "              </tr>\n" +
       "            </thead>\n" +
@@ -1300,7 +1282,7 @@ echo "    </div>\n";
       "                <td width=\"5%\" valign=\"middle\">" + l + "</td>\n" +
       "                <td width=\"85%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup\" name=\"quota_" + m + "_subgroup_" + l + "\"></td>\n" +
       "                <td width=\"10%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + m + "_samplesize_" + l + "\"></td>\n" +
-      "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+      "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
       "              </tr>\n";
       "            </tbody>\n" +
       "          </table>\n" +
@@ -1312,7 +1294,7 @@ echo "    </div>\n";
       "                <td width=\"5%\" valign=\"middle\">Add</td>\n" +
       "                <td width=\"85%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup\" name=\"quota_" + m + "_subgroup_" + l + "\"></td>\n" +
       "                <td width=\"10%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + m + "_samplesize_" + l + "\"></td>\n" +
-      "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+      "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
       "              </tr>\n";
     $('#tablesample'+m).find('tbody').append(newrow3C);
     $('#mynewrow'+m).click(function() { $('#insert'+m).toggle('slow'); });

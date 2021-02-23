@@ -426,6 +426,15 @@ $totalrecords = sizeof($ee); //print_r($totalrecords);
 if ($subgroupanswer != "all") { $records = $k; $basesize = $subgrouprecords; } else { $records = $ee; $basesize = $totalrecords; }
 
 if (($cd == "checkbox") || ($cd == "checkboxhtml")) {
+  $tableout4 = "  <table class=\"table\" style=\"font-family:boon\">\n";
+  $tableout4 .= "    <thead>\n";
+  $tableout4 .= "      <tr class=\"bg-primary\">\n";
+  $tableout4 .= "        <th width=\"60%\"></th>\n";
+  $tableout4 .= "        <th style=\"text-align:right\" width=\"20%\">Count</th>\n";
+  $tableout4 .= "        <th style=\"text-align:right\" width=\"20%\">Percentage</th>\n";
+  $tableout4 .= "      </tr>\n";
+  $tableout4 .= "    </thead>\n";
+  $tableout4 .= "    <tbody>\n";
   $k1 = array();
   for ($i=0; $i < count($records); $i++) { foreach ($records[$i]["data"][$qq] as $m => $v) { array_push($k1, $v); } }
   // print_r($k1);
@@ -442,7 +451,14 @@ if (($cd == "checkbox") || ($cd == "checkboxhtml")) {
     $out .= "    data.setCell($m, 0, '$A[$m]');\n";
     $out .= "    data.setCell($m, 1, $B[$m]);\n";
     $out .= "    data.setCell($m, 2, $BB[$m]);\n";
+    $tableout4 .= "      <tr>\n";
+    $tableout4 .= "        <td align=\"left\">$A[$m]</td>\n";
+    $tableout4 .= "        <td align=\"right\">".$B[$m]."</td>\n";
+    $tableout4 .= "        <td align=\"right\">".$BB[$m]."%</td>\n";
+    $tableout4 .= "      </tr>\n";
   }
+  $tableout4 .= "    </tbody>\n";
+  $tableout4 .= "  </table>\n";
   $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
   if ($_GET['subgroup']) { $ext1 = "&subgroup=".$_GET['subgroup']; } else { $ext1 = ""; }
   if ($_GET['type']) { $ext2 = "&type=".$_GET['type']; } else { $ext2 = ""; }
@@ -510,7 +526,7 @@ else if (($cd == "text" || $cd == "comment")) {
     $out .= "    data.setCell($m, 1, $B[$m]);\n";
     $out .= "    data.setCell($m, 2, $BB[$m]);\n";
     $tableout2 .= "      <tr>\n";
-    $tableout2 .= "        <td align=\"right\">$newAM</td>\n";
+    $tableout2 .= "        <td align=\"left\">$newAM</td>\n";
     $tableout2 .= "        <td align=\"right\">".$B[$m]."</td>\n";
     $tableout2 .= "        <td align=\"right\">".$BB[$m]."%</td>\n";
     $tableout2 .= "      </tr>\n";
@@ -519,7 +535,6 @@ else if (($cd == "text" || $cd == "comment")) {
   $vdata .= "]";
   $tableout2 .= "    </tbody>\n";
   $tableout2 .= "  </table>\n";
-  // $tableout3 .= "  <div id=\"PEPE\"></div>\n";
   $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
   if ($_GET['subgroup']) { $ext1 = "&subgroup=".$_GET['subgroup']; } else { $ext1 = ""; }
   if ($_GET['type']) { $ext2 = "&type=".$_GET['type']; } else { $ext2 = ""; }
@@ -666,30 +681,46 @@ else if (($cd == "file") || ($cd == "signaturepad")) {
   }
 }
 else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating")) {
+  $tableout3 = "  <table class=\"table\" style=\"font-family:boon\">\n";
+  $tableout3 .= "    <thead>\n";
+  $tableout3 .= "      <tr class=\"bg-primary\">\n";
+  $tableout3 .= "        <th width=\"60%\"></th>\n";
+  $tableout3 .= "        <th style=\"text-align:right\" width=\"20%\">Count</th>\n";
+  $tableout3 .= "        <th style=\"text-align:right\" width=\"20%\">Percentage</th>\n";
+  $tableout3 .= "      </tr>\n";
+  $tableout3 .= "    </thead>\n";
+  $tableout3 .= "    <tbody>\n";
   foreach ($records as $k1 => $p1) { $jj[] = $p1; }
   for ($i=0; $i < count($jj); $i++) { $k[] = $jj[$i]["data"][$qq]; }
   $c = array_count_values($k); //print_r($k);
   if (json_decode(str_replace($c_code, $c_text, json_encode($c)), true)) { $c = json_decode(str_replace($c_code, $c_text, json_encode($c)), true); }
-  // arsort($c);
   $totalresponses = array_sum($c);
   $A = array_keys($c); $B = array_values($c);
   $C = count($c);
-  // print_r($c);
   $out = "";
   $out .= "    data.addRows($C);\n";
   for ($m=0; $m < count($c); $m++) {
     $BB[$m] = number_format(($B[$m]/$basesize)*100, 2);
     $m1 = $m+1; $m2 = $m1+1;
-    $out .= "    data.setCell($m, 0, '$A[$m]');\n";
-    $out .= "    data.setCell($m, 1, $B[$m]);\n";
-    $out .= "    data.setCell($m, 2, $BB[$m]);\n";
+    if ($A[$m] == "") { $zA = 0; } else { $zA = addslashes($A[$m]); }
+    if ($B[$m] == "") { $zB = 0; } else { $zB = addslashes($B[$m]); }
+    if ($BB[$m] == "") { $zC = 0; } else { $zC = addslashes($BB[$m]); }
+    $out .= "    data.setCell($m, 0, '$zA');\n";
+    $out .= "    data.setCell($m, 1, $zB);\n";
+    $out .= "    data.setCell($m, 2, $zC);\n";
+    $tableout3 .= "      <tr>\n";
+    $tableout3 .= "        <td align=\"left\">$zA</td>\n";
+    $tableout3 .= "        <td align=\"right\">".$zB."</td>\n";
+    $tableout3 .= "        <td align=\"right\">".$$zC."%</td>\n";
+    $tableout3 .= "      </tr>\n";
   }
+  $tableout3 .= "    </tbody>\n";
+  $tableout3 .= "  </table>\n";
   $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
   if ($_GET['subgroup']) { $ext1 = "&subgroup=".$_GET['subgroup']; } else { $ext1 = ""; }
   if ($_GET['type']) { $ext2 = "&type=".$_GET['type']; } else { $ext2 = ""; }
   if ($_GET['size']) { $ext3 = "&size=".$_GET['size']; } else { $ext3 = ""; }
   $me = $me.$ext1.$ext2.$ext3;
-
   if ((empty($_GET['type'])) || ($_GET['type'] == "pie")) { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Pie</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
   else if ($_GET['type'] == "donut") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <u>Donut</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
   else if ($_GET['type'] == "bar-H") { $menu = "<p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=pie")."\">Pie</a> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=donut")."\">Donut</a> <strong>:</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
@@ -814,7 +845,24 @@ echo "      <a class=\"list-group-item exceldownload\"><i class=\"pe-download pe
 echo "    </div>\n";
 echo "  </div>\n";
 echo "</div>\n";
+?>
 
+<nav>
+  <ul class="nav nav-tabs">
+      <li class="active"><a href="#first" data-toggle="tab"><i class="pe-line-chart pe-fw"></i> Charts</a></li>
+      <li><a href="#second" data-toggle="tab"><i class="pe-wrench pe-fw"></i> Settings</a></li>
+  </ul>
+</nav>
+<br>
+<br>
+
+<div class="tab-content">
+  <div id="first" class="tab-pane fade in active">
+    <h3>Question Listing</h3>
+
+<?php
+echo "      <p>This survey has a total of <strong>$numberofquestions $qphrase</strong> as shown in the question listing below. Because there are many questions, we separate them into pages (each page contains up to 10 questions). Please click one of the questions below to see a quick real-time result.</p>\n";
+echo "      <p>Should you need to see more details such as subgroup analysis, you would need to download the data file and process it with your data processing team in a more traditional way.</p>\n";
 echo $navtab;
 echo $navtabcontent;
 echo $questionlisting;
@@ -824,20 +872,20 @@ if ($totalresponses) {
     if ($cd == "matrix") {
       $responseperattribute = number_format($totalresponses/$numberofattributes, '1');
       $responseperrecord = number_format($totalresponses/$numberofattributes, '1');
-      $answers = "<p align=\"right\" class=\"small\"><em>A total of $totalresponses responses across $numberofattributes attiributes ($responseperattribute responses per attribute)</em></p>\n";
+      $answers = "<p>This question contains a total of $totalresponses responses across $numberofattributes attiributes, or at a total of $responseperattribute responses for each of the attributes.</p>\n";
     } else {
       $responseperrecord = number_format($totalresponses/$basesize, '1');
-      $answers = "<p align=\"right\" class=\"small\"><em>A total of $totalresponses responses answered by $basesize respondents (average of $responseperrecord responses per respondent)</em></p>\n";
+      $answers = "<p>This question contains a total of $totalresponses responses answered by $basesize respondents, or at an average of $responseperrecord responses for each respondent.</p>\n";
     }
   } else if ($totalresponses < $basesize) {
     $responsepercent = number_format(($totalresponses/$basesize)*100, '1');
-    $answers = "<p align=\"right\" class=\"small\"><em>A total of $totalresponses responses answered by $basesize respondents ($responsepercent%)</em></p>\n";
+    $answers = "<p>This question contains a total of $totalresponses responses answered by $basesize respondents (<strong>$responsepercent%</strong>)</p>\n";
   } else {
     $responsepercent = number_format(($totalresponses/$basesize)*100, '1');
-    $answers = "<p align=\"right\" class=\"small\"><em>A total of $totalresponses responses answered by $basesize respondents ($responsepercent%)</em></p>\n";
+    $answers = "<p>This question contains a total of $totalresponses responses answered by $basesize respondents (<strong>$responsepercent%</strong>)</p>\n";
   }
 } else {
-  $answers = "<p align=\"right\" class=\"small\"><em>Non-responsive format</em></p>\n";
+  $answers = "<p>This is a Non-responsive question, so number of responses is not available</p>\n";
 }
 
 // $openendquery = "<div style=\"text-align:right\">\n";
@@ -846,30 +894,47 @@ if ($totalresponses) {
 // $openendquery .= "<input type=\"button\" id=\"go\" value=\"Re-center\" class=\"btn btn-info btn-xs\">\n";
 // $openendquery .= "</div>\n";
 
+
+
+if ($_GET["q"]) { 
 ?>
 
-<?php if ($_GET["q"]) { ?>
+    <h3>The result</h3>
+      <h4>Question preview <small>(read only)</small></h4>
 
 <div class="row">
   <div class="col-sm-12" style="margin-bottom:40px;border: 1px dotted grey; background:mitcream">
     <?php echo $qout; ?>
-    <?php echo $answers; ?>
   </div>
   <div class="col-sm-12">
-<?php if (($cd == "file") || ($cd == "signaturepad")) { echo $outdirect; } else { ?>
-  <?php // if ($cd == "comment") { echo $openendquery; } else { echo $menu; } ?>
-  <?php if ($cd != "comment") { echo $menu; } ?>
-    <?php if (($cd != "matrix") && ($cd != "comment")) { echo "<p><small class=\"blue\">You can sort the results by clicking the table's headers</small></p>\n"; } ?>
-    <div id="table" style="width:300px"></div>
-    <?php // if ($cd == "comment") { echo "<br><br>"; } ?>
-    <div id="chart"></div>
-<?php } ?>
-  </div>
-</div>
+<?php 
 
+if (($cd == "file") || ($cd == "signaturepad")) {
+  echo $outdirect;
+} 
+else {
+  if (($cd != "html")) { 
+    echo "<h4>Result of this question</h4>\n";
+  }
+?>
 
-<?php } else { echo "<p class=\"grey\">To view survey results, you just simply click one of the above questions</p>"; } ?>
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#one" data-toggle="tab"><i class="pe-line-chart pe-fw"></i> Chart</a></li>
+  <li><a href="#two" data-toggle="tab"><i class="pe-table pe-fw"></i> Table</a></li>
+</ul>
+<br>
+<br>      
+      
+<div class="tab-content">
+  <div id="one" class="tab-pane fade in active">
 
+<?php
+  echo $answers;
+  if ($cd != "comment") { echo $menu; } 
+  if (($cd != "matrix") && ($cd != "comment") && ($cd != "html")) { echo "<p><small class=\"blue\">You can sort the results by clicking the table's headers</small></p>\n"; } 
+  echo "<div id=\"table\" style=\"width:300px\"></div><div id=\"chart\"></div>\n";
+}
+?>
 
 <?php if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating")) { ?>
 
@@ -888,6 +953,7 @@ if ($totalresponses) {
     view.setColumns([0, 1, 2]);
     var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
     formatter.format(data, 2);
+    <?php $bdx = preg_replace("/\r\n|\r|\n/", ' ', $bdx); ?>
     var options = { title: '<?php echo $bdx; ?>', is3D: true, width: '100%', height: '400' };
     var chart = new google.visualization.PieChart(document.getElementById('chart'));
     chart.draw(view, options);
@@ -1377,16 +1443,18 @@ if ($totalresponses) {
     $('#subgroup').append(newrow3FB);
   }
   var i; var j; var k = 0;
-  for (i=0; i<monitor.quota.length; i++) {
-    var combinedtotalsample = 0;
-    for (j=0; j<monitor.quota[i].details.length; j++) {
-      combinedtotalsample += parseInt(monitor.quota[i].details[j].samplesize);
-    }
-    $('#subgroup').append(newrow300);
-    dropdownA(parseInt(k)+1, counter2a, monitor.quota[i].questionname, monitor.quota[i].details[k].subgroup, combinedtotalsample, "<?php echo $subgroupquestion; ?>", "<?php echo $subgroupanswer; ?>");
-    $('#subgroup').append(newrow300);
-    for (j=0; j<monitor.quota[i].details.length; j++) {
-      dropdownB(parseInt(k)+1, j, monitor.quota[i].questionname, monitor.quota[i].details[j].subgroup, monitor.quota[i].details[j].samplesize, "<?php echo $subgroupquestion; ?>", "<?php echo $subgroupanswer; ?>");
+  if (monitor.quota) {
+    for (i=0; i<monitor.quota.length; i++) {
+      var combinedtotalsample = 0;
+      for (j=0; j<monitor.quota[i].details.length; j++) {
+        combinedtotalsample += parseInt(monitor.quota[i].details[j].samplesize);
+      }
+      $('#subgroup').append(newrow300);
+      dropdownA(parseInt(k)+1, counter2a, monitor.quota[i].questionname, monitor.quota[i].details[k].subgroup, combinedtotalsample, "<?php echo $subgroupquestion; ?>", "<?php echo $subgroupanswer; ?>");
+      $('#subgroup').append(newrow300);
+      for (j=0; j<monitor.quota[i].details.length; j++) {
+        dropdownB(parseInt(k)+1, j, monitor.quota[i].questionname, monitor.quota[i].details[j].subgroup, monitor.quota[i].details[j].samplesize, "<?php echo $subgroupquestion; ?>", "<?php echo $subgroupanswer; ?>");
+      }
     }
   }
   $(document).ready(function() {
@@ -1394,21 +1462,44 @@ if ($totalresponses) {
   });
 </script>
 
+  </div>
+  <div id="two" class="tab-pane fade">
+
 <?php
-if ($tableout3) {
-  // echo "<p align=\"right\"><a class=\"grey small\" data-toggle=\"collapse\" href=\"#showverbatim\">Click to show animated verbatim</a></p>\n";
-  // echo "<br><div class=\"collapse\" id=\"showverbatim\">\n";
-  echo "<div class=\"well vcontainer\">\n";
-  echo $tableout3;
-  echo "</div>\n";
-}
-if ($tableout1 || $tableout2) {
-  echo "<p align=\"right\"><a class=\"grey small\" data-toggle=\"collapse\" href=\"#showtable\">Click to show table</a></p>\n";
-  echo "<br><div class=\"collapse\" id=\"showtable\">\n";
-  if ($tableout1) { echo $tableout1; } else if ($tableout2) { echo $tableout2; }
-  echo "</div>\n";
-}
+  echo $answers;
+  if ($cd == "matrix") { echo $tableout1; } 
+  else if (($cd == "comment") || ($cd == "text")) { echo $tableout2; }
+  else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating")) { echo $tableout3; } 
+  else if (($cd == "checkbox") || ($cd == "checkboxhtml")) { echo $tableout4; }
+  else { echo "No table to be shown for this question\n"; }
+  // else { echo $tableout2; }
+  // echo "<div id=\"table\" style=\"width:300px\"></div><div id=\"chart\"></div>\n";
 ?>
+
+  </div>
+</div>
+
+    
+  </div>
+</div>
+
+
+
+
+
+
+
+    </div>
+  </div>
+  <div id="second" class="tab-pane fade">
+    <h3>Settings</h3>
+
+
+  </div>
+</div>
+<br>
+
+<?php } else { echo "<p class=\"grey\">To view survey results, you just simply click one of the above questions</p>"; } ?>
 
 <?php backButton("/admin/?w=surveys", "Back to the main page", "danger"); ?>
 

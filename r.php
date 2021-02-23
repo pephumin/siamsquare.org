@@ -3,8 +3,9 @@
 
 $mobile = 0; $mpilot = 0; $mdesign = 0; $readonly = 0;
 if ($_GET['mobile'] == "✓") { $mobile = 1; }
-else if ($_GET['pilot'] == "✓") { $mpilot = 1; }
-else if ($_GET['designer'] == "✓") { $mdesign = 1; $readonly = 1; }
+if ($_GET['pilot'] == "✓") { $mpilot = 1; }
+if ($_GET['readonly'] == "✓") { $readonly = 1; } else if (($_GET['readonly'] == "✓") || ($_GET["rd"])) { $readonly = 1; }
+if ($_GET['designer'] == "✓") { $mdesign = 1; $readonly = 1; }
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/admin/assets/include/functions.php';
@@ -83,8 +84,9 @@ if (!empty($_GET['rd'])) {
   while ($r = $q2->fetchObject()) {
     $resultdata = $r->data;
   }
-  $readonly = 0;
+  if ($_GET['readonly'] == "✓") { $readonly = 1; } else { $readonly = 0; }
 }
+// print_r($resultdata);
 
 
 // $showsurvey = 0;
@@ -220,7 +222,7 @@ if (!empty($_GET['rd'])) {
 //   $email = "CNT@siamsquare.org";
 // }
 
-$showsurvey = 0;
+$showsurvey = 0; $closed = 0;
 if (($status == 1) && ($_GET['pilot'] == "✓")) { $showsurvey = 1; }
 else if ($status == 2) { $showsurvey = 1; }
 else if ($status == 3) { $readonly = 1; $closed = 1; }
@@ -247,7 +249,7 @@ pageHeader($title);
 
 if ($mpilot == 1) { echo "<div class='alert alert-warning'><i class='pe-exclamation-triangle pe-lg pe-fw'></i> <strong>Pilot test mode</strong> สามารถดูและตอบแบบสอบถามได้ครบถ้วน แต่ความคิดเห็นจะไม่ถูกนำไปประมวลผล</div>\n"; }
 else if (($mpilot != 1) && ($readonly == 1)) {
-  if ($closed == 1) { echo "<div class='alert alert-warning'><i class='pe-clock-o pe-lg pe-fw'></i> <strong>งานวิจัยสิ้นสุดไปแล้ว</strong> สามารถดูแบบสอบถามได้ แต่ไม่สามารถส่งความคิดเห็นได้</div>\n"; }
+  if ($closed == 1) { echo "<div class='alert alert-danger'><i class='pe-clock-o pe-lg pe-fw'></i> <strong>งานวิจัยสิ้นสุดไปแล้ว</strong> สามารถดูแบบสอบถามได้ แต่ไม่สามารถส่งความคิดเห็นได้</div>\n"; }
   else { echo "<div class='alert alert-warning'><i class='pe-exclamation-triangle pe-lg pe-fw'></i> <strong>Read-only mode</strong> สามารถดูแบบสอบถามได้ แต่ไม่สามารถส่งความคิดเห็นได้</div>\n"; }
 }
 
@@ -362,6 +364,30 @@ echo "<div id=\"notification\"></div>\n";
     });
     return result;
   }
+  function editsurveydata(cid, cip, email, id, data, etitle, pilot) {
+    var result = "";
+    if (pilot == 1) { logger = "/log/" + cid; logmessage = '"userid": "' + cid + '"'; loglevel = 2; resultstatus = 1; }
+    else { logger = "/rlog/" + email; logmessage = '"email": "' + email + '"'; loglevel = 1; resultstatus = 2; }
+    $.ajax({
+      url: api + '/submitedit',
+      dataType: 'json',
+      type: 'post',
+      contentType: 'application/json; charset=utf-8',
+      data: '{"rd": "' + cid + '", "ip": "' + cip + '", "email": "' + email + '", "surveyid": ' + id + ', "data": ' + JSON.stringify(JSON.stringify(data)) + ', "status": ' + resultstatus + ' }',
+      success: function(data) {
+        $('#showcompletion').show();
+        $.ajax({
+          url: api + logger + '/' + id,
+          dataType: 'json',
+          type: 'post',
+          contentType: 'application/json; charset=utf-8',
+          data: '{ "surveyid": "' + id + '", ' + logmessage + ', "ip": "' + cip + '", "data": "' + email + ' edited results of a survey ' + etitle + '", "critical": "' + loglevel + '" }',
+          success: function(data) { result = data; }
+        });
+      }
+    });
+    return result;
+  }
   function getsavesurveydata(id, email) {
     var result = "";
     $.ajax({
@@ -411,12 +437,14 @@ echo "<div id=\"notification\"></div>\n";
   // Start scripting by pe (phumin@sawasdee.org)
   var api = "http://www.siamsquare.org.uk";
   var surveyid = <?php echo $_GET["s"]; ?>;
+  <?php if ($_GET["rd"]) { echo "var rd =".$_GET["rd"]; } else { echo "var rd = \"000000\""; } ?>;
   var cid = "<?php echo $userid; ?>";
   var email = "<?php echo $email; ?>";
   var title = "Project <?php echo $project; ?>";
   var ip = "<?php echo getip(); ?>";
   var pilot = <?php if (($mpilot == "1") || ($mdesign == "1") || ($closed == "1")) { echo "1"; } else { echo "0"; } ?>;
   var readonly = <?php echo $readonly; ?>;
+  var closed = <?php if ($closed == "1") { echo "1"; } else { echo "0"; } ?>;
   var colour = <?php echo $showcolour; ?>;
   var pincode = "<?php echo $pincode; ?>";
   var terminated = "<h2><i class='pe-ban pe-fw red'></i> ยุติการสัมภาษณ์</h2>\n\n<p>ระบบได้ทำการยุติการสัมภาษณ์สืบเนื่องมาจากคุณใส่รหัส pin code ไม่ถูกต้อง</p>\n\n<p>กรุณาลองใหม่อีกครั้งโดยการกลับไปเริ่มที่หน้าแรกอีกครั้ง หรือกดที่นี่ <a href='' class='btn btn-xs btn-warning' type='button' onClick='window.location.reload()'><i class='pe-undo pe-fw'></i> Refresh</a></p>\n\n<p>และหลังจากที่คุณใส่รหัส pincode ที่ถูกต้อง ระบบจะนำคุณเข้าสู่แบบสอบถามหลักในทันที</p>";
@@ -599,7 +627,7 @@ echo "<div id=\"notification\"></div>\n";
     afterRender: function(question, el) {
       var $el = $(el).is("input") ? $(el) : $(el).find("input");
       if (!question.choices) { question.choices = getinterviewers(surveyid); }
-      console.log(question.choices);
+      // console.log(question.choices);
       var options = {
         data: question.choices,
         getValue: "interviewer",
@@ -656,7 +684,14 @@ echo "<div id=\"notification\"></div>\n";
     if (pre.group4) { var group4 = pre.group4; for (var i=0; i<group4.length; i++) { newpre.push(group4[i]); } }
     var result = {}
     for (var i=0; i < newpre.length; i++) { result[newpre[i].question] = newpre[i].answer; }
-    return result;
+    var A = survey.data;
+    var B = result;
+    if (A) { 
+      for (var AA in B) { A[AA] = B[AA]; } 
+      survey.data = A; 
+    }
+    else { survey.data = result; }
+    return survey.data;
   }
   function subset(leader, follower, key) {
     survey.onValueChanged.add(function(survey, options) {
@@ -668,8 +703,12 @@ echo "<div id=\"notification\"></div>\n";
         if (key == "keep") { if (options.value.indexOf(item.value) >= 0) { choices.push(item); } }
         else if (key == "delete") { if (options.value.indexOf(item.value) < 0) { choices.push(item); } }
       }
+      console.log(choices);
       var smallerSet = survey.getQuestionByName(follower);
       smallerSet.choices = choices;
+      smallerSet.items = choices;
+      // console.log(smallerSet.choices);
+      // console.log(smallerSet.items);
       smallerSet.visible = choices.length > 0;
     });
   }
@@ -704,7 +743,7 @@ echo "<div id=\"notification\"></div>\n";
     }
     return array;
   }
-  function maketotal(questionname, array) {
+  function maketotal(questionname, totalsum, array) {
     survey.onValueChanged.add(function(survey, options) {
       if (options.name !== questionname) { return; }
       var total = 0;
@@ -721,37 +760,65 @@ echo "<div id=\"notification\"></div>\n";
       var td1 = document.createElement("td");
       var td2 = document.createElement("td");
       $(tbody).attr("id", "sumtotal");
-      if (total > 100) { td1.innerHTML = "<strong class='red'>รวมทั้งสิ้น</strong> (จะต้องเป็น 100 พอดี)"; td2.innerHTML = "<strong class='red'>" + total + "</strong>"; }
-      else if (total == 100) { td1.innerHTML = "<strong class='green'>รวมทั้งสิ้น</strong> (จะต้องเป็น 100 พอดี)"; td2.innerHTML = "<strong class='green'>" + total + "</strong> <i class='pe-check green'></i>"; }
-      else { td1.innerHTML = "<strong>รวมทั้งสิ้น</strong> (จะต้องเป็น 100 พอดี)"; td2.innerHTML = "<strong>" + total + "</strong>"; }
+      if (total > totalsum) { td1.innerHTML = "<strong class='red'>รวมทั้งสิ้น</strong> (จะต้องเป็น "+ totalsum +" พอดี)"; td2.innerHTML = "<strong class='red'>" + total + "</strong>"; }
+      else if (total == totalsum) { td1.innerHTML = "<strong class='green'>รวมทั้งสิ้น</strong> (จะต้องเป็น "+ totalsum +" พอดี)"; td2.innerHTML = "<strong class='green'>" + total + "</strong> <i class='pe-check green'></i>"; }
+      else { td1.innerHTML = "<strong>รวมทั้งสิ้น</strong> (จะต้องเป็น "+ totalsum +" พอดี)"; td2.innerHTML = "<strong>" + total + "</strong>"; }
       tr.appendChild(td1);
       tr.appendChild(td2);
       tbody.appendChild(tr);
       table.appendChild(tbody);
     });
   }
-  function pin(mypin) {
+  function pin(pin) {
     survey.onValueChanged.add(function (survey, options) {
+      var mypin = parseInt(pin, 10);
+      console.log(mypin);
       if (survey.data.PIN != mypin) { survey.completedHtml = terminated; }
       else { return; }
     });
   }
-  var optionsout = getsurveyoptions(surveyid);
-  if (optionsout.keep) { for (var i=0; i<optionsout.keep.length; i++) { subset(optionsout.keep[i].leader, optionsout.keep[i].follower, "keep"); } }
-  if (optionsout.delete) { for (var i=0; i<optionsout.delete.length; i++) { subset(optionsout.delete[i].leader, optionsout.delete[i].follower, "delete"); } }
-  if (optionsout.shuffle) { for (var i=0; i<optionsout.shuffle.length; i++) { var matrix = survey.getQuestionByName(optionsout.shuffle[i].questionname); shuffle(matrix.rows); } }
-  if (optionsout.maketotal) { for (i=0; i<optionsout.maketotal.length; i++) { var makingtotal = survey.getQuestionByName(optionsout.maketotal[i].questionname); maketotal(makingtotal.name, makingtotal.itemsValues); } }
-  if (optionsout.PSM) { for (var i=0; i<optionsout.PSM.length; i++) { PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].expensive, "up"); PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].tooexpensive, "up"); PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].toocheap, "down"); PSM(optionsout.PSM[i].expensive, optionsout.PSM[i].tooexpensive, "up"); } }
-  if (pincode) { pin(pincode); }
+  function updateSurveyResult(id) {
+    $.ajax({
+      url: api + '/update/result/' + surveyid + '/' + id,
+      dataType: 'json',
+      type: 'put',
+      cache: false,
+      contentType: 'application/json; charset=utf-8',
+      success: function(data) {
+        // $('#showalert-delete').show();
+        // window.setTimeout(function() { $("#showalert-delete").slideUp(500, function() { $("#showalert-delete").hide(); }); }, 3000);
+        $.ajax({
+            url: api + '/log',
+            dataType: 'json',
+            type: 'post',
+            contentType: 'application/json; charset=utf-8',
+            data: '{ "userid": "' + userid + '", "ip": "' + ip + '", "data": "' + email + ' deleted an interim result for Audio B (id=' + surveyid + ')", "critical": "4" }',
+            success: function(data) { result = data; }
+        });
+      },
+      error: function(error) { alert(error); }
+    });
+    window.setTimeout(function() { window.location.reload(); }, 3300);
+  }
 
+  var optionsout = getsurveyoptions(surveyid);
+  // console.log(optionsout.keep);
+  // console.log(optionsout.delete);
+  // console.log(optionsout.shuffle);
+  // console.log(optionsout.maketotal);
+  // console.log(optionsout.PSM);
+  if (typeof(optionsout.keep) !== 'undefined' && optionsout.keep.length) { for (var i=0; i<optionsout.keep.length; i++) { subset(optionsout.keep[i].leader, optionsout.keep[i].follower, "keep"); } }
+  if (typeof(optionsout.delete) !== 'undefined' && optionsout.delete.length) { for (var i=0; i<optionsout.delete.length; i++) { subset(optionsout.delete[i].leader, optionsout.delete[i].follower, "delete"); } }
+  if (typeof(optionsout.shuffle) !== 'undefined' && optionsout.shuffle.length) { var matrix = survey.getQuestionByName(optionsout.shuffle[i].questionname); shuffle(matrix.rows); }
+  if (typeof(optionsout.maketotal) !== 'undefined' && optionsout.maketotal.length) { for (i=0; i<optionsout.maketotal.length; i++) { var makingtotal = survey.getQuestionByName(optionsout.maketotal[i].questionname); maketotal(optionsout.maketotal[i].questionname, optionsout.maketotal[i].totalsum, makingtotal.itemsValues); } }
+  if (typeof(optionsout.PSM) !== 'undefined' && optionsout.PSM.length) { for (var i=0; i<optionsout.PSM.length; i++) { PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].expensive, "up"); PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].tooexpensive, "up"); PSM(optionsout.PSM[i].cheap, optionsout.PSM[i].toocheap, "down"); PSM(optionsout.PSM[i].expensive, optionsout.PSM[i].tooexpensive, "up"); } }
+  if (pincode) { pin(pincode); }
 
   var tryAPIGeolocation = function() {
     jQuery.post( "https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyA0MZthPLSO48HzjyPNXY9125WpbURDXVU", function(success) {
       apiGeolocationSuccess({ coords: { latitude: success.location.lat, longitude: success.location.lng } });
     })
-    .fail(function(err) {
-      console.log("API Geolocation error! \n\n"+err);
-    });
+    .fail(function(err) { console.log("API Geolocation error! \n\n"+err); });
   };
   var browserGeolocationSuccess = function(position) {
       console.log("Browser geolocation success!\n\nlat = " + position.coords.latitude + "\nlng = " + position.coords.longitude);
@@ -783,22 +850,25 @@ echo "<div id=\"notification\"></div>\n";
     return survey.data;
   };
 
-  <?php if ($resultdata) { echo "survey.data = $resultdata"; } ?>
-  // console.log(getinterviewers(surveyid));
-
-  survey.render("runsurvey");
+  <?php if ($resultdata) { echo "survey.data = $resultdata\n"; } ?>
+  tryGeolocation();
+  // console.log(survey.data);
+  <?php if ($precodes) { echo "var pre = $precodes\n"; } else { echo "var pre = \"\";\n"; } echo "survey.data = precoding(pre);\n"; ?>
+  // console.log(survey.data);
   $('#showupload').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> ระบบกำลังอัพโหลดรูปของคุณ ระหว่างนี้คุณสามารถทำรายการต่อได้ทันที และอีกสักครู่เมื่อระบบทำงานในส่วนนี้เสร็จ ข้อความนี้จะหายไปเอง</div>").hide();
   $('#showcompletion').html("<div class='alert alert-success'><i class='pe-check-square-o pe-lg pe-fw'></i> เราได้ทำการจัดเก็บความคิดเห็นของคุณลงระบบเป็นที่เรียบร้อยแล้ว</div>").hide();
   $('#resetsave').on('click', function() { clearsavesurveydata(resultid, ip, email, surveyid, title); });
-  <?php if ($precodes) { echo "var pre = $precodes\n"; } else { echo "var pre = \"\";\n"; }?>
-  survey.data = precoding(pre);
-  tryGeolocation();
-  // console.log(survey.data);
-  // console.log(precoding(pre));
-  survey.onComplete.add(function(data) { postsurveydata(cid, ip, email, surveyid, survey.data, title, pilot); });
+  <?php 
+    if ($readonly == 0 || !empty($_GET["rd"])) { echo "survey.onComplete.add(function(data) { editsurveydata(cid, ip, email, surveyid, survey.data, title, pilot); });"; }
+    else { echo "survey.onComplete.add(function(data) { postsurveydata(cid, ip, email, surveyid, survey.data, title, pilot); });"; } 
+  ?>
   survey.onUploadFile.add(function(data) { $('#showupload').show(); setTimeout(function() { $("#showupload").slideUp(500, function() { $("#showupload").hide(); }); }, 6000); });
+  if (readonly == 1) { survey.mode = "display"; $(function() { $('#runsurvey').attr('disabled', 'disabled'); }); } else { survey.mode = "edit"; }
   if (pilot != 1) { survey.onCurrentPageChanged.add(function(data) { autosavesurveydata(cid, ip, email, surveyid, survey.data, title); }); }
-  if (readonly == 1) { survey.mode = "display"; $(function() { $('#runsurvey').attr('disabled', 'disabled'); }); } else if (readonly == 0) { survey.mode = "edit"; }
+  // console.log(survey.data);
+  // survey.mode = "edit"; 
+  survey.render("runsurvey");
+  // console.log(precoding(pre));
 
   // survey.onComplete
   // survey.onCurrentPageChanged

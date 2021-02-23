@@ -184,7 +184,7 @@ function getWho($surveyid) {
   $q5 = $db->prepare("SELECT U.fullname, U.email, U.lastlogin, R.role FROM j_users U, j_access A, j_roles R WHERE A.userid = U.id AND U.level = R.id AND A.projectid = :surveyid ");
   $q5->bindValue(':surveyid', $surveyid, PDO::PARAM_INT);
   $q5->execute();
-  $whoelse = "<p><a data-toggle=\"collapse\" href=\"#whoelse$surveyid\" aria-expanded=\"false\" class=\"alert-link\">Click to see other user(s)</a> who also access to this project (click again to close)</p>\n";
+  $whoelse = "<p align=\"left\"><a data-toggle=\"collapse\" href=\"#whoelse$surveyid\" aria-expanded=\"false\" class=\"alert-link\">Click to see other user(s)who also access to this project</a> (click again to close)</p>\n";
   $whoelse .= "<div class=\"collapse\" id=\"whoelse$surveyid\">";
   $whoelse .= "<table class='table table-condensed small'>\n";
   $whoelse .= "  <thead>\n";
@@ -242,12 +242,14 @@ function getStats($surveyid) {
       $stage = "1";
       $last = "<p class=\"small\">Last saved on the questionnaire: $updatedA ($updatedB)</p>\n";
       $a = date_parse_from_format("Y-m-d H:i:s", $LLL0); $ac = $a['year']."-".$a['month']."-".$a['day']; $begindate0 = $a['day']." ".fullmonth($a['month'], "short");
-      $from0 = strtotime($ac); $today = time();
+      $b = date_parse_from_format("Y-m-d H:i:s", $LLL1); $bc = $b['year']."-".$b['month']."-".$b['day']; $begindate1 = $b['day']." ".fullmonth($b['month'], "short");
+      $from0 = strtotime($ac); $from1 = strtotime($bc); $today = time();
       $difference1 = $today-$from0; $dd1 = floor($difference1/86400); if ($dd1 == "1") { $daysofsetup = "$dd1 day"; } else { $daysofsetup = "$dd1 days"; }
+      $difference2 = $today-$from1; $dd2 = floor($difference2/86400); if ($dd2 == "1") { $daysoffieldwork = "$dd2 day"; } else { $daysoffieldwork = "$dd2 days"; }
       $setuptiming = "since $begindate0";
-      $fieldworkstatus = "<font color=\"orange\">Still at the set-up stage</font>";
+      $fieldworkstatus = "<strong><font color=\"orange\">Still at the set-up stage  <i class=\"pe-hourglass-start pe-fw\"></i></font></strong>";
       $insert1 .= "<div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Setup ($setuptiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysofsetup</strong></h4></div><br>\n";
-      $insert1 .= "<div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork ($fieldworktiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork</strong></h4></div><br>\n";
+      // $insert1 .= "<div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork ($fieldworktiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork</strong></h4></div><br>\n";
       if ($sample_size) {
         $insert2 .= "<div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Target sample</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$sample_size</strong></h4></div><br>\n";
         if ($RDsuccess) {
@@ -257,8 +259,6 @@ function getStats($surveyid) {
             $insert1 .= "<div class=\"text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Expected to end in</p><h4 style=\"margin-bottom:10px !important\"><strong>$stilltodo days</strong></h4></div><br>\n";
           } else if ($RDsuccess > $sample_size) {
             $insert2 .= "<div class=\"bg-primary text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Successful interviews so far</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$RDsuccess <i class=\"pe-check-circle-o pe-lg orange\"></i></strong></h4></div><br>\n";
-            // $insert2 .= "<div class=\"bg-warning text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Progression</p><h4 style=\"margin-bottom:10px !important\"><strong>$RDsuccess_percent</strong></h4></div><br>\n";
-            // $insert1 .= "<div class=\"text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Expected to end in</p><h4 style=\"margin-bottom:10px !important\"><strong>$stilltodo days</strong></h4></div><br>\n";
           } else if ($RDsuccess < $sample_size) {
             $insert2 .= "<div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Successful interviews so far</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$RDsuccess </strong></h4></div><br>\n";
             $insert2 .= "<div class=\"bg-warning text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Progression</p><h4 style=\"margin-bottom:10px !important\"><strong>$RDsuccess_percent</strong></h4></div><br>\n";
@@ -269,20 +269,24 @@ function getStats($surveyid) {
         if ($RDsuccess) {
           $insert2 .= "<div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Target sample</p><h4 style=\"margin-bottom:10px !important\" class=\"red\"><strong>N/A</strong></h4></div><br>\n";
           $insert2 .= "<div class=\"bg-primary text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Successful interviews so far</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$RDsuccess</strong></h4></div><br>\n";
-          // $insert2 .= "<div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Progression</p><h4 style=\"margin-bottom:10px !important\"><strong>$RDsuccess_percent</strong></h4></div><br>\n";
-          // $insert1 .= "<div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Expected to end in</p><h4 style=\"margin-bottom:10px !important\"><strong>$stilltodo days</strong></h4></div><br>\n";
         } else {
-          $insert2 .= "<div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Target sample</p><h4 style=\"margin-bottom:10px !important\" class=\"red\"><strong>N/A</strong></h4></div><br>\n";
+          // $insert2 .= "<div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Target sample</p><h4 style=\"margin-bottom:10px !important\" class=\"red\"><strong>N/A</strong></h4></div><br>\n";
         }
       }
-      $insert1 .= "<div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Setup ($setuptiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysofsetup</strong></h4></div>\n";
-      $insert1 .= "<br>\n";
       if ($sample_size) { $ss0 = "n=$sample_size"; $ss1 = "bg-default"; } else { $ss0 = "N/A"; $ss1 = "bg-warning"; }
-      $insert2 .= "<div class=\"$ss1 text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Target sample</p><h4 style=\"margin-bottom:10px !important\"><strong>$ss0</strong></h4></div>\n";
-      $insert2 .= "<br>\n";
-      $menu = "    <a href=\"/admin/?w=design&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-warning\">Questionnaire design <i class=\"pe-edit\"></i></a>\n";
-      $menu .= "    <a href=\"/admin/?w=progress&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-default\">Progress <i class=\"pe-flask\"></i></a>\n";
-      $menu .= "    <a href=\"/r.php?pilot=✓&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-default\">Pilot test <i class=\"pe-paper-plane\"></i></a>\n";
+      $menu = "";
+      if ($_SESSION['level'] == "9") {
+        $menu .= "    <a href=\"/admin/?w=design&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-danger\">Questionnaire design <i class=\"pe-edit\"></i></a>\n";
+        $menu .= "    <a href=\"/admin/?w=questionnaire&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-warning\">View questionnaire <i class=\"pe-edit\"></i></a>\n";
+        $menu .= "    <a href=\"/r.php?s=$newsurveyid\" class=\"btn btn-tiny btn-success\" target=\"_blank\">Live <i class=\"pe-plane\"></i></a>\n";
+        $menu .= "    <a href=\"/r.php?pilot=✓&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-warning\">Pilot test <i class=\"pe-paper-plane\"></i></a>\n";
+        $menu .= "    <a href=\"/admin/?w=progress&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-info\">Progress <i class=\"pe-flask\"></i></a>\n";
+      } else {
+        $menu .= "    <a href=\"/admin/?w=design&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-danger\">Questionnaire design <i class=\"pe-edit\"></i></a>\n";
+        $menu .= "    <a href=\"/r.php?pilot=✓&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-warning\">Pilot test <i class=\"pe-paper-plane\"></i></a>\n";
+        $menu .= "    <a href=\"/admin/?w=progress&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-info\">Progress <i class=\"pe-flask\"></i></a>\n";
+      }
+      // $menu .= "    <a href=\"/r.php?pilot=✓&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-default\">Pilot test <i class=\"pe-paper-plane\"></i></a>\n";
     } else if ($status == "2") {
       $stage = "2";
       $last = "<p class=\"small\">Latest data submitted: $lastsubmittedA ($lastsubmittedB)</p>\n";
@@ -295,7 +299,7 @@ function getStats($surveyid) {
       $fieldworktiming = "since $begindate1";
       $rate = $RDsuccess / $daysoffieldwork;
       $stilltodo = number_format(($sample_size-$RDsuccess) / $rate, 1);
-      $fieldworkstatus = "<font color=\"green\">Fieldwork is still on-going</font>";
+      $fieldworkstatus = "<strong><font color=\"red\">Fieldwork is still on-going <i class=\"pe-hourglass-half pe-fw\"></i></font></strong>";
       if ($fieldworktiming == "") { $fieldworktiming = "N/A"; }
       $insert1 .= "<div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Setup ($setuptiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysofsetup</strong></h4></div><br>\n";
       $insert1 .= "<div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork ($fieldworktiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork</strong></h4></div><br>\n";
@@ -326,10 +330,19 @@ function getStats($surveyid) {
           $insert2 .= "<div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Target sample</p><h4 style=\"margin-bottom:10px !important\" class=\"red\"><strong>N/A</strong></h4></div><br>\n";
         }
       }
-      $menu = "    <a href=\"/r.php?s=$newsurveyid\" class=\"btn btn-tiny btn-success\" target=\"_blank\">Live <i class=\"pe-plane\"></i></a>\n";
-      $menu .= "    <a href=\"/admin/?w=progress&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-default\">Progress <i class=\"pe-flask\"></i></a>\n";
-      $menu .= "    <a href=\"/admin/?w=result&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-default\">Result <i class=\"pe-line-chart\"></i></a>\n";
-      $label = "<span class=\"label label-danger\">ON-AIR</span>";
+      $menu = "";
+      if ($_SESSION['level'] == "9") {
+        $menu .= "    <a href=\"/admin/?w=design&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-danger\">Questionnaire design <i class=\"pe-edit\"></i></a>\n";
+        $menu .= "    <a href=\"/admin/?w=questionnaire&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-warning\">View questionnaire <i class=\"pe-edit\"></i></a>\n";
+        $menu .= "    <a href=\"/r.php?s=$newsurveyid\" class=\"btn btn-tiny btn-success\" target=\"_blank\">Live <i class=\"pe-plane\"></i></a>\n";
+        $menu .= "    <a href=\"/admin/?w=progress&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-info\">Progress <i class=\"pe-flask\"></i></a>\n";
+        $menu .= "    <a href=\"/admin/?w=result&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-primary\">Result <i class=\"pe-line-chart\"></i></a>\n";
+      } else {
+        $menu .= "    <a href=\"/r.php?s=$newsurveyid\" class=\"btn btn-tiny btn-success\" target=\"_blank\">Live <i class=\"pe-plane\"></i></a>\n";
+        $menu .= "    <a href=\"/admin/?w=progress&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-info\">Progress <i class=\"pe-flask\"></i></a>\n";
+        $menu .= "    <a href=\"/admin/?w=result&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-primary\">Result <i class=\"pe-line-chart\"></i></a>\n";
+      }
+      $label = "<span class=\"label label-danger\">IN-FIELD</span>";
       $insert3 = "  <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n";
       $insert3 .= "    <div id='areachart-$surveyid'></div>\n";
       $insert3 .= "  </div>\n";
@@ -345,9 +358,9 @@ function getStats($surveyid) {
       $difference3 = $today-$from2; $dd3 = floor($difference3/86400); if ($dd3) { if ($dd3 == "1") { $daysoffieldworkcompletion = "$dd3 day"; } else { $daysoffieldworkcompletion = "$dd3 days"; } } else { $daysoffieldworkcompletion = "N/A"; }
       $setuptiming = "$begindate0 to $begindate1";
       $fieldworktiming = "$begindate1 to $begindate2";
-      $fieldworkstatus = "<font color=\"blue\">Data collection was completed</font>";
+      $fieldworkstatus = "<strong><font color=\"green\">Data collection was completed <i class=\"pe-hourglass-end pe-fw\"></i></font></strong>";
       $insert1 .= "<div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Setup ($setuptiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysofsetup</strong></h4></div>\n";
-      $insert1 .= "<br><div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork ($fieldworktiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork</strong></h4></div>\n";
+      $insert1 .= "<br><div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork ($fieldworktiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork</strong></h4></div><br>\n";
       if ($sample_size) {
         $insert2 .= "<div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Target sample</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$sample_size</strong></h4></div>\n";
         if ($RDsuccess) {
@@ -365,9 +378,17 @@ function getStats($surveyid) {
           $insert2 .= "<br><div class=\"bg-default text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Successful interviews</p><h4 style=\"margin-bottom:10px !important\"><strong>n=$RDsuccess</strong>$nn</h4></div>\n";
         }
       }
-      $menu = "    <a href=\"/admin/?w=questionnaire&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-default\">Questionnaire <i class=\"pe-edit\"></i></a>\n";
-      $menu .= "    <a href=\"/admin/?w=progress&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-default\">Progress <i class=\"pe-flask\"></i></a>\n";
-      $menu .= "    <a href=\"/admin/?w=result&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-default\">Result <i class=\"pe-line-chart\"></i></a>\n";
+      $menu = "";
+      if ($_SESSION['level'] == "9") {
+        $menu .= "    <a href=\"/admin/?w=design&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-danger\">Questionnaire design <i class=\"pe-edit\"></i></a>\n";
+        $menu .= "    <a href=\"/admin/?w=questionnaire&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-warning\">View questionnaire <i class=\"pe-edit\"></i></a>\n";
+        $menu .= "    <a href=\"/admin/?w=progress&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-info\">Progress <i class=\"pe-flask\"></i></a>\n";
+        $menu .= "    <a href=\"/admin/?w=result&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-primary\">Result <i class=\"pe-line-chart\"></i></a>\n";
+      } else {
+        $menu .= "    <a href=\"/admin/?w=questionnaire&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-warning\">View questionnaire <i class=\"pe-edit\"></i></a>\n";
+        $menu .= "    <a href=\"/admin/?w=progress&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-info\">Progress <i class=\"pe-flask\"></i></a>\n";
+        $menu .= "    <a href=\"/admin/?w=result&amp;s=$newsurveyid\" class=\"btn btn-tiny btn-primary\">Result <i class=\"pe-line-chart\"></i></a>\n";
+        }
       //$menu .= "    <a href=\"/admin/?w=design&s=$newsurveyid\" class=\"btn btn-tiny btn-default\">Archive <i class=\"pe-archive\"></i></a>\n";
       $insert3 = "  <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n";
       $insert3 .= "    <div id='areachart-$surveyid'></div>\n";
