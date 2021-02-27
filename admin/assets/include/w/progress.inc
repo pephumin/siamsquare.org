@@ -730,10 +730,53 @@ function getMissingTable($input = array()) {
   return $output;
 }
 
+// function utf8_converter($array) {
+//   array_walk_recursive($array, function(&$item, $key) {
+//     if(!mb_detect_encoding($item, 'utf-8', true)) {
+//       $item = utf8_encode($item);
+//     }
+//   });
+//   return $array;
+// }
+
+// echo phpinfo();
+// print_r($ee);
 $ff = json_decode($monitor, true); //print_r($ff);
 foreach ($ff["QC"] as $fA) { foreach ($fA as $fB) { $mn1[] = $fB; } } //print_r($mn1);
 foreach ($ff["monitor"] as $fC) { foreach ($fC as $fD) { $mn2[] = $fD; } } // print_r($mn2);
 foreach ($ff["quota"] as $fE) { foreach ($fE as $fF) { $mn3[] = $fF; } } // print_r($mn3);
+
+// for ($i = 0; $i < count($mn1); $i++) {
+//   $AA = checkingQuestion($mn1[$i], $ee);
+//   $AB = getResultHTML($v1, $RDsuccess, $mn1[$i]);
+//   // print_r($AA["0"]);
+//   // foreach ($AA["0"] as $k1 => $v1) {
+//   //   print_r($v1);
+//   //   $AB = getResultHTML($v1, $RDsuccess, $mn1[$i]);
+//   // }
+//   print_r($AB);
+//   $AC = getResultJS($AA, $RDsuccess, "1", $mn1[$i]);
+//   $ab .= $AB;
+//   $ac .= $AC["2"];
+//   $missing = array_merge($missing, $AA["2"]);
+//
+// }
+
+// function is_multibyte($s) {
+//   return mb_strlen($s,'utf-8') < strlen($s);
+// }
+
+// print_r($mn1["0"]);
+// print_r($mn1["1"]);
+// print_r($mn2["0"]);
+// print_r($mn2["1"]);
+
+// if(is_multibyte($A1A)) { echo "Yes"; } else { echo "NO"; }
+// echo utf8_encode($A1A);
+// echo mb_detect_encoding($A1A, 'UTF-8');
+// print_r("<pre>\n");
+// print_r($A1A);
+// print_r("</pre>");
 
 $A1A = checkingQuestion($mn1["0"], $ee);
 $A1B = getResultHTML($A1A, $RDsuccess, $mn1["0"]);
@@ -751,7 +794,9 @@ $A4A = checkingQuestion($mn1["3"], $ee);
 $A4B = getResultHTML($A4A, $RDsuccess, $mn1["3"]);
 $A4C = getResultJS($A4A, $RDsuccess, "1", $mn1["3"]);
 
-// ----------------------------------------------------
+// print_r("<pre>\n");
+// print_r($A3A);
+// print_r("</pre>");
 
 $A5A = checkingQuestion($mn2["0"], $ee);
 $A5B = getResultHTML($A5A, $RDsuccess, $mn2["0"]);

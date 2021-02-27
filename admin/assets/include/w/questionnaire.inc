@@ -38,26 +38,33 @@ while ($rr = $q1->fetchAll(PDO::FETCH_ASSOC)) {
   $rr1 = json_decode($rr['0']['data'], true);
   $rr2 = $rr1['pages'];
 }
-for ($i=0; $i<count($rr2); $i++) { $rr4[] = $rr2[$i]['questions']; }
+for ($i=0; $i<count($rr2); $i++) { $rr4[] = $rr2[$i]['questions']; $rr414[] = $rr2[$i]['visible']; $rr424[] = $rr2[$i]['visibleIf']; }
 // print_r($rr4);
 // $rr4 = array_merge($rr3);
 // $rr4 = call_user_func_array('array_merge', $rr3);
-// print_r($rr4);
+// // print_r($rr4);
+// print_r($rr414);
+// echo "PEEEE";
+// print_r($rr424);
 
 for ($i=0; $i<count($rr4); $i++) {
   $moveKeys = array('hasOther', 'visibleIf', 'colCount');
+  // $moveKeys = array('hasOther', 'colCount');
   foreach ($moveKeys as $k1) {
     $bb = $rr4[$i][$k1];
     if ($bb) { unset($rr4[$i][$k1]); $rr4[$i][$k1] = $bb; }
   }
   $removeKeys = array('isRequired', 'visible', 'choicesOrder', 'placeHolder', 'renderAs', 'ratingTheme', 'showValues', 'cellType', 'itemSize');
+  // $removeKeys = array('isRequired', 'choicesOrder', 'placeHolder', 'renderAs', 'ratingTheme', 'showValues', 'cellType', 'itemSize');
   foreach ($removeKeys as $k2) { unset($rr4[$i][$k2]); }
-  $moveKeys1 = array('html', 'hasOther', 'visibleIf');
+  // $moveKeys1 = array('html', 'hasOther', 'visibleIf');
+  $moveKeys1 = array('html', 'hasOther');
   foreach ($moveKeys1 as $k3) {
     $bb = $rr4[$i][$k1];
     if ($bb) { unset($rr4[$i][$k3]); $rr4[$i][$k3] = $bb; }
   }
   $removeKeys1 = array('isRequired', 'visible', 'choicesOrder', 'placeHolder', 'renderAs', 'ratingTheme', 'showValues', 'cellType', 'inputType', 'colCount', 'itemSize');
+  // $removeKeys1 = array('isRequired', 'choicesOrder', 'placeHolder', 'renderAs', 'ratingTheme', 'showValues', 'cellType', 'inputType', 'colCount', 'itemSize');
   foreach ($removeKeys1 as $k4) {
     unset($rr4[$i][$k4]);
   }
@@ -74,13 +81,14 @@ for ($i=0; $i<count($rr4); $i++) {
   else if ($rr4[$i]['type'] == "html") { unset($rr4[$i]['type']); }
 }
 $rr4 = array_remove_empty($rr4);
-// print_r($rr4);
 $json = json_encode($rr4);
+// $rr444 = array_push($rr414, $rr424);
+// $rr4 = array_push($rr444, $rr4);
+// print_r($rr4);
 $out = "";
 $seq = 1;
 foreach ($rr4 as $rr44) {
   foreach ($rr44 as $question) {
-    // print_r($question);
     if ($question['type'] == "html") {
       $out .= "<div>\n";
       $out .= "  <div class=\"pull-right small\">".$question['type']." [<a data-toggle=\"collapse\" href=\"#showthis-$seq\" aria-expanded=\"false\" class=\"alert-link\">hide <i class=\"pe-arrow-circle-up pe-fw\"></i></a>]</div>\n";
@@ -103,6 +111,7 @@ foreach ($rr4 as $rr44) {
       $out .= "<div class=\"collapse in\" id=\"showthis-$seq\"><div class=\"well\" style=\"font-family:boon\">\n";
       $out .= "<span class=\"pull-right\">$viewresult</span>";
       $out .= "<h4>".$question['title']."</h4>\n";
+      // if (($rr4['visible'] == "false") && empty($rr4['visibleIf'])) {
       if ($question['type'] == "text") {
         $out .= "    <div><input type=\"text\" class=\"form-control\" name=\"\" disabled=\"\"></div>\n";
       } else if ($question['type'] == "comment") {
@@ -223,7 +232,7 @@ foreach ($rr4 as $rr44) {
           for ($i=0; $i<$counting; $i++) {
             if ($question['colCount'] == "2") { $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n"; }
             else if ($question['colCount'] == "3") { $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4\">\n"; }
-            $out .= "    <form class=\"form-horizontal\"><div class=\"form-group\"><label class=\"control-label col-sm-4\">".$question['items'][$i]['title'].": </label><div class=\"col-sm-8\"><input type=\"text\" class=\"form-control\" name=\"\" disabled=\"\"></div></div></form>";
+            $out .= "    <form class=\"form-horizontal\"><div class=\"form-group\"><label class=\"control-label col-sm-4\">".$question['items'][$i]['title']." (".$question['items'][$i]['name']."): </label><div class=\"col-sm-8\"><input type=\"text\" class=\"form-control\" name=\"\" disabled=\"\"></div></div></form>";
             if ($i % $question['colCount'] == 0) {
               $out .= "  </div>\n";
               if ($question['colCount'] == "2") { $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n"; }
@@ -237,7 +246,7 @@ foreach ($rr4 as $rr44) {
           $out .= "<div class=\"row\">\n";
           for ($i=0; $i<$counting; $i++) {
             $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
-            $out .= "    <form class=\"form-horizontal\"><div class=\"form-group\"><label class=\"control-label col-sm-4\">".$question['items'][$i]['title'].": </label><div class=\"col-sm-8\"><input type=\"text\" class=\"form-control\" name=\"\" disabled=\"\"></div></div></form>";
+            $out .= "    <form class=\"form-horizontal\"><div class=\"form-group\"><label class=\"control-label col-sm-4\">".$question['items'][$i]['title']." (".$question['items'][$i]['name']."): </label><div class=\"col-sm-8\"><input type=\"text\" class=\"form-control\" name=\"\" disabled=\"\"></div></div></form>";
             $out .= "  </div>\n";
           }
           $out .= "</div>\n";
