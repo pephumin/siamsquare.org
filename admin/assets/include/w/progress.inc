@@ -96,7 +96,7 @@ if ($_POST['m'] == "fixerrors") {
   exit;
 } else if (($_POST['m'] == "updatesettings") || isset($_POST["totalsamplebysubgroup"])) {
   // print_r("<pre>");
-  // print_r($_POST);
+  print_r($_POST);
   // print_r("</pre>");
   $addtype = "0";
   if (isset($_POST["totalsample"]) && ($_POST["totalsample"] != $sample_size)) { $add = "sample = :sample, "; $addtype = "1"; }
@@ -920,6 +920,7 @@ echo "    </div>\n";
 
   <h3>Specific settings</h3>
   <p>This page contains all advanced settings for accurately monitoring this survey such as getting the quota correctly on the sample size and track some questions along with the data collection in order to ensure the work will be done correctly in within the timeline..</p>
+  <hr>
   <form id="updatesettings" method="post" action="<?php echo $base; ?>">
     <div class="row">
       <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
@@ -955,6 +956,8 @@ echo "    </div>\n";
       </div>
     </div>
     <br>
+    <hr>
+    <br>
     <div class="row">
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <h4>Quota by subgroups</h4>
@@ -963,6 +966,8 @@ echo "    </div>\n";
         <div class="row" id="tablesamplewrap"></div>
       </div>
     </div>
+    <br>
+    <hr>
     <br>
     <div class="row">
       <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
