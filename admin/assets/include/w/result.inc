@@ -29,7 +29,9 @@ $private = $rows[0]["private"];
 $sample_size = $rows[0]["sample"];
 $options = $rows[0]["options"];
 $monitor = $rows[0]["QC"];
-$sreport = $rows[0]["report"];
+$report = $rows[0]["report"];
+
+// print_r($report);
 
 $rr1 = json_decode($rows['0']['data'], true);
 $rr2 = $rr1['pages'];
@@ -85,10 +87,12 @@ else if ($_SESSION['level'] == 5) { if ($_SESSION['userid'] == $owner) { $cansav
 else { $cansave = false; }
 $xreport = array();
 
-if ($_POST['settingreport']) {
+if (($_POST['settingreport']) == "1") {
+  // print_r($_POST['settingreport']);
   foreach (array_keys($_POST) as $key) {
+    print_r($key);
     list($a, $b, $c) = split('_', $key);
-    if ($a == "report") { $xreport[$b][] = $_POST[$key]; }
+    if ($a == "sequential") { $xreport[$b][] = $_POST[$key]; }
     // else if ($a == "delete") { $delete[$b][] = $_POST[$key]; }
     // else if ($a == "shuffle") { $shuffle[$b][] = $_POST[$key]; }
     // else if ($a == "maketotal") { $maketotal[$b][] = $_POST[$key]; }
@@ -103,7 +107,7 @@ if ($_POST['settingreport']) {
   print_r($newreport);
 
   $all = [];
-  array_push($all, $newreport); $all["report"] = $all["0"]; unset($all["0"]);
+  array_push($all, $newreport); $all["sequential"] = $all["0"]; unset($all["0"]);
   // array_push($all, $newdelete); $all["delete"] = $all["1"]; unset($all["1"]);
   // array_push($all, $newshuffle); $all["shuffle"] = $all["2"]; unset($all["2"]);
   // array_push($all, $newmaketotal); $all["maketotal"] = $all["3"]; unset($all["3"]);
@@ -111,10 +115,10 @@ if ($_POST['settingreport']) {
 
   $all = array_remove_empty($all);
   $alljson = json_encode($all, JSON_PRETTY_PRINT);
-  print_r($alljson);
+  // print_r($alljson);
 
   $move = 0;
-  if ($alljson != $sreport) { $move = 1; }
+  if ($alljson != $report) { $move = 1; }
   if ($move == 0) {
     $redirect = $me."&m=3";
     header("location: $redirect");
@@ -123,7 +127,7 @@ if ($_POST['settingreport']) {
 
   $qG = $db->prepare("UPDATE j_projects SET report = :report WHERE id = :surveyid");
   $qG->bindValue(':surveyid', $_POST["surveyid"], PDO::PARAM_INT);
-  $qG->bindValue(':report', $json, PDO::PARAM_STR);
+  $qG->bindValue(':report', $alljson, PDO::PARAM_STR);
   $qG->execute();
   $redirect = $me."&m=1";
   header("location: $redirect");
@@ -356,7 +360,7 @@ for ($i = 0; $i < count($questions); $i++) {
         for ($d=0; $d < $c; $d++) { $qout .= "          <td align=\"right\">$cc</td>\n"; }
         $qout .= "        </tr>";
       }
-      $qout .= "</tbody>\n";
+      $qout .= "        </tbody>\n";
       $qout .= "      </table>\n";
     }
     else if ($qtype == "barrating") {
@@ -519,9 +523,9 @@ if (($cd == "checkbox") || ($cd == "checkboxhtml")) {
   $tableout4 .= "    <tbody>\n";
   $k1 = array(); 
   for ($i=0; $i < count($records); $i++) { foreach ($records[$i]["data"][$qq] as $m => $v) { array_push($k1, $v); } }
+  // print_r($k1);
   $cee = array_count_values($k1);
   if (json_decode(str_replace($c_code, $c_text, json_encode($cee)), true)) { $c = json_decode(str_replace($c_code, $c_text, json_encode($cee)), true); }
-  // print_r($cee);
   $totalresponses = array_sum($c);
   $A = array_keys($c); $B = array_values($c);
   $C = count($c); $Aee = array_keys($cee); 
@@ -687,19 +691,112 @@ else if (($cd == "file") || ($cd == "signaturepad")) {
     $outdirect .= $pagination."\n<br>\n";
   }
 }
-else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating") || (($cd == "multipletext") && (preg_match('/t10/i', $_GET['q']) == 1))) {
-  $k = array(); $c = array();
+else if ($cd == "matrixdropdown") {
+  $k = array(); $k1z = array(); $c = array();
+  $tableout5 = "";
+  foreach ($records as $k1 => $p1) { $jj[] = $p1; }
+  for ($i=0; $i < count($jj); $i++) { 
+    $k[] = $jj[$i]["data"][$qq];
+    foreach (array_values($k[i]) as $kz1 => $pz1) { print_r($pz1); }
+    // $cee = array_count_values($jj[$i]["data"][$qq]); 
+  }
+  // $cee = array_count_values($k); 
+  // print_r($k1z);
+  // print_r($cee);
+  // print_r($k);
+  if (json_decode(str_replace($c_code, $c_text, json_encode($cee)), true)) { $c = json_decode(str_replace($c_code, $c_text, json_encode($cee)), true); }
+  $totalresponses = array_sum($c); //print_r($totalresponses);
+  $A = array_keys($c); $B = array_values($c);
+  $C = count($c); $Aee = array_keys($cee); 
+  $c = 0;
+  // foreach ($questions[$i]["columns"] as $k10 => $p10) {
+  //   $column_name = $p10['name']; print_r($column_name);
+  //   $column_title = $p10['title']; print_r($column_title);
+  //   // $qout .= "          <th style=\"text-align:right\">$column_name<br>($column_title)</th>\n";
+  //   $c++;
+  // }
+  // foreach ($questions[$i]["choices"] as $k11 => $p11) {
+  //   $choice_text = $p11['text']; print_r($choice_text);
+  //   $choice_code = $p11['value']; print_r($choice_code);
+  //   // $cc .= "            <option>$choice_text ($choice_code)</option>";
+  // }
+  // foreach ($questions[$i]["rows"] as $k12 => $p12) {
+  //   $row_text = $p12['text']; print_r($row_text);
+  //   $row_code = $p12['value']; print_r($row_code);
+  //   // $qout .= "          <td align=\"right\">$row_text<br>($row_code)</td>\n";
+  //   for ($d=0; $d < $c; $d++) { } //$qout .= "          <td align=\"right\">$cc</td>\n"; }
+  //   // $qout .= "        </tr>";
+  // }
+  // $tableout5 .= "  <table class=\"table\" style=\"font-family:boon\">\n";
+  // $tableout5 .= "    <thead>\n";
+  // $tableout5 .= "      <tr class=\"bg-primary\">\n";
+  // $tableout5 .= "        <th width=\"30%\">Thai</th>\n";
+  // $tableout5 .= "        <th width=\"30%\">English</th>\n";
+  // $tableout5 .= "        <th style=\"text-align:right\" width=\"20%\">Count</th>\n";
+  // $tableout5 .= "        <th style=\"text-align:right\" width=\"20%\">Percentage</th>\n";
+  // $tableout5 .= "      </tr>\n";
+  // $tableout5 .= "    </thead>\n";
+  // $tableout5 .= "    <tbody>\n";
+  // $out = "";
+  // $out .= "    data.addRows($C);\n";
+}
+
+// else if ($qtype == "") {
+//   $qout .= "      <table class=\"table\" style=\"font-family:boon\">\n";
+//   $qout .= "        <thead><tr class=\"bg-primary\">\n";
+//   $qout .= "          <th width=\"20%\"></th>\n";
+//   $c = 0;
+//   foreach ($questions[$i]["columns"] as $k10 => $p10) {
+//     $column_name = $p10['name']; print_r($column_name);
+//     $column_title = $p10['title']; print_r($column_title);
+//     $qout .= "          <th style=\"text-align:right\">$column_name<br>($column_title)</th>\n";
+//     $c++;
+//   }
+//   $qout .= "        </tr></thead>\n";
+//   $cc = "          <select class=\"form-control input-sm\">";
+//   foreach ($questions[$i]["choices"] as $k11 => $p11) {
+//     $choice_text = $p11['text'];
+//     $choice_code = $p11['value'];
+//     $cc .= "            <option>$choice_text ($choice_code)</option>";
+//   }
+//   $cc .= "          </select>";
+//   $qout .= "        <tbody><tr>\n";
+//   foreach ($questions[$i]["rows"] as $k12 => $p12) {
+//     $row_text = $p12['text'];
+//     $row_code = $p12['value'];
+//     $qout .= "          <td align=\"right\">$row_text<br>($row_code)</td>\n";
+//     for ($d=0; $d < $c; $d++) { $qout .= "          <td align=\"right\">$cc</td>\n"; }
+//     $qout .= "        </tr>";
+//   }
+//   $qout .= "        </tbody>\n";
+//   $qout .= "      </table>\n";
+
+
+
+
+
+
+
+
+
+else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating") || (($cd == "multipletext") && (preg_match('/Last10/i', $_GET['q']) == 1)) || ($cd == "multipletext") && (preg_match('/Next10/i', $_GET['q']) == 1)) {
+  $k = array(); $k1 = array();  $ck = array();
   $tableout3 = "";
   if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating")) {
+    // for ($i=0; $i < count($records); $i++) { foreach ($records[$i]["data"][$qq] as $m => $v) { array_push($k, $v); } }
+    $cee = array_count_values($k);  
     foreach ($records as $k1 => $p1) { $jj[] = $p1; }
     for ($i=0; $i < count($jj); $i++) { $k[] = $jj[$i]["data"][$qq]; }
     $cee = array_count_values($k); 
-  } else if (($cd == "multipletext") && (preg_match('/t10/i', $_GET['q']) == 1)) {
+  } else if (($cd == "multipletext") && (preg_match('/Last10/i', $_GET['q']) == 1) || ($cd == "multipletext") && (preg_match('/Next10/i', $_GET['q']) == 1)) {
     $mk1 = array();
     for ($i=0; $i < count($records); $i++) { array_push($mk1, $records[$i]["data"][$qq]); }
-    foreach ($mk1 as $n => $o) { foreach ($o as $kn => $ko) { $c[$kn] += $ko; } }
+    // print_r($mk1);
+    foreach ($mk1 as $n => $o) { foreach ($o as $kn => $ko) { $ck[$kn] += $ko; } }
+    $cee = $ck;
   }
-  if (json_decode(str_replace($c_code, $c_text, json_encode($cee)), true)) { $c = json_decode(str_replace($c_code, $c_text, json_encode($cee)), true); }
+  if (json_decode(str_replace($row_text, $row_code, json_encode($cee)), true)) { $c = json_decode(str_replace($row_text, $row_code, json_encode($cee)), true); }
+  // print_r($c);
   $totalresponses = array_sum($c); //print_r($totalresponses);
   $A = array_keys($c); $B = array_values($c);
   $C = count($c); $Aee = array_keys($cee); 
@@ -717,18 +814,19 @@ else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown
   $out .= "    data.addRows($C);\n";
   for ($m=0; $m < count($c); $m++) {
     if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating")) { $BB[$m] = number_format(($B[$m]/$basesize)*100, 2); }
-    else if (($cd == "multipletext") && (preg_match('/t10/i', $_GET['q']) == 1)) { $BB[$m] = number_format(($B[$m]/$totalresponses)*100, 2); }
+    else if (($cd == "multipletext") && (preg_match('/Last10/i', $_GET['q']) == 1) || ($cd == "multipletext") && (preg_match('/Next10/i', $_GET['q']) == 1)) { $BB[$m] = number_format(($B[$m]/$totalresponses)*100, 2); }
     $m1 = $m+1; $m2 = $m1+1;
     if ($A[$m] == "") { $zA = 0; } else { $zA = addslashes($A[$m]); }
     if ($Aee[$m] == "") { $zAee = 0; } else { $zAee = addslashes($Aee[$m]); }
     if ($B[$m] == "") { $zB = 0; } else { $zB = addslashes($B[$m]); }
     if ($BB[$m] == "") { $zC = 0; } else { $zC = addslashes($BB[$m]); }
+    // print_r($zAee);
     $out .= "    data.setCell($m, 0, '$zA');\n";
     $out .= "    data.setCell($m, 1, $zB);\n";
     $out .= "    data.setCell($m, 2, $zC);\n";
     $tableout3 .= "      <tr>\n";
-    $tableout3 .= "        <td align=\"left\">$zA</td>\n";
-    $tableout3 .= "        <td align=\"left\">$zAee</td>\n";
+    $tableout3 .= "        <td align=\"left\">".$zA."</td>\n";
+    $tableout3 .= "        <td align=\"left\">".$zAee."</td>\n";
     $tableout3 .= "        <td align=\"right\">".$zB."</td>\n";
     $tableout3 .= "        <td align=\"right\">".$zC."%</td>\n";
     $tableout3 .= "      </tr>\n";
@@ -929,6 +1027,15 @@ echo "<h2>$title</h2>\n";
 echo "<p class=\"introtext\">This is a tool that helps you view the survey result whenever you need. Result is generated by pulling the data from our server in <em>real time</em>.</p>\n";
 echo "<p class=\"introtext\">Although several question types have an option to show results in many different ways (e.g. a few chart types, tabulation, ability to sort data, etc.), there is still a limitation for a certain type of question such as open-ends.</p>\n";
 echo "<hr>\n";
+
+if (($_GET['m'] == "1") || ($m == 1)) { echo "<div id=\"showalert-m1\"></div>\n"; }
+else if ($_GET['m'] == "2") { echo "<div id=\"showalert-m2\"></div>\n"; }
+else if ($_GET['m'] == "3") { echo "<div id=\"showalert-m3\"></div>\n"; }
+else if ($_GET['m'] == "4") { echo "<div id=\"showalert-m4\"></div>\n"; }
+else if ($_GET['m'] == "5") { echo "<div id=\"showalert-m5\"></div>\n"; }
+echo "<div id=\"showreadonly\"></div><div id=\"showsaving\"></div><div id=\"showsavesuccess\"></div>\n";
+echo "<br>\n";
+
 echo "<div class=\"row\">\n";
 echo "  <div class=\"col-sm-9\">\n";
 echo "    <h3>Project $project</h3>\n";
@@ -947,18 +1054,10 @@ echo "    </div>\n";
 echo "  </div>\n";
 echo "</div><br>\n";
 
-if (($_GET['m'] == "1") || ($m == 1)) { echo "<div id=\"showalert-m1\"></div>\n"; }
-else if ($_GET['m'] == "2") { echo "<div id=\"showalert-m2\"></div>\n"; }
-else if ($_GET['m'] == "3") { echo "<div id=\"showalert-m3\"></div>\n"; }
-else if ($_GET['m'] == "4") { echo "<div id=\"showalert-m4\"></div>\n"; }
-else if ($_GET['m'] == "5") { echo "<div id=\"showalert-m5\"></div>\n"; }
-echo "<div id=\"showreadonly\"></div><div id=\"showsaving\"></div><div id=\"showsavesuccess\"></div>\n";
-echo "<br>\n";
-
 ?>
 
 <ul class="nav nav-tabs">
-<?php if (($_POST['settingreport']) || ($_GET['m'] == 4)) { ?>
+<?php if ((($_POST['settingreport']) == "1") || ($_GET['m'] == 1)) { ?>
   <li><a href="#A1" data-toggle="tab"><i class="pe-line-chart pe-fw"></i> Charts</a></li>
   <li class="active"><a href="#A2" data-toggle="tab"><i class="pe-wrench pe-fw"></i> Settings</a></li>
 <?php } else { ?>
@@ -970,7 +1069,7 @@ echo "<br>\n";
 <br>
 
 <div class="tab-content">
-<?php if (($_POST['settingreport']) || ($_GET['m'] == 4)) { ?>
+<?php if ((($_POST['settingreport']) == "1") || ($_GET['m'] == "1") || ($_GET['m'] == "3")) { ?>
   <div id="A1" class="tab-pane fade">
 <?php } else { ?>
   <div id="A1" class="tab-pane fade in active">
@@ -1007,7 +1106,7 @@ if ($totalresponses) {
 
 if ($_GET["q"]) { 
 
-if (substr($_GET["q"], -1) == "1") { $seq = 1; } else { $seq = 0; }
+// if (substr($_GET["q"], -1) == "1") { $seq = 1; } else { $seq = 0; }
 // echo $sequential;
 ?>
 
@@ -1049,7 +1148,7 @@ if (($cd == "file") || ($cd == "signaturepad")) {
 }
 ?>
 
-<?php if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating") || (($cd == "multipletext") && (preg_match('/t10/i', $_GET['q']) == 1))) { ?>
+<?php if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating") || (($cd == "multipletext") && (preg_match('/Last10/i', $_GET['q']) == 1)) || (($cd == "multipletext") && (preg_match('/Next10/i', $_GET['q']) == 1))) { ?>
 
 <?php if ((empty($_GET['type'])) || ($_GET['type'] == "pie")) { ?>
 
@@ -1490,6 +1589,92 @@ if (($cd == "file") || ($cd == "signaturepad")) {
 
 <br>
 
+
+  </div>
+  <div id="B2" class="tab-pane fade">
+
+<?php
+  echo $answers;
+  if ($totalresponses) {
+    if ($cd == "matrix") { echo $tableout1A; echo $tableout1B; } 
+    else if (($cd == "comment") || ($cd == "text")) { echo $tableout2; }
+    else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating") || (($cd == "multipletext") && (preg_match('/Last10/i', $_GET['q']) == 1)) || ($cd == "multipletext") && (preg_match('/Next10/i', $_GET['q']) == 1)) { echo $tableout3; } 
+    else if (($cd == "checkbox") || ($cd == "checkboxhtml")) { echo $tableout4; }
+    else { echo "No table to be shown for this question\n"; }
+  }
+  echo "</div></div></div>";
+?>
+  <!-- </div></div></div> -->
+<?php } else { 
+  echo "<h5>To view survey results, you just simply click one of the above questions</h5>"; 
+  // echo "</div>";  
+} ?>
+
+  </div>
+<?php if ((($_POST['settingreport']) == "1") || ($_GET['m'] == 1)) { ?>
+  <div id="A2" class="tab-pane fade in active">
+<?php } else { ?>
+  <div id="A2" class="tab-pane fade">
+<?php } ?>
+
+    <h3>Settings</h3>
+    <p>This page contains specific settings to see results in the right way you need.</p>
+    <hr>
+    <form id="settingreport" method="post" action="<?php echo $me; ?>">
+      <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+          <h4>Sequential Monadic Questions</h4>
+          <p>Enter question name and number of questions to be linked in order to get a combined result for analysis.</p>
+          <table class="table table-hover table-condensed" id="tablereportsettings">
+            <thead>
+              <tr class="bg-success">
+                <th width="5%"></th>
+                <th width="60%">Common question name</th>
+                <th width="5%"></th>
+                <th width="20%">No. of questions</th>
+                <th width="10%"></th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+          <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newbutton"><i class="pe-plus pe-fw"></i>Add new</button></p>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+        </div>
+      </div>
+      <br>
+      <hr>
+      <br>
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <h4>Quota by subgroups</h4>
+          <p>The sample size broken down by subgroups.</p>
+          <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newsample" onClick="newTable();" title="Add a new subgroup"><i class="pe-plus pe-fw"></i>Add new</button></p>
+          <div class="row" id="tablesamplewrap"></div>
+        </div>
+      </div>
+      <hr>
+      <p class="text-center">
+        <input type="hidden" name="settingreport" value="1">
+        <input type="hidden" name="surveyid" value="<?php echo $_GET['s']; ?>">
+        <button type="submit" class="btn btn-success"<?php if ($cansave == false) { echo " disabled"; } ?>>Save <i class="pe-check-circle-o"></i></button>
+        <button type="reset" class="btn btn-default"<?php if ($cansave == false) { echo " disabled"; } ?>>Cancel <i class="pe-times-circle-o"></i></button>
+      </p>
+    </div>
+  </form>
+  <br>
+  <br>
+  <br>
+
+
+
+  </div>
+</div>
+<br>
+
+<?php backButton("/admin/?w=surveys", "Back to the main page", "danger"); ?>
+
 <script type="text/javascript">
   var companyid = parseInt("<?php echo $_SESSION['companyid']; ?>");
   var userid = parseInt("<?php echo $_SESSION['userid']; ?>");
@@ -1504,7 +1689,7 @@ if (($cd == "file") || ($cd == "signaturepad")) {
   $('#showsavesuccess').html("<div class='alert alert-success'><i class='pe-save pe-fw'></i> Data has been saved successfully</div>").hide();
   $('#showreadonly').html("<div class='alert alert-warning'><i class='pe-exclamation-triangle pe-fw'></i> Because you are not the project owner, this questionnaire has entered <strong>read-only mode</strong> (all changes will not be saved)</div>").hide();
   $('#showalert-delete').html("<div class='alert alert-success'><i class='pe-check pe-fw'></i> You have successfully saved & updated the settings on reporting of this survey.</div>").hide();
-  $('#showalert-m1').html("<div class='alert alert-success'><i class='pe-check pe-fw'></i> You have successfully changed the appearanace of this survey. Please see the example below as the changes should be implemented right away.</div>").hide();
+  $('#showalert-m1').html("<div class='alert alert-success'><i class='pe-check pe-fw'></i> You have successfully changed the settings on reporting for this survey. Please see below on the changes you hvae just made.</div>").hide();
   $('#showalert-m2').html("<div class='alert alert-success'><i class='pe-check pe-fw'></i> You have successfully updated the survey options including survey description, thank you message, PIN CODE, and the total sample size.</div>").hide();
   $('#showalert-m3').html("<div class='alert alert-info'><i class='pe-exclamation-triangle pe-fw'></i> No changes detected. So no change has been made to this survey.</div><br>").hide();
   $('#showalert-m4').html("<div class='alert alert-success'><i class='pe-check pe-fw'></i> You have successfully updated all the advanced settings for this survey.</div><br>").hide();
@@ -1539,58 +1724,110 @@ if (($cd == "file") || ($cd == "signaturepad")) {
     var filename = "<?php echo $project; ?>" + "_data_" + todayDate + '.csv';
     $("a.exceldownload").attr({'download': filename, 'href': csvUrl });
   });
-
-
-</script>
-
-
-
-<script type="text/javascript">
-  <?php if ($monitor) { echo "var monitor = $monitor;\n"; } else { echo "var monitor = { \"quota\": [], \"QC\": [], \"monitor\": [] };\n"; } ?>
-  var counter2a = 0, counter2b = 0;
-  var newrow300 = "                <option disabled>----------</option>";
-  <?php echo "var newrow301 = '                <option value=\"all\">No subgroup (show all)</option>';\n"; ?>
-  function dropdownA(l, m, n, o, p, ssq, ssa) {
-    mn = n.toString().replace(/ /g,"_"); mo = o.toString().replace(/ /g,"_");
-    ssq = ssq.toString().replace(/ /g,"_"); ssa = ssa.toString().replace(/ /g,"_");
-    if (mn == ssq) { var newrow3FA = "                <option value=\"" + mn + "-all\" selected>" + n + ": Total sample (n=" + p + ")</option>\n"; }
-    else { var newrow3FA = "                <option value=\"" + mn + "-all\">" + n + ": Total sample (n=" + p + ")</option>\n"; }
-    $('#subgroup').append(newrow3FA);
-  }
-  function dropdownB(l, m, n, o, p, ssq, ssa) {
-    mn = n.toString().replace(/ /g,"_"); mo = o.toString().replace(/ /g,"_");
-    ssq = ssq.toString().replace(/ /g,"_"); ssa = ssa.toString().replace(/ /g,"_");
-    if (mo == ssa && mn == ssq) { var newrow3FB = "                <option value=\"" + mn + "-" + mo + "\" selected>" + n + ": " + o + " (n=" + p + ")</option>\n"; }
-    else { var newrow3FB = "                <option value=\"" + mn + "-" + mo + "\">" + n + ": " + o + " (n=" + p + ")</option>\n"; }
-    $('#subgroup').append(newrow3FB);
-  }
-  var i; var j; var k = 0;
-  if (monitor.quota) {
-    $('#subgroup').append(newrow300);
-    $('#subgroup').append(newrow301);
-    for (i=0; i<monitor.quota.length; i++) {
-      var combinedtotalsample = 0;
-      for (j=0; j<monitor.quota[i].details.length; j++) {
-        combinedtotalsample += parseInt(monitor.quota[i].details[j].samplesize);
-      }
+<?php if ($monitor) { echo "var monitor = $monitor;\n"; } else { echo "var monitor = { \"quota\": [], \"QC\": [], \"monitor\": [] };\n"; } ?>
+    var counter2a = 0, counter2b = 0;
+    var newrow300 = "                <option disabled>----------</option>";
+    <?php echo "var newrow301 = '                <option value=\"all\">No subgroup (show all)</option>';\n"; ?>
+    function dropdownA(l, m, n, o, p, ssq, ssa) {
+      mn = n.toString().replace(/ /g,"_"); mo = o.toString().replace(/ /g,"_");
+      ssq = ssq.toString().replace(/ /g,"_"); ssa = ssa.toString().replace(/ /g,"_");
+      if (mn == ssq) { var newrow3FA = "                <option value=\"" + mn + "-all\" selected>" + n + ": Total sample (n=" + p + ")</option>\n"; }
+      else { var newrow3FA = "                <option value=\"" + mn + "-all\">" + n + ": Total sample (n=" + p + ")</option>\n"; }
+      $('#subgroup').append(newrow3FA);
+    }
+    function dropdownB(l, m, n, o, p, ssq, ssa) {
+      mn = n.toString().replace(/ /g,"_"); mo = o.toString().replace(/ /g,"_");
+      ssq = ssq.toString().replace(/ /g,"_"); ssa = ssa.toString().replace(/ /g,"_");
+      if (mo == ssa && mn == ssq) { var newrow3FB = "                <option value=\"" + mn + "-" + mo + "\" selected>" + n + ": " + o + " (n=" + p + ")</option>\n"; }
+      else { var newrow3FB = "                <option value=\"" + mn + "-" + mo + "\">" + n + ": " + o + " (n=" + p + ")</option>\n"; }
+      $('#subgroup').append(newrow3FB);
+    }
+    var i; var j; var k = 0;
+    if (monitor.quota) {
       $('#subgroup').append(newrow300);
-      dropdownA(parseInt(k)+1, counter2a, monitor.quota[i].questionname, monitor.quota[i].details[k].subgroup, combinedtotalsample, "<?php echo $subgroupquestion; ?>", "<?php echo $subgroupanswer; ?>");
-      $('#subgroup').append(newrow300);
-      for (j=0; j<monitor.quota[i].details.length; j++) {
-        dropdownB(parseInt(k)+1, j, monitor.quota[i].questionname, monitor.quota[i].details[j].subgroup, monitor.quota[i].details[j].samplesize, "<?php echo $subgroupquestion; ?>", "<?php echo $subgroupanswer; ?>");
+      $('#subgroup').append(newrow301);
+      for (i=0; i<monitor.quota.length; i++) {
+        var combinedtotalsample = 0;
+        for (j=0; j<monitor.quota[i].details.length; j++) {
+          combinedtotalsample += parseInt(monitor.quota[i].details[j].samplesize);
+        }
+        $('#subgroup').append(newrow300);
+        dropdownA(parseInt(k)+1, counter2a, monitor.quota[i].questionname, monitor.quota[i].details[k].subgroup, combinedtotalsample, "<?php echo $subgroupquestion; ?>", "<?php echo $subgroupanswer; ?>");
+        $('#subgroup').append(newrow300);
+        for (j=0; j<monitor.quota[i].details.length; j++) {
+          dropdownB(parseInt(k)+1, j, monitor.quota[i].questionname, monitor.quota[i].details[j].subgroup, monitor.quota[i].details[j].samplesize, "<?php echo $subgroupquestion; ?>", "<?php echo $subgroupanswer; ?>");
+        }
       }
     }
+    $(document).ready(function() {
+      $('#subgroup').on('change', function() { this.form.submit(); });
+    });
+
+
+<?php if ($report) { echo "var sreport = $report;\n"; } else { echo "var sreport = { \"sequential\": [] };\n"; } ?>
+
+function selectDropdownOld(s, i) { 
+  s.options[i-1].selected = true;
+  return;
+}
+function selectDropdown(s, v) {
+  for (var i=0; i < s.options.length; i++ ) {
+    if (s.options[i].value == v ) {
+      s.options[i].selected = true;
+      return;
+    }
   }
-  $(document).ready(function() {
-    $('#subgroup').on('change', function() { this.form.submit(); });
-  });
-</script>
+}
+var counter1 = 0, counter1z = counter1 + 1;
+if (typeof(sreport.sequential) === 'undefined') {
+  var currentrow4 = "              <tr>\n" +
+    "                <td></td><td colspan=\"2\"><small><strong><br>No data.</strong><br>Click button below to add one.</small></td>\n" +
+    "              </tr>\n";
+  $('#tablereportsettings').find('tbody').append(currentrow4);
+} else {
+  while (counter1 < sreport.sequential.length) {
+    var currentrow4 = "              <tr>\n" +
+      "                <td valign=\"middle\">" + counter1z + "</td>\n" +
+      "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" name=\"sequential_questionname_" + counter1z + "\" value=\"" + sreport.sequential[counter1].questionname + "\"></td>\n" +
+      "                <td valign=\"middle\"><i class=\"pe-arrow-right pe-lg\"></i></td>\n" +
+      "                <td valign=\"middle\"><select id=\"jsdropdown"+ counter1z +"\" class=\"form-control input-sm\" id=\"subgroup\" name=\"sequential_linkamount_" + counter1z + "\">" +
+      "                </select></td>\n" +
+      // "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" name=\"report_linkamount_" + counter1z + "\" value=\"" + sreport.sequential[counter1].linkamount + "\"></td>\n" +
+      "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+      "              </tr>\n";
+    $('#tablereportsettings').find('tbody').append(currentrow4);
+    var dropdownoptions = { 0 : '---', 1 : '1', 2 : '2', 3 : '3', 4 : '4', 5 : '5' };
+    var select = document.getElementById("jsdropdown" + counter1z);
+    for (index in dropdownoptions) { 
+      select.options[select.options.length] = new Option(dropdownoptions[index], index); 
+      selectDropdown(select, sreport.sequential[counter1].linkamount);
+    }
+    counter1++;
+    counter1z++;
+  }
+  }
+$('#newbutton').click(function() {
+  var newrow4 = "              <tr>\n" +
+    "                <td valign=\"middle\">" + counter1z + "</td>\n" +
+    "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"sequential_questionname_" + counter1z + "\"></td>\n" +
+    "                <td valign=\"middle\"><i class=\"pe-arrow-right pe-lg\"></i></td>\n" +
+    "                <td valign=\"middle\"><select class=\"form-control input-sm\" id=\"subgroup\" name=\"sequential_linkamount_" + counter1z + "\">" +
+    "                <option value=\"0\" selected>--</option>\n" +
+    "                <option value=\"1\">1</option>\n" +
+    "                <option value=\"2\">2</option>\n" +
+    "                <option value=\"3\">3</option>\n" +
+    "                <option value=\"4\">4</option>\n" +
+    "                <option value=\"4\">5</option>\n" +
+    "                </select></td>\n" +
+    "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+    "              </tr>\n";
+  $('#tablereportsettings').find('tbody').append(newrow4);
+  // $('#nodata').remove();
+  counter1z++;
+});
+$(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
 
-
-<script type="text/javascript">
-
-
-<?php if (($_GET['m'] == "1") || ($m == 1)) { ?>
+  <?php if (($_GET['m'] == "1") || ($m == 1)) { ?>
   $('#showalert-m1').show();
   window.setTimeout(function() { $("#showalert-m1").slideUp(500, function() { $("#showalert-m1").hide(); }); }, 8000);
 <?php } else if ($_GET['m'] == "2") { ?>
@@ -1607,117 +1844,6 @@ if (($cd == "file") || ($cd == "signaturepad")) {
   window.setTimeout(function() { $("#showalert-m5").slideUp(500, function() { $("#showalert-m5").hide(); }); }, 8000);
 <?php } ?>
 
-<?php if ($sreport) { echo "var sreport = $sreport;\n"; } else { echo "var sreport = { \"report\": [] };\n"; } ?>
-
-var counter4 = 0, counter4z = counter4 + 1;
-  if (typeof(sreport.report) === 'undefined') {
-    var currentrow4 = "              <tr>\n" +
-      "                <td></td><td colspan=\"2\"><small><strong><br>No data.</strong><br>Click button below to add one.</small></td>\n" +
-      "              </tr>\n";
-    $('#tablereportsettings').find('tbody').append(currentrow4);
-  } else {
-    while (counter4<sreport.report.length) {
-      var currentrow4 = "              <tr>\n" +
-        "                <td valign=\"middle\">" + counter4z + "</td>\n" +
-        "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" name=\"report_questionname_" + counter4z + "\" value=\"" + sreport.report[counter4].questionname + "\"></td>\n" +
-        "                <td valign=\"middle\"><i class=\"pe-arrow-right pe-lg\"></i></td>\n" +
-        "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" name=\"report_linkamount_" + counter4z + "\" value=\"" + sreport.report[counter4].linkamount + "\"></td>\n" +
-        "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
-        "              </tr>\n";
-      $('#tablereportsettings').find('tbody').append(currentrow4);
-      counter4++;
-      counter4z++;
-    }
-  }
-  $('#newbutton4').click(function() {
-    var newrow4 = "              <tr>\n" +
-      "                <td valign=\"middle\">" + counter4z + "</td>\n" +
-      "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"report_questionname_" + counter4z + "\"></td>\n" +
-      "                <td valign=\"middle\"><i class=\"pe-arrow-right pe-lg\"></i></td>\n" +
-      "                <td valign=\"middle\"><select class=\"form-control input-sm\" id=\"subgroup\" name=\"report_linkamount_" + counter4z + "\">" +
-      "                <option value=\"0\">--</option>\n" +
-      "                <option value=\"1\">1</option>\n" +
-      "                <option value=\"2\">2</option>\n" +
-      "                <option value=\"3\">3</option>\n" +
-      "                <option value=\"4\">4</option>\n" +
-      "                <option value=\"4\">5</option>\n" +
-      "                </select></td>\n" +
-      "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
-      "              </tr>\n";
-    $('#tablereportsettings').find('tbody').append(newrow4);
-    counter4z++;
-  });
-  $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
-
 </script>
-
-
-  </div>
-  <div id="B2" class="tab-pane fade">
-
-<?php
-  echo $answers;
-  if ($totalresponses) {
-    if ($cd == "matrix") { echo $tableout1A; echo $tableout1B; } 
-    else if (($cd == "comment") || ($cd == "text")) { echo $tableout2; }
-    else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating") || (($cd == "multipletext") && (preg_match('/t10/i', $_GET['q']) == 1))) { echo $tableout3; } 
-    else if (($cd == "checkbox") || ($cd == "checkboxhtml")) { echo $tableout4; }
-    else { echo "No table to be shown for this question\n"; }
-    echo "</div></div></div>";  
-  }
-?>
-
-<?php } else { echo "<p class=\"grey\">To view survey results, you just simply click one of the above questions</p>"; } ?>
-
-  </div>
-<?php if (($_POST['settingreport']) || ($_GET['m'] == 4)) { ?>
-  <div id="A2" class="tab-pane fade in active">
-<?php } else { ?>
-  <div id="A2" class="tab-pane fade">
-<?php } ?>
-
-    <h3>Settings</h3>
-    <p>This page contains specific settings to see results in the right way you need.</p>
-    <form id="settingreport" method="post" action="<?php echo $me; ?>">
-      <div class="row">
-        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-          <h4>Linkage of questions <small>(sequential monadic)</small></h4>
-          <p>Idebtify which questions to link for analysis including an option to set how many of them to link up.</p>
-          <table class="table table-hover table-condensed" id="tablereportsettings">
-            <thead>
-              <tr class="bg-success">
-                <th width="5%"></th>
-                <th width="60%">Common question name</th>
-                <th width="5%"></th>
-                <th width="20%">No. of questions</th>
-                <th width="10%"></th>
-              </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
-          <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newbutton4"><i class="pe-plus pe-fw"></i>Add new</button></p>
-        </div>
-        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-        </div>
-      </div>
-      <br>
-      <hr>
-      <p class="text-center">
-        <input type="hidden" name="settingreport" value="1">
-        <input type="hidden" name="surveyid" value="<?php echo $_GET['s']; ?>">
-        <button type="submit" class="btn btn-success"<?php if ($cansave == false) { echo " disabled"; } ?>>Save <i class="pe-check-circle-o"></i></button>
-        <button type="reset" class="btn btn-default"<?php if ($cansave == false) { echo " disabled"; } ?>>Cancel <i class="pe-times-circle-o"></i></button>
-      </p>
-    </form>
-  </div>
-
-
-  </div>
-</div>
-<br>
-
-<?php backButton("/admin/?w=surveys", "Back to the main page", "danger"); ?>
-
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
