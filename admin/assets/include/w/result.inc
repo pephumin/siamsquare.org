@@ -88,23 +88,25 @@ else { $cansave = false; }
 $xreport = array();
 
 if (($_POST['settingreport']) == "1") {
-  // print_r($_POST['settingreport']);
   foreach (array_keys($_POST) as $key) {
-    print_r($key);
-    list($a, $b, $c) = split('_', $key);
+    list($a, $b, $c, $d) = split('_', $key);
     if ($a == "sequential") { $xreport[$b][] = $_POST[$key]; }
+    else if ($a == "quota") { $xmonitor[$b][$c][$d] = $_POST[$key]; }
     // else if ($a == "delete") { $delete[$b][] = $_POST[$key]; }
     // else if ($a == "shuffle") { $shuffle[$b][] = $_POST[$key]; }
     // else if ($a == "maketotal") { $maketotal[$b][] = $_POST[$key]; }
     // else if ($a == "PSM") { $psm[$b][] = $_POST[$key]; }
   }
-  // print_r($_POST['settingkeepdelete']);
+  print_r($xreport);
+  print_r($xmonitor);
   $newreport = array_map(function ($questionname, $linkamount) { return array('questionname' => $questionname, 'linkamount' => $linkamount); }, $xreport["questionname"], $xreport["linkamount"]);
+  $newmonitor = array_map(function ($questionname, $subgroup, $samplesize) { return array('questionname' => $questionname, 'details' => array('subgroup' => $subgroup, 'samplesize' => $samplesize)); }, $xmonitor["questionname"], $xmonitor["details"]["subgroup"], $xmonitor["details"]["samplesize"]);
   // $newdelete = array_map(function ($leader, $follower) { return array('leader' => $leader, 'follower' => $follower); }, $delete["leader"], $delete["follower"]);
   // $newshuffle = array_map(function ($questionname) { return array('questionname' => $questionname); }, $shuffle["questionname"]);
   // $newmaketotal = array_map(function ($questionname, $totalsum) { return array('questionname' => $questionname, 'totalsum' => $totalsum); }, $maketotal["questionname"], $maketotal["totalsum"]);
   // $newpsm = array_map(function ($cheap, $expensive, $tooexpensive, $toocheap) { return array('cheap' => $cheap, 'expensive' => $expensive, 'tooexpensive' => $tooexpensive, 'toocheap' => $toocheap); }, $psm["cheap"], $psm["expensive"], $psm["tooexpensive"], $psm["toocheap"]);
   print_r($newreport);
+  print_r($newmonitor);
 
   $all = [];
   array_push($all, $newreport); $all["sequential"] = $all["0"]; unset($all["0"]);
@@ -117,21 +119,22 @@ if (($_POST['settingreport']) == "1") {
   $alljson = json_encode($all, JSON_PRETTY_PRINT);
   // print_r($alljson);
 
-  $move = 0;
-  if ($alljson != $report) { $move = 1; }
-  if ($move == 0) {
-    $redirect = $me."&m=3";
-    header("location: $redirect");
-    exit;
-  }
 
-  $qG = $db->prepare("UPDATE j_projects SET report = :report WHERE id = :surveyid");
-  $qG->bindValue(':surveyid', $_POST["surveyid"], PDO::PARAM_INT);
-  $qG->bindValue(':report', $alljson, PDO::PARAM_STR);
-  $qG->execute();
-  $redirect = $me."&m=1";
-  header("location: $redirect");
-  exit;
+  // $move = 0;
+  // if ($alljson != $report) { $move = 1; }
+  // if ($move == 0) {
+  //   $redirect = $me."&m=3";
+  //   header("location: $redirect");
+  //   exit;
+  // }
+
+  // $qG = $db->prepare("UPDATE j_projects SET report = :report WHERE id = :surveyid");
+  // $qG->bindValue(':surveyid', $_POST["surveyid"], PDO::PARAM_INT);
+  // $qG->bindValue(':report', $alljson, PDO::PARAM_STR);
+  // $qG->execute();
+  // $redirect = $me."&m=1";
+  // header("location: $redirect");
+  // exit;
 }
 // ----------------- RESULT ----------------------
 
@@ -166,6 +169,12 @@ for ($i=0; $i<count($ee); $i++) {
 }
 
 $datafordownload = json_encode($ee);
+
+// ----------------- CHECK SEQUENTIAL MONADIC ----------------------
+
+$seqq1 = json_decode($rows['0']['report'], true);
+$seqq2 = $seqq1['sequential'];
+// print_r($seqq2);
 
 
 // ----------------- ORIGINAL ----------------------
@@ -274,7 +283,7 @@ for ($i = 0; $i < count($questions); $i++) {
       $qout .= "      <textarea rows=\"5\" class=\"form-control\" disabled></textarea><br>\n";
     }
     else if ($qtype == "text") {
-      $qout .= "      <input type=\"text\" class=\"form-control\" name=\"\" disabled=\"\">\n";
+      $qout .= "      <input type=\"text\" class=\"form-control\" disabled=\"\">\n";
     }
     else if ($qtype == "multipletext") {
       $qout .= "      <table class=\"table\" style=\"font-family:boon\">\n";
@@ -339,8 +348,8 @@ for ($i = 0; $i < count($questions); $i++) {
       $qout .= "          <th width=\"20%\"></th>\n";
       $c = 0;
       foreach ($questions[$i]["columns"] as $k10 => $p10) {
-        $column_name = $p10['name'];
-        $column_title = $p10['title'];
+        $column_name = $p10['name']; $cname = $p10['name'];
+        $column_title = $p10['title']; $ctitle = $p10['title'];
         $qout .= "          <th style=\"text-align:right\">$column_name<br>($column_title)</th>\n";
         $c++;
       }
@@ -393,10 +402,10 @@ for ($i = 0; $i < count($questions); $i++) {
 }
 
 if ($_GET['subgroup']) { $ss1 = html_entity_decode($_GET['subgroup']); }
-$ss2 = explode(" ", $ss1);
-$ss3 = explode("-", $ss2[0]);
-$ss12 = str_replace('_', ' ', $ss3[0]);
-$ss22 = str_replace('_', ' ', $ss3[1]);
+$ss2 = explode(" ", $ss1); //print_r($ss2);
+$ss3 = explode("-", $ss2[0]); //print_r($ss3);
+$ss12 = str_replace('_', ' ', $ss3[0]); //print_r($ss12);
+$ss22 = str_replace('_', ' ', $ss3[1]); //print_r($ss22);
 // if ($ss3[0]) { $subgroupquestion = mb_convert_case($ss12, MB_CASE_TITLE, "UTF-8"); } else { $subgroupquestion = "all"; } //print_r($subgroupquestion);
 // if ($ss3[1]) { $subgroupanswer = mb_convert_case($ss22, MB_CASE_TITLE, "UTF-8"); } else { $subgroupanswer = "all"; } //print_r($subgroupanswer);
 if ($ss3[0]) { $subgroupquestion = $ss12; } else { $subgroupquestion = "all"; } //print_r($subgroupquestion);
@@ -476,7 +485,6 @@ if ($search == "yes") {
 
 $q = $db->prepare($sql);
 $q->bindValue(':surveyid', $surveyid, PDO::PARAM_INT);
-// if ($search == "yes") { $q->bindValue(':query', "\"Region\":\"North (Chiang Mai)\"", PDO::PARAM_STR ); }
 $q->execute();
 $r = $q->fetchAll(PDO::FETCH_ASSOC);
 $ee = $r;
@@ -524,9 +532,9 @@ if (($cd == "checkbox") || ($cd == "checkboxhtml")) {
   $k1 = array(); 
   for ($i=0; $i < count($records); $i++) { foreach ($records[$i]["data"][$qq] as $m => $v) { array_push($k1, $v); } }
   // print_r($k1);
-  $cee = array_count_values($k1);
+  $cee = array_count_values($k1); arsort($cee); //print_r($cee);
   if (json_decode(str_replace($c_code, $c_text, json_encode($cee)), true)) { $c = json_decode(str_replace($c_code, $c_text, json_encode($cee)), true); }
-  $totalresponses = array_sum($c);
+  $totalresponses = array_sum($c); 
   $A = array_keys($c); $B = array_values($c);
   $C = count($c); $Aee = array_keys($cee); 
   $out = "";
@@ -692,102 +700,72 @@ else if (($cd == "file") || ($cd == "signaturepad")) {
   }
 }
 else if ($cd == "matrixdropdown") {
-  $k = array(); $k1z = array(); $c = array();
-  $tableout5 = "";
-  foreach ($records as $k1 => $p1) { $jj[] = $p1; }
-  for ($i=0; $i < count($jj); $i++) { 
-    $k[] = $jj[$i]["data"][$qq];
-    foreach (array_values($k[i]) as $kz1 => $pz1) { print_r($pz1); }
-    // $cee = array_count_values($jj[$i]["data"][$qq]); 
+  $k0 = array();  $k1 = array();  $k2 = array();
+  for ($i=0; $i < count($records); $i++) { $k[] = $records[$i]["data"][$qq]["Record"]; }
+  foreach ($k as $key => $value) { foreach ($value as $subkey => $subvalue) {  $k0[$subkey][] = $subvalue;  } }
+  foreach ($k0 as $k0s => $v0s) { $cee2[$k0s] = array_count_values($v0s); ksort($cee2[$k0s]); }
+  $mmm = 1;
+  foreach ($cee2 as $ckey => $cvalue) {
+    $Aaa = $ckey;
+    if (json_decode(str_replace($c_text, $c_code, json_encode($cvalue)), true)) { $c = json_decode(str_replace($c_text, $c_code, json_encode($cvalue)), true); }
+    $totalresponses = array_sum($c); //print_r($totalresponses);
+    $A = array_keys($c); $B = array_values($c); //print_r($A); print_r($B);
+    $C = count($c); $Aee = array_keys($c); //print_r($C); print_r($cee);
+    $tableout5A[$mmm] = "  <h5>".$qq.": ".$Aaa."</h5>\n";
+    $tableout5[$mmm] .= "  <table class=\"table\" style=\"font-family:boon\">\n";
+    $tableout5[$mmm] .= "    <thead>\n";
+    $tableout5[$mmm] .= "      <tr class=\"bg-primary\">\n";
+    $tableout5[$mmm] .= "        <th width=\"30%\">Thai</th>\n";
+    $tableout5[$mmm] .= "        <th width=\"30%\">English</th>\n";
+    $tableout5[$mmm] .= "        <th style=\"text-align:right\" width=\"20%\">Count</th>\n";
+    $tableout5[$mmm] .= "        <th style=\"text-align:right\" width=\"20%\">Percentage</th>\n";
+    $tableout5[$mmm] .= "      </tr>\n";
+    $tableout5[$mmm] .= "    </thead>\n";
+    $tableout5[$mmm] .= "    <tbody>\n";
+    $out5[$mmm] = "";
+    $out5[$mmm] .= "    data.addRows($C);\n";
+    for ($m=0; $m < count($c); $m++) {
+      $BB[$m] = number_format(($B[$m]/$basesize)*100, 2);
+      $m1 = $m+1; $m2 = $m1+1;
+      if ($A[$m] == "") { $zA = 0; } else { $zA = addslashes($A[$m]); }
+      if ($Aee[$m] == "") { $zAee = 0; } else { $zAee = addslashes($Aee[$m]); }
+      if ($B[$m] == "") { $zB = 0; } else { $zB = addslashes($B[$m]); }
+      if ($BB[$m] == "") { $zC = 0; } else { $zC = addslashes($BB[$m]); }
+      // print_r($zAee);
+      $out5[$mmm] .= "    data.setCell($m, 0, '$zA');\n";
+      $out5[$mmm] .= "    data.setCell($m, 1, $zB);\n";
+      $out5[$mmm] .= "    data.setCell($m, 2, $zC);\n";
+      $tableout5[$mmm] .= "      <tr>\n";
+      $tableout5[$mmm] .= "        <td align=\"left\">".$zA."</td>\n";
+      $tableout5[$mmm] .= "        <td align=\"left\">".$zAee."</td>\n";
+      $tableout5[$mmm] .= "        <td align=\"right\">".$zB."</td>\n";
+      $tableout5[$mmm] .= "        <td align=\"right\">".$zC."%</td>\n";
+      $tableout5[$mmm] .= "      </tr>\n";
+    }
+    $tableout5[$mmm] .= "    </tbody>\n";
+    $tableout5[$mmm] .= "  </table><br>\n";
+    $me = "/admin/?w=result&s=".$_GET['s']."&q=".$_GET['q'];
+    if ($_GET['subgroup']) { $ext1 = "&subgroup=".$_GET['subgroup']; } else { $ext1 = ""; }
+    if ($_GET['type']) { $ext2 = "&type=".$_GET['type']; } else { $ext2 = ""; }
+    if ($_GET['size']) { $ext3 = "&size=".$_GET['size']; } else { $ext3 = ""; }
+    $me = $me.$ext1.$ext2.$ext3;  
+    if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <u>Bar Horizontal</u> <strong>:</strong> <a href=\"".htmlspecialchars($me."&type=bar-V")."\">Bar Vertical</a> <strong>]</strong></p><br>\n"; }
+    else if ($_GET['type'] == "bar-V") { $menu = "    <p class=\"text-center\"><strong>Choose the chart type [</strong> <a href=\"".htmlspecialchars($me."&type=bar-H")."\">Bar Horizontal</a> <strong>:</strong> <u>Bar Vertical</u> <strong>]</strong></p><br>\n"; }
+    $mmm++;
   }
-  // $cee = array_count_values($k); 
-  // print_r($k1z);
-  // print_r($cee);
-  // print_r($k);
-  if (json_decode(str_replace($c_code, $c_text, json_encode($cee)), true)) { $c = json_decode(str_replace($c_code, $c_text, json_encode($cee)), true); }
-  $totalresponses = array_sum($c); //print_r($totalresponses);
-  $A = array_keys($c); $B = array_values($c);
-  $C = count($c); $Aee = array_keys($cee); 
-  $c = 0;
-  // foreach ($questions[$i]["columns"] as $k10 => $p10) {
-  //   $column_name = $p10['name']; print_r($column_name);
-  //   $column_title = $p10['title']; print_r($column_title);
-  //   // $qout .= "          <th style=\"text-align:right\">$column_name<br>($column_title)</th>\n";
-  //   $c++;
-  // }
-  // foreach ($questions[$i]["choices"] as $k11 => $p11) {
-  //   $choice_text = $p11['text']; print_r($choice_text);
-  //   $choice_code = $p11['value']; print_r($choice_code);
-  //   // $cc .= "            <option>$choice_text ($choice_code)</option>";
-  // }
-  // foreach ($questions[$i]["rows"] as $k12 => $p12) {
-  //   $row_text = $p12['text']; print_r($row_text);
-  //   $row_code = $p12['value']; print_r($row_code);
-  //   // $qout .= "          <td align=\"right\">$row_text<br>($row_code)</td>\n";
-  //   for ($d=0; $d < $c; $d++) { } //$qout .= "          <td align=\"right\">$cc</td>\n"; }
-  //   // $qout .= "        </tr>";
-  // }
-  // $tableout5 .= "  <table class=\"table\" style=\"font-family:boon\">\n";
-  // $tableout5 .= "    <thead>\n";
-  // $tableout5 .= "      <tr class=\"bg-primary\">\n";
-  // $tableout5 .= "        <th width=\"30%\">Thai</th>\n";
-  // $tableout5 .= "        <th width=\"30%\">English</th>\n";
-  // $tableout5 .= "        <th style=\"text-align:right\" width=\"20%\">Count</th>\n";
-  // $tableout5 .= "        <th style=\"text-align:right\" width=\"20%\">Percentage</th>\n";
-  // $tableout5 .= "      </tr>\n";
-  // $tableout5 .= "    </thead>\n";
-  // $tableout5 .= "    <tbody>\n";
-  // $out = "";
-  // $out .= "    data.addRows($C);\n";
 }
-
-// else if ($qtype == "") {
-//   $qout .= "      <table class=\"table\" style=\"font-family:boon\">\n";
-//   $qout .= "        <thead><tr class=\"bg-primary\">\n";
-//   $qout .= "          <th width=\"20%\"></th>\n";
-//   $c = 0;
-//   foreach ($questions[$i]["columns"] as $k10 => $p10) {
-//     $column_name = $p10['name']; print_r($column_name);
-//     $column_title = $p10['title']; print_r($column_title);
-//     $qout .= "          <th style=\"text-align:right\">$column_name<br>($column_title)</th>\n";
-//     $c++;
-//   }
-//   $qout .= "        </tr></thead>\n";
-//   $cc = "          <select class=\"form-control input-sm\">";
-//   foreach ($questions[$i]["choices"] as $k11 => $p11) {
-//     $choice_text = $p11['text'];
-//     $choice_code = $p11['value'];
-//     $cc .= "            <option>$choice_text ($choice_code)</option>";
-//   }
-//   $cc .= "          </select>";
-//   $qout .= "        <tbody><tr>\n";
-//   foreach ($questions[$i]["rows"] as $k12 => $p12) {
-//     $row_text = $p12['text'];
-//     $row_code = $p12['value'];
-//     $qout .= "          <td align=\"right\">$row_text<br>($row_code)</td>\n";
-//     for ($d=0; $d < $c; $d++) { $qout .= "          <td align=\"right\">$cc</td>\n"; }
-//     $qout .= "        </tr>";
-//   }
-//   $qout .= "        </tbody>\n";
-//   $qout .= "      </table>\n";
-
-
-
-
-
-
-
-
-
 else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating") || (($cd == "multipletext") && (preg_match('/Last10/i', $_GET['q']) == 1)) || ($cd == "multipletext") && (preg_match('/Next10/i', $_GET['q']) == 1)) {
   $k = array(); $k1 = array();  $ck = array();
   $tableout3 = "";
   if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating")) {
     // for ($i=0; $i < count($records); $i++) { foreach ($records[$i]["data"][$qq] as $m => $v) { array_push($k, $v); } }
-    $cee = array_count_values($k);  
+    // $cee = array_count_values($k); uksort($cee); 
+    // print_r($cee);
     foreach ($records as $k1 => $p1) { $jj[] = $p1; }
     for ($i=0; $i < count($jj); $i++) { $k[] = $jj[$i]["data"][$qq]; }
     $cee = array_count_values($k); 
+    // $cee = array_count_values($k); uksort($cee); 
+    // print_r($cee);
   } else if (($cd == "multipletext") && (preg_match('/Last10/i', $_GET['q']) == 1) || ($cd == "multipletext") && (preg_match('/Next10/i', $_GET['q']) == 1)) {
     $mk1 = array();
     for ($i=0; $i < count($records); $i++) { array_push($mk1, $records[$i]["data"][$qq]); }
@@ -796,7 +774,6 @@ else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown
     $cee = $ck;
   }
   if (json_decode(str_replace($row_text, $row_code, json_encode($cee)), true)) { $c = json_decode(str_replace($row_text, $row_code, json_encode($cee)), true); }
-  // print_r($c);
   $totalresponses = array_sum($c); //print_r($totalresponses);
   $A = array_keys($c); $B = array_values($c);
   $C = count($c); $Aee = array_keys($cee); 
@@ -910,11 +887,9 @@ else if ($cd == "matrix") {
     $de[] = array_sum($r);
   }
   $totalresponses = array_sum($de);
-  // print_r($totalresponses);
   $c1 = array_combine($db, $dd); // percentage
   $c1a = array_combine($db, $dc); // absolute
   $c2 = array_combine($db, $average);
-  // print_r($c1a);
   $ccmax = count($column_link); //print_r($ccmax);
 
   if ($ccmax == 2) { $color = "colors: ['#00C851', '#007E33', "; $series = "series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 1 }, type: 'line' } },\n"; }
@@ -936,7 +911,6 @@ else if ($cd == "matrix") {
   $tableout1B .= "    <thead>\n";
   $tableout1B .= "      <tr class=\"bg-info\">\n";
   $tableout1B .= "        <th width=\"20%\"></th>\n";
-
   if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H-mean") || ($_GET['type'] == "bar-V-mean")) { $cwidth = 80/($ccmax+1); } else { $cwidth = 80/($ccmax); }
   $out = "[ 'Attribute', ";
   foreach ($column_link as $a) { $out .= "{ label: '".$a."', type: 'number' }, "; } // label
@@ -971,10 +945,6 @@ else if ($cd == "matrix") {
     $tableout1B .= "        <td align=\"right\">$bb1</td>\n";
     $jj = array(); $jjj = array();
     foreach ($c_code as $c) {
-      // print_r($c);
-      // foreach ($c1 as $CA => $CB) {
-      //   print_r($CB);
-      // }
       if (empty($c1[$b][$c])) { $ccc = 0; } else { $ccc = round($c1[$b][$c]); }
       if (empty($c1a[$b][$c])) { $ccc1 = 0; } else { $ccc1 = round($c1a[$b][$c]); }
       array_push($jj, $c1[$b][$c]);
@@ -1028,7 +998,8 @@ echo "<p class=\"introtext\">This is a tool that helps you view the survey resul
 echo "<p class=\"introtext\">Although several question types have an option to show results in many different ways (e.g. a few chart types, tabulation, ability to sort data, etc.), there is still a limitation for a certain type of question such as open-ends.</p>\n";
 echo "<hr>\n";
 
-if (($_GET['m'] == "1") || ($m == 1)) { echo "<div id=\"showalert-m1\"></div>\n"; }
+// if (($_GET['m'] == "1") || ($_POST["settingreport"] == 1)) { 
+if ((($_POST['settingreport']) == "1") || ($_GET['m'] == 1)) { echo "<div id=\"showalert-m1\"></div>\n"; }
 else if ($_GET['m'] == "2") { echo "<div id=\"showalert-m2\"></div>\n"; }
 else if ($_GET['m'] == "3") { echo "<div id=\"showalert-m3\"></div>\n"; }
 else if ($_GET['m'] == "4") { echo "<div id=\"showalert-m4\"></div>\n"; }
@@ -1083,26 +1054,37 @@ echo $navtab;
 echo $navtabcontent;
 echo $questionlisting;
 
+if (($_GET["subgroup"] != "all") || ($subgroupquestion != "all") || ($subgroupanswer != "all") || ($subgrouprecords)) { 
+  $responsepercent = number_format(($totalresponses/$subgrouprecords)*100, '1');
+  $subgrouppercent = number_format(($subgrouprecords/$totalrecords)*100, '1');
+} else { 
+  $responsepercent = number_format(($totalresponses/$basesize)*100, '1');
+  $subgrouppercent = number_format(($subgrouprecords/$totalresponses)*100, '1');
+}
 
-if ($subgrouprecords) { $responsepercent = number_format(($totalresponses/$subgrouprecords)*100, '1'); }
-else { $responsepercent = number_format(($totalresponses/$basesize)*100, '1'); }
 if ($totalresponses) { 
-  if ($totalresponses <= $basesize) { $answers = "<p>This question contains a total of $totalresponses responses answered by $basesize respondents (<strong>$responsepercent%</strong>).</p>\n"; } else if ($totalresponses > $basesize) {
+  if ($totalresponses <= $basesize) { $answers1 = "This question contains a total of $totalresponses responses answered by $basesize respondents (<strong>$responsepercent%</strong>).\n"; } 
+  else if ($totalresponses > $basesize) {
     if ($cd == "matrix") {
       $responseperattribute = number_format($totalresponses/$numberofattributes, '1');
       $responseperrecord = number_format($totalresponses/$numberofattributes, '1');
-      $answers = "<p>This question contains a total of $totalresponses responses across $numberofattributes attiributes, or at a total of <strong>$responseperattribute responses for each of the attributes</strong>.</p>\n";
+      $answers1 = "This question contains a total of $totalresponses responses across $numberofattributes attiributes, or at a total of <strong>$responseperattribute responses for each of the attributes</strong>.\n";
     } else {
       $responseperrecord = number_format($totalresponses/$basesize, '1');
-      $answers = "<p>This question contains a total of $totalresponses responses answered by $basesize respondents or at an average of <strong>$responseperrecord responses per respondent</strong>.</p>\n";
+      $answers1 = "This question contains a total of $totalresponses responses answered by $basesize respondents or at an average of <strong>$responseperrecord responses per respondent</strong>.\n";
     }
   }  
 } else if ($totalresponses == "0") {
-  $answers = "<p>This question contains no answer at all (<strong>0%</strong>) so there is no data to show.</p>\n";
+  $answers1 = "This question contains no answer at all (<strong>0%</strong>) so there is no data to show.\n";
 } else {
-  $answers = "<p>This is a Non-responsive question, so number of responses is not available.</p>\n";
+  $answers1 = "This is a Non-responsive question, so number of responses is not available.\n";
 }
 
+if (($_GET["subgroup"] != "all") || ($subgroupquestion != "all") || ($subgroupanswer != "all")) { 
+  $answers = "<p>$answers1</p><p>This is a subgrouo analysis which does <u>not</u> represent the total sample.<br>In fact it only represents <strong>$subgrouppercent%</strong> of the total sample ($subgrouprecords out of $totalrecords respondents).</p>";
+} else { 
+  $answers = "<p>".$answers1."</p>";
+}
 
 if ($_GET["q"]) { 
 
@@ -1138,12 +1120,24 @@ if (($cd == "file") || ($cd == "signaturepad")) {
     
   echo "<div class=\"tab-content\">\n";
   echo " <div id=\"B1\" class=\"tab-pane fade in active\">\n";
-  echo $answers;
+  if (($cd == "matrix") || ($cd == "comment") || ($cd == "html") || ($cd == "matrixdropdown")) { }
+  else { echo $answers; } 
   if ($totalresponses) {
     if ($cd != "comment") { echo $menu; } 
-    if (($cd == "matrix") || ($cd == "comment") || ($cd == "html")) { }
+    if (($cd == "matrix") || ($cd == "comment") || ($cd == "html") || ($cd == "matrixdropdown")) { }
     else { echo "<p><small class=\"blue\">You can sort the results by clicking the table's headers</small></p>\n"; } 
-    echo "<div id=\"table\" style=\"width:300px\"></div><div id=\"chart\"></div>\n";
+    if ($cd == "matrixdropdown") { 
+      $mmm = 1;
+      foreach ($cee2 as $ckey => $cvalue) {
+        echo "<h5>".$qq.": ".$ckey."</h5>\n";
+        echo $answers;
+        echo "<p><small class=\"blue\">You can sort the results by clicking the table's headers</small></p>\n";
+        echo "<div id=\"table".$mmm."\" style=\"width:300px\"></div><div id=\"chart".$mmm."\"></div><br><br>\n";
+        $mmm++;
+      }
+    }
+    else { echo "<div id=\"table\" style=\"width:300px\"></div><div id=\"chart\"></div>\n"; } 
+    echo  "<br><br>\n";
   }
 }
 ?>
@@ -1269,7 +1263,104 @@ if (($cd == "file") || ($cd == "signaturepad")) {
 
 <?php } ?>
 
-<?php } else if (($cd == "checkbox") || ($cd == "checkboxhtml") || ($cd == "text")) { ?>
+<?php } else if (($cd == "checkbox") || ($cd == "checkboxhtml") || ($cd == "text") || ($cd == "matrixdropdown")) { ?>
+
+<?php if ($cd == "matrixdropdown") { $mmm = 1; foreach ($cee2 as $ckey => $cvalue) { ?>
+
+<?php if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { ?>
+
+<script type="text/javascript">
+  google.charts.load('current', { 'packages': ['table', 'corechart'] });
+  google.charts.setOnLoadCallback(drawSort);
+  function drawSort() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Answer');
+    data.addColumn('number', 'Count');
+    data.addColumn('number', 'Percentage');
+<?php echo $out5[$mmm]; ?>
+    var viewTable = new google.visualization.DataView(data);
+    viewTable.setColumns([0, 1, 2]);
+    var viewChart = new google.visualization.DataView(data);
+    viewChart.setColumns([0, 2]);
+    var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
+    formatter.format(data, 2);
+    var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '<?php if ($C <= 10) { echo 400; } else if (($C > 10) && ($C <= 20)) { echo 800; } else if ($C > 20) { echo 1200; } ?>', bar: { groupWidth: '60%' }, legend: { position: 'none' } };
+    var chart = new google.visualization.BarChart(document.getElementById('chart<?php echo $mmm; ?>'));
+    chart.draw(viewChart, options);
+    var table = new google.visualization.Table(document.getElementById('table<?php echo $mmm; ?>'));
+    table.draw(viewTable, {width: '100%', height: '100%'});
+    google.visualization.events.addListener(table, 'sort', function(event) {
+      data.sort([{ column: event.column, desc: !event.ascending }]);
+      chart.draw(viewChart);
+    });
+  }
+  $(window).resize(function() { drawSort(); });
+</script>
+
+<?php } else if ($_GET['type'] == "newbar-H") { ?>
+
+<script type="text/javascript">
+  google.charts.load('current', {'packages': ['table', 'bar']});
+  google.charts.setOnLoadCallback(drawSort);
+  function drawSort() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Answer');
+    data.addColumn('number', 'Count');
+    data.addColumn('number', 'Percentage');
+<?php echo $out5[$mmm]; ?>
+    var viewTable = new google.visualization.DataView(data);
+    viewTable.setColumns([0, 1, 2]);
+    var viewChart = new google.visualization.DataView(data);
+    viewChart.setColumns([0, 2]);
+    // view.setColumns([0, 1, { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation" }, 2]);
+    var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
+    formatter.format(data, 2);
+    var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth: '60%' }, legend: { position: 'none' }, bars: 'horizontal' };
+    var chart = new google.charts.Bar(document.getElementById('chart<?php echo $mmm; ?>'));
+    chart.draw(viewChart, options);
+    var table = new google.visualization.Table(document.getElementById('table<?php echo $mmm; ?>'));
+    table.draw(viewTable, {width: '100%', height: '100%'});
+    google.visualization.events.addListener(table, 'sort', function(event) {
+      data.sort([{ column: event.column, desc: !event.ascending }]);
+      chart.draw(viewChart);
+    });
+  }
+  $(window).resize(function() { drawSort(); });
+</script>
+
+<?php } else if ($_GET['type'] == "bar-V") { ?>
+
+<script type="text/javascript">
+  google.charts.load('current', { 'packages': ['table', 'corechart'] });
+  google.charts.setOnLoadCallback(drawSort);
+  function drawSort() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Answer');
+    data.addColumn('number', 'Count');
+    data.addColumn('number', 'Percentage');
+<?php echo $out5[$mmm]; ?>
+    var viewTable = new google.visualization.DataView(data);
+    viewTable.setColumns([0, 1, 2]);
+    var viewChart = new google.visualization.DataView(data);
+    viewChart.setColumns([0, 2]);
+    var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });
+    formatter.format(data, 2);
+    var options = { title: '<?php echo $bdx; ?>', width: '100%', height: '400', bar: { groupWidth:  '60%' }, legend: { position: 'none' } };
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart<?php echo $mmm; ?>'));
+    chart.draw(viewChart, options);
+    var table = new google.visualization.Table(document.getElementById('table<?php echo $mmm; ?>'));
+    table.draw(viewTable, {width: '100%', height: '100%'});
+    google.visualization.events.addListener(table, 'sort', function(event) {
+      data.sort([{ column: event.column, desc: !event.ascending }]);
+      chart.draw(viewChart);
+    });
+  }
+  $(window).resize(function() { drawSort(); });
+</script>
+
+<?php } ?>
+
+<?php $mmm++; } } else { ?>
 
 <?php if ((empty($_GET['type'])) || ($_GET['type'] == "bar-H")) { ?>
 
@@ -1364,6 +1455,7 @@ if (($cd == "file") || ($cd == "signaturepad")) {
 
 <?php } ?>
 
+<?php } ?>
 
 <?php  } else if ($cd == "comment") { ?>
 
@@ -1594,12 +1686,22 @@ if (($cd == "file") || ($cd == "signaturepad")) {
   <div id="B2" class="tab-pane fade">
 
 <?php
-  echo $answers;
+  if (($cd == "matrix") || ($cd == "comment") || ($cd == "html") || ($cd == "matrixdropdown")) { }
+  else { echo $answers; } 
   if ($totalresponses) {
     if ($cd == "matrix") { echo $tableout1A; echo $tableout1B; } 
     else if (($cd == "comment") || ($cd == "text")) { echo $tableout2; }
     else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating") || (($cd == "multipletext") && (preg_match('/Last10/i', $_GET['q']) == 1)) || ($cd == "multipletext") && (preg_match('/Next10/i', $_GET['q']) == 1)) { echo $tableout3; } 
     else if (($cd == "checkbox") || ($cd == "checkboxhtml")) { echo $tableout4; }
+    else if ($cd == "matrixdropdown") { 
+      $mmm = 1; 
+      foreach ($cee2 as $ckey => $cvalue) { 
+        echo $tableout5A[$mmm];
+        echo $answers;
+        echo $tableout5[$mmm];
+        $mmm++; 
+      } 
+    }
     else { echo "No table to be shown for this question\n"; }
   }
   echo "</div></div></div>";
@@ -1638,7 +1740,7 @@ if (($cd == "file") || ($cd == "signaturepad")) {
             <tbody>
             </tbody>
           </table>
-          <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newbutton"><i class="pe-plus pe-fw"></i>Add new</button></p>
+          <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newseq" title="Add a new question linkage"><i class="pe-plus pe-fw"></i>Add new</button></p>
         </div>
         <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
         </div>
@@ -1648,11 +1750,11 @@ if (($cd == "file") || ($cd == "signaturepad")) {
       <br>
       <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-          <h4>Quota by subgroups</h4>
-          <p>The sample size broken down by subgroups.</p>
-          <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newsample" onClick="newTable();" title="Add a new subgroup"><i class="pe-plus pe-fw"></i>Add new</button></p>
-          <div class="row" id="tablesamplewrap"></div>
+          <h4>Subgroups settings</h4>
+          <p>Set up a simple subgroup analysis below.</p>
+          <div class="row" id="tablesubgroupwrap"></div>
         </div>
+        <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newsubgroup" title="Add a new subgroup"><i class="pe-plus pe-fw"></i>Add new</button></p>
       </div>
       <hr>
       <p class="text-center">
@@ -1766,66 +1868,145 @@ if (($cd == "file") || ($cd == "signaturepad")) {
 
 <?php if ($report) { echo "var sreport = $report;\n"; } else { echo "var sreport = { \"sequential\": [] };\n"; } ?>
 
-function selectDropdownOld(s, i) { 
-  s.options[i-1].selected = true;
-  return;
-}
-function selectDropdown(s, v) {
-  for (var i=0; i < s.options.length; i++ ) {
-    if (s.options[i].value == v ) {
-      s.options[i].selected = true;
+    function selectDropdownOld(s, i) { 
+      s.options[i-1].selected = true;
       return;
     }
-  }
-}
-var counter1 = 0, counter1z = counter1 + 1;
-if (typeof(sreport.sequential) === 'undefined') {
-  var currentrow4 = "              <tr>\n" +
-    "                <td></td><td colspan=\"2\"><small><strong><br>No data.</strong><br>Click button below to add one.</small></td>\n" +
-    "              </tr>\n";
-  $('#tablereportsettings').find('tbody').append(currentrow4);
-} else {
-  while (counter1 < sreport.sequential.length) {
-    var currentrow4 = "              <tr>\n" +
-      "                <td valign=\"middle\">" + counter1z + "</td>\n" +
-      "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" name=\"sequential_questionname_" + counter1z + "\" value=\"" + sreport.sequential[counter1].questionname + "\"></td>\n" +
-      "                <td valign=\"middle\"><i class=\"pe-arrow-right pe-lg\"></i></td>\n" +
-      "                <td valign=\"middle\"><select id=\"jsdropdown"+ counter1z +"\" class=\"form-control input-sm\" id=\"subgroup\" name=\"sequential_linkamount_" + counter1z + "\">" +
-      "                </select></td>\n" +
-      // "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" name=\"report_linkamount_" + counter1z + "\" value=\"" + sreport.sequential[counter1].linkamount + "\"></td>\n" +
-      "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
-      "              </tr>\n";
-    $('#tablereportsettings').find('tbody').append(currentrow4);
-    var dropdownoptions = { 0 : '---', 1 : '1', 2 : '2', 3 : '3', 4 : '4', 5 : '5' };
-    var select = document.getElementById("jsdropdown" + counter1z);
-    for (index in dropdownoptions) { 
-      select.options[select.options.length] = new Option(dropdownoptions[index], index); 
-      selectDropdown(select, sreport.sequential[counter1].linkamount);
+    function selectDropdown(s, v) {
+      for (var i=0; i < s.options.length; i++) {
+        if (s.options[i].value == v) {
+          s.options[i].selected = true;
+          return;
+        }
+      }
     }
-    counter1++;
-    counter1z++;
-  }
-  }
-$('#newbutton').click(function() {
-  var newrow4 = "              <tr>\n" +
-    "                <td valign=\"middle\">" + counter1z + "</td>\n" +
-    "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"sequential_questionname_" + counter1z + "\"></td>\n" +
-    "                <td valign=\"middle\"><i class=\"pe-arrow-right pe-lg\"></i></td>\n" +
-    "                <td valign=\"middle\"><select class=\"form-control input-sm\" id=\"subgroup\" name=\"sequential_linkamount_" + counter1z + "\">" +
-    "                <option value=\"0\" selected>--</option>\n" +
-    "                <option value=\"1\">1</option>\n" +
-    "                <option value=\"2\">2</option>\n" +
-    "                <option value=\"3\">3</option>\n" +
-    "                <option value=\"4\">4</option>\n" +
-    "                <option value=\"4\">5</option>\n" +
-    "                </select></td>\n" +
-    "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
-    "              </tr>\n";
-  $('#tablereportsettings').find('tbody').append(newrow4);
-  // $('#nodata').remove();
-  counter1z++;
-});
-$(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
+    var counter1 = 0, counter1z = counter1 + 1;
+    if (typeof(sreport.sequential) === 'undefined') {
+      var currentrow4 = "              <tr>\n" +
+        "                <td></td><td colspan=\"2\"><small><strong><br>No data.</strong><br>Click button below to add one.</small></td>\n" +
+        "              </tr>\n";
+      $('#tablereportsettings').find('tbody').append(currentrow4);
+    } else {
+      while (counter1 < sreport.sequential.length) {
+        var currentrow4 = "              <tr>\n" +
+          "                <td valign=\"middle\">" + counter1z + "</td>\n" +
+          "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" name=\"sequential_questionname_" + counter1z + "\" value=\"" + sreport.sequential[counter1].questionname + "\"></td>\n" +
+          "                <td valign=\"middle\"><i class=\"pe-arrow-right pe-lg\"></i></td>\n" +
+          "                <td valign=\"middle\"><select id=\"jsdropdown"+ counter1z +"\" class=\"form-control input-sm\" id=\"subgroup\" name=\"sequential_linkamount_" + counter1z + "\">" +
+          "                </select></td>\n" +
+          "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+          "              </tr>\n";
+        $('#tablereportsettings').find('tbody').append(currentrow4);
+        var dropdownoptions = { 0 : '---', 1 : '1', 2 : '2', 3 : '3', 4 : '4', 5 : '5' };
+        var select = document.getElementById("jsdropdown" + counter1z);
+        for (index in dropdownoptions) { 
+          select.options[select.options.length] = new Option(dropdownoptions[index], index); 
+          selectDropdown(select, sreport.sequential[counter1].linkamount);
+        }
+        counter1++;
+        counter1z++;
+      }
+    }
+    $('#newseq').click(function() {
+      var newrow4 = "              <tr>\n" +
+        "                <td valign=\"middle\">" + counter1z + "</td>\n" +
+        "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"sequential_questionname_" + counter1z + "\"></td>\n" +
+        "                <td valign=\"middle\"><i class=\"pe-arrow-right pe-lg\"></i></td>\n" +
+        "                <td valign=\"middle\"><select class=\"form-control input-sm\" id=\"subgroup\" name=\"sequential_linkamount_" + counter1z + "\">" +
+        "                <option value=\"0\" selected>--</option>\n" +
+        "                <option value=\"1\">1</option>\n" +
+        "                <option value=\"2\">2</option>\n" +
+        "                <option value=\"3\">3</option>\n" +
+        "                <option value=\"4\">4</option>\n" +
+        "                <option value=\"4\">5</option>\n" +
+        "                </select></td>\n" +
+        "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+        "              </tr>\n";
+      $('#tablereportsettings').find('tbody').append(newrow4);
+      // $('#nodata').remove();
+      counter1z++;
+    });
+    $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
+
+    var counter3 = 0;
+    if (typeof(monitor.quota) === 'undefined') {
+      var currentrow4 = "        <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n" +
+        "                <h5><strong><br>No data.</strong><br>Click button below to add one.</h5>\n" +
+        "        </div>\n";
+      $('#tablesubgroupwrap').append(currentrow4);
+    } else {
+      while (counter3 < monitor.quota.length) {
+        var head1 = "        <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n" +
+        "          <table class=\"table table-hover table-condensed small\" id=\"tablesubgroup" + counter3 + "\">\n" +
+        "            <thead>\n" +
+        "            </thead>\n" +
+        "            <tbody>\n" +
+        "            </tbody>\n" +
+        "          </table>\n" +
+        "        </div>\n";
+        var newrow3A = "              <tr class=\"bg-success\">\n" +
+        "                <td width=\"5%\" valign=\"middle\">" + counter3 + "</td>\n" +
+        "                <td width=\"85%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question Name\" name=\"quota_" + counter3 + "_questionname\" value=\"" + monitor.quota[counter3].questionname + "\"></td>\n" +
+        // "                <td width=\"10%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + counter3 + "_questionname_" + counter3 + "\" value=\"" + monitor.quota[counter3].questionname + "\"></td>\n" +
+        "                <td width=\"10%\" valign=\"middle\" colspan=\"2\"><i class=\"pe-trash pe-fw red deletethistable\" title=\"Delete this subgroup\"></i> <i class=\"pe-plus pe-fw\" id=\"newsubgroupoption\"></i></td>\n" +
+        "              </tr>\n";
+        $('#tablesubgroupwrap').append(head1);
+        $('#tablesubgroupwrap').find('#tablesubgroup'+counter3).find('tbody').append(newrow3A);
+        // $('#mynewrow'+counter3).click(function() { $('#insert'+counter3).toggle('slow'); });
+        var details = monitor.quota[counter3].details;
+        for (var index=0; index < details.length; index++) {
+          var counter3z = index + 1;
+          var newrow3B = "              <tr id=\"" + counter3 + "_" + counter3z + "\">\n" +
+          "                <td width=\"5%\" valign=\"middle\">" + counter3z + "</td>\n" +
+          "                <td width=\"75%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup\" name=\"quota_" + counter3 + "_subgroup_" + counter3z + "\" value=\"" + details[index].subgroup + "\"></td>\n" +
+          "                <td width=\"10%\" valign=\"midcounter3zdle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + counter3 + "_samplesize_" + counter3z + "\" value=\"" + details[index].samplesize + "\"></td>\n" +
+          "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
+          "              </tr>\n";
+          $('#tablesubgroupwrap').find('#tablesubgroup'+counter3).find('tbody').append(newrow3B);
+        counter3z++;
+        }
+        counter3++;
+      }
+      $('#newsubgroup').click(function() {
+          var head2 = "        <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n" +
+          "          <table class=\"table table-hover table-condensed small\" id=\"tablesubgroup" + counter3 + "\">\n" +
+          "            <thead>\n" +
+          "            </thead>\n" +
+          "            <tbody>\n" +
+          "            </tbody>\n" +
+          "          </table>\n" +
+          "        </div>\n";
+          var newrow3C = "              <tr class=\"bg-success\">\n" +
+          "                <td width=\"5%\" valign=\"middle\">" + counter3 + "</td>\n" +
+          "                <td width=\"85%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question Name\" name=\"quota_" + counter3 + "_questionname\"></td>\n" +
+          "                <td width=\"10%\" valign=\"middle\" colspan=\"2\"><i class=\"pe-trash pe-fw red deletethistable\" title=\"Delete this subgroup\"></i> <i class=\"pe-plus pe-fw\" id=\"newsubgroupoption\"></i></td>\n" +
+          "              </tr>\n";
+          $('#tablesubgroupwrap').append(head2);
+          $('#tablesubgroupwrap').find('#tablesubgroup'+counter3).find('tbody').append(newrow3C);
+          for (var counter3a = 1; counter3a < 3; counter3a++) {
+            var newrow3D = "              <tr id=\"" + counter3 + "_" + counter3a + "\">\n" +
+            "                <td width=\"5%\" valign=\"middle\">" + counter3a + "</td>\n" +
+            "                <td width=\"75%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup\" name=\"quota_" + counter3 + "_subgroup_" + counter3a + "\"></td>\n" +
+            "                <td width=\"10%\" valign=\"midcounter3zdle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + counter3 + "_samplesize_" + counter3a + "\"></td>\n" +
+            "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
+            "              </tr>\n";
+            $('#tablesubgroupwrap').find('#tablesubgroup'+counter3).find('tbody').append(newrow3D);
+          }
+          counter3++;
+        });
+        var counter4 = counter3z + 1;
+        $('#newsubgroupoption').click(function() {
+          var newrow3E = "              <tr id=\"insert\">\n" +
+          "                <td width=\"5%\" valign=\"middle\">" + counter4 + "</td>\n" +
+          "                <td width=\"75%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup\" name=\"quota_" + counter3 + "_subgroup_" + counter4 + "\"></td>\n" +
+          "                <td width=\"10%\" valign=\"midcounter3zdle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + counter3 + "_samplesize_" + counter4 + "\"></td>\n" +
+          "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
+          "              </tr>\n";
+          $('#tablesubgroupwrap #tablesubgroup'+counter3).find('tr > td:last').append(newrow3E);
+        });
+        $(document.body).delegate(".deletethistable", "click", function() { $(this).closest("table").remove(); });
+        $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
+    }
 
   <?php if (($_GET['m'] == "1") || ($m == 1)) { ?>
   $('#showalert-m1').show();
