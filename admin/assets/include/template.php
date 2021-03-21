@@ -2,7 +2,7 @@
 
 // if (HTTP_PROTOCOL == "HTTPS") {
 //   if (empty($_SERVER['HTTPS'])) {
-//     $url = 'https://www.siamsquare.org'.$_SERVER['REQUEST_URI'];
+//     $url = 'https://siamsquare.org'.$_SERVER['REQUEST_URI'];
 //     header('location: '.$url);
 //     exit;
 //   }

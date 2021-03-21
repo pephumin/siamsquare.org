@@ -96,7 +96,7 @@ if ($_POST['m'] == "fixerrors") {
   exit;
 } else if (($_POST['m'] == "updatesettings") || isset($_POST["totalsamplebysubgroup"])) {
   // print_r("<pre>");
-  print_r($_POST);
+  // print_r($_POST);
   // print_r("</pre>");
   $addtype = "0";
   if (isset($_POST["totalsample"]) && ($_POST["totalsample"] != $sample_size)) { $add = "sample = :sample, "; $addtype = "1"; }
@@ -1022,7 +1022,7 @@ echo "    </div>\n";
   var email = "<?php echo $_SESSION['email']; ?>";
   var ip = "<?php echo getip(); ?>";
   var private = <?php echo $private; ?>;
-  var api = 'http://www.siamsquare.org.uk';
+  var api = 'https://siamsquare.org.uk';
   $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
   $('#showalert-delete').html("<div class='alert alert-warning'><i class='pe-trash pe-fw'></i> A result record has been deleted</div>").hide();
   $('#showalert-m1').html("<div class='alert alert-success'><i class='pe-check pe-fw'></i> You have successfully cleaned the incorrect termination from this survey. You can notice a better matching in number of responses vs. number of respondents.</div><br>").hide();

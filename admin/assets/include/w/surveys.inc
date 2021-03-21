@@ -203,7 +203,7 @@ $userlist .= "    ]";
   var level = <?php echo $_SESSION['level']; ?>;
   var email = "<?php echo $_SESSION['email']; ?>";
   var ip = "<?php echo getip(); ?>";
-  var api = "http://www.siamsquare.org.uk";
+  var api = "https://siamsquare.org.uk";
   $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
   $('#showalert-addnew').html("<div class='alert alert-success'><i class='pe-check pe-fw'></i> A new project has been created. Please wait for a few seconds as we are refreshing this page.</div><br>").hide();
   $('#showalert-delete').html("<div class='alert alert-warning'><i class='pe-trash pe-fw'></i> The project has been deleted</div>").hide();
