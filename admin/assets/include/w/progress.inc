@@ -148,7 +148,7 @@ if ($status == "1") {
   $from0 = strtotime($ac); $today = time();
   $difference1 = $today-$from0; $dd1 = floor($difference1/86400); if ($dd1 == "1") { $daysofsetup = "$dd1 day"; } else { $daysofsetup = "$dd1 days"; }
   $setuptiming = "since $begindate0";
-  $fieldworkstatus = "<font color=\"orange\">Still at the set-up stage</font>";
+  $fieldworkstatus = "<strong><font color=\"orange\">Still at the set-up stage <i class=\"pe-hourglass-start pe-fw\"></i></font></strong>";
   $dcupdateinsert .= "    <div class=\"bg-primary text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Setup ($setuptiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysofsetup</strong></h4></div>\n";
 } else if ($status == "2") {
   $stage = "2";
@@ -159,7 +159,7 @@ if ($status == "1") {
   $difference2 = $today-$from1; $dd2 = floor($difference2/86400); if ($dd2 == "1") { $daysoffieldwork = "$dd2 day"; } else { $daysoffieldwork = "$dd2 days"; }
   $setuptiming = "$begindate0 to $begindate1";
   $fieldworktiming = "since $begindate1";
-  $fieldworkstatus = "<font color=\"green\">Fieldwork is still on-going</font>";
+  $fieldworkstatus = "<strong><font color=\"red\">Fieldwork is still on-going <i class=\"pe-hourglass-half pe-fw\"></i></font></strong>";
   $dcupdateinsert .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Setup ($setuptiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysofsetup</strong></h4></div>\n";
   $dcupdateinsert .= "    <br>\n";
   $dcupdateinsert .= "    <div class=\"bg-primary text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork ($fieldworktiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork</strong></h4></div>\n";
@@ -174,7 +174,7 @@ if ($status == "1") {
   $difference3 = $today-$from2; $dd3 = floor($difference3/86400); if ($dd3 == "1") { $daysoffieldworkcompletion = "$dd3 day"; } else { $daysoffieldworkcompletion = "$dd3 days"; }
   $setuptiming = "$begindate0 to $begindate1";
   $fieldworktiming = "$begindate1 to $begindate2";
-  $fieldworkstatus = "<font color=\"blue\">Fieldwork was completed</font>";
+  $fieldworkstatus = "<strong><font color=\"green\">Data collection was completed <i class=\"pe-hourglass-end pe-fw\"></i></font></strong>";
   $dcupdateinsert .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Setup ($setuptiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysofsetup</strong></h4></div>\n";
   $dcupdateinsert .= "    <br>\n";
   $dcupdateinsert .= "    <div class=\"bg-info text-center\" style=\"padding: 10px; border: 2px solid black;\"><p style=\"margin-bottom:10px !important\" class=\"small\">Fieldwork ($fieldworktiming)</p><h4 style=\"margin-bottom:10px !important\"><strong>$daysoffieldwork</strong></h4></div>\n";
@@ -444,22 +444,24 @@ if ($notparticipated || $notparticipated == 0) { $notparticipated_bar = "<div cl
 $strikerate = number_format(($participated / $invited) * 100, 1);
 
 // Get stats for public projects e.g. projects wothout name list upload.
-$q2B = $db->prepare("SELECT SUM(status = :S1) AS q2B1, SUM(status = :S2) AS q2B2, SUM(status = :S3) AS q2B3 FROM j_results WHERE surveyid = :surveyid ");
+$q2B = $db->prepare("SELECT SUM(status = :S1) AS q2B1, SUM(status = :S2) AS q2B2, SUM(status = :S3) AS q2B3, SUM(status = :S4) AS q2B4 FROM j_results WHERE surveyid = :surveyid ");
 $q2B->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2B->bindValue(':S1', '2', PDO::PARAM_INT);
 $q2B->bindValue(':S2', '1', PDO::PARAM_INT);
 $q2B->bindValue(':S3', '0', PDO::PARAM_INT);
+$q2B->bindValue(':S4', '3', PDO::PARAM_INT);
 $q2B->execute();
 while ($row = $q2B->fetchObject()) {
   $rgood = $row->q2B1;
   $rtested = $row->q2B2;
   $rdeleted = $row->q2B3;
+  $RDdeleted = $row->q2B4;
   $valid = $rgood;
-  $invalid = $rtested + $deleted;
+  $invalid = $rtested + $rdeleted + $RDdeleted;
   $RDterminated = $row->q2B3;
   $RDpilot = $row->q2B2;
   $RDsuccess = $row->q2B1;
-  $RDall = $RDterminated + $RDpilot + $RDsuccess;
+  $RDall = $RDterminated + $RDpilot + $RDsuccess + $RDdeleted;
 }
 $valid_format = number_format($valid);
 $invalid_format = number_format($invalid);
@@ -470,22 +472,10 @@ $invalid_percent = percent($invalid / $invited);
 if ($invalid) { $invalid_bar = "<div class=\"progress progress-inbox\"><div class=\"progress-bar progress-bar-inbox progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$invalid_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-width:2em; width:$invalid_percent\">$invalid_percent</div></div>"; } else { $invalid_bar = "<div class=\"progress progress-inbox\"></div>"; }
 $successrate = number_format(($valid / $participated) * 100, 1);
 
-if ($sample_size) {
-  $RDpilot_percent = percent($RDpilot/$sample_size); //print_r($RDpilot_percent);
-  if ($RDpilot || $RDpilot == 0) { $RDpilot_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-warning progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDpilot_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDpilot_percent\">$RDpilot_percent</div></div>"; } else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
-  $RDterminated_percent = percent($RDterminated/$sample_size); //print_r($RDterminated_percent);
-  if ($RDterminated || $RDterminated == 0) { $RDterminated_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-danger progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDterminated_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDterminated_percent\">$RDterminated_percent</div></div>"; } else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
-  $RDsuccess_percent = percent($RDsuccess/$sample_size); //print_r($RDsuccess_percent);
-  if ($RDsuccess || $RDsuccess == 0) { $RDsuccess_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-striped\" role=\"progressbar\" aria-valuenow=\"$RDsuccess_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDsuccess_percent\">$RDsuccess_percent</div></div>"; } else { $RDsuccess_bar = "<div class=\"progress\"></div>"; }
-  $oversuccess = $RDsuccess - $sample_size; $oversuccess_percent = percent($oversuccess/$sample_size);
-} else {
-  $RDpilot_percent = "";
-  if ($RDpilot || $RDpilot == 0) { $RDpilot_bar = ""; } else { $RDsuccess_bar = ""; }
-  $RDterminated_percent = "";
-  if ($RDterminated || $RDterminated == 0) { $RDterminated_bar = ""; } else { $RDsuccess_bar = ""; }
-  $RDsuccess_percent = "";
-  if ($RDsuccess || $RDsuccess == 0) { $RDsuccess_bar = ""; } else { $RDsuccess_bar = ""; }
-}
+if (!isset($RDpilot) || is_null($RDpilot)) { $RDpilot = "0"; $RDpilot_bar = "<div class=\"progress\"></div>"; } else { $RDpilot_percent = percent($RDpilot/$RDall); $RDpilot_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-info progress-bar-striped active\" role=\"progressbar\" aria-valuenow=\"$RDpilot_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDpilot_percent\">$RDpilot_percent</div></div>"; }
+if (!isset($RDdeleted) || is_null($RDdeleted)) { $RDdeleted = "0"; $RDdeleted_bar = "<div class=\"progress\"></div>"; } else { $RDdeleted_percent = percent($RDdeleted/$RDall); $RDdeleted_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-warning progress-bar-striped active\" role=\"progressbar\" aria-valuenow=\"$RDdeleted_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDdeleted_percent\">$RDdeleted_percent</div></div>"; }
+if (!isset($RDterminated) || is_null($RDterminated)) { $RDterminated = "0"; $RDterminated_bar = "<div class=\"progress\"></div>"; } else { $RDterminated_percent = percent($RDterminated/$RDall); $RDterminated_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-warning progress-bar-striped active\" role=\"progressbar\" aria-valuenow=\"$RDterminated_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDterminated_percent\">$RDterminated_percent</div></div>"; }
+if (!isset($RDsuccess) || is_null($RDsuccess)) { $RDsuccess = "0"; $RDsuccess_bar = "<div class=\"progress\"></div>"; } else { $RDsuccess_percent = percent($RDsuccess/$RDall); $RDsuccess_bar = "<div class=\"progress\"><div class=\"progress-bar progress-bar-primary progress-bar-striped active\" role=\"progressbar\" aria-valuenow=\"$RDsuccess_percent\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"min-height:0.2em; min-width:2em; width:$RDsuccess_percent\">$RDsuccess_percent</div></div>"; }
 
 // Contact sheet summary
 $showdc = false;
@@ -552,9 +542,14 @@ if ($private == 1) {
       $togo = number_format(($sample_size - $RDsuccess) / $average, 1);
       $text .= "<p>Within a period of <strong>$daysoffieldwork</strong> of fieldwork, we have achieved a total of <strong>n=$RDsuccess</strong> successful interviews <small class=\"grey\">(an average of $average interviews per day)</small>.</p>\n";
       if ($RDsuccess < $sample_size) {
-        $text .= "<p>From the required total sample of <strong>n=$sample_size</strong> we have so far achieved <strong>$RDsuccess_percent</strong>.</p>\n";
+        $achieved_percent = percent($RDsuccess/$sample_size);
+        $text .= "<p>From the required total sample of <strong>n=$sample_size</strong> we have so far achieved <strong>$achieved_percent</strong>.</p>\n";
         $text .= "<p>With this rate of progression, the data collection is estimated to end in <strong>$togo</strong> days.</p>\n";
-      } else {
+      } else if ($RDsuccess == $sample_size) {
+        $text .= "<p>From the required total sample of <strong>n=$sample_size</strong> we have achived <strong>exactly 100%</strong> of the required sample size.</p>\n";
+        $text .= "<p>Now it's time for result analysis.</p>\n";
+      } else if ($RDsuccess > $sample_size) {
+        $oversuccess_percent = percent($RDsuccess/$sample_size);
         $text .= "<p>From the required total sample of <strong>n=$sample_size</strong> we have achived more than the required sample size at <strong>+$oversuccess_percent</strong>.</p>\n";
         $text .= "<p>Now it's time for result analysis.</p>\n";
       }
@@ -833,9 +828,6 @@ $A11C = getResultJS($A11A, $RDsuccess, "1", $mn2["6"]);
 
 <?php
 
-
-// echo "pepepepepe";
-// echo $ab;
 if ($A1B) { print_r($A1B); }
 if ($A2B) { print_r($A2B); }
 if ($A3B) { print_r($A3B); }
@@ -848,8 +840,6 @@ print_r(getMissingTable($missing));
   <div id="third" class="tab-pane fade">
 
 <?php
-// if ($A3B) { print_r($A3B); }
-// if ($A4B) { print_r($A4B); }
 if ($A5B) { print_r($A5B); }
 if ($A6B) { print_r($A6B); }
 if ($A7B) { print_r($A7B); }
@@ -858,6 +848,7 @@ if ($A9B) { print_r($A9B); }
 if ($A10B) { print_r($A10B); }
 if ($A11B) { print_r($A11B); }
 ?>
+
   </div>
   <div id="fourth" class="tab-pane fade">
 
@@ -888,17 +879,13 @@ echo "        <div class=\"table rendered\"><table class=\"table\"></table></div
 echo "        <span class=\"tablenotice\">You may need to scroll right if there are many columns <i class=\"pe-hand-o-right\"></i></span>\n";
 echo "      </div>\n";
 echo "    </div>\n";
-
 ?>
 
 </div>
 <div id="fifth" class="tab-pane fade">
-
   <h3>Map of interviews</h3>
   <p>This page shows the map of all interviews taken place for this study which was automatrically recorded by the system.</p>
-
   <div id="map" style="width: 400px; height: 300px"></div>
-
   <script type="text/javascript">
     google.charts.load("current", { "packages":["map"], "mapsApiKey": "AIzaSyA0MZthPLSO48HzjyPNXY9125WpbURDXVU" });
     google.charts.setOnLoadCallback(drawChart);
@@ -907,11 +894,10 @@ echo "    </div>\n";
       var data = google.visualization.arrayToDataTable( <?php echo $geoout; ?>);
       var map = new google.visualization.Map(document.getElementById('map'));
       map.draw(data, { zoomLevel: 6.5, mapType: 'terrain', howTooltip: true, useMapTypeControl: true, showInfoWindow: true });
-  }
-
+    }
   </script>
+</div>
 
-  </div>
 <?php if (($_GET["m"] == "2") || ($_GET["m"] == "3") || ($_GET["bpass"] == "1")) { ?>
   <div id="sixth" class="tab-pane fade in active">
 <?php } else { ?>
@@ -1014,7 +1000,6 @@ echo "    </div>\n";
 
 
 <script type="text/javascript">
-
   var companyid = parseInt("<?php echo $_SESSION['companyid']; ?>");
   var userid = parseInt("<?php echo $_SESSION['userid']; ?>");
   var surveyid = <?php echo $_GET['s']; ?>;
@@ -1022,13 +1007,12 @@ echo "    </div>\n";
   var email = "<?php echo $_SESSION['email']; ?>";
   var ip = "<?php echo getip(); ?>";
   var private = <?php echo $private; ?>;
-  var api = 'https://siamsquare.org.uk';
+  var api = 'http://www.siamsquare.org.uk';
   $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
   $('#showalert-delete').html("<div class='alert alert-warning'><i class='pe-trash pe-fw'></i> A result record has been deleted</div>").hide();
   $('#showalert-m1').html("<div class='alert alert-success'><i class='pe-check pe-fw'></i> You have successfully cleaned the incorrect termination from this survey. You can notice a better matching in number of responses vs. number of respondents.</div><br>").hide();
   $('#showalert-m2').html("<div class='alert alert-success'><i class='pe-check pe-fw'></i> You have successfully updated all the settings for monitoring this survey.</div><br>").hide();
   $('#showalert-m3').html("<div class='alert alert-info'><i class='pe-exclamation-triangle pe-fw'></i> No changes detected. So no change has been made to this survey.</div><br>").hide();
-
   function getColumn(anArray, columnNumber) { return anArray.map(function(row) { return row[columnNumber]; }); }
   function showRow(e, rowIndex) { showhiddenRow(rowIndex, true); e.preventDefault(); return false; }
   function hideRow(e, rowIndex) { showhiddenRow(rowIndex, false); e.preventDefault(); return false; }
@@ -1121,7 +1105,6 @@ echo "    </div>\n";
       for (field in rows[i]) {
         var td = document.createElement("td");
         $(td).html(rows[i][field]).addClass("small");
-        // if (td.contains("upload")) { alert("String Found"); }
         tr.appendChild(td);
         $(tr).find('td:first-child').append(a1).append(a2);
       }
@@ -1131,7 +1114,6 @@ echo "    </div>\n";
       td2.appendChild(bbspace);
       td2.appendChild(bb1);
       td2.append(" ");
-      // td2.appendChild(bb2);
 <?php } ?>
       tr2.appendChild(td2);
       tbody.appendChild(tr2);
@@ -1142,9 +1124,7 @@ echo "    </div>\n";
   }
   Object.size = function(obj) {
     var size = 0, key;
-    for (key in obj) {
-      if (obj.hasOwnProperty(key)) size++;
-    }
+    for (key in obj) { if (obj.hasOwnProperty(key)) { size++; } }
     return size;
   };
   String.prototype.replaceAll = function(search, replacement) {
@@ -1186,11 +1166,6 @@ echo "    </div>\n";
       $(".csv textarea").focus().select();
       return false;
     })
-    // $(".csv a.download").click(function() {
-    //   var data = $(".csv textarea").val();
-    //   if (data) { Events.download(data.length); return true; }
-    //   else { return false; }
-    // });
     $(".csv textarea").click(function() {$(this).focus().select();});
   });
 
@@ -1208,9 +1183,6 @@ echo "    </div>\n";
         "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"QC_questionname_" + counter0z + "\" value=\"" + monitor.QC[counter0].questionname + "\"></td>\n" +
         "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
         "              </tr>\n";
-        // "              <tr><td colspan=\"3\">\n";
-        // "              <p align=\"center\"><button type=\"button\" class=\"btn btn-warning btn-xs\" id=\"newkeyquestion1\"><i class=\"pe-plus pe-fw\"></i>Add a new subgroup aspect</button></p>\n";       
-        // "              </td></tr>\n";
         $('#tableQC').find('tbody').append(row1);
       counter0++;
       counter0z++;
@@ -1269,7 +1241,6 @@ echo "    </div>\n";
       for (j=0; j<monitor.quota[i].details.length; j++) {
         listRow(parseInt(j)+1, i, monitor.quota[i].details[j].subgroup, monitor.quota[i].details[j].samplesize);
         combinedtotalsample += parseInt(monitor.quota[i].details[j].samplesize);
-        // combinedtotalsample[i] += parseInt(monitor.quota[i].details[j].samplesize);
       }
       suggestedTotalsample(i, monitor.quota[i].questionname, combinedtotalsample);
       addRow(parseInt(j)+2, i);
@@ -1382,7 +1353,6 @@ echo "    </div>\n";
       var options = { width: 120, height: 400, redFrom: 0, redTo: 10, yellowFrom:10, yellowTo: 30, greenFrom:30, greenTo: 100, minorTicks: 5 };
       chart.draw(dataTable, options);
     }
-
     google.charts.setOnLoadCallback(drawGaugeChart2);
     function drawGaugeChart2() {
       var chart = new google.visualization.Gauge(document.getElementById('gauge2'));
@@ -1404,15 +1374,15 @@ echo "    </div>\n";
       dataTable.addRows([
         <?php echo "[{ v:'Total', f:'<div class=\"small\">Total</div><div style=\"font-size:1.5rem\">n=".$RDall."</div>' }, '', 'Total interviews so far' ],\n"; ?>
         <?php echo "[{ v:'Pilot', f:'<div class=\"small\">Pilot</div><div style=\"font-size:1.5rem\">n=".$RDpilot."</div>$RDpilot_bar' }, 'Total', 'Pilot interviews' ],\n"; ?>
+        <?php echo "[{ v:'Deleted', f:'<div class=\"small\">Deleted</div><div style=\"font-size:1.5rem\">n=".$RDdeleted."</div>$RDdeleted_bar' }, 'Total', 'Deleted interviews' ],\n"; ?>
         <?php echo "[{ v:'Terminated', f:'<div class=\"small\">Terminated</div><div style=\"font-size:1.5rem\">n=".$RDterminated."</div>$RDterminated_bar' }, 'Total', 'Terminated interviews' ],\n"; ?>
         <?php echo "[{ v:'Successful', f:'<div class=\"small\">Successful</div><div style=\"font-size:1.5rem\">n=".$RDsuccess."</div>$RDsuccess_bar' }, 'Total', 'Successful interviews' ],\n"; ?>
       ]);
-      dataTable.setRowProperty(3, 'style', 'background: #d9edf7; border: 3px solid #31708f');
+      dataTable.setRowProperty(4, 'style', 'background: #d9edf7; border: 3px solid #31708f');
       var options = { allowHtml: true, nodeClass: "nodeClass", selectedNodeClass: "selectedNodeClass", size: "large" };
       chart.draw(dataTable, options);
     }
   }
-
   google.charts.setOnLoadCallback(drawAreaChart);
   function drawAreaChart() {
     var container = document.getElementById('areachart');
@@ -1461,6 +1431,7 @@ echo "    </div>\n";
     }
     chart.draw(dataTable, options);
   }
+
 <?php
 if ($A1C["0"]) { print_r($A1C["0"]); }
 if ($A2C["0"]) { print_r($A2C["0"]); }
@@ -1473,22 +1444,6 @@ if ($A8C["0"]) { print_r($A8C["0"]); }
 if ($A9C["0"]) { print_r($A9C["0"]); }
 if ($A10C["0"]) { print_r($A10C["0"]); }
 if ($A11C["0"]) { print_r($A11C["0"]); }
-// print_r($A1C["0"]);
-// print_r($A2C["0"]);
-// print_r($A3C["0"]);
-// print_r($A4C["0"]);
-// print_r($A5C["0"]);
-// print_r($A6C["0"]);
-// print_r($A7C["0"]);
-// print_r($A8C["0"]);
-// print_r($A9C["0"]);
-// print_r($A10C["0"]);
-// print_r($A11C["0"]);
-// print_r("<pre>\n");
-// print_r($A1C["0"]);
-// print_r("</pre>");
-
-// echo $ac;
 ?>
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {

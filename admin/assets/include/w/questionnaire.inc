@@ -115,7 +115,7 @@ foreach ($rr4 as $rr44) {
       if ($question['type'] == "text") {
         $out .= "    <div><input type=\"text\" class=\"form-control\" name=\"\" disabled=\"\"></div>\n";
       } else if ($question['type'] == "comment") {
-        $out .= "    <div><textarea class=\"form-control\" rows=\"5\"></textarea></div>\n";
+        $out .= "    <div><textarea class=\"form-control\" rows=\"5\" disabled></textarea></div>\n";
       } else if ($question['type'] == "matrix") {
         $out .= "    <table class=\"table table-hover\">\n";
         $out .= "      <thead><tr class=\"bg-primary\">\n";
@@ -226,74 +226,147 @@ foreach ($rr4 as $rr44) {
           $out .= "</div>\n";
         }
       } else if ($question['type'] == "multipletext") {
-        if ($question['colCount']) {
-          $counting = count($question['items']);
-          $out .= "<div class=\"row\">\n";
-          for ($i=0; $i<$counting; $i++) {
-            if ($question['colCount'] == "2") { $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n"; }
-            else if ($question['colCount'] == "3") { $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4\">\n"; }
-            $out .= "    <form class=\"form-horizontal\"><div class=\"form-group\"><label class=\"control-label col-sm-4\">".$question['items'][$i]['title']." (".$question['items'][$i]['name']."): </label><div class=\"col-sm-8\"><input type=\"text\" class=\"form-control\" name=\"\" disabled=\"\"></div></div></form>";
-            if ($i % $question['colCount'] == 0) {
-              $out .= "  </div>\n";
-              if ($question['colCount'] == "2") { $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n"; }
-              else if ($question['colCount'] == "3") { $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4\">\n"; }
-            }
-            $out .= "  </div>\n";
-          }
-          $out .= "</div>\n";
-        } else {
-          $counting = count($question['items']);
-          $out .= "<div class=\"row\">\n";
-          for ($i=0; $i<$counting; $i++) {
-            $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
-            $out .= "    <form class=\"form-horizontal\"><div class=\"form-group\"><label class=\"control-label col-sm-4\">".$question['items'][$i]['title']." (".$question['items'][$i]['name']."): </label><div class=\"col-sm-8\"><input type=\"text\" class=\"form-control\" name=\"\" disabled=\"\"></div></div></form>";
-            $out .= "  </div>\n";
-          }
-          $out .= "</div>\n";
-        }
-      } else {
         $out .= "<div class=\"row\">\n";
         $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n";
-        if ($question['type'] == "radiogroup") {
-          foreach ($question['choices'] as $choice) {
-            $out .= "    <div class=\"radio\"><label style=\"display:inline; padding-left:0px\"><input type=\"radio\" name=\"\" disabled=\"\">".$choice['text']."</label></div>\n";
+        $counting1 = count($questions["colCount"]);
+        $width = 100/$counting1;
+        $out .= "      <table class=\"table\" style=\"font-family:boon\">\n";
+        $out .= "        <thead><tr>\n";
+        for ($i=0; $i<$counting1; $i++) {
+          $out .= "        <tr>\n";
+          $out .= "          <th width=\"".$width."%\">pepe</th>\n";
+          $out .= "        </tr>\n";
+        }
+        $out .= "        </thead>\n";
+        $out .= "      <tbody>\n";
+        $counting2 = count($question['items']);
+        for ($j=0; $j<$counting2; $j++) {
+          $out .= "        <tr>\n";
+          $out .= "          <td align=\"right\">".$question['items'][$j]['title']."</td>\n";
+          $out .= "          <td align=\"right\"><input type=\"text\" class=\"form-control\" disabled></td>\n";
+          $out .= "        </tr>";
+        }
+        $out .= "        </tbody>\n";
+        $out .= "      </table>\n";
+        $out .= "      <br>\n";
+        // $out .= "  </div>\n";
+        $out .= "  </div>\n";
+        // } else {
+        $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n";
+        $out .= "      <table class=\"table\" style=\"font-family:boon\">\n";
+        $out .= "        <thead><tr>\n";
+        for ($i=0; $i<$counting1; $i++) {
+          $out .= "        <tr>\n";
+          $out .= "          <th width=\"100%\">pepe</th>\n";
+          $out .= "        </tr>\n";
+        }
+        $out .= "        </thead>\n";
+        $out .= "      <tbody>\n";
+        $counting2 = count($question['items']);
+        for ($j=0; $j<$counting2; $j++) {
+          $out .= "        <tr>\n";
+          $out .= "          <td align=\"right\">".$question['items'][$j]['name']."</td>\n";
+          $out .= "          <td align=\"right\"><input type=\"text\" class=\"form-control\" disabled></td>\n";
+          $out .= "        </tr>";
+        }
+        $out .= "        </tbody>\n";
+        $out .= "      </table>\n";
+        $out .= "      <br>\n";
+        $out .= "  </div>\n";
+        $out .= "</div>\n";
+      } else if ($question['type'] == "rating") {
+        $out .= "<div class=\"row\">\n";
+        $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n";
+        $out .= "    <div class=\"btn-group\" role=\"group\">\n";
+        $counting = count($question['rateValues']);
+        for ($i=0; $i<$counting; $i++) {
+          $out .= "        <button type=\"button\" class=\"btn btn-default\">".$question['rateValues'][$i]['text']."</button>\n";
+        }
+        $out .= "    </div>\n";
+        $out .= "  </div>\n";
+        $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n";
+        $out .= "    <div class=\"btn-group\" role=\"group\">\n";
+        $counting = count($question['rateValues']);
+        for ($i=0; $i<$counting; $i++) {
+          $out .= "        <button type=\"button\" class=\"btn btn-default\">".$question['rateValues'][$i]['value']."</button>\n";
+        }
+        $out .= "    </div>\n";
+        $out .= "  </div>\n";
+        $out .= "</div>\n";
+      } else if ($question['type'] == "radiogroup") {
+        $out .= "<div class=\"row\">\n";
+        $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n";
+        foreach ($question['choices'] as $choice) {
+          $out .= "    <div class=\"radio\"><label style=\"display:inline; padding-left:0px\"><input type=\"radio\" name=\"\" disabled=\"\">".$choice['text']."</label></div>\n";
+        }
+        $out .= "  </div>\n";
+        $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n";
+        foreach ($question['choices'] as $choice) {
+          $out .= "    <div class=\"radio\"><label style=\"display:inline; padding-left:0px\"><input type=\"radio\" name=\"\" disabled=\"\">".$choice['value']."</label></div>\n";
+        }
+        $out .= "  </div>\n";
+        $out .= "</div>\n";
+      } else if ($question['type'] == "checkbox") {
+        $out .= "<div class=\"row\">\n";
+        $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n";
+        foreach ($question['choices'] as $choice) {
+          $out .= "    <div class=\"checkbox\"><label style=\"display:inline; padding-left:0px\"><input type=\"checkbox\" name=\"\" disabled=\"\">".$choice['text']."</label></div>\n";
+        }
+        $out .= "  </div>\n";
+        $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n";
+        foreach ($question['choices'] as $choice) {
+          $out .= "    <div class=\"checkbox\"><label style=\"display:inline; padding-left:0px\"><input type=\"checkbox\" name=\"\" disabled=\"\">".$choice['value']."</label></div>\n";
+        }
+        $out .= "  </div>\n";
+        $out .= "</div>\n";
+      } else if ($question['type'] == "dropdown") {
+        if ($question['renderAs'] == "NPS") {
+          $out .= "<div class=\"row\">\n";
+          $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\" style=\"font-family:boon;font-size:120%\">\n";
+          $out .= "    <div class=\"br-wrapper br-theme-square-2\"><div class=\"br-widget\">\n";
+          $counting1 = count($questions["choices"]);
+          foreach ($choices as $k16 => $p16) {
+            $choice_text = $p16['text']; $c_text[] = $p16['text'];
+            $choice_code = $p16['code']; $c_code[] = $p16['code'];
+            $out .= "      <a data-rating-value=\"".$p16["text"]."\" data-rating-text=\"".$p16["text"]."\">".$p16["text"]."</a>\n";
           }
-        } else if ($question['type'] == "checkbox") {
-          foreach ($question['choices'] as $choice) {
-            $out .= "    <div class=\"checkbox\"><label style=\"display:inline; padding-left:0px\"><input type=\"checkbox\" name=\"\" disabled=\"\">".$choice['text']."</label></div>\n";
+          $out .= "    </div></div>\n";
+          $out .= "  </div>\n";
+          $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n";
+          $out .= "    <div class=\"br-wrapper br-theme-square-2\"><div class=\"br-widget\">\n";
+          $counting1 = count($questions["choices"]);
+          foreach ($choices as $k17 => $p17) {
+            $choice_text = $p17['text']; $c_text[] = $p17['text'];
+            $choice_code = $p17['code']; $c_code[] = $p17['code'];
+            $out .= "      <a data-rating-value=\"".$p17["text"]."\" data-rating-text=\"".$p17["text"]."\">".$p17["text"]."</a>\n";
           }
-        } else if ($question['type'] == "dropdown") {
+          $out .= "    </div></div>\n";
+          $out .= "  </div>\n";
+          $out .= "</div>\n";  
+        } else {
+          $out .= "<div class=\"row\">\n";
+          $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n";
           $out .= "    <select class=\"form-control\">\n";
           $out .= "      <option>---</option>\n";
           $counting4 = count($question['choices']);
           for ($i=0; $i<$counting4; $i++) {
             if ($question['choices'][$i]['text']) { $out .= "      <option>".$question['choices'][$i]['text']."</option>\n"; }
-            else { $out .= "      <option>".$question['choices'][$i]."</option>\n"; }
+            else { $out .= "      <option>".$question['choices'][$i]['value']."</option>\n"; }
           }
           $out .= "    </select>\n";
-        }
-        $out .= "  </div>\n";
-        $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n";
-        if ($question['type'] == "radiogroup") {
-          foreach ($question['choices'] as $choice) {
-            $out .= "    <div class=\"radio\"><label style=\"display:inline; padding-left:0px\"><input type=\"radio\" name=\"\" disabled=\"\">".$choice['value']."</label></div>\n";
-          }
-        } else if ($question['type'] == "checkbox") {
-          foreach ($question['choices'] as $choice) {
-            $out .= "    <div class=\"checkbox\"><label style=\"display:inline; padding-left:0px\"><input type=\"checkbox\" name=\"\" disabled=\"\">".$choice['value']."</label></div>\n";
-          }
-        } else if ($question['type'] == "dropdown") {
+          $out .= "  </div>\n";
+          $out .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n";
           $out .= "    <select class=\"form-control\">\n";
           $out .= "      <option>---</option>\n";
           $counting4 = count($question['choices']);
           for ($i=0; $i<$counting4; $i++) {
             if ($question['choices'][$i]['text']) { $out .= "      <option>".$question['choices'][$i]['value']."</option>\n"; }
-            else { $out .= "      <option>".$question['choices'][$i]."</option>\n"; }
+            else { $out .= "      <option>".$question['choices'][$i]['value']."</option>\n"; }
           }
           $out .= "    </select>\n";
+          $out .= "  </div>\n";
+          $out .= "</div>\n";  
         }
-        $out .= "  </div>\n";
-        $out .= "</div>\n";
       }
       $out .= "</div>\n";
       $out .= "</div>\n";
