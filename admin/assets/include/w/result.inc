@@ -766,7 +766,7 @@ else if ($cd == "matrixdropdown") {
         $countresponses = count($c);
         if ($countresponses > $toplimit) { $ctop = array_slice($c, 0, $toplimit); $topmessage[$bbc]= "<p class=\"green\"><strong>Showing top ".$toplimit." results (from a total of ".$countresponses.")</strong></p>"; }
         else { $ctop = $c; }      
-        $answer1[$bbc] = "<p>This question contains a total of ".number_format($totalresponses)." responses.</p>";
+        $answer1[$bbc] = "This question contains a total of ".number_format($totalresponses)." responses.";
         $A = array_keys($ctop); $B = array_values($ctop);
         $C = count($ctop); $Aee = array_keys($cvalue);
         $tableout5A[$bbc] = "  <h4>".$qq.": ".$Aaa."</h4>\n";
@@ -1320,44 +1320,45 @@ if (($_GET["subgroup"] != "all") || ($subgroupquestion != "all") || ($subgroupan
 if ($totalresponses) { 
   if ($totalresponses <= $basesize) { 
     if ((($cd == "multipletext") && (preg_match('/Last10/i', $_GET["q"]) == "0")) || (($cd == "multipletext") && (preg_match('/Next10/i', $_GET["q"]) == "0"))) { $answer1 = $answer2; }
-    else { $answer1 = "<p>This question contains a total of ".number_format($totalresponses)." responses answered by $basesize respondents (<strong>$responsepercent%</strong>).</p>\n"; } 
+    else { $answer1 = "This question contains a total of ".number_format($totalresponses)." responses answered by $basesize respondents (<strong>$responsepercent%</strong>).\n"; } 
   } else if ($totalresponses > $basesize) {
     if ($cd == "matrix") {
       $responseperattribute = number_format($totalresponses/$numberofattributes, '1');
       $responseperrecord = number_format($totalresponses/$numberofattributes, '1');
-      $answer1 = "<p>This question contains a total of ".number_format($totalresponses)." responses across $numberofattributes attiributes, or at a total of <strong>$responseperattribute responses for each of the attributes</strong>.</p>\n";
+      $answer1 = "This question contains a total of ".number_format($totalresponses)." responses across $numberofattributes attiributes answered by $basesize respondents, or at a total of <strong>$responseperattribute responses for each of the attributes</strong>.\n";
     } else {
       $responseperrecord = number_format($totalresponses/$basesize, '1');
-      $answer1 = "<p>This question contains a total of ".number_format($totalresponses)." responses answered by $basesize respondents or at an average of <strong>$responseperrecord responses per respondent</strong>.</p>\n";
+      $answer1 = "This question contains a total of ".number_format($totalresponses)." responses answered by $basesize respondents or at an average of <strong>$responseperrecord responses per respondent</strong>.\n";
     }
   }  
 } else if ($totalresponses == "0") {
-  $answer1 = "<p>This question contains no answer at all (<strong>0%</strong>) so there is no data to show.</p>\n";
+  $answer1 = "This question contains no answer at all (<strong>0%</strong>) so there is no data to show.\n";
 } else {
-  $answer1 = "<p>This is a Non-responsive question, so number of responses is not available.</p>\n";
+  $answer1 = "This is a Non-responsive question, so number of responses is not available.\n";
 }
 
-
 // print_r($answer1);
+$answers = "";
+$answersubgroup = "<p class=\"red\"><strong>Caution:</strong> You are viewing data with subgroup analysis ($subgroupquestion = $subgroupanswer) which does <strong>*<u>not</u>*</strong> represent the total sample. In fact this subgroup only represents <strong>$subgrouppercent%</strong> of the total sample ($subgrouprecords out of $totalrecords respondents).</p>\n";
 
-if ($cd == "matrix") { $answers = $answer1; } 
-else if (($cd == "comment") || ($cd == "text")) { $answers = $answer1; }
-else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating")) { $answers = $answer1; } 
-else if (($cd == "checkbox") || ($cd == "checkboxhtml")) { $answers = $answer1; }
+if ($cd == "matrix") { $answers .= "<p>".$answer1."</p>"; if ($showsubgroup == "1") { $answers .= $answersubgroup; } } 
+else if (($cd == "comment") || ($cd == "text")) { $answers .= "<p>".$answer1."</p>"; if ($showsubgroup == "1") { $answers .= $answersubgroup; } }
+else if (($cd == "radiogroup") || ($cd == "radiogrouphtml") || ($cd == "dropdown") || ($cd == "barrating") || ($cd == "NPS") || ($cd == "rating")) { $answers .= "<p>".$answer1."</p>"; if ($showsubgroup == "1") { $answers .= $answersubgroup; } } 
+else if (($cd == "checkbox") || ($cd == "checkboxhtml")) { $answers .= "<p>".$answer1."</p>"; if ($showsubgroup == "1") { $answers .= $answersubgroup; } }
 else if (($cd == "matrixdropdown") || ($cd == "multipletext")) { 
   if ((preg_match('/Last10/i', $_GET["q"]) == "1") || (preg_match('/Next10/i', $_GET["q"]) == "1")) {
-    if ($showsubgroup != "0") { $answers = "<p>$answer1</p><p class=\"red\"><strong>Important note:</strong> This is a subgrouop analysis which does <u>not</u> represent the total sample.<br>In fact it only represents <strong>$subgrouppercent%</strong> of the total sample ($subgrouprecords out of $totalrecords respondents).</p>"; } 
-    else { $answers = "<p>".$answer1."</p>"; }
+    if ($showsubgroup == "1") { $answers .= "<p>".$answer1."</p>"; $answers .= $answersubgroup; } 
+    else { $answers .= "<p>".$answer1."</p>"; }
   } else if ((preg_match('/Last10/i', $_GET["q"]) == "0") || (preg_match('/Next10/i', $_GET["q"]) == "0")) {
     $nnn = 1; 
     foreach ($cee2 as $ckey => $cvalue) { 
-      if ($showsubgroup != "0") { $answers[$nnn] = "<p>$answer1</p><p class=\"red\"><strong>Important note:</strong> This is a subgrouop analysis which does <u>not</u> represent the total sample.<br>In fact it only represents <strong>$subgrouppercent%</strong> of the total sample ($subgrouprecords out of $totalrecords respondents).</p>"; } 
-      else { $answers[$nnn] = "<p>".$answer1."</p>"; }
+      if ($showsubgroup == "1") { $answers[$nnn] .= "<p>$answer1</p>"; $answers[$nnn] .= $answersubgroup; } 
+      else { $answers[$nnn] .= "<p>".$answer1."</p>"; }
       $nnn++; 
     } 
   } else {
-    if ($showsubgroup != "0") { $answers = "<p>$answer1</p><p class=\"red\"><strong>Important note:</strong> This is a subgrouop analysis which does <u>not</u> represent the total sample.<br>In fact it only represents <strong>$subgrouppercent%</strong> of the total sample ($subgrouprecords out of $totalrecords respondents).</p>"; } 
-    else { $answers = "<p>".$answer1."</p>"; }
+    if ($showsubgroup == "1") { $answers .= "<p>$answer1</p>"; $answers .= $answersubgroup; } 
+    else { $answers .= "<p>".$answer1."</p>"; }
   }
 }
 
@@ -2163,7 +2164,7 @@ if (($cd == "file") || ($cd == "signaturepad")) {
           <div class="row" id="tablesubgroupwrap"></div>
         </div>
         <input type="hidden" name="settingsubgroups" value="1">
-        <p align="center"><button type="button" class="btn btn-warning btn-xs" id="newsubgroup" title="Add a new subgroup"><i class="pe-plus pe-fw"></i>Add new</button></p>
+        <p align="center"><button type="button" class="btn btn-warning btn-xs" onClick="newSS()" title="Add a new subgroup"><i class="pe-plus pe-fw"></i>Add new</button></p>
       </div>
       <hr>
       <p class="text-center">
@@ -2277,6 +2278,50 @@ if (($cd == "file") || ($cd == "signaturepad")) {
 
 <?php if ($report) { echo "var sreport = $report;\n"; } else { echo "var sreport = { \"sequential\": [] };\n"; } ?>
 
+    function newSS() {
+      var counter5 = $(this).parents("tr").children("td:first").text(); console.log(counter5);
+      var head2 = "        <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n" +
+      "          <table class=\"table table-hover table-condensed small\" id=\"tablesubgroup" + counter5 + "\">\n" +
+      "            <thead>\n" +
+      "            </thead>\n" +
+      "            <tbody>\n" +
+      "            </tbody>\n" +
+      "          </table>\n" +
+      "        </div><br>\n";
+      var newrow3C = "              <tr class=\"bg-success\">\n" +
+      "                <td width=\"5%\" valign=\"middle\">" + counter5 + "</td>\n" +
+      "                <td width=\"85%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question Name\" name=\"quota_" + counter5 + "_questionname_" + counter5 + "\"></td>\n" +
+      "                <td width=\"10%\" valign=\"middle\" align=\"center\" colspan=\"2\"><i class=\"pe-trash pe-fw red deletethistable\" title=\"Delete this subgroup\"></i> <i class=\"pe-plus pe-fw newsubgroupoption\" title=\"Add a new subgroup option\"></i></td>\n" +
+      "              </tr>\n";
+      $('#tablesubgroupwrap').append(head2);
+      $('#tablesubgroupwrap').find('#tablesubgroup'+counter5).find('tbody').append(newrow3C);
+      var counter3a = 1; 
+      var counter3c = counter3a + 1;
+      for (var counter3a = 1; counter3a < counter3c; counter3a++) {
+        var newrow3D = "              <tr id=\"" + counter3 + "_" + counter3a + "\">\n" +
+        "                <td width=\"5%\" valign=\"middle\">" + counter3a + "</td>\n" +
+        "                <td width=\"75%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup\" name=\"quota_" + counter3 + "_subgroup_" + counter3a + "\"></td>\n" +
+        "                <td width=\"10%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + counter3 + "_samplesize_" + counter3a + "\"></td>\n" +
+        "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
+        "              </tr>\n";
+        $('#tablesubgroupwrap').find('#tablesubgroup'+counter3).find('tbody').append(newrow3D);
+      }
+      $(document.body).delegate(".newsubgroupoption", "click", function() {
+        var value = $(this).closest('table').find('tr').length;
+        var value2 = $(this).parents("tr").children("td:first").text();
+        var counter4b = value + 1;
+        for (var counter4a = value; counter4a < counter4b; counter4a++) {
+          var newrow3E = "              <tr id=\"" + counter3 + "_" + counter4a + "\">\n" +
+          "                <td width=\"5%\" valign=\"middle\">" + counter4a + "</td>\n" +
+          "                <td width=\"75%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup\" name=\"quota_" + counter3 + "_subgroup_" + counter4a + "\"></td>\n" +
+          "                <td width=\"10%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + counter3 + "_samplesize_" + counter4a + "\"></td>\n" +
+          "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
+          "              </tr>\n";
+          $(this).closest("tbody").append(newrow3E);
+        }
+      });
+      counter5++;
+    }
     function selectDropdownOld(s, i) { 
       s.options[i-1].selected = true;
       return;
@@ -2357,7 +2402,7 @@ if (($cd == "file") || ($cd == "signaturepad")) {
         var newrow3A = "              <tr class=\"bg-success\">\n" +
         "                <td width=\"5%\" valign=\"middle\">" + counter3 + "</td>\n" +
         "                <td width=\"85%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question Name\" name=\"quota_" + counter3 + "_questionname_" + counter3 + "\" value=\"" + monitor.quota[counter3].questionname + "\"></td>\n" +
-        "                <td width=\"10%\" valign=\"middle\" align=\"center\" colspan=\"2\"><i class=\"pe-trash pe-fw red deletethistable\" title=\"Delete this subgroup\"></i> <i class=\"pe-plus pe-fw newsubgroupoption\" title=\"Add a new subgroup\"></i></td>\n" +
+        "                <td width=\"10%\" valign=\"middle\" align=\"center\" colspan=\"2\"><i class=\"pe-trash pe-fw red deletethistable\" title=\"Delete this subgroup\"></i> <i class=\"pe-plus pe-fw newsubgroupoption\" title=\"Add a new subgroup option\"></i></td>\n" +
         "              </tr>\n";
         $('#tablesubgroupwrap').append(head1);
         $('#tablesubgroupwrap').find('#tablesubgroup'+counter3).find('tbody').append(newrow3A);
@@ -2375,54 +2420,15 @@ if (($cd == "file") || ($cd == "signaturepad")) {
         }
         counter3++;
       }
-      $('#newsubgroup').click(function() {
-        var head2 = "        <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n" +
-        "          <table class=\"table table-hover table-condensed small\" id=\"tablesubgroup" + counter3 + "\">\n" +
-        "            <thead>\n" +
-        "            </thead>\n" +
-        "            <tbody>\n" +
-        "            </tbody>\n" +
-        "          </table>\n" +
-        "        </div>\n";
-        var newrow3C = "              <tr class=\"bg-success\">\n" +
-        "                <td width=\"5%\" valign=\"middle\">" + counter3 + "</td>\n" +
-        "                <td width=\"85%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question Name\" name=\"quota_" + counter3 + "_questionname_" + counter3 + "\"></td>\n" +
-        "                <td width=\"10%\" valign=\"middle\" align=\"center\" colspan=\"2\"><i class=\"pe-trash pe-fw red deletethistable\" title=\"Delete this subgroup\"></i> <i class=\"pe-plus pe-fw newsubgroupoption\" title=\"Add a new subgroup\"></i></td>\n" +
-        "              </tr>\n";
-        $('#tablesubgroupwrap').append(head2);
-        $('#tablesubgroupwrap').find('#tablesubgroup'+counter3).find('tbody').append(newrow3C);
-        var counter3a = 1; 
-        var counter3c = counter3a + 1;
-        for (var counter3a = 1; counter3a < counter3c; counter3a++) {
-          var newrow3D = "              <tr id=\"" + counter3 + "_" + counter3a + "\">\n" +
-          "                <td width=\"5%\" valign=\"middle\">" + counter3a + "</td>\n" +
-          "                <td width=\"75%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup\" name=\"quota_" + counter3 + "_subgroup_" + counter3a + "\"></td>\n" +
-          "                <td width=\"10%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + counter3 + "_samplesize_" + counter3a + "\"></td>\n" +
-          "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
-          "              </tr>\n";
-          $('#tablesubgroupwrap').find('#tablesubgroup'+counter3).find('tbody').append(newrow3D);
-        }
-        $(document.body).delegate(".newsubgroupoption", "click", function() {
-          var value = $(this).closest('table').find('tr').length;
-          var value2 = $(this).parents("tr").children("td:first").text();
-          var counter4b = value + 1;
-          for (var counter4a = value; counter4a < counter4b; counter4a++) {
-            var newrow3E = "              <tr id=\"" + counter3 + "_" + counter4a + "\">\n" +
-            "                <td width=\"5%\" valign=\"middle\">" + counter4a + "</td>\n" +
-            "                <td width=\"75%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup\" name=\"quota_" + counter3 + "_subgroup_" + counter4a + "\"></td>\n" +
-            "                <td width=\"10%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + counter3 + "_samplesize_" + counter4a + "\"></td>\n" +
-            "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
-            "              </tr>\n";
-            $(this).closest("tbody").append(newrow3E);
-          }
-        });
-        counter3++;
-      });
       $(document.body).delegate(".deletethistable", "click", function() { $(this).closest("table").remove(); });
       $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
     }
 
-  <?php if (($_GET["m"] == "1") || ($m == 1)) { ?>
+</script>
+
+
+
+<?php if (($_GET["m"] == "1") || ($m == 1)) { ?>
   $('#showalert-m1').show();
   window.setTimeout(function() { $("#showalert-m1").slideUp(500, function() { $("#showalert-m1").hide(); }); }, 8000);
 <?php } else if ($_GET["m"] == "2") { ?>
@@ -2439,7 +2445,6 @@ if (($cd == "file") || ($cd == "signaturepad")) {
   window.setTimeout(function() { $("#showalert-m5").slideUp(500, function() { $("#showalert-m5").hide(); }); }, 8000);
 <?php } ?>
 
-</script>
 
 <script language="javascript">
 
