@@ -2195,7 +2195,7 @@ if (($cd == "file") || ($cd == "signaturepad")) {
   var email = "<?php echo $_SESSION["email"]; ?>";
   var ip = "<?php echo getip(); ?>";
   var private = <?php echo $private; ?>;
-  var api = 'https://siamsquare.org.uk';
+  var api = 'http://www.siamsquare.org.uk';
   $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
   $('#showsaving').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> The system is now saving your data, please wait until the green message shows up which shoud be in a minute</div>").hide();
   $('#showsavesuccess').html("<div class='alert alert-success'><i class='pe-save pe-fw'></i> Data has been saved successfully</div>").hide();
@@ -2222,19 +2222,30 @@ if (($cd == "file") || ($cd == "signaturepad")) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
   };
-  $(document).ready(function () {
-    var ttt = JSON.stringify(getdatafortable(surveyid));
-    ttt = ttt.replaceAll("data", "");
-    ttt = ttt.replaceAll("Record", "");
-    var inArray2 = JSON.parse(ttt);
-    var outArray2 = [];
-    for (var row in inArray2) { outArray2[outArray2.length] = parse_object(inArray2[row]); }
-    var csv = "\ufeff"+$.csv.fromObjects(outArray2);
-    var blob = new Blob([csv], { type: ' type: "text/csv;charset=UTF-8"' });
+  function makeDownload(surveyid) {
+    var tt = getdatafortable(surveyid);
+    for (var k in tt) {
+      var o = tt[k];
+      moment.locale('en');
+      var newsubmitted = moment(o.submitted).fromNow();
+      o.submitted = newsubmitted;
+    }
+    var tt = JSON.stringify(tt);
+    tt = tt.replaceAll("data", "");
+    tt = tt.replaceAll("Record", "");
+    tt = tt.replaceAll("upload/", "http://www.siamsquare.org/members/assets/upload/");
+    var inArray = JSON.parse(tt);
+    var outArray = []; 
+    for (var row in inArray) { outArray[outArray.length] = parse_object(inArray[row]); }
+    var csv = "\ufeff"+$.csv.fromObjects(outArray);
+    var blob = new Blob([csv], { type: 'type: "text/csv;charset=UTF-8"' });
     var csvUrl = window.URL.createObjectURL(blob);
     var todayDate = new Date().toISOString().slice(0,10);
     var filename = "<?php echo $project; ?>" + "_data_" + todayDate + '.csv';
-    $("a.exceldownload").attr({'download': filename, 'href': csvUrl });
+    $(".csv a.exceldownload").attr({'download': filename, 'href': csvUrl });
+  }
+  $(document).ready(function () {
+    makeDownload(surveyid);
   });
 <?php if ($monitor) { echo "var monitor = $monitor;\n"; } else { echo "var monitor = { \"quota\": [], \"QC\": [], \"monitor\": [] };\n"; } ?>
     var counter2a = 0, counter2b = 0;
