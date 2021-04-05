@@ -75,7 +75,7 @@ if ($login->passwordResetWasSuccessful() == true && $login->passwordResetLinkIsV
   </div>
   <hr>
   <p class="text-center">
-    <button class="btn btn-warning" name="submit_new_password" type="submit disabled="disabled"">Set my password <i class="pe-check-circle-o"></i></button>
+    <button class="btn btn-warning" name="submit_new_password" type="submit" disabled="disabled">Set my password <i class="pe-check-circle-o"></i></button>
     <button class="btn btn-default" name="Cancel" type="reset">Cancel <i class="pe-times-circle-o"></i></button>
   </p>
 </form>
@@ -126,12 +126,10 @@ if ($login->passwordResetWasSuccessful() == true && $login->passwordResetLinkIsV
     echo "<p>We can help you recovery your account by resetting your password. Just follow the intruction in the below form.</p>\n";
     echo "<p>Should you find any problems, please do not hesitate to contact us directly.</p>\n";
   }
-
   if (isset($login)) {
     if ($login->errors) { foreach ($login->errors as $error) { echo $error; } }
     if ($login->messages) { foreach ($login->messages as $message) { echo $message; } }
   }
-
   echo "<br>\n";
 
 ?>

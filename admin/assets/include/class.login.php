@@ -345,16 +345,18 @@ class Login {
     // elseif (strlen($mobile) < 10) { $this->errors[] = mkerror("Your mobile number has to be 10 digits only"); }
     // elseif (ctype_digit($mobile) != true) { $this->errors[] = mkerror("Your mobile number cannot be non-numeric character"); }
     $add = ""; $move = 0;
-    if ($fullname != $_SESSION['fullname']) { $add .= "fullname = :fullname, "; $move = 1; }
-    if ($mobile != $_SESSION['mobile']) { $add .= "mobile = :mobile, "; $move = 1; }
-    if ($tax != $_SESSION['tax']) { $add .= "tax = :tax, "; $move = 1; }
-    if ($avatar != $_SESSION['avatar']) { $add .= "avatar = :avatar, "; $move = 1; }
+    if (($fullname) || ($fullname != $_SESSION['fullname'])) { $add .= "fullname = :fullname, "; $move = 1; }
+    if (($$mobile) || ($mobile != $_SESSION['mobile'])) { $add .= "mobile = :mobile, "; $move = 1; }
+    if (($tax) || ($tax != $_SESSION['tax'])) { $add .= "tax = :tax, "; $move = 1; }
+    if (($avatar) || ($avatar != $_SESSION['avatar'])) { $add .= "avatar = :avatar, "; $move = 1; }
     $add = substr_replace($add, '', -2);
-    if ($move == 0) { $this->errors[] = mkerror("Nothing has changed therefore we did not update anything"); }
+    if ($move == 0) { $this->errors[] = mkinfo("No changes were detected, therefore we did not update anything at all."); }
     // elseif (($fullname == $_SESSION['fullname']) && ($mobile == $_SESSION['mobile']) && ($avatar == $_SESSION['avatar'])) { $this->errors[] = mkerror("Nothing has changed therefore we did not update anything"); }
     else {
       if ($this->dbconnect()) {
         $query_update = $this->db->prepare("UPDATE j_users SET ".$add." WHERE email = :email");
+        // print_r($query_update);
+        // print_r($_POST);
         if ($fullname != $_SESSION['fullname']) { $query_update->bindValue(':fullname', $fullname, PDO::PARAM_STR); }
         if ($mobile != $_SESSION['mobile']) { $query_update->bindValue(':mobile', $mobile, PDO::PARAM_STR); }
         if ($tax != $_SESSION['tax']) { $query_update->bindValue(':tax', $tax, PDO::PARAM_STR); }
@@ -373,12 +375,14 @@ class Login {
           $this->messages[] = mksuccess("Your information has been updated successfully");
           $notes = array (array("title" => "Info updated", "text" => "You have updated your information successfully.", "image" => "/admin/assets/img/notification.svg"));
           $_SESSION['fullname'] = $fullname;
-          $_SESSION['mobile'] = $mobile;
+          // $_SESSION['mobile'] = $mobile;
+          if ($mobile) { $_SESSION['mobile'] = $mobile; }
+          if ($tax) { $_SESSION['tax'] = $tax; }
           if ($avatar) { $_SESSION['avatar'] = $avatar; }
-          $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." updated profile info', '3')");
-          $q4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
-          $q4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
-          $q4->execute();
+          // $q4 = $this->db->prepare("INSERT INTO j_users_logs (userid, ip, data, critical) VALUE (:userid, :ip, '".$_SESSION['email']." updated profile info', '3')");
+          // $q4->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
+          // $q4->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
+          // $q4->execute();
         } else { $this->errors[] = mkerror("Cannot update your information, please try again"); }
       }
     }

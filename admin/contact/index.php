@@ -268,10 +268,10 @@ if ((empty($_GET['d'])) || ($_GET['d'] == "contact")) {
   <?php if ($_POST['copyme'] == 1) { ?>
       <div class="checkbox"><label class="red"><input type="checkbox" name="copyme" value="1" style="position:relative" checked disabled> A copy of this message has been sent to your email</label></div>
   <?php } else { ?>
-      <div class="checkbox"><label><input type="checkbox" name="copyme" value="1" style="position:relative" disabled> Send a copy of this message to my email</label></div>
+      <div class="checkbox"><label><input type="checkbox" name="copyme" value="1" style="position:relative" disabled> Send a copy of this message to my email</label> <span class="text-muted small" style="font-family:'boon'; font-size:0.9rem; color:black"><small>(ส่งสำเนาไปยังอีเมล์ของฉันด้วย)</small></span></div>
   <?php } ?>
 <?php } else { ?>
-      <div class="checkbox"><label><input type="checkbox" name="copyme" value="1" style="position:relative"> Send a copy of this message to my email</label></div>
+      <div class="checkbox"><label><input type="checkbox" name="copyme" value="1" style="position:relative"> Send a copy of this message to my email</label> <span class="text-muted small" style="font-family:'boon'; font-size:0.9rem; color:black"><small>(ส่งสำเนาไปยังอีเมล์ของฉันด้วย)</small></span></div>
     </div>
   </div>
 <?php } ?>

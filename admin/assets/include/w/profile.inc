@@ -28,26 +28,26 @@ if ($_GET["m"] == "tips") {
 <?php
 } else {
 
-  // $sql = "SELECT id, title, created FROM j_projects WHERE userid = :userid AND companyid = :companyid AND status >= 0 ORDER BY id DESC";
-  // $q = $db->prepare($sql);
-  // $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
-  // $q->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
-  // $q->execute();
-  // $counts = $q->rowCount();
-  // $output = "              <select id=\"projectlist\" multiple class=\"form-control\" readonly>\n";
-  // while ($row = $q->fetchObject()) {
-  //   $id = $row->id;
-  //   $title = $row->title;
-  //   $created = ago($row->created);
-  //   $output .= "                <option>Project $title</option>\n";
-  // }
-  // $output .= "              </select>\n";
+  $sql = "SELECT id, title, created FROM j_projects WHERE userid = :userid AND companyid = :companyid AND status >= 0 ORDER BY id DESC";
+  $q = $db->prepare($sql);
+  $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
+  $q->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
+  $q->execute();
+  $counts = $q->rowCount();
+  $output = "              <select id=\"projectlist\" multiple class=\"form-control\" readonly>\n";
+  while ($row = $q->fetchObject()) {
+    $id = $row->id;
+    $title = $row->title;
+    $created = ago($row->created);
+    $output .= "                <option>Project $title</option>\n";
+  }
+  $output .= "              </select>\n";
 
   if ($_SESSION["lastlogin2"]) { $lastlogin = ago($_SESSION["lastlogin2"]); } else { $lastlogin = "Never"; }
   $registersince = ago($_SESSION["created"]);
   $lastupdate = ago($_SESSION["updated"]);
 
-  $title = "Profile";
+  $title = "Your profile";
   pageHeader($title);
   echo "<h2>$title</h2>\n";
   echo "<p class=\"introtext\">This is a user-dashboard where all users including yourself can manage your own information here which includes editing and updating your profile and more importantly keeping your account secure by changing your password whenever you need to.</p>\n";
@@ -75,7 +75,8 @@ if ($_GET["m"] == "tips") {
       <div id="one" class="tab-pane in active fade">
 <?php if ($_SESSION["avatar"] != "00") { echo "        <p id=\"avatar1\" class=\"pull-right\"><img src=\"assets/img/u/" . $_SESSION["avatar"] . ".svg\" class=\"img-circle members-photo\" alt=\"Avatar\"></p>\n"; } else { echo "        <p id=\"avatar1\" class=\"pull-right\"></p>\n"; } ?>
         <h4>Welcome to your profile page</h4>
-        <p>Below shows the summary of your profile in a <em>read-only</em> mode. You can update your profile and change your password by clicking the next two tabs respectively.</p>
+        <p>This <em>read-only</em> page shows a summary of your profile.</p>
+        <p>Should you wish to update your information, you can simply click to the next tab tabs on the menu on top of this page.</p>
         <br>
         <table class="table">
           <tr>
@@ -106,7 +107,7 @@ if ($_GET["m"] == "tips") {
             <td width="70%">
               <div class="input-group">
                 <span class="input-group-addon"><i class="pe-mobile pe-fw"></i></span>
-                <input type="text" name="mobile" class="form-control" value="<?php echo $_SESSION["mobile"]; // $mm = implode("-", str_split($_SESSION["mobile"], 3)); echo $mm; ?>" onclick="this.select()" readonly>
+                <input type="text" name="mobile" class="form-control" value="<?php  if ($_SESSION["mobile"]) { echo $_SESSION["mobile"]; } else { echo "N/A"; } ?>" onclick="this.select()" readonly>
               </div>
               <span class="text-muted small"><small>Mobile number, enter without any spaces or symbols</small></span>
             </td>
@@ -244,7 +245,7 @@ if ($_GET["m"] == "tips") {
               excluded: [':disabled'],
               fields: {
                 fullname: { validators: { notEmpty: { message: 'Please enter your first and last name' } } },
-                tax: { validators: { notEmpty: { message: 'Please enter your ID card numbere', stringLength: { min: 13, message: 'It has to be 13 digits only' }, regexp: { regexp: /^[0-9]+$/, message: 'Only numbers are allowed' } } } }
+                // tax: { validators: { notEmpty: { message: 'Please enter your ID card number', stringLength: { min: 13, message: 'It has to be 13 digits only' }, regexp: { regexp: /^[0-9]+$/, message: 'Only numbers are allowed' } } } }
                 // mobile: { validators: { notEmpty: { message: 'Please enter your mobie number' }, stringLength: { min: 10, message: 'It has to be 10 digits only' }, regexp: { regexp: /^[0-9]+$/, message: 'Only numbers are allowed' } } }
               }
             })
@@ -352,34 +353,6 @@ if ($_GET["m"] == "tips") {
             if (val !== "") { text.innerHTML = "Strength: " + strength[result.score]; }
             else { text.innerHTML = ""; }
           });
-          // function scorePassword(pass) {
-          //   var score = 0;
-          //   if (!pass) { return score; }
-          //   // award every unique letter until 5 repetitions
-          //   var letters = new Object();
-          //   for (var i=0; i<pass.length; i++) {
-          //       letters[pass[i]] = (letters[pass[i]] || 0) + 1;
-          //       score += 5.0 / letters[pass[i]];
-          //   }
-          //   // bonus points for mixing it up
-          //   var variations = {
-          //       digits: /\d/.test(pass),
-          //       lower: /[a-z]/.test(pass),
-          //       upper: /[A-Z]/.test(pass),
-          //       nonWords: /\W/.test(pass),
-          //   }
-          //   variationCount = 0;
-          //   for (var check in variations) { variationCount += (variations[check] == true) ? 1 : 0; }
-          //   score += (variationCount - 1) * 10;
-          //   return parseInt(score);
-          // }
-          // function checkPassStrength(pass) {
-          //   var score = scorePassword(pass);
-          //   if (score > 80) { return "strong"; }
-          //   if (score > 60) { return "good"; }
-          //   if (score >= 30) { return "weak"; }
-          //   return "";
-          // }
           $(document).ready(function() {
             $('#changepassword').formValidation({
               framework: 'bootstrap',
@@ -400,11 +373,6 @@ if ($_GET["m"] == "tips") {
               var isValidTab = data.fv.isValidContainer($tabPane);
               if (isValidTab !== null) { $icon.addClass(isValidTab ? 'pe-check' : 'pe-times'); }
             });
-            // $("#strengthchecking").on("keypress keyup keydown", function() {
-            //   var pass = $(this).val();
-            //   $("#strength_human").text(checkPassStrength(pass));
-            //   $("#strength_score").text(scorePassword(pass));
-            // });
           });
         </script>
       </div>
@@ -450,7 +418,7 @@ if ($_GET["m"] == "tips") {
       }
     });
   });
-  // $(function () { $("#projectlist").css("height", parseInt($("#projectlist option").length) * 25); });
+  $(function () { $("#projectlist").css("height", parseInt($("#projectlist option").length) * 25); });
 </script>
 
 <?php if ($notes) { pageFooter($notes); } else { pageFooter(); } ?>
