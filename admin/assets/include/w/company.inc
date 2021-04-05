@@ -34,6 +34,7 @@ while ($row = $q1->fetchObject()) {
   $website = $row->website;
   $email = $row->email;
   $telephone = $row->telephone;
+  $mobile = $row->mobile;
   $fax = $row->fax;
   $tax = $row->tax;
   $created = ago($row->created);
@@ -88,6 +89,7 @@ if ($_POST['savethisinfo'] == 1) {
     if ($_POST['website'] != $website) { $add .= "website = :website, "; $move = 1; }
     if ($_POST['email'] != $email) { $add .= "email = :email, "; $move = 1; }
     if ($_POST['telephone'] != $telephone) { $add .= "telephone = :telephone, "; $move = 1; }
+    if ($_POST['mobile'] != $mobile) { $add .= "mobile = :mobile, "; $move = 1; }
     if ($_POST['fax'] != $fax) { $add .= "fax = :fax, "; $move = 1; }
     if ($_POST['tax'] != $tax) { $add .= "tax = :tax, "; $move = 1; }
     $add = substr_replace($add, '', -2);
@@ -106,6 +108,7 @@ if ($_POST['savethisinfo'] == 1) {
       if ($_POST['website'] != $website) { $q2B->bindValue(':website', $_POST['website'], PDO::PARAM_STR); }
       if ($_POST['email'] != $email) { $q2B->bindValue(':email', $_POST['email'], PDO::PARAM_STR); }
       if ($_POST['telephone'] != $telephone) { $q2B->bindValue(':telephone', $_POST['telephone'], PDO::PARAM_STR); }
+      if ($_POST['mobile'] != $telephone) { $q2B->bindValue(':mobile', $_POST['mobile'], PDO::PARAM_STR); }
       if ($_POST['fax'] != $fax) { $q2B->bindValue(':fax', $_POST['fax'], PDO::PARAM_STR); }
       if ($_POST['tax'] != $tax) { $q2B->bindValue(':tax', $_POST['tax'], PDO::PARAM_STR); }
       $q2B->bindValue(':companyid', $_SESSION["companyid"], PDO::PARAM_INT);
@@ -176,34 +179,51 @@ if ($logo) {
         </span>
         <span class="text-muted small"><small>The full company name in Thai based on official company registration</small></span>
       </p>
-      <p>
-        <label>Tax ID</label> <span class="label label-blue">optional</span><br>
-        <span class="input-group">
-          <span class="input-group-addon"><i class="pe-building pe-fw"></i></span>
-          <input type="text" class="form-control" name="tax" onclick="this.select()" placeholder="0107536000595"<?php if ($tax) { echo " value=\"$tax\""; } ?>>
-        </span>
-        <span class="text-muted small"><small>Tax ID (registration with Department of Business Development, Ministry of Finance)</small></span>
-      </p>
     </div>
     <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3" style="text-align:right">
       <p></p>
       <div><?php echo $clientlogo; ?></div>
       <p class="small" style="margin-top:20px"><small>[ <i class="pe-upload pe-fw"></i> <a data-toggle="modal" data-target="#upload" style="cursor:pointer">Upload</a> : <i class="pe-remove pe-fw"></i> <a href="<?php echo $me; ?>&amp;removelogo=✓">Remove</a> ]</small></p>
     </div>
+  </div>
+  <div class="row">
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
       <p>
-        <label>Description in English</label> <span class="label label-red">required</span>
-        <textarea class="form-control" row="5" name="description" onclick="this.select()" style="height:120px" placeholder="A few sentences describing some key outstanding points of the company" style="height:100px"><?php if ($description) { echo $description; } ?></textarea>
-        <span class="text-muted small"><small>A brief detail in English such as products &amp; services or outstanding aspects.</small></span>
+        <label>Mobile</label> <span class="label label-red">required</span>
+        <span class="input-group">
+          <span class="input-group-addon"><i class="pe-mobile pe-fw"></i></span>
+          <input type="text" class="form-control" name="website" onclick="this.select()" placeholder="+6681 9999999"<?php if ($mobile) { echo " value=\"$mobile\""; } ?>>
+        </span>
+        <span class="text-muted small"><small>A mobile contact for the contact person for an urgent contact in any specific circumstances.</small></span>
       </p>
     </div>
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
       <p>
-        <label>Description in Thai</label> <span class="label label-red">required</span>
-        <textarea class="form-control" row="5" name="description_th" onclick="this.select()" style="font-family:'boon'; font-size:1.1rem; color:black; height:120px" placeholder="สองสามประโยคสั่นๆที่อธิบายได้ดีถึงบริษัท หรือจุดเด่นในมุมต่างๆของบริษัท" style="height:100px"><?php if ($description_th) { echo $description_th; } ?></textarea>
-        <span class="text-muted small"><small>A brief detail in Thai such as products &amp; services or outstanding aspects.</small></span>
+        <label>Tax ID</label> <span class="label label-blue">optional</span>
+        <span class="input-group">
+          <span class="input-group-addon"><i class="pe-building pe-fw"></i></span>
+          <input type="email" class="form-control" name="email" onclick="this.select()" placeholder="0107536000595"<?php if ($tax) { echo " value=\"$tax\"";} ?>>
+        </span>
+        <span class="text-muted small"><small>Tax ID (registration with Department of Business Development, Ministry of Finance)</small></span>
       </p>
     </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <p>
+      <label>Description in English</label> <span class="label label-red">required</span>
+      <textarea class="form-control" row="5" name="description" onclick="this.select()" style="height:120px" placeholder="A few sentences describing some key outstanding points of the company" style="height:100px"><?php if ($description) { echo $description; } ?></textarea>
+      <span class="text-muted small"><small>A brief detail in English such as products &amp; services or outstanding aspects.</small></span>
+    </p>
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <p>
+      <label>Description in Thai</label> <span class="label label-red">required</span>
+      <textarea class="form-control" row="5" name="description_th" onclick="this.select()" style="font-family:'boon'; font-size:1.1rem; color:black; height:120px" placeholder="สองสามประโยคสั่นๆที่อธิบายได้ดีถึงบริษัท หรือจุดเด่นในมุมต่างๆของบริษัท" style="height:100px"><?php if ($description_th) { echo $description_th; } ?></textarea>
+      <span class="text-muted small"><small>A brief detail in Thai such as products &amp; services or outstanding aspects.</small></span>
+    </p>
+  </div>
   </div>
   <div class="row">
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
@@ -220,8 +240,6 @@ if ($logo) {
         <span class="text-muted small"><small class="orange"><strong>Only for client based in Thailand, others please skip this.</strong></small></span>
       </p>
     </div>
-  </div>
-  <div class="row">
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
       <p>
         <label>Email contact</label> <span class="label label-blue">optional</span>
@@ -290,15 +308,21 @@ foreach($banks as $a => $b) {
       <p>
         <label>Bank Account</label> <span class="label label-blue">optional</span>
         <div class="input-group">
-          <div class="input-group-addon"><i class="pe-dollar pe-fw"></i></div>
+          <div class="input-group-addon"><i class="pe-money pe-fw"></i></div>
           <div class="input-group-btn">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select your bank <span class="caret"></span></button>
             <ul class="dropdown-menu">
-              <li><a href="#">Action</a></li>
-              <li><a href="#">Another action</a></li>
-              <li><a href="#">Something else here</a></li>
+              <li>Bangkok Bank (BBL)</li>
+              <li>Kasikorn (KBANK)</li>
+              <li>Siam Commercial Bank (SCB)</li>
+              <li>Krung Thai (KTB)</li>
+              <li>TMB</li>
               <li role="separator" class="divider"></li>
-              <li><a href="#">Separated link</a></li>
+              <li>Krungsri</li>
+              <li>Thanachart</li>
+              <li>Kiatnakin</li>
+              <li>CIMB</li>
+              <li>Standard Chartered</li>
             </ul>
           </div>
           <input type="text" class="form-control" name="bankaccount" onclick="this.select()" placeholder="000-0-00000-0"<?php if ($bankaccount) { echo " value=\"$bankaccount\""; } ?>>
