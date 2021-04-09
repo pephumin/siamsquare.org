@@ -832,7 +832,6 @@ echo "<div id=\"notification\"></div>\n";
         if (error.message.indexOf("Only secure origins are allowed") == 0) { tryAPIGeolocation(); }
         break;
       case error.POSITION_UNAVAILABLE:
-        // dirty hack for safari
         if (error.message.indexOf("Origin does not have permission to use Geolocation service") == 0) { tryAPIGeolocation(); }
         else { alert("Browser geolocation error !\n\nPosition unavailable."); }
         break;
