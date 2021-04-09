@@ -2177,9 +2177,6 @@ if (($cd == "file") || ($cd == "signaturepad")) {
   <br>
   <br>
   <br>
-
-
-
   </div>
 </div>
 <br>
@@ -2240,7 +2237,6 @@ if (($cd == "file") || ($cd == "signaturepad")) {
     for (var row in inArray2) { outArray2[outArray2.length] = parse_object(inArray2[row]); }
     var csv1 = "\ufeff"+$.csv.fromObjects(outArray1);
     var csv2 = "\ufeff"+$.csv.fromObjects(outArray2);
-
     var blob = new Blob([csv2], { type: 'type: "text/csv;charset=UTF-8"' });
     var csvUrl = window.URL.createObjectURL(blob);
     var todayDate = new Date().toISOString().slice(0,10);
@@ -2290,46 +2286,34 @@ if (($cd == "file") || ($cd == "signaturepad")) {
 <?php if ($report) { echo "var sreport = $report;\n"; } else { echo "var sreport = { \"sequential\": [] };\n"; } ?>
 
     function newSS() {
-      var counter5 = $(this).parents("tr").children("td:first").text(); console.log(counter5);
+      var counter5 = $('#tablesubgroupwrap').find("td:first").text(); console.log(counter5);
       var head2 = "        <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n" +
       "          <table class=\"table table-hover table-condensed small\" id=\"tablesubgroup" + counter5 + "\">\n" +
       "            <thead>\n" +
       "            </thead>\n" +
       "            <tbody>\n" +
-      "            </tbody>\n" +
-      "          </table>\n" +
-      "        </div><br>\n";
-      var newrow3C = "              <tr class=\"bg-success\">\n" +
+      "              <tr class=\"bg-success\">\n" +
       "                <td width=\"5%\" valign=\"middle\">" + counter5 + "</td>\n" +
       "                <td width=\"85%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question Name\" name=\"quota_" + counter5 + "_questionname_" + counter5 + "\"></td>\n" +
       "                <td width=\"10%\" valign=\"middle\" align=\"center\" colspan=\"2\"><i class=\"pe-trash pe-fw red deletethistable\" title=\"Delete this subgroup\"></i> <i class=\"pe-plus pe-fw newsubgroupoption\" title=\"Add a new subgroup option\"></i></td>\n" +
       "              </tr>\n";
+      "            </tbody>\n" +
+      "          </table>\n" +
+      "        </div><br>\n";
       $('#tablesubgroupwrap').append(head2);
-      $('#tablesubgroupwrap').find('#tablesubgroup'+counter5).find('tbody').append(newrow3C);
-      var counter3a = 1; 
-      var counter3c = counter3a + 1;
-      for (var counter3a = 1; counter3a < counter3c; counter3a++) {
-        var newrow3D = "              <tr id=\"" + counter3 + "_" + counter3a + "\">\n" +
-        "                <td width=\"5%\" valign=\"middle\">" + counter3a + "</td>\n" +
-        "                <td width=\"75%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup\" name=\"quota_" + counter3 + "_subgroup_" + counter3a + "\"></td>\n" +
-        "                <td width=\"10%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + counter3 + "_samplesize_" + counter3a + "\"></td>\n" +
-        "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
-        "              </tr>\n";
-        $('#tablesubgroupwrap').find('#tablesubgroup'+counter3).find('tbody').append(newrow3D);
-      }
       $(document.body).delegate(".newsubgroupoption", "click", function() {
         var value = $(this).closest('table').find('tr').length;
         var value2 = $(this).parents("tr").children("td:first").text();
         var counter4b = value + 1;
         for (var counter4a = value; counter4a < counter4b; counter4a++) {
-          var newrow3E = "              <tr id=\"" + counter3 + "_" + counter4a + "\">\n" +
+          var newrow3E = "              <tr id=\"" + counter5 + "_" + counter4a + "\">\n" +
           "                <td width=\"5%\" valign=\"middle\">" + counter4a + "</td>\n" +
-          "                <td width=\"75%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup\" name=\"quota_" + counter3 + "_subgroup_" + counter4a + "\"></td>\n" +
-          "                <td width=\"10%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + counter3 + "_samplesize_" + counter4a + "\"></td>\n" +
+          "                <td width=\"75%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Subgroup\" name=\"quota_" + counter5 + "_subgroup_" + counter4a + "\"></td>\n" +
+          "                <td width=\"10%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"n=\" name=\"quota_" + counter5 + "_samplesize_" + counter4a + "\"></td>\n" +
           "                <td width=\"10%\" valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
           "              </tr>\n";
-          $(this).closest("tbody").append(newrow3E);
         }
+        $(this).closest("tbody").append(newrow3E);
       });
       counter5++;
     }
@@ -2372,27 +2356,27 @@ if (($cd == "file") || ($cd == "signaturepad")) {
         counter1z++;
       }
     }
-    $('#newseq').click(function() {
-      var newrow4 = "              <tr>\n" +
-        "                <td valign=\"middle\">" + counter1z + "</td>\n" +
-        "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"sequential_questionname_" + counter1z + "\"></td>\n" +
-        "                <td valign=\"middle\"><i class=\"pe-arrow-right pe-lg\"></i></td>\n" +
-        "                <td valign=\"middle\"><select class=\"form-control input-sm\" id=\"subgroup\" name=\"sequential_linkamount_" + counter1z + "\">" +
-        "                <option value=\"0\" selected>--</option>\n" +
-        "                <option value=\"1\" disabled>1</option>\n" +
-        "                <option value=\"2\">2</option>\n" +
-        "                <option value=\"3\">3</option>\n" +
-        "                <option value=\"4\">4</option>\n" +
-        "                <option value=\"5\">5</option>\n" +
-        "                <option value=\"6\">6</option>\n" +
-        "                </select></td>\n" +
-        "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
-        "              </tr>\n";
-      $('#tablereportsettings').find('tbody').append(newrow4);
-      // $('#nodata').remove();
-      counter1z++;
-    });
-    $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
+    // $('#newseq').click(function() {
+    //   var newrow4 = "              <tr>\n" +
+    //     "                <td valign=\"middle\">" + counter1z + "</td>\n" +
+    //     "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"sequential_questionname_" + counter1z + "\"></td>\n" +
+    //     "                <td valign=\"middle\"><i class=\"pe-arrow-right pe-lg\"></i></td>\n" +
+    //     "                <td valign=\"middle\"><select class=\"form-control input-sm\" id=\"subgroup\" name=\"sequential_linkamount_" + counter1z + "\">" +
+    //     "                <option value=\"0\" selected>--</option>\n" +
+    //     "                <option value=\"1\" disabled>1</option>\n" +
+    //     "                <option value=\"2\">2</option>\n" +
+    //     "                <option value=\"3\">3</option>\n" +
+    //     "                <option value=\"4\">4</option>\n" +
+    //     "                <option value=\"5\">5</option>\n" +
+    //     "                <option value=\"6\">6</option>\n" +
+    //     "                </select></td>\n" +
+    //     "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\"></i></td>\n" +
+    //     "              </tr>\n";
+    //   $('#tablereportsettings').find('tbody').append(newrow4);
+    //   // $('#nodata').remove();
+    //   counter1z++;
+    // });
+    // $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
 
     var counter3 = 0;
     if (typeof(monitor.quota) === 'undefined') {
@@ -2407,16 +2391,16 @@ if (($cd == "file") || ($cd == "signaturepad")) {
         "            <thead>\n" +
         "            </thead>\n" +
         "            <tbody>\n" +
-        "            </tbody>\n" +
-        "          </table>\n" +
-        "        </div>\n";
-        var newrow3A = "              <tr class=\"bg-success\">\n" +
+        "              <tr class=\"bg-success\">\n" +
         "                <td width=\"5%\" valign=\"middle\">" + counter3 + "</td>\n" +
         "                <td width=\"85%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question Name\" name=\"quota_" + counter3 + "_questionname_" + counter3 + "\" value=\"" + monitor.quota[counter3].questionname + "\"></td>\n" +
         "                <td width=\"10%\" valign=\"middle\" align=\"center\" colspan=\"2\"><i class=\"pe-trash pe-fw red deletethistable\" title=\"Delete this subgroup\"></i> <i class=\"pe-plus pe-fw newsubgroupoption\" title=\"Add a new subgroup option\"></i></td>\n" +
         "              </tr>\n";
+        "            </tbody>\n" +
+        "          </table>\n" +
+        "        </div>\n";
         $('#tablesubgroupwrap').append(head1);
-        $('#tablesubgroupwrap').find('#tablesubgroup'+counter3).find('tbody').append(newrow3A);
+        // $('#tablesubgroupwrap').find('#tablesubgroup'+counter3).find('tbody').append(newrow3A);
         // $('#mynewrow'+counter3).click(function() { $('#insert'+counter3).toggle('slow'); });
         var details = monitor.quota[counter3].details;
         for (var counter3b = 0; counter3b < details.length; counter3b++) {
@@ -2431,11 +2415,9 @@ if (($cd == "file") || ($cd == "signaturepad")) {
         }
         counter3++;
       }
-      $(document.body).delegate(".deletethistable", "click", function() { $(this).closest("table").remove(); });
+      $(document.body).delegate(".deletethistable", "click", function() { $(this).closest("table").parent().remove(); });
       $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
     }
-
-</script>
 
 
 
@@ -2457,7 +2439,6 @@ if (($cd == "file") || ($cd == "signaturepad")) {
 <?php } ?>
 
 
-<script language="javascript">
 
 function addRow(tableID) {
   var table = document.getElementById(tableID);
