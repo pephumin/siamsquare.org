@@ -815,7 +815,7 @@ echo "<div id=\"notification\"></div>\n";
   if (pincode) { pin(pincode); }
 
   var tryAPIGeolocation = function() {
-    jQuery.post( "https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyA0MZthPLSO48HzjyPNXY9125WpbURDXVU", function(success) {
+    jQuery.post( "https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyBMfG84RTce07jumINFyCrr54Y-z4PRNpM", function(success) {
       apiGeolocationSuccess({ coords: { latitude: success.location.lat, longitude: success.location.lng } });
     })
     .fail(function(err) { console.log("API Geolocation error! \n\n"+err); });
@@ -961,7 +961,6 @@ echo "</style>\n";
 // echo "<p>Click the button to get your coordinates.</p>\n";
 // echo "<button onclick=\"getLocation()\">Try It</button>\n";
 // echo "<p id=\"demo\"></p>\n";
-
 
 if ($project || $notes) { pageFooter($project, $notes); } else { pageFooter(); }
 
