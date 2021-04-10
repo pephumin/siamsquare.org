@@ -61,6 +61,16 @@ while ($row = $q1->fetchObject()) {
   //   $timelinedata .= "[ '".$project."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
   // }
 }
+if (!($monitor)) { 
+  $a1 = "{ \"QC\": [{ \"questionname\": \"Gender\" }, { \"questionname\": \"Age\" }, { \"questionname\": \"SES\" }], \"monitor\": [{ \"questionname\": \"Interviewer\" }] }";
+  $a2 = json_decode($a1, true);
+  $a3 = json_encode($a2, JSON_PRETTY_PRINT);
+  $q0 = $db->prepare("UPDATE j_projects SET QC = :QC");
+  $q0->bindValue(':QC', $a3, PDO::PARAM_INT);
+  $q0->execute();
+  $redirect = $base;
+  header("location: $redirect");
+}
 // $timelinedata .= " ]";
 if ($_SESSION['level'] != "9") {
   if ($status < 1 || $status > 3) {
@@ -95,9 +105,6 @@ if ($_POST['m'] == "fixerrors") {
   header("location: $redirect");
   exit;
 } else if (($_POST['m'] == "updatesettings") || isset($_POST["totalsamplebysubgroup"])) {
-  // print_r("<pre>");
-  // print_r($_POST);
-  // print_r("</pre>");
   $addtype = "0";
   if (isset($_POST["totalsample"]) && ($_POST["totalsample"] != $sample_size)) { $add = "sample = :sample, "; $addtype = "1"; }
   else if (isset($_POST["totalsamplebysubgroup"]) && ($_POST["totalsamplebysubgroup"] != $sample_size)) { $add = "sample = :sample, "; $addtype = "2"; }
@@ -134,7 +141,6 @@ if ($_POST['m'] == "fixerrors") {
   $qG->bindValue(':QC', $json, PDO::PARAM_STR);
   if ($addtype == "1") { $qG->bindValue(':sample', $_POST["totalsample"], PDO::PARAM_INT); }
   else if ($addtype == "2") { $qG->bindValue(':sample', $_POST["totalsamplebysubgroup"], PDO::PARAM_INT); }
-  // print_r($qG);
   $qG->execute();
   $redirect = $base."&m=2";
   header("location: $redirect");
@@ -304,20 +310,13 @@ while ($row = $q->fetchAll(PDO::FETCH_ASSOC)) {
     $ee[$i]['data'] = json_decode($ee[$i]['data'], true);
   }
 }
-// ksort($ee);
-// $datafortable = json_encode($ee);
-// print_r($ee);
 
 // ----------------- COMBINING ----------------------
-// print_r($rr4);
+
 for ($i=0; $i<count($rr4); $i++) { $rr5[] = $rr4[$i]["name"]; }
 
-// print_r($rr5);
-
 $rr5 = array_flip($rr5);
-foreach ($rr5 as $key => $value) {
-  if (preg_match("/^+Text$/", $key)) { unset($rr5[$key]); }
-}
+foreach ($rr5 as $key => $value) { if (preg_match("/^+Text$/", $key)) { unset($rr5[$key]); } }
 remove_array_value($rr5);
 
 for ($i=0; $i<count($ee); $i++) {
@@ -329,38 +328,28 @@ for ($i=0; $i<count($ee); $i++) {
 
 // ksort($ee);
 
-// print_r($ee);
 $resultformattedJSON = json_encode($ee);
 
-// pin error, hence "those who are terminated"
 $pinerror = 0;
 $geoout = "[\n";
 $geoout .= "      [ 'Lat', 'Long', 'Name' ],\n";
 
 $pincheck = json_decode($resultformattedJSON, true);
-// print_r($pincheck);
 foreach ($pincheck as $k1 => $p1) {
-  // print_r($p1["Interviewer"]);
-  if (($p1["data"]["RespondentInfo1"]) || ($p1["data"]["RespondentInfo"])) {
-    if ($p1["data"]["Region"]) {
-      $info = $p1["data"]["RespondentInfo1"]["First name"] . " " . $p1["data"]["RespondentInfo1"]["Surname"] . " (" . $p1["data"]["Region"] . ")";
-    } else {
-      $info = $p1["data"]["RespondentInfo1"]["First name"] . " " . $p1["data"]["RespondentInfo1"]["Surname"] . " (ID: " . $p1["id"] . ")";
-    }
-  } else if ($p1["data"]["Interviewer"]) {
-    $info = "ID: " . $p1["id"] . " (by " . $p1["Interviewer"] . ")";
-  } else {
-    $info = "ID: " . $p1["id"];
-  }
-  if (isset($p1["data"]["Geolocation"]["Latitude"]) && isset($p1["data"]["Geolocation"]["Longitude"])) {
-    $geoout .= "      [ " . $p1["data"]["Geolocation"]["Latitude"] . ", " . $p1["data"]["Geolocation"]["Longitude"] . ", '$info' ],\n";
-  }
-  if ($p1["data"]["PIN"] != $pinnumber) {
-    $errorlist[] = $p1["id"]; $pinerror = 1;
-  }
+  if ($p1["data"]["RespondentInformation"]) {
+    if ($p1["data"]["Region"]) { $info = $p1["data"]["RespondentInformation"]["First name"] . " " . $p1["data"]["RespondentInformation"]["Surname"] . " (" . $p1["data"]["Region"] . ")"; } 
+    else { $info = $p1["data"]["RespondentInformation"]["First name"] . " " . $p1["data"]["RespondentInformation"]["Surname"] . " (ID: " . $p1["id"] . ")"; }
+  } 
+  else if ($p1["data"]["Interviewer"]) { $info = "ID: " . $p1["id"] . " (by " . $p1["data"]["Interviewer"] . ")"; } 
+  else { $info = "ID: " . $p1["id"]; }
+
+  if (isset($p1["data"]["Geolocation"]["Latitude"]) && isset($p1["data"]["Geolocation"]["Longitude"])) { $geoout .= "      [ " . $p1["data"]["Geolocation"]["Latitude"] . ", " . $p1["data"]["Geolocation"]["Longitude"] . ", '$info' ],\n"; }
+  else { $geoout .= ""; }
+
+  if ($p1["data"]["PIN"] != $pinnumber) { $errorlist[] = $p1["id"]; $pinerror = 1; }
 }
 $geoout .= "    ]";
-// print_r($geoout);
+
 $terminatedsize = count($errorlist);
 if ($terminatedsize > 0) {
   $errorinput = "";
@@ -576,6 +565,8 @@ if ($private == 1) {
   echo "<hr>\n";
 }
 
+$interviewerbylocation = 0;
+
 function checkingQuestion($input, $ee = array()) {
   for ($i=0; $i<count($ee); $i++) {
     $alt1 = ""; $alt2 = "";
@@ -714,10 +705,12 @@ function getMissingTable($input = array()) {
   $records = count($input);
   if ($records > "0") {
     $output = "      <h4>Missing Information <small>($records records)</small></h4>\n";
+    $output .= "      <p>Oh no, we have detected a missing important information that is critical to this study. Below table shows a tital of $records missing records.</p>\n";
     $rows = array();
     foreach ($input as $row) {
       $cells = array();
       foreach ($row as $cell) { $cells[] = "<td>{$cell}</td>"; }
+      // print_r($cells);
       $rows[] = "<tr>" . implode('', $cells) . "</tr>";
     }
     $output .= "      <table class='table table-hover small' id='missing'><thead><tr class='bg-primary'><th>What is missing?</th><th>Questionnaire No.</th><th colspan='3'>Respondent's information</th><th>Location</th><th>Interviewer</th><th>Since</th></tr></thead><tbody>" . implode('', $rows) . "</tbody></table>";
@@ -727,58 +720,20 @@ function getMissingTable($input = array()) {
 
 
 $ff = json_decode($monitor, true); //print_r($ff);
-foreach ($ff["QC"] as $fA) { foreach ($fA as $fB) { $mn1[] = $fB; } } //print_r($mn1);
-foreach ($ff["monitor"] as $fC) { foreach ($fC as $fD) { $mn2[] = $fD; } } // print_r($mn2);
-foreach ($ff["quota"] as $fE) { foreach ($fE as $fF) { $mn3[] = $fF; } } // print_r($mn3);
+foreach ($ff["QC"] as $fA) { foreach ($fA as $fB) { $mn1[] = $fB; } }
+foreach ($ff["monitor"] as $fC) { foreach ($fC as $fD) { $mn2[] = $fD; } } 
+foreach ($ff["quota"] as $fE) { foreach ($fE as $fF) { $mn3[] = $fF; } } 
 
-// print_r($mn1["0"]);
-// print_r($mn1["1"]);
-// print_r($mn2["0"]);
-// print_r($mn2["1"]);
-
-$A1A = checkingQuestion($mn1["0"], $ee);
-$A1B = getResultHTML($A1A, $RDsuccess, $mn1["0"]);
-$A1C = getResultJS($A1A, $RDsuccess, "1", $mn1["0"]);
-
-$A2A = checkingQuestion($mn1["1"], $ee);
-$A2B = getResultHTML($A2A, $RDsuccess, $mn1["1"]);
-$A2C = getResultJS($A2A, $RDsuccess, "1", $mn1["1"]);
-
-$A3A = checkingQuestion($mn1["2"], $ee);
-$A3B = getResultHTML($A3A, $RDsuccess, $mn1["2"]);
-$A3C = getResultJS($A3A, $RDsuccess, "1", $mn1["2"]);
-
-$A4A = checkingQuestion($mn1["3"], $ee);
-$A4B = getResultHTML($A4A, $RDsuccess, $mn1["3"]);
-$A4C = getResultJS($A4A, $RDsuccess, "1", $mn1["3"]);
-
-$A5A = checkingQuestion($mn2["0"], $ee);
-$A5B = getResultHTML($A5A, $RDsuccess, $mn2["0"]);
-$A5C = getResultJS($A5A, $RDsuccess, "0", $mn2["0"]);
-
-$A6A = checkingQuestion($mn2["1"], $ee);
-$A6B = getResultHTML($A6A, $RDsuccess, $mn2["1"]);
-$A6C = getResultJS($A6A, $RDsuccess, "3", $mn2["1"]);
-
-$A7A = checkingQuestion($mn2["2"], $ee);
-$A7B = getResultHTML($A7A, $RDsuccess, $mn2["2"]);
-$A7C = getResultJS($A7A, $RDsuccess, "3", $mn2["2"]);
-
-$A8A = checkingQuestion($mn2["3"], $ee);
-$A8B = getResultHTML($A8A, $RDsuccess, $mn2["3"]);
-$A8C = getResultJS($A8A, $RDsuccess, "1", $mn2["3"]);
-
-$A9A = checkingQuestion($mn2["4"], $ee);
-$A9B = getResultHTML($A9A, $RDsuccess, $mn2["4"]);
-$A9C = getResultJS($A9A, $RDsuccess, "1", $mn2["4"]);
-
-$A10A = checkingQuestion($mn2["5"], $ee);
-$A10B = getResultHTML($A10A, $RDsuccess, $mn2["5"]);
-$A10C = getResultJS($A10A, $RDsuccess, "2", $mn2["5"]);
-
-$A11A = checkingQuestion($mn2["6"], $ee);
-$A11B = getResultHTML($A11A, $RDsuccess, $mn2["6"]);
-$A11C = getResultJS($A11A, $RDsuccess, "1", $mn2["6"]);
+for ($i = 0; $i < count($mn1); $i++) {
+  $AA[$i] = checkingQuestion($mn1[$i], $ee);
+  $AB[$i] = getResultHTML($AA[$i], $RDsuccess, $mn1[$i]);
+  $AC[$i] = getResultJS($AA[$i], $RDsuccess, $i, $mn1[$i]);
+}
+for ($j = 0; $j < count($mn2); $j++) {
+  $BA[$j] = checkingQuestion($mn2[$j], $ee);
+  $BB[$j] = getResultHTML($BA[$j], $RDsuccess, $mn2[$j]);
+  $BC[$j] = getResultJS($BA[$j], $RDsuccess, $i, $mn2[$j]);
+}
 
 ?>
 
@@ -786,26 +741,23 @@ $A11C = getResultJS($A11A, $RDsuccess, "1", $mn2["6"]);
   <div id="second" class="tab-pane fade">
 
 <?php
+foreach ($AB as $ab) { print_r($ab); }
+$missingA = array();
+foreach ($AA as $aa) { $missingA = array_merge($missingA, $aa["2"]); }
+print_r(getMissingTable($missingA));
 
-if ($A1B) { print_r($A1B); }
-if ($A2B) { print_r($A2B); }
-if ($A3B) { print_r($A3B); }
-if ($A4B) { print_r($A4B); }
-$missing = array_merge($A1A["2"], $A2A["2"], $A3A["2"], $A4A["2"], $A5A["2"], $A6A["2"], $A7A["2"], $A8A["2"], $A9A["2"], $A10A["2"], $A11A["2"]);
-print_r(getMissingTable($missing));
 ?>
 
   </div>
   <div id="third" class="tab-pane fade">
 
 <?php
-if ($A5B) { print_r($A5B); }
-if ($A6B) { print_r($A6B); }
-if ($A7B) { print_r($A7B); }
-if ($A8B) { print_r($A8B); }
-if ($A9B) { print_r($A9B); }
-if ($A10B) { print_r($A10B); }
-if ($A11B) { print_r($A11B); }
+
+foreach ($BB as $bb) { print_r($bb); }
+$missingB = array();
+foreach ($BA as $ba) { $missingB = array_merge($missingB, $ba["2"]); }
+print_r(getMissingTable($missingB));
+
 ?>
 
   </div>
@@ -846,7 +798,7 @@ echo "    </div>\n";
   <p>This page shows the map of all interviews taken place for this study. Geolocation data was automatically collected by the system.</p>
   <div id="map" style="width: 500px; height: 500px"></div>
   <script type="text/javascript">
-    google.charts.load("current", { "packages":["map"], "mapsApiKey": "AIzaSyA0MZthPLSO48HzjyPNXY9125WpbURDXVU" });
+    google.charts.load("current", { "packages":["map"], "mapsApiKey": "AIzaSyBMfG84RTce07jumINFyCrr54Y-z4PRNpM" });
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
@@ -1128,7 +1080,7 @@ echo "    </div>\n";
     $(".csv textarea").click(function() {$(this).focus().select();});
   });
 
-<?php if ($monitor) { echo "var monitor = $monitor;\n"; } else { echo "var monitor = { \"quota\": [], \"QC\": [], \"monitor\": [] };\n"; } ?>
+<?php if ($monitor) { echo "var monitor = $monitor;\n"; } else { echo "var monitor = { \"quota\": [], \"QC\": [] };\n"; } ?>
 
   var counter0 = 0; var counter0z = counter0 + 1; var counter0zz = counter0z + 1;
   if (typeof(monitor.QC) === 'undefined') {
@@ -1392,35 +1344,19 @@ echo "    </div>\n";
   }
 
 <?php
-if ($A1C["0"]) { print_r($A1C["0"]); }
-if ($A2C["0"]) { print_r($A2C["0"]); }
-if ($A3C["0"]) { print_r($A3C["0"]); }
-if ($A4C["0"]) { print_r($A4C["0"]); }
-if ($A5C["0"]) { print_r($A5C["0"]); }
-if ($A6C["0"]) { print_r($A6C["0"]); }
-if ($A7C["0"]) { print_r($A7C["0"]); }
-if ($A8C["0"]) { print_r($A8C["0"]); }
-if ($A9C["0"]) { print_r($A9C["0"]); }
-if ($A10C["0"]) { print_r($A10C["0"]); }
-if ($A11C["0"]) { print_r($A11C["0"]); }
+
+foreach ($AC as $ac) { print_r($ac["0"]); }
+foreach ($BC as $bc) { print_r($bc["0"]); }
+
 ?>
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     if ($(e.target).attr('id') == 'first-tab-trigger') { drawOrgChart1(); drawOrgChart2(); drawGaugeChart1(); drawGaugeChart2(); drawAreaChart(); }
     if ($(e.target).attr('id') == 'second-tab-trigger') {
-      <?php if ($A1C["1"]) { print_r($A1C["1"]); } ?>
-      <?php if ($A2C["1"]) { print_r($A2C["1"]); } ?>
-      <?php if ($A3C["1"]) { print_r($A3C["1"]); } ?>
-      <?php if ($A4C["1"]) { print_r($A4C["1"]); } ?>
+      <?php foreach ($AC as $ac) { print_r($ac["1"]); } ?>
     }
     if ($(e.target).attr('id') == 'third-tab-trigger') {
-      <?php if ($A5C["1"]) { print_r($A5C["1"]); } ?>
-      <?php if ($A6C["1"]) { print_r($A6C["1"]); } ?>
-      <?php if ($A7C["1"]) { print_r($A7C["1"]); } ?>
-      <?php if ($A8C["1"]) { print_r($A8C["1"]); } ?>
-      <?php if ($A9C["1"]) { print_r($A9C["1"]); } ?>
-      <?php if ($A10C["1"]) { print_r($A10C["1"]); } ?>
-      <?php if ($A11C["1"]) { print_r($A11C["1"]); } ?>
+      <?php foreach ($BC as $bc) { print_r($bc["1"]); } ?>
     }
   })
 
