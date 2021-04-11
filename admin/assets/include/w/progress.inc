@@ -681,7 +681,7 @@ function getResultHTML($input = array(), $RD, $keyword) {
     $output .= "      <h4>Sample size broken down by ".$keyword."</h4>\n";
     $output .= "      <p>This question contains a total of ".$C." answer(s).</p>";
     if ($Z == $RD) { $output .= "<p class=\"green\"><i class=\"pe-check pe-lg\"></i> The number of responses for this question (n=$Z) matches exactly to the number of sample (n=$RD). So the data is good.</p>\n"; } 
-    else { $output .= "<p class=\"red\"><i class=\"pe-exclamation-triangle pe-lg\"></i> The number of responses for this question (n=$Z) is lower than the number of sample (n=$RD). Questionnaire no. with missing answers (ID number of ".$Y.") are listed in the table at the bottom of this page <a href=\"#missinginfolink\ class=\"red\"><i class=\"pe-chevron-circle-down pe-fw red\"></i></a>.</p>\n"; }
+    else { $output .= "<p class=\"red\"><i class=\"pe-exclamation-triangle pe-lg\"></i> The number of responses for this question (n=$Z) is lower than the number of sample (n=$RD). Questionnaire no. with missing answers (ID number of ".$Y.") are listed in the table at the bottom of this page <a href=\"#missinginfolink\" class=\"red\"><i class=\"pe-chevron-circle-down pe-fw red\"></i></a>.</p>\n"; }
     $output .= "      <p class=\"small grey\">Click the table header <i class=\"pe-hand-o-down\"></i> to sort the data by column</p>\n";
     $output .= "      <div id=\"sorttable-$keyword\" style=\"width:400px\"></div>\n";
     $output .= "      <div id=\"sortchart-$keyword\"></div>\n";

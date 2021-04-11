@@ -20,7 +20,7 @@ define('MYDESC',           "SiamSquare Survey Engine by PE BINARY CO., LTD.");
 define('SLOGANEN',         "We build a society where your opinion matters");
 define('SLOGANTH',         "เราสร้างสังคมที่มองเห็นความสำคัญในความคิดเห็นของคุณ");
 define('MYDOMAIN',         "siamsquare.org");
-define('MYHOME',           "http://www.siamsquare.org");
+define('MYHOME',           "https://www.siamsquare.org");
 define('ADMIN',            MYHOME."/admin/");
 define('MEMBERS',          MYHOME."/members/");
 define('EMAILADMIN',       "phumin@sawasdee.org");

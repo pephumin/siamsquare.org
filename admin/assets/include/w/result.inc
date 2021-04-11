@@ -2191,7 +2191,7 @@ if (($cd == "file") || ($cd == "signaturepad")) {
   var email = "<?php echo $_SESSION["email"]; ?>";
   var ip = "<?php echo getip(); ?>";
   var private = <?php echo $private; ?>;
-  var api = 'http://www.siamsquare.org.uk';
+  var api = 'https://www.siamsquare.org.uk';
   $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
   $('#showsaving').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> The system is now saving your data, please wait until the green message shows up which shoud be in a minute</div>").hide();
   $('#showsavesuccess').html("<div class='alert alert-success'><i class='pe-save pe-fw'></i> Data has been saved successfully</div>").hide();
