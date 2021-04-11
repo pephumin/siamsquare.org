@@ -213,17 +213,15 @@ echo "<br>\n";
 <?php if (($_GET["m"] == "2") || ($_GET["m"] == "3") || ($_GET["bpass"] == "1")) { ?>
     <li><a href="#first" data-toggle="tab" id="first-tab-trigger"><i class="pe-flask pe-fw"></i> Progress</a></li>
     <li><a href="#second" data-toggle="tab" id="second-tab-trigger"><i class="pe-check pe-fw"></i> Quality control</a></li>
-    <li><a href="#third" data-toggle="tab" id="third-tab-trigger"><i class="pe-desktop pe-fw"></i> Monitor</a></li>
-    <li><a href="#fourth" data-toggle="tab" id="fourth-tab-trigger"><i class="pe-table pe-fw"></i> Interim data</a></li>
-    <li><a href="#fifth" data-toggle="tab" id="fourth-tab-trigger"><i class="pe-map-marker pe-fw"></i> Interview Map</a></li>
-    <li class="active"><a href="#sixth" data-toggle="tab" id="sixth-tab-trigger"><i class="pe-wrench pe-fw"></i> Settings</a></li>
+    <li><a href="#third" data-toggle="tab" id="third-tab-trigger"><i class="pe-table pe-fw"></i> Interim data</a></li>
+    <li><a href="#fourth" data-toggle="tab" id="fourth-tab-trigger"><i class="pe-map-marker pe-fw"></i> Interview Map</a></li>
+    <li class="active"><a href="#fifth" data-toggle="tab" id="fifth-tab-trigger"><i class="pe-wrench pe-fw"></i> Settings</a></li>
 <?php } else { ?>
     <li class="active"><a href="#first" data-toggle="tab" id="first-tab-trigger"><i class="pe-flask pe-fw"></i> Progress</a></li>
     <li><a href="#second" data-toggle="tab" id="second-tab-trigger"><i class="pe-check pe-fw"></i> Quality control</a></li>
-    <li><a href="#third" data-toggle="tab" id="third-tab-trigger"><i class="pe-desktop pe-fw"></i> Monitor</a></li>
-    <li><a href="#fourth" data-toggle="tab" id="fourth-tab-trigger"><i class="pe-table pe-fw"></i> Interim data</a></li>
-    <li><a href="#fifth" data-toggle="tab" id="fifth-tab-trigger"><i class="pe-map-marker pe-fw"></i> InterviewMap</a></li>
-    <li><a href="#sixth" data-toggle="tab" id="sixth-tab-trigger"><i class="pe-wrench pe-fw"></i> Settings</a></li>
+    <li><a href="#third" data-toggle="tab" id="third-tab-trigger"><i class="pe-table pe-fw"></i> Interim data</a></li>
+    <li><a href="#fourth" data-toggle="tab" id="fourth-tab-trigger"><i class="pe-map-marker pe-fw"></i> InterviewMap</a></li>
+    <li><a href="#fifth" data-toggle="tab" id="fifth-tab-trigger"><i class="pe-wrench pe-fw"></i> Settings</a></li>
 <?php } ?>
   </ul>
 </nav>
@@ -639,7 +637,7 @@ function getResultJS($input = array(), $RD, $sort, $keyword) {
       $output .= "    formatter.format(data, 2);\n";
       if ($C < 15) { $height = '500'; } else if (($C >= 15) && ($C < 30)) { $height = '700'; } else if ($C >= 30) { $height = '1000'; }
       if (($Z > $RD) || ($C > 7)) { $tt = array('bar', 'column'); } else if (($Z <= $RD) && ($C <= 3)) { $tt = array('pie', 'donut'); } else if ($C > 15) { $tt = array('column'); } else { $tt = array('bar', 'column', 'pie', 'donut'); }
-      if (($keyword == "Region") || ($keyword == "Location")) { $chart = 'column'; } else if ($keyword == "Interviewer") { $chart = 'bar'; } else if ($C > 8) { $chart = 'bar'; } else { $chart = $tt[array_rand($tt)]; }
+      if (($keyword == "Region") || ($keyword == "Location") || ($keyword == "SES")) { $chart = 'column'; } else if (($keyword == "Interviewer") || ($keyword == "Age")) { $chart = 'bar'; } else if ($C > 8) { $chart = 'bar'; } else { $chart = $tt[array_rand($tt)]; }
       if ($chart == "pie") {
         $output .= "    var options = { width: '100%', height: '500' };\n";
         $output .= "    var chart = new google.visualization.PieChart(document.getElementById('sortchart-$keyword'));\n";
@@ -680,23 +678,13 @@ function getResultHTML($input = array(), $RD, $keyword) {
   $Y = implode(', ', $inputB);
   $output = "";
   if ($Z > 0) {
-    $output .= "      <h4>Sample size broken down by $keyword <small>($C groups)</small></h4>\n";
+    $output .= "      <h4>Sample size broken down by ".$keyword."</h4>\n";
+    $output .= "      <p>This question contains a total of ".$C." answer(s).</p>";
+    if ($Z == $RD) { $output .= "<p class=\"green\"><i class=\"pe-check pe-lg\"></i> The number of responses for this question (n=$Z) matches exactly to the number of sample (n=$RD). So the data is good.</p>\n"; } 
+    else { $output .= "<p class=\"red\"><i class=\"pe-exclamation-triangle pe-lg\"></i> The number of responses for this question (n=$Z) is lower than the number of sample (n=$RD). Questionnaire no. with missing answers (ID number of ".$Y.") are listed in the table at the bottom of this page.</p>\n"; }
     $output .= "      <p class=\"small grey\">Click the table header <i class=\"pe-hand-o-down\"></i> to sort the data by column</p>\n";
-    $output .= "      <div class=\"row\">\n";
-    $output .= "        <div class=\"col-xs-7 col-sm-7 col-md-7 col-lg-7\">\n";
-    $output .= "          <div id=\"sorttable-$keyword\" style=\"width:400px\"></div>\n";
-    $output .= "        </div>\n";
-    $output .= "        <div class=\"col-xs-5 col-sm-5 col-md-5 col-lg-5\">\n";
-    if ($Z == $RD) {
-      $output .= "          <p class=\"small green\"><i class=\"pe-check pe-lg\"></i> The number of responses for this question (n=$Z) matches exactly to the number of sample (n=$RD). So the data is good.</p>\n";
-    } else {
-      $output .= "          <p class=\"small red\"><i class=\"pe-exclamation-triangle pe-lg\"></i> The number of responses for this question (n=$Z) is lower than the number of sample (n=$RD).</p><p class=\"small red\">Questionnaire no. with missing answers: $Y</p>\n";
-    }
-    $output .= "        </div>\n";
-    $output .= "        <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
-    $output .= "          <div id=\"sortchart-$keyword\"></div>\n";
-    $output .= "        </div>\n";
-    $output .= "      </div>\n";
+    $output .= "      <div id=\"sorttable-$keyword\" style=\"width:400px\"></div>\n";
+    $output .= "      <div id=\"sortchart-$keyword\"></div>\n";
   }
   return $output;
 }
@@ -704,36 +692,70 @@ function getResultHTML($input = array(), $RD, $keyword) {
 function getMissingTable($input = array()) {
   $records = count($input);
   if ($records > "0") {
-    $output = "      <h4>Missing Information <small>($records records)</small></h4>\n";
-    $output .= "      <p>Oh no, we have detected a missing important information that is critical to this study. Below table shows a tital of $records missing records.</p>\n";
+    $output = "      <h4>Missing Information</h4>\n";
+    $output .= "      <p>Oh no, we have detected there are a missing piece which could be critical to the analysis of this study. Below table shows a total of $records missing record(s).</p>\n";
     $rows = array();
+    $k = 1;
     foreach ($input as $row) {
+      $no = "<td class='center'>".$k."</td>";
       $cells = array();
       foreach ($row as $cell) { $cells[] = "<td>{$cell}</td>"; }
-      // print_r($cells);
-      $rows[] = "<tr>" . implode('', $cells) . "</tr>";
+      $rows[] = "<tr>".$no.implode('', $cells)."</tr>";
+      $k++;
     }
-    $output .= "      <table class='table table-hover small' id='missing'><thead><tr class='bg-primary'><th>What is missing?</th><th>Questionnaire No.</th><th colspan='3'>Respondent's information</th><th>Location</th><th>Interviewer</th><th>Since</th></tr></thead><tbody>" . implode('', $rows) . "</tbody></table>";
+    $output .= "      <table class='table table-hover small' id='missing'><thead><tr class='bg-primary'><th class='center'>No.</th><th>What is missing?</th><th>Questionnaire No.</th><th colspan='3'>Respondent's information</th><th>Location</th><th>Interviewer</th><th>Date and time</th></tr></thead><tbody>" . implode('', $rows) . "</tbody></table>";
   }
   return $output;
 }
 
-
-$ff = json_decode($monitor, true); //print_r($ff);
+$ff = json_decode($monitor, true); 
 foreach ($ff["QC"] as $fA) { foreach ($fA as $fB) { $mn1[] = $fB; } }
 foreach ($ff["monitor"] as $fC) { foreach ($fC as $fD) { $mn2[] = $fD; } } 
 foreach ($ff["quota"] as $fE) { foreach ($fE as $fF) { $mn3[] = $fF; } } 
 
-for ($i = 0; $i < count($mn1); $i++) {
-  $AA[$i] = checkingQuestion($mn1[$i], $ee);
-  $AB[$i] = getResultHTML($AA[$i], $RDsuccess, $mn1[$i]);
-  $AC[$i] = getResultJS($AA[$i], $RDsuccess, $i, $mn1[$i]);
-}
-for ($j = 0; $j < count($mn2); $j++) {
-  $BA[$j] = checkingQuestion($mn2[$j], $ee);
-  $BB[$j] = getResultHTML($BA[$j], $RDsuccess, $mn2[$j]);
-  $BC[$j] = getResultJS($BA[$j], $RDsuccess, $i, $mn2[$j]);
-}
+$A1A = checkingQuestion($mn1["0"], $ee);
+$A1B = getResultHTML($A1A, $RDsuccess, $mn1["0"]);
+$A1C = getResultJS($A1A, $RDsuccess, "3", $mn1["0"]);
+
+$A2A = checkingQuestion($mn1["1"], $ee);
+$A2B = getResultHTML($A2A, $RDsuccess, $mn1["1"]);
+$A2C = getResultJS($A2A, $RDsuccess, "3", $mn1["1"]);
+
+$A3A = checkingQuestion($mn1["2"], $ee);
+$A3B = getResultHTML($A3A, $RDsuccess, $mn1["2"]);
+$A3C = getResultJS($A3A, $RDsuccess, "3", $mn1["2"]);
+
+$A4A = checkingQuestion($mn1["3"], $ee);
+$A4B = getResultHTML($A4A, $RDsuccess, $mn1["3"]);
+$A4C = getResultJS($A4A, $RDsuccess, "3", $mn1["3"]);
+
+$A5A = checkingQuestion($mn2["0"], $ee);
+$A5B = getResultHTML($A5A, $RDsuccess, $mn2["0"]);
+$A5C = getResultJS($A5A, $RDsuccess, "3", $mn2["0"]);
+
+$A6A = checkingQuestion($mn2["1"], $ee);
+$A6B = getResultHTML($A6A, $RDsuccess, $mn2["1"]);
+$A6C = getResultJS($A6A, $RDsuccess, "3", $mn2["1"]);
+
+$A7A = checkingQuestion($mn2["2"], $ee);
+$A7B = getResultHTML($A7A, $RDsuccess, $mn2["2"]);
+$A7C = getResultJS($A7A, $RDsuccess, "3", $mn2["2"]);
+
+$A8A = checkingQuestion($mn2["3"], $ee);
+$A8B = getResultHTML($A8A, $RDsuccess, $mn2["3"]);
+$A8C = getResultJS($A8A, $RDsuccess, "1", $mn2["3"]);
+
+$A9A = checkingQuestion($mn2["4"], $ee);
+$A9B = getResultHTML($A9A, $RDsuccess, $mn2["4"]);
+$A9C = getResultJS($A9A, $RDsuccess, "1", $mn2["4"]);
+
+$A10A = checkingQuestion($mn2["5"], $ee);
+$A10B = getResultHTML($A10A, $RDsuccess, $mn2["5"]);
+$A10C = getResultJS($A10A, $RDsuccess, "2", $mn2["5"]);
+
+$A11A = checkingQuestion($mn2["6"], $ee);
+$A11B = getResultHTML($A11A, $RDsuccess, $mn2["6"]);
+$A11C = getResultJS($A11A, $RDsuccess, "1", $mn2["6"]);
 
 ?>
 
@@ -741,27 +763,25 @@ for ($j = 0; $j < count($mn2); $j++) {
   <div id="second" class="tab-pane fade">
 
 <?php
-foreach ($AB as $ab) { print_r($ab); }
-$missingA = array();
-foreach ($AA as $aa) { $missingA = array_merge($missingA, $aa["2"]); }
-print_r(getMissingTable($missingA));
+
+if ($A1B) { print_r($A1B); }
+if ($A2B) { print_r($A2B); }
+if ($A3B) { print_r($A3B); }
+if ($A4B) { print_r($A4B); }
+if ($A5B) { print_r($A5B); }
+if ($A6B) { print_r($A6B); }
+if ($A7B) { print_r($A7B); }
+if ($A8B) { print_r($A8B); }
+if ($A9B) { print_r($A9B); }
+if ($A10B) { print_r($A10B); }
+if ($A11B) { print_r($A11B); }
+$missing = array_merge($A1A["2"], $A2A["2"], $A3A["2"], $A4A["2"], $A5A["2"], $A6A["2"], $A7A["2"], $A8A["2"], $A9A["2"], $A10A["2"], $A11A["2"]);
+print_r(getMissingTable($missing));
 
 ?>
 
   </div>
   <div id="third" class="tab-pane fade">
-
-<?php
-
-foreach ($BB as $bb) { print_r($bb); }
-$missingB = array();
-foreach ($BA as $ba) { $missingB = array_merge($missingB, $ba["2"]); }
-print_r(getMissingTable($missingB));
-
-?>
-
-  </div>
-  <div id="fourth" class="tab-pane fade">
 
 <?php
 if ($status >= 2) { echo "    <h4>Interim data <small>(based on successful interviews)</small></h4>\n"; } else if ($status == 1) { echo "    <h4>Interim data <small>(based on pilot interviews)</small></h4>\n"; }
@@ -793,7 +813,7 @@ echo "    </div>\n";
 ?>
 
 </div>
-<div id="fifth" class="tab-pane fade">
+<div id="fourth" class="tab-pane fade">
   <h3>Map of interviews</h3>
   <p>This page shows the map of all interviews taken place for this study. Geolocation data was automatically collected by the system.</p>
   <div id="map" style="width: 500px; height: 500px"></div>
@@ -810,9 +830,9 @@ echo "    </div>\n";
 </div>
 
 <?php if (($_GET["m"] == "2") || ($_GET["m"] == "3") || ($_GET["bpass"] == "1")) { ?>
-  <div id="sixth" class="tab-pane fade in active">
+  <div id="fifth" class="tab-pane fade in active">
 <?php } else { ?>
-  <div id="sixth" class="tab-pane fade">
+  <div id="fifth" class="tab-pane fade">
 <?php } ?>
 
   <h3>Specific settings</h3>
@@ -1345,23 +1365,40 @@ echo "    </div>\n";
 
 <?php
 
-foreach ($AC as $ac) { print_r($ac["0"]); }
-foreach ($BC as $bc) { print_r($bc["0"]); }
-
+if ($A1C["0"]) { print_r($A1C["0"]); }
+if ($A2C["0"]) { print_r($A2C["0"]); }
+if ($A3C["0"]) { print_r($A3C["0"]); }
+if ($A4C["0"]) { print_r($A4C["0"]); }
+if ($A5C["0"]) { print_r($A5C["0"]); }
+if ($A6C["0"]) { print_r($A6C["0"]); }
+if ($A7C["0"]) { print_r($A7C["0"]); }
+if ($A8C["0"]) { print_r($A8C["0"]); }
+if ($A9C["0"]) { print_r($A9C["0"]); }
+if ($A10C["0"]) { print_r($A10C["0"]); }
+if ($A11C["0"]) { print_r($A11C["0"]); }
 ?>
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     if ($(e.target).attr('id') == 'first-tab-trigger') { drawOrgChart1(); drawOrgChart2(); drawGaugeChart1(); drawGaugeChart2(); drawAreaChart(); }
     if ($(e.target).attr('id') == 'second-tab-trigger') {
-      <?php foreach ($AC as $ac) { print_r($ac["1"]); } ?>
+      <?php if ($A1C["1"]) { print_r($A1C["1"]); } ?>
+      <?php if ($A2C["1"]) { print_r($A2C["1"]); } ?>
+      <?php if ($A3C["1"]) { print_r($A3C["1"]); } ?>
+      <?php if ($A4C["1"]) { print_r($A4C["1"]); } ?>    
     }
     if ($(e.target).attr('id') == 'third-tab-trigger') {
-      <?php foreach ($BC as $bc) { print_r($bc["1"]); } ?>
+      <?php if ($A5C["1"]) { print_r($A5C["1"]); } ?>
+      <?php if ($A6C["1"]) { print_r($A6C["1"]); } ?>
+      <?php if ($A7C["1"]) { print_r($A7C["1"]); } ?>
+      <?php if ($A8C["1"]) { print_r($A8C["1"]); } ?>
+      <?php if ($A9C["1"]) { print_r($A9C["1"]); } ?>
+      <?php if ($A10C["1"]) { print_r($A10C["1"]); } ?>
+      <?php if ($A11C["1"]) { print_r($A11C["1"]); } ?>    
     }
   })
 
-  $("#missing").find('th:first-child').css("background", "#555");
-  $("#missing").find('td:first-child').css("background", "#eee");
+  $("#missing").find('th:first-child').next().css("background", "#555");
+  $("#missing").find('td:first-child').next().css("background", "#eee");
 
 
 <?php if (($_GET['m'] == "1") || ($m == 1)) { ?>
