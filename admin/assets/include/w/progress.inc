@@ -5,6 +5,8 @@ $excerptRows = "50";
 $base = "/admin/?w=progress&s=".$_GET['s'];
 $result = "/admin/?w=result&s=".$_GET['s'];
 $respondent = "/admin/?w=respondents&s=".$_GET['s'];
+$defaultdata_QC = "{ \"default\": [{ \"questionname\": \"Gender\" }, { \"questionname\": \"Age\" }, { \"questionname\": \"SES\" }], \"monitor\": [{ \"questionname\": \"Interviewer\" }] }";
+$defaultdata_quota = "{ \"quota\": [] }";
 
 $today['year'] = date("Y"); $today['month'] = date("m"); $today['day'] = date("d");
 if ($today['month'] == "01") { $today['month'] = "12"; $today['year'] = $today['year']-1; } else { $today['month'] = $today['month']-1; }
@@ -25,8 +27,8 @@ if ($q1->rowCount() == 0) {
   pageFooter();
   $q = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '" . $_SESSION["email"] . " tried accessing a non-existing project', '5')");
   $q->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
-  $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
-  $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
+  $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_STR);
+  $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_STR);
   $q->execute();
   exit;
 }
@@ -36,7 +38,8 @@ while ($row = $q1->fetchObject()) {
   $private = $row->private;
   $sample_size = $row->sample;
   $options = $row->options;
-  $monitor = $row->QC;
+  $QC = $row->QC;
+  $quota = $row->quota;
   $rr1 = json_decode($row->data, true);
   $rr2 = $rr1['pages'];
   if ($row->pin) { $pinnumber = $row->pin; }
@@ -61,16 +64,40 @@ while ($row = $q1->fetchObject()) {
   //   $timelinedata .= "[ '".$project."', 'Archived', new Date(".$L3['year'].", ".$L3['month'].", ".$L3['day']."), new Date(".$today['year'].", ".$today['month'].", ".$today['day'].") ], \n"; $colordata .= "'#AAAAAA', ";
   // }
 }
-if (!($monitor)) { 
-  $a1 = "{ \"QC\": [{ \"questionname\": \"Gender\" }, { \"questionname\": \"Age\" }, { \"questionname\": \"SES\" }], \"monitor\": [{ \"questionname\": \"Interviewer\" }] }";
+if (empty($QC) || ($QC == "[]")) {
+  $a1 = $defaultdata_QC;
   $a2 = json_decode($a1, true);
   $a3 = json_encode($a2, JSON_PRETTY_PRINT);
-  $q0 = $db->prepare("UPDATE j_projects SET QC = :QC");
+  $q0 = $db->prepare("UPDATE j_projects SET QC = :QC WHERE id = :surveyid");
   $q0->bindValue(':QC', $a3, PDO::PARAM_INT);
-  $q0->execute();
-  $redirect = $base;
-  header("location: $redirect");
+  $q0->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
+  $q0->execute();  
+  $QC = json_encode(json_decode($defaultdata_QC, true),JSON_PRETTY_PRINT);
 }
+if (empty($quota) || ($quota == "[]")) {
+  $b1 = $defaultdata_quota;
+  $b2 = json_decode($b1, true);
+  $b3 = json_encode($b2, JSON_PRETTY_PRINT);
+  $p0 = $db->prepare("UPDATE j_projects SET quota = :quota WHERE id = :surveyid");
+  $p0->bindValue(':quota', $b3, PDO::PARAM_INT);
+  $p0->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
+  $p0->execute();  
+  $quota = json_encode(json_decode($defaultdata_quota, true),JSON_PRETTY_PRINT);
+}
+
+// print_r();
+// print_R($a3);
+// if (wempty(quota)) {
+//   // echo "QQQQ";
+//   $b1 = "{ \"quota\": [] }";
+//   $b2 = json_decode($b1, true);
+//   $b3 = json_encode($b2, JSON_PRETTY_PRINT);
+//   $p0 = $db->prepare("UPDATE j_projects SET quota = :quota WHERE id = :surveyid");
+//   $p0->bindValue(':quota', $b3, PDO::PARAM_INT);
+//   $q0->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
+//   $p0->execute();
+// }
+
 // $timelinedata .= " ]";
 if ($_SESSION['level'] != "9") {
   if ($status < 1 || $status > 3) {
@@ -84,8 +111,8 @@ if ($_SESSION['level'] != "9") {
     pageFooter();
     $q = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '" . $_SESSION["email"] . " tried editing a non-editable project', '5')");
     $q->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
-    $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_INT);
-    $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_INT);
+    $q->bindValue(':userid', $_SESSION["userid"], PDO::PARAM_STR);
+    $q->bindValue(':ip', $_SESSION["ip"], PDO::PARAM_STR);
     $q->execute();
     exit;
   }
@@ -98,7 +125,7 @@ if ($_POST['m'] == "fixerrors") {
   $q2A->execute($execinput);
   $ql2 = $db->prepare("INSERT INTO j_users_logs (surveyid, userid, ip, data, critical) VALUE (:surveyid, :userid, :ip, '".$_SESSION['email']." fixed terminated respondents for $project', '3')");
   $ql2->bindValue(':surveyid', $_GET['s'], PDO::PARAM_INT);
-  $ql2->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_INT);
+  $ql2->bindValue(':userid', $_SESSION['userid'], PDO::PARAM_STR);
   $ql2->bindValue(':ip', $_SESSION['ip'], PDO::PARAM_STR);
   $ql2->execute();
   $redirect = $base."&m=1";
@@ -112,27 +139,32 @@ if ($_POST['m'] == "fixerrors") {
   foreach (array_keys($_POST) as $key) {
     if (substr($key, 0, 5) === "quota") {
       list($a, $b, $c, $d) = split('_', $key);
-      $qq1[$b][$c][] = $_POST[$key];
+      $qq1[$b][$c] = $_POST[$key];
     } else {
       list($x, $y, $z) = split('_', $key);
-      if ($x == "QC") { $qq2[$y][] = $_POST[$key]; }
-      else if ($x == "monitor") { $qq3[$y][] = $_POST[$key]; }
+      if ($x == "default") { $qq2[$y][$z] = $_POST[$key]; }
+      else if ($x == "monitor") { $qq3[$y][$z] = $_POST[$key]; }
     }
   }
-  for ($i=0; $i<count($qq1); $i++) {
-    $c1 = array_map(function ($m, $n) { return array('subgroup' => $m, 'samplesize' => $n); }, $qq1[$i]["subgroup"], $qq1[$i]["samplesize"]);
-    $qq1[$i]["details"] = $c1;
-    unset($qq1[$i]["subgroup"]);
-    unset($qq1[$i]["samplesize"]);
+  // print_r($qq2);
+  // print_r($qq3);
+  foreach ($qq1 as $qqk => $qqv) {
+    $newqq1["questionname"] = $qqv["questionname"];
+    $newqq1["details"]["subgroup"] = $qqv["subgroup"];
+    $newqq1["details"]["samplesize"] = $qqv["samplesize"];
   }
   $newqq2 = array_map(function ($input) { return array('questionname' => $input); }, $qq2["questionname"]);
   $newqq3 = array_map(function ($input) { return array('questionname' => $input); }, $qq3["questionname"]);
+  // print_r($newqq2);
+  // print_r($newqq3);
   $all = [];
   array_push($all, $qq1); $all["quota"] = $all["0"]; unset($all["0"]);
-  array_push($all, $newqq2); $all["QC"] = $all["1"]; unset($all["1"]);
+  array_push($all, $newqq2); $all["default"] = $all["1"]; unset($all["1"]);
   array_push($all, $newqq3); $all["monitor"] = $all["2"]; unset($all["2"]);
   $all = array_remove_empty($all);
+  // print_r($all);
   $json = json_encode($all, JSON_PRETTY_PRINT);
+  print_r($json);
   $query = "QC = :QC, ";
   if (($addtype == "1") || ($addtype == "2")) { $query = $query.$add; }
   $query = substr($query, 0, -2);
@@ -708,10 +740,12 @@ function getMissingTable($input = array()) {
   return $output;
 }
 
-$ff = json_decode($monitor, true); 
-foreach ($ff["QC"] as $fA) { foreach ($fA as $fB) { $mn1[] = $fB; } }
-foreach ($ff["monitor"] as $fC) { foreach ($fC as $fD) { $mn2[] = $fD; } } 
-foreach ($ff["quota"] as $fE) { foreach ($fE as $fF) { $mn3[] = $fF; } } 
+// print_r($QC);
+$ff = json_decode($QC, true); 
+if ($ff["default"]) { foreach ($ff["default"] as $fA) { foreach ($fA as $fB) { $mn1[] = $fB; } } }
+if ($ff["monitor"]) { foreach ($ff["monitor"] as $fC) { foreach ($fC as $fD) { $mn2[] = $fD; } } }
+$fff = json_decode($quota, true); 
+if ($fff["quota"]) { foreach ($fff["quota"] as $fE) { foreach ($fE as $fF) { $mn3[] = $fF; } } }
 
 $A1A = checkingQuestion($mn1["0"], $ee);
 $A1B = getResultHTML($A1A, $RDsuccess, $mn1["0"]);
@@ -938,7 +972,7 @@ echo "    </div>\n";
   var email = "<?php echo $_SESSION['email']; ?>";
   var ip = "<?php echo getip(); ?>";
   var private = <?php echo $private; ?>;
-  var api = 'https://www.siamsquare.org.uk';
+  var api = 'http://www.siamsquare.org.uk';
   $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
   $('#showalert-delete').html("<div class='alert alert-warning'><i class='pe-trash pe-fw'></i> A result record has been deleted</div>").hide();
   $('#showalert-m1').html("<div class='alert alert-success'><i class='pe-check pe-fw'></i> You have successfully cleaned the incorrect termination from this survey. You can notice a better matching in number of responses vs. number of respondents.</div><br>").hide();
@@ -1105,18 +1139,18 @@ echo "    </div>\n";
     $(".csv textarea").click(function() {$(this).focus().select();});
   });
 
-<?php if ($monitor) { echo "var monitor = $monitor;\n"; } else { echo "var monitor = { \"quota\": [], \"QC\": [] };\n"; } ?>
+<?php if ($QC) { echo "var QC = $QC;\n"; } else { echo "var QC = $defaultdata_QC;\n"; } ?>
 
   var counter0 = 0; var counter0z = counter0 + 1; var counter0zz = counter0z + 1;
-  if (typeof(monitor.QC) === 'undefined') {
+  if (typeof(QC.default) === 'undefined') {
     var row1 = "              <tr>\n" +
       "              </tr>\n";
     $('#tableQC').find('tbody').append(row1);
   } else {
-    while (counter0<monitor.QC.length) {
+    while (counter0<QC.default.length) {
       var row1 = "              <tr>\n" +
         "                <td valign=\"middle\">" + counter0z + "</td>\n" +
-        "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"QC_questionname_" + counter0z + "\" value=\"" + monitor.QC[counter0].questionname + "\"></td>\n" +
+        "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"default_questionname_" + counter0z + "\" value=\"" + QC.default[counter0].questionname + "\"></td>\n" +
         "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
         "              </tr>\n";
         $('#tableQC').find('tbody').append(row1);
@@ -1127,7 +1161,7 @@ echo "    </div>\n";
   $('#newkeyquestion1').click(function() {
     var newrow1 = "              <tr>\n" +
       "                <td valign=\"middle\">" + counter0z + "</td>\n" +
-      "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"QC_questionname_" + counter0z + "\"></td>\n" +
+      "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"default_questionname_" + counter0z + "\"></td>\n" +
       "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
       "              </tr>\n";
     $('#tableQC').find('tbody').append(newrow1);
@@ -1136,15 +1170,15 @@ echo "    </div>\n";
   $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
 
   var counter1 = 0; var counter1z = counter1 + 1;
-  if (typeof(monitor.monitor) === 'undefined') {
+  if (typeof(QC.monitor) === 'undefined') {
     var row2 = "              <tr>\n" +
       "              </tr>\n";
     $('#tableMonitor').find('tbody').append(row2);
   } else {
-    while (counter1<monitor.monitor.length) {
+    while (counter1<QC.monitor.length) {
       var row2 = "              <tr>\n" +
         "                <td valign=\"middle\">" + counter1z + "</td>\n" +
-        "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"monitor_questionname_" + counter1z + "\" value=\"" + monitor.monitor[counter1].questionname + "\"></td>\n" +
+        "                <td valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question name\" name=\"monitor_questionname_" + counter1z + "\" value=\"" + QC.monitor[counter1].questionname + "\"></td>\n" +
         "                <td valign=\"middle\"><i class=\"pe-trash pe-fw red deletethisrow\" title=\"Delete this row\"></i></td>\n" +
         "              </tr>\n";
       $('#tableMonitor').find('tbody').append(row2);
@@ -1163,22 +1197,26 @@ echo "    </div>\n";
   });
   $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
 
+
+<?php if ($quota) { echo "var quota = $quota;\n"; } else { echo "var quota = $defaultdata_quota;\n"; } ?>
+
   var counter2a = 0, counter2b = 0;
   var checkcombinedtotalsample = $('#totalsamplesize').val();
-  if (typeof(monitor.quota) === 'undefined') {
+
+  if (typeof(quota.quota) === 'undefined') {
     var row3 = "              <tr>\n" +
       "              </tr>\n";
     $('#tablesamplewrap').find('tbody').append(row3);
   } else {
     var i; var j;
-    for (i=0; i<monitor.quota.length; i++) {
+    for (i=0; i<quota.quota.length; i++) {
       var subTotal= 0, combinedtotalsample = 0; combinedtotalsample[i] = 0;
-      listTable(i, monitor.quota[i].questionname);
-      for (j=0; j<monitor.quota[i].details.length; j++) {
-        listRow(parseInt(j)+1, i, monitor.quota[i].details[j].subgroup, monitor.quota[i].details[j].samplesize);
-        combinedtotalsample += parseInt(monitor.quota[i].details[j].samplesize);
+      listTable(i, quota.quota[i].questionname);
+      for (j=0; j<quota.quota[i].details.length; j++) {
+        listRow(parseInt(j)+1, i, quota.quota[i].details[j].subgroup, quota.quota[i].details[j].samplesize);
+        combinedtotalsample += parseInt(quota.quota[i].details[j].samplesize);
       }
-      suggestedTotalsample(i, monitor.quota[i].questionname, combinedtotalsample);
+      suggestedTotalsample(i, quota.quota[i].questionname, combinedtotalsample);
       addRow(parseInt(j)+2, i);
     }
   }

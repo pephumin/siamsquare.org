@@ -1,0 +1,3631 @@
+{
+ "completedHtml": "<h2><i class='pe-flag-checkered pe-fw'></i> คุณได้ตอบแบบสอบถามเสร็จสมบูรณ์แล้ว</h2>\n\n<p>ระบบได้ทำการบันทึกข้อมูลทั้งหมดเป้นที่เรียบร้อย คุณจะสามารถมั่นใจได้ว่าข้อมูลของคุณจะถูกเก็บเป็นความลับ และความคิดเห็นของคุณจะถูกใช้ประมวลผลสำหรับงานวิจัยนี้เท่านั้น โดยจะประมวลผลรวมกับความคิดเห็นของผู้ที่ร่วมแสดงความคิดเห็นท่านอื่นๆ</p>\n\n<p> ในนามของบริษัท พีอี ไบนารี่ จำกัด เราขอขอบพระคุณสำหรับการสละเวลาอันมีค่าของคุณในวันนี้ และเราหวังว่าจะได้รับความร่วมมือจากคุณอีกในวันข้างหน้า</p>",
+ "pages": [
+  {
+   "name": "0",
+   "questions": [
+    {
+     "type": "html",
+     "name": "Introduction",
+     "html": "<h3>ยินดีต้อนรับเข้าสู่งานวิจัยทดสอบผลิตภัณฑ์</h3>\n\n<p><img src=\"https://cdn1.iconfinder.com/data/icons/black_and_gold/256/Paint.png\" align=\"right\" hspace=\"20\">คุณคือผู้ที่ผ่านการคัดเลือกและได้รับสิทธิ์ในการเข้าร่วมแสดงความคิดเห็นกับงานวิจัยชิ้นนี้ ซึ่งเป็นงานวิจัยตลาดในเรื่องผลิตภัณฑ์บอร์ดไฟเบอร์ซีเมนใหม่ โดยจะใช้เวลารวมทั้งสิ้นโดยเฉลี่ยประมาณ 120 นาที</p>\n\n<p>เพื่อให้เป็นไปตามหลักการปฏิบัติสากลของการวิจัยตลาด เราไม่อ่านผลวิจัยเป็นรายบุคคล ความคิดเห้นของคุณจะถูกนำไปรวมกับของผู้อื่น ก่อนจะถูกประมวลผล และจะถูกนำไปวิเคราะห์ผลที่ภาพรวม  นอกจากนั้นเรายังมีนโยบายความเป็นส่วนตัว ที่ช่วยปกปิดข้อมูลทั้งหมดเป็นความลับ และจะถูกนำไปใช้สำหรับงานวิจัยเท่านั้น</p>\n\n<h4><strong>หากคุณยินดีที่จะเข้าร่วมแสดงความคิดเห็น คุณสามารถเริ่มต้นด้วยการใส่ PIN CODE ลงในช่องด้านล่างเพื่อยืนยันตัวตนและเพื่อเข้าสู่แบบสอบถามหลัก</strong></h4>\n\n<p><i>หมายเหตุ: การให้ช้อมูลที่เป็นเท็จ อาจจะนำมาซึ่งผลในด้านลบ อีกทั้งยังอาจจะมีผลทางด้านกฎหมายตามพระราชบัญญัติว่าด้วยการกระทำความผิดเกี่ยวกับคอมพิวเตอร์</i></p>"
+    },
+    {
+     "type": "text",
+     "name": "PIN",
+     "title": "ใส่ PIN CODE เพื่อทำรายการต่อ (ขอรหัสได้จากพนักงานสัมภาษณ์หรือผู้ดูแลงานภาคสนามในพื้นที่)",
+     "isRequired": true,
+     "inputType": "password",
+     "placeHolder": "PIN CODE"
+    }
+   ]
+  },
+  {
+   "name": "1",
+   "questions": [
+    {
+     "type": "html",
+     "name": "Prelude",
+     "html": "<h3>สำหรับพนักงานสัมภาษณ์</h3>\n\n<p>ทุกคำถามในส่วนนี้ จะถูกบันทึกโดยพนักงานสัมภาษณ์เท่านั้น โดยที่คำตอบส่วนใหญ่จะมีอยู่แล้วในแบบสอบถามคัดเลือก ซึ่งคำตอบจะต้องคัดลอกมาให้เหมือนกัน เพราะจะถูกใช้สำหรับการ QC/Edit</p>\n\n<p>ตรวจสอบให้แน่ใจว่าได้ทำการบันทึกครบถ้วนทุกข้อ จากนั้นให้ดำเนินการต่อ เพื่อจะเข้าสู่แบบสอบถามหลัก โดยที่ผู้ให้สัมภาษณ์สามารถเลือกได้ว่า จะเป็นผู้ที่ทำแบบสอบถามเอง หรือจะให้พนักงานทำการสัมภาษณ์พร้อมบันทึกข้อมูลให้</p>"
+    },
+    {
+     "type": "text",
+     "name": "Interviewer",
+     "title": "ชื่อและนามสกุล ของพนักงานสัมภาษณ์ (กรุณาตรวจสอบให้แน่ใจว่าสะกดชื่อและนามสกุลถูกต้องและเหมือนกันทุกครั้ง)",
+     "isRequired": true,
+     "placeHolder": "ชื่อ นามสกุล"
+    },
+    {
+     "type": "multipletext",
+     "colCount": 2,
+     "isRequired": true,
+     "items": [
+      {
+       "name": "First name",
+       "title": "ชื่อ"
+      },
+      {
+       "name": "Surname",
+       "title": "นามสกุล"
+      },
+      {
+       "name": "Address1",
+       "title": "บ้านเลขที่ / ซอย"
+      },
+      {
+       "name": "Address2",
+       "title": "แขวง / ตำบล"
+      },
+      {
+       "name": "Address3",
+       "title": "เขต / อำเภอ"
+      },
+      {
+       "name": "Province",
+       "title": "จังหวัด"
+      },
+      {
+       "name": "Mobile",
+       "title": "โทรศัพท์มือถือ"
+      },
+      {
+       "name": "Email",
+       "title": "อีเมล์"
+      }
+     ],
+     "name": "RespondentInformation",
+     "title": "ข้อมูลของผู้ให้สัมภาษณ์ กรุณากรอกให้ครบทุกช่อง"
+    },
+    {
+     "type": "matrixdropdown",
+     "columns": [
+      {
+       "name": "Gender",
+       "title": "เพศ",
+       "choices": [
+        {
+         "value": "Male",
+         "text": "ผู้ชาย"
+        },
+        {
+         "value": "Female",
+         "text": "ผู้หญิง"
+        }
+       ],
+       "optionsCaption": "เลือกคำตอบ",
+       "cellType": "dropdown"
+      },
+      {
+       "name": "Age",
+       "title": "อายุ",
+       "choices": [
+        {
+         "value": "25-35 years old",
+         "text": "25-35 ปี"
+        },
+        {
+         "value": "36-45 years old",
+         "text": "36-45 ปี"
+        },
+        {
+         "value": "46-55 years old",
+         "text": "46-55 ปี"
+        },
+        {
+         "value": "55+ years old",
+         "text": "55 ปีหรือมากกว่า"
+        }
+       ],
+       "optionsCaption": "เลือกคำตอบ",
+       "cellType": "dropdown"
+      },
+      {
+       "name": "SES",
+       "title": "สถานะภาพทางสังคม",
+       "choices": [
+        {
+         "value": "SES-A",
+         "text": "SES-A (85,000 บาทหรือสูงกว่า)"
+        },
+        {
+         "value": "SES-B",
+         "text": "SES-B (50,000-84,999 บาท)"
+        },
+        {
+         "value": "SES-C",
+         "text": "SES-C (18,000-49,999 บาท)"
+        },
+        {
+         "value": "SES-D",
+         "text": "SES-D (7,500-17,999 บาท)"
+        }
+       ],
+       "optionsCaption": "เลือกคำตอบ",
+       "cellType": "dropdown"
+      }
+     ],
+     "isRequired": true,
+     "name": "Demographic",
+     "optionsCaption": "เลือกคำตอบ",
+     "rows": [
+      {
+       "value": "Record",
+       "text": "บันทึก"
+      }
+     ],
+     "title": "ข้อมูลประชากรศาสตร์ของผู้ให้สัมภาษณ์ (ลอกคำตอบจากแบบสอบถามส่วนคัดเลือก)"
+    }
+   ]
+  },
+  {
+   "name": "2.1",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroMain",
+     "html": "<h3>แบบสอบถามหลัก</h3>"
+    },
+    {
+     "type": "checkbox",
+     "name": "FCType",
+     "title": "คุณมักทาสี [ไฟเบอร์ซีเมนต์/ซีเมนต์บอร์ด/แผ่นเรียบ/สมาร์ทบอร์ด/วัสดุทดแทนไม้] กับงานประเภทใดบ้าง [หลายคำตอบ]",
+     "isRequired": true,
+     "choices": [
+      {
+       "value": "Ceiling",
+       "text": "งานฝ้า"
+      },
+      {
+       "value": "Wall",
+       "text": "งานผนัง"
+      },
+      {
+       "value": "Floor",
+       "text": "งานพื้น"
+      },
+      {
+       "value": "Decorative woods",
+       "text": "ไม้ฝา ไม้เชิงชาย ไม้บัว ไม้มอบ ไม้รั้ว"
+      }
+     ]
+    },
+    {
+     "type": "checkbox",
+     "name": "DecisionColour",
+     "title": "ในฐานะที่คุณเป็นช่างทาสี ใครมักเป็น คนตัดสินใจเลือกเฉดสี ที่ใช้ทา [ไฟเบอร์ซีเมนต์/ซีเมนต์บอร์ด/แผ่นเรียบ/สมาร์ทบอร์ด/วัสดุทดแทนไม้] [หลายคำตอบ]",
+     "isRequired": true,
+     "choices": [
+      {
+       "value": "House Owner",
+       "text": "เจ้าของบ้าน (รวมไปถึงญาติเจ้าของบ้าน/ภรรยา/บุตร/ฯลฯ)"
+      },
+      {
+       "value": "Craftsman",
+       "text": "ช่าง"
+      },
+      {
+       "value": "Contractor",
+       "text": "ผู้รับเหมา"
+      },
+      {
+       "value": "Architect",
+       "text": "สถาปนิก"
+      },
+      {
+       "value": "Developer",
+       "text": "โครงการ"
+      }
+     ]
+    },
+    {
+     "type": "checkbox",
+     "name": "FCInfoCheck",
+     "title": "ก่อนการซื้อ [ไฟเบอร์ซีเมนต์/ซีเมนต์บอร์ด/แผ่นเรียบ/สมาร์ทบอร์ด/วัสดุทดแทนไม้] คุณ ตรวจสอบสินค้าและราคา ผ่านทางช่องทางใดบ้าง [หลายคำตอบ]",
+     "isRequired": true,
+     "choices": [
+      {
+       "value": "Visit to shops/ stores",
+       "text": "สอบถามจากหน้าร้าน/ร้านค้า/ผู้จำหน่าย ไปเองที่หน้าร้าน"
+      },
+      {
+       "value": "Ask friends or family",
+       "text": "สอบถามจากเพื่อน/ญาติ/คนรู้จัก"
+      },
+      {
+       "value": "Ask contractor/ craftsman/ experts",
+       "text": "สอบถามจากผู้รับเหมา/ช่าง/ผู้ชำนาญการ"
+      },
+      {
+       "value": "Online: Internet browsing",
+       "text": "ผ่านช่องทางออนไลน์ เช่น กูเกิล เว็บไซต์"
+      },
+      {
+       "value": "Online: Marketplace",
+       "text": "ผ่านช่องทางออนไลน์ของร้าน เช่น แอพพลิเคชั่นร้านค้า หรือ ไลน์ร้านค้า"
+      },
+      {
+       "value": "Ask PC/ store employees",
+       "text": "ผ่านช่องทางออนไลน์ของพนักงานขาย เช่น ไลน์พีซี หรือ ไลน์พนักงานร้าน"
+      },
+      {
+       "value": "Call shops/ stores",
+       "text": "ผ่านการโทรศัพท์สอบถามที่ร้านค้า ผู้แทนจำหน่าย"
+      },
+      {
+       "value": "Prints",
+       "text": "จากสื่อสิ่งพิมพ์ต่างๆ เช่น หนังสือ/วารสาร/ใบปลิว"
+      },
+      {
+       "value": "I do not check",
+       "text": "ไม่ได้ตรวจสอบสินค้าและราคาก่อนซื้อ"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "2.2",
+   "questions": [
+    {
+     "type": "checkbox",
+     "name": "PrimrerUse",
+     "title": "คุณใช้ สีรองพื้น ประเภทใด ในการทา [ไฟเบอร์ซีเมนต์/ซีเมนต์บอร์ด/แผ่นเรียบ/สมาร์ทบอร์ด/วัสดุทดแทนไม้] [หลายคำตอบ]",
+     "isRequired": true,
+     "choices": [
+      {
+       "value": "Old plaster primer",
+       "text": "สีรองพื้นปูนเก่า"
+      },
+      {
+       "value": "New plaster primer",
+       "text": "สีรองพื้นปูนใหม่"
+      },
+      {
+       "value": "Fibre Cement primer",
+       "text": "สีรองพื้นสำหรับทาไฟเบอร์ซีเมนต์โดยเฉพาะ"
+      },
+      {
+       "value": "I do not use",
+       "text": "ไม่ทาสีรองพื้น"
+      }
+     ]
+    },
+    {
+     "type": "checkbox",
+     "name": "PaintUse",
+     "title": "แล้วคุณใช้ สีทาทับหน้า (สีจริง) ประเภทใด ในการทา [ไฟเบอร์ซีเมนต์/ซีเมนต์บอร์ด/แผ่นเรียบ/สมาร์ทบอร์ด/วัสดุทดแทนไม้] [หลายคำตอบ]",
+     "isRequired": true,
+     "choices": [
+      {
+       "value": "Acrylic",
+       "text": "สีน้ำอะคริลิคทั่วไป"
+      },
+      {
+       "value": "FC",
+       "text": "สีทาไฟเบอร์ซีเมนต์โดยเฉพาะ"
+      },
+      {
+       "value": "Oil",
+       "text": "สีน้ำมัน"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "2.3",
+   "questions": [
+    {
+     "type": "checkbox",
+     "name": "FCPaintPurchase",
+     "title": "คุณซื้อ สีทาไฟเบอร์ซีเมนต์โดยเฉพาะ จากช่องทางใดบ้าง [หลายคำตอบ]",
+     "isRequired": true,
+     "choices": [
+      {
+       "value": "General paint shops",
+       "text": "ร้านขายสีทั่วไป"
+      },
+      {
+       "value": "Modern trade (at store)",
+       "text": "ร้านโมเดิร์นเทรด เช่น โฮมโปร ไทวัสดุ ผ่านทางหน้าร้าน"
+      },
+      {
+       "value": "Modern trade (online)",
+       "text": "ร้านโมเดิร์นเทรด เช่น โฮมโปร ไทวัสดุ ผ่านทางออนไลน์"
+      },
+      {
+       "value": "Retailers (at shop)",
+       "text": "ร้านค้าปลีก ร้านค้าส่ง ร้านฮาร์ดแวร์ ผ่านทางหน้าร้าน"
+      },
+      {
+       "value": "Retailers (online)",
+       "text": "ร้านค้าปลีก ร้านค้าส่ง ร้านฮาร์ดแวร์ ผ่านทางออนไลน์"
+      },
+      {
+       "value": "Online marketplace",
+       "text": "ช่องทางออนไลน์: ตลาดออนไลน์ เช่น ลาซาด้า ช้อปปี้"
+      },
+      {
+       "value": "Manufacture websites",
+       "text": "ช่องทางออนไลน์: เว็บไซต์ของบริษัทผู้ผลิต"
+      },
+      {
+       "value": "Facebook page/ Instagram",
+       "text": "ช่องทางออนไลน์: เพจ/ร้านค้าของผู้ค้ารายย่อย เช่น เฟสบุ๊ค อินสตาแกรม"
+      },
+      {
+       "value": "Retailers (other methods)",
+       "text": "ติดต่อตรงกับผู้ค้ารายย่อยด้วยช่องทางอื่นๆ"
+      },
+      {
+       "value": "I have never bought Fibre Cement Paint",
+       "text": "ยังไม่เคยซื้อสีทาไฟเบอร์ซีเมนต์โดยเฉพาะเลย"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "2.4",
+   "questions": [
+    {
+     "type": "checkbox",
+     "name": "FCBrandAwareness",
+     "title": "คุณรู้จัก/เคยได้ยิน สีทาไฟเบอร์ซีเมนต์โดยเฉพาะ ยี่ห้ออะไรต่อไปนี้บ้าง [หลายคำตอบ]",
+     "isRequired": true,
+     "choices": [
+      {
+       "value": "TOA",
+       "text": "ทีโอเอ"
+      },
+      {
+       "value": "Beger",
+       "text": "เบเยอร์"
+      },
+      {
+       "value": "Shera",
+       "text": "เฌอร่า"
+      },
+      {
+       "value": "Rothenburg",
+       "text": "โรเทนเบิร์ก"
+      },
+      {
+       "value": "None",
+       "text": "ไม่รู้จัก"
+      }
+     ]
+    },
+    {
+     "type": "checkbox",
+     "name": "FCBrandEverBought",
+     "title": "แล้วคุณุเคยซื้อ สีทาไฟเบอร์ซีเมนต์โดยเฉพาะ ยี่ห้อใดบ้าง [หลายคำตอบ]",
+     "isRequired": true,
+     "choices": [
+      {
+       "value": "TOA",
+       "text": "ทีโอเอ"
+      },
+      {
+       "value": "Beger",
+       "text": "เบเยอร์"
+      },
+      {
+       "value": "Shera",
+       "text": "เฌอร่า"
+      },
+      {
+       "value": "Rothenburg",
+       "text": "โรเทนเบิร์ก"
+      },
+      {
+       "value": "None",
+       "text": "ไม่เคยซื้อ"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "2.5",
+   "questions": [
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "Definitely buy",
+       "text": "ซื้ออย่างแน่นอน"
+      },
+      {
+       "value": "Probably buy",
+       "text": "ซื้อ"
+      },
+      {
+       "value": "Not sure",
+       "text": "ไม่แน่ใจ"
+      },
+      {
+       "value": "Probably not buy",
+       "text": "ไม่ซื้อ"
+      },
+      {
+       "value": "Definitely not buy",
+       "text": "ไม่ซื้ออย่างแน่นอน"
+      }
+     ],
+     "isRequired": true,
+     "name": "SheraPaint",
+     "title": "หาก เฌอร่า มี สีทาไฟเบอร์ซีเมนต์โดยเฉพาะ คุณจะเลือกซื้อหรือไม่ [คำตอบเดียว] "
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "Promotions",
+       "text": "มีโปรโมชั่นหรือของสมนาคุณหลังจบการอบรม"
+      },
+      {
+       "value": "Certificates",
+       "text": "มีประกาศนียบัตรหลังจบการอบรม"
+      },
+      {
+       "value": "Get works from Shera",
+       "text": "โอกาสเข้าร่วมเป็นช่างเฌอร่า มีการมอบงานให้จากเฌอร่า"
+      },
+      {
+       "value": "Not interested",
+       "text": "ไม่สนใจเลย"
+      }
+     ],
+     "isRequired": true,
+     "name": "SheraTraining",
+     "title": "หาก เฌอร่า จัดงานฝึกอบรมช่างสำหรับงานติดตั้งผลิตภัณฑ์และงานทาสี ใกล้ที่ทำงานของคุณ คุณจะสนใจเข้าร่วมการอบรมต่อเมื่อ [คำตอบเดียว]"
+    }
+   ]
+  },
+  {
+   "name": "2.6",
+   "questions": [
+    {
+     "type": "matrix",
+     "name": "ImportantFactor",
+     "title": "ต่อไปนี้เป็นข้อความที่คนทั่วไปกล่าวถึง สิ่งต่างๆที่สำคัญในการเลือก [ไฟเบอร์ซีเมนต์/ซีเมนต์บอร์ด/แผ่นเรียบ/สมาร์ทบอร์ด/วัสดุทดแทนไม้] สำหรับตัวคุณเองนั้น แต่ละข้อความต่าง ๆเหล่านี้มีความสำคัญมากน้อยเพียงใด กรุณาใช้คะแนนตั้งแต่ 1 ถึง 5 โดยที่ 1 หมายถึงไม่สำคัญเลยและ 5 หมายถึงสำคัญมาก เราขอย้ำอีกครั้งว่าไม่มีคำตอบถูกหรือผิด เราเพียงต้องการทราบความคิดเห็นของคุณ [คำตอบเดียว]",
+     "isRequired": true,
+     "columns": [
+      {
+       "value": "Not important at all",
+       "text": "ไม่สำคัญเลย"
+      },
+      {
+       "value": "Not important",
+       "text": "ไม่สำคัญ"
+      },
+      {
+       "value": "Neither nor",
+       "text": "เฉยๆ"
+      },
+      {
+       "value": "Important",
+       "text": "สำคัญ"
+      },
+      {
+       "value": "Very important",
+       "text": "สำคัญมาก"
+      }
+     ],
+     "rows": [
+      {
+       "value": "Price",
+       "text": "ราคาที่เหมาะสม"
+      },
+      {
+       "value": "Trustworthy brabnd",
+       "text": "เป็นยี่ห้อที่เชื่อใจได้"
+      },
+      {
+       "value": "Ease of install",
+       "text": "ติดตั้งง่าย"
+      },
+      {
+       "value": "Ease of paint",
+       "text": "ทาสีง่าย"
+      },
+      {
+       "value": "Consume less amount of paint",
+       "text": "ใช้ปริมาณสีน้อยในการทา"
+      },
+      {
+       "value": "Smooth surface",
+       "text": "เนื้อบอร์ดเรียบ"
+      },
+      {
+       "value": "No. of timea to paint",
+       "text": "จำนวนครั้งที่ต้องใช้ในการทาสี"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "2.7",
+   "questions": [
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "Yes",
+       "text": "เคยซื้อ"
+      },
+      {
+       "value": "No",
+       "text": "ไม่เคยซื้อ"
+      },
+      {
+       "value": "No answer",
+       "text": "ไม่มีคำตอบ (สำหรับผู้ที่สัมภาษณ์ก่อนวันที่ 2 เมษายน 2564)"
+      }
+     ],
+     "isRequired": true,
+     "name": "FCP6M",
+     "title": "ใน 6 เดือนที่ผ่านมา คุณได้ซื้อ [ไฟเบอร์ซีเมนต์/ซีเมนต์บอร์ด/แผ่นเรียบ/สมาร์ทบอร์ด/วัสดุทดแทนไม้] ด้วยตัวเองบ้างหรือไม่ [คำตอบเเดียว]"
+    }
+   ]
+  },
+  {
+   "name": "3.1",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroProduct1",
+     "html": "<h3>Product #1A (ทาครั้งที่ 1)</h3>"
+    },
+    {
+     "type": "dropdown",
+     "name": "Rotation1",
+     "title": "บันทึกผลิตภํณฑ์ทดสอบ",
+     "isRequired": true,
+     "choices": [
+      {
+       "value": "CA",
+       "text": "ผลิตภัณฑ์ทดสอบ CA"
+      },
+      {
+       "value": "CB",
+       "text": "ผลิตภัณฑ์ทดสอบ CB"
+      }
+     ],
+     "optionsCaption": "เลือก"
+    },
+    {
+     "type": "multipletext",
+     "colCount": 3,
+     "isRequired": true,
+     "itemSize": "5",
+     "items": [
+      {
+       "name": "WeightBefore",
+       "title": "น้ำหนักสี ก่อนเริ่มทา (กิโลกรัม)"
+      },
+      {
+       "name": "WeightAfter",
+       "title": "น้ำหนักสี หลังทาเสร็จ (กิโลกรัม)"
+      },
+      {
+       "name": "Weight",
+       "title": "ปริมาณสีที่ใช้ไปทั้งหมด (กิโลกรัม)"
+      },
+      {
+       "name": "TimeBefore",
+       "title": "บันทึกเวลา ตอนเริ่มทา"
+      },
+      {
+       "name": "TimeAfter",
+       "title": "บันทึกเวลา หลังทาเสร็จ"
+      },
+      {
+       "name": "Time",
+       "title": "เวลาที่ใช้ไปทั้งหมด (นาที)"
+      }
+     ],
+     "name": "WeightTime1",
+     "title": "บันทึกน้ำหนักและเวลา"
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "Yes",
+       "text": "ใช้"
+      },
+      {
+       "value": "No",
+       "text": "ไม่ได้ใช้"
+      }
+     ],
+     "isRequired": true,
+     "name": "TrayA",
+     "title": "ผู้ให้สัมภาษณ์ ใช้ถาดในการทาสีรองพื้นหรือไม่ (ไม่ต้องถาม ใช้วิธีสีงเกตการณ์)"
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "I don't like it a lot",
+       "text": "ไม่ชอบเลย"
+      },
+      {
+       "value": "I don't like it slightly",
+       "text": "ไม่ชอบมาก"
+      },
+      {
+       "value": "I don't like it somewhat",
+       "text": "ไม่ชอบเล็กน้อย"
+      },
+      {
+       "value": "Neither nor",
+       "text": "เฉยๆ"
+      },
+      {
+       "value": "I like it somewhat",
+       "text": "ชอบเล็กน้อย"
+      },
+      {
+       "value": "I like it slightly",
+       "text": "ชอบมาก"
+      },
+      {
+       "value": "I like it a lot",
+       "text": "ชอบมากอย่างยิ่ง"
+      }
+     ],
+     "isRequired": true,
+     "name": "Liking1",
+     "title": "หลังจากที่คุณได้ทดลองทาสีแล้ว คะแนนระดับความชอบที่คุณมีต่อบอร์ดไฟเบอร์ซีเมนต์นี้เป็นอย่างไร [คำตอบเดียว]"
+    }
+   ]
+  },
+  {
+   "name": "3.2",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroProduct1",
+     "html": "<h3>Product #1A (ทาครั้งที่ 1)</h3>"
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceA1",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ การกินสี (การดูดซึมสี)",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "กินสีน้อย (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "กินสีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceB1",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ ความเต็ม-ความอิ่มของสี หรือ การกลบพื้นผิว",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "แย่มาก (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ดีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceC1",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ ความเรียบเนียนของพื้นผิวหลังทา",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "แย่มาก (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ดีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceD1",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ แรงที่ใช้ในการทาสี",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "ออกแรงน้อย (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ออกแรงมาก (5)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "4.1",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroProduct2",
+     "html": "<h3>Product #1B (ทาครั้งที่ 2)</h3>"
+    },
+    {
+     "type": "multipletext",
+     "colCount": 3,
+     "isRequired": true,
+     "itemSize": "5",
+     "items": [
+      {
+       "name": "WeightBefore",
+       "title": "น้ำหนักสี ก่อนเริ่มทา (กิโลกรัม)"
+      },
+      {
+       "name": "WeightAfter",
+       "title": "น้ำหนักสี หลังทาเสร็จ (กิโลกรัม)"
+      },
+      {
+       "name": "Weight",
+       "title": "ปริมาณสีที่ใช้ไปทั้งหมด (กิโลกรัม)"
+      },
+      {
+       "name": "TimeBefore",
+       "title": "บันทึกเวลา ตอนเริ่มทา"
+      },
+      {
+       "name": "TimeAfter",
+       "title": "บันทึกเวลา หลังทาเสร็จ"
+      },
+      {
+       "name": "Time",
+       "title": "เวลาที่ใช้ไปทั้งหมด (นาที)"
+      }
+     ],
+     "name": "WeightTime2",
+     "title": "บันทึกน้ำหนักและเวลา"
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "Yes",
+       "text": "ใช้"
+      },
+      {
+       "value": "No",
+       "text": "ไม่ได้ใช้"
+      }
+     ],
+     "isRequired": true,
+     "name": "TrayB",
+     "title": "ผู้ให้สัมภาษณ์ ใช้ถาดในการทาสีจริงหรือไม่ (ไม่ต้องถาม ใช้วิธีสีงเกตการณ์)"
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "I don't like it a lot",
+       "text": "ไม่ชอบเลย"
+      },
+      {
+       "value": "I don't like it slightly",
+       "text": "ไม่ชอบมาก"
+      },
+      {
+       "value": "I don't like it somewhat",
+       "text": "ไม่ชอบเล็กน้อย"
+      },
+      {
+       "value": "Neither nor",
+       "text": "เฉยๆ"
+      },
+      {
+       "value": "I like it somewhat",
+       "text": "ชอบเล็กน้อย"
+      },
+      {
+       "value": "I like it slightly",
+       "text": "ชอบมาก"
+      },
+      {
+       "value": "I like it a lot",
+       "text": "ชอบมากอย่างยิ่ง"
+      }
+     ],
+     "isRequired": true,
+     "name": "Liking2",
+     "title": "หลังจากที่คุณได้ทดลองทาสีแล้ว คะแนนระดับความชอบที่คุณมีต่อบอร์ดไฟเบอร์ซีเมนต์นี้เป็นอย่างไร [คำตอบเดียว]"
+    }
+   ]
+  },
+  {
+   "name": "4.2",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroProduct2",
+     "html": "<h3>Product #1B (ทาครั้งที่ 2)</h3>"
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceA2",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ การกินสี (การดูดซึมสี)",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "กินสีน้อย (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "กินสีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceB2",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ ความเต็ม-ความอิ่มของสี หรือ การกลบพื้นผิว",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "แย่มาก (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ดีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceC2",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ ความเรียบเนียนของพื้นผิวหลังทา",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "แย่มาก (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ดีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceD2",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ แรงที่ใช้ในการทาสี",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "ออกแรงน้อย (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ออกแรงมาก (5)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "5.1",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroProduct3",
+     "html": "<h3>Product #1C (ทาครั้งที่ 3)</h3>"
+    },
+    {
+     "type": "multipletext",
+     "colCount": 3,
+     "isRequired": true,
+     "itemSize": "5",
+     "items": [
+      {
+       "name": "WeightBefore",
+       "title": "น้ำหนักสี ก่อนเริ่มทา (กิโลกรัม)"
+      },
+      {
+       "name": "WeightAfter",
+       "title": "น้ำหนักสี หลังทาเสร็จ (กิโลกรัม)"
+      },
+      {
+       "name": "Weight",
+       "title": "ปริมาณสีที่ใช้ไปทั้งหมด (กิโลกรัม)"
+      },
+      {
+       "name": "TimeBefore",
+       "title": "บันทึกเวลา ตอนเริ่มทา"
+      },
+      {
+       "name": "TimeAfter",
+       "title": "บันทึกเวลา หลังทาเสร็จ"
+      },
+      {
+       "name": "Time",
+       "title": "เวลาที่ใช้ไปทั้งหมด (นาที)"
+      }
+     ],
+     "name": "WeightTime3",
+     "title": "บันทึกน้ำหนักและเวลา"
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "I don't like it a lot",
+       "text": "ไม่ชอบเลย"
+      },
+      {
+       "value": "I don't like it slightly",
+       "text": "ไม่ชอบมาก"
+      },
+      {
+       "value": "I don't like it somewhat",
+       "text": "ไม่ชอบเล็กน้อย"
+      },
+      {
+       "value": "Neither nor",
+       "text": "เฉยๆ"
+      },
+      {
+       "value": "I like it somewhat",
+       "text": "ชอบเล็กน้อย"
+      },
+      {
+       "value": "I like it slightly",
+       "text": "ชอบมาก"
+      },
+      {
+       "value": "I like it a lot",
+       "text": "ชอบมากอย่างยิ่ง"
+      }
+     ],
+     "isRequired": true,
+     "name": "Liking3",
+     "title": "หลังจากที่คุณได้ทดลองทาสีแล้ว คะแนนระดับความชอบที่คุณมีต่อบอร์ดไฟเบอร์ซีเมนต์นี้เป็นอย่างไร [คำตอบเดียว]"
+    }
+   ]
+  },
+  {
+   "name": "5.2",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroProduct3",
+     "html": "<h3>Product #1C (ทาครั้งที่ 3)</h3>"
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceA3",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ การกินสี (การดูดซึมสี)",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "กินสีน้อย (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "กินสีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceB3",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ ความเต็ม-ความอิ่มของสี หรือ การกลบพื้นผิว",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "แย่มาก (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ดีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceC3",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ ความเรียบเนียนของพื้นผิวหลังทา",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "แย่มาก (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ดีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceD3",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ แรงที่ใช้ในการทาสี",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "ออกแรงน้อย (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ออกแรงมาก (5)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "6",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroSummary1",
+     "html": "<h3>Product #1 (สรุป)</h3>"
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "I don't like it a lot",
+       "text": "ไม่ชอบเลย"
+      },
+      {
+       "value": "I don't like it slightly",
+       "text": "ไม่ชอบมาก"
+      },
+      {
+       "value": "I don't like it somewhat",
+       "text": "ไม่ชอบเล็กน้อย"
+      },
+      {
+       "value": "Neither nor",
+       "text": "เฉยๆ"
+      },
+      {
+       "value": "I like it somewhat",
+       "text": "ชอบเล็กน้อย"
+      },
+      {
+       "value": "I like it slightly",
+       "text": "ชอบมาก"
+      },
+      {
+       "value": "I like it a lot",
+       "text": "ชอบมากอย่างยิ่ง"
+      }
+     ],
+     "isRequired": true,
+     "name": "OverallLiking1",
+     "title": "หลังจากที่คุณได้ทดลองทาสีไปทั้งครบสามครั้งแล้วนั้น ระดับ ความชอบโดยรวม ที่คุณมีต่อบอร์ดไฟเบอร์ซีเมนต์นี้เป็นอย่างไร [คำตอบเดียว]"
+    },
+    {
+     "type": "comment",
+     "name": "LikesDislikes1",
+     "title": "โดยรวมแล้ว คุณชอบหรือไม่ชอบอะไร กับผลิตภัณฑ์บอร์ดไฟเบอร์ซีเมนทดสอบนี้บ้าง",
+     "isRequired": true
+    },
+    {
+     "type": "dropdown",
+     "name": "NPS1",
+     "title": "คุณจะแนะนำผลิตภัณฑ์นี้ให้กับผู้อื่นอย่างไร กรุณาตอบเพียงคำตอบเดียว โดยที่ 0 หมายถึง คุณจะไม่แนะนำอย่างแน่นอน และ 10 หมายถึงคุณจะแนะนำอย่างแน่นอน",
+     "isRequired": true,
+     "choices": [
+      {
+       "value": "0",
+       "text": "0"
+      },
+      {
+       "value": "1",
+       "text": "1"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "5"
+      },
+      {
+       "value": "6",
+       "text": "6"
+      },
+      {
+       "value": "7",
+       "text": "7"
+      },
+      {
+       "value": "8",
+       "text": "8"
+      },
+      {
+       "value": "9",
+       "text": "9"
+      },
+      {
+       "value": "10",
+       "text": "10"
+      }
+     ],
+     "renderAs": "NPS",
+     "ratingTheme": "square-2",
+     "showValues": true
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "Definitely not buy it",
+       "text": "จะไม่ซื้ออย่างแน่นอน"
+      },
+      {
+       "value": "Probably not buy it",
+       "text": "อาจจะไม่ซื้อ"
+      },
+      {
+       "value": "Not sure",
+       "text": "ไม่แน่ใจ"
+      },
+      {
+       "value": "Probably buy it",
+       "text": "อาจจะซื้อ"
+      },
+      {
+       "value": "Definitely buy it",
+       "text": "จะซื้ออย่างแน่นอน"
+      }
+     ],
+     "isRequired": true,
+     "name": "PI1",
+     "title": "หากผลิตภัณฑ์ที่คุณเพิ่งทาสีเสร็จไปนี้ นี้มีวางจำหน่ายในร้านค้าที่คุณซื้อประจำ ในราคาที่สูงขึ้นกว่าราคาเดิม 8 บาท ระดับการซื้อของคุณจะเป็นอย่างไร [คำตอบเดียว]"
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "No",
+       "text": "ไม่ดีพอที่จะส่งมอบ"
+      },
+      {
+       "value": "Yes",
+       "text": "ดีพอแล้วที่จะส่งมอบ"
+      },
+      {
+       "value": "No answer",
+       "text": "ไม่มีคำตอบ (สำหรับผู้ที่สัมภาษณ์ก่อนวันที่ 1 เมษายน 2564)"
+      }
+     ],
+     "isRequired": true,
+     "name": "ForJobDelivery1",
+     "title": "บอร์ดไฟเบอร์ซีเมนต์ที่คุณเพิ่งทาสีเสร็จไปนี้ ดีพอที่จะส่งมอบให้กับลูกค้า หรือ ผู้ว่าจ้างของคุณ (ลูกค้าหรือผู้ว่าจ้าง อาจจะเป็นเจ้าของบ้าน ผู้รับเหมา เป็นต้น) หรือยัง [คำตอบเดียว]"
+    }
+   ]
+  },
+  {
+   "name": "7.1",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroProduct4",
+     "html": "<h3>Product #2A (ทาครั้งที่ 1)</h3>"
+    },
+    {
+     "type": "dropdown",
+     "name": "Rotation4",
+     "title": "บันทึกผลิตภํณฑ์ทดสอบ",
+     "isRequired": true,
+     "choices": [
+      {
+       "value": "CA",
+       "text": "ผลิตภัณฑ์ทดสอบ CA"
+      },
+      {
+       "value": "CB",
+       "text": "ผลิตภัณฑ์ทดสอบ CB"
+      }
+     ]
+    },
+    {
+     "type": "multipletext",
+     "colCount": 3,
+     "isRequired": true,
+     "itemSize": "5",
+     "items": [
+      {
+       "name": "WeightBefore",
+       "title": "น้ำหนักสี ก่อนเริ่มทา (กิโลกรัม)"
+      },
+      {
+       "name": "WeightAfter",
+       "title": "น้ำหนักสี หลังทาเสร็จ (กิโลกรัม)"
+      },
+      {
+       "name": "Weight",
+       "title": "ปริมาณสีที่ใช้ไปทั้งหมด (กิโลกรัม)"
+      },
+      {
+       "name": "TimeBefore",
+       "title": "บันทึกเวลา ตอนเริ่มทา"
+      },
+      {
+       "name": "TimeAfter",
+       "title": "บันทึกเวลา หลังทาเสร็จ"
+      },
+      {
+       "name": "Time",
+       "title": "เวลาที่ใช้ไปทั้งหมด (นาที)"
+      }
+     ],
+     "name": "WeightTime4",
+     "title": "บันทึกน้ำหนักและเวลา"
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "I don't like it a lot",
+       "text": "ไม่ชอบเลย"
+      },
+      {
+       "value": "I don't like it slightly",
+       "text": "ไม่ชอบมาก"
+      },
+      {
+       "value": "I don't like it somewhat",
+       "text": "ไม่ชอบเล็กน้อย"
+      },
+      {
+       "value": "Neither nor",
+       "text": "เฉยๆ"
+      },
+      {
+       "value": "I like it somewhat",
+       "text": "ชอบเล็กน้อย"
+      },
+      {
+       "value": "I like it slightly",
+       "text": "ชอบมาก"
+      },
+      {
+       "value": "I like it a lot",
+       "text": "ชอบมากอย่างยิ่ง"
+      }
+     ],
+     "isRequired": true,
+     "name": "Liking4",
+     "title": "หลังจากที่คุณได้ทดลองทาสีแล้ว คะแนนระดับความชอบที่คุณมีต่อบอร์ดไฟเบอร์ซีเมนต์นี้เป็นอย่างไร [คำตอบเดียว]"
+    }
+   ]
+  },
+  {
+   "name": "7.2",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroProduct4",
+     "html": "<h3>Product #2A (ทาครั้งที่ 1)</h3>"
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceA4",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ การกินสี (การดูดซึมสี)",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "กินสีน้อย (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "กินสีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceB4",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ ความเต็ม-ความอิ่มของสี หรือ การกลบพื้นผิว",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "แย่มาก (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ดีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceC4",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ ความเรียบเนียนของพื้นผิวหลังทา",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "แย่มาก (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ดีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceD4",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ แรงที่ใช้ในการทาสี",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "ออกแรงน้อย (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ออกแรงมาก (5)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "8.1",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroProduct5",
+     "html": "<h3>Product #2B (ทาครั้งที่ 2)</h3>"
+    },
+    {
+     "type": "multipletext",
+     "colCount": 3,
+     "isRequired": true,
+     "itemSize": "5",
+     "items": [
+      {
+       "name": "WeightBefore",
+       "title": "น้ำหนักสี ก่อนเริ่มทา (กิโลกรัม)"
+      },
+      {
+       "name": "WeightAfter",
+       "title": "น้ำหนักสี หลังทาเสร็จ (กิโลกรัม)"
+      },
+      {
+       "name": "Weight",
+       "title": "ปริมาณสีที่ใช้ไปทั้งหมด (กิโลกรัม)"
+      },
+      {
+       "name": "TimeBefore",
+       "title": "บันทึกเวลา ตอนเริ่มทา"
+      },
+      {
+       "name": "TimeAfter",
+       "title": "บันทึกเวลา หลังทาเสร็จ"
+      },
+      {
+       "name": "Time",
+       "title": "เวลาที่ใช้ไปทั้งหมด (นาที)"
+      }
+     ],
+     "name": "WeightTime5",
+     "title": "บันทึกน้ำหนักและเวลา"
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "I don't like it a lot",
+       "text": "ไม่ชอบเลย"
+      },
+      {
+       "value": "I don't like it slightly",
+       "text": "ไม่ชอบมาก"
+      },
+      {
+       "value": "I don't like it somewhat",
+       "text": "ไม่ชอบเล็กน้อย"
+      },
+      {
+       "value": "Neither nor",
+       "text": "เฉยๆ"
+      },
+      {
+       "value": "I like it somewhat",
+       "text": "ชอบเล็กน้อย"
+      },
+      {
+       "value": "I like it slightly",
+       "text": "ชอบมาก"
+      },
+      {
+       "value": "I like it a lot",
+       "text": "ชอบมากอย่างยิ่ง"
+      }
+     ],
+     "isRequired": true,
+     "name": "Liking5",
+     "title": "หลังจากที่คุณได้ทดลองทาสีแล้ว คะแนนระดับความชอบที่คุณมีต่อบอร์ดไฟเบอร์ซีเมนต์นี้เป็นอย่างไร [คำตอบเดียว]"
+    }
+   ]
+  },
+  {
+   "name": "8.2",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroProduct5",
+     "html": "<h3>Product #2B (ทาครั้งที่ 2)</h3>"
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceA5",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ การกินสี (การดูดซึมสี)",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "กินสีน้อย (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "กินสีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceB5",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ ความเต็ม-ความอิ่มของสี หรือ การกลบพื้นผิว",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "แย่มาก (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ดีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceC5",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ ความเรียบเนียนของพื้นผิวหลังทา",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "แย่มาก (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ดีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceD5",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ แรงที่ใช้ในการทาสี",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "ออกแรงน้อย (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ออกแรงมาก (5)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "9.1",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroProduct6",
+     "html": "<h3>Product #2C (ทาครั้งที่ 3)</h3>"
+    },
+    {
+     "type": "multipletext",
+     "colCount": 3,
+     "isRequired": true,
+     "itemSize": "5",
+     "items": [
+      {
+       "name": "WeightBefore",
+       "title": "น้ำหนักสี ก่อนเริ่มทา (กิโลกรัม)"
+      },
+      {
+       "name": "WeightAfter",
+       "title": "น้ำหนักสี หลังทาเสร็จ (กิโลกรัม)"
+      },
+      {
+       "name": "Weight",
+       "title": "ปริมาณสีที่ใช้ไปทั้งหมด (กิโลกรัม)"
+      },
+      {
+       "name": "TimeBefore",
+       "title": "บันทึกเวลา ตอนเริ่มทา"
+      },
+      {
+       "name": "TimeAfter",
+       "title": "บันทึกเวลา หลังทาเสร็จ"
+      },
+      {
+       "name": "Time",
+       "title": "เวลาที่ใช้ไปทั้งหมด (นาที)"
+      }
+     ],
+     "name": "WeightTime6",
+     "title": "บันทึกน้ำหนักและเวลา"
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "I don't like it a lot",
+       "text": "ไม่ชอบเลย"
+      },
+      {
+       "value": "I don't like it slightly",
+       "text": "ไม่ชอบมาก"
+      },
+      {
+       "value": "I don't like it somewhat",
+       "text": "ไม่ชอบเล็กน้อย"
+      },
+      {
+       "value": "Neither nor",
+       "text": "เฉยๆ"
+      },
+      {
+       "value": "I like it somewhat",
+       "text": "ชอบเล็กน้อย"
+      },
+      {
+       "value": "I like it slightly",
+       "text": "ชอบมาก"
+      },
+      {
+       "value": "I like it a lot",
+       "text": "ชอบมากอย่างยิ่ง"
+      }
+     ],
+     "isRequired": true,
+     "name": "Liking6",
+     "title": "หลังจากที่คุณได้ทดลองทาสีแล้ว คะแนนระดับความชอบที่คุณมีต่อบอร์ดไฟเบอร์ซีเมนต์นี้เป็นอย่างไร [คำตอบเดียว]"
+    }
+   ]
+  },
+  {
+   "name": "9.2",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroProduct6",
+     "html": "<h3>Product #2C (ทาครั้งที่ 3)</h3>"
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceA6",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ การกินสี (การดูดซึมสี)",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "กินสีน้อย (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "กินสีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceB6",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ ความเต็ม-ความอิ่มของสี หรือ การกลบพื้นผิว",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "แย่มาก (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ดีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceC6",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ ความเรียบเนียนของพื้นผิวหลังทา",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "แย่มาก (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ดีมาก (5)"
+      }
+     ]
+    },
+    {
+     "type": "rating",
+     "name": "PerformanceD6",
+     "title": "คุณให้คะแนนบอร์ดไฟเบอร์ซีเมนต์กับเรื่องต่างๆเหล่านี้อย่างไร ในเรื่องของ แรงที่ใช้ในการทาสี",
+     "isRequired": true,
+     "rateValues": [
+      {
+       "value": "1",
+       "text": "ออกแรงน้อย (1)"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "ออกแรงมาก (5)"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "10",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroSummary2",
+     "html": "<h3>Product #2 (สรุป)</h3>"
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "I don't like it a lot",
+       "text": "ไม่ชอบเลย"
+      },
+      {
+       "value": "I don't like it slightly",
+       "text": "ไม่ชอบมาก"
+      },
+      {
+       "value": "I don't like it somewhat",
+       "text": "ไม่ชอบเล็กน้อย"
+      },
+      {
+       "value": "Neither nor",
+       "text": "เฉยๆ"
+      },
+      {
+       "value": "I like it somewhat",
+       "text": "ชอบเล็กน้อย"
+      },
+      {
+       "value": "I like it slightly",
+       "text": "ชอบมาก"
+      },
+      {
+       "value": "I like it a lot",
+       "text": "ชอบมากอย่างยิ่ง"
+      }
+     ],
+     "isRequired": true,
+     "name": "OverallLiking2",
+     "title": "หลังจากที่คุณได้ทดลองทาสีไปทั้งครบสามครั้งแล้วนั้น ระดับ ความชอบโดยรวม ที่คุณมีต่อบอร์ดไฟเบอร์ซีเมนต์นี้เป็นอย่างไร [คำตอบเดียว]"
+    },
+    {
+     "type": "comment",
+     "name": "LikesDislikes2",
+     "title": "โดยรวมแล้ว คุณชอบหรือไม่ชอบอะไร กับผลิตภัณฑ์บอร์ดไฟเบอร์ซีเมนทดสอบนี้บ้าง",
+     "isRequired": true
+    },
+    {
+     "type": "dropdown",
+     "name": "NPS2",
+     "title": "คุณจะแนะนำผลิตภัณฑ์นี้ให้กับผู้อื่นอย่างไร กรุณาตอบเพียงคำตอบเดียว โดยที่ 0 หมายถึง คุณจะไม่แนะนำอย่างแน่นอน และ 10 หมายถึงคุณจะแนะนำอย่างแน่นอน",
+     "isRequired": true,
+     "choices": [
+      {
+       "value": "0",
+       "text": "0"
+      },
+      {
+       "value": "1",
+       "text": "1"
+      },
+      {
+       "value": "2",
+       "text": "2"
+      },
+      {
+       "value": "3",
+       "text": "3"
+      },
+      {
+       "value": "4",
+       "text": "4"
+      },
+      {
+       "value": "5",
+       "text": "5"
+      },
+      {
+       "value": "6",
+       "text": "6"
+      },
+      {
+       "value": "7",
+       "text": "7"
+      },
+      {
+       "value": "8",
+       "text": "8"
+      },
+      {
+       "value": "9",
+       "text": "9"
+      },
+      {
+       "value": "10",
+       "text": "10"
+      }
+     ],
+     "renderAs": "NPS",
+     "ratingTheme": "square-2",
+     "showValues": true
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "Definitely not buy it",
+       "text": "จะไม่ซื้ออย่างแน่นอน"
+      },
+      {
+       "value": "Probably not buy it",
+       "text": "อาจจะไม่ซื้อ"
+      },
+      {
+       "value": "Not sure",
+       "text": "ไม่แน่ใจ"
+      },
+      {
+       "value": "Probably buy it",
+       "text": "อาจจะซื้อ"
+      },
+      {
+       "value": "Definitely buy it",
+       "text": "จะซื้ออย่างแน่นอน"
+      }
+     ],
+     "isRequired": true,
+     "name": "PI2",
+     "title": "หากผลิตภัณฑ์ที่คุณเพิ่งทาสีเสร็จไปนี้ นี้มีวางจำหน่ายในร้านค้าที่คุณซื้อประจำ ในราคาที่สูงขึ้นกว่าราคาเดิม 8 บาท ระดับการซื้อของคุณจะเป็นอย่างไร [คำตอบเดียว]"
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "No",
+       "text": "ไม่ดีพอที่จะส่งมอบ"
+      },
+      {
+       "value": "Yes",
+       "text": "ดีพอแล้วที่จะส่งมอบ"
+      },
+      {
+       "value": "No answer",
+       "text": "ไม่มีคำตอบ (สำหรับผู้ที่สัมภาษณ์ก่อนวันที่ 1 เมษายน 2564)"
+      }
+     ],
+     "isRequired": true,
+     "name": "ForJobDelivery2",
+     "title": "บอร์ดไฟเบอร์ซีเมนต์ที่คุณเพิ่งทาสีเสร็จไปนี้ ดีพอที่จะส่งมอบให้กับลูกค้า หรือ ผู้ว่าจ้างของคุณ (ลูกค้าหรือผู้ว่าจ้าง อาจจะเป็นเจ้าของบ้าน ผู้รับเหมา เป็นต้น) หรือยัง [คำตอบเดียว]"
+    }
+   ]
+  },
+  {
+   "name": "11",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroDirectCompare",
+     "html": "<h3>Direct Comparison</h3>"
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "CA",
+       "text": "บอร์ดไฟเบอร์ซีเมนทดสอบ CA"
+      },
+      {
+       "value": "CB",
+       "text": "บอร์ดไฟเบอร์ซีเมนทดสอบ CB"
+      }
+     ],
+     "isRequired": true,
+     "name": "DirectComparison",
+     "title": "จากผลิตภัณฑ์ทดสอบทั้งสองที่คุณได้ทดลองนี้ คุณชอบผลิตภัณฑ์ใดมากกว่ากัน [คำตอบเดียว]"
+    }
+   ]
+  },
+  {
+   "name": "12.1",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroConcept",
+     "html": "<h3>Concept</h3>"
+    },
+    {
+     "type": "html",
+     "name": "Concept",
+     "html": "<h4>รายละเอียดผลิตภัณฑ์</h4>\n\n<p>ต่อไปนี้คือผลิตภัณฑ์ผลไม้ อยากให้คุณดูรายละเอียดของผลิตภัณฑ์นี้ เพื่อใช้สำหรับตอบคำถามในส่วนนี้และส่วนถัดไปจนจบการสัมถาษณ์</p>\n\n<img src=\"/admin/assets/projects/paint/concept.png\">\n"
+    }
+   ]
+  },
+  {
+   "name": "12.2",
+   "questions": [
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "I don't like it a lot",
+       "text": "ไม่ชอบเลย"
+      },
+      {
+       "value": "I don't like it slightly",
+       "text": "ไม่ชอบมาก"
+      },
+      {
+       "value": "I don't like it somewhat",
+       "text": "ไม่ชอบเล็กน้อย"
+      },
+      {
+       "value": "Neither nor",
+       "text": "เฉยๆ"
+      },
+      {
+       "value": "I like it somewhat",
+       "text": "ชอบเล็กน้อย"
+      },
+      {
+       "value": "I like it slightly",
+       "text": "ชอบมาก"
+      },
+      {
+       "value": "I like it a lot",
+       "text": "ชอบมากอย่างยิ่ง"
+      }
+     ],
+     "isRequired": true,
+     "name": "ConceptLiking",
+     "title": "คะแนนระดับความชอบที่คุณมี่ต่อผลิตภัณฑ์ใหม่ในแนวความคิดนี้เป็นอย่างไร [คำตอบเดียว]"
+    },
+    {
+     "type": "comment",
+     "name": "ConceptOpen",
+     "title": "คุณ [ชอบ/ไม่ชอบ] อะไร เกี่ยวกับผลิตภัณฑ์ใหม่ที่แสดงให้ดูจากแนวความคิดนี้บ้าง",
+     "isRequired": true
+    }
+   ]
+  },
+  {
+   "name": "12.3",
+   "questions": [
+    {
+     "type": "dropdown",
+     "name": "ConceptPSMCheap",
+     "title": "ที่ระดับราคาเท่าไร ที่คุณคิดว่าผลิตภัณฑ์ใหม่จากแนวความคิดนี้มี ราคาถูก [คำตอบเดียว]",
+     "isRequired": true,
+     "choices": [
+      {
+       "value": "112 Baht",
+       "text": "112 บาท"
+      },
+      {
+       "value": "114 Baht",
+       "text": "114 บาท"
+      },
+      {
+       "value": "116 Baht",
+       "text": "116 บาท"
+      },
+      {
+       "value": "118 Baht",
+       "text": "118 บาท"
+      },
+      {
+       "value": "120 Baht",
+       "text": "120 บาท"
+      },
+      {
+       "value": "122 Baht",
+       "text": "122 บาท"
+      },
+      {
+       "value": "124 Baht",
+       "text": "124 บาท"
+      },
+      {
+       "value": "126 Baht",
+       "text": "126 บาท"
+      },
+      {
+       "value": "128 Baht",
+       "text": "128 บาท"
+      },
+      {
+       "value": "130 Baht",
+       "text": "130 บาท"
+      },
+      {
+       "value": "132 Baht",
+       "text": "132 บาท"
+      },
+      {
+       "value": "134 Baht",
+       "text": "134 บาท"
+      },
+      {
+       "value": "136 Baht",
+       "text": "136 บาท"
+      },
+      {
+       "value": "138 Baht",
+       "text": "138 บาท"
+      },
+      {
+       "value": "140 Baht",
+       "text": "140 บาท"
+      },
+      {
+       "value": "142 Baht",
+       "text": "142 บาท"
+      },
+      {
+       "value": "144 Baht",
+       "text": "144 บาท"
+      },
+      {
+       "value": "146 Baht",
+       "text": "146 บาท"
+      },
+      {
+       "value": "148 Baht",
+       "text": "148 บาท"
+      },
+      {
+       "value": "150 Baht",
+       "text": "150 บาท"
+      },
+      {
+       "value": "152 Baht",
+       "text": "152 บาท"
+      },
+      {
+       "value": "154 Baht",
+       "text": "154 บาท"
+      },
+      {
+       "value": "156 Baht",
+       "text": "156 บาท"
+      },
+      {
+       "value": "158 Baht",
+       "text": "158 บาท"
+      },
+      {
+       "value": "160 Baht",
+       "text": "160 บาท"
+      },
+      {
+       "value": "162 Baht",
+       "text": "162 บาท"
+      },
+      {
+       "value": "164 Baht",
+       "text": "164 บาท"
+      },
+      {
+       "value": "166 Baht",
+       "text": "166 บาท"
+      },
+      {
+       "value": "168 Baht",
+       "text": "168 บาท"
+      },
+      {
+       "value": "170 Baht",
+       "text": "170 บาท"
+      },
+      {
+       "value": "172 Baht",
+       "text": "172 บาท"
+      }
+     ]
+    },
+    {
+     "type": "dropdown",
+     "name": "ConceptPSMExpensive",
+     "title": "ที่ระดับราคาเท่าไร ที่คุณคิดว่าผลิตภัณฑ์ใหม่จากแนวความคิดนี้มี ราคาแพง [คำตอบเดียว]",
+     "isRequired": true,
+     "choices": [
+      {
+       "value": "112 Baht",
+       "text": "112 บาท"
+      },
+      {
+       "value": "114 Baht",
+       "text": "114 บาท"
+      },
+      {
+       "value": "116 Baht",
+       "text": "116 บาท"
+      },
+      {
+       "value": "118 Baht",
+       "text": "118 บาท"
+      },
+      {
+       "value": "120 Baht",
+       "text": "120 บาท"
+      },
+      {
+       "value": "122 Baht",
+       "text": "122 บาท"
+      },
+      {
+       "value": "124 Baht",
+       "text": "124 บาท"
+      },
+      {
+       "value": "126 Baht",
+       "text": "126 บาท"
+      },
+      {
+       "value": "128 Baht",
+       "text": "128 บาท"
+      },
+      {
+       "value": "130 Baht",
+       "text": "130 บาท"
+      },
+      {
+       "value": "132 Baht",
+       "text": "132 บาท"
+      },
+      {
+       "value": "134 Baht",
+       "text": "134 บาท"
+      },
+      {
+       "value": "136 Baht",
+       "text": "136 บาท"
+      },
+      {
+       "value": "138 Baht",
+       "text": "138 บาท"
+      },
+      {
+       "value": "140 Baht",
+       "text": "140 บาท"
+      },
+      {
+       "value": "142 Baht",
+       "text": "142 บาท"
+      },
+      {
+       "value": "144 Baht",
+       "text": "144 บาท"
+      },
+      {
+       "value": "146 Baht",
+       "text": "146 บาท"
+      },
+      {
+       "value": "148 Baht",
+       "text": "148 บาท"
+      },
+      {
+       "value": "150 Baht",
+       "text": "150 บาท"
+      },
+      {
+       "value": "152 Baht",
+       "text": "152 บาท"
+      },
+      {
+       "value": "154 Baht",
+       "text": "154 บาท"
+      },
+      {
+       "value": "156 Baht",
+       "text": "156 บาท"
+      },
+      {
+       "value": "158 Baht",
+       "text": "158 บาท"
+      },
+      {
+       "value": "160 Baht",
+       "text": "160 บาท"
+      },
+      {
+       "value": "162 Baht",
+       "text": "162 บาท"
+      },
+      {
+       "value": "164 Baht",
+       "text": "164 บาท"
+      },
+      {
+       "value": "166 Baht",
+       "text": "166 บาท"
+      },
+      {
+       "value": "168 Baht",
+       "text": "168 บาท"
+      },
+      {
+       "value": "170 Baht",
+       "text": "170 บาท"
+      },
+      {
+       "value": "172 Baht",
+       "text": "172 บาท"
+      }
+     ]
+    },
+    {
+     "type": "dropdown",
+     "name": "ConceptPSMTooExpensive",
+     "title": "ระดับราคาเท่าไร ที่คุณคิดว่าผลิตภัณฑ์ใหม่จากแนวความคิดนี้มี ราคาแพงเกินไปจนคุณจะไม่ซื้อ [คำตอบเดียว]",
+     "isRequired": true,
+     "choices": [
+      {
+       "value": "112 Baht",
+       "text": "112 บาท"
+      },
+      {
+       "value": "114 Baht",
+       "text": "114 บาท"
+      },
+      {
+       "value": "116 Baht",
+       "text": "116 บาท"
+      },
+      {
+       "value": "118 Baht",
+       "text": "118 บาท"
+      },
+      {
+       "value": "120 Baht",
+       "text": "120 บาท"
+      },
+      {
+       "value": "122 Baht",
+       "text": "122 บาท"
+      },
+      {
+       "value": "124 Baht",
+       "text": "124 บาท"
+      },
+      {
+       "value": "126 Baht",
+       "text": "126 บาท"
+      },
+      {
+       "value": "128 Baht",
+       "text": "128 บาท"
+      },
+      {
+       "value": "130 Baht",
+       "text": "130 บาท"
+      },
+      {
+       "value": "132 Baht",
+       "text": "132 บาท"
+      },
+      {
+       "value": "134 Baht",
+       "text": "134 บาท"
+      },
+      {
+       "value": "136 Baht",
+       "text": "136 บาท"
+      },
+      {
+       "value": "138 Baht",
+       "text": "138 บาท"
+      },
+      {
+       "value": "140 Baht",
+       "text": "140 บาท"
+      },
+      {
+       "value": "142 Baht",
+       "text": "142 บาท"
+      },
+      {
+       "value": "144 Baht",
+       "text": "144 บาท"
+      },
+      {
+       "value": "146 Baht",
+       "text": "146 บาท"
+      },
+      {
+       "value": "148 Baht",
+       "text": "148 บาท"
+      },
+      {
+       "value": "150 Baht",
+       "text": "150 บาท"
+      },
+      {
+       "value": "152 Baht",
+       "text": "152 บาท"
+      },
+      {
+       "value": "154 Baht",
+       "text": "154 บาท"
+      },
+      {
+       "value": "156 Baht",
+       "text": "156 บาท"
+      },
+      {
+       "value": "158 Baht",
+       "text": "158 บาท"
+      },
+      {
+       "value": "160 Baht",
+       "text": "160 บาท"
+      },
+      {
+       "value": "162 Baht",
+       "text": "162 บาท"
+      },
+      {
+       "value": "164 Baht",
+       "text": "164 บาท"
+      },
+      {
+       "value": "166 Baht",
+       "text": "166 บาท"
+      },
+      {
+       "value": "168 Baht",
+       "text": "168 บาท"
+      },
+      {
+       "value": "170 Baht",
+       "text": "170 บาท"
+      },
+      {
+       "value": "172 Baht",
+       "text": "172 บาท"
+      }
+     ]
+    },
+    {
+     "type": "dropdown",
+     "name": "ConceptPSMTooCheap",
+     "title": "ที่ระดับราคาเท่าไร ที่คุณคิดว่าผลิตภัณฑ์ใหม่จากแนวความคิดนี้มี ราคาถูกเกินไปจนคุณไม่เชื่อใจคุณภาพ [คำตอบเดียว]",
+     "isRequired": true,
+     "choices": [
+      {
+       "value": "112 Baht",
+       "text": "112 บาท"
+      },
+      {
+       "value": "114 Baht",
+       "text": "114 บาท"
+      },
+      {
+       "value": "116 Baht",
+       "text": "116 บาท"
+      },
+      {
+       "value": "118 Baht",
+       "text": "118 บาท"
+      },
+      {
+       "value": "120 Baht",
+       "text": "120 บาท"
+      },
+      {
+       "value": "122 Baht",
+       "text": "122 บาท"
+      },
+      {
+       "value": "124 Baht",
+       "text": "124 บาท"
+      },
+      {
+       "value": "126 Baht",
+       "text": "126 บาท"
+      },
+      {
+       "value": "128 Baht",
+       "text": "128 บาท"
+      },
+      {
+       "value": "130 Baht",
+       "text": "130 บาท"
+      },
+      {
+       "value": "132 Baht",
+       "text": "132 บาท"
+      },
+      {
+       "value": "134 Baht",
+       "text": "134 บาท"
+      },
+      {
+       "value": "136 Baht",
+       "text": "136 บาท"
+      },
+      {
+       "value": "138 Baht",
+       "text": "138 บาท"
+      },
+      {
+       "value": "140 Baht",
+       "text": "140 บาท"
+      },
+      {
+       "value": "142 Baht",
+       "text": "142 บาท"
+      },
+      {
+       "value": "144 Baht",
+       "text": "144 บาท"
+      },
+      {
+       "value": "146 Baht",
+       "text": "146 บาท"
+      },
+      {
+       "value": "148 Baht",
+       "text": "148 บาท"
+      },
+      {
+       "value": "150 Baht",
+       "text": "150 บาท"
+      },
+      {
+       "value": "152 Baht",
+       "text": "152 บาท"
+      },
+      {
+       "value": "154 Baht",
+       "text": "154 บาท"
+      },
+      {
+       "value": "156 Baht",
+       "text": "156 บาท"
+      },
+      {
+       "value": "158 Baht",
+       "text": "158 บาท"
+      },
+      {
+       "value": "160 Baht",
+       "text": "160 บาท"
+      },
+      {
+       "value": "162 Baht",
+       "text": "162 บาท"
+      },
+      {
+       "value": "164 Baht",
+       "text": "164 บาท"
+      },
+      {
+       "value": "166 Baht",
+       "text": "166 บาท"
+      },
+      {
+       "value": "168 Baht",
+       "text": "168 บาท"
+      },
+      {
+       "value": "170 Baht",
+       "text": "170 บาท"
+      },
+      {
+       "value": "172 Baht",
+       "text": "172 บาท"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "12.4",
+   "questions": [
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "Definitely not buy it",
+       "text": "จะไม่ซื้ออย่างแน่นอน"
+      },
+      {
+       "value": "Probably not buy it",
+       "text": "อาจจะไม่ซื้อ"
+      },
+      {
+       "value": "Not sure",
+       "text": "ไม่แน่ใจ"
+      },
+      {
+       "value": "Probably buy it",
+       "text": "อาจจะซื้อ"
+      },
+      {
+       "value": "Definitely buy it",
+       "text": "จะซื้ออย่างแน่นอน"
+      }
+     ],
+     "isRequired": true,
+     "name": "ConceptPI",
+     "title": "หากผลิตภัณฑ์ใหม่นี้มีวางจำหน่ายในร้านค้าที่คุณซื้อประจำในราคา 142 บาท ระดับการซื้อของคุณจะเป็นอย่างไร [คำตอบเดียว]"
+    }
+   ]
+  },
+  {
+   "name": "13",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroDemographic",
+     "html": "<h3>ประชากรศาสตร์</h3>"
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "No formal education",
+       "text": "ไม่ได้รับการศึกษาอย่างเป็นทางการ"
+      },
+      {
+       "value": "Primary school",
+       "text": "ประถมศึกษา"
+      },
+      {
+       "value": "Secondary school",
+       "text": "มัธยมศึกษาตอนต้น"
+      },
+      {
+       "value": "High School",
+       "text": "มัธยมศึกษาตอนปลาย"
+      },
+      {
+       "value": "Vocational certificate / Diploma",
+       "text": "อนุปริญญา ประกาศนียบัตร"
+      },
+      {
+       "value": "Bachelor’s degree",
+       "text": "ปริญญาตรี"
+      },
+      {
+       "value": "Higher than Bachelor’s degree",
+       "text": "ปริญญาโทหรือสูงกว่า"
+      }
+     ],
+     "isRequired": true,
+     "name": "Education",
+     "title": "ระดับการศึกษาสูงที่สุดของคุณ [คำตอบเดียว]"
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "Single",
+       "text": "โสด"
+      },
+      {
+       "value": "Married without kids",
+       "text": "สมรส ไม่มีบุตร"
+      },
+      {
+       "value": "Married with kids",
+       "text": "สมรส มีบุตร"
+      },
+      {
+       "value": "Separated/ Divorced/ Widow without kids",
+       "text": "หย่าร้าง แยกทาง หม้าย ไม่มีบุตร"
+      },
+      {
+       "value": "Separated/ Divorced/ Widow with kids",
+       "text": "หย่าร้าง แยกทาง หม้าย มีบุตร"
+      }
+     ],
+     "isRequired": true,
+     "name": "MaritalStatus",
+     "title": "สถานะภาพสมรส (คำตอบเดียว)"
+    }
+   ]
+  },
+  {
+   "name": "14",
+   "questions": [
+    {
+     "type": "html",
+     "name": "IntroEnd",
+     "html": "<h3>สิ้นสุดการสัมภาษณ์</h3>\n\n<p>สิ้นสุดการสัมภาษณ์ กดปุ่ม 'ส่งความคิดเห็น' ล่างนี้เพื่อส่งคำตอบทั่งหมดจากแบบสอบถามชุดนี้เข้าสู่ระบบสำหรับการประมวลผลต่อไป</p>\n\n<p>ทางบริษัทขอขอบพระคุณสำหรับการสละเวลาเพื่อแสดงความคิดเห็นของคุณในโครงงานวิจัยชิ้นนี้</p>"
+    }
+   ]
+  },
+  {
+   "name": "2.6"
+  },
+  {
+   "name": "A1",
+   "questions": [
+    {
+     "type": "matrixdropdown",
+     "choices": [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "columns": [
+      {
+       "name": "Region",
+       "title": "ภูมิภาค",
+       "cellType": "dropdown"
+      },
+      {
+       "name": "Province",
+       "title": "จังหวัด",
+       "choices": [
+        {
+         "value": "Bangkok",
+         "text": "กรุงเทพมหานคร\t"
+        },
+        {
+         "value": "Nonthaburi",
+         "text": "นนทบุรี\t"
+        },
+        {
+         "value": "Samutprakarn",
+         "text": "สมุทรปราการ"
+        },
+        {
+         "value": "Pathumthani",
+         "text": "ปทุมธานี"
+        },
+        {
+         "value": "Ayutthaya",
+         "text": "พระนครศรีอยุธยา\t"
+        },
+        {
+         "value": "Angthong",
+         "text": "อ่างทอง\t"
+        },
+        {
+         "value": "Lopburi",
+         "text": "ลพบุรี"
+        },
+        {
+         "value": "Singburi",
+         "text": "สิงห์บุรี"
+        },
+        {
+         "value": "Chainat",
+         "text": "ชัยนาท"
+        },
+        {
+         "value": "Saraburi",
+         "text": "สระบุรี"
+        },
+        {
+         "value": "Nakornnayok",
+         "text": "นครนายก"
+        },
+        {
+         "value": "Nakornsawan",
+         "text": "นครสวรรค์"
+        },
+        {
+         "value": "Kampaengpetch",
+         "text": "กำแพงเพชร\t"
+        },
+        {
+         "value": "U-Thaithani",
+         "text": "อุทัยธานี"
+        },
+        {
+         "value": "Sukhothai",
+         "text": "สุโขทัย"
+        },
+        {
+         "value": "Nakornpathom",
+         "text": "นครปฐม"
+        },
+        {
+         "value": "`Pitsanulok",
+         "text": "พิษณุโลก"
+        },
+        {
+         "value": "Pijit",
+         "text": "พิจิตร\t"
+        },
+        {
+         "value": "Petchaboon",
+         "text": "เพชรบูรณ์\t"
+        },
+        {
+         "value": "Supanburi",
+         "text": "สุพรรณบุรี"
+        },
+        {
+         "value": "Samutsakorn",
+         "text": "สมุทรสาคร\t"
+        },
+        {
+         "value": "Samutsongkram",
+         "text": "สมุทรสงคราม"
+        },
+        {
+         "value": "Chonburi",
+         "text": "ชลบุรี"
+        },
+        {
+         "value": "Rayong",
+         "text": "ระยอง"
+        },
+        "Chanthaburiจันทบุรี\t",
+        {
+         "value": "Trad",
+         "text": "ตราด"
+        },
+        {
+         "value": "Chachengsao",
+         "text": "ฉะเชิงเทรา"
+        },
+        {
+         "value": "Prajeenburi ",
+         "text": "ปราจีนบุรี"
+        },
+        {
+         "value": "Sakaew",
+         "text": "สระแก้ว"
+        },
+        {
+         "value": "Ratchaburi",
+         "text": "ราชบุรี"
+        },
+        {
+         "value": "Kanjanaburi",
+         "text": "กาญจนบุรี\t"
+        },
+        {
+         "value": "Petchaburi",
+         "text": "เพชรบุรี"
+        },
+        {
+         "value": "Prachuabkirikhan",
+         "text": "ประจวบคีรีขันธ์"
+        },
+        {
+         "value": "Tak",
+         "text": "ตาก"
+        },
+        {
+         "value": "Chiangmai",
+         "text": "เชียงใหม่"
+        },
+        {
+         "value": "Lampoon",
+         "text": "ลำพูน"
+        },
+        {
+         "value": "Lampang",
+         "text": "ลำปาง"
+        },
+        {
+         "value": "Uttaradit",
+         "text": "อุตรดิตถ์\t"
+        },
+        {
+         "value": "Prae",
+         "text": "แพร่"
+        },
+        {
+         "value": "Nan",
+         "text": "น่าน"
+        },
+        {
+         "value": "Payao",
+         "text": "พะเยา"
+        },
+        {
+         "value": "Chiangrai",
+         "text": "เชียงราย"
+        },
+        {
+         "value": "Maehongsorn",
+         "text": "แม่ฮ่องสอน\t\t\t\t\t\t"
+        },
+        {
+         "value": "Nakornratchasima",
+         "text": "นครราชสีมา"
+        },
+        {
+         "value": "Burirum",
+         "text": "บุรีรัมย์\t"
+        },
+        {
+         "value": "Surin",
+         "text": "สุรินทร์\t"
+        },
+        {
+         "value": "Srisaket",
+         "text": "ศรีสะเกษ"
+        },
+        {
+         "value": "Ubonratchathani",
+         "text": "อุบลราชธานี\t"
+        },
+        {
+         "value": "Yasothorn",
+         "text": "ยโสธร\t"
+        },
+        {
+         "value": "Chaiyapoom",
+         "text": "ชัยภูมิ\t"
+        },
+        {
+         "value": "Umnajjaroen",
+         "text": "อำนาจเจริญ"
+        },
+        {
+         "value": "Buengkarn",
+         "text": "บึงกาฬ\t"
+        },
+        {
+         "value": "Nongbualampoo",
+         "text": "หนองบัวลำภู"
+        },
+        {
+         "value": "Khonkaen",
+         "text": "ขอนแก่น"
+        },
+        {
+         "value": "Udonthani",
+         "text": "อุดรธานี"
+        },
+        {
+         "value": "Leoy",
+         "text": "เลย"
+        },
+        {
+         "value": "Nongkai",
+         "text": "หนองคาย"
+        },
+        {
+         "value": "Mahasarakam",
+         "text": "มหาสารคาม"
+        },
+        {
+         "value": "Roi-et",
+         "text": "ร้อยเอ็ด"
+        },
+        {
+         "value": "Karasin",
+         "text": "กาฬสินธุ์"
+        },
+        {
+         "value": "Sakonnakorn",
+         "text": "สกลนคร"
+        },
+        {
+         "value": "Nakornpanom",
+         "text": "นครพนม"
+        },
+        {
+         "value": "Mookdaharn",
+         "text": "มุกดาหาร"
+        },
+        {
+         "value": "Nokornsrithammarat",
+         "text": "นครศรีธรรมราช"
+        },
+        {
+         "value": "Krabi",
+         "text": "กระบี่"
+        },
+        {
+         "value": "Pang-nga",
+         "text": "พังงา\t"
+        },
+        {
+         "value": "Phuket",
+         "text": "ภูเก็ต"
+        },
+        {
+         "value": "Suratthani",
+         "text": "สุราษฎร์ธานี\t"
+        },
+        {
+         "value": "Ranong",
+         "text": "ระนอง"
+        },
+        {
+         "value": "Chomporn",
+         "text": "ชุมพร\t"
+        },
+        {
+         "value": "Songkhla",
+         "text": "สงขลา\t"
+        },
+        {
+         "value": "Satun",
+         "text": "สตูล\t"
+        },
+        {
+         "value": "Trang",
+         "text": "ตรัง"
+        },
+        {
+         "value": "Patthalung",
+         "text": "พัทลุง"
+        },
+        {
+         "value": "Pattani",
+         "text": "ปัตตานี\t"
+        },
+        {
+         "value": "Yala",
+         "text": "ยะลา\t"
+        },
+        {
+         "value": "Narathiwas",
+         "text": "นราธิวาส"
+        }
+       ],
+       "cellType": "dropdown"
+      }
+     ],
+     "name": "fInterviewArea",
+     "rows": [
+      "Record"
+     ],
+     "title": "พื้นที่ทำการสัมภาษณ์"
+    },
+    {
+     "type": "radiogroup",
+     "choices": [
+      {
+       "value": "Bangkok",
+       "text": "กรุงเทพมหานคร\t"
+      },
+      {
+       "value": "Nonthaburi",
+       "text": "นนทบุรี\t"
+      },
+      {
+       "value": "Samutprakarn",
+       "text": "สมุทรปราการ"
+      },
+      {
+       "value": "Pathumthani",
+       "text": "ปทุมธานี"
+      },
+      {
+       "value": "Ayutthaya",
+       "text": "พระนครศรีอยุธยา\t"
+      },
+      {
+       "value": "Angthong",
+       "text": "อ่างทอง\t"
+      },
+      {
+       "value": "Lopburi",
+       "text": "ลพบุรี"
+      },
+      {
+       "value": "Singburi",
+       "text": "สิงห์บุรี"
+      },
+      {
+       "value": "Chainat",
+       "text": "ชัยนาท"
+      },
+      {
+       "value": "Saraburi",
+       "text": "สระบุรี"
+      },
+      {
+       "value": "Nakornnayok",
+       "text": "นครนายก"
+      },
+      {
+       "value": "Nakornsawan",
+       "text": "นครสวรรค์"
+      },
+      {
+       "value": "Kampaengpetch",
+       "text": "กำแพงเพชร\t"
+      },
+      {
+       "value": "U-Thaithani",
+       "text": "อุทัยธานี"
+      },
+      {
+       "value": "Sukhothai",
+       "text": "สุโขทัย"
+      },
+      {
+       "value": "Nakornpathom",
+       "text": "นครปฐม"
+      },
+      {
+       "value": "`Pitsanulok",
+       "text": "พิษณุโลก"
+      },
+      {
+       "value": "Pijit",
+       "text": "พิจิตร\t"
+      },
+      {
+       "value": "Petchaboon",
+       "text": "เพชรบูรณ์\t"
+      },
+      {
+       "value": "Supanburi",
+       "text": "สุพรรณบุรี"
+      },
+      {
+       "value": "Samutsakorn",
+       "text": "สมุทรสาคร\t"
+      },
+      {
+       "value": "Samutsongkram",
+       "text": "สมุทรสงคราม"
+      },
+      {
+       "value": "Chonburi",
+       "text": "ชลบุรี"
+      },
+      {
+       "value": "Rayong",
+       "text": "ระยอง"
+      },
+      "Chanthaburiจันทบุรี\t",
+      {
+       "value": "Trad",
+       "text": "ตราด"
+      },
+      {
+       "value": "Chachengsao",
+       "text": "ฉะเชิงเทรา"
+      },
+      {
+       "value": "Prajeenburi ",
+       "text": "ปราจีนบุรี"
+      },
+      {
+       "value": "Sakaew",
+       "text": "สระแก้ว"
+      },
+      {
+       "value": "Ratchaburi",
+       "text": "ราชบุรี"
+      },
+      {
+       "value": "Kanjanaburi",
+       "text": "กาญจนบุรี\t"
+      },
+      {
+       "value": "Petchaburi",
+       "text": "เพชรบุรี"
+      },
+      {
+       "value": "Prachuabkirikhan",
+       "text": "ประจวบคีรีขันธ์"
+      },
+      {
+       "value": "Tak",
+       "text": "ตาก"
+      },
+      {
+       "value": "Chiangmai",
+       "text": "เชียงใหม่"
+      },
+      {
+       "value": "Lampoon",
+       "text": "ลำพูน"
+      },
+      {
+       "value": "Lampang",
+       "text": "ลำปาง"
+      },
+      {
+       "value": "Uttaradit",
+       "text": "อุตรดิตถ์\t"
+      },
+      {
+       "value": "Prae",
+       "text": "แพร่"
+      },
+      {
+       "value": "Nan",
+       "text": "น่าน"
+      },
+      {
+       "value": "Payao",
+       "text": "พะเยา"
+      },
+      {
+       "value": "Chiangrai",
+       "text": "เชียงราย"
+      },
+      {
+       "value": "Maehongsorn",
+       "text": "แม่ฮ่องสอน\t\t\t\t\t\t"
+      },
+      {
+       "value": "Nakornratchasima",
+       "text": "นครราชสีมา"
+      },
+      {
+       "value": "Burirum",
+       "text": "บุรีรัมย์\t"
+      },
+      {
+       "value": "Surin",
+       "text": "สุรินทร์\t"
+      },
+      {
+       "value": "Srisaket",
+       "text": "ศรีสะเกษ"
+      },
+      {
+       "value": "Ubonratchathani",
+       "text": "อุบลราชธานี\t"
+      },
+      {
+       "value": "Yasothorn",
+       "text": "ยโสธร\t"
+      },
+      {
+       "value": "Chaiyapoom",
+       "text": "ชัยภูมิ\t"
+      },
+      {
+       "value": "Umnajjaroen",
+       "text": "อำนาจเจริญ"
+      },
+      {
+       "value": "Buengkarn",
+       "text": "บึงกาฬ\t"
+      },
+      {
+       "value": "Nongbualampoo",
+       "text": "หนองบัวลำภู"
+      },
+      {
+       "value": "Khonkaen",
+       "text": "ขอนแก่น"
+      },
+      {
+       "value": "Udonthani",
+       "text": "อุดรธานี"
+      },
+      {
+       "value": "Leoy",
+       "text": "เลย"
+      },
+      {
+       "value": "Nongkai",
+       "text": "หนองคาย"
+      },
+      {
+       "value": "Mahasarakam",
+       "text": "มหาสารคาม"
+      },
+      {
+       "value": "Roi-et",
+       "text": "ร้อยเอ็ด"
+      },
+      {
+       "value": "Karasin",
+       "text": "กาฬสินธุ์"
+      },
+      {
+       "value": "Sakonnakorn",
+       "text": "สกลนคร"
+      },
+      {
+       "value": "Nakornpanom",
+       "text": "นครพนม"
+      },
+      {
+       "value": "Mookdaharn",
+       "text": "มุกดาหาร"
+      },
+      {
+       "value": "Nokornsrithammarat",
+       "text": "นครศรีธรรมราช"
+      },
+      {
+       "value": "Krabi",
+       "text": "กระบี่"
+      },
+      {
+       "value": "Pang-nga",
+       "text": "พังงา\t"
+      },
+      {
+       "value": "Phuket",
+       "text": "ภูเก็ต"
+      },
+      {
+       "value": "Suratthani",
+       "text": "สุราษฎร์ธานี\t"
+      },
+      {
+       "value": "Ranong",
+       "text": "ระนอง"
+      },
+      {
+       "value": "Chomporn",
+       "text": "ชุมพร\t"
+      },
+      {
+       "value": "Songkhla",
+       "text": "สงขลา\t"
+      },
+      {
+       "value": "Satun",
+       "text": "สตูล\t"
+      },
+      {
+       "value": "Trang",
+       "text": "ตรัง"
+      },
+      {
+       "value": "Patthalung",
+       "text": "พัทลุง"
+      },
+      {
+       "value": "Pattani",
+       "text": "ปัตตานี\t"
+      },
+      {
+       "value": "Yala",
+       "text": "ยะลา\t"
+      },
+      {
+       "value": "Narathiwas ",
+       "text": "นราธิวาส"
+      }
+     ],
+     "colCount": 2,
+     "name": "Province",
+     "title": "บันทึกพื้นที่ที่ทำการสัมภาษณ์"
+    }
+   ]
+  },
+  {
+   "name": "A2",
+   "questions": [
+    {
+     "type": "multipletext",
+     "colCount": 2,
+     "items": [
+      {
+       "name": "Brand 1",
+       "title": "Brand 1"
+      },
+      {
+       "name": "Brand 2",
+       "title": "Brand 2"
+      },
+      {
+       "name": "Brand 3",
+       "title": "Brand 3"
+      },
+      {
+       "name": "Brand 4",
+       "title": "Brand 4"
+      },
+      {
+       "name": "Brand 5",
+       "title": "Brand 5"
+      },
+      {
+       "name": "Brand 6",
+       "title": "Brand 6"
+      },
+      {
+       "name": "Brand 7",
+       "title": "Brand 7"
+      },
+      {
+       "name": "Brand 8",
+       "title": "Brand 8"
+      },
+      {
+       "name": "Brand 9",
+       "title": "Brand 9"
+      },
+      {
+       "name": "Brand 10",
+       "title": "Brand 10"
+      }
+     ],
+     "name": "StockA",
+     "title": "บันทึกราคาสำหรับแต่ละยี่ห้อที่มีจำหน่ายในร้าน โดยบันทึกราคาแยกตามประเภทสินค้าและขนาดบรรจุภัณฑ์ที่แตกต่างกัน",
+     "tooltip": "บันทึกราคา",
+     "validators": [
+      {
+       "type": "text"
+      },
+      {
+       "type": "numeric",
+       "maxValue": "9",
+       "minValue": "0"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "A3"
+  }
+ ],
+ "showProgressBar": "top",
+ "showQuestionNumbers": "off",
+ "triggers": [
+  {
+   "type": "complete",
+   "operator": "notequal",
+   "value": "2727",
+   "name": "PIN"
+  }
+ ]
+}

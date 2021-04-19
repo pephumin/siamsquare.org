@@ -37,6 +37,7 @@ $private = $rows[0]["private"];
 $sample_size = $rows[0]["sample"];
 $options = $rows[0]["options"];
 $monitor = $rows[0]["QC"];
+$quota = $rows[0]["quota"];
 $report = $rows[0]["report"];
 
 // print_r($report);
@@ -85,7 +86,7 @@ for ($i=0; $i<count($rr4); $i++) {
   else if ($rr4[$i]["type"] == "html") { unset($rr4[$i]["type"]); }
 }
 
-$json = json_encode($rr4);
+$json = json_encode($rr4, JSON_UNESCAPED_SLASHES);
 
 // ----------------- SAVINGS ----------------------
 
@@ -94,6 +95,7 @@ else if ($_SESSION["level"] == 6) { $cansave = true; }
 else if ($_SESSION["level"] == 5) { if ($_SESSION["userid"] == $owner) { $cansave = true; } }
 else { $cansave = false; }
 $xreport = array();
+$xquota = array();
 if (($_POST["settingreport"]) == "1") {
   foreach (array_keys($_POST) as $key) {
     if (substr($key, 0, 5) === "quota") {
@@ -101,7 +103,7 @@ if (($_POST["settingreport"]) == "1") {
       $qq1[$b][$c][] = $_POST[$key];
     } else {
       list($x, $y, $z) = split('_', $key);
-      if ($x == "QC") { $qq2[$y][] = $_POST[$key]; }
+      if ($x == "quota") { $qq2[$y][] = $_POST[$key]; }
       else if ($x == "monitor") { $qq3[$y][] = $_POST[$key]; }
       else if ($x == "sequential") { $qq4[$y][] = $_POST[$key]; }
     }
@@ -112,12 +114,13 @@ if (($_POST["settingreport"]) == "1") {
     unset($qq1[$i]["subgroup"]);
     unset($qq1[$i]["samplesize"]);
   }
+  $newqq2 = array_map(function ($ssanswer, $sssamplesize) { return array("ssanswer" => $ssanswer, "sssamplesize" => $sssamplesize); }, $qq2["ssanswer"], $qq2["sssamplesize"]);
   $newqq4 = array_map(function ($input, $linkamount) { return array("questionname" => $input, "linkamount" => $linkamount); }, $qq4["questionname"], $qq4["linkamount"]);
   $all1 = []; $all4 = [];
   array_push($all1, $qq1); $all1["quota"] = $all1["0"]; unset($all1["0"]);
   array_push($all4, $newqq4); $all4["sequential"] = $all4["0"]; unset($all4["0"]);
   $all1 = array_remove_empty($all1); $all4 = array_remove_empty($all4); 
-  // print_r($all1); print_r($all4);
+  print_r($all1); print_r($all4);
   $json1 = json_encode($all1, JSON_PRETTY_PRINT); $json4 = json_encode($all4, JSON_PRETTY_PRINT);
   $query = " "; 
 
@@ -174,7 +177,7 @@ for ($i=0; $i<count($ee); $i++) {
   }
 }
 
-$datafordownload = json_encode($ee);
+$datafordownload = json_encode($ee, JSON_UNESCAPED_SLASHES);
 
 // -----------------  SEQUENTIAL MONADIC ----------------------
 
@@ -1158,13 +1161,15 @@ else if ($cd == "matrix") {
   $tableout1A .= "  <table class=\"table table-hover table-condensed\" style=\"font-family:boon\">\n";
   $tableout1A .= "    <thead>\n";
   $tableout1A .= "      <tr class=\"bg-primary\">\n";
-  $tableout1A .= "        <th width=\"20%\"></th>\n";
+  // $tableout1A .= "        <th width=\"15%\">Thai</th>\n";
+  $tableout1A .= "        <th width=\"30%\"></th>\n";
   $tableout1B = "<h4>Results in absolute number</h4>\n";
   $tableout1B .= "  <table class=\"table table-hover table-condensed\" style=\"font-family:boon\">\n";
   $tableout1B .= "    <thead>\n";
   $tableout1B .= "      <tr class=\"bg-info\">\n";
-  $tableout1B .= "        <th width=\"20%\"></th>\n";
-  if ((empty($_GET["type"])) || ($_GET["type"] == "bar-H-mean") || ($_GET["type"] == "bar-V-mean")) { $cwidth = 80/($ccmax+1); } else { $cwidth = 80/($ccmax); }
+  // $tableout1B .= "        <th width=\"15%\">Thai</th>\n";
+  $tableout1B .= "        <th width=\"30%\"></th>\n";
+  if ((empty($_GET["type"])) || ($_GET["type"] == "bar-H-mean") || ($_GET["type"] == "bar-V-mean")) { $cwidth = 70/($ccmax+1); } else { $cwidth = 80/($ccmax); }
   $out = "[ 'Attribute', ";
   foreach ($column_link as $a) { $out .= "{ label: '".$a."', type: 'number' }, "; } // label
   foreach ($column_link1 as $a1) { 
@@ -1191,11 +1196,13 @@ else if ($cd == "matrix") {
     // print_r($b);
     if (json_decode(str_replace($ee_code, $ee_text, json_encode($b, JSON_UNESCAPED_SLASHES)), true)) { $bb = json_decode(str_replace($ee_code, $ee_text, json_encode($b, JSON_UNESCAPED_SLASHES)), true); }
     // if (json_decode(str_replace($ee_code, $ee_text, json_encode($b)), true)) { $bb = json_decode(str_replace($ee_code, $ee_text, json_encode($b)), true); }
-    $bb1 = json_decode(json_encode($b), true);
+    $bb1 = json_decode(json_encode($b, JSON_UNESCAPED_SLASHES), true);
     $out .= "      [ '".($bb)."', ";
     $tableout1A .= "      <tr>\n";
+    // $tableout1A .= "        <td align=\"right\">$b</td>\n";
     $tableout1A .= "        <td align=\"right\">$bb1</td>\n";
     $tableout1B .= "      <tr>\n";
+    // $tableout1A .= "        <td align=\"right\">$b</td>\n";
     $tableout1B .= "        <td align=\"right\">$bb1</td>\n";
     $jj = array(); $jjj = array();
     foreach ($c_code as $c) {
@@ -2191,7 +2198,7 @@ if (($cd == "file") || ($cd == "signaturepad")) {
   var email = "<?php echo $_SESSION["email"]; ?>";
   var ip = "<?php echo getip(); ?>";
   var private = <?php echo $private; ?>;
-  var api = 'https://www.siamsquare.org.uk';
+  var api = 'http://www.siamsquare.org.uk';
   $.ajaxSetup({ headers: { 'X-Requested-With': 'aa5e1ab4-b0bf-4e82-8584-7cf4e9fdeaa8' } });
   $('#showsaving').html("<div class='alert alert-info'><i class='pe-spinner pe-pulse pe-lg pe-fw'></i> The system is now saving your data, please wait until the green message shows up which shoud be in a minute</div>").hide();
   $('#showsavesuccess').html("<div class='alert alert-success'><i class='pe-save pe-fw'></i> Data has been saved successfully</div>").hide();
@@ -2286,12 +2293,13 @@ if (($cd == "file") || ($cd == "signaturepad")) {
 <?php if ($report) { echo "var sreport = $report;\n"; } else { echo "var sreport = { \"sequential\": [] };\n"; } ?>
 
     function newSS() {
-      var counter5 = $('#tablesubgroupwrap').find("td:first").text(); console.log(counter5);
+      var counter5 = 0;
+      // var counter5 = $('#tablesubgroupwrap').find("td:first").text(); console.log(counter5);
       var head2 = "        <div class=\"col-xs-12 col-sm-6 col-md-6 col-lg-6\">\n" +
-      "          <table class=\"table table-hover table-condensed small\" id=\"tablesubgroup" + counter5 + "\">\n" +
+      "          <table class=\"table table-hover table-condensed small\" id=\"newtablesubgroup" + counter5 + "\">\n" +
       "            <thead>\n" +
       "            </thead>\n" +
-      "            <tbody>\n" +
+      "            <tbody class=\"ssbody\">\n" +
       "              <tr class=\"bg-success\">\n" +
       "                <td width=\"5%\" valign=\"middle\">" + counter5 + "</td>\n" +
       "                <td width=\"85%\" valign=\"middle\"><input type=\"text\" class=\"form-control input-sm\" placeholder=\"Question Name\" name=\"quota_" + counter5 + "_questionname_" + counter5 + "\"></td>\n" +
@@ -2301,6 +2309,7 @@ if (($cd == "file") || ($cd == "signaturepad")) {
       "          </table>\n" +
       "        </div><br>\n";
       $('#tablesubgroupwrap').append(head2);
+      counter5++;
       $(document.body).delegate(".newsubgroupoption", "click", function() {
         var value = $(this).closest('table').find('tr').length;
         var value2 = $(this).parents("tr").children("td:first").text();
@@ -2315,7 +2324,6 @@ if (($cd == "file") || ($cd == "signaturepad")) {
         }
         $(this).closest("tbody").append(newrow3E);
       });
-      counter5++;
     }
     function selectDropdownOld(s, i) { 
       s.options[i-1].selected = true;
@@ -2417,6 +2425,9 @@ if (($cd == "file") || ($cd == "signaturepad")) {
       }
       $(document.body).delegate(".deletethistable", "click", function() { $(this).closest("table").parent().remove(); });
       $(document.body).delegate(".deletethisrow", "click", function() { $(this).closest("tr").remove(); });
+      // $(document).ready(function () {
+      //   $(#tablesubgroup)
+      // });
     }
 
 
