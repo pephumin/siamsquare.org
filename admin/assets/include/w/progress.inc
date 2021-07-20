@@ -139,7 +139,7 @@ if ($_POST['m'] == "fixerrors") {
   foreach (array_keys($_POST) as $key) {
     if (substr($key, 0, 5) === "quota") {
       list($a, $b, $c, $d) = split('_', $key);
-      $qq1[$b][$c] = $_POST[$key];
+      $qq1[$b][$c][] = $_POST[$key];
     } else {
       list($x, $y, $z) = split('_', $key);
       if ($x == "default") { $qq2[$y][$z] = $_POST[$key]; }
@@ -147,36 +147,47 @@ if ($_POST['m'] == "fixerrors") {
     }
   }
   // print_r($qq2);
-  // print_r($qq3);
   foreach ($qq1 as $qqk => $qqv) {
     $newqq1["questionname"] = $qqv["questionname"];
-    $newqq1["details"]["subgroup"] = $qqv["subgroup"];
-    $newqq1["details"]["samplesize"] = $qqv["samplesize"];
+    $newqq1["details"]["subgroup"] = $qqv["subgroup"]["0"];
+    $newqq1["details"]["samplesize"] = $qqv["samplesize"]["0"];
   }
   $newqq2 = array_map(function ($input) { return array('questionname' => $input); }, $qq2["questionname"]);
-  $newqq3 = array_map(function ($input) { return array('questionname' => $input); }, $qq3["questionname"]);
   // print_r($newqq2);
-  // print_r($newqq3);
-  $all = [];
-  array_push($all, $qq1); $all["quota"] = $all["0"]; unset($all["0"]);
-  array_push($all, $newqq2); $all["default"] = $all["1"]; unset($all["1"]);
-  array_push($all, $newqq3); $all["monitor"] = $all["2"]; unset($all["2"]);
-  $all = array_remove_empty($all);
-  // print_r($all);
-  $json = json_encode($all, JSON_PRETTY_PRINT);
-  print_r($json);
-  $query = "QC = :QC, ";
+  // foreach ($newqq2 as $q2v) {
+  //   $newqq22["questionname"] = $q2v;
+  // }
+  // print_r($newqq22);
+  $newqq3 = array_map(function ($input) { return array('questionname' => $input); }, $qq3["questionname"]);
+  $all1 = []; $all2 = [];
+  // array_push($all2, $newqq1); $all2["quota"][] = $all2["0"]; unset($all2["0"]);
+  array_push($all2, $newqq1); $all2["quota"] = $all2["0"]; unset($all2["0"]);
+  array_push($all1, $newqq2); $all1["default"] = $all1["0"]; unset($all1["0"]);
+  array_push($all1, $newqq3); $all1["monitor"] = $all1["1"]; unset($all1["1"]);
+  $all1 = array_remove_empty($all1); $all2 = array_remove_empty($all2);
+  // print_r($all1); 
+  // print_r($all2);
+  $json1 = json_encode($all1, JSON_PRETTY_PRINT);
+  $json2 = json_encode($all2, JSON_PRETTY_PRINT);
+  // print_r($json1); print_r($json2);
+  if (($json1) && ($json2)) { $query = "QC = :QC, quota = :quota, "; }
+  else if (($json1) && !($json2)) { $query = "QC = :QC, "; }
+  else if (!($json1) && ($json2)) { $query = "quota = :quota, "; }
+  // $query = "QC = :QC, ";
   if (($addtype == "1") || ($addtype == "2")) { $query = $query.$add; }
   $query = substr($query, 0, -2);
   $qG = $db->prepare("UPDATE j_projects SET ".$query." WHERE id = :surveyid");
   $qG->bindValue(':surveyid', $_POST["surveyid"], PDO::PARAM_INT);
-  $qG->bindValue(':QC', $json, PDO::PARAM_STR);
+  if (($json1) && ($json2)) { $qG->bindValue(':QC', $json1, PDO::PARAM_STR); $qG->bindValue(':quota', $json2, PDO::PARAM_STR); }
+  else if (($json1) && !($json2)) { $qG->bindValue(':QC', $json1, PDO::PARAM_STR); }
+  else if (!($json1) && ($json2)) { $qG->bindValue(':quota', $json2, PDO::PARAM_STR); }
+  // $qG->bindValue(':QC', $json, PDO::PARAM_STR);
   if ($addtype == "1") { $qG->bindValue(':sample', $_POST["totalsample"], PDO::PARAM_INT); }
   else if ($addtype == "2") { $qG->bindValue(':sample', $_POST["totalsamplebysubgroup"], PDO::PARAM_INT); }
   $qG->execute();
-  $redirect = $base."&m=2";
-  header("location: $redirect");
-  exit;
+  // $redirect = $base."&m=2";
+  // header("location: $redirect");
+  // exit;
 }
 
 // Data for fieldwork summary boxes
