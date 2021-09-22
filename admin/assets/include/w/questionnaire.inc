@@ -49,22 +49,21 @@ for ($i=0; $i<count($rr2); $i++) { $rr4[] = $rr2[$i]['questions']; $rr414[] = $r
 
 for ($i=0; $i<count($rr4); $i++) {
   $moveKeys = array('hasOther', 'visibleIf', 'colCount');
-  // $moveKeys = array('hasOther', 'colCount');
   foreach ($moveKeys as $k1) {
     $bb = $rr4[$i][$k1];
     if ($bb) { unset($rr4[$i][$k1]); $rr4[$i][$k1] = $bb; }
   }
   $removeKeys = array('isRequired', 'visible', 'choicesOrder', 'placeHolder', 'renderAs', 'ratingTheme', 'showValues', 'cellType', 'itemSize');
-  // $removeKeys = array('isRequired', 'choicesOrder', 'placeHolder', 'renderAs', 'ratingTheme', 'showValues', 'cellType', 'itemSize');
   foreach ($removeKeys as $k2) { unset($rr4[$i][$k2]); }
-  // $moveKeys1 = array('html', 'hasOther', 'visibleIf');
+}
+
+for ($i=0; $i<count($rr4); $i++) {
   $moveKeys1 = array('html', 'hasOther');
   foreach ($moveKeys1 as $k3) {
     $bb = $rr4[$i][$k1];
     if ($bb) { unset($rr4[$i][$k3]); $rr4[$i][$k3] = $bb; }
   }
   $removeKeys1 = array('isRequired', 'visible', 'choicesOrder', 'placeHolder', 'renderAs', 'ratingTheme', 'showValues', 'cellType', 'inputType', 'colCount', 'itemSize');
-  // $removeKeys1 = array('isRequired', 'choicesOrder', 'placeHolder', 'renderAs', 'ratingTheme', 'showValues', 'cellType', 'inputType', 'colCount', 'itemSize');
   foreach ($removeKeys1 as $k4) {
     unset($rr4[$i][$k4]);
   }
@@ -80,6 +79,7 @@ for ($i=0; $i<count($rr4); $i++) {
   else if (($rr4[$i]['type'] == "text") || ($rr4[$i]['type'] == "multipletext") || ($rr4[$i]['type'] == "comment")) { unset($rr4[$i]['type']); $rr4[$i]['accept'] = "Open-ended"; }
   else if ($rr4[$i]['type'] == "html") { unset($rr4[$i]['type']); }
 }
+
 $rr4 = array_remove_empty($rr4);
 $json = json_encode($rr4);
 // $rr444 = array_push($rr414, $rr424);
@@ -111,7 +111,6 @@ foreach ($rr4 as $rr44) {
       $out .= "<div class=\"collapse in\" id=\"showthis-$seq\"><div class=\"well\" style=\"font-family:boon\">\n";
       $out .= "<span class=\"pull-right\">$viewresult</span>";
       $out .= "<h4>".$question['title']."</h4>\n";
-      // if (($rr4['visible'] == "false") && empty($rr4['visibleIf'])) {
       if ($question['type'] == "text") {
         $out .= "    <div><input type=\"text\" class=\"form-control\" name=\"\" disabled=\"\"></div>\n";
       } else if ($question['type'] == "comment") {
