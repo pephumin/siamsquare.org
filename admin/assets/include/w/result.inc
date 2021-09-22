@@ -75,31 +75,31 @@ $rr2 = $rr1['pages'];
 // ----------------- QUESTIONS ----------------------
 
 for ($i=0; $i<count($rr2); $i++) { $rr3[] = $rr2[$i]['questions']; }
-$rr3 = call_user_func_array('array_merge', $rr3);
+$rr3 = call_user_func_array('array_merge', $rr3); 
 $rr4 = $rr3;
 
 for ($i=0; $i<count($rr3); $i++) {
   $moveKeys = array('hasOther', 'visibleIf', 'colCount');
-  foreach($moveKeys as $k1) {
+  foreach ($moveKeys as $k1) {
     $bb = $rr3[$i][$k1];
     if ($bb) { unset($rr3[$i][$k1]); $rr3[$i][$k1] = $bb; }
   }
   $removeKeys = array('isRequired', 'visible', 'choicesOrder', 'placeHolder', 'renderAs', 'ratingTheme', 'showValues', 'cellType', 'itemSize');
-  foreach($removeKeys as $k2) { unset($rr3[$i][$k2]); }
+  foreach ($removeKeys as $k2) { unset($rr3[$i][$k2]); }
 }
 
 for ($i=0; $i<count($rr4); $i++) {
   $moveKeys = array('html', 'hasOther', 'visibleIf');
-  foreach($moveKeys as $k1) {
+  foreach ($moveKeys as $k1) {
     $bb = $rr4[$i][$k1];
     if ($bb) { unset($rr4[$i][$k1]); $rr4[$i][$k1] = $bb; }
   }
-  $removeKeys1 = array('isRequired', 'visible', 'choicesOrder', 'placeHolder', 'renderAs', 'ratingTheme', 'showValues', 'cellType', 'inputType', 'colCount', 'itemSize');
-  foreach($removeKeys1 as $rm1) {
+  $removeKeys1 = array('isRequired', 'visible', 'choicesOrder', 'placeHolder', 'renderAs', 'ratingTheme', 'showValues', 'cellType', 'inputType', 'itemSize');
+  foreach ($removeKeys1 as $rm1) {
     unset($rr4[$i][$rm1]);
   }
   $removeKeys2 = array('cellType', 'optionsCaption');
-  foreach($removeKeys2 as $rm2) {
+  foreach ($removeKeys2 as $rm2) {
     for ($j=0; $j<count($rr4[$i]["columns"]); $j++) { unset($rr4[$i]["columns"][$j][$rm2]); }
   }
   if ($rr4[$i]["type"] == "html") { $rr4[$i]['html'] = strip_tags($rr4[$i]['html']); }
@@ -113,7 +113,10 @@ for ($i=0; $i<count($rr4); $i++) {
   else if ($rr4[$i]["type"] == "html") { unset($rr4[$i]["type"]); }
 }
 
+$rr4 = array_remove_empty($rr4);
+// $json = json_encode($rr4);
 $json = json_encode($rr4, JSON_UNESCAPED_SLASHES);
+
 
 // ----------------- SAVINGS ----------------------
 
@@ -208,7 +211,7 @@ while ($row = $q->fetchAll(PDO::FETCH_ASSOC)) {
   $ee = $row;
   for ($i=0; $i<count($ee); $i++) {
     $removeKeys = array("rd", "email", "ip", "surveyid", "status", "interviewer");
-    foreach($removeKeys as $key) { unset($ee[$i][$key]); }
+    foreach ($removeKeys as $key) { unset($ee[$i][$key]); }
     $ee[$i]["data"] = json_decode($ee[$i]["data"], true);
   }
 }
@@ -243,6 +246,7 @@ $seq2 = array_values(array_unique($seq1));
 
 $a = json_decode($rows[0]["data"], true);
 foreach ($a["pages"] as $k1 => $p1) { foreach ($p1 as $k2 => $p2) { foreach ($p2 as $k3 => $p3) { $questions[] = $p3; } } }
+// print_r($questions);
 
 $qoutadd = "<p align=\"right\" class=\"lightgrey\"><form action=\"\" method=\"get\" id=\"subgroups\">\n";
 $qoutadd .= "<strong>Select the target group below:</strong></p>\n";
@@ -253,7 +257,6 @@ $qoutadd .= "<select class=\"form-control\" id=\"subgroup\" name=\"subgroup\" cl
 $qoutadd .= "</select>\n";
 $qoutadd .= "</form>\n";
 
-$qout = "";
 for ($i = 0; $i < count($questions); $i++) {
   $qname = $questions[$i]["name"]; $pname[] = $questions[$i]["name"];
   if ($questions[$i]["html"]) { $qtitle = "HTML"; $ptitle[] = $questions[$i]["title"]; $html = $questions[$i]["html"]; }
@@ -264,8 +267,7 @@ for ($i = 0; $i < count($questions); $i++) {
   else if (($questions[$i]["type"] == "dropdown") && ($questions[$i]["renderAs"] == "NPS")) { $qtype = $questions[$i]["renderAs"]; $ptype[] = $questions[$i]["renderAs"]; }
   else { $qtype = $questions[$i]["type"]; $ptype[] = $questions[$i]["type"]; }
   $qvisibleIf = $questions[$i]["visibleIf"]; $pvisibleIf[] = $questions[$i]["visibleIf"];
-  $qrequired = $questions[$i]["isRequired"];
-  $choices = $questions[$i]["choices"]; //$choices1 = $questions[$i]["columns"];
+  $qrequired = $questions[$i]["isRequired"]; 
   if ($questions[$i]["choicesByUrl"]) { $choicesByUrl = $questions[$i]["choicesByUrl"]; }
   if ($questions[$i]["choicesByUrl"]["url"]) { $url = $questions[$i]["choicesByUrl"]["url"]; }
   if ($questions[$i]["choicesByUrl"]["path"]) { $path = $questions[$i]["choicesByUrl"]["path"]; }
@@ -294,8 +296,10 @@ for ($i = 0; $i < count($questions); $i++) {
     if ($qvisibleIf) { $qout .= "      <p class=\"grey small\"><em>Only ask when <u>".$qvisibleIf."</u></em></p>\n"; } else { $qout .= "      <p class=\"grey small\"><em>Ask all respondents</em></p>\n"; }
     $qout .= "<div class=\"row\"><div class=\"col-lg-9 col-md-9 col-sm-9 col-xs-9\">\n";
     // $qout .= $qoutadd;
-    if (($qtype == "radiogroup") || ($qtype == "radiogrouphtml")) {
+
+    if ($qtype == "radiogroup") {
       $qout .= "      <ul>\n";
+      $choices = $questions[$i]['choices'];
       foreach ($choices as $k4 => $p4) {
         $choice_text = $p4["text"]; $c_text[] = $p4["text"];
         $choice_code = $p4["value"]; $c_code[] = $p4["value"];
@@ -306,8 +310,42 @@ for ($i = 0; $i < count($questions); $i++) {
       array_push($zzsubgroup, $c_text);
       array_push($zzsubgroup, $c_code);
     }
-    else if (($qtype == "checkbox") || ($qtype == "checkboxhtml")) {
+
+
+    else if ($qtype == "radiogrouphtml") {
+      $colCount = $questions[$i]['colCount'];
+      $choices = $questions[$i]['choices'];
+      $counting = count($choices);
+      foreach ($choices as $k14 => $p14) {
+        $choice_text = $p14['text']; $c_text[] = strip_tags($p14['text']);
+        if (is_null($p14['text'])) { $choice_code = $p14['code']; $c_code[] = $p14['value']; }
+        else { $choice_code = strip_tags($p14['text']); $c_code[] = $p14['value']; }
+      }
+      if ($colCount) {
+        $qout .= "<div class=\"row\">\n";
+        for ($j=0; $j<$counting; $j++) {
+          if ($colCount == "2") { $qout .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n"; } 
+          else if ($colCount == "3") { $qout .= "  <div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4\">\n"; }
+          else if ($colCount == "4") { $qout .= "  <div class=\"col-xs-12 col-sm-12 col-md-3 col-lg-3\">\n"; }
+          $qout .= "    <div class=\"checkbox\"><label style=\"display:inline; padding-left:0px\"><input type=\"radio\" name=\"\" disabled=\"\">".$choices[$j]["text"]."</label><br>(".$choices[$j]["value"].")</div>\n";
+          $qout .= "  </div>\n";
+      }
+        $qout .= "</div>\n";
+      } else {
+        $qout .= "<div class=\"row\">\n";
+        for ($j=0; $j<$counting; $j++) {
+          $qout .= "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
+          $qout .= "    <div class=\"checkbox\"><label style=\"display:inline; padding-left:0px\"><input type=\"radio\" name=\"\" disabled=\"\">".$choices[$j]["text"]."</label><br>(".$choices[$j]["value"].")</div>\n";
+          $qout .= "  </div>\n";
+        }
+        $qout .= "</div>\n";
+      }
+    }
+
+
+    else if ($qtype == "checkbox") {
       $qout .= "      <ul>\n";
+      $choices = $questions[$i]['choices'];
       foreach ($choices as $k5 => $p5) {
         $choice_text = $p5["text"]; $c_text[] = $p5["text"];
         $choice_code = $p5["value"]; $c_code[] = $p5["value"];
@@ -318,6 +356,38 @@ for ($i = 0; $i < count($questions); $i++) {
       array_push($zzsubgroup, $c_text); 
       array_push($zzsubgroup, $c_code); 
     }
+
+
+    else if ($qtype == "checkboxhtml") {
+      $colCount = $questions[$i]['colCount'];
+      $choices = $questions[$i]['choices'];
+      $counting = count($choices);
+      foreach ($choices as $k14 => $p14) {
+        $choice_text = $p14['text']; $c_text[] = strip_tags($p14['text']);
+        if (is_null($p14['text'])) { $choice_code = $p14['code']; $c_code[] = $p14['value']; }
+        else { $choice_code = strip_tags($p14['text']); $c_code[] = $p14['value']; }
+      }
+      if ($colCount) {
+        $qout .= "<div class=\"row\">\n";
+        for ($j=0; $j<$counting; $j++) {
+          if ($colCount == "2") { $qout .= "  <div class=\"col-xs-12 col-sm-12 col-md-6 col-lg-6\">\n"; } 
+          else if ($colCount == "3") { $qout .= "  <div class=\"col-xs-12 col-sm-12 col-md-4 col-lg-4\">\n"; }
+          else if ($colCount == "4") { $qout .= "  <div class=\"col-xs-12 col-sm-12 col-md-3 col-lg-3\">\n"; }
+          $qout .= "    <div class=\"checkbox\"><label style=\"display:inline; padding-left:0px\"><input type=\"checkbox\" name=\"\" disabled=\"\">".$choices[$j]["text"]."</label><br>(".$choices[$j]["value"].")</div>\n";
+          $qout .= "  </div>\n";
+      }
+        $qout .= "</div>\n";
+      } else {
+        $qout .= "<div class=\"row\">\n";
+        for ($j=0; $j<$counting; $j++) {
+          $qout .= "  <div class=\"col-xs-12 col-sm-12 col-md-12 col-lg-12\">\n";
+          $qout .= "    <div class=\"checkbox\"><label style=\"display:inline; padding-left:0px\"><input type=\"checkbox\" name=\"\" disabled=\"\">".$choices[$j]["text"]."</label><br>(".$choices[$j]["value"].")</div>\n";
+          $qout .= "  </div>\n";
+        }
+        $qout .= "</div>\n";
+      }
+    }
+
     else if ($qtype == "dropdown") {
       if ($choicesByUrl) {
         list($path1, $path2) = explode(';', $path);
@@ -333,6 +403,7 @@ for ($i = 0; $i < count($questions); $i++) {
       } else {
         $qout .= "      <div class=\"row\"><div class=\"col-sm-6\" style=\"font-family:boon;font-size:120%\">\n";
         $qout .= "        <select class=\"form-control\">\n";
+        $choices = $questions[$i]['choices'];
         foreach ($choices as $k6 => $p6) {
           $choice_text = $p6["text"]; $c_text[] = $p6["text"];
           $choice_code = $p6["value"]; $c_code[] = $p6["value"];
@@ -345,6 +416,8 @@ for ($i = 0; $i < count($questions); $i++) {
       array_push($zzsubgroup, $c_text); 
       array_push($zzsubgroup, $c_code); 
     }
+
+
     else if ($qtype == "rating") {
       $qout .= "      <div class=\"btn-group\" role=\"group\">\n";
       foreach ($questions[$i]["rateValues"] as $k7 => $p7) {
@@ -357,12 +430,18 @@ for ($i = 0; $i < count($questions); $i++) {
       array_push($zzsubgroup, $c_text); 
       array_push($zzsubgroup, $c_code); 
     }
+
+
     else if ($qtype == "comment") {
       $qout .= "      <textarea rows=\"5\" class=\"form-control\" disabled></textarea><br>\n";
     }
+
+
     else if ($qtype == "text") {
       $qout .= "      <input type=\"text\" class=\"form-control\" disabled=\"\">\n";
     }
+
+
     else if ($qtype == "multipletext") {
       $qout .= "      <table class=\"table\" style=\"font-family:boon\">\n";
       $qout .= "        <thead><tr class=\"bg-primary\">\n";
@@ -385,14 +464,20 @@ for ($i = 0; $i < count($questions); $i++) {
       array_push($zzsubgroup, $ee_text); 
       array_push($zzsubgroup, $ee_code); 
     }
+
+
     else if ($qtype == "date") {
       $qout .= "      <input id=\"widget-datepicker\" type=\"text\" style=\"width:100%;\" class=\"hasDatepicker\" disabled><br>\n";
     }
+
+
     else if ($qtype == "html") {
       $qout .= "      <div style=\"font-family:boon;font-size:110%\">\n";
       $qout .= $html."<br>";
       $qout .= "      </div>\n";
     }
+
+
     else if ($qtype == "matrix") {
       $qout .= "      <table class=\"table\" style=\"font-family:boon\">\n";
       $qout .= "        <thead><tr class=\"bg-primary\">\n";
@@ -428,12 +513,15 @@ for ($i = 0; $i < count($questions); $i++) {
       array_push($zzsubgroup, $ee_text); 
       array_push($zzsubgroup, $ee_code); 
     }
+
+
     else if ($qtype == "matrixdropdown") {
       $a = array(); $b = array();
       $qout .= "      <table class=\"table\" style=\"font-family:boon\">\n";
       $qout .= "        <thead><tr class=\"bg-primary\">\n";
       $qout .= "          <th width=\"20%\"></th>\n";
       // $c = 0;
+      // $choices = $questions[$i]['choices'];
       $counting1 = count($questions[$i]["columns"]);
       $width = 80/$counting1;
       $dd1 = ""; $dd2 = "";
@@ -474,9 +562,12 @@ for ($i = 0; $i < count($questions); $i++) {
       array_push($zzsubgroup, $a); 
       array_push($zzsubgroup, $b); 
     }
+
+
     else if ($qtype == "barrating") {
       $qout .= "      <div class=\"row\"><div class=\"col-sm-6\" style=\"font-family:boon;font-size:120%\">\n";
       $qout .= "        <div class=\"br-wrapper br-theme-star\"><div class=\"br-widget\">\n";
+      $choices = $questions[$i]['choices'];
       foreach ($choices as $k13 => $p13) {
         $choice_text = $p13; $c_text[] = $p13;
         $choice_code = $p13; $c_code[] = $p13;
@@ -488,6 +579,8 @@ for ($i = 0; $i < count($questions); $i++) {
       array_push($zzsubgroup, $c_text);
       array_push($zzsubgroup, $c_code);
     }
+
+
     else if ($qtype == "NPS") {
       $qout .= "      <div class=\"row\"><div class=\"col-sm-6\" style=\"font-family:boon;font-size:120%\">\n";
       $qout .= "        <div class=\"br-wrapper br-theme-square-2\"><div class=\"br-widget\">\n";
@@ -510,7 +603,7 @@ for ($i = 0; $i < count($questions); $i++) {
     $qout .= "      <br>\n";
   }
 }
-print_r($zzsubgroup);
+// print_r($zzsubgroup);
 
 if (($_GET["subgroup"]) && ($_GET["subgroup"] != "")) { 
   $ss1 = html_entity_decode($_GET["subgroup"]);
@@ -623,7 +716,7 @@ $bdx = $bx[$qq]; //print_r($bdx);
 $king = array();
 for ($i=0; $i<count($ee); $i++) {
   $removeKeys = array('rd', 'email', 'ip', 'surveyid', 'status');
-  foreach($removeKeys as $key) {
+  foreach ($removeKeys as $key) {
     unset($ee[$i][$key]);
   }
   $ee[$i]["data"] = json_decode($ee[$i]["data"], true);
