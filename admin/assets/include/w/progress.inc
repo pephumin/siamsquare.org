@@ -2,6 +2,7 @@
 
 $excerptRows = "50";
 // $c_target = 300;
+$interviewerbylocation = 0;
 $base = "/admin/?w=progress&s=".$_GET['s'];
 $result = "/admin/?w=result&s=".$_GET['s'];
 $respondent = "/admin/?w=respondents&s=".$_GET['s'];
@@ -153,14 +154,8 @@ if ($_POST['m'] == "fixerrors") {
     $newqq1["details"]["samplesize"] = $qqv["samplesize"]["0"];
   }
   $newqq2 = array_map(function ($input) { return array('questionname' => $input); }, $qq2["questionname"]);
-  // print_r($newqq2);
-  // foreach ($newqq2 as $q2v) {
-  //   $newqq22["questionname"] = $q2v;
-  // }
-  // print_r($newqq22);
   $newqq3 = array_map(function ($input) { return array('questionname' => $input); }, $qq3["questionname"]);
   $all1 = []; $all2 = [];
-  // array_push($all2, $newqq1); $all2["quota"][] = $all2["0"]; unset($all2["0"]);
   array_push($all2, $newqq1); $all2["quota"] = $all2["0"]; unset($all2["0"]);
   array_push($all1, $newqq2); $all1["default"] = $all1["0"]; unset($all1["0"]);
   array_push($all1, $newqq3); $all1["monitor"] = $all1["1"]; unset($all1["1"]);
@@ -173,7 +168,6 @@ if ($_POST['m'] == "fixerrors") {
   if (($json1) && ($json2)) { $query = "QC = :QC, quota = :quota, "; }
   else if (($json1) && !($json2)) { $query = "QC = :QC, "; }
   else if (!($json1) && ($json2)) { $query = "quota = :quota, "; }
-  // $query = "QC = :QC, ";
   if (($addtype == "1") || ($addtype == "2")) { $query = $query.$add; }
   $query = substr($query, 0, -2);
   $qG = $db->prepare("UPDATE j_projects SET ".$query." WHERE id = :surveyid");
@@ -181,7 +175,6 @@ if ($_POST['m'] == "fixerrors") {
   if (($json1) && ($json2)) { $qG->bindValue(':QC', $json1, PDO::PARAM_STR); $qG->bindValue(':quota', $json2, PDO::PARAM_STR); }
   else if (($json1) && !($json2)) { $qG->bindValue(':QC', $json1, PDO::PARAM_STR); }
   else if (!($json1) && ($json2)) { $qG->bindValue(':quota', $json2, PDO::PARAM_STR); }
-  // $qG->bindValue(':QC', $json, PDO::PARAM_STR);
   if ($addtype == "1") { $qG->bindValue(':sample', $_POST["totalsample"], PDO::PARAM_INT); }
   else if ($addtype == "2") { $qG->bindValue(':sample', $_POST["totalsamplebysubgroup"], PDO::PARAM_INT); }
   $qG->execute();
@@ -233,7 +226,6 @@ if ($status == "1") {
   $stage = "0";
 }
 
-
 $title = "Job monitoring";
 pageHeader($title);
 echo "<h2>$title</h2>";
@@ -282,7 +274,6 @@ $q2C = $db->prepare("SELECT SSDATE, SUM(SSCOUNT1) as SSCOUNT1, SUM(SSCOUNT2) as 
 $q2C->bindValue(':surveyid', $_GET["s"], PDO::PARAM_INT);
 $q2C->execute();
 $area = "[\n";
-// $areacount = 0;
 if ($q2C->rowCount() < 1) { $SSCOUNT1 = "0"; $SSCOUNT2 = "0"; $NEWSSDATE = "-"; }
 else {
   while ($row = $q2C->fetchObject()) {
@@ -294,7 +285,6 @@ else {
     $SSCOUNT2 += $row->SSCOUNT2;
     if ($private == 1) { $area .= "        [\"".$NEWSSDATE."\", ".$SSCOUNT2.", ".$SSCOUNT1."], \n"; }
     else { $area .= "        [\"".$NEWSSDATE."\", ".$SSCOUNT1."], \n"; }
-    // $areacount++;
   }
 }
 $area .= "      ]";
@@ -423,8 +413,7 @@ if ($terminatedsize > 0) {
   $redirect = $base."&m=2";
   $dcupdate .= "<script type=\"text/javascript\">";
   $dcupdate .= "setTimeout(function () { window.location.href = \"$base\"; }, 10000);";
-  $dcupdate .= "</script>";
-  
+  $dcupdate .= "</script>";  
   // header('Refresh: 10; URL='.$redirect);
   // header("location: $redirect");
   // exit;
@@ -510,7 +499,6 @@ if (!isset($RDsuccess) || is_null($RDsuccess)) { $RDsuccess = "0"; $RDsuccess_ba
 // Contact sheet summary
 $showdc = false;
 if ($private == 1) {
-  // for private projects
   if ($all == 0) {
     echo "<p>This project currently has <strong>no respondent</strong> stored in the database.</p>\n";
     echo "<p>Please upload respondent's emails using a Comma Separated Value (CSV) file and our system will enable the email function allowing you to send invitation / reminder to respondents accordingly.</p>\n";
@@ -564,8 +552,7 @@ if ($private == 1) {
     echo $dcupdate;
     echo "<hr>\n";
   }
-} else {
-  // for public projects
+} else { // for public projects
   $average = number_format($RDsuccess / $daysoffieldwork, 1);
   if ($sample_size) {
     if ($RDsuccess > 0) {
@@ -606,7 +593,6 @@ if ($private == 1) {
   echo "<hr>\n";
 }
 
-$interviewerbylocation = 0;
 
 function checkingQuestion($input, $ee = array()) {
   for ($i=0; $i<count($ee); $i++) {
@@ -682,20 +668,20 @@ function getResultJS($input = array(), $RD, $sort, $keyword) {
       if (($Z > $RD) || ($C > 7)) { $tt = array('bar', 'column'); } else if (($Z <= $RD) && ($C <= 3)) { $tt = array('pie', 'donut'); } else if ($C > 15) { $tt = array('column'); } else { $tt = array('bar', 'column', 'pie', 'donut'); }
       if (($keyword == "Region") || ($keyword == "Location") || ($keyword == "SES")) { $chart = 'column'; } else if (($keyword == "Interviewer") || ($keyword == "Age")) { $chart = 'bar'; } else if ($C > 8) { $chart = 'bar'; } else { $chart = $tt[array_rand($tt)]; }
       if ($chart == "pie") {
-        $output .= "    var options = { width: '100%', height: '500' };\n";
+        $output .= "    var options = { width: '100%', height: '500', pieSliceText: 'label', legend: 'none' };\n";
         $output .= "    var chart = new google.visualization.PieChart(document.getElementById('sortchart-$keyword'));\n";
       } else if ($chart == "donut") {
-        $output .= "    var options = { pieHole: 0.4, width: '100%', height: '500' };\n";
+        $output .= "    var options = { pieHole: 0.4, width: '100%', height: '500', pieSliceText: 'label', legend: 'none' };\n";
         $output .= "    var chart = new google.visualization.PieChart(document.getElementById('sortchart-$keyword'));\n";
       } else if ($chart == "column") {
-        $output .= "    var options = { width: '100%', height: '500', bar: { groupWidth: '60%' }, legend: { position: 'none' } };\n";
+        $output .= "    var options = { width: '100%', height: '500', bar: { groupWidth: '60%' }, legend: 'none' };\n";
         $output .= "    var chart = new google.visualization.ColumnChart(document.getElementById('sortchart-$keyword'));\n";
       } else if ($chart == "bar") {
-        if ($C >= 15) { $output .= "    var options = { width: '100%', height: $height, vAxis: { textStyle: { fontSize: 10 } }, hAxis: { textStyle: { fontSize: 14 } }, bar: { groupWidth: '60%' }, legend: { position: 'none' } };\n"; }
-        else { $output .= "    var options = { width: '100%', height: $height, bar: { groupWidth: '60%' }, legend: { position: 'none' } };\n"; }
+        if ($C >= 15) { $output .= "    var options = { width: '100%', height: $height, vAxis: { textStyle: { fontSize: 10 } }, hAxis: { textStyle: { fontSize: 14 } }, bar: { groupWidth: '60%' }, legend: 'none' };\n"; }
+        else { $output .= "    var options = { width: '100%', height: $height, bar: { groupWidth: '60%' }, legend: 'none' };\n"; }
         $output .= "    var chart = new google.visualization.BarChart(document.getElementById('sortchart-$keyword'));\n";
       }
-      $output .= "    chart.draw(viewChart, options);\n";
+      $output .= "    setTimeout(function() { chart.draw(viewChart, options); }, 2000);\n";
       $output .= "    var table = new google.visualization.Table(document.getElementById('sorttable-$keyword'));\n";
       $output .= "    table.draw(viewTable, { width: '100%', height: '100%' });\n";
       $output .= "    google.visualization.events.addListener(table, 'sort', function(event) {\n";
@@ -712,9 +698,9 @@ function getResultJS($input = array(), $RD, $sort, $keyword) {
 }
 
 function getResultHTML($input = array(), $RD, $keyword) {
-  $input = array_remove_empty($input);
-  $inputA = $input["0"];
-  $inputB = $input["1"];
+  $input = array_remove_empty($input); // print_r($input);
+  $inputA = $input["0"]; // print_r($inputA);
+  $inputB = $input["1"]; // print_r($inputB);
   $inputA = array_count_values($inputA);
   $Z = array_sum($inputA);
   $C = count($inputA);
@@ -758,47 +744,72 @@ if ($ff["monitor"]) { foreach ($ff["monitor"] as $fC) { foreach ($fC as $fD) { $
 $fff = json_decode($quota, true); 
 if ($fff["quota"]) { foreach ($fff["quota"] as $fE) { foreach ($fE as $fF) { $mn3[] = $fF; } } }
 
-$A1A = checkingQuestion($mn1["0"], $ee);
+// print_r("PEPEPEPEPEPEPE");
+// print_r($mn2);
+
+// for ($i=0; $i<count($mn1); $i++) {
+//   $A1[$i] = checkingQuestion($mn1[$i], $ee);
+//   $B1[$i] = getResultHTML($A1[$i], $RDsuccess, $mn1[$i]);
+//   $C1[$i] = getResultJS($A1[$i], $RDsuccess, "3", $mn1[$i]);
+// }
+// for ($j=0; $j<count($mn2); $j++) {
+//   $A2[$j] = checkingQuestion($nn2[$j], $ee);
+//   $B2[$j] = getResultHTML($A2[$j], $RDsuccess, $nn2[$j]);
+//   $C2[$j] = getResultJS($A2[$j], $RDsuccess, "3", $nn2[$j]);
+// }
+
+$A1A = checkingQuestion($mn1["0"], $ee); 
+// print_r($A1A);
 $A1B = getResultHTML($A1A, $RDsuccess, $mn1["0"]);
 $A1C = getResultJS($A1A, $RDsuccess, "3", $mn1["0"]);
 
 $A2A = checkingQuestion($mn1["1"], $ee);
+// print_r($A2A);
 $A2B = getResultHTML($A2A, $RDsuccess, $mn1["1"]);
 $A2C = getResultJS($A2A, $RDsuccess, "3", $mn1["1"]);
 
 $A3A = checkingQuestion($mn1["2"], $ee);
+// print_r($A3A);
 $A3B = getResultHTML($A3A, $RDsuccess, $mn1["2"]);
 $A3C = getResultJS($A3A, $RDsuccess, "3", $mn1["2"]);
 
 $A4A = checkingQuestion($mn1["3"], $ee);
+// print_r($A4A);
 $A4B = getResultHTML($A4A, $RDsuccess, $mn1["3"]);
 $A4C = getResultJS($A4A, $RDsuccess, "3", $mn1["3"]);
 
 $A5A = checkingQuestion($mn2["0"], $ee);
+// print_r($A5A);
 $A5B = getResultHTML($A5A, $RDsuccess, $mn2["0"]);
 $A5C = getResultJS($A5A, $RDsuccess, "3", $mn2["0"]);
 
 $A6A = checkingQuestion($mn2["1"], $ee);
+// print_r($A6A);
 $A6B = getResultHTML($A6A, $RDsuccess, $mn2["1"]);
 $A6C = getResultJS($A6A, $RDsuccess, "3", $mn2["1"]);
 
 $A7A = checkingQuestion($mn2["2"], $ee);
+// print_r($A7A);
 $A7B = getResultHTML($A7A, $RDsuccess, $mn2["2"]);
 $A7C = getResultJS($A7A, $RDsuccess, "3", $mn2["2"]);
 
 $A8A = checkingQuestion($mn2["3"], $ee);
+// print_r($A8A);
 $A8B = getResultHTML($A8A, $RDsuccess, $mn2["3"]);
 $A8C = getResultJS($A8A, $RDsuccess, "1", $mn2["3"]);
 
 $A9A = checkingQuestion($mn2["4"], $ee);
+// print_r($A9A);
 $A9B = getResultHTML($A9A, $RDsuccess, $mn2["4"]);
 $A9C = getResultJS($A9A, $RDsuccess, "1", $mn2["4"]);
 
 $A10A = checkingQuestion($mn2["5"], $ee);
+// print_r($A10A);
 $A10B = getResultHTML($A10A, $RDsuccess, $mn2["5"]);
 $A10C = getResultJS($A10A, $RDsuccess, "2", $mn2["5"]);
 
 $A11A = checkingQuestion($mn2["6"], $ee);
+// print_r($A11A);
 $A11B = getResultHTML($A11A, $RDsuccess, $mn2["6"]);
 $A11C = getResultJS($A11A, $RDsuccess, "1", $mn2["6"]);
 
@@ -808,6 +819,16 @@ $A11C = getResultJS($A11A, $RDsuccess, "1", $mn2["6"]);
   <div id="second" class="tab-pane fade">
 
 <?php
+
+// print_r($B2);
+// for ($j=0; $j<count($B2); $j++) {
+//   print_r($B2[$j]);
+// }
+// print_r($A1);
+// for ($i=0; $i<count($A1); $i++) {
+//   $missing = array_merge($A1[$i]);
+//   print_r(getMissingTable($missing));
+// }
 
 if ($A1B) { print_r($A1B); }
 if ($A2B) { print_r($A2B); }
