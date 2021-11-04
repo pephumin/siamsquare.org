@@ -561,4 +561,184 @@ function themeBG($colour) {
   return $themeBG;
 }
 
+function checkingQuestion($input, $ee = array()) {
+  for ($i=0; $i<count($ee); $i++) {
+    $alt1 = ""; $alt2 = "";
+    if (($input == "Region") || ($input == "Location")) { $alt1 = "Region"; $alt2 = "Location"; $interviewerbylocation = 1; }
+    else if (($input == "Interviewer") || ($input == "Interviewers")) { $alt1 = "Interviewer"; $alt2 = "Interviewer"; }
+    else if (($input == "Gender") || ($input == "Sex")) { $alt1 = "Gender"; $alt2 = "Sex"; }
+    else if (($input == "SES") || ($input == "SocialClass")) { $alt1 = "SES"; $alt2 = "SocialClass"; }
+    else { $alt1 = $input; $alt2 = $input; }
+    if ($alt1) {
+      if ($ee[$i]['data']['RespondentInformation'][$alt1]) { $outputz0[] = $ee[$i]['data']['RespondentInformation'][$alt1]; $missing_idz0[] = ""; $missing_infoz0[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdataz[] = array('region' => $ee[$i]['data']['RespondentInformation'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['RespondentInformation']['Record'][$alt1]) { $outputz0[] = $ee[$i]['data']['RespondentInformation']['Record'][$alt1]; $missing_idz0[] = ""; $missing_infoz0[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdataz[] = array('region' => $ee[$i]['data']['RespondentInformation']['Record'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else { $outputz0[] = ""; $missing_idz0[] = $ee[$i]['id']; $missing_infoz0[] = array('missing' => $alt1, 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
+      if ($ee[$i]['data']['RespondentInformation1'][$alt1]) { $outputz1[] = $ee[$i]['data']['RespondentInformation1'][$alt1]; $missing_idz1[] = ""; $missing_infoz1[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdataz[] = array('region' => $ee[$i]['data']['RespondentInformation1'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['RespondentInformation1']['Record'][$alt1]) { $outputz1[] = $ee[$i]['data']['RespondentInformation1']['Record'][$alt1]; $missing_idz1[] = ""; $missing_infoz1[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdataz[] = array('region' => $ee[$i]['data']['RespondentInformation1']['Record'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else { $outputz1[] = ""; $missing_idz1[] = $ee[$i]['id']; $missing_infoz1[] = array('missing' => $alt1, 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation1']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation1']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation1']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
+      if ($ee[$i]['data']['RespondentInformation2'][$alt1]) { $outputz2[] = $ee[$i]['data']['RespondentInformation2'][$alt1]; $missing_idz2[] = ""; $missing_infoz2[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdataz[] = array('region' => $ee[$i]['data']['RespondentInformation2'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['RespondentInformation2']['Record'][$alt1]) { $outputz2[] = $ee[$i]['data']['RespondentInformation2']['Record'][$alt1]; $missing_idz2[] = ""; $missing_infoz2[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdataz[] = array('region' => $ee[$i]['data']['RespondentInformation2']['Record'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else { $outputz2[] = ""; $missing_idz2[] = $ee[$i]['id']; $missing_infoz2[] = array('missing' => $alt1, 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation2']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation2']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation2']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
+      if ($ee[$i]['data'][$alt1]) { $output[] = $ee[$i]['data'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['Demographic'][$alt1]) { $output[] = $ee[$i]['data']['Demographic'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Demographic'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['Demographic']['Record'][$alt1]) { $output[] = $ee[$i]['data']['Demographic']['Record'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Demographic']['Record'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['Respondent'][$alt1]) { $output[] = $ee[$i]['data']['Respondent'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Respondent'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['Respondent']['Record'][$alt1]) { $output[] = $ee[$i]['data']['Respondent']['Record'][$alt1]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Respondent']['Record'][$alt1], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else { 
+        if ($ee[$i]['data']['RespondentInformation']) { $output[] = ""; $missing_id[] = $ee[$i]['id']; $missing_info[] = array('missing' => $alt1, 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
+        else if ($ee[$i]['data']['RespondentInformation1']) { $output[] = ""; $missing_id[] = $ee[$i]['id']; $missing_info[] = array('missing' => $alt1, 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation1']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation1']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation1']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
+        else if ($ee[$i]['data']['RespondentInformation2']) { $output[] = ""; $missing_id[] = $ee[$i]['id']; $missing_info[] = array('missing' => $alt1, 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation2']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation2']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation2']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
+      }
+    } else if ($alt2) {
+      if ($ee[$i]['data']['RespondentInformation'][$alt2]) { $outputz0[] = $ee[$i]['data']['RespondentInformation'][$alt2]; $missing_idz0[] = ""; $missing_infoz0[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdataz[] = array('region' => $ee[$i]['data']['RespondentInformation'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['RespondentInformation']['Record'][$alt2]) { $outputz0[] = $ee[$i]['data']['RespondentInformation']['Record'][$alt2]; $missing_idz0[] = ""; $missing_infoz0[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdataz[] = array('region' => $ee[$i]['data']['RespondentInformation']['Record'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else { $outputz0[] = ""; $missing_idz0[] = $ee[$i]['id']; $missing_infoz0[] = array('missing' => $alt2, 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
+      if ($ee[$i]['data']['RespondentInformation1'][$alt2]) { $outputz1[] = $ee[$i]['data']['RespondentInformation1'][$alt2]; $missing_idz1[] = ""; $missing_infoz1[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdataz[] = array('region' => $ee[$i]['data']['RespondentInformation1'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['RespondentInformation1']['Record'][$alt2]) { $outputz1[] = $ee[$i]['data']['RespondentInformation1']['Record'][$alt2]; $missing_idz1[] = ""; $missing_infoz1[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdataz[] = array('region' => $ee[$i]['data']['RespondentInformation1']['Record'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else { $outputz1[] = ""; $missing_idz1[] = $ee[$i]['id']; $missing_infoz1[] = array('missing' => $alt2, 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation1']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation1']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation1']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
+      if ($ee[$i]['data']['RespondentInformation2'][$alt2]) { $outputz2[] = $ee[$i]['data']['RespondentInformation2'][$alt2]; $missing_idz2[] = ""; $missing_infoz2[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdataz[] = array('region' => $ee[$i]['data']['RespondentInformation2'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['RespondentInformation2']['Record'][$alt2]) { $outputz2[] = $ee[$i]['data']['RespondentInformation2']['Record'][$alt2]; $missing_idz2[] = ""; $missing_infoz2[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdataz[] = array('region' => $ee[$i]['data']['RespondentInformation2']['Record'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else { $outputz2[] = ""; $missing_idz2[] = $ee[$i]['id']; $missing_infoz2[] = array('missing' => $alt2, 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation2']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation2']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation2']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
+      if ($ee[$i]['data'][$alt2]) { $output[] = $ee[$i]['data'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['Demographic'][$alt2]) { $output[] = $ee[$i]['data']['Demographic'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Demographic'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['Demographic']['Record'][$alt2]) { $output[] = $ee[$i]['data']['Demographic']['Record'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Demographic']['Record'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['Respondent'][$alt2]) { $output[] = $ee[$i]['data']['Respondent'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Respondent'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else if ($ee[$i]['data']['Respondent']['Record'][$alt2]) { $output[] = $ee[$i]['data']['Respondent']['Record'][$alt2]; $missing_id[] = ""; $missing_info[] = ""; if ($interviewerbylocation == 1) { $interviewerbylocationdata[] = array('region' => $ee[$i]['data']['Respondent']['Record'][$alt2], array('interviewer' => $ee[$i]['data']['Interviewer'])); } }
+      else { 
+        if ($ee[$i]['data']['RespondentInformation']) { $output[] = ""; $missing_id[] = $ee[$i]['id']; $missing_info[] = array('missing' => $alt2, 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
+        else if ($ee[$i]['data']['RespondentInformation1']) { $output[] = ""; $missing_id[] = $ee[$i]['id']; $missing_info[] = array('missing' => $alt2, 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation1']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation1']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation1']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
+        else if ($ee[$i]['data']['RespondentInformation2']) { $output[] = ""; $missing_id[] = $ee[$i]['id']; $missing_info[] = array('missing' => $alt2, 'id' => $ee[$i]['id'], 'RD_firstname' => $ee[$i]['data']['RespondentInformation2']['First name'], 'RD_surname' => $ee[$i]['data']['RespondentInformation2']['Surname'], 'RD_mobile' => $ee[$i]['data']['RespondentInformation2']['Mobile'], 'RD_region' => $ee[$i]['data']['Region'], 'interviewer' => $ee[$i]['data']['Interviewer'], 'submitted' => $ee[$i]['submitted']); }
+      }
+    }
+  }
+  $alloutput = [];
+  array_push($alloutput, $output);
+  array_push($alloutput, $missing_id);
+  array_push($alloutput, array_remove_empty($missing_info, "no"));
+  array_push($alloutput, $interviewerbylocationdata);
+  if ($outputz0) { array_push($alloutput, $outputz0); }
+  if ($missing_idz0) { array_push($alloutput, $missing_idz0); }
+  if ($missing_infoz0) { array_push($alloutput, array_remove_empty($missing_infoz0, "no")); }
+  if ($interviewerbylocationdataz0) { array_push($alloutput, $interviewerbylocationdataz0); }
+  if ($outputz1) { array_push($alloutput, $outputz1); }
+  if ($missing_idz1) { array_push($alloutput, $missing_idz1); }
+  if ($missing_infoz1) { array_push($alloutput, array_remove_empty($missing_infoz1, "no")); }
+  if ($interviewerbylocationdataz1) { array_push($alloutput, $interviewerbylocationdataz1); }
+  if ($outputz2) { array_push($alloutput, $outputz2); }
+  if ($missing_idz2) { array_push($alloutput, $missing_idz2); }
+  if ($missing_infoz2) { array_push($alloutput, array_remove_empty($missing_infoz2, "no")); }
+  if ($interviewerbylocationdataz2) { array_push($alloutput, $interviewerbylocationdataz2); }
+  return $alloutput;
+}
+
+function getResultJS($input = array(), $RD, $keyword) {
+  if (isset($keyword)) {
+    $input = array_remove_empty($input["0"]);
+    $input = str_replace('  ', ' ', $input);
+    $input = array_count_values($input);
+    if (($keyword == "Age") || ($keyword == "Region") || ($keyword == "SES")) { ksort($input); }
+    else if ($keyword == "Gender") { krsort($input); }
+    else { arsort($input); }
+    $Z = array_sum($input);
+    $A = array_keys($input);
+    $B = array_values($input);
+    $C = count($input);
+    $draw = "draw$keyword();";
+    $output = "";
+    if ($Z > 0) {
+      $output .= "  google.charts.setOnLoadCallback(draw$keyword);\n";
+      $output .= "  function draw$keyword() {\n";
+      $output .= "    var data = new google.visualization.DataTable();\n";
+      $output .= "    data.addColumn('string', 'Answer');\n";
+      $output .= "    data.addColumn('number', 'Count');\n";
+      $output .= "    data.addColumn('number', 'Percentage');\n";
+      $output .= "    data.addRows($C);\n";
+      for ($m=0; $m<$C; $m++) {
+        $BB[$m] = number_format(($B[$m]/$RD)*100, 2);
+        $m1 = $m+1; $m2 = $m1+1;
+        $output .= "    data.setCell($m, 0, '".addslashes($A[$m])."');\n";
+        $output .= "    data.setCell($m, 1, $B[$m]);\n";
+        $output .= "    data.setCell($m, 2, $BB[$m]);\n";
+      }
+      $output .= "    var viewTable = new google.visualization.DataView(data);\n";
+      $output .= "    viewTable.setColumns([0, 1, 2]);\n";
+      $output .= "    var viewChart = new google.visualization.DataView(data);\n";
+      $output .= "    viewChart.setColumns([0, 2]);\n";
+      $output .= "    var formatter = new google.visualization.NumberFormat({ suffix: '%', fractionDigits: '1' });\n";
+      $output .= "    formatter.format(data, 2);\n";
+      if ($C < 15) { $height = '500'; } else if (($C >= 15) && ($C < 30)) { $height = '700'; } else if ($C >= 30) { $height = '1000'; }
+      if (($Z > $RD) || ($C > 7)) { $tt = array('bar', 'column'); } else if (($Z <= $RD) && ($C <= 3)) { $tt = array('pie', 'donut'); } else if ($C > 15) { $tt = array('column'); } else { $tt = array('bar', 'column', 'pie', 'donut'); }
+      if (($keyword == "Region") || ($keyword == "Location") || ($keyword == "SES")) { $chart = 'column'; } else if (($keyword == "Interviewer") || ($keyword == "Age")) { $chart = 'bar'; } else if ($C > 8) { $chart = 'bar'; } else { $chart = $tt[array_rand($tt)]; }
+      if ($chart == "pie") {
+        $output .= "    var options = { width: '100%', height: '500', pieSliceText: 'label', legend: 'none' };\n";
+        $output .= "    var chart = new google.visualization.PieChart(document.getElementById('sortchart-$keyword'));\n";
+      } else if ($chart == "donut") {
+        $output .= "    var options = { pieHole: 0.4, width: '100%', height: '500', pieSliceText: 'label', legend: 'none' };\n";
+        $output .= "    var chart = new google.visualization.PieChart(document.getElementById('sortchart-$keyword'));\n";
+      } else if ($chart == "column") {
+        $output .= "    var options = { width: '100%', height: '500', bar: { groupWidth: '60%' }, legend: 'none' };\n";
+        $output .= "    var chart = new google.visualization.ColumnChart(document.getElementById('sortchart-$keyword'));\n";
+      } else if ($chart == "bar") {
+        if ($C >= 15) { $output .= "    var options = { width: '100%', height: $height, vAxis: { textStyle: { fontSize: 10 } }, hAxis: { textStyle: { fontSize: 14 } }, bar: { groupWidth: '60%' }, legend: 'none' };\n"; }
+        else { $output .= "    var options = { width: '100%', height: $height, bar: { groupWidth: '60%' }, legend: 'none' };\n"; }
+        $output .= "    var chart = new google.visualization.BarChart(document.getElementById('sortchart-$keyword'));\n";
+      }
+      $output .= "    setTimeout(function() { chart.draw(viewChart, options); }, 2000);\n";
+      $output .= "    var table = new google.visualization.Table(document.getElementById('sorttable-$keyword'));\n";
+      $output .= "    table.draw(viewTable, { width: '100%', height: '100%' });\n";
+      $output .= "    google.visualization.events.addListener(table, 'sort', function(event) {\n";
+      $output .= "      data.sort([{ column: event.column, desc: !event.ascending }]);\n";
+      $output .= "      chart.draw(viewChart);\n";
+      $output .= "    });\n";
+      $output .= "  }\n";
+    }
+    $alloutput = [];
+    array_push($alloutput, $output);
+    array_push($alloutput, $draw);
+  }
+  return $alloutput;
+}
+
+function getResultHTML($input = array(), $RD, $keyword) {
+  if (isset($keyword)) {
+    $input = array_remove_empty($input); // print_r($input);
+    $inputA = $input["0"]; // print_r($inputA);
+    $inputB = $input["1"]; // print_r($inputB);
+    $inputA = array_count_values($inputA);
+    $Z = array_sum($inputA);
+    $C = count($inputA);
+    $Y = implode(', ', $inputB);
+    $output = "";
+    if ($Z > 0) {
+      $output .= "      <h4>Sample size broken down by ".$keyword."</h4>\n";
+      $output .= "      <p>This question contains a total of ".$C." answer(s).</p>";
+      if ($Z == $RD) { $output .= "<p class=\"green\"><i class=\"pe-check pe-lg\"></i> The number of responses for this question (n=$Z) matches exactly to the number of sample (n=$RD). So the data is good.</p>\n"; } 
+      else { $output .= "<p class=\"red\"><i class=\"pe-exclamation-triangle pe-lg\"></i> The number of responses for this question (n=$Z) is lower than the number of sample (n=$RD). Questionnaire no. with missing answers (ID number of ".$Y.") are listed in the table at the bottom of this page <a href=\"#missinginfolink\" class=\"red\"><i class=\"pe-chevron-circle-down pe-fw red\"></i></a>.</p>\n"; }
+      $output .= "      <p class=\"small grey\">Click the table header <i class=\"pe-hand-o-down\"></i> to sort the data by column</p>\n";
+      $output .= "      <div id=\"sorttable-$keyword\" style=\"width:400px\"></div>\n";
+      $output .= "      <div id=\"sortchart-$keyword\"></div>\n";
+    }
+  }
+  return $output;
+}
+
+function getMissingTable($input = array()) {
+  $records = count($input);
+  if ($records > "0") {
+    $output = "      <h4 id=\"missinginfolink\">Missing Information</h4>\n";
+    $output .= "      <p>Oh no, we have detected there are a missing piece which could be critical to the analysis of this study. Below table shows a total of $records missing record(s).</p>\n";
+    $rows = array();
+    $k = 1;
+    foreach ($input as $row) {
+      $no = "<td class='center'>".$k."</td>";
+      $cells = array();
+      foreach ($row as $cell) { $cells[] = "<td>{$cell}</td>"; }
+      $rows[] = "<tr>".$no.implode('', $cells)."</tr>";
+      $k++;
+    }
+    $output .= "      <table class='table table-hover small' id='missing'><thead><tr class='bg-primary'><th class='center'>No.</th><th>What is missing?</th><th>Questionnaire No.</th><th colspan='3'>Respondent's information</th><th>Location</th><th>Interviewer</th><th>Date and time</th></tr></thead><tbody>" . implode('', $rows) . "</tbody></table>";
+  }
+  return $output;
+}
+
 ?>
