@@ -258,6 +258,7 @@ if ($_POST['m'] == "fixerrors") {
   if (isset($_POST["totalsample"]) && ($_POST["totalsample"] != $sample_size)) { $add = "sample = :sample, "; $addtype = "1"; }
   else if (isset($_POST["totalsamplebysubgroup"]) && ($_POST["totalsamplebysubgroup"] != $sample_size)) { $add = "sample = :sample, "; $addtype = "2"; }
   else { $addtype = "0"; }
+  // print_r($_POST);
   foreach (array_keys($_POST) as $key) {
     if (substr($key, 0, 5) === "quota") {
       list($a, $b, $c, $d) = split('_', $key);
@@ -268,20 +269,26 @@ if ($_POST['m'] == "fixerrors") {
       else if ($x == "monitor") { $qq3[$z] = $_POST[$key]; }
     }
   }
+  // print_r($qq1);
   foreach ($qq1 as $qqk => $qqv) {
-    $newqq1["code"] = $qqv["code"];
-    $newqq1["details"]["subgroup"] = $qqv["subgroup"]["0"];
-    $newqq1["details"]["samplesize"] = $qqv["samplesize"]["0"];
+    $newqq1["code"] = $qqv["code"]["0"];
+    $newqq1["details"]["subgroup"][] = $qqv["subgroup"]["0"];
+    $newqq1["details"]["samplesize"][] = $qqv["samplesize"]["0"];
   }
+  // print_r($newqq1);
   // $newqq2 = array_map(function ($input) { return array('questionname' => $input); }, $qq2["questionname"]);
   // $newqq3 = array_map(function ($input) { return array('questionname' => $input); }, $qq3["questionname"]);
   $newqq2 = array(); $newqq3 = array();
   foreach ($qq2 as $qq2k => $qq2v) { $newqq2["questionname"][] = $qq2v; } 
   foreach ($qq3 as $qq3k => $qq3v) { $newqq3["questionname"][] = $qq3v; } 
+  // print_r($newqq2);
+  // print_r($newqq3);
   $all1 = []; $all2 = [];
   array_push($all2, $newqq1); $all2["quota"] = $all2["0"]; unset($all2["0"]);
   array_push($all1, $newqq2); $all1["default"] = $all1["0"]; unset($all1["0"]);
   array_push($all1, $newqq3); $all1["monitor"] = $all1["1"]; unset($all1["1"]);
+  // print_r($all1);
+  // print_r($all2);
   $all1 = array_remove_empty($all1); $all2 = array_remove_empty($all2);
   // print_r($all1); 
   // print_r($all2);
@@ -957,10 +964,12 @@ $ff = json_decode($QC, true);
 if ($ff["default"]) { foreach ($ff["default"] as $fA) { foreach ($fA as $fB) { $mn1[] = $fB; } } }
 if ($ff["monitor"]) { foreach ($ff["monitor"] as $fC) { foreach ($fC as $fD) { $mn2[] = $fD; } } }
 $fff = json_decode($quota, true); 
-if ($fff["quota"]) { foreach ($fff["quota"] as $kE => $fE) { if ($kE == "questionname") { foreach ($fE as $fF) { $mn3[] = $fF; } } } }
-$MN = array_unique(array_merge($mn1, $mn2, $mn3));
-print_r($mn1);
-print_r($MN);
+if ($fff["quota"]) { foreach ($fff["quota"] as $kE => $fE) { if ($kE == "code") { foreach ($fE as $fF) { $mn3[] = $fF; } } } }
+$MN = array_merge($mn1, $mn2);
+// print_r($mn1);
+// print_r($mn2);
+// print_r($mn3);
+// print_r($MN);
 foreach ($MN as $k1 => $v1) {
   $vv1 = $v1;
   $AA = checkingQuestion($v1, $ee); 
@@ -1455,6 +1464,7 @@ echo "    </div>\n";
       }
       suggestedTotalsample(i, quota.subgroup[i].code, combinedtotalsample);
       addRow(parseInt(j)+2, i);
+      k++;
     }
   }
   function suggestedTotalsample(l, m, n) {
@@ -1649,6 +1659,7 @@ echo "    </div>\n";
 
 <?php
 
+// print_r($AC);
 if ($AC) { foreach ($AC as $ac => $acv) { print_r($acv["0"]); } }
 // if ($BC) { foreach ($BC as $bc => $bcv) { print_r($bcv["0"]); } }
 // if ($CC) { foreach ($CC as $cc => $ccv) { print_r($ccv["0"]); } }
