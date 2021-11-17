@@ -2470,7 +2470,7 @@ if (($cd == "file") || ($cd == "signaturepad")) {
       }
     }
     else { echo "No table to be shown for this question\n"; }
-    echo "</divaz>"; 
+    echo "</div>"; 
   }
   echo "</div></div></div>";
 ?>
@@ -2822,7 +2822,6 @@ function selectElementContents(el) {
 }
 
 $(document).ready(function() {
-  // $('.js-tooltip').tooltip();
   $('.js-copy').click(function() {
     var tableoutputwrap = document.getElementById('outputwrap');
     var count = tableoutputwrap.getElementsByTagName('table').length;
